@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,7 @@ public class Organization : BaseEntity
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
+    public Status Status { get; set; }
 
 
 }

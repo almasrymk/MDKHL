@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using System.Collections.Generic;
 
 
@@ -10,4 +11,6 @@ public class Emaraa : BaseEntity
     public string ArName { get; set; }
     public int CountryId { get; set; }
     public ICollection<Organization> Organizations { get; set; }
+    public Status Status { get; set; }
+
 }
