@@ -14,3 +14,4 @@ namespace SmartParking.Entities
 
     }
 }
+ 

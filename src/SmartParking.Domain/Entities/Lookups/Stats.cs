@@ -9,8 +9,6 @@ namespace SmartParking.Entities.Lookups;
 
 public class Stats : BaseEntity
 {
-    public string EnName { get; set; }
-    public string ArName { get; set; }
     public int EmaraaId { get; set; }
     public Status Status { get; set; }
 
