@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationCategories
+public class OrganizationCategory
 {
-    public int OrganizationCategoriesId { get; set; }
+    public int OrganizationCategoryId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public bool Default { get; set; }

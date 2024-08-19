@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationSubscriptions 
+public class OrganizationCustomer
 {
-    public int OrganizationSubscriptionsId { get; set; }
+    public int OrganizationCustomerId { get; set; }
     public int OrganizationId { get; set; }
-    public int SubscriptionsId { get; set; }
-
+    public int CustomerId { get; set; }
     public Status Status { get; set; }
 }
