@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,5 @@ public class OrganizationSubscriptions
     public int OrganizationId { get; set; }
     public int SubscriptionsId { get; set; }
 
-
+    public Status Status { get; set; }
 }
