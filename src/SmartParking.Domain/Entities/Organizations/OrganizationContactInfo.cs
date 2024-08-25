@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationContactInfo
+public class OrganizationContactInfo : FullAuditedEntity<int>
 {
-    public int Id { get; set; }
     public int OrganizationId { get; set; }
     public string Name { get; set; }
     public int NationalityId { get; set; }
