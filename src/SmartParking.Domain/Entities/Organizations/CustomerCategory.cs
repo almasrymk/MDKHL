@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations;
 
-public class CustomerCategory
+public class CustomerCategory : FullAuditedEntity<int>
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string  Description { get; set; }
     public bool Default { get; set; }
     public int OrganizationId { get; set; }
+    public virtual Organization Organization { get; set; }
     public Status Status { get; set; }
 }
