@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Primitives;
+using System.Collections.Generic;
 
 namespace SmartParking.Entities
 {
@@ -9,6 +10,8 @@ namespace SmartParking.Entities
             Cities=new List<City>();
         }
         public int CountryId { get; set; }
+        public string EnglishCapital { get; set; }
+        public string ArabicCapital { get; set; }
         public Country Country { get; set; }
         public List<City> Cities { get; set; }
 
