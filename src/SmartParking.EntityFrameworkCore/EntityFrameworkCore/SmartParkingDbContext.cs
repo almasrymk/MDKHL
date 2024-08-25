@@ -95,13 +95,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<PackageType> PackageTypes { get; set; }
     [NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
-    public DbSet<Country> Countries{ get; set; }
-        public DbSet<Governorate> Governorates { get; set; }
-        public DbSet<City> Cities { get; set; }
-        public DbSet<Feature> Features { get; set; }
-        public DbSet<Screen> Screens { get; set; }
-        public DbSet<UserType> UserTypes { get; set; }
-        public DbSet<PackageType> PackageTypes { get; set; }
+
     #endregion
     private readonly IConnectionStringResolver _connectionStringResolver;
     private readonly ICurrentTenant _currentTenant;
