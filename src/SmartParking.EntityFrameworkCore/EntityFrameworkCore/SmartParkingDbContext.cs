@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
+using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
+
 using System.Collections.Generic;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -53,10 +58,26 @@ public class SmartParkingDbContext :
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationCategory> OrganizationCategories { get; set; }
+    public DbSet<OrganizationContactInfo> OrganizationContactInfos { get; set; }
+    public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
+    public DbSet<OrganizationGarage> OrganizationGarages { get; set; }
+    public DbSet<OrganizationPackage> OrganizationPackages { get; set; }
+    public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Camera> Cameras { get; set; }
+    public DbSet<CustomerCategory> CustomerCategories { get; set; }
+    
+
+  
+
+
     #endregion
 
     #region Lookups
-        public DbSet<Country> Countries{ get; set; }
+    public DbSet<Country> Countries{ get; set; }
         public DbSet<Governorate> Governorates { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Feature> Features { get; set; }
