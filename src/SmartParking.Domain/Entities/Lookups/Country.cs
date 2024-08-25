@@ -8,6 +8,8 @@ namespace SmartParking.Entities
         {
             Governorates = new List<Governorate>();
         }
+        public string EnglishCapital {  get; set; }
+        public string ArabicCapital { get; set; }
         public List<Governorate> Governorates { get; set; }
     }
 }

@@ -29,6 +29,10 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Volo.Abp.Data;
+using SmartParking.Configurations;
+using SmartParking.Repositories;
 
 namespace SmartParking;
 
@@ -49,6 +53,8 @@ public class SmartParkingHttpApiHostModule : AbpModule
     {
         PreConfigure<OpenIddictBuilder>(builder =>
         {
+            context.Services.Replace(ServiceDescriptor.Transient<IConnectionStringResolver, SmartParkingConnectionStringResolver>());
+
             builder.AddValidation(options =>
             {
                 options.AddAudiences("SmartParking");
@@ -70,6 +76,8 @@ public class SmartParkingHttpApiHostModule : AbpModule
         ConfigureVirtualFileSystem(context);
         ConfigureCors(context, configuration);
         ConfigureSwaggerServices(context, configuration);
+        context.Services.AddTransient<IConnectionStringResolver, SmartParkingConnectionStringResolver>();
+        context.Services.AddTransient<ITenantConnectionStringRepository, TenantConnectionStringRepository>();
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
