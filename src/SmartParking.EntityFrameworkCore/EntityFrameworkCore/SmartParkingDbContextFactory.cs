@@ -3,6 +3,9 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp.Data;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -12,25 +15,44 @@ public class SmartParkingDbContextFactory : IDesignTimeDbContextFactory<SmartPar
 {
     public SmartParkingDbContext CreateDbContext(string[] args)
     {
-        // https://www.npgsql.org/efcore/release-notes/6.0.html#opting-out-of-the-new-timestamp-mapping-logic
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
-        SmartParkingEfCoreEntityExtensionMappings.Configure();
-
         var configuration = BuildConfiguration();
 
-        var builder = new DbContextOptionsBuilder<SmartParkingDbContext>()
-            .UseNpgsql(configuration.GetConnectionString("Default"));
+        var services = new ServiceCollection();
+        // Manually add necessary dependencies
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConnectionStringResolver>(new DefaultConnectionStringResolver(configuration));
+        services.AddSingleton<ICurrentTenant, CurrentTenant>();
 
-        return new SmartParkingDbContext(builder.Options);
+        services.AddDbContext<SmartParkingDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString("Default"));
+        });
+
+
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        return serviceProvider.GetRequiredService<SmartParkingDbContext>();
+        //// https://www.npgsql.org/efcore/release-notes/6.0.html#opting-out-of-the-new-timestamp-mapping-logic
+        //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+        //SmartParkingEfCoreEntityExtensionMappings.Configure();
+
+        //var configuration = BuildConfiguration();
+
+        //var builder = new DbContextOptionsBuilder<SmartParkingDbContext>()
+        //    .UseNpgsql(configuration.GetConnectionString("Default"));
+
+        //return new SmartParkingDbContext(builder.Options);
     }
 
     private static IConfigurationRoot BuildConfiguration()
     {
         var builder = new ConfigurationBuilder()
             .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../SmartParking.DbMigrator/"))
-            .AddJsonFile("appsettings.json", optional: false);
-
+            .AddJsonFile("appsettings.json", optional: false)
+           .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true);
         return builder.Build();
     }
+   
 }
