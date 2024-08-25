@@ -9,7 +9,7 @@ namespace SmartParking.Entities.Organizations;
 
 public class OrganizationPackage : BaseEntity
 {
-    public int Type { get; set; }
+    public int PackageTypeId { get; set; }
     public decimal Price { get; set; }
     public string Details { get; set; }
     public int OrganizationId { get; set; }

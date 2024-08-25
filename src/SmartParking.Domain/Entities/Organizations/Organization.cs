@@ -18,13 +18,19 @@ public class Organization : BaseEntity
 
     public int EmaraaId { get; set; }
 
-    public int StatId { get; set; }
+    public int StatsId { get; set; }
 
     public int CityId { get; set; }
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
     public Status Status { get; set; }
+
+    public ICollection<OrganizationGarage> OrganizationGarages { get; set; }
+    public ICollection<OrganizationPackage> organizationPackages { get; set; }
+    public ICollection<OrganizationContactInfo> organizationContactInfos { get; set; }
+    public ICollection<CustomerCategory> CustomerCategories { get; set; }
+
 
 
 }

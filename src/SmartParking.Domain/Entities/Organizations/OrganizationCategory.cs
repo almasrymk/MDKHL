@@ -9,7 +9,7 @@ namespace SmartParking.Entities.Organizations;
 
 public class OrganizationCategory
 {
-    public int OrganizationCategoryId { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public bool Default { get; set; }
