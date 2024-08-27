@@ -30,7 +30,7 @@ public class OrganizationDto
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
-
+    public Guid TenantId { get; set; }
     public Status Status { get; set; }
 
 

@@ -14,6 +14,7 @@ public class CreateUpdateOrganiztionDto
     public string Code { get; set; }
 
     public string UnifiedLicenseNum { get; set; }
+    public Guid TenantId { get; set; }
 
     public int NumOfCameras { get; set; }
 
