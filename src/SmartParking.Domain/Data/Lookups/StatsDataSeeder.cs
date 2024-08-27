@@ -23,9 +23,9 @@ namespace SmartParking.Data.Lookups
             {
                 var statsList = new List<Stats>
                 {
-                    new Stats { Id = 1, EmaraaId = 1, Status = Status.Active },
-                    new Stats { Id = 2, EmaraaId = 2, Status = Status.Active },
-                    new Stats { Id = 3, EmaraaId = 3, Status = Status.Active },
+                    new Stats { Id = 1,ArabicName="test", EnglishName = "test", EmaraaId = 1, Status = Status.Active },
+                    new Stats { Id = 2,ArabicName="test", EnglishName = "test", EmaraaId = 2, Status = Status.Active },
+                    new Stats { Id = 3,ArabicName="test", EnglishName = "test", EmaraaId = 3, Status = Status.Active },
 
                 };
 

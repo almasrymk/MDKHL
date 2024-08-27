@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SmartParking.Entities.Lookups;
 using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
 
@@ -19,15 +20,15 @@ public class SmartParkingDbContextFactory : IDesignTimeDbContextFactory<SmartPar
 
         var services = new ServiceCollection();
         // Manually add necessary dependencies
-        services.AddSingleton<IConfiguration>(configuration);
-        services.AddSingleton<IConnectionStringResolver>(new DefaultConnectionStringResolver(configuration));
-        services.AddSingleton<ICurrentTenant, CurrentTenant>();
-
         services.AddDbContext<SmartParkingDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("Default"));
         });
 
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConnectionStringResolver>(new DefaultConnectionStringResolver(configuration));
+        services.AddSingleton<ICurrentTenant, CurrentTenant>();
+        services.AddSingleton<ICurrentTenantAccessor, NullCurrentTenantAccessor>(); // This line is crucial to bypass multi-tenancy at design-time
 
 
         var serviceProvider = services.BuildServiceProvider();

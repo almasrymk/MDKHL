@@ -2,6 +2,7 @@
 using SmartParking.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using SmartParking.Entities.Lookups;
 namespace SmartParking.Configurations
 {
     public class CountryConfiguration : IEntityTypeConfiguration<Country>
@@ -95,6 +96,33 @@ namespace SmartParking.Configurations
             builder.Property(x => x.ArabicDescription).HasMaxLength(SmartParkingSettingsConsts.StringMaxLength);
             builder.Property(x => x.EnglishDescription).HasMaxLength(SmartParkingSettingsConsts.StringMaxLength);
             builder.ToTable("PackageTypes");
+        }
+    }
+
+    public class EmaraaConfiguration : IEntityTypeConfiguration<Emaraa>
+    {
+        void IEntityTypeConfiguration<Emaraa>.Configure(EntityTypeBuilder<Emaraa> builder)
+        {
+            builder.ConfigureByConvention();
+            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.ArabicName).IsRequired();
+            builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
+            builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
+
+            builder.ToTable("Emaraas");
+        }
+    }
+    public class StatsConfiguration : IEntityTypeConfiguration<Stats>
+    {
+        void IEntityTypeConfiguration<Stats>.Configure(EntityTypeBuilder<Stats> builder)
+        {
+            builder.ConfigureByConvention();
+            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.ArabicName).IsRequired();
+            builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
+            builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
+
+            builder.ToTable("Stats");
         }
     }
 }

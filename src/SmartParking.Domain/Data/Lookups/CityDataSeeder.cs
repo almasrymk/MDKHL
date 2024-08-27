@@ -22,9 +22,9 @@ namespace SmartParking.Data.Lookups
             {
                 var cities = new List<City>
                 {
-                    new City { Id = 1, GovernorateId = 1 },
-                    new City { Id = 2, GovernorateId = 2 },
-                    new City { Id = 3, GovernorateId = 3 },
+                    new City { Id = 1, ArabicName="test", EnglishName = "test", GovernorateId = 1 },
+                    new City { Id = 2, ArabicName="test", EnglishName = "test", GovernorateId = 2 },
+                    new City { Id = 3, ArabicName="test", EnglishName = "test", GovernorateId = 3 },
               
                 
                 };

@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
-using SmartParking.Repositories;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
-
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -17,7 +14,6 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
@@ -93,6 +89,8 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Screen> Screens { get; set; }
     public DbSet<UserType> UserTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
+    public DbSet<Emaraa> Emaraas { get; set; }
+    public DbSet<Stats> Stats { get; set; }
     [NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 
