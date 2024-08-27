@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SmartParking.CustomerCategories;
 using SmartParking.Entities.Organizations;
 using SmartParking.Organizations;
 
@@ -18,5 +19,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.ArabicName))
             .ForMember(dest => dest.StatsName, opt => opt.MapFrom(src => src.Stats.ArabicName));
         CreateMap<CreateUpdateOrganiztionDto, Organization>();
+
+
+        CreateMap<CustomerCategory, CustomerCategoryDto>()
+            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName))
+        CreateMap<CreateUpdateCutomerCategoryDto, CustomerCategory>();
+
+
+
     }
 }
