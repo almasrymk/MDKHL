@@ -12,11 +12,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
 
-        CreateMap<Organization, OrganizationDto>();
-            //.ForMember(dest => dest.EmaraaName, opt => opt.MapFrom(src => src.Emaraa.ArabicName))
-            //.ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.ArabicName))
-            //.ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.ArabicName))
-            //.ForMember(dest => dest.StatsName, opt => opt.MapFrom(src => src.Stats.ArabicName));
+        CreateMap<Organization, OrganizationDto>()
+            .ForMember(dest => dest.EmaraaName, opt => opt.MapFrom(src => src.Emaraa.ArabicName))
+            .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.ArabicName))
+            .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.ArabicName))
+            .ForMember(dest => dest.StatsName, opt => opt.MapFrom(src => src.Stats.ArabicName));
         CreateMap<CreateUpdateOrganiztionDto, Organization>();
     }
 }
