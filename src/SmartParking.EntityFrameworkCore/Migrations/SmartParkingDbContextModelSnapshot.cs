@@ -436,14 +436,12 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Lookups.Stats", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
@@ -465,7 +463,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("EnglishName")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -495,7 +494,7 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("EmaraaId");
 
-                    b.ToTable("Stats");
+                    b.ToTable("Stats", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerCategory", b =>
@@ -577,7 +576,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Code")
-                        .HasColumnType("text");
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
 
                     b.Property<string>("ContactMail")
                         .HasColumnType("text");
