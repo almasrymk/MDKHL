@@ -2,9 +2,13 @@
 using SmartParking.Entities.Organizations;
 using SmartParking.Validations.Organizations;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Organizations;
@@ -14,11 +18,14 @@ public class OrganizationAppService : CrudAppService<Organization, OrganizationD
     private readonly IRepository<Organization, int> _repository;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
 
-    public OrganizationAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService) : base(repository)
+    public IDataFilter<ISoftDelete> _softDeleteFilter { get; }
+
+    public OrganizationAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter<ISoftDelete> softDeleteFilter) : base(repository)
     {
         _repository = repository;
   
         _customerCategoryAppService = customerCategoryAppService;
+         _softDeleteFilter = softDeleteFilter;
     }
 
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
@@ -31,6 +38,15 @@ public class OrganizationAppService : CrudAppService<Organization, OrganizationD
 
 
     }
+
+    public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        using (_softDeleteFilter.Disable())
+        {
+            return await base.GetListAsync(input);
+        }
+       
+    }
     private string CodeGenerator(int id)
     {
         var idLen =(int) Math.Floor(Math.Log10(id) + 1);
@@ -39,6 +55,20 @@ public class OrganizationAppService : CrudAppService<Organization, OrganizationD
         Code = Code.PadRight(zeros + 1, '0');
         Code += (id);
         return Code;
+    }
+
+
+    public new async Task<string> DeleteByIdAsync(int id)
+    {
+        var orgaization = await _repository.FindAsync(id);
+        if(orgaization is null)
+            throw new EntityNotFoundException(typeof(Organization),id);
+       else
+        {
+            await _repository.DeleteAsync(id);
+            orgaization.Status = Enums.Status.Deleted;
+            return "Orgaization has been deleted";
+        }
     }
 }
  
