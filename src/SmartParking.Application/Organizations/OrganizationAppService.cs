@@ -23,17 +23,12 @@ public class OrganizationAppService : CrudAppService<Organization, OrganizationD
 
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
-
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
-        _repository.EnableTracking();
         await _repository.InsertAsync(organization,autoSave:true);
         organization.Code = CodeGenerator(organization.Id);
-        _repository.DisableTracking();
-        return  ObjectMapper.Map<Organization, OrganizationDto>(organization);
-        organization.Code = CodeGenerator(id);
-        await _repository.InsertAsync(organization , autoSave:true);
-        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = "عام", Description = "جميع العملاء", Default = true, OrganizationId = id });
+        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = "عام", Description = "جميع العملاء", Default = true, OrganizationId = organization.Id });
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);
+
 
     }
     private string CodeGenerator(int id)
