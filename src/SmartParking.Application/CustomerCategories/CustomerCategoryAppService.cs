@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,24 @@ namespace SmartParking.CustomerCategories;
 
 public class CustomerCategoryAppService : CrudAppService<CustomerCategory, CustomerCategoryDto, int, PagedAndSortedResultRequestDto, CreateUpdateCutomerCategoryDto>, ICustomerCategoryAppService
 {
+    private readonly IRepository<CustomerCategory, int> _repository;
+
     public CustomerCategoryAppService(IRepository<CustomerCategory, int> repository) : base(repository)
     {
+        _repository = repository;
+    }
+
+    public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
+    {
+        var query = await  _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+        if(input.Default)
+        {
+            var customerCategory = query.First(x => x.Default == true);
+            customerCategory.Default = false;
+
+        }
+        
+        
+        return await base.CreateAsync(input);
     }
 }
