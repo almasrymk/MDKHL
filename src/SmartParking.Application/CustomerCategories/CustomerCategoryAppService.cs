@@ -29,8 +29,13 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
             customerCategory.Default = false;
 
         }
-        
-        
         return await base.CreateAsync(input);
+    }
+    public async Task<List<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId)
+    {
+
+        var query =await _repository.GetListAsync(x => x.OrganizationId == OrganizationId);
+        return ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(query);
+
     }
 }
