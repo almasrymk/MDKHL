@@ -23,10 +23,14 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
     public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
     {
         var query = await  _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-        if(input.Default)
+        if(input.Default == true)
         {
-            var customerCategory = query.First(x => x.Default == true);
-            customerCategory.Default = false;
+            if(query.Count > 0)
+            {
+                var customerCategory = query.First(x => x.Default == true);
+                customerCategory.Default = false;
+
+            }
 
         }
         
