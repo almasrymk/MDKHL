@@ -31,7 +31,7 @@ public class Organization : BaseEntity
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
-    public Status Status { get; set; }
+    public Status Status { get; set; } = Status.Active;
     public virtual ICollection<OrganizationGarage> OrganizationGarages { get; set; }
     public virtual ICollection<Camera> Cameras { get; set; }
     public virtual ICollection<OrganizationPackage> organizationPackages { get; set; }
