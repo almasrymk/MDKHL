@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.CustomerCategories;
@@ -23,7 +24,11 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
     public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
     {
         var query = await  _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-        if(input.Default == true)
+        if(query.Count ==0)
+        {
+            throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
+        }
+        else if(input.Default == true)
         {
             if(query.Count > 0)
             {
