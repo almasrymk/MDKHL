@@ -23,7 +23,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName));
-        CreateMap<CreateUpdateCutomerCategoryDto, CustomerCategory>();
+
 
 
 
