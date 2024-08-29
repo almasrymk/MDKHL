@@ -33,7 +33,7 @@ public class OrganizationAppService : CrudAppService<Organization, OrganizationD
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
         await _repository.InsertAsync(organization,autoSave:true);
         organization.Code = CodeGenerator(organization.Id);
-        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = "عام", Description = "جميع العملاء", Default = true, OrganizationId = organization.Id });
+        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = "عام", Description = "جميع العملاء", Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);
 
 

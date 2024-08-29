@@ -23,8 +23,12 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
 
     public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
     {
+        if (input.CreatedByOrganization)
+        {
+            return await base.CreateAsync(input);
+        }
         var query = await  _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-        if(query.Count ==0)
+        if(query.Count == 0)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
         }
