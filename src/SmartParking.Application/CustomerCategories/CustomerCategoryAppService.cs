@@ -40,11 +40,12 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         }
         return await base.CreateAsync(input);
     }
-    public async Task<List<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId)
+    public async Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId)
     {
 
         var query =await _repository.GetListAsync(x => x.OrganizationId == OrganizationId);
-        return ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(query);
+        var list= ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(query);
+        return new PagedResultDto<CustomerCategoryDto>(list.Count,list);
 
     }
 }
