@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Organizations;
+using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using System;
 using System.Collections;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
@@ -47,11 +49,20 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
     }
     public override async Task<CustomerCategoryDto> UpdateAsync(int id, CreateUpdateCutomerCategoryDto input)
     {
+        //object has been set to be Default is true (true in database) , and in update operation is set Default to be false
+        var customerCategoryById = await _repository.FindAsync(x => x.Id == id);
+        if(input.Default==false && customerCategoryById.Default == true)
+        {
+            throw new BusinessException(EnumValues.GetEnumDescription(CustomerCategoryValidations.DefaultIsTrueAndUpdatedToBeFalse) + " " + customerCategoryById.Organization.EnglishName);
+        }
+
+
         if (input.Default==true) {
             var query = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
             var customerCategory = query.FirstOrDefault(x => x.Default == true);
             customerCategory.Default = false;
         }
+        
         return await base.UpdateAsync(id, input);
     }
 
@@ -63,5 +74,15 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         return new PagedResultDto<CustomerCategoryDto>(list.Count,list);
 
     }
-    
+    public override async Task DeleteAsync(int id)
+    {
+        var customerCategory=await _repository.FirstOrDefaultAsync(x => x.Id == id);
+        if (customerCategory.Default == true) {
+
+            throw new BusinessException(EnumValues.GetEnumDescription(CustomerCategoryValidations.DeleteDefaultForOrganization) +" " +customerCategory.Organization.EnglishName );
+
+        }
+
+        await base.DeleteAsync(id);
+    }
 }
