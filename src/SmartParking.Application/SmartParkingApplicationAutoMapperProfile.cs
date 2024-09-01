@@ -16,13 +16,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Organization, OrganizationDto>()
             .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.ArabicName))
             .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.ArabicName))
-            .ForMember(dest => dest.StatsName, opt => opt.MapFrom(src => src.Stats.ArabicName));
-        CreateMap<CreateUpdateOrganiztionDto, Organization>();
+            .ForMember(dest => dest.StatsName, opt => opt.MapFrom(src => src.Stats.ArabicName)).ReverseMap();
+        CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
 
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
-            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName));
-        CreateMap<CreateUpdateCutomerCategoryDto, CustomerCategory>();
+            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
+        CreateMap<CreateUpdateCutomerCategoryDto, CustomerCategory>().ReverseMap();
 
 
 

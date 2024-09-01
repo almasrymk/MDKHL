@@ -1,6 +1,7 @@
 ﻿using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,16 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         }
         return await base.CreateAsync(input);
     }
+    public override async Task<CustomerCategoryDto> UpdateAsync(int id, CreateUpdateCutomerCategoryDto input)
+    {
+        if (input.Default==true) {
+            var query = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+            var customerCategory = query.FirstOrDefault(x => x.Default == true);
+            customerCategory.Default = false;
+        }
+        return await base.UpdateAsync(id, input);
+    }
+
     public async Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId)
     {
 
@@ -52,4 +63,5 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         return new PagedResultDto<CustomerCategoryDto>(list.Count,list);
 
     }
+    
 }
