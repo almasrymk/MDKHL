@@ -8,6 +8,6 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Organizations;
 
-public interface IOrganizationAppService : ICrudAppService<OrganizationDto,int,PagedAndSortedResultRequestDto,CreateUpdateOrganiztionDto>
+public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,PagedAndSortedResultRequestDto,CreateUpdateOrganiztionDto>
 {
 }
