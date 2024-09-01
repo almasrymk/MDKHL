@@ -18,8 +18,8 @@ public class CreateUpdateOrganiztionDto
     public int NumOfCameras { get; set; }
 
     public int MaxCapacity { get; set; }
-    public DateOnly CRExpiryDate { get; set; }
-    public DateOnly LicenseExpiryDate { get; set; }
+    public DateOnly CRExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateOnly LicenseExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public int CountryId { get; set; }
 
     public int EmaraaId { get; set; }
