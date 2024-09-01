@@ -8,6 +8,9 @@ using Serilog;
 using Serilog.Events;
 using Microsoft.JSInterop;
 using Blazorise.Bootstrap5;
+using MudBlazor.Services;
+
+
 
 namespace SmartParking.Blazor;
 
@@ -35,6 +38,9 @@ public class Program
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
+
+            builder.Services.AddMudServices();
+
             await builder.AddApplicationAsync<SmartParkingBlazorModule>();
             //builder.Services.AddBlazorise()
             //                .AddBootstrapProviders()
