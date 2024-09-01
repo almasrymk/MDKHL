@@ -13,14 +13,14 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Organizations;
 
-public class OrganizationAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationAppService
+public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
 
     public IDataFilter<ISoftDelete> _softDeleteFilter { get; }
 
-    public OrganizationAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter<ISoftDelete> softDeleteFilter) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter<ISoftDelete> softDeleteFilter) : base(repository)
     {
         _repository = repository;
   
