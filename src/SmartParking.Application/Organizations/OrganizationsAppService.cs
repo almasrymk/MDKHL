@@ -1,5 +1,7 @@
 ﻿using SmartParking.CustomerCategories;
 using SmartParking.Entities.Organizations;
+using SmartParking.EnumDescriptions;
+using SmartParking.Enums;
 using SmartParking.Validations.Organizations;
 using System;
 using System.Linq;
@@ -30,10 +32,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
+        var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
+        if (query.Count>0)
+        {
+            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.UnifiedLicenseNumUnifiedLicenseNum) + query.First().ArabicName);
+
+        }
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
         await _repository.InsertAsync(organization,autoSave:true);
         organization.Code = CodeGenerator(organization.Id);
-        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = "عام", Description = "جميع العملاء", Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});
+        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name =EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description=EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);
 
 
@@ -67,7 +75,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
             await _repository.DeleteAsync(id);
             orgaization.Status = Enums.Status.Deleted;
-            return "Orgaization has been deleted";
+            
+            return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion); 
         }
     }
 }
