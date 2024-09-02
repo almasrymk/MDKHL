@@ -12,8 +12,9 @@ namespace SmartParking.Entities
         public int CountryId { get; set; }
         public string EnglishCapital { get; set; }
         public string ArabicCapital { get; set; }
-        public Country Country { get; set; }
-        public List<City> Cities { get; set; }
+        public virtual Country Country { get; set; }
+        public  virtual List<City> Cities { get; set; }
 
     }
 }
+ 

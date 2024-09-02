@@ -12,6 +12,7 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -48,8 +49,11 @@ public class SmartParkingEntityFrameworkCoreModule : AbpModule
 
         Configure<AbpDbContextOptions>(options =>
         {
-                /* The main point to change your DBMS.
-                 * See also SmartParkingMigrationsDbContextFactory for EF Core tooling. */
+            options.PreConfigure<SmartParkingDbContext>(opts =>
+            {
+                opts.DbContextOptions.UseLazyLoadingProxies(); //Enable lazy loading
+            });
+
             options.UseNpgsql();
         });
 

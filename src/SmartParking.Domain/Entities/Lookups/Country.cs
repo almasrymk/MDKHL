@@ -10,6 +10,6 @@ namespace SmartParking.Entities
         }
         public string EnglishCapital {  get; set; }
         public string ArabicCapital { get; set; }
-        public List<Governorate> Governorates { get; set; }
+        public virtual List<Governorate> Governorates { get; set; }
     }
 }

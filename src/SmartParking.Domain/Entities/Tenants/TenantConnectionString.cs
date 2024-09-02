@@ -14,7 +14,7 @@ namespace SmartParking.Entities
         public string UserName { get; set; }
         public string Password { get; set; }
         public string ConnectionString  { get; set; }
-        public Tenant Tenant { get; set; }
+        public virtual Tenant Tenant { get; set; }
 
 
         public TenantConnectionString

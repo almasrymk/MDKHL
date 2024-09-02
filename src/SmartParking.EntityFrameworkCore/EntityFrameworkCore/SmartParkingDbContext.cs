@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
-using SmartParking.Repositories;
-using System;
+using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -11,7 +14,6 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
@@ -61,6 +63,22 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
 
     public DbSet<Entities.TenantConnectionString> TenantConnectionStrings { get; set; }
 
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationCategory> OrganizationCategories { get; set; }
+    public DbSet<OrganizationContactInfo> OrganizationContactInfos { get; set; }
+    public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
+    public DbSet<OrganizationGarage> OrganizationGarages { get; set; }
+    public DbSet<OrganizationPackage> OrganizationPackages { get; set; }
+    public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Camera> Cameras { get; set; }
+    public DbSet<CustomerCategory> CustomerCategories { get; set; }
+    
+
+  
+
+
     #endregion
 
     #region Lookups
@@ -71,8 +89,11 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Screen> Screens { get; set; }
     public DbSet<UserType> UserTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
+    public DbSet<Emaraa> Emaraas { get; set; }
+    public DbSet<Stats> Stats { get; set; }
     [NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
+
     #endregion
     private readonly IConnectionStringResolver _connectionStringResolver;
     private readonly ICurrentTenant _currentTenant;

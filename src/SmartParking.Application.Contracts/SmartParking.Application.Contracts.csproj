@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\common.props" />
 
@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Volo.Abp.FluentValidation" Version="8.2.1" />
     <PackageReference Include="Volo.Abp.ObjectExtending" Version="8.2.1" />
     <PackageReference Include="Volo.Abp.Account.Application.Contracts" Version="8.2.1" />
     <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="8.2.1" />
