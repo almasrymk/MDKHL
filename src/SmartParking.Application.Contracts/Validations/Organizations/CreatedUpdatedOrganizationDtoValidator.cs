@@ -25,7 +25,8 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
             .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
             .WithMessage("The expiry date cannot be earlier than today.");
 
-        RuleFor(x => x.EnglishName).Matches(@"^[a-zA-Z][a-zA-Z0-9/.\,\\]*$");
+        RuleFor(x => x.EnglishName)
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\]*(\s[a-zA-Z0-9/.,\\]+)*$");
 
         RuleFor(x => x.WhatsAppNum).Matches(@"^(?:05[3-8]\d{7}|\+966[3-8]\d{8})$");
 
