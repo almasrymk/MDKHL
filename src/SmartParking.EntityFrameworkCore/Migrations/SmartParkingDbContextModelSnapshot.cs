@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SmartParking.EntityFrameworkCore;
@@ -13,11 +12,9 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20240827054956_add-Emaraa-table")]
-    partial class addEmaraatable
+    partial class SmartParkingDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,7 +189,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
@@ -439,14 +435,12 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Lookups.Stats", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
@@ -468,7 +462,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("EnglishName")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -498,7 +493,7 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("EmaraaId");
 
-                    b.ToTable("Stats");
+                    b.ToTable("Stats", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerCategory", b =>
@@ -561,6 +556,38 @@ namespace SmartParking.Migrations
                     b.ToTable("CustomerCategories");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GarageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OrganizationCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OrganizationGarageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationCategoryId");
+
+                    b.HasIndex("OrganizationGarageId");
+
+                    b.ToTable("GarageCategories");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -570,7 +597,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateOnly>("CRExpiryDate")
@@ -580,7 +606,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Code")
-                        .HasColumnType("text");
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
 
                     b.Property<string>("ContactMail")
                         .HasColumnType("text");
@@ -850,7 +877,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
@@ -1074,7 +1100,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
@@ -3062,6 +3087,17 @@ namespace SmartParking.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Organizations.OrganizationCategory", null)
+                        .WithMany("GarageCategories")
+                        .HasForeignKey("OrganizationCategoryId");
+
+                    b.HasOne("SmartParking.Entities.Organizations.OrganizationGarage", null)
+                        .WithMany("GarageCategories")
+                        .HasForeignKey("OrganizationGarageId");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
                 {
                     b.HasOne("SmartParking.Entities.City", "City")
@@ -3305,6 +3341,16 @@ namespace SmartParking.Migrations
                     b.Navigation("organizationContactInfos");
 
                     b.Navigation("organizationPackages");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.OrganizationCategory", b =>
+                {
+                    b.Navigation("GarageCategories");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.OrganizationGarage", b =>
+                {
+                    b.Navigation("GarageCategories");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

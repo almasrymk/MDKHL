@@ -15,4 +15,5 @@ public class OrganizationCategory
     public bool Default { get; set; }
     public int OrganizationId { get; set; }
     public Status Status { get; set; }
+    public virtual ICollection<GarageCategories> GarageCategories { get; set; }
 }

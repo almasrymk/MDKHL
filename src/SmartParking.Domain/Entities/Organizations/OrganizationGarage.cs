@@ -16,4 +16,6 @@ public class OrganizationGarage : FullAuditedEntity<int>
     public TimeOnly ClosingHours { get; set; }
     public int OrganizationId { get; set; }
     public Status Status { get; set; }
+    public virtual ICollection<GarageCategories> GarageCategories { get; set; }
+
 }
