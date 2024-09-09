@@ -1,0 +1,190 @@
+﻿
+
+<header id="page-topbar" style="background-color: transparent">
+    <MudGrid class="navbar-header">
+        <MudGrid class="d-flex">
+            <!-- LOGO -->
+            <MudGrid class="navbar-brand-box" style="background-color: transparent;">
+                <MudLink href="index.html" class="logo">
+                    <MudGrid class="logo-light fs-5 fw-semibold ">
+                        <MudImage style="width:50%" src="/logo_MDKHL.png" />
+                    </MudGrid>
+                    <MudGrid class="logo-sm fs-2">
+                        <MudImage style="width:50%" src="/logo_MDKHL.png" />
+                    </MudGrid>
+                </MudLink>
+            </MudGrid>
+
+            <MudButton type="button" class="btn btn-sm px-3 font-size-15 header-item waves-effect" id="vertical-menu-btn">
+                <i style="background-color: #ffffff; border-radius: 10px 0px !important; width:30px;height:30px; padding-top:7px" class="fas fa-angle-left"></i>
+            </MudButton>
+
+            <MudGrid class="dropdown d-inline-block" style="margin-top:10px">
+                <!-- start page title -->
+                <MudGrid class="row">
+                    <MudGrid class="col-12">
+                        <MudText Typo="Typo.h4" class="mb-sm-0 text-light">Dashboard</MudText>
+
+                        <span class="breadcrumb-item text-light">
+                            <MudImage src="/public/external/home.png" style="width:15px; height:15px" />
+                            Home /
+                        </span>
+                        <span class="breadcrumb-item active text-light">Dashboard</span>
+
+                    </MudGrid>
+                </MudGrid>
+                <!-- end page title -->
+            </MudGrid>
+
+
+        </MudGrid>
+
+        <MudGrid class="d-flex">
+
+            <!-- App Search-->
+            <MudForm role="search" class="app-search">
+                <MudGrid class="form-group mb-0 position-relative">
+                    <input type="text" class="form-control" placeholder="Search..">
+                    <span><i class="fa fa-search"></i></span>
+                </MudGrid>
+            </MudForm>
+
+
+            <MudGrid class="dropdown d-inline-block">
+                <MudButton type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <MudImage style="width:20px; height:20px" src="/public/external/noti.png" />
+                    <span class="badge rounded-pill text-bg-danger noti-dot">3</span>
+                </MudButton>
+                <MudGrid class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
+                    <MudGrid class="p-3">
+                        <MudGrid class="row align-items-center">
+                            <MudGrid class="col">
+                                <h6 class="m-0"> Notifications </h6>
+                            </MudGrid>
+                        </MudGrid>
+                    </MudGrid>
+                    <MudGrid data-simplebar style="max-height: 230px;">
+                        <MudLink href="" class="text-reset notification-item">
+                            <MudGrid class="d-flex">
+                                <MudGrid class="avatar-xs me-3">
+                                    <span class="avatar-title bg-success rounded-circle">
+                                        <i class="mdi mdi-cart-outline"></i>
+                                    </span>
+                                </MudGrid>
+                                <MudGrid class="flex-1">
+                                    <p class="mb-0"><b class="mb-1 ">Your order is placed</b></p>
+                                    <MudGrid class="font-size-12 text-muted">
+                                        <p class="mb-1">Dummy text of the printing and typesetting industry.</p>
+                                    </MudGrid>
+                                </MudGrid>
+                            </MudGrid>
+                        </MudLink>
+                        <MudLink href="" class="text-reset notification-item">
+                            <MudGrid class="d-flex">
+                                <MudGrid class="avatar-xs me-3">
+                                    <span class="avatar-title bg-danger rounded-circle">
+                                        <i class="mdi mdi-message-text-outline"></i>
+                                    </span>
+                                </MudGrid>
+                                <MudGrid class="flex-1">
+                                    <p class="mb-0"><b class="mb-1">New Message received</b></p>
+                                    <MudGrid class="font-size-12 text-muted">
+                                        <p class="mb-1">You have 87 unread messages</p>
+                                    </MudGrid>
+                                </MudGrid>
+                            </MudGrid>
+                        </MudLink>
+                        <MudLink href="" class="text-reset notification-item">
+                            <MudGrid class="d-flex">
+                                <MudGrid class="avatar-xs me-3">
+                                    <span class="avatar-title bg-info rounded-circle">
+                                        <i class="mdi mdi-filter-outline"></i>
+                                    </span>
+                                </MudGrid>
+                                <MudGrid class="flex-1">
+                                    <p class="mb-0"><b class="mb-1">Your item is shipped</b></p>
+                                    <MudGrid class="font-size-12 text-muted">
+                                        <p class="mb-1">It is a long established fact that a reader will</p>
+                                    </MudGrid>
+                                </MudGrid>
+                            </MudGrid>
+                        </MudLink>
+
+                        <MudLink href="" class="text-reset notification-item">
+                            <MudGrid class="d-flex">
+                                <MudGrid class="avatar-xs me-3">
+                                    <span class="avatar-title bg-success rounded-circle">
+                                        <i class="mdi mdi-message-text-outline"></i>
+                                    </span>
+                                </MudGrid>
+                                <MudGrid class="flex-1">
+                                    <p class="mb-0"><b class="mb-1">New Message received</b></p>
+                                    <MudGrid class="font-size-12 text-muted">
+                                        <p class="mb-1">You have 87 unread messages</p>
+                                    </MudGrid>
+                                </MudGrid>
+                            </MudGrid>
+                        </MudLink>
+
+                        <MudLink href="" class="text-reset notification-item">
+                            <MudGrid class="d-flex">
+                                <MudGrid class="avatar-xs me-3">
+                                    <span class="avatar-title bg-warning rounded-circle">
+                                        <i class="mdi mdi-cart-outline"></i>
+                                    </span>
+                                </MudGrid>
+                                <MudGrid class="flex-1">
+                                    <p class="mb-0"><b class="mb-1">Your order is placed</b></p>
+                                    <MudGrid class="font-size-12 text-muted">
+                                        <p class="mb-1">Dummy text of the printing and typesetting industry.</p>
+                                    </MudGrid>
+                                </MudGrid>
+                            </MudGrid>
+                        </MudLink>
+                    </MudGrid>
+                    <MudGrid class="p-1">
+                        <MudGrid class="d-grid">
+                            <MudLink href="javascript:void(0);" class="dropdown-item text-center notify-all text-primary">
+                                View all <i class="fi-arrow-right"></i>
+                            </MudLink>
+                        </MudGrid>
+                    </MudGrid>
+                </MudGrid>
+            </MudGrid>
+
+
+            <MudButton type="button" class="btn header-item fs-4 rounded-end-0" id="light-dark-mode">
+                <MudImage style="width:20px; height:20px" src="/public/external/ar.png" />
+            </MudButton>
+
+
+
+            <MudGrid class="dropdown notification-list d-inline-block user-dropdown">
+                <MudButton type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <MudImage class="rounded-circle header-profile-user" src="/images/users/user-4.jpg" alt="Header Avatar"/>
+                </MudButton>
+                <MudGrid class="dropdown-menu dropdown-menu-end profile-dropdown ">
+                    <!-- item-->
+                    <MudLink class="dropdown-item" href="#"><i class="mdi mdi-account-circle "></i> Profile</MudLink>
+                    <MudLink class="dropdown-item" href="#"><i class="mdi mdi-wallet"></i> My Wallet</MudLink>
+                    <MudLink class="dropdown-item d-block" href="#"><span class="badge text-bg-success float-end mt-1">11</span><i class="mdi mdi-settings"></i>Settings</MudLink>
+                    <MudLink class="dropdown-item" href="#"><i class="mdi mdi-lock-open-outline"></i> Lock screen</MudLink>
+                    <MudGrid class="dropdown-divider"></MudGrid>
+                    <MudLink class="dropdown-item text-danger" href="#"><i class="mdi mdi-power text-danger"></i> Logout</MudLink>
+                </MudGrid>
+            </MudGrid>
+
+            <MudGrid class="dropdown d-inline-block">
+                <MudButton type="button" class="btn header-item noti-icon right-bar-toggle waves-effect">
+                    <i class="ri-settings-2-line"></i>
+                </MudButton>
+            </MudGrid>
+
+        </MudGrid>
+    </MudGrid>
+</header>
+
+
+@code {
+
+}

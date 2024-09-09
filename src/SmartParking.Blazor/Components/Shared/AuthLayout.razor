@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase;
+
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudThemeProvider />
+
+<MudMainContent Class="auth-wrapper">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="h-100">
+        <div class="d-flex gap-2"><Image Source="images/svgs/arabic.svg" /> <MudText Color="MudBlazor.Color.Tertiary">عربي</MudText></div>
+        <MudGrid Class="h-100 align-center">
+            <MudItem md="6">
+                <Image Source="images/mdkhl.png" /> 
+            </MudItem>
+            <MudItem md="6">
+                @Body
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</MudMainContent>
+
+
+@* @code {
+    private bool _isDarkMode;
+    public MudTheme MyCustomTheme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+
+            }
+        };
+} *@
+<style>
+    .auth-wrapper{
+        min-width: 100vw;
+        min-height: 100vh;
+        background-image: url("/images/auth-bg.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+</style>
