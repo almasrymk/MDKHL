@@ -85,7 +85,7 @@ public class SmartParkingDbMigrationService : ITransientDependency
         Logger.LogInformation("You can safely end this process...");
     }
 
-    private async Task MigrateDatabaseSchemaAsync(Tenant? tenant = null)
+    private async Task MigrateDatabaseSchemaAsync(Tenant tenant = null)
     {
         Logger.LogInformation(
             $"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
