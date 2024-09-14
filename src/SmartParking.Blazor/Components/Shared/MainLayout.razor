@@ -1,18 +1,19 @@
 ﻿@inherits LayoutComponentBase;
-
+@using Composites;
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider  />
 
-
-
+<div class="main-layout-gradient">
+    <MudMainContent>
+        
+        <MudContainer Class="mb-16 mt-4" MaxWidth="MaxWidth.Medium">
+            <SmartParking.Blazor.Components.Composites.SideMenu/>
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</div>
 
 @code {
 
 }
-    <MudMainContent>
-        <MudContainer Class="mb-16 mt-4" MaxWidth="MaxWidth.Medium">
-        <h3>MainLayout</h3>
-            @Body
-        </MudContainer>
-    </MudMainContent>

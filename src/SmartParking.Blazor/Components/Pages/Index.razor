@@ -10,77 +10,7 @@
         <MudBadge Color="MudBlazor.Color.Success" Class="mb-4">
             <MudText Typo="Typo.h5" Class="m-1"><i class="fas fa-rocket"></i> Congratulations, <strong>SmartParking</strong> is successfully running!</MudText>
         </MudBadge>
-
         <MudText Typo="Typo.h3">Welcome to the Application</MudText>
-
-        <MudText Typo="Typo.subtitle1" Class="lead px-lg-5 mx-lg-5">@L["LongWelcomeMessage"]</MudText>
-
-        @if (!CurrentUser.IsAuthenticated)
-        {
-            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Href="Account/Login">
-                <MudIcon Icon="fa fa-sign-in" /> @L["Login"]
-            </MudButton>
-        }
     </MudPaper>
 
-    <MudPaper Class="mt-4 mb-5">
-        <MudGrid>
-            <MudItem xs="12"  Class="text-center">
-                <img src="https://abp.io/assets/png/mastering-abp-framework.webp" style="max-width: 400px;" class="w-100 mb-5 my-md-3">
-            </MudItem>
-            <MudItem xs="12"  Class="d-flex align-items-center">
-                <MudText Typo="Typo.caption" Class="text-uppercase text-muted">THE OFFICIAL GUIDE</MudText>
-                <MudText Typo="Typo.h4" Class="mb-4">Mastering ABP Framework</MudText>
-                <MudText Typo="Typo.body1" Class="mb-4">
-                    Written by the creator of the ABP Framework, this book will help you gain a complete understanding of the framework and modern web application development techniques.
-                </MudText>
-                <MudButtonGroup Class="mb-4">
-                    <MudButton Color="MudBlazor.Color.Success" Variant="Variant.Filled" Href="https://www.amazon.com/gp/product/B097Z2DM8Q/ref=dbs_a_def_rwt_hsch_vapi_tkin_p1_i0">Buy on Amazon US</MudButton>
-                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Href="https://www.packtpub.com/product/mastering-abp-framework/9781801079242">Buy on PACKT</MudButton>
-                </MudButtonGroup>
-            </MudItem>
-        </MudGrid>
-    </MudPaper>
-
-    <MudPaper Class="my-3 text-center">
-        <MudText Typo="Typo.h3">Let's improve your application!</MudText>
-        <MudText Typo="Typo.body1">Here are some links to help you get started:</MudText>
-    </MudPaper>
-
-    <MudCard Class="mt-4 mb-5">
-        <MudCardContent>
-            <MudGrid Justify="Justify.Center">
-                <!-- Repeat MudItems for each link section -->
-                <MudItem xs="12" lg="4" Class="p-4 text-center">
-                    <MudIcon Icon="fas fa-book" Class="text-secondary fa-2x mb-3" />
-                    <MudText Typo="Typo.h5">Learn the ABP Framework</MudText>
-                    <MudText Typo="Typo.body2">Explore the comprehensive documentation to learn how to build a modern web application.</MudText>
-                    <MudLink Href="https://docs.abp.io/en/abp/latest?ref=tmpl" Target="_blank">See Documents <MudIcon Icon="fas fa-chevron-right" /></MudLink>
-                </MudItem>
-                <!-- Additional items for Samples, ABP Community, Blog, etc. -->
-            </MudGrid>
-        </MudCardContent>
-    </MudCard>
-
-    <MudPaper Class="my-5 text-center">
-        <MudText Typo="Typo.h3">Meet the ABP Commercial</MudText>
-        <MudText Typo="Typo.body1">A Complete Web Application Platform Built on the ABP Framework</MudText>
-    </MudPaper>
-
-    <MudCard Class="mt-4 mb-5">
-        <MudCardContent>
-            <MudText Typo="Typo.body1" Class="px-lg-5 mx-lg-5 py-3 text-center">
-                <MudLink Href="https://commercial.abp.io/" Target="_blank">ABP Commercial</MudLink> is a platform based on the open source ABP framework. It provides pre-built application modules, rapid application development tooling, professional UI themes, premium support and more.
-            </MudText>
-            <MudGrid Justify="Justify.Center">
-                <!-- Additional MudItems for platform features -->
-            </MudGrid>
-        </MudCardContent>
-    </MudCard>
-
-    <MudPaper Class="mb-5 text-center">
-        <MudLink Href="https://twitter.com/abpframework" Target="_blank"><MudIcon Icon="fab fa-twitter" /><span class="text-secondary"> Abp Framework</span></MudLink>
-        <MudLink Href="https://twitter.com/abpcommercial" Target="_blank"><MudIcon Icon="fab fa-twitter" /><span class="text-secondary"> Abp Commercial</span></MudLink>
-        <MudLink Href="https://github.com/abpframework/abp" Target="_blank"><MudIcon Icon="fab fa-github" /><span class="text-secondary"> abpframework</span></MudLink>
-    </MudPaper>
 </MudContainer>

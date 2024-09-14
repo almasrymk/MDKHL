@@ -1,0 +1,24 @@
+﻿
+<MudDrawerContainer Class="mud-height-full">
+    <MudDrawer @bind-Open="@_open"  Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+        <MudNavMenu>
+            <MudNavLink Icon="@Icons.Material.Filled.Store">Store</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.LibraryBooks">Library</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.Group">Community</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <div class="d-flex justify-center align-center mud-height-full">
+        <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler"><i class="fa fa-chevron-left"></i></MudButton>
+    </div>
+</MudDrawerContainer>
+
+@code
+{
+    private bool _open = true;
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+}
+
