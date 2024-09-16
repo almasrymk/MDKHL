@@ -1,24 +1,24 @@
 ﻿
-<MudDrawerContainer Class="mud-height-full">
-    <MudDrawer @bind-Open="@_open"  Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
-        <MudNavMenu>
-            <MudNavLink Icon="@Icons.Material.Filled.Store">Store</MudNavLink>
-            <MudNavLink Icon="@Icons.Material.Filled.LibraryBooks">Library</MudNavLink>
-            <MudNavLink Icon="@Icons.Material.Filled.Group">Community</MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
-    <div class="d-flex justify-center align-center mud-height-full">
-        <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler"><i class="fa fa-chevron-left"></i></MudButton>
-    </div>
-</MudDrawerContainer>
+<div class="pt-5">
+    <MudDrawerContainer Class="mud-height-full" Elevation="0">
+        <MudDrawer @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
+            <MudNavMenu>
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">Dashboard</MudNavLink>
+                <MudNavLink Href="/rganizations" Icon="@Icons.Material.Filled.LocationCity">Organizations</MudNavLink>
+                <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.Group">My Account</MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+        <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler">
+            <i class="fa fa-chevron-left"></i>
+        </MudButton>
+    </MudDrawerContainer>
+</div>
 
 @code
 {
     private bool _open = true;
 
-    private void ToggleDrawer()
-    {
-        _open = !_open;
-    }
+    private void ToggleDrawer() => _open = !_open;
+
 }
 

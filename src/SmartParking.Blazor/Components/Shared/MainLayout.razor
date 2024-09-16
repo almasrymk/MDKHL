@@ -2,16 +2,32 @@
 @using Composites;
 <MudDialogProvider />
 <MudSnackbarProvider />
-<MudThemeProvider  />
+<MudThemeProvider />
 
-<div class="main-layout-gradient">
-    <MudMainContent>
-        
-        <MudContainer Class="mb-16 mt-4" MaxWidth="MaxWidth.Medium">
-            <SmartParking.Blazor.Components.Composites.SideMenu/>
+
+<div class="main-layout-gradient d-flex flex-column">
+
+    <header class="bg-transparent px-4 py-5 d-flex">
+       
+            <MudItem Style="width:240px">
+                <Image Source="images/logo/logo.png" />
+            </MudItem>
+            <MudItem Class="text-white">
+                <h2>
+                    Dashboard
+                </h2>
+            </MudItem>
+      
+    </header>
+    <div Class="d-flex me-5 flex-grow-1">
+        <SideMenu />
+        <MudPaper Class="h-100 p-3 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl w-100 h-100 main-layout-paper">
             @Body
-        </MudContainer>
-    </MudMainContent>
+        </MudPaper>
+    </div>
+    <footer class="text-center text-white my-5">
+        All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles
+    </footer>
 </div>
 
 @code {
