@@ -10,4 +10,41 @@ namespace SmartParking.Organizations;
 
 public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,PagedAndSortedResultRequestDto,CreateUpdateOrganiztionDto>
 {
+    /// <summary>
+    /// abstract method to create organization
+    /// </summary>
+    /// <param name="input">Organization create dto</param>
+    /// <returns>Organization Dto</returns>
+    Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input);
+
+
+    /// <summary>
+    /// abstract method to get list of organizations
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it sorted or not</param>
+    /// <returns>Organization Dto</returns>
+    Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+
+    /// <summary>
+    /// abstract method to get organization
+    /// </summary>
+    /// <param name="input">id of organization</param>
+    /// <returns>Organization Dto</returns>
+    Task<OrganizationDto> GetAsync(int id);
+
+/// <summary>
+/// abstract method used to update organization
+/// </summary>
+/// <param name="id">organization id</param>
+/// <param name="input">dto of create organization</param>
+/// <returns>organization dto of update one</returns>
+    Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input);
+
+    /// <summary>
+    /// abstract method to delete organization
+    /// </summary>
+    /// <param name="id">id of organization</param>
+    /// <returns>successfull message of deletion</returns>
+    Task<string> DeleteByIdAsync(int id);
+
 }
