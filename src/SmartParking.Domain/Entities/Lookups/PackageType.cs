@@ -1,8 +1,11 @@
-﻿namespace SmartParking.Entities
+﻿using SmartParking.Enums;
+
+namespace SmartParking.Entities;
+
+public class PackageType:BaseEntity
 {
-    public class PackageType:BaseEntity
-    {
-        public string ArabicDescription { get; set; }
-        public string EnglishDescription { get; set; }
-    }
+    public string ArabicDescription { get; set; }
+    public string EnglishDescription { get; set; }
+    public Status  Status { get; set; }
+
 }
