@@ -90,7 +90,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<UserType> UserTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Emaraa> Emaraas { get; set; }
-    public DbSet<Stats> Stats { get; set; }
+    public DbSet<State> State { get; set; }
     [NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 

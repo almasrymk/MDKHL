@@ -1,6 +1,5 @@
-﻿namespace SmartParking.Entities
+﻿namespace SmartParking.Entities;
+
+public class UserType:BaseEntity
 {
-    public class UserType:BaseEntity
-    {
-    }
 }

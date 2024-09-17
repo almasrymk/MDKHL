@@ -8,30 +8,30 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Data.Lookups
 {
-    public class StatsDataSeeder : IDataSeedContributor, ITransientDependency
+    public class StateDataSeeder : IDataSeedContributor, ITransientDependency
     {
-        private readonly IRepository<Stats, int> _statsRepository;
+        private readonly IRepository<State, int> _StateRepository;
 
-        public StatsDataSeeder(IRepository<Stats, int> statsRepository)
+        public StateDataSeeder(IRepository<State, int> StateRepository)
         {
-            _statsRepository = statsRepository;
+            _StateRepository = StateRepository;
         }
 
         public async Task SeedAsync(DataSeedContext context)
         {
-            if (!await _statsRepository.AnyAsync())
+            if (!await _StateRepository.AnyAsync())
             {
-                var statsList = new List<Stats>
+                var StateList = new List<State>
                 {
-                    new Stats { Id = 1,ArabicName="test", EnglishName = "test", EmaraaId = 1, Status = Status.Active },
-                    new Stats { Id = 2,ArabicName="test", EnglishName = "test", EmaraaId = 2, Status = Status.Active },
-                    new Stats { Id = 3,ArabicName="test", EnglishName = "test", EmaraaId = 3, Status = Status.Active },
+                    new State { Id = 1,ArabicName="test", EnglishName = "test", EmaraaId = 1, Status = Status.Active },
+                    new State { Id = 2,ArabicName="test", EnglishName = "test", EmaraaId = 2, Status = Status.Active },
+                    new State { Id = 3,ArabicName="test", EnglishName = "test", EmaraaId = 3, Status = Status.Active },
 
                 };
 
-                foreach (var stats in statsList)
+                foreach (var State in StateList)
                 {
-                    await _statsRepository.InsertAsync(stats);
+                    await _StateRepository.InsertAsync(State);
                 }
             }
         }

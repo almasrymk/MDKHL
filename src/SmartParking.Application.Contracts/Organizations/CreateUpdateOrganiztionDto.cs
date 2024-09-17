@@ -24,7 +24,7 @@ public class CreateUpdateOrganiztionDto
 
     public int EmaraaId { get; set; }
 
-    public int StatsId { get; set; }
+    public int StateId { get; set; }
 
     public int CityId { get; set; }
     public string PhoneNum { get; set; }

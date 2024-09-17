@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities.Lookups;
 
-public class Stats : BaseEntity
+public class State : BaseEntity
 {
     public int EmaraaId { get; set; }
     public virtual Status Status { get; set; }

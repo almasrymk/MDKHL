@@ -23,9 +23,9 @@ public class Organization : BaseEntity
 
     public virtual Emaraa Emaraa { get; set; }
 
-    public int StatsId { get; set; }
+    public int StateId { get; set; }
 
-    public virtual Stats Stats { get; set; }
+    public virtual State State { get; set; }
     public int CityId { get; set; }
     public virtual City City { get; set; }
     public string PhoneNum { get; set; }
