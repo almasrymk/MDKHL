@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20240827054956_add-Emaraa-table")]
-    partial class addEmaraatable
+    [Migration("20240917073633_Fix-tenant-issue")]
+    partial class Fixtenantissue
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,10 +110,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GovernorateId");
@@ -174,10 +170,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.ToTable("Countries", (string)null);
@@ -192,7 +184,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
@@ -233,10 +224,6 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
 
                     b.HasKey("Id");
 
@@ -297,10 +284,6 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
 
                     b.HasKey("Id");
 
@@ -363,10 +346,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CountryId");
@@ -427,10 +406,6 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.ToTable("Emaraas", (string)null);
@@ -439,14 +414,12 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Lookups.Stats", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
@@ -468,7 +441,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("EnglishName")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -490,15 +464,11 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmaraaId");
 
-                    b.ToTable("Stats");
+                    b.ToTable("Stats", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerCategory", b =>
@@ -570,7 +540,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateOnly>("CRExpiryDate")
@@ -580,7 +549,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Code")
-                        .HasColumnType("text");
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
 
                     b.Property<string>("ContactMail")
                         .HasColumnType("text");
@@ -638,10 +608,6 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
 
                     b.Property<string>("UnifiedLicenseNum")
                         .HasColumnType("text");
@@ -850,7 +816,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
@@ -903,10 +868,6 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
 
                     b.HasKey("Id");
 
@@ -992,10 +953,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.ToTable("PackageTypes", (string)null);
@@ -1056,10 +1013,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.ToTable("Screens", (string)null);
@@ -1074,7 +1027,6 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
@@ -1116,51 +1068,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
-
                     b.HasKey("Id");
 
                     b.ToTable("Subscriptions");
-                });
-
-            modelBuilder.Entity("SmartParking.Entities.TenantConnectionString", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ConnectionString")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DatabaseName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Port")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("TenantConnectionStrings", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.UserType", b =>
@@ -1209,10 +1119,6 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
 
                     b.HasKey("Id");
 
@@ -3122,17 +3028,6 @@ namespace SmartParking.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SmartParking.Entities.TenantConnectionString", b =>
-                {
-                    b.HasOne("Volo.Abp.TenantManagement.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>

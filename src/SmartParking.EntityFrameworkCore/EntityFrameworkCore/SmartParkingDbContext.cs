@@ -5,7 +5,6 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
-using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -14,7 +13,6 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
@@ -26,10 +24,12 @@ namespace SmartParking.EntityFrameworkCore;
 [ReplaceDbContext(typeof(IIdentityDbContext))]
 [ReplaceDbContext(typeof(ITenantManagementDbContext))]
 [ConnectionStringName("Default")]
-
-public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdentityDbContext, ITenantManagementDbContext
-
+public class SmartParkingDbContext :
+    AbpDbContext<SmartParkingDbContext>,
+    IIdentityDbContext,
+    ITenantManagementDbContext
 {
+
 
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
@@ -59,9 +59,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<IdentitySession> Sessions { get; set; }
     // Tenant Management
     public DbSet<Tenant> Tenants { get; set; }
-  //  public DbSet<Volo.Abp.TenantManagement.TenantConnectionString> TenantConnectionStrings { get; set; }
-
-    public DbSet<Entities.TenantConnectionString> TenantConnectionStrings { get; set; }
+    public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<OrganizationCategory> OrganizationCategories { get; set; }
@@ -74,11 +72,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
-    
-
-  
-
-
     #endregion
 
     #region Lookups
@@ -91,22 +84,14 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Emaraa> Emaraas { get; set; }
     public DbSet<Stats> Stats { get; set; }
-    [NotMapped]
-    DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
-
     #endregion
-    private readonly IConnectionStringResolver _connectionStringResolver;
-    private readonly ICurrentTenant _currentTenant;
-    
-    public SmartParkingDbContext(
-        DbContextOptions<SmartParkingDbContext> options,
-        IConnectionStringResolver connectionStringResolver,
-        ICurrentTenant currentTenant)
+
+  public SmartParkingDbContext(DbContextOptions<SmartParkingDbContext> options)
         : base(options)
     {
-        _connectionStringResolver = connectionStringResolver;
-        _currentTenant = currentTenant;
+
     }
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -120,17 +105,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
-        builder.Entity<Tenant>(b =>
-        {
-            // Apply a global query filter to the Tenant entity
-            b.HasQueryFilter(t => !t.IsDeleted); // Example filter for soft deletion
-        });
-
-        builder.Entity<Entities.TenantConnectionString>(b =>
-        {
-            // Apply a matching global query filter to the TenantConnectionString entity
-            b.HasQueryFilter(tc => !tc.Tenant.IsDeleted); // Matches the Tenant filter
-        });
         builder.ApplyConfigurationsFromAssembly(typeof(SmartParkingDbContext).Assembly);
         /* Configure your own tables/entities inside here */
 
@@ -141,15 +115,5 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
         //    //...
         //});
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = _currentTenant.IsAvailable
-                ? _connectionStringResolver.Resolve(_currentTenant.Id.ToString())
-                : _connectionStringResolver.Resolve("Default");
 
-            optionsBuilder.UseNpgsql(connectionString);
-        }
-    }
 }

@@ -59,6 +59,7 @@ namespace SmartParking.Blazor;
    )]
 public class SmartParkingBlazorModule : AbpModule
 {
+
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
