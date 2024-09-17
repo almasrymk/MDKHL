@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Organizations;
 
@@ -24,6 +26,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
         CreateMap<CreateUpdateCutomerCategoryDto, CustomerCategory>().ReverseMap();
 
+        CreateMap<Camera, CameraDto>();
+        CreateMap<CreateUpdateCameraDto, Camera>();
 
 
     }
