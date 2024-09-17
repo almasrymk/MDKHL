@@ -1,5 +1,5 @@
 ﻿::deep .side-menu-toggler {
-    border-radius: 10px 0 10px 0;
+    border-radius: 10px 0 10px 0 !important;
     background-color: white;
     width: 30px;
     height: 30px;
