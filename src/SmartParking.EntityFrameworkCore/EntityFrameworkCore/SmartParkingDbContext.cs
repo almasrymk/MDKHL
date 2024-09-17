@@ -67,8 +67,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<ContactInfo> ContactInfos { get; set; }
     public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
     public DbSet<Garage> Garages { get; set; }
-    public DbSet<Package> OrganizationPackages { get; set; }
-    public DbSet<Garage> OrganizationGarages { get; set; }
+    public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
