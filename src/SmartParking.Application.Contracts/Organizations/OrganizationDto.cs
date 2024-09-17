@@ -13,7 +13,7 @@ public class OrganizationDto
     public string Code { get; set; }
     public string EnglishName { get; set; }
     public string CountryName { get; set; }
-    public string StatsName { get; set; }
+    public string StateName { get; set; }
     public string CityName { get; set; }
     public int MaxCapacity { get; set; }
     public int NumOfCameras { get; set; }
