@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.OrganizationsGarages;
 
-public class CreateUpdateOrganizationGarageDto
+public class CreateUpdateGarageDto
 {
     public string Code { get; set; }
     public string Name { get; set; }
