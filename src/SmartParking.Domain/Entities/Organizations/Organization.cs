@@ -32,10 +32,9 @@ public class Organization : BaseEntity
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
     public Status Status { get; set; } = Status.Active;
-    public virtual ICollection<OrganizationGarage> OrganizationGarages { get; set; }
+    public virtual ICollection<Garage> OrganizationGarages { get; set; }
     public virtual ICollection<Camera> Cameras { get; set; }
-    public virtual ICollection<OrganizationPackage> organizationPackages { get; set; }
-    public virtual ICollection<OrganizationContactInfo> organizationContactInfos { get; set; }
+    public virtual ICollection<ContactInfo> organizationContactInfos { get; set; }
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
 
 
