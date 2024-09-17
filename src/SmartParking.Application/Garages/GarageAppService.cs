@@ -1,4 +1,6 @@
 ﻿using SmartParking.Entities.Organizations;
+using SmartParking.EnumDescriptions;
+using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
@@ -17,9 +19,9 @@ namespace SmartParking.Garages;
 public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>, IGarageAppService
 {
     private readonly IRepository<Garage> _repository;
-    private readonly IOrganizationsAppService _organizationsAppService;
+    private readonly OrganizationsAppService _organizationsAppService;
 
-    public GarageAppService(IRepository<Garage, int> repository, IOrganizationsAppService organizationsAppService) : base(repository)
+    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService) : base(repository)
     {
         _repository = repository;
         _organizationsAppService = organizationsAppService;
@@ -68,5 +70,28 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         Code += (input + 1);
         return Code;
+    }
+    /// <summary>
+    /// methods that deletes camera.
+    /// it takes camera id as parameter , checks if it exists
+    /// if don't it throws an exception
+    /// if exists it deletes it , changes its status to deleted
+    /// </summary>
+    /// <param name="id">camera id</param>
+    /// <returns></returns>
+    /// <exception cref="EntityNotFoundException">exception thrown when camera isn't exist</exception>
+    public new async Task<string> DeleteByIdAsync(int id)
+    {
+        var garage = await base.GetAsync(id);
+
+        if (garage is null)
+            throw new EntityNotFoundException(typeof(Garage), id);
+        else
+        {
+            await base.DeleteByIdAsync(id);
+            garage.Status = Enums.Status.Deleted;
+
+            return EnumValues.GetEnumDescription(GarageValidations.GarageDeleteion);
+        }
     }
 }
