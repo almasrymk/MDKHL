@@ -112,9 +112,9 @@ namespace SmartParking.Configurations
             builder.ToTable("Emaraas");
         }
     }
-    public class StatsConfiguration : IEntityTypeConfiguration<Stats>
+    public class StateConfiguration : IEntityTypeConfiguration<State>
     {
-        void IEntityTypeConfiguration<Stats>.Configure(EntityTypeBuilder<Stats> builder)
+        void IEntityTypeConfiguration<State>.Configure(EntityTypeBuilder<State> builder)
         {
             builder.ConfigureByConvention();
             builder.Property(x => x.Id).ValueGeneratedNever();
@@ -122,7 +122,7 @@ namespace SmartParking.Configurations
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
 
-            builder.ToTable("Stats");
+            builder.ToTable("State");
         }
     }
 }
