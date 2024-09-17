@@ -64,10 +64,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Entities.TenantConnectionString> TenantConnectionStrings { get; set; }
 
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<OrganizationCategory> OrganizationCategories { get; set; }
-    public DbSet<OrganizationContactInfo> OrganizationContactInfos { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<ContactInfo> ContactInfos { get; set; }
     public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
-    public DbSet<OrganizationGarage> OrganizationGarages { get; set; }
+    public DbSet<Garage> Garages { get; set; }
     public DbSet<OrganizationPackage> OrganizationPackages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
