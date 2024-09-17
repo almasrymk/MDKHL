@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationCategory
+public class Category
 {
     public int Id { get; set; }
     public string Name { get; set; }

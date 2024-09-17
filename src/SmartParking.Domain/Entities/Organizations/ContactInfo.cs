@@ -9,7 +9,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationContactInfo : FullAuditedEntity<int>,IMultiTenant
+public class ContactInfo : FullAuditedEntity<int>, IMultiTenant
 {
     public int OrganizationId { get; set; }
     public string Name { get; set; }

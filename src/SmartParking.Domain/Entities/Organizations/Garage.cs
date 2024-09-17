@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationGarage : FullAuditedEntity<int>
+public class Garage : FullAuditedEntity<int>
 {
     public string Code { get; set; }
     public string Name { get; set; }
