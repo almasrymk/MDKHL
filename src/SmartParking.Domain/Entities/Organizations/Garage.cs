@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Organizations;
 
-public class Garage : FullAuditedEntity<int>
+public class Garage : FullAuditedEntity<int> , IMultiTenant
 {
     public string Code { get; set; }
     public string Name { get; set; }
@@ -16,4 +17,6 @@ public class Garage : FullAuditedEntity<int>
     public TimeOnly ClosingHours { get; set; }
     public int OrganizationId { get; set; }
     public Status Status { get; set; }
+
+    public Guid? TenantId { get; set; }
 }
