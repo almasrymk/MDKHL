@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationContactInfo : FullAuditedEntity<int>
+public class OrganizationContactInfo : FullAuditedEntity<int>,IMultiTenant
 {
     public int OrganizationId { get; set; }
     public string Name { get; set; }
@@ -18,4 +19,5 @@ public class OrganizationContactInfo : FullAuditedEntity<int>
     public string ContactMail { get; set; }
     public Status Status { get; set; }
 
+    public Guid? TenantId { get; set; }
 }
