@@ -4,38 +4,25 @@
 <MudSnackbarProvider />
 <MudThemeProvider />
 
-<MudMainContent Class="auth-wrapper">
-    <MudContainer MaxWidth="MaxWidth.Large" Class="h-100">
-        <div class="d-flex gap-2"><Image Source="images/svgs/arabic.svg" /> <MudText Color="MudBlazor.Color.Tertiary">عربي</MudText></div>
-        <MudGrid Class="h-100 align-center">
-            <MudItem md="6">
-                <Image Source="images/logo/auth-logo.png" /> 
-            </MudItem>
-            <MudItem md="6">
-                @Body
-            </MudItem>
-        </MudGrid>
-    </MudContainer>
-</MudMainContent>
+<div>
+    <MudLayout class="auth-layout">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="auth-container">
+            <MudMainContent Class="auth-content">
+                <div class="d-flex gap-2"><Image Source="images/svgs/arabic.svg" /> <MudText class="text-white">عربي</MudText></div>
+                <MudGrid Class="auth-grid">
+                    <MudItem xs="12" md="6" Class="d-flex justify-content-center justify-content-md-start">
+                        <Image Source="images/mdkhl.png" Style="max-width: 100%;" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudCard class="w-100 py-12 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl d-flex flex-column align-center">
+                            <Image Source="images/maden.jpg" Class="mb-7" />
+                            @Body
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+                <p class="text-center text-white">All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles</p>
+            </MudMainContent>
+        </MudContainer>
+    </MudLayout>
+</div>
 
-
-@* @code {
-    private bool _isDarkMode;
-    public MudTheme MyCustomTheme = new MudTheme()
-        {
-            PaletteLight = new PaletteLight()
-            {
-
-            }
-        };
-} *@
-<style>
-    .auth-wrapper{
-        min-width: 100vw;
-        min-height: 100vh;
-        background-image: url("/images/auth-bg.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-</style>
