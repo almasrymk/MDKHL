@@ -1,0 +1,81 @@
+﻿@page "/data-grid"
+@using Customs
+
+<div>
+    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="Element" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+        <ToolBarContent>
+            <MudTextField Elevation="2" @bind-Value="_searchString" Placeholder="Search For Organizations" Adornment="Adornment.End" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
+            <MudSpacer />
+            <MudButton Class="text-white bg-primary">
+                CREATE NEW
+                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1"/>
+            </MudButton>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="Element" />
+            <PropertyColumn Property="x => x.Organization" Title="Organization" Sortable="false" Filterable="false" />
+            <PropertyColumn Property="x => x.Country" />
+            <PropertyColumn Property="x => x.Cities" SortBy="@_sortBy" />
+            <PropertyColumn Property="x => x.Position" />
+            <PropertyColumn Property="x => x.Status" Title="Status" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Element" />
+        </PagerContent>
+    </MudDataGrid>
+</div>
+
+@code {
+    private IEnumerable<Element> Elements = new List<Element>();
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+
+    // Custom sort by name length
+    private Func<Element, object> _sortBy => x =>
+    {
+        return _sortNameByLength ? x.Organization.Length : x.Organization;
+    };
+
+    // Quick filter - filter globally across multiple columns with the same input
+    private Func<Element, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Country.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Organization.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if ($"{x.Organization} {x.Position}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    protected override void OnInitialized()
+    {
+        // Use mock data instead of fetching from an API
+        Elements = PeriodicTableData.GetElements();
+    }
+
+    // Events
+    void RowClicked(DataGridRowClickEventArgs<Element> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<Element> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<Element> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+}
