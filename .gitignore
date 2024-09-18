@@ -261,5 +261,4 @@ src/SmartParking.DbMigrator/Logs/*
 src/SmartParking.Blazor.Server/Logs/*
 src/SmartParking.Blazor.Server.Tiered/Logs/*
 
-# Use abp install-libs to restore.
-**/wwwroot/libs/*
+

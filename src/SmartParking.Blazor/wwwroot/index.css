@@ -1,0 +1,307 @@
+.frame1-login-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+.frame1-login-frame1-login {
+  width: 100%;
+  height: 1024px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(143deg, rgba(13, 84, 128, 1) 0%, rgba(22, 183, 211, 1) 100%);
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+.frame1-login-pexelskhoward9447122202921 {
+  top: -22px;
+  /*left: -31px;*/
+  width: 100%;
+  height: 1068px;
+  opacity: 0.50;
+  position: absolute;
+}
+.frame1-login-text10 {
+  top: 987px;
+  left: 486px;
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-logo-open-source011 {
+  top: 464px;
+  left: 147px;
+  width: 440px;
+  height: 95px;
+  position: absolute;
+}
+.frame1-login-rectangle49 {
+  top: 189px;
+  left: 735px;
+  width: 675px;
+  height: 646px;
+  position: absolute;
+  border-radius: 0 30px;
+}
+.frame1-login-group311 {
+  top: 30px;
+  left: 30px;
+  width: 64px;
+  height: 24.00501823425293px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-vector1 {
+  top: 0px;
+  left: 0px;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+}
+.frame1-login-svg {
+  top: 4px;
+  left: 6.0009765625px;
+  width: 7px;
+  height: 9px;
+  position: absolute;
+  box-sizing: content-box;
+}
+.frame1-login-text12 {
+  top: 2px;
+  left: 34px;
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: underline;
+}
+.frame1-login-group2337 {
+  top: 390px;
+  left: 852px;
+  /*width: 440px;*/
+  height: 392px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-group2334 {
+  top: 362px;
+  left: 106px;
+  width: 228px;
+  height: 30px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+  background-color: rgba(13, 84, 128, 1);
+}
+.frame1-login-group2266 {
+  top: 6px;
+  left: 92.00001525878906px;
+  width: 44px;
+  height: 17px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-text14 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Bold;
+  text-align: center;
+  font-family: Inter;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-text16 {
+  left: 170px;
+  color: rgba(67, 67, 65, 1);
+  height: auto;
+  position: absolute;
+  font-size: 30px;
+  font-style: Bold;
+  text-align: center;
+  font-family: Inter;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-group2305 {
+  top: 97px;
+  left: 0px;
+  width: 440px;
+  height: 59px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-rectangle41 {
+  top: 29px;
+  left: 440px;
+  width: 440px;
+  height: 30px;
+  position: absolute;
+  border-color: rgba(67, 67, 65, 1);
+}
+.frame1-login-text18 {
+  top: 27px;
+  left: 14px;
+  color: rgba(177, 177, 177, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-text20 {
+  color: rgba(67, 67, 65, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-group2306 {
+  top: 186px;
+  left: 0px;
+  width: 440px;
+  height: 59px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-rectangle42 {
+  top: 29px;
+  left: 440px;
+  width: 440px;
+  height: 30px;
+  position: absolute;
+  border-color: rgba(67, 67, 65, 1);
+}
+.frame1-login-text22 {
+  top: 27px;
+  left: 14px;
+  color: rgba(177, 177, 177, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-text24 {
+  color: rgba(67, 67, 65, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-crossedeye1 {
+  top: 29px;
+  left: 414px;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+.frame1-login-frame01aligncenter {
+  top: 0.8081247806549072px;
+  left: 0.00008025543502299115px;
+  width: 14.999615669250488px;
+  height: 13.383750915527344px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-vector2 {
+  top: 0px;
+  left: 0px;
+  width: 15px;
+  height: 13px;
+  position: absolute;
+}
+.frame1-login-group2338 {
+  top: 275px;
+  left: 37px;
+  width: 366px;
+  height: 17px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.frame1-login-text26 {
+  color: rgba(67, 67, 65, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.frame1-login-text27 {
+  font-weight: 400;
+}
+.frame1-login-image1 {
+  top: 237px;
+  left: 952px;
+  width: 240px;
+  height: 123px;
+  position: absolute;
+}

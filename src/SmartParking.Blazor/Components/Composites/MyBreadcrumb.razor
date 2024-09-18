@@ -1,0 +1,27 @@
+﻿
+<MudBreadcrumbs Items="_items" Class="text-white"></MudBreadcrumbs>
+
+<style>
+
+    .mud-breadcrumbs{
+        padding:0;
+    }
+    .mud-breadcrumb-item > a {
+        color: white !important;
+    }
+
+    .mud-breadcrumb-separator > span {
+        color: white !important;
+        opacity: 1;
+    }
+</style>
+
+@code {
+    [Parameter] public Array Links { get; set; }
+    private List<MudBlazor.BreadcrumbItem> _items = new List<MudBlazor.BreadcrumbItem>
+    {
+        new MudBlazor.BreadcrumbItem("Home", href: "#"),
+        new MudBlazor.BreadcrumbItem("Dashboard", href: "#"),
+
+    };
+}
