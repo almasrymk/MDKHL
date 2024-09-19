@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
 using SmartParking.Organizations;
@@ -29,6 +31,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Garage, GarageDto>();
         CreateMap<CreateUpdateGarageDto, Garage>().ReverseMap();
 
+        CreateMap<Camera, CameraDto>();
+        CreateMap<CreateUpdateCameraDto, Camera>();
 
 
     }

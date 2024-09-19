@@ -19,4 +19,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EntityFrameworkCore\Applications\Cameras\" />
+  </ItemGroup>
+
 </Project>
