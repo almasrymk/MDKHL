@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.OrganizationsGarages;
+namespace SmartParking.Garages;
 
-public class CreateUpdateOrganizationGarageDto
+public class GarageDto
 {
+    public int Id { get; set; }
     public string Code { get; set; }
     public string Name { get; set; }
     public int MaxCapacity { get; set; }
