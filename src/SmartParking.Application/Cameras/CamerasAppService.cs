@@ -14,7 +14,7 @@ using Volo.Abp.Users;
 
 namespace SmartParking.Cameras
 {
-    public class CameraAppServices:
+    public class CamerasAppService:
         CrudAppService<
             Camera,
             CameraDto,
@@ -28,7 +28,7 @@ namespace SmartParking.Cameras
         private IDataFilter _dataFilter;
         private readonly ICurrentUser _currentUser; // Inject ICurrentUser
 
-        public CameraAppServices(IRepository<Camera, int> repository,IDataFilter dataFilter, ICurrentUser currentUser)
+        public CamerasAppService(IRepository<Camera, int> repository,IDataFilter dataFilter, ICurrentUser currentUser)
             : base(repository)
         {
             _repository = repository;
