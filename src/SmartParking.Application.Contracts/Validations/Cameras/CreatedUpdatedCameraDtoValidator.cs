@@ -14,7 +14,6 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
     public CreatedUpdatedCameraDtoValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
-        RuleFor(x => x.Id).NotEmpty();
         
 
 

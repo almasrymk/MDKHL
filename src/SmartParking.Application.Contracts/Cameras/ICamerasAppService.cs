@@ -8,7 +8,7 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Cameras;
 
-public interface ICameraAppService:
+public interface ICamerasAppService:
      ICrudAppService<
         CameraDto,
         int,

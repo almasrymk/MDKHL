@@ -22,7 +22,7 @@ namespace SmartParking.Cameras
             PagedAndSortedResultRequestDto,
             CreateUpdateCameraDto
             >,
-        ICameraAppService
+        ICamerasAppService
     {
         private readonly IRepository<Camera, int> _repository;
         private IDataFilter _dataFilter;
