@@ -43,7 +43,7 @@
         var parameters = new DialogParameters
         {
             
-            { nameof(MyModal.ChildContent), (RenderFragment)(builder =>
+            { nameof(SPModal.ChildContent), (RenderFragment)(builder =>
                 {
                     builder.OpenComponent(0, typeof(MudForm));
                     builder.AddAttribute(1, "ChildContent", (RenderFragment)(formBuilder =>
@@ -85,6 +85,6 @@
         };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        DialogService.Show<MyModal>("Form Dialog", parameters, options);
+        DialogService.Show<SPModal>("Form Dialog", parameters, options);
     }
 }
