@@ -1,0 +1,19 @@
+﻿.header-search ::deep .mud-input, .mud-input-label {
+    color: white !important;
+}
+
+.header-search .mud-input {
+    margin-top: 0 !important;
+}
+
+.header-search .mud-icon-default {
+    color: white;
+}
+
+.header-search .mud-input-label-inputcontrol {
+    transform: translate(0, 9px) scale(1);
+}
+
+.header-search .mud-input.mud-input-underline:after, .mud-input-underline:before {
+    border-bottom: 2px solid white !important;
+}

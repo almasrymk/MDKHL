@@ -1,24 +1,7 @@
-﻿<MudTextField T="string" @bind-Value="TextValue" Label="Search..." Variant="Variant.Text" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"></MudTextField>
+﻿<div class="header-search">
+<MudTextField T="string" @bind-Value="TextValue" Label="Search..." Variant="Variant.Text" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"></MudTextField>
+</div>
 
-<style>
-    .mud-input, .mud-input-label {
-        color:white !important;
-    }
-    .mud-input{
-        margin-top:0 !important;
-    }
-    .mud-icon-default {
-        color: white;
-    }
-
-    .mud-input-label-inputcontrol {
-        transform: translate(0, 9px) scale(1);
-    }
-
-    .mud-input.mud-input-underline:after, .mud-input-underline:before {
-        border-bottom: 2px solid white !important;
-    }
-</style>
 @code {
     public string TextValue { get; set; }
 }
