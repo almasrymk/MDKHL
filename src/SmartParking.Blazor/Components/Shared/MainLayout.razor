@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase;
 <MudDialogProvider />
 <MudSnackbarProvider />
-<MudThemeProvider />
+<MudThemeProvider Theme="SPCustomTheme" />
 <MudPopoverProvider />
 
 <div class="main-layout-gradient d-flex flex-column">
@@ -48,5 +48,18 @@
 </div>
 
 @code {
-    
+    MudTheme SPCustomTheme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Primary = "#0D5480",
+                Secondary = "#16B7D3",
+                GrayLight = "#F2F2F2",
+                GrayDark = "#434341",
+                WarningLighten = "#CE3333",
+                Success = "#28BA24",
+                White = "FFFFFF"
+            },
+           
+        };
 }
