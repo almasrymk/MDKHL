@@ -13,11 +13,11 @@ namespace SmartParking.Cameras;
 public abstract class  CameraAppService_Tests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
 {
-    private ICameraAppService _cameraAppService;
+    private ICamerasAppService _cameraAppService;
 
     protected CameraAppService_Tests()
     {
-        _cameraAppService=GetRequiredService<ICameraAppService>();
+        _cameraAppService=GetRequiredService<ICamerasAppService>();
     }
     [Fact]
     public async Task Should_Get_List_of_Cameras()
