@@ -1,0 +1,31 @@
+﻿@using SmartParking.Cameras
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudTextField Label="ID" @bind-Value="Camera.Id" Disabled="true" />
+            <MudTextField Label="MacAddress" @bind-Value="Camera.MacAddress" />
+            <MudTextField Label="Type" @bind-Value="Camera.Type" />
+            <MudTextField Label="Status" @bind-Value="Camera.Status" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="MudBlazor.Color.Primary" OnClick="Save">Save</MudButton>
+        <MudButton Color="MudBlazor.Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public CameraDto Camera { get; set; } = new CameraDto();
+    private MudForm form;
+
+    private void Save()
+    {
+        MudDialog.Close(DialogResult.Ok(Camera));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

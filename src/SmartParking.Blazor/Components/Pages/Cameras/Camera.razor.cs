@@ -1,8 +1,10 @@
-﻿using SmartParking.Cameras;
+﻿using MudBlazor;
+using SmartParking.Cameras;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras;
 
@@ -11,6 +13,14 @@ public partial class Camera
     private List<CameraDto> cameras=new List<CameraDto>();
     private int currentPage = 1;
     private int pageSize = 100;
+    //Dialog
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private readonly DialogOptions _closeButton = new() { CloseButton = true };
+    private readonly DialogOptions _noHeader = new() { NoHeader = true };
+    private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+    private readonly DialogOptions _fullScreen = new() { FullScreen = true, CloseButton = true };
+    private readonly DialogOptions _topCenter = new() { Position = DialogPosition.TopCenter };
+
 
     private async Task GetData()
     {
@@ -31,5 +41,15 @@ public partial class Camera
         await base.OnInitializedAsync();
         await GetData();
 
+    }
+    
+    //private Task EditDialogAsync(DialogOptions options)
+    //{
+        
+    //    return Dialog.ShowAsync<EditCamera>("Custom Options Dialog", options);
+    //}
+    private Task OpenDialogAsync(DialogOptions options)
+    {
+        return Dialog.ShowAsync<AddDialog>("Custom Options Dialog", options);
     }
 }

@@ -1,0 +1,54 @@
+﻿@using SmartParking.Cameras
+@using SmartParking.Enums
+@inject IDialogService DialogService
+
+<MudCard Style="background-color:aqua;">
+    <MudForm Model="@cameraDto" @ref="@form">
+        <MudCardContent>
+            <MudTextField @bind-Value="cameraDto.Name" Label="Name" Required="true" />
+            <MudTextField @bind-Value="cameraDto.Model" Label="Model" Required="true" />
+            <MudTextField @bind-Value="cameraDto.MainType" Label="Main Type" Required="true" />
+            <MudTextField @bind-Value="cameraDto.BrandName" Label="Brand Name" Required="true" />
+            <MudTextField @bind-Value="cameraDto.Code" Label="Code" Required="true" />
+            <MudTextField @bind-Value="cameraDto.CameraIP" Label="Camera IP" Required="true" />
+            <MudTextField @bind-Value="cameraDto.MacAddress" Label="Mac Address" Required="true" />
+            <MudTextField @bind-Value="cameraDto.Type" Label="Type" Required="true" />
+            <MudTextField @bind-Value="cameraDto.GarageId" Label="Garage ID" Required="true" />
+            <MudSelect @bind-Value="cameraDto.Status" Label="Status" Required="true">
+                @* Assuming Status is an enum; populate options accordingly *@
+                @foreach (var status in Enum.GetValues(typeof(Status)).Cast<Status>())
+                {
+                    <MudSelectItem Value="@status">@status</MudSelectItem>
+                }
+            </MudSelect>
+        </MudCardContent>
+    </MudForm>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Create Camera</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] ICamerasAppService CamerasAppService { get; set; } // Assuming you have a service to handle the camera creation
+
+    private MudForm form;
+    private CreateUpdateCameraDto cameraDto = new CreateUpdateCameraDto();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private async Task Submit()
+    {
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            await CamerasAppService.CreateAsync(cameraDto);
+            Snackbar.Add("Camera created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            
+        }
+        else
+        {
+            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+        }
+    }
+}
