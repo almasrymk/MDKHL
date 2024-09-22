@@ -63,7 +63,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Entities.TenantConnectionString> TenantConnectionStrings { get; set; }
 
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<Category> Categories { get; set; }
     public DbSet<ContactInfo> ContactInfos { get; set; }
     public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
     public DbSet<Garage> Garages { get; set; }
@@ -72,7 +71,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<DefaultPackage> DefaultPackages { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Camera> Cameras { get; set; }
-    //public DbSet<CustomerCategory> CustomerCategories { get; set; }
+    public DbSet<CustomerCategory> CustomerCategories { get; set; }
     public DbSet<PackageCategory> PackageCategories { get; set; }
 
 

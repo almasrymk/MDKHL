@@ -6,12 +6,11 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.LookupsAppServices
 {
-    public class PackageTypesAppService : CrudAppService<PackageType,
-                                                       PackageTypeDto,
-                                                       int,
-                                                       PagedAndSortedResultRequestDto,
-                                                       CreateUpdatePackageTypeDto>,
+    public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto,
+                                    int, PagedAndSortedResultRequestDto,
+                                    CreateUpdatePackageTypeDto>,
         IPackageTypesAppService
+
     {
         public PackageTypesAppService(IRepository<PackageType, int> repository) : base(repository)
         {
