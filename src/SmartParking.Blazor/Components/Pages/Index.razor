@@ -4,7 +4,7 @@
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
 <MudGrid>
     <MudItem sm="4">
@@ -54,5 +54,6 @@
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<SPModal>("Form Dialog", parameters, options);
+
     }
 }

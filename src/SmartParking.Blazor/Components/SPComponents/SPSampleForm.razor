@@ -1,17 +1,20 @@
 ﻿<MudForm>
     <MudGrid>
         <MudItem sm="6">
-            <MudTextField T="string" Label="User Name" Placeholder="Type Here" Typo="Typo.h6" />
+            <MudTextField T="string" Label="IP Address" Placeholder="Type Here" Typo="Typo.input" />
         </MudItem>
         <MudItem sm="6">
-            <MudTextField T="string" Label="password" Placeholder="Type Here" Typo="Typo.h6" />
+            <MudDatePicker Label="installing Date" @bind-Date="_date" Placeholder="Choose your date" />
+        </MudItem>
+        <MudItem sm="6">
+            <MudTextField T="string" Label="Camera code" Placeholder="Type Here" Typo="Typo.input" />
+        </MudItem>
+        <MudItem sm="6">
+            <MudTextField T="string" Label="Camera code" Placeholder="Type Here" Typo="Typo.input" />
         </MudItem>
     </MudGrid>
-    @* <div class="w-100 d-flex justify-content-end">
-        <MudButton ButtonType="MudBlazor.ButtonType.Submit" Color="MudBlazor.Color.Primary">Submit</MudButton>
-    </div> *@
+    
 </MudForm>
-
 @code {
-
+    private DateTime? _date = DateTime.Today;
 }

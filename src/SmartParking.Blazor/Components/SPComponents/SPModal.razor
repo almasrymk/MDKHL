@@ -1,14 +1,14 @@
-﻿<div class="modal-wrapper">
+﻿
+<div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText>Create New</MudText>
+            @TitleContent
         </TitleContent>
         <DialogContent>
             @ChildContent
         </DialogContent>
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Submit" Variant="Variant.Filled">Submit</MudButton>
+            @Actions
         </DialogActions>
     </MudDialog>
 </div>
@@ -25,7 +25,9 @@
 
     [Parameter] public RenderFragment ChildContent { get; set; }
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    [Parameter] public RenderFragment TitleContent { get; set; }
 
-    private void Cancel() => MudDialog.Cancel();
+    [Parameter] public RenderFragment Actions { get; set; }
+    
+    private void close() => MudDialog.Close();
 }
