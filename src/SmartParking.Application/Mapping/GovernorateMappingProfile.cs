@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SmartParking.Entities;
 using SmartParking.Lookups;
+using SmartParking.Lookups.Governorate;
 
 namespace SmartParking.Mapping
 {
@@ -10,6 +11,7 @@ namespace SmartParking.Mapping
         {
             CreateMap<Governorate , GovernorateDto>();
             CreateMap<CreateUpdateGovernorateDto, Governorate>();
+            CreateMap<Country, CountryLookupDto>();
         }
     }
 }
