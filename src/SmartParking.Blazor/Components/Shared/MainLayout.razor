@@ -1,4 +1,10 @@
-﻿@inherits LayoutComponentBase;
+﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
+@using SmartParking.Localization
+@using Volo.Abp.Localization
+@using Volo.Abp.SettingManagement
+@inherits LayoutComponentBase;
+@inject IStringLocalizer<SmartParkingResource> L
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -14,7 +20,7 @@
         <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
            <div class="d-flex flex-column justify-center">
                 <h2>
-                    Dashboard
+                    @L["Dashboard"]
                 </h2>
                 <SPBreadcrumb />
            </div>
@@ -22,6 +28,15 @@
                <SPSearch />
                 <MudImage src="images/svgs/notification.svg" Width="24" Height="24"/>
                 <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
+                <MudMenu Icon="@Icons.Material.Filled.Language" Label="Language">
+                    
+                    @foreach (var language in _localizationOptions.Value.Languages)
+                    {
+                        <MudMenuItem OnClick="@(() => ChangeLanguage(language.CultureName))">
+                            <MudText>@language.DisplayName</MudText>
+                        </MudMenuItem>
+                    }
+                </MudMenu>
                <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
                         <MudImage src="images/avatar.png" Width="49" Height="49" />
@@ -48,6 +63,15 @@
 </div>
 
 @code {
+    [Inject] private IOptions<AbpLocalizationOptions> _localizationOptions { get; set; }
+    [Inject] private NavigationManager Navigation { get; set; }
+
+    private void ChangeLanguage(string cultureName)
+    {
+
+        var uri = "/?culture=" + cultureName + "&ui-culture=" + cultureName;
+        Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
+    }
     MudTheme SPCustomTheme = new MudTheme()
         {
             PaletteLight = new PaletteLight()
