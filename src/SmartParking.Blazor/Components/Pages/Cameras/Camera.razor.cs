@@ -53,6 +53,6 @@ public partial class Camera
     }
     private Task OpenDialogAsync(DialogOptions options)
     {
-        return Dialog.ShowAsync<AddDialog>("Custom Options Dialog", options);
+        return Dialog.ShowAsync<AddDialog>("Add Camera", options);
     }
 }

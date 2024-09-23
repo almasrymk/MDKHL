@@ -25,6 +25,8 @@
     </MudForm>
     <MudCardActions>
         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Create Camera</MudButton>
+        <MudButton Color="MudBlazor.Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+
     </MudCardActions>
 </MudCard>
 
@@ -50,5 +52,9 @@
         {
             Snackbar.Add("Please fix the validation errors.", Severity.Error);
         }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
     }
 }
