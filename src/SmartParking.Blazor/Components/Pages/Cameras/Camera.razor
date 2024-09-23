@@ -23,8 +23,19 @@
             <PropertyColumn Property="x => x.MacAddress" Title="MacAddress" />
             <PropertyColumn Property="x => x.Type" Title="Type" />
             <PropertyColumn Property="x => x.Status" Title="Status" />
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
+                    @if (context.Item is CameraDto camera)
+                    {
+                        <MudButton Variant="Variant.Text" Color="MudBlazor.Color.Primary" OnClick="@(() => OpenEditDialog(camera))">
+                            <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                            Edit
+                        </MudButton>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
 
-            <MudIconButton Size="@MudBlazor.Size.Small" Icon="@Icons.Material.Outlined.Edit" />
+
 
 
 

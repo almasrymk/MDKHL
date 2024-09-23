@@ -42,12 +42,15 @@ public partial class Camera
         await GetData();
 
     }
-    
-    //private Task EditDialogAsync(DialogOptions options)
-    //{
-        
-    //    return Dialog.ShowAsync<EditCamera>("Custom Options Dialog", options);
-    //}
+
+    private async Task OpenEditDialog(CameraDto camera)
+    {
+        var parameters = new DialogParameters { ["Camera"] = camera };
+        var dialog = Dialog.Show<EditCamera>("Edit Camera", parameters);
+        var result = await dialog.Result;
+
+       
+    }
     private Task OpenDialogAsync(DialogOptions options)
     {
         return Dialog.ShowAsync<AddDialog>("Custom Options Dialog", options);
