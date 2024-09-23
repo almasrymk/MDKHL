@@ -10,7 +10,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<Country>.Configure(EntityTypeBuilder<Country> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x=>x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x=>x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
@@ -23,7 +24,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<Governorate>.Configure(EntityTypeBuilder<Governorate> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
@@ -35,7 +37,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<City>.Configure(EntityTypeBuilder<City> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
@@ -48,7 +51,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<Feature>.Configure(EntityTypeBuilder<Feature> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
@@ -77,7 +81,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<UserType>.Configure(EntityTypeBuilder<UserType> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
@@ -89,7 +94,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<PackageType>.Configure(EntityTypeBuilder<PackageType> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);

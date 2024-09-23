@@ -19,7 +19,7 @@ namespace SmartParking.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.PostgreSql)
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -109,7 +109,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.City", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -173,7 +176,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicCapital")
                         .HasColumnType("text");
@@ -291,7 +297,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Feature", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicDescription")
                         .HasMaxLength(1000)
@@ -352,7 +361,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicCapital")
                         .HasColumnType("text");
@@ -1125,7 +1137,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.PackageType", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicDescription")
                         .HasMaxLength(1000)
@@ -1288,7 +1303,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.UserType", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
