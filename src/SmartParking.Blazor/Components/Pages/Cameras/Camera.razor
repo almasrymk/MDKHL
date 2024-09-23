@@ -1,18 +1,20 @@
-﻿@page "/cameras"
-@using SmartParking.Cameras
+﻿@using SmartParking.Cameras
 @inject ICamerasAppService CamerasAppService
 @inject IDialogService Dialog
 
+@page "/cameras"
+@using Customs
+
 <div>
     <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="CameraDto" MultiSelection="true" Items="@cameras" SortMode="SortMode.Multiple" Filterable="true"
-                 Hideable="true" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged">
+                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
         <ToolBarContent>
             <MudTextField Elevation="2" @bind-Value="_searchString" Placeholder="Search For Cameras" Adornment="Adornment.End" Immediate="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
             <MudSpacer />
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateNewCamera">
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenDialogAsync(_backdropClick))">
                 CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
+                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-s1" />
             </MudButton>
         </ToolBarContent>
         <Columns>
@@ -21,11 +23,11 @@
             <PropertyColumn Property="x => x.MacAddress" Title="MacAddress" />
             <PropertyColumn Property="x => x.Type" Title="Type" />
             <PropertyColumn Property="x => x.Status" Title="Status" />
-            <TemplateColumn>
-                <CellTemplate>
-                    <MudIconButton Size="Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditCameraAsync(context))" />
-                </CellTemplate>
-            </TemplateColumn>
+
+            <MudIconButton Size="@MudBlazor.Size.Small" Icon="@Icons.Material.Outlined.Edit" />
+
+
+
         </Columns>
         <PagerContent>
             <MudDataGridPager T="CameraDto" />
@@ -35,33 +37,23 @@
 
 @code {
     private string _searchString = string.Empty;
-    //private IEnumerable<CameraDto> cameras = new List<CameraDto>();
-
-    // Edit Camera Dialog
-    private async Task EditCameraAsync(CameraDto camera)
-    {
-        var parameters = new DialogParameters { { "Camera", camera } };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
-
-        var dialog = Dialog.Show<EditCamera>("Edit Camera", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            var updatedCamera = (CameraDto)result.Data;
-            // Handle the updated camera data (save changes, update UI, etc.)
-        }
-    }
-
-  
 
     private async Task RowClicked(DataGridRowClickEventArgs<CameraDto> args)
     {
-        // Handle row click (optional)
+        // Handle row click
+    }
+
+    private async Task RowRightClicked(DataGridRowClickEventArgs<CameraDto> args)
+    {
+        // Handle right-click row actions
     }
 
     private async Task SelectedItemsChanged(HashSet<CameraDto> selectedItems)
     {
-        // Handle selection changes (optional)
+        // Handle selected item changes
     }
+
+
 }
+
+
