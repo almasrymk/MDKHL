@@ -16,14 +16,14 @@ namespace SmartParking.Blazor.Components.Pages.Garages;
 
 public partial class Garage
 {
+ 
 
     private List<GarageDto> Garages = new List<GarageDto>();
     private GarageDto View;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-    public int updateId { get; set; }
-    private bool updateModal=false;
-    private bool createModal=false;
-    private bool viewModal=false;
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
+
 
     private TimeSpan? _time=new TimeSpan();
     CreateUpdateGarageDto createUpdateGarage=new CreateUpdateGarageDto();
@@ -43,94 +43,44 @@ public partial class Garage
         await GetData();
 
     }
-    private async Task SubmitEdit()
+  
+    private  Task CreateGarage()
     {
-        try
+    
+
+        return DialogService.ShowAsync<AddGarageDialog>("Simple Dialog", options);
+
+
+    }
+    private Task OnClickRowEdit(GarageDto row)
+    {
+        createUpdateGarage.Name = row.Name; 
+        createUpdateGarage.MaxCapacity = row.MaxCapacity;
+        createUpdateGarage.ClosingHours =row.ClosingHours;
+        createUpdateGarage.Code = row.Code;
+        createUpdateGarage.Status = row.Status;
+        createUpdateGarage.OrganizationId = row.OrganizationId;
+
+        var parameters = new DialogParameters { 
+            ["Garage"] = createUpdateGarage,
+            ["UpdatedId"]=row.Id
+        };
+
+
+        return DialogService.ShowAsync<UpdateGarageDialog>("Edit Garage", parameters);
+        
+    }
+    private  Task OnClickRowView(GarageDto row)
+    {
+
+        var parameters = new DialogParameters
         {
-            createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
-
-            await GarageAppService.UpdateAsync(updateId,createUpdateGarage);
-            Snackbar.Add("Garage Updated Successfully", Severity.Success);
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add(e.Message,Severity.Error);
-        }
-        updateModal = false;
-    } 
-    private async void SubmitCreate()
-    {
-        try
-        {
-            createUpdateGarage.Code = "";
-            
-            var garage= await GarageAppService.CreateAsync(createUpdateGarage);
-            if (garage != null)
-            {
-                Snackbar.Add("Garage Has been created Successfully", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("Can't create garage", Severity.Error);
+            ["Garage"] = row,
+        };
 
 
-            }
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add(e.Message,Severity.Error);
-            Console.WriteLine(e);
-        }
-        createModal = false;
-    }   
-
-    private async Task CancelCreate()
-    {
-        createUpdateGarage= new CreateUpdateGarageDto();
-        createModal = false;
-        _time = new TimeSpan();
-
-
+        return DialogService.ShowAsync<ViewGarageDialog>("View Garage", parameters);
     }
-    private async Task CancelEdit()
-    {
-        updateId = 0;
-        createUpdateGarage= new CreateUpdateGarageDto();
-        updateModal = false;
-        _time = new TimeSpan();
-
-    }
-    private async Task CreateGarage()
-    {
-        createModal=true;
-        createUpdateGarage= new CreateUpdateGarageDto();
-        var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        Organizations = result.Items.ToList();
 
 
-    }
-    private async Task OnClickRowEdit(GarageDto row)
-    {
-        var cellId = row.Id;
-        var garage= await GarageAppService.GetAsync(cellId);
-        createUpdateGarage.Name = garage.Name; 
-        createUpdateGarage.MaxCapacity = garage.MaxCapacity;
-        _time=garage.ClosingHours.ToTimeSpan();
-        createUpdateGarage.Code = garage.Code;
-        createUpdateGarage.Status = garage.Status;
-        createUpdateGarage.OrganizationId = garage.OrganizationId;
-        updateId = cellId;
-        updateModal = true;
-    }
-    private async Task OnClickRowView(GarageDto row)
-    {
-        View = row;
-        viewModal= true;
-    }
-    private  void OnCloseViewOnly()
-    {
-        View = null;
-        viewModal= false;
-
-    }
 }

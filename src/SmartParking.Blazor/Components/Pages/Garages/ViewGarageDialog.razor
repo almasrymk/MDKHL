@@ -1,0 +1,92 @@
+﻿
+
+<div class="modal-wrapper">
+    <MudDialog Class="mud-modal">
+
+        <TitleContent>
+            <MudText Typo="Typo.h6">Details for Garage @Garage.Name</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem Class="w-100">
+
+                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+
+                    *@
+                    <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                        <MudGrid>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.Name"
+                                              For="@(() => Garage.Name)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              ReadOnly="true"
+                                              Label="Garage name"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.MaxCapacity"
+                                              For="@(() => Garage.MaxCapacity)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Immediate="true"
+                                              Label="Garage Max Capacity"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.Code"
+                                              For="@(() => Garage.Code)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Immediate="true"
+                                              Label="Garage Code"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.ClosingHours"
+                                              For="@(() => Garage.ClosingHours)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Immediate="true"
+                                              Label="Closing Hours"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="6" md="6" Class="d-flex justify-content-center align-items-center">
+                                <MudTextField @bind-Value="Garage.Status"
+                                              For="@(() => Garage.Status)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Immediate="true"
+                                              Label="Status"
+                                              Disabled />
+
+                            </MudItem>
+
+
+
+                        </MudGrid>
+                    </MudForm>
+
+                    @*         </MudPaper>
+
+                    *@
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+
+        <DialogActions>
+            <MudButton OnClick="OnCloseViewOnly">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+
+
+
+</div>
+
+
+<style>
+
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
