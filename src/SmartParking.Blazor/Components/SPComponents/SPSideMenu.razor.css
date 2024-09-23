@@ -30,3 +30,7 @@
 ::deep .mud-nav-link:not(.mud-nav-link-disabled) .mud-nav-link-icon.mud-nav-link-icon-default {
     color: rgb(255 255 255) !important;
 }
+
+::deep .mud-nav-link-expand-icon{
+    fill: white !important;
+}
