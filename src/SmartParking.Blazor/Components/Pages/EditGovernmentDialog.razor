@@ -2,8 +2,144 @@
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp.Application.Dtos
 @inject IGovernorateAppService GovernorateAppService
+@inject ICountriesAppService CountriesAppService
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">New Government</MudText>
+		</TitleContent>
+		<DialogContent>
 
-<MudDialog Visible="_editGovernmentDialogVisible" Style="background-color:aquamarine;">
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+					
+
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="governorate.ArabicName"
+									  For="@(() => governorate.ArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="ArabicName" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="governorate.EnglishName"
+									  For="@(() => governorate.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="EnglishName" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="governorate.ArabicCapital"
+									  For="@(() => governorate.ArabicCapital)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="ArabicCapital" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="governorate.EnglishCapital"
+									  For="@(() => governorate.EnglishCapital)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="EnglishCapital" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="governorate.Notes"
+									  For="@(() => governorate.Notes)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="Notes" />
+					</MudItem>
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@governorate.CountryId"
+									   Variant="Variant.Text"
+									   Label="Country"
+									   Placeholder="Please Select"
+									   Clearable="_clearable">
+								@foreach (var country in countries)
+								{
+									<MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+								}
+							</MudSelect>
+						</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton OnClick="Cancel">Cancel</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">Edit</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+	[Parameter] public GovernorateDto governorate { get; set; } = new GovernorateDto();
+	public IReadOnlyList<CountryDto> countries { get; set; } = new List<CountryDto>();
+	private MudForm editForm;
+	bool _clearable;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await CountriesAppService.GetListAsync(new PagedAndSortedResultRequestDto
+			{
+				MaxResultCount = 100,
+				SkipCount = (1 - 1) * 100
+			});
+		countries = result.Items.ToList();
+	}
+
+	private async Task Save()
+	{
+		await editForm.Validate();
+		if (editForm.IsValid)
+		{
+
+			// Create the input object for update
+			var input = new CreateUpdateGovernorateDto
+				{
+					ArabicName = governorate.ArabicName,
+					EnglishName = governorate.EnglishName,
+					ArabicCapital = governorate.ArabicCapital,
+					EnglishCapital = governorate.EnglishCapital,
+					Notes = governorate.Notes,
+					CountryId = governorate.CountryId,
+					
+
+				};
+
+			// Call the update method
+			await GovernorateAppService.UpdateAsync(governorate.Id, input);
+
+			// Close the dialog with a success result
+			MudDialog.Close(DialogResult.Ok(true));
+		}
+	}
+
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}
+
+
+
+@* <MudDialog Visible="_editGovernmentDialogVisible" Style="background-color:aquamarine;">
     <TitleContent>
         <MudText Typo="Typo.h6">New Government</MudText>
     </TitleContent>
@@ -96,5 +232,5 @@
     }
    
 
-}
+} *@
 
