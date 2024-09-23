@@ -1,0 +1,10 @@
+﻿
+::deep .mud-input-slot{
+    text-align:center;
+    font-size:30px !important;
+    font-weight:700 !important;
+}
+
+::deep .mud-input-underline:before {
+    border-bottom: 2px solid #434341 !important;
+}
