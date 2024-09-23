@@ -12,4 +12,5 @@ public class FilterRequestDto
     public string FilterValue { get; set; }
     public string FilterOperator { get; set; }
     public bool IsNot { get; set; }
+    public TypeFilter TypeFilter { get; set; }
 }

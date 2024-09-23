@@ -7,7 +7,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking;
 
-public class PagedAndSortedAndFilteredResultRequestDto:PagedAndSortedResultRequestDto
+public class PagedAndSortedAndFilteredResultRequestDto:PagedAndSortedAndSearchResultRequestDto
 {
     public List<FilterRequestDto> filters { get; set; }
 }

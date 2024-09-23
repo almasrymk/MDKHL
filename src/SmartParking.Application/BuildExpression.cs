@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -24,14 +25,47 @@ public static class BuildExpression<T>
         {
             if (filter.FilterProperty.IsNullOrEmpty() && filter.FilterOperator.IsNullOrEmpty())
                 continue;
-            // Get the property of the Hotel object (x.Id, x.Name, x.Location)
-            MemberExpression property = Expression.Property(Param, filter.FilterProperty);
+            // Start with the parameter (x)
+            Expression property = Param;
+            
+            Expression condition;
+            if (filter.FilterProperty.Contains('.'))
+            {
+                // Split the filter property to handle nested properties (e.g., "Country.ArabicName")
+                string[] propertyParts = filter.FilterProperty.Split('.');
+
+
+
+                // Iterate through each part of the nested property
+                foreach (var part in propertyParts)
+                {
+                    property = Expression.Property(property, part);
+                }
+            }
+            else
+            {
+                property = Expression.Property(Param, filter.FilterProperty);
+            }
+
+            // Get the property of the Hotel object (x.Id, x.Country.ArabicName, x.Location)
+ 
+
             // Create a constant expression with the value to compare to
             ConstantExpression value = Expression.Constant(filter.FilterValue);
+            if (filter.TypeFilter == TypeFilter.Number)
+            {
+                Type propertyType = property.Type;
+                ConstantExpression valueNumber = Expression.Constant(Convert.ChangeType(Enum.Parse(propertyType, filter.FilterValue.ToString()), propertyType));
+                condition = Expression.Equal(property, valueNumber);
+                combinedExpression = Expression.AndAlso(combinedExpression, condition);
+                continue;
+            }
 
-            // Create the equality expression (x.Property == value)
-            MethodInfo ContainsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
-            Expression condition;
+                // Create the equality expression (x.Property == value)
+                MethodInfo ContainsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
+
+            
+            
             if (filter.IsNot)
             {
                 if (filter.FilterOperator == "IsNullOrEmpty")
@@ -39,6 +73,7 @@ public static class BuildExpression<T>
                     condition = Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property));
 
                 }
+                
                 else
                 {
                     condition = Expression.Not(Expression.Call(property, ContainsMethod, value));
