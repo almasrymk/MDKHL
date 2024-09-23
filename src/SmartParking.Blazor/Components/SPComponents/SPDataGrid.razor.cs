@@ -16,7 +16,7 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
-    [Parameter] public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
+     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
     private string _searchString;

@@ -10,5 +10,6 @@ public enum TypeFilter
 {
     Number,
     Text,
-    Date
+    Date,
+    Enum
 }

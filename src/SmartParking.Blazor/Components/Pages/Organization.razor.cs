@@ -118,7 +118,7 @@ public partial class Organization
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Country Name", Name = "CountryName", IsFilterable = true , PropertyNmae = "Country.ArabicName" , IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = "State Name", Name = "StateName", IsFilterable = true , PropertyNmae = "State.ArabicName" , IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = "City Name", Name = "CityName", IsFilterable = true , PropertyNmae = "City.ArabicName" , IsSortable = true , TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true , PropertyNmae = "Status" ,IsSortable = true , TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true , PropertyNmae = "Status" ,IsSortable = true , TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false , IsSortable = false , TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Num Of Cameras", Name = "NumOfCameras", IsFilterable = false ,IsSortable = false , TypeFilter = TypeFilter.Number });
         foreach (var item in organizations.Items)

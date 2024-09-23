@@ -52,7 +52,7 @@ public static class BuildExpression<T>
 
             // Create a constant expression with the value to compare to
             ConstantExpression value = Expression.Constant(filter.FilterValue);
-            if (filter.TypeFilter == TypeFilter.Number)
+            if (filter.TypeFilter == TypeFilter.Enum)
             {
                 Type propertyType = property.Type;
                 ConstantExpression valueNumber = Expression.Constant(Convert.ChangeType(Enum.Parse(propertyType, filter.FilterValue.ToString()), propertyType));

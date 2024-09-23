@@ -35,16 +35,20 @@
                                     }
                                 </MudSelect>
                             </MudItem>
-                            <MudItem>
-                                Operator:
-                                <MudSelect Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="Colmn name" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                            @if (Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
+                            {
+                                <MudItem>
+                                    Operator:
+                                    <MudSelect Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="Colmn name" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
 
-                                    @foreach (var column in StringOperator)
-                                    {
-                                        <MudSelectItem Value="@column">@column.Key</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </MudItem>
+                                        @foreach (var column in StringOperator)
+                                        {
+                                            <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                            }
+                            
                             @if (SelectOperator.Value != "IsNullOrEmpty")
                             {
                                 <MudItem>
