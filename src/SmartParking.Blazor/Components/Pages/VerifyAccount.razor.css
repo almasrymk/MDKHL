@@ -1,0 +1,18 @@
+﻿/* Hide spinners in Chrome, Safari, Edge, and Opera */
+::deep input[type=number]::-webkit-inner-spin-button,
+::deep input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+::deep .mud-input-slot{
+    text-align:center;
+    font-size:30px !important;
+    font-weight:700 !important;
+}
+/* Hide spinners in Firefox */
+::deep input[type=number] {
+    -moz-appearance: textfield;
+}
+::deep .mud-input-underline:before {
+    border-bottom: 2px solid #434341 !important;
+}
