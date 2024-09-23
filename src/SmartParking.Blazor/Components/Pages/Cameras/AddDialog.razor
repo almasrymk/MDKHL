@@ -1,5 +1,6 @@
 ﻿@using SmartParking.Cameras
 @using SmartParking.Enums
+@using Volo.Abp
 @inject IDialogService DialogService
 
 <div class="modal-wrapper">
@@ -115,7 +116,15 @@
         if (form.IsValid)
         {
             // Call your service to create the camera
-            await CamerasAppService.CreateAsync(cameraDto);
+            try
+            {
+                await CamerasAppService.CreateAsync(cameraDto);
+            }
+            catch (UserFriendlyException ex)
+            {
+                Snackbar.Add("DuplicateCameraIP", Severity.Error);
+                return;
+            }
             Snackbar.Add("Camera created successfully!", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
             

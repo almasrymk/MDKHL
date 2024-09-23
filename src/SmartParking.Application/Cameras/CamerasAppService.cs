@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -86,6 +87,40 @@ namespace SmartParking.Cameras
                 }
             }
             await base.DeleteAsync(id);
+        }
+
+        public override async Task<CameraDto> CreateAsync(CreateUpdateCameraDto input)
+        {
+            if(await CheckIPUnique(input.CameraIP)==1)
+            {
+                throw new UserFriendlyException("The Camera IP is already in use.")
+                {
+                    Code = "DuplicateCameraIP"
+                };
+            }
+            if (_currentUser.IsInRole("admin"))
+            {
+                using (_dataFilter.Disable<IMultiTenant>())
+                {
+                    return await base.CreateAsync(input);
+                }
+            }
+            else
+                return await base.CreateAsync(input);
+        }
+        private async Task<int> CheckIPUnique(string cameraIP)
+        {
+            // Use FirstOrDefaultAsync to find the camera by IP
+            var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
+
+            // If a camera is found, return 1 (or any positive number to indicate it's not unique)
+            if (camera != null)
+            {
+                return 1; // CameraIP exists
+            }
+
+            // Return 0 if the CameraIP is unique (not found)
+            return -1;
         }
     }
 
