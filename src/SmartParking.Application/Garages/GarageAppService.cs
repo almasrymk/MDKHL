@@ -6,6 +6,7 @@ using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -13,6 +14,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Garages;
 
@@ -93,5 +95,73 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
             return EnumValues.GetEnumDescription(GarageValidations.GarageDeleteion);
         }
+    }
+
+    /// <summary>
+    /// method used to get list of organizations
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it sorted or not</param>
+    /// <returns>OrganizatioDto List</returns>
+    public async Task<PagedResultDto<GarageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        // Get the IQueryable<garage> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply search filtering
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.Name.StartsWith(input.SearchingTerm) ||
+                or.Code.StartsWith(input.SearchingTerm) 
+            );
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of garage entities
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the garage entities to garageDto objects
+        var garageDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        Console.WriteLine(garageDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garageDto
+        );
+    }
+
+    /// <summary>
+    /// method used to get list of garages
+    /// </summary>
+    /// <param name="input">specifies max number of garage and if it filtered or not</param>
+    /// <returns>garageDto List</returns>
+    public async Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        // Get the IQueryable<garage> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply filtering
+        var filterExpression = BuildExpression<Garage>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of garages entities
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the garages entities to garageDto objects
+        var garageDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        // Return the paginated result
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garageDto
+        );
     }
 }
