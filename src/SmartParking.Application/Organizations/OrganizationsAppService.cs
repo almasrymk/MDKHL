@@ -178,6 +178,19 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 or.City.ArabicName.StartsWith(input.SearchingTerm)
             );
         }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+            
+        }
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -210,6 +223,19 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
         }
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
