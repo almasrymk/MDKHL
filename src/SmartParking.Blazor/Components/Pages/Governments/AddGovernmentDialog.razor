@@ -35,7 +35,6 @@
                         <MudTextField @bind-Value="input.ArabicCapital"
                                       For="@(() => input.ArabicCapital)"
                                       Immediate="true"
-                                      Disabled=true
                                       Label="ArabicCapital" />
                     </MudItem>
                     <MudItem sm="6" md="6">
@@ -115,7 +114,7 @@
             }
             catch (UserFriendlyException ex)
             {
-                Snackbar.Add("DuplicateCameraIP", Severity.Error);
+                Snackbar.Add(ex.Message, Severity.Error);
                 return;
             }
             Snackbar.Add("Governorate created successfully!", Severity.Success);
@@ -132,96 +131,3 @@
         MudDialog.Cancel();
     }
 }
-
-@* <MudDialog Visible="_createGovernmentDialogVisible"  Style="background-color:aquamarine;">
-    <TitleContent>
-        <MudText Typo="Typo.h6">New Government</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudForm Model="@model" @ref="@_createForm" ValidationDelay="0">
-            <MudCardContent>
-                <MudTextField @bind-Value="model.ArabicName"
-                              For="@(() => model.ArabicName)"
-                              Immediate="true"
-                              Label="ArabicName" />
-
-                <MudTextField @bind-Value="model.EnglishName"
-                              For="@(() => model.EnglishName)"
-                              Immediate="true"
-                              Label="EnglishName" />
-
-                <MudTextField @bind-Value="model.ArabicCapital"
-                              For="@(() => model.ArabicCapital)"
-                              Immediate="true"
-                              Label="ArabicCapital" />
-
-                <MudTextField @bind-Value="model.EnglishCapital"
-                              For="@(() => model.EnglishCapital)"
-                              Immediate="true"
-                              Label="EnglishCapital" />
-
-                <MudTextField @bind-Value="model.Notes"
-                              For="@(() => model.Notes)"
-                              Immediate="true"
-                              Label="Notes" />
-
-
-                <MudSelect @bind-Value="@model.CountryId" Label="Country" Placeholder="Please Select">
-
-                    @foreach (var country in countries)
-                    {
-                        <MudSelectItem T="int" Value="@country.Id">
-                            @country.Name
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-
-              
-
-            </MudCardContent>
-
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CloseCreateGovernmnetModal">Cancel</MudButton>
-        <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="CreateGovernmentAsync">Create</MudButton>
-    </DialogActions>
-</MudDialog>
-
-@code
-{
-    public CreateUpdateGovernorateDto model = new CreateUpdateGovernorateDto();
-    public IReadOnlyList<GovernorateDto> items = Array.Empty<GovernorateDto>();
-    public IReadOnlyList<CountryLookupDto> countries = Array.Empty<CountryLookupDto>();
-
-    private MudForm _createForm;
-
-    private bool _createGovernmentDialogVisible;
-    private bool _editGovernmentDialogVisible;
-
-    private void CloseCreateGovernmnetModal()
-    {
-        _createGovernmentDialogVisible = false;
-    }
-
-    private async Task GetCountryLookupAsync()
-    {
-         countries = (await GovernorateAppService.GetCountryLookupAsync()).Items;
-
-    }
-
-  
-
-    private async Task CreateGovernmentAsync()
-    {
-       var input = new PagedAndSortedResultRequestDto();
-
-       if (_createForm.IsValid)
-       {
-           await GovernorateAppService.CreateAsync(model);
-           _createGovernmentDialogVisible = false;
-           items = (await GovernorateAppService.GetListAsync(input)).Items;
-       }
-    }
-} *@
-
