@@ -4,87 +4,183 @@
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
-<MudDialog Style="background-color:aqua;">
-    <DialogContent>
-        <MudForm @ref="form">
-            <!-- Dropdown for selecting Garage -->
-            <MudSelect Label="Garage" T="int" @bind-Value="Camera.GarageId">
-                @foreach (var garage in Garages)
-                {
-                    <MudSelectItem Value="garage.Id">@garage.Name</MudSelectItem>
-                }
-            </MudSelect>
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">New Government</MudText>
+		</TitleContent>
+		<DialogContent>
 
-            <!-- GarageId TextField (Disabled) -->
-            <MudTextField Label="GarageId" @bind-Value="Camera.GarageId" Disabled="true" />
 
-            <MudTextField Label="Name" @bind-Value="Camera.Name" Disabled="true" />
-            <MudTextField Label="Model" @bind-Value="Camera.Model" Disabled="true" />
-            <MudTextField Label="Type" @bind-Value="Camera.Type" Disabled="true" />
-            <MudTextField Label="BrandName" @bind-Value="Camera.BrandName" Disabled="true" />
-            <MudTextField Label="CameraIP" @bind-Value="Camera.CameraIP" Disabled="true" />
-            <MudTextField Label="MacAddress" @bind-Value="Camera.MacAddress" Disabled="true" />
-            <MudTextField Label="ID" @bind-Value="Camera.Id" Disabled="true" />
-            <MudTextField Label="Type" @bind-Value="Camera.Type"  />
-            <MudTextField Label="Status" @bind-Value="Camera.Status" Disabled="true" />
 
-            
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@Camera.GarageId"
+								   Variant="Variant.Text"
+								   Label="Status"
+								   Placeholder="Please Select"
+								   Clearable="_clearable">
+							@foreach (var garage in Garages)
+							{
+								<MudSelectItem Value="garage.Id">@garage.Name</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
 
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="MudBlazor.Color.Primary" OnClick="Save">Save</MudButton>
-        <MudButton Color="MudBlazor.Color.Secondary" OnClick="Cancel">Cancel</MudButton>
-    </DialogActions>
-</MudDialog>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.GarageId"
+									  For="@(() => Camera.GarageId)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="GarageId" />
+					</MudItem>
+
+
+
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Name"
+									  For="@(() => Camera.Name)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="Name" />
+					</MudItem>
+
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Model"
+									  For="@(() => Camera.Model)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="Model" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Type"
+									  For="@(() => Camera.Type)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="Type" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.BrandName"
+									  For="@(() => Camera.BrandName)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="BrandName" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.CameraIP"
+									  For="@(() => Camera.CameraIP)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="CameraIP" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.MacAddress"
+									  For="@(() => Camera.MacAddress)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="MacAddress" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.MacAddress"
+									  For="@(() => Camera.MacAddress)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="MacAddress" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Id"
+									  For="@(() => Camera.Id)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="Id" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Type"
+									  For="@(() => Camera.Type)"
+									  Immediate="true"
+									  Label="Type" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Status"
+									  For="@(() => Camera.Status)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="Status" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton OnClick="Cancel">Cancel</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">Edit</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public CameraDto Camera { get; set; } = new CameraDto();
-    public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
-    private MudForm form;
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+	[Parameter] public CameraDto Camera { get; set; } = new CameraDto();
+	public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
+	private MudForm form;
+	bool _clearable;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = (1 - 1) * 100
-            });
-        Garages = result.Items.ToList();
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
+			{
+				MaxResultCount = 100,
+				SkipCount = (1 - 1) * 100
+			});
+		Garages = result.Items.ToList();
+	}
 
-    private async Task Save()
-    {
-        await form.Validate();
-        if (form.IsValid)
-        {
+	private async Task Save()
+	{
+		await form.Validate();
+		if (form.IsValid)
+		{
 
-            // Create the input object for update
-            var input = new CreateUpdateCameraDto
-                {
-                    Name = Camera.Name,
-                    Type = Camera.Type,
-                    GarageId=Camera.GarageId,
-                    Model=Camera.Model,
-                    BrandName=Camera.BrandName,
-                    CameraIP=Camera.CameraIP,
-                    MacAddress=Camera.MacAddress,
-                    Status=Camera.Status
+			// Create the input object for update
+			var input = new CreateUpdateCameraDto
+				{
+					Name = Camera.Name,
+					Type = Camera.Type,
+					GarageId = Camera.GarageId,
+					Model = Camera.Model,
+					BrandName = Camera.BrandName,
+					CameraIP = Camera.CameraIP,
+					MacAddress = Camera.MacAddress,
+					Status = Camera.Status
 
-                };
+				};
 
-            // Call the update method
-            await CamerasAppService.UpdateAsync(Camera.Id, input);
+			// Call the update method
+			await CamerasAppService.UpdateAsync(Camera.Id, input);
 
-            // Close the dialog with a success result
-            MudDialog.Close(DialogResult.Ok(true));
-        }
-    }
+			// Close the dialog with a success result
+			MudDialog.Close(DialogResult.Ok(true));
+		}
+	}
 
 
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
 }

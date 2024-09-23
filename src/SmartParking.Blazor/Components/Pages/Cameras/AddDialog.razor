@@ -2,33 +2,104 @@
 @using SmartParking.Enums
 @inject IDialogService DialogService
 
-<MudCard Style="background-color:aqua;">
-    <MudForm Model="@cameraDto" @ref="@form">
-        <MudCardContent>
-            <MudTextField @bind-Value="cameraDto.Name" Label="Name" Required="true" />
-            <MudTextField @bind-Value="cameraDto.Model" Label="Model" Required="true" />
-            <MudTextField @bind-Value="cameraDto.MainType" Label="Main Type" Required="true" />
-            <MudTextField @bind-Value="cameraDto.BrandName" Label="Brand Name" Required="true" />
-            <MudTextField @bind-Value="cameraDto.Code" Label="Code" Required="true" />
-            <MudTextField @bind-Value="cameraDto.CameraIP" Label="Camera IP" Required="true" />
-            <MudTextField @bind-Value="cameraDto.MacAddress" Label="Mac Address" Required="true" />
-            <MudTextField @bind-Value="cameraDto.Type" Label="Type" Required="true" />
-            <MudTextField @bind-Value="cameraDto.GarageId" Label="Garage ID" Required="true" />
-            <MudSelect @bind-Value="cameraDto.Status" Label="Status" Required="true">
-                @* Assuming Status is an enum; populate options accordingly *@
-                @foreach (var status in Enum.GetValues(typeof(Status)).Cast<Status>())
-                {
-                    <MudSelectItem Value="@status">@status</MudSelectItem>
-                }
-            </MudSelect>
-        </MudCardContent>
-    </MudForm>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Create Camera</MudButton>
-        <MudButton Color="MudBlazor.Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">New Government</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem sm="8">
+                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                    *@
+                    <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                        <MudGrid>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Name"
+                                              For="@(() => cameraDto.Name)"
+                                              Immediate="true"
+                                              Label="Name" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Model"
+                                              For="@(() => cameraDto.Model)"
+                                              Immediate="true"
+                                              Label="Model" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.MainType"
+                                              For="@(() => cameraDto.MainType)"
+                                              Immediate="true"
+                                              Label="MainType" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.BrandName"
+                                              For="@(() => cameraDto.BrandName)"
+                                              Immediate="true"
+                                              Label="BrandName" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Code"
+                                              For="@(() => cameraDto.Code)"
+                                              Immediate="true"
+                                              Label="Code" />
 
-    </MudCardActions>
-</MudCard>
+                            </MudItem>
+                            <MudItem sm="4">
+                    <MudTextField @bind-Value="cameraDto.CameraIP"
+                                  For="@(() => cameraDto.CameraIP)"
+                                  Immediate="true"
+                                              Label="CameraIP" />
+
+                </MudItem>
+                            <MudItem sm="4">
+                    <MudTextField @bind-Value="cameraDto.MacAddress"
+                                  For="@(() => cameraDto.MacAddress)"
+                                  Immediate="true"
+                                              Label="MacAddress" />
+
+                </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Type"
+                                              For="@(() => cameraDto.Type)"
+                                              Immediate="true"
+                                              Label="Type" />
+
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudSelect @bind-Value="@cameraDto.Status"
+                                           Variant="Variant.Text"
+                                           Label="Status"
+                                           Placeholder="Please Select"
+                                           Clearable="_clearable">
+                                    @foreach (var status in Enum.GetValues(typeof(Status)).Cast<Status>())
+                                    {
+                                        <MudSelectItem Value="@status">@status</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                    @*         </MudPaper>
+                    *@
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+        </DialogActions>
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
 
 @code {
     [Inject] ISnackbar Snackbar { get; set; }
@@ -38,6 +109,7 @@
     private CreateUpdateCameraDto cameraDto = new CreateUpdateCameraDto();
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
     private async Task Submit()
     {
         if (form.IsValid)
