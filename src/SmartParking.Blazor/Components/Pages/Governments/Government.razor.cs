@@ -45,7 +45,7 @@ public partial class Government
 
 	private Task OpenCreateGovernmentDialog(DialogOptions options)
 	{
-		return Dialog.ShowAsync<EditGovernmentDialog>("Add Camera", options);
+		return Dialog.ShowAsync<AddGovernmentDialog>("Add Governorate", options);
 	}
 
 	private async Task OpenEditGovernmentDialog(GovernorateDto governorateDto)
@@ -57,25 +57,7 @@ public partial class Government
 
 	}
 	
-	//public IReadOnlyList<GovernorateDto> items = Array.Empty<GovernorateDto>();
-	//public IReadOnlyList<CountryLookupDto> countries = Array.Empty<CountryLookupDto>();
-	//private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
-
-
-	//protected override async Task OnInitializedAsync()
-	//{
-	//    var input = new PagedAndSortedResultRequestDto();
-	//    await base.OnInitializedAsync();
-	//    items = (await AppService.GetListAsync(input)).Items;
-	//    countries = (await AppService.GetCountryLookupAsync()).Items;
-	//}
-
-
-	//private async Task OpenCreateGovernmentDialog(DialogOptions dialogOptions)
-	//{
-	//     await Dialog.ShowAsync<AddGovernmentDialog>("Add",dialogOptions);
-	//}
-
+	
 
 
 

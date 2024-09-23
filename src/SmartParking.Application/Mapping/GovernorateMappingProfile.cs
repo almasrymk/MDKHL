@@ -11,7 +11,11 @@ namespace SmartParking.Mapping
         {
             CreateMap<Governorate , GovernorateDto>();
             CreateMap<CreateUpdateGovernorateDto, Governorate>();
-            CreateMap<Country, CountryLookupDto>();
+            CreateMap<Country, CountryLookupDto>()
+                .ForMember(d=>d.ArabicName,o=>o.MapFrom(s=>s.ArabicName))
+                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.EnglishName))
+                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicCapital))
+                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.EnglishCapital));
         }
     }
 }

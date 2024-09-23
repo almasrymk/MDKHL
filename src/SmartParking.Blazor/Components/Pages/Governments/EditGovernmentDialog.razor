@@ -2,11 +2,10 @@
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp.Application.Dtos
 @inject IGovernorateAppService GovernorateAppService
-@inject ICountriesAppService CountriesAppService
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">New Government</MudText>
+			<MudText Typo="Typo.h6">Update Government</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -46,19 +45,16 @@
 									  Variant="Variant.Text"
 									  Label="EnglishCapital" />
 					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="governorate.Notes"
-									  For="@(() => governorate.Notes)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="Notes" />
-					</MudItem>
+					
 						<MudItem sm="6">
 							<MudSelect @bind-Value="@governorate.CountryId"
 									   Variant="Variant.Text"
 									   Label="Country"
 									   Placeholder="Please Select"
-									   Clearable="_clearable">
+									   Clearable="_clearable"
+									   AnchorOrigin="Origin.TopCenter"
+									   TransformOrigin="Origin.TopCenter">
+
 								@foreach (var country in countries)
 								{
 									<MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
@@ -89,13 +85,13 @@
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 	[Parameter] public GovernorateDto governorate { get; set; } = new GovernorateDto();
-	public IReadOnlyList<CountryDto> countries { get; set; } = new List<CountryDto>();
+	public IReadOnlyList<CountryLookupDto> countries { get; set; } = new List<CountryLookupDto>();
 	private MudForm editForm;
 	bool _clearable;
 
 	protected override async Task OnInitializedAsync()
 	{
-		var result = await CountriesAppService.GetListAsync(new PagedAndSortedResultRequestDto
+		var result = await GovernorateAppService.GetCountryLookupAsync(new PagedAndSortedResultRequestDto
 			{
 				MaxResultCount = 100,
 				SkipCount = (1 - 1) * 100

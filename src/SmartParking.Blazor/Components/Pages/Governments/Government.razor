@@ -10,9 +10,7 @@
 <MudItem>
     <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="GovernorateDto" MultiSelection="true" Items="governorates" SortMode="SortMode.Multiple" Filterable="true">
         <ToolBarContent>
-           @*  <MudTextField Elevation="2" @bind-Value="_searchString" Placeholder="Search For Organizations" Adornment="Adornment.End" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
-            <MudSpacer /> *@
+           
             <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateGovernmentDialog(_backdropClick))">
                 
                 CREATE NEW
@@ -22,7 +20,7 @@
         <Columns>
             <SelectColumn T="GovernorateDto" />
             <PropertyColumn Property="x => x.ArabicName" Title="Government Arabic Name"  />
-            <PropertyColumn Property="x => x.EnglishName" />
+            <PropertyColumn Property="x => x.EnglishName" Title="Government English Name" />
             <PropertyColumn Property="x => x.CountryArabicName" Title="Country Arabic Name"  />
             <PropertyColumn Property="x => x.CountryEnglishName" Title="Country English Name"  />
             <TemplateColumn Title="Actions">
@@ -32,7 +30,7 @@
                             <MudIcon Icon="@Icons.Material.Filled.Edit" />
                             Edit
                         </MudButton>
-                    }
+                    
                 </CellTemplate>
             </TemplateColumn>
 

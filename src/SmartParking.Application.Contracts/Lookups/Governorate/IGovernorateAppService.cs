@@ -7,7 +7,7 @@ namespace SmartParking.Lookups
 {
     public interface IGovernorateAppService : ICrudAppService<GovernorateDto , int , PagedAndSortedResultRequestDto , CreateUpdateGovernorateDto>
     {
-        Task<ListResultDto<CountryLookupDto>> GetCountryLookupAsync();
+        Task<PagedResultDto<CountryLookupDto>> GetCountryLookupAsync(PagedAndSortedResultRequestDto input);
 
     }
 }
