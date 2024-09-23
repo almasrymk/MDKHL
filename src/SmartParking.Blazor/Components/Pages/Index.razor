@@ -1,10 +1,10 @@
 ﻿@inject MudBlazor.IDialogService DialogService
-@page "/"
+@page "/dashboard"
 @using Volo.Abp.MultiTenancy
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
 <MudGrid>
     <MudItem sm="4">
@@ -45,40 +45,8 @@
             
             { nameof(SPModal.ChildContent), (RenderFragment)(builder =>
                 {
-                    builder.OpenComponent(0, typeof(MudForm));
-                    builder.AddAttribute(1, "ChildContent", (RenderFragment)(formBuilder =>
-                    {
-                        formBuilder.OpenComponent(2, typeof(MudGrid));
-                        formBuilder.AddAttribute(3, "ChildContent", (RenderFragment)(gridBuilder =>
-                        {
-                            gridBuilder.OpenComponent(4, typeof(MudItem));
-                            gridBuilder.AddAttribute(5, "xs", 6); // Changed to int
-                            gridBuilder.AddAttribute(6, "ChildContent", (RenderFragment)(itemBuilder =>
-                            {
-                                itemBuilder.OpenComponent(7, typeof(MudTextField<string>));
-                                itemBuilder.AddAttribute(8, "Label", "Name");
-                                itemBuilder.AddAttribute(9, "Required", true);
-                                itemBuilder.AddAttribute(10, "RequiredError", "Name is required!");
-                                itemBuilder.CloseComponent();
-                            }));
-                            gridBuilder.CloseComponent();
-
-                            gridBuilder.OpenComponent(11, typeof(MudItem));
-                            gridBuilder.AddAttribute(12, "xs", 6); // Changed to int
-                            gridBuilder.AddAttribute(13, "ChildContent", (RenderFragment)(itemBuilder =>
-                            {
-                                itemBuilder.OpenComponent(14, typeof(MudTextField<string>));
-                                itemBuilder.AddAttribute(15, "Label", "Email");
-                                itemBuilder.AddAttribute(16, "Required", true);
-                                itemBuilder.AddAttribute(17, "RequiredError", "Email is required!");
-                                itemBuilder.CloseComponent();
-                            }));
-                            gridBuilder.CloseComponent();
-
-                            // Add more items for password and number here as needed
-                        }));
-                        formBuilder.CloseComponent();
-                    }));
+                    builder.OpenComponent(0, typeof(SPSampleForm));
+                   
                     builder.CloseComponent();
                 })
             }
@@ -86,5 +54,6 @@
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<SPModal>("Form Dialog", parameters, options);
+
     }
 }
