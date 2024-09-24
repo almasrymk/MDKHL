@@ -27,13 +27,11 @@ public static class BuildExpression<T>
                 continue;
             // Start with the parameter (x)
             Expression property = Param;
-            
             Expression condition;
             if (filter.FilterProperty.Contains('.'))
             {
                 // Split the filter property to handle nested properties (e.g., "Country.ArabicName")
                 string[] propertyParts = filter.FilterProperty.Split('.');
-
 
 
                 // Iterate through each part of the nested property
@@ -48,11 +46,11 @@ public static class BuildExpression<T>
             }
 
             // Get the property of the Hotel object (x.Id, x.Country.ArabicName, x.Location)
- 
+
 
             // Create a constant expression with the value to compare to
             ConstantExpression value = Expression.Constant(filter.FilterValue);
-            if (filter.TypeFilter == TypeFilter.Number)
+            if (filter.TypeFilter == TypeFilter.Enum)
             {
                 Type propertyType = property.Type;
                 ConstantExpression valueNumber = Expression.Constant(Convert.ChangeType(Enum.Parse(propertyType, filter.FilterValue.ToString()), propertyType));
@@ -61,11 +59,10 @@ public static class BuildExpression<T>
                 continue;
             }
 
-                // Create the equality expression (x.Property == value)
-                MethodInfo ContainsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
+            // Create the equality expression (x.Property == value)
+            MethodInfo ContainsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
 
-            
-            
+
             if (filter.IsNot)
             {
                 if (filter.FilterOperator == "IsNullOrEmpty")
@@ -73,7 +70,6 @@ public static class BuildExpression<T>
                     condition = Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property));
 
                 }
-                
                 else
                 {
                     condition = Expression.Not(Expression.Call(property, ContainsMethod, value));
@@ -93,7 +89,6 @@ public static class BuildExpression<T>
                     condition = Expression.Call(property, ContainsMethod, value);
                 }
             }
-
 
 
             // Combine the new condition with the existing combined expression using AND logic
