@@ -1,14 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Organizations;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
-using SmartParking.Blazor.Components.DataGrid;
-using System.Collections.Generic;
-using SmartParking.Organizations;
 
-namespace SmartParking.Blazor.Components.Pages;
+namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class Organization
 {
+
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
