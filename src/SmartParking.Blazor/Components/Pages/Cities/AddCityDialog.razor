@@ -1,0 +1,126 @@
+﻿@using SmartParking.Lookups
+@using SmartParking.Lookups.City
+@using SmartParking.Lookups.Governorate
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@inject ICitiesAppService CitiesAppService
+@inject ISnackbar Snackbar
+
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">New Government</MudText>
+        </TitleContent>
+        <DialogContent>
+
+
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    <MudItem sm="6" >
+                        <MudTextField @bind-Value="input.ArabicName"
+                                      For="@(() => input.ArabicName)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Label="ArabicName" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.EnglishName"
+                                      For="@(() => input.EnglishName)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Label="EnglishName" />
+                    </MudItem>
+                    
+                    <MudItem sm="6" >
+                        <MudTextField @bind-Value="input.Notes"
+                                      For="@(() => input.Notes)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Label="Notes" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudSelect @bind-Value="@input.GovernorateId"
+                                   Variant="Variant.Text"
+                                   Label="Governorate"
+                                   Placeholder="Please Select"
+                                   Clearable="_clearable"
+                                   AnchorOrigin="Origin.TopCenter"
+                                   TransformOrigin="Origin.TopCenter">
+                            @foreach (var city in cities)
+                            {
+                                <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+        </DialogActions>
+    </MudDialog>
+
+</div>
+
+
+@code {
+
+    private MudForm form;
+    public CreateUpdateCityDto input = new CreateUpdateCityDto();
+    public IReadOnlyList<GovernmentLookupDto> cities = new List<GovernmentLookupDto>();
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await CitiesAppService.GetGovernmentLookupAsync(new PagedAndSortedResultRequestDto
+            {
+                MaxResultCount = 100,
+                SkipCount = (1 - 1) * 100
+            });
+        cities = result.Items.ToList();
+    }
+    private async Task Submit()
+    {
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            try
+            {
+                await CitiesAppService.CreateAsync(input);
+            }
+            catch (UserFriendlyException ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+                return;
+            }
+            Snackbar.Add("City created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+
+        }
+        else
+        {
+            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+        }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+
+
+
+<style>
+    .mud-modal 
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
