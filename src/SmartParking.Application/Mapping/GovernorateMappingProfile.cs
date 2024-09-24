@@ -13,9 +13,9 @@ namespace SmartParking.Mapping
             CreateMap<CreateUpdateGovernorateDto, Governorate>();
             CreateMap<Country, CountryLookupDto>()
                 .ForMember(d=>d.ArabicName,o=>o.MapFrom(s=>s.ArabicName))
-                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.EnglishName))
-                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicCapital))
-                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.EnglishCapital));
+                .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName))
+                .ForMember(d => d.ArabicCapital, o => o.MapFrom(s => s.ArabicCapital))
+                .ForMember(d => d.EnglishCapital, o => o.MapFrom(s => s.EnglishCapital));
         }
     }
 }
