@@ -42,13 +42,13 @@ public partial class City
 
 	private Task OpenCreateCityDialog(DialogOptions options)
 	{
-		return Dialog.ShowAsync<AddGovernmentDialog>("Add City", options);
+		return Dialog.ShowAsync<AddCityDialog>("Add City", options);
 	}
 
 	private async Task OpenEditCityDialog(CityDto cityDto)
 	{
 		var parameters = new DialogParameters { ["City"] = cityDto };
-		var dialog = await Dialog.ShowAsync<EditGovernmentDialog>("Edit City", parameters);
+		var dialog = await Dialog.ShowAsync<EditCityDialog>("Edit City", parameters);
 		var result = await dialog.Result;
 
 
@@ -57,7 +57,7 @@ public partial class City
 	private async Task OpenDetailsCityDialog(CityDto cityDto)
 	{
 		var parameters = new DialogParameters { ["City"] = cityDto };
-		var dialog = await Dialog.ShowAsync<EditGovernmentDialog>("Edit City", parameters);
+		var dialog = await Dialog.ShowAsync<DetailsCityDialog>("City Details", parameters);
 		var result = await dialog.Result;
 
 
