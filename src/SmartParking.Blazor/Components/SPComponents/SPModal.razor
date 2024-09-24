@@ -1,0 +1,33 @@
+﻿
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            @TitleContent
+        </TitleContent>
+        <DialogContent>
+            @ChildContent
+        </DialogContent>
+        <DialogActions>
+            @Actions
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal{
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public RenderFragment TitleContent { get; set; }
+
+    [Parameter] public RenderFragment Actions { get; set; }
+    
+    private void close() => MudDialog.Close();
+}

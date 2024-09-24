@@ -1,0 +1,43 @@
+﻿@page "/login"
+@layout Shared.AuthLayout
+
+<PageTitle>Login</PageTitle>
+
+<h2>Sign In</h2>
+
+<MudContainer Class="d-flex justify-content-center my-5">
+    <MudForm Class="d-flex flex-column gap-3 w-75">
+        <MudTextField T="string" Placeholder="Type your Email or Phone Number here" Label="Email Address / Phone Number" />
+        <MudTextField T="string" Placeholder="Type your password here" Label="Password" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+        <div class="d-flex align-items-center justify-content-center gap-1">
+            <p class="m-0">Forget Your Password Don't worry ..</p>
+            <MudLink Href="/verify-account" Class="fw-bold" Color="MudBlazor.Color.Dark">Click here to reset</MudLink>
+        </div>
+        <MudButton Class="mt-4" ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" FullWidth="false">LOGIN</MudButton>
+    </MudForm>
+    
+</MudContainer>
+
+
+
+@code {
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

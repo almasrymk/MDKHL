@@ -1,8 +1,12 @@
-﻿namespace SmartParking.Entities
+﻿using SmartParking.Enums;
+
+namespace SmartParking.Entities;
+
+public class City: BaseEntity
 {
-    public class City: BaseEntity
-    {
-        public int GovernorateId { get; set; }
-        public virtual Governorate Governorate { get; set; }
-    }
+    public int EmaraaId { get; set; }
+
+    public Status Status { get; set; }
+    public int GovernorateId { get; set; }
+
 }

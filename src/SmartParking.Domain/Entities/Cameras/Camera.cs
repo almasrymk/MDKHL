@@ -4,16 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Cameras;
 
-public class Camera
+public class Camera : FullAuditedEntity<int>, IMultiTenant
 {
     public int Id { get; set; }
+    public string Name { get; set; }
+    public string Model { get; set; }
+    public string MainType { get; set; }
+    public string BrandName { get; set; }
     public string Code { get; set; }
     public string CameraIP { get; set; }
+    public string MacAddress { get; set; }
     public string Type { get; set; }
-    public int OrganizationGarageId { get; set; }
-    public int OrganizationId { get; set; }
-    public Status   Status { get; set; }
+    public int GarageId { get; set; }
+    public Status Status { get; set; }
+    public Guid? TenantId { get; set; }
 }

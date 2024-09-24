@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
+using SmartParking.Garages;
 using SmartParking.Organizations;
+using SmartParking.OrganizationsGarages;
 
 namespace SmartParking;
 
@@ -16,7 +20,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Organization, OrganizationDto>()
             .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.ArabicName))
             .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.ArabicName))
-            .ForMember(dest => dest.StatsName, opt => opt.MapFrom(src => src.Stats.ArabicName)).ReverseMap();
+            .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.State.ArabicName)).ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
 
 
@@ -24,6 +28,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
         CreateMap<CreateUpdateCutomerCategoryDto, CustomerCategory>().ReverseMap();
 
+        CreateMap<Garage, GarageDto>();
+        CreateMap<CreateUpdateGarageDto, Garage>().ReverseMap();
+
+        CreateMap<Camera, CameraDto>();
+        CreateMap<CreateUpdateCameraDto, Camera>();
 
 
     }

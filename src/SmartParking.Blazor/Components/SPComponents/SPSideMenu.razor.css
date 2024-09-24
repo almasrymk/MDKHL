@@ -1,0 +1,32 @@
+﻿::deep .side-menu-toggler {
+    border-radius: 10px 0 10px 0 !important;
+    background-color: white;
+    width: 30px;
+    height: 30px;
+    position:absolute;
+    top:20px;
+    left:200px;
+    min-width:fit-content !important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+::deep .side-menu-toggler:hover {
+    background-color: white;
+}
+
+::deep .mud-drawer {
+    position: relative !important;
+}
+::deep .mud-nav-link {
+    color: white;
+}
+::deep .mud-navmenu.mud-navmenu-default .mud-nav-link.active:not(.mud-nav-link-disabled) {
+    color: white !important;
+    background-color: #16B7D3 !important;
+}
+
+::deep .mud-nav-link:not(.mud-nav-link-disabled) .mud-nav-link-icon.mud-nav-link-icon-default {
+    color: rgb(255 255 255) !important;
+}

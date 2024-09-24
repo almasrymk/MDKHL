@@ -1,0 +1,23 @@
+﻿::deep .auth-layout {
+    background-image: url("/images/auth-bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height:100vh;
+}
+
+::deep .auth-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+::deep .auth-grid {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+.footer{
+    width:50%;
+    display:inline-grid
+}

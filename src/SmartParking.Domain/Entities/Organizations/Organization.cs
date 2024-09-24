@@ -23,19 +23,19 @@ public class Organization : BaseEntity
 
     public virtual Emaraa Emaraa { get; set; }
 
-    public int StatsId { get; set; }
+    public int StateId { get; set; }
 
-    public virtual Stats Stats { get; set; }
+    public virtual State State { get; set; }
     public int CityId { get; set; }
     public virtual City City { get; set; }
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
     public Status Status { get; set; } = Status.Active;
-    public virtual ICollection<OrganizationGarage> OrganizationGarages { get; set; }
+    public virtual ICollection<Garage> OrganizationGarages { get; set; }
     public virtual ICollection<Camera> Cameras { get; set; }
-    public virtual ICollection<OrganizationPackage> organizationPackages { get; set; }
-    public virtual ICollection<OrganizationContactInfo> organizationContactInfos { get; set; }
+    public virtual ICollection<Package> organizationPackages { get; set; }
+    public virtual ICollection<ContactInfo> organizationContactInfos { get; set; }
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
 
 

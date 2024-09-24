@@ -1,0 +1,48 @@
+﻿@inherits LayoutComponentBase;
+
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudThemeProvider Theme="CustomTheme" />
+
+<div>
+    <MudLayout Class="auth-layout">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="auth-container">
+            <MudMainContent Class="auth-content">
+                <div class="d-flex gap-2">
+                    <Image Source="/images/svgs/arabic.svg" />
+                    <MudText class="text-white">عربي</MudText>
+                </div>
+                <MudGrid Class="d-flex align-items-center flex-1 mb-5">
+                    <MudItem xs="12" md="6" Class="d-flex justify-content-center justify-content-md-start">
+                        <Image Source="/images/logo/auth-logo.png" Style="max-width: 100%;" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudCard class="w-100 py-12 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl d-flex flex-column align-center">
+                            <Image Source="images/maden.jpg" Class="mb-7" />
+                            @Body
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+                <p class="text-center text-white mt-5">All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles</p>
+            </MudMainContent>
+        </MudContainer>
+    </MudLayout>
+</div>
+
+
+@code {
+    MudTheme CustomTheme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Primary = "#0D5480",
+                Secondary = "#16B7D3",
+                GrayLight = "#F2F2F2",
+                Dark = "#434341",
+                WarningLighten = "#CE3333",
+                Success = "#28BA24",
+                White = "FFFFFF"
+            },
+
+        };
+}

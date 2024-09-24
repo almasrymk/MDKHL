@@ -1,0 +1,52 @@
+﻿@page "/verify-account"
+@layout Shared.AuthLayout
+
+<PageTitle>Verify account</PageTitle>
+
+<h2>Verify Account</h2>
+<MudText Class="w-50 text-center">
+    we send the OTP to <a class="fw-bold" href="mailto:info@mdkhl.com">info@mdkhl.com</a>
+    enter the code bellow to verify account
+</MudText>
+
+<div>
+    <MudForm @ref="otpForm">
+        <MudGrid Justify="Justify.Center" Class="my-5">
+            @for (int i = 0; i < 4; i++)
+            {
+                <MudItem xs="2">
+                    <MudNumericField @bind-Value="_otp[i]"
+                                     HideSpinButtons="true"
+                                     MaxLength="1"
+                                     InputType="InputType.Number"
+                                     OnKeyDown="@(e => MoveNext(e, i))"
+                                     Variant="Variant.Text"
+                                     Typo="Typo.h5"
+                                     />
+                </MudItem>
+            }
+        </MudGrid>
+        <MudText Class="text-center my-5">Didn't receive the code .. <MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">Resend</MudLink></MudText>
+        <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Type="Submit">VERIFY</MudButton>
+    </MudForm>
+</div>
+<MudText Class="text-center mt-5">if the mail is wrong change it in previous page .. <MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">Back</MudLink></MudText>
+@code {
+    private string[] _otp = new string[5];
+    private MudTextField<string>[] _otpRefs = new MudTextField<string>[5];
+    private MudForm otpForm;
+    private async void MoveNext(KeyboardEventArgs e, int index)
+    {
+        // Check for valid indices to prevent IndexOutOfRangeException
+        if (e.Key == "Backspace" && index > 0)
+        {
+            // Move focus to the previous field if the index is valid
+            await _otpRefs[index - 1].FocusAsync();
+        }
+        else if (!string.IsNullOrWhiteSpace(_otp[index]) && index < _otp.Length - 1)
+        {
+            // Automatically move to the next field after input, ensuring index is within bounds
+            await _otpRefs[index + 1].FocusAsync();
+        }
+    }
+}

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartParking.Domain.Shared\SmartParking.Domain.Shared.csproj" />
+    <ProjectReference Include="..\SmartParking.Domain\SmartParking.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

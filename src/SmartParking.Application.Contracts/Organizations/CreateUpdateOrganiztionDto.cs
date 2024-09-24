@@ -13,7 +13,7 @@ public class CreateUpdateOrganiztionDto
     public string EnglishName { get; set; }
 
     public string UnifiedLicenseNum { get; set; }
-    public Guid TenantId { get; set; }
+   // public Guid TenantId { get; set; }
 
     public int NumOfCameras { get; set; }
 
@@ -24,7 +24,7 @@ public class CreateUpdateOrganiztionDto
 
     public int EmaraaId { get; set; }
 
-    public int StatsId { get; set; }
+    public int StateId { get; set; }
 
     public int CityId { get; set; }
     public string PhoneNum { get; set; }

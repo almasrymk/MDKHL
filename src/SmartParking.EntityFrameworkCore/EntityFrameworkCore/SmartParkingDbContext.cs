@@ -4,7 +4,6 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Subscriptions;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -49,6 +48,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
 
     //Identity
 
+    
     public DbSet<IdentityUser> Users { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<IdentityClaimType> ClaimTypes { get; set; }
@@ -64,20 +64,21 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Entities.TenantConnectionString> TenantConnectionStrings { get; set; }
 
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<OrganizationCategory> OrganizationCategories { get; set; }
-    public DbSet<OrganizationContactInfo> OrganizationContactInfos { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<ContactInfo> ContactInfos { get; set; }
     public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
-    public DbSet<OrganizationGarage> OrganizationGarages { get; set; }
-    public DbSet<OrganizationPackage> OrganizationPackages { get; set; }
+    public DbSet<Garage> Garages { get; set; }
+    public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
     public DbSet<GarageCategories> GarageCategories { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
-    
 
-  
+
+
 
 
     #endregion
@@ -91,7 +92,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<UserType> UserTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Emaraa> Emaraas { get; set; }
-    public DbSet<Stats> Stats { get; set; }
+    public DbSet<State> States { get; set; }
     [NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 
