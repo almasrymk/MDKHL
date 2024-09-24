@@ -8,6 +8,7 @@ namespace SmartParking.Cutomers;
 
 public class OtpVerificationDto
 {
+    public Guid CustomerId { get; set; }
     public string MobileNumber { get; set; }
     public string OtpCode { get; set; }
 }

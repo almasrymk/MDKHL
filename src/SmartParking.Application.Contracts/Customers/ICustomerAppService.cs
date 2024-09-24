@@ -9,11 +9,16 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Cutomers;
 
-public interface ICustomerAppService : ICrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, RegisterCustomerDto>
+public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>
 {
-    Task<CustomerDto> RegisterAsync(RegisterCustomerDto input);
-    Task<CustomerDto> LoginAsync(LoginCustomerDto input);
-    //Task<bool> SendOtpAsync(string mobileNumber);
-    //Task<bool> VerifyOtpAsync(OtpVerificationDto input);
-    //Task ResetPasswordAsync(ResetPasswordDto input);
+   Task<CustomerDto> RegisterAsync(CreateUpdateCustomerDto input);
+    Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);
+   string GenerateOtp();
+
+
+   //Task<bool> SendOtpAsync(string mobileNumber);
+
+
+
+   Task<bool> VerifyOtpAsync(OtpVerificationDto input);
 }

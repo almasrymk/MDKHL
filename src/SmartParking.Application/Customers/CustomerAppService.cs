@@ -5,88 +5,108 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp;
 using SmartParking.Entities.Customers;
 using SmartParking.Customers;
-using Microsoft.AspNetCore.Identity;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using System.Linq;
+using Volo.Abp.ObjectMapping;
+using Volo.Abp.Identity;
+using Microsoft.AspNetCore.Identity;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using Volo.Abp.Data;
 
 namespace SmartParking.Customers;
 
-public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, RegisterCustomerDto>, ICustomerAppService
+public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService
 {
     private readonly IRepository<Customer, Guid> _repository;
-    private readonly UserManager<Customer> _userManager;    
-    private readonly SignInManager<Customer> _signInManager;
+    private IIdentityUserAppService _identityUserAppService;
+    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
 
-    public CustomerAppService(IRepository<Customer, Guid> repository, UserManager<Customer> userManager, SignInManager<Customer> signInManager) : base(repository)
+
+    public CustomerAppService(IRepository<Customer, Guid> repository,IIdentityUserAppService identityUserAppService , UserManager<Volo.Abp.Identity.IdentityUser> userManager) : base(repository)
     {
         _repository = repository;
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _identityUserAppService= identityUserAppService;
+        _userManager=userManager;
     }
-
-   
-
-    public async Task<CustomerDto> RegisterAsync(RegisterCustomerDto input)
+    /// <summary>
+    /// A method used to register customer
+    /// Method uses create customer method to create customer
+    /// </summary>
+    /// <param name="input">Customer create dto</param>
+    /// <returns>A dto for created customer</returns>
+    public async Task<CustomerDto> RegisterAsync(CreateUpdateCustomerDto input)
     {
-        var customer = new Customer
-        {
-        
-         
-            FullName = input.FullName,
-            MobileNumber = input.MobileNumber,
-            NationalId = input.NationalId
-        };
-
-        var result = await _userManager.CreateAsync(customer, input.Password);
-        if (!result.Succeeded)
-        {
-            throw new UserFriendlyException("Registration failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
-        }
-
-        return ObjectMapper.Map<Customer, CustomerDto>(customer);
+             return await CreateAsync(input);
     }
 
-    public async Task<CustomerDto> LoginAsync(LoginCustomerDto input)
-    {
-        var result = await _signInManager.PasswordSignInAsync(input.Email, input.Password, false, false);
-        if (!result.Succeeded)
-        {
-            throw new UserFriendlyException("Login failed");
-        }
 
-        var customer = await _userManager.FindByEmailAsync(input.Email);
-        return ObjectMapper.Map<Customer, CustomerDto>(customer);
-    }
 
-    private string GenerateOtp()
+
+    /// <summary>
+    /// Method Used to create random otp
+    /// </summary>
+    /// <returns>string of generated otp</returns>
+
+    public string GenerateOtp()
     {
         var random = new Random();
         return random.Next(1000, 9999).ToString();
     }
 
-    public Task<Customer> GetAsync(CustomerDto id)
+
+
+    /// <summary>
+    /// Method to add customer to database
+    /// It depends on UserManager to add identity user to User Table
+    /// User Manager confirms that user has SecurityStamp
+    /// Calls repository to add customer to databas
+    /// </summary>
+    /// <param name="input">Customer create dto</param>
+    /// <returns>A dto for created customer</returns>
+    /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
+    public override async Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
-        throw new NotImplementedException();
+        var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+        try
+        {
+
+            await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            await _userManager.UpdateSecurityStampAsync(customer.IdentityUser);
+            await _repository.InsertAsync(customer);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
+
+
+
+        }
+        catch (Exception ex)
+        {
+
+            throw new UserFriendlyException("Registration failed: " + ex.Message);
+        }
     }
 
-    public Task<PagedResultDto<Customer>> GetListAsync(Guid input)
-    {
-        throw new NotImplementedException();
-    }
 
-    public Task<Customer> CreateAsync(PagedAndSortedResultRequestDto input)
-    {
-        throw new NotImplementedException();
-    }
+    /// <summary>
+    /// Method used to verify user otp
+    /// </summary>
+    /// <param name="input">Otp dto</param>
+    /// <returns>boolean depends on operation status</returns>
+    /// <exception cref="NotImplementedException">Throws exception if no user with that id in database</exception>
 
-    public Task<Customer> UpdateAsync(CustomerDto id, RegisterCustomerDto input)
+    public async Task<bool> VerifyOtpAsync(OtpVerificationDto input)
     {
-        throw new NotImplementedException();
-    }
+        var cutsomer = await _repository.FindAsync(input.CustomerId);
+        if (cutsomer == null) {
 
-    public Task DeleteAsync(CustomerDto id)
-    {
-        throw new NotImplementedException();
+            throw new UserFriendlyException("No User matched that criteria in Database" );
+
+        }
+        if (cutsomer.OTP == input.OtpCode)
+        {
+            return true;
+        }
+        return false;
+
     }
 }
