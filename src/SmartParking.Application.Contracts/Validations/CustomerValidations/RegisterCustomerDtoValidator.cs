@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Validations.CustomerValidations;
 
-public class RegisterCustomerDtoValidator : AbstractValidator<RegisterCustomerDto>
+public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustomerDto>
 {
     public RegisterCustomerDtoValidator()
     {
