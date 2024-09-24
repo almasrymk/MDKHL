@@ -96,12 +96,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await GovernorateAppService.GetCountryLookupAsync(new PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = (1 - 1) * 100
-            });
-        countries = result.Items.ToList();
+        var result = await GovernorateAppService.GetCountryLookupAsync();
+        countries = result;
     }
     private async Task Submit()
     {
