@@ -1,0 +1,7 @@
+﻿@page "/organizations"
+@* @page "/" *@
+@using SmartParking.Organizations
+@inject IOrganizationsAppService OrganizationsAppService
+
+
+<SPDataGrid PageName="organizations" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>

@@ -1,14 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Organizations;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
-using SmartParking.Blazor.Components.DataGrid;
-using System.Collections.Generic;
-using SmartParking.Organizations;
 
-namespace SmartParking.Blazor.Components.Pages;
+namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class Organization
 {
+
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -36,7 +37,6 @@ public partial class Organization
             SearchingTerm = termSearch, // The term to use for filtering results
             filters = pageInfo.Filters
         };
-       
         // Call the service to perform the search based on the input parameters
         var organizationsDto = await OrganizationsAppService.Filter(input);
 
@@ -96,7 +96,6 @@ public partial class Organization
 
         // Retrieve the list of organizations from the server
         var organizationsDto = await OrganizationsAppService.GetListAsync(input);
-      
         TotalItem = (int)organizationsDto.TotalCount;
         CreateTable(organizationsDto);
 
@@ -112,15 +111,15 @@ public partial class Organization
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false ,PropertyNmae = "Id" ,IsSortable=false , TypeFilter=TypeFilter.Text});
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Code", Name = "Code", IsFilterable = false ,PropertyNmae = "Code" , IsSortable = true , TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "English Name", Name = "EnglishName", IsFilterable = true ,PropertyNmae = "EnglishName" ,IsSortable = true , TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Country Name", Name = "CountryName", IsFilterable = true , PropertyNmae = "Country.ArabicName" , IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "State Name", Name = "StateName", IsFilterable = true , PropertyNmae = "State.ArabicName" , IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "City Name", Name = "CityName", IsFilterable = true , PropertyNmae = "City.ArabicName" , IsSortable = true , TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true , PropertyNmae = "Status" ,IsSortable = true , TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false , IsSortable = false , TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Num Of Cameras", Name = "NumOfCameras", IsFilterable = false ,IsSortable = false , TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Code", Name = "Code", IsFilterable = false, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "English Name", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Country Name", Name = "CountryName", IsFilterable = true, PropertyNmae = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "State Name", Name = "StateName", IsFilterable = true, PropertyNmae = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "City Name", Name = "CityName", IsFilterable = true, PropertyNmae = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Num Of Cameras", Name = "NumOfCameras", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in organizations.Items)
         {
             var rowDef = new RowDef();

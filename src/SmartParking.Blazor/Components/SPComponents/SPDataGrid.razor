@@ -5,15 +5,16 @@
 @using Volo.Abp.Application.Dtos
 @using MudBlazor
 @inject IOrganizationsAppService OrganizationsAppService
+@inject NavigationManager Navigation
 
 <div>
     <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" MultiSelection="true" SortMode="SortMode.Single" Filterable="true"
-                 Hideable="true" RowsPerPage="2" >
+                 Hideable="true" RowsPerPage="2">
         <ToolBarContent>
             <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="Search For Organizations" Adornment="Adornment.End" Immediate="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
             <MudItem Class="me-2 ">
-                <MudButton OnClick="OnClickFilter" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Filter" >Filters</MudButton>
+                <MudButton OnClick="OnClickFilter" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Filter">Filters</MudButton>
 
             </MudItem>
             <MudItem>
@@ -39,7 +40,7 @@
                             {
                                 <MudItem>
                                     Operator:
-                                    <MudSelect Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="Colmn name" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                    <MudSelect Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="Colmn name" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
 
                                         @foreach (var column in StringOperator)
                                         {
@@ -48,7 +49,6 @@
                                     </MudSelect>
                                 </MudItem>
                             }
-                            
                             @if (SelectOperator.Value != "IsNullOrEmpty")
                             {
                                 <MudItem>
@@ -69,9 +69,9 @@
                 }
             </MudItem>
             <MudSpacer />
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled">
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="HandleAdd">
                 CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1"/>
+                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
             </MudButton>
             <MudItem>
                 @if (ColumnsFilterApply.Count > 0)
@@ -83,7 +83,7 @@
                             {
                                 <MudItem Class="d-flex align-center">
                                     <MudChip Class="custom-chip-filter" T="string">@(value ?? "Select Column is Null")</MudChip>
-                                    <MudIconButton Icon="@Icons.Material.Outlined.Close" OnClick="@(()=>ClearItem(value))" ></MudIconButton>
+                                    <MudIconButton Icon="@Icons.Material.Outlined.Close" OnClick="@(()=>ClearItem(value))"></MudIconButton>
                                 </MudItem>
 
                             }
@@ -95,19 +95,15 @@
                 }
             </MudItem>
         </ToolBarContent>
-       
         <Columns>
-            
-                    <SelectColumn  />
-                   
-              
+            <SelectColumn />
+
             @foreach (var header in Data.Columns)
             {
                 @if (header.DisplayName == "Id")
                     continue;
 
-                <TemplateColumn DragAndDropEnabled="true" Resizable="true" Filterable="header.IsFilterable" >
-                   
+                <TemplateColumn DragAndDropEnabled="true" Resizable="true">
                     <HeaderTemplate>
                         @header.DisplayName
                         @if (header.IsSortable)
@@ -115,27 +111,24 @@
                             <MudIconButton OnClick="()=> SortTable(header.PropertyNmae)" Size="MudBlazor.Size.Small" ClickPropagation="_ascending" Icon="@(_ascending ? Icons.Material.Filled.ArrowUpward : Icons.Material.Filled.ArrowDownward)">
                             </MudIconButton>
                         }
-                       
                     </HeaderTemplate>
-                    <CellTemplate >
+                    <CellTemplate>
                         @{
                             var cell = @context.Item.Cells.FirstOrDefault(c => c.Key == header.DisplayName).Value;
                         }
                         @cell
                     </CellTemplate>
                 </TemplateColumn>
-                
+
 
             }
 
 
-            
+
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="RowDef"  />
+            <MudDataGridPager T="RowDef" />
         </PagerContent>
     </MudDataGrid>
 
 </div>
-
-

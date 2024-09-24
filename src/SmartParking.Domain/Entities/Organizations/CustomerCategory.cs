@@ -14,6 +14,6 @@ public class CustomerCategory : FullAuditedEntity<int>
     public string  Description { get; set; }
     public bool Default { get; set; }
     public int OrganizationId { get; set; }
-    public virtual Organization Organization { get; set; }
     public Status Status { get; set; }
+    public virtual Organization Organization { get; set; }
 }

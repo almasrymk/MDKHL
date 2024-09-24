@@ -3,12 +3,22 @@
     <MudDrawerContainer Class="mud-height-full" >
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
-                <MudNavLink Href="/" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">Dashboard</MudNavLink>
+                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">Dashboard</MudNavLink>
                 <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">Organizations</MudNavLink>
                 <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.Group">My Account</MudNavLink>
                 <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="Components">
                     <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Group">Login</MudNavLink>
                     <MudNavLink Href="/data-grid" Icon="@Icons.Material.Filled.Group">Data Grid</MudNavLink>
+
+                </MudNavGroup>
+                <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="Lookups">
+                    <MudNavLink Href="/governments" Icon="@Icons.Material.Filled.Group">Governments</MudNavLink>
+                    <MudNavLink Href="/countries" Icon="@Icons.Material.Filled.Group">Countries</MudNavLink>
+                    <MudNavLink Href="/cities" Icon="@Icons.Material.Filled.Group">Cities</MudNavLink>
+                </MudNavGroup>
+                <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="false">
+                    <MudNavLink Href="/edit-profile">Profile</MudNavLink>
+                    <MudNavLink Href="/dashboard">Packages</MudNavLink>
                 </MudNavGroup>
             </MudNavMenu>
         </MudDrawer>
@@ -21,7 +31,7 @@
 @code
 {
     private bool _open = true;
-
+    private bool _expanded = true;
     private void ToggleDrawer() => _open = !_open;
 
 }

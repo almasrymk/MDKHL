@@ -1,0 +1,26 @@
+﻿@using SmartParking.Lookups
+@using SmartParking.Lookups.City
+@inject ICitiesAppService CitiesAppService
+<MudItem sm="4">
+    <MudSelect @bind-Value="SelectValue"
+               Variant="Variant.Text"
+               Label="City"
+               Placeholder="Choose"
+               Clearable="true">
+        @foreach (var city in cities)
+        {
+            <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
+        }
+    </MudSelect>
+</MudItem>
+
+@code {
+    IList<CityLookupDto> cities = new List<CityLookupDto>();
+    [Parameter] public int SelectValue { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        cities = await CitiesAppService.GetCityLookupAsync();
+
+    }
+}
