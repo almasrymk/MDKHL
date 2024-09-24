@@ -12,6 +12,7 @@ namespace SmartParking.Blazor.Components.SPComponents;
 
 public partial class SPDataGrid
 {
+    [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
@@ -41,7 +42,11 @@ public partial class SPDataGrid
         ["is not empty"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
-
+    private void HandleAdd()
+    {
+        var uri = "/" + PageName + "/" + "add";
+        Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
+    }
     public async Task ClearItem(string key)
     {
 
