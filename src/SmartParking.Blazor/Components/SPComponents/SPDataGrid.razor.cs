@@ -16,14 +16,14 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
-    [Parameter] public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
+    public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
     private string _searchString;
     private string sort;
     MudDataGrid<RowDef> dataGrid;
     private bool _ascending = true;
-    public string sortString ="Code";
+    public string sortString = "Code";
     public bool ClickFilter { get; set; } = false;
     private string SelectedColumn { get; set; }
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
@@ -44,8 +44,7 @@ public partial class SPDataGrid
 
     public async Task ClearItem(string key)
     {
-        
-      
+
 
         ColumnsFilterApply.Remove(key);
         if (ColumnsFilterApply.Count == 0)
@@ -86,7 +85,6 @@ public partial class SPDataGrid
         ColumnsFilterApply.Add(SelectedColumn);
         ClickFilter = false;
         await dataGrid.ReloadServerData();
-        
         SelectedColumn = "";
         FilterValue = "";
         SelectOperator = default;
@@ -100,13 +98,13 @@ public partial class SPDataGrid
     {
         _searchString = text;
 
-        
+
         await dataGrid.ReloadServerData();
     }
     private async Task SortTable(string column)
     {
 
-        
+
         if (sort == column)
         {
             _ascending = !_ascending;
@@ -135,13 +133,11 @@ public partial class SPDataGrid
             Filters = ColumnsFilter
         };
         await OnPageChanged.InvokeAsync(pageArgs);
-        
         if (!_searchString.IsNullOrEmpty())
         {
             await OnSearching.InvokeAsync(pageArgs);
-           
         }
-        if(ColumnsFilter.Count > 0)
+        if (ColumnsFilter.Count > 0)
         {
             await OnFiltering.InvokeAsync(pageArgs);
         }
