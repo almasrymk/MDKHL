@@ -1,0 +1,26 @@
+﻿@using SmartParking.Lookups
+@using SmartParking.Lookups.Governorate
+ @inject IGovernorateAppService GovernorateAppService
+<MudItem sm="4">
+    <MudSelect @bind-Value="SelectValue"
+               Variant="Variant.Text"
+               Label="Country"
+               Placeholder="Choose"
+               Clearable="true">
+        @foreach (var country in countries)
+        {
+            <MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+        }
+    </MudSelect>
+</MudItem>
+
+@code {
+    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    [Parameter] public int SelectValue{ get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        countries = await GovernorateAppService.GetCountryLookupAsync();
+         
+    }
+}
