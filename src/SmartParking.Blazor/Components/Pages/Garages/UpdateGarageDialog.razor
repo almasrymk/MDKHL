@@ -50,7 +50,7 @@
                             <MudItem sm="6" md="6">
 
                                 <MudRadioGroup @bind-Value="@Garage.Status">
-                                    <div Class="d-flex flex row justify-content-between">
+                                    <div Class="d-flex flex-row justify-content-between">
 
 
                                         <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
@@ -68,8 +68,16 @@
             </MudGrid>
         </DialogContent>
         <DialogActions>
-            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Class="ml-auto" OnClick="@(async () => await SubmitEdit())">update</MudButton>
-            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" Class="ml-auto" OnClick="@(async () => await CancelEdit())">Cancel</MudButton>
+            <MudGrid Class="ps-lg-5">
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary"  OnClick="@(async () => await SubmitEdit())">update</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@(async () => await CancelEdit())">Cancel</MudButton>
+                </MudItem>
+            </MudGrid>
         </DialogActions>
     </MudDialog>
 </div>

@@ -51,7 +51,7 @@
                                               Label="Closing Hours"
                                               Disabled />
                             </MudItem>
-                            <MudItem sm="6" md="6" Class="d-flex justify-content-center align-items-center">
+                            <MudItem sm="6" md="6" >
                                 <MudTextField @bind-Value="Garage.Status"
                                               For="@(() => Garage.Status)"
                                               Variant="Variant.Text"
@@ -74,8 +74,14 @@
             </MudGrid>
         </DialogContent>
 
+
         <DialogActions>
-            <MudButton OnClick="OnCloseViewOnly">Cancel</MudButton>
+            <MudGrid Class="ps-lg-5">
+                  <MudItem sm="6" md="6" >
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="OnCloseViewOnly">Cancel</MudButton>
+                  </MudItem>
+              </MudGrid>
         </DialogActions>
     </MudDialog>
 

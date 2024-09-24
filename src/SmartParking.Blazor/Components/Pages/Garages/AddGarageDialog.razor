@@ -62,17 +62,18 @@
 
                             </MudItem>
 
+                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                              <div Class="d-flex flex-row justify-content-between">
 
-                            <MudItem sm="6" md="6">
-                                <div Class="d-flex flex row justify-content-between">
 
-                                    <MudRadioGroup @bind-Value="@createUpdateGarage.Status">
-                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
-                                    </MudRadioGroup>
-                                </div>
+                                <MudRadioGroup @bind-Value="@createUpdateGarage.Status" Class="d-inline-flex align-content-center">
+                                    <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                    <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                    <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                </MudRadioGroup>
+                              </div>
                             </MudItem>
+
                             @*         </MudPaper>
 
                             *@
@@ -81,9 +82,18 @@
                 </MudItem>
             </MudGrid>
         </DialogContent>
-        <DialogActions>
-            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Class="ml-auto" OnClick="@(() =>  SubmitCreate())">Create</MudButton>
-            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" Class="ml-auto" OnClick="@( () => CancelCreate())">Cancel</MudButton>
+        <DialogActions >
+            <MudGrid Class="ps-lg-5">
+
+                <MudItem sm="6" md="6">
+
+                  <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@(() =>  SubmitCreate())">Create</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary"  OnClick="@( () => CancelCreate())">Cancel</MudButton>
+                </MudItem>
+            </MudGrid>
         </DialogActions>
     </MudDialog>
 </div>
