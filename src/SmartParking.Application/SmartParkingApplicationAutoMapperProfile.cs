@@ -2,8 +2,10 @@
 using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
+using SmartParking.Lookups.PlateColor;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 
@@ -34,6 +36,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Camera, CameraDto>();
         CreateMap<CreateUpdateCameraDto, Camera>();
 
+        CreateMap<PlateColor, PlateColorDto>();
+		CreateMap<CreateUpdatePlateColorDto, PlateColor>();
 
-    }
+
+	}
 }
