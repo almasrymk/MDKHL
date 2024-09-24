@@ -131,4 +131,5 @@ namespace SmartParking.Configurations
             builder.ToTable("State");
         }
     }
+
 }
