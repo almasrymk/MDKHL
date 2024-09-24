@@ -5,4 +5,8 @@
 }
 ::deep .main-layout-paper {
     background-color: #F2F2F2;   
-} 
+}
+
+::deep .mud-paper {
+    border-radius: 0 10px 0 10px !important;
+}

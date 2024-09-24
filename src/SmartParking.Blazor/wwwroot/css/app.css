@@ -1,6 +1,6 @@
 
 
-button {
+button,a[type="button"] {
     border-radius: 0 10px 0 10px !important;
 }
 
@@ -11,3 +11,10 @@ button {
 input:-webkit-autofill {
     -webkit-box-shadow: none !important;
 }
+
+.main-layout-gradient {
+    background: rgb(13,84,128);
+    background: linear-gradient(90deg, rgba(13,84,128,0.9809173669467787) 37%, rgba(22,183,211,1) 100%);
+    min-height: 100vh;
+}
+
