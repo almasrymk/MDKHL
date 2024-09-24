@@ -3,7 +3,7 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Lookups
 {
-    public interface ICetiesAppService :ICrudAppService<CityDto,int,PagedAndSortedResultRequestDto,CreateUpdateCityDto>
+    public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedResultRequestDto,CreateUpdateCityDto>
     {
     }
 }

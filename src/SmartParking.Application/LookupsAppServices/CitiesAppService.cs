@@ -9,7 +9,7 @@ namespace SmartParking.LookupsAppServices
     public class CitiesAppService : CrudAppService<City, CityDto,
                                     int, PagedAndSortedResultRequestDto,
                                     CreateUpdateCityDto>,
-        ICetiesAppService
+        ICitiesAppService
 
     {
         public CitiesAppService(IRepository<City, int> repository) : base(repository)
