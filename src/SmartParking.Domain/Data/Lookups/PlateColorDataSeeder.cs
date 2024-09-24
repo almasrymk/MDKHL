@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.Lookups;
+﻿using SmartParking.Entities.Lookups.VehiclesLookups;
 using System;
 using System.Collections.Generic;
 using System.Linq;

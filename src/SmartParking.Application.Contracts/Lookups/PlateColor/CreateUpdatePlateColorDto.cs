@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Lookups.PlateColor
+namespace SmartParking.Lookups.PlateColor;
+
+public class CreateUpdatePlateColorDto
 {
-    public class CreateUpdatePlateColorDto
-    {
-        public string ArabicName { get; set; }
-        public string EnglishName { get; set; }
-    }
+    public string ArabicName { get; set; }
+    public string EnglishName { get; set; }
 }

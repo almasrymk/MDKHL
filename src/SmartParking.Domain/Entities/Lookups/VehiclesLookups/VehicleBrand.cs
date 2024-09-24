@@ -8,6 +8,6 @@ namespace SmartParking.Entities.Lookups.VehiclesLookups
 {
 	public class VehicleBrand:BaseEntity
 	{
-		public ICollection<VehicleModel> Models { get; set; }
+		public virtual ICollection<VehicleModel> Models { get; set; }
 	}
 }
