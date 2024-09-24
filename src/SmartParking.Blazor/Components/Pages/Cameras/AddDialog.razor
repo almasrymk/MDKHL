@@ -68,17 +68,17 @@
 
                             </MudItem>
 
-                            <MudItem sm="4">
-                                <MudSelect @bind-Value="@cameraDto.Status"
-                                           Variant="Variant.Text"
-                                           Label="Status"
-                                           Placeholder="Please Select"
-                                           Clearable="_clearable">
-                                    @foreach (var status in Enum.GetValues(typeof(Status)).Cast<Status>())
-                                    {
-                                        <MudSelectItem Value="@status">@status</MudSelectItem>
-                                    }
-                                </MudSelect>
+                      
+                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                                <div Class="d-flex flex-row justify-content-between">
+
+
+                                    <MudRadioGroup @bind-Value="@cameraDto.Status" Class="d-inline-flex align-content-center">
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
                             </MudItem>
                         </MudGrid>
                     </MudForm>
