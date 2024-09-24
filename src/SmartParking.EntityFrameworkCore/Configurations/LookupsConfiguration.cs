@@ -110,7 +110,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<Emaraa>.Configure(EntityTypeBuilder<Emaraa> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
@@ -123,7 +124,8 @@ namespace SmartParking.Configurations
         void IEntityTypeConfiguration<State>.Configure(EntityTypeBuilder<State> builder)
         {
             builder.ConfigureByConvention();
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
