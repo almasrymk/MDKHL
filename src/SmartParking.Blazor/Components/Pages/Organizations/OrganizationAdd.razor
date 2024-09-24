@@ -1,4 +1,5 @@
 ﻿@page "/organizations/add"
+@using SmartParking.Blazor.Components.LookUps
 <PageTitle>Add Organization</PageTitle>
 <div>
     <MudGrid>
@@ -33,79 +34,20 @@
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <Countrylookups SelectValue="CountrySelectValue"></Countrylookups>
+                        <GovernorateLookUps SelectValue="GovernorateSelectValue"></GovernorateLookUps>
+                       
+                        <CityLookUps SelectValue="CitySelectValue"></CityLookUps>
                         <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label="Country"
-                                       Placeholder="Choose"
-                                       
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
-                                {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudTextField T="string" Placeholder="Type Here" Label="Contact Phone" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label="Governorate"
-                                       Placeholder="Choose"
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
-                                {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudTextField T="string" Placeholder="Type Here" Label="Whatsapp Num." />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label="City"
-                                       Placeholder="Choose"
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
-                                {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudTextField T="string" Placeholder="Type Here" Label="Contact Email" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label="Contact Phone"
-                                       Placeholder="Choose"
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
-                                {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label="Whatsapp Num."
-                                       Placeholder="Choose"
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
-                                {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label="Contact Email"
-                                       Placeholder="Choose"
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
-                                {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
+                       
                     </MudGrid>
                    
                     <div class="d-flex justify-content-between mt-auto">
