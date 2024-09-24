@@ -118,11 +118,19 @@
 
 
 		</DialogContent>
-
 		<DialogActions>
-			<MudButton OnClick="Cancel">Cancel</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">Edit</MudButton>
+			<MudGrid Class="ps-lg-5">
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">update</MudButton>
+				</MudItem>
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">Cancel</MudButton>
+				</MudItem>
+			</MudGrid>
 		</DialogActions>
+		
 	</MudDialog>
 
 </div>
