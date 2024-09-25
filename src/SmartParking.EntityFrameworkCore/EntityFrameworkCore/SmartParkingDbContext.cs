@@ -3,7 +3,9 @@ using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Vehicles;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -90,7 +92,15 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Emaraa> Emaraas { get; set; }
     public DbSet<State> States { get; set; }
-    [NotMapped]
+	public DbSet<Vehicle> Vehicles { get; set; }
+	public DbSet<VehicleModel> VehicleModels { get; set; }
+	public DbSet<VehicleBrand> VehicleBrands { get; set; }
+	public DbSet<LicenceType> LicenceTypes { get; set; }
+	public DbSet<PlateColor> PlateColors { get; set; }
+
+
+
+	[NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 
     #endregion
