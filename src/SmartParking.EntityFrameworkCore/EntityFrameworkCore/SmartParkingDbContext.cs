@@ -93,18 +93,13 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 
     #endregion
-    private readonly IConnectionStringResolver _connectionStringResolver;
-    private readonly ICurrentTenant _currentTenant;
-
-    public SmartParkingDbContext(
-        DbContextOptions<SmartParkingDbContext> options,
-        IConnectionStringResolver connectionStringResolver,
-        ICurrentTenant currentTenant)
+    public SmartParkingDbContext(DbContextOptions<SmartParkingDbContext> options)
         : base(options)
     {
-        _connectionStringResolver = connectionStringResolver;
-        _currentTenant = currentTenant;
+
     }
+
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
