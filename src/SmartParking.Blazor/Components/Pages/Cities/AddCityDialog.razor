@@ -1,4 +1,5 @@
-﻿@using SmartParking.Lookups
+﻿@using SmartParking.Blazor.Components.Lookups
+@using SmartParking.Lookups
 @using SmartParking.Lookups.City
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp
@@ -7,10 +8,10 @@
 @inject ISnackbar Snackbar
 
 
-<div class="modal-wrapper">
+<MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">New Government</MudText>
+            <MudText Typo="Typo.h6">New City</MudText>
         </TitleContent>
         <DialogContent>
 
@@ -40,20 +41,7 @@
                                       Variant="Variant.Text"
                                       Label="Notes" />
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudSelect @bind-Value="@input.GovernorateId"
-                                   Variant="Variant.Text"
-                                   Label="Governorate"
-                                   Placeholder="Please Select"
-                                   Clearable="_clearable"
-                                   AnchorOrigin="Origin.TopCenter"
-                                   TransformOrigin="Origin.TopCenter">
-                            @foreach (var city in cities)
-                            {
-                                <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
+                    <GovernorateLookups SelectValueChanged="SelectGovernment"></GovernorateLookups>
                 </MudGrid>
             </MudForm>
 
@@ -65,7 +53,7 @@
         </DialogActions>
     </MudDialog>
 
-</div>
+</MudItem>
 
 
 @code {
@@ -73,11 +61,17 @@
     private MudForm form;
     public CreateUpdateCityDto input = new CreateUpdateCityDto();
     public IReadOnlyList<GovernmentLookupDto> cities = new List<GovernmentLookupDto>();
+    private int GovernmentSelectValue { get; set; }
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
 
+
+    private void SelectGovernment(int Government)
+    {
+        GovernmentSelectValue = Government;
+    }
     protected override async Task OnInitializedAsync()
     {
         var result = await CitiesAppService.GetGovernmentLookupAsync();

@@ -1,4 +1,5 @@
-﻿@using SmartParking.Lookups
+﻿@using SmartParking.Blazor.Components.Lookups
+@using SmartParking.Lookups
 @using SmartParking.Lookups.City
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
@@ -26,23 +27,9 @@
 									  Variant="Variant.Text"
 									  Label="EnglishName" />
 					</MudItem>
-					
 
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@city.GovernorateId"
-								   Variant="Variant.Text"
-								   Label="Governorate"
-								   Placeholder="Please Select"
-								   Clearable="_clearable"
-								   AnchorOrigin="Origin.TopCenter"
-								   TransformOrigin="Origin.TopCenter">
 
-							@foreach (var government in governments)
-							{
-								<MudSelectItem Value="government.Id">@government.EnglishName</MudSelectItem>
-							}
-						</MudSelect>
-					</MudItem>
+					<GovernorateLookups SelectValueChanged="SelectGovernment"></GovernorateLookups>
 				</MudGrid>
 			</MudForm>
 		</DialogContent>
@@ -66,8 +53,15 @@
 	[Parameter] public CityDto city { get; set; } = new CityDto();
 	public IReadOnlyList<GovernmentLookupDto> governments { get; set; } = new List<GovernmentLookupDto>();
 	private MudForm editForm;
+	private int GovernmentSelectValue { get; set; }
+
 	bool _clearable;
 
+
+	private void SelectGovernment(int Government)
+	{
+		GovernmentSelectValue = Government;
+	}
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await CitiesAppService.GetGovernmentLookupAsync();

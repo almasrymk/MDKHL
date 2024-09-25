@@ -1,6 +1,6 @@
 ﻿@page "/organizations/add"
 @using Microsoft.AspNetCore.Identity
-@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Blazor.Components.Lookups
 @using SmartParking.Organizations
 @using Volo.Abp.Identity
 @layout Shared.ProfileLayout
@@ -49,7 +49,7 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
-                        <CityLookUps SelectValueChanged="SelectCity"></CityLookUps>
+                        <CityLookups SelectValueChanged="SelectCity"></CityLookups>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="Type Here" Label="Contact Phone" />
                         </MudItem>
