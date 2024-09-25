@@ -29,7 +29,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         _organizationsAppService = organizationsAppService;
     }
 
-    public IRepository<Garage, int> Repository { get; }
+
+    
 
     /// <summary>
     /// Method that used to create new garage to specific organization
@@ -47,9 +48,9 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
         }
         string code = organization.Code;
-        var numberOfGaragesForOrganization = _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId).Result.Count;
+        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
         // Checking criteria for package that organization subscribe.
-        input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization);
+        input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
         return await base.CreateAsync(input);
     }
     /// <summary>
@@ -74,14 +75,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         return Code;
     }
     /// <summary>
-    /// methods that deletes camera.
-    /// it takes camera id as parameter , checks if it exists
+    /// methods that deletes garage.
+    /// it takes garage id as parameter , checks if it exists
     /// if don't it throws an exception
     /// if exists it deletes it , changes its status to deleted
     /// </summary>
-    /// <param name="id">camera id</param>
-    /// <returns></returns>
-    /// <exception cref="EntityNotFoundException">exception thrown when camera isn't exist</exception>
+    /// <param name="id">garage id</param>
+    /// <returns>string</returns>
+    /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
     public new async Task<string> DeleteByIdAsync(int id)
     {
         var garage = await base.GetAsync(id);
@@ -96,72 +97,21 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             return EnumValues.GetEnumDescription(GarageValidations.GarageDeleteion);
         }
     }
-
     /// <summary>
-    /// method used to get list of organizations
+    /// A method used to update Garage
     /// </summary>
-    /// <param name="input">specifies max number of organization and if it sorted or not</param>
-    /// <returns>OrganizatioDto List</returns>
-    public async Task<PagedResultDto<GarageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    /// <param name="id">Id of garage</param>
+    /// <param name="input">Dto of updated garage</param>
+    /// <returns></returns>
+    /// <exception cref="EntityNotFoundException">An exception will be thrown if no organization id found in database</exception>
+
+    public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
     {
-        // Get the IQueryable<garage> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
+        if (organization == null)
         {
-
-            queryable = queryable.Where(or =>
-                or.Name.StartsWith(input.SearchingTerm) ||
-                or.Code.StartsWith(input.SearchingTerm) 
-            );
+            throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of garage entities
-        var garages = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the garage entities to garageDto objects
-        var garageDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
-        Console.WriteLine(garageDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<GarageDto>(
-            totalCount,
-            garageDto
-        );
-    }
-
-    /// <summary>
-    /// method used to get list of garages
-    /// </summary>
-    /// <param name="input">specifies max number of garage and if it filtered or not</param>
-    /// <returns>garageDto List</returns>
-    public async Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-        // Get the IQueryable<garage> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
-        var filterExpression = BuildExpression<Garage>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
-        {
-            queryable = queryable.Where(filterExpression);
-        }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of garages entities
-        var garages = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the garages entities to garageDto objects
-        var garageDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
-        // Return the paginated result
-        return new PagedResultDto<GarageDto>(
-            totalCount,
-            garageDto
-        );
+        return await base.UpdateAsync(id, input);
     }
 }

@@ -1,0 +1,155 @@
+﻿@using SmartParking.Cameras
+@using SmartParking.Enums
+@using Volo.Abp
+@inject IDialogService DialogService
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">New Government</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem sm="8">
+                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                    *@
+                    <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                        <MudGrid>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Name"
+                                              For="@(() => cameraDto.Name)"
+                                              Immediate="true"
+                                              Label="Name" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Model"
+                                              For="@(() => cameraDto.Model)"
+                                              Immediate="true"
+                                              Label="Model" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.MainType"
+                                              For="@(() => cameraDto.MainType)"
+                                              Immediate="true"
+                                              Label="MainType" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.BrandName"
+                                              For="@(() => cameraDto.BrandName)"
+                                              Immediate="true"
+                                              Label="BrandName" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Code"
+                                              For="@(() => cameraDto.Code)"
+                                              Immediate="true"
+                                              Label="Code" />
+
+                            </MudItem>
+                            <MudItem sm="4">
+                    <MudTextField @bind-Value="cameraDto.CameraIP"
+                                  For="@(() => cameraDto.CameraIP)"
+                                  Immediate="true"
+                                              Label="CameraIP" />
+
+                </MudItem>
+                            <MudItem sm="4">
+                    <MudTextField @bind-Value="cameraDto.MacAddress"
+                                  For="@(() => cameraDto.MacAddress)"
+                                  Immediate="true"
+                                              Label="MacAddress" />
+
+                </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="cameraDto.Type"
+                                              For="@(() => cameraDto.Type)"
+                                              Immediate="true"
+                                              Label="Type" />
+
+                            </MudItem>
+
+                      
+                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                                <div Class="d-flex flex-row justify-content-between">
+
+
+                                    <MudRadioGroup @bind-Value="@cameraDto.Status" Class="d-inline-flex align-content-center">
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                    @*         </MudPaper>
+                    *@
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudGrid Class="ps-lg-5">
+
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">Create</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">Cancel</MudButton>
+                </MudItem>
+            </MudGrid>
+        </DialogActions>
+        
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] ICamerasAppService CamerasAppService { get; set; } // Assuming you have a service to handle the camera creation
+
+    private MudForm form;
+    private CreateUpdateCameraDto cameraDto = new CreateUpdateCameraDto();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
+    private async Task Submit()
+    {
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            try
+            {
+                await CamerasAppService.CreateAsync(cameraDto);
+            }
+            catch (UserFriendlyException ex)
+            {
+                Snackbar.Add("DuplicateCameraIP", Severity.Error);
+                return;
+            }
+            catch(Exception e)
+            {
+                Snackbar.Add("Fill Items", Severity.Error);
+                return;
+            }
+            Snackbar.Add("Camera created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            
+        }
+        else
+        {
+            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+        }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
