@@ -18,9 +18,9 @@ public class StateDataSeeder : IDataSeedContributor, ITransientDependency
         {
             var StateList = new List<State>
                 {
-                    new State { ArabicName="test", EnglishName = "test", EmaraaId = 1, Status = Status.Active },
-                    new State { ArabicName="test", EnglishName = "test", EmaraaId = 2, Status = Status.Active },
-                    new State { ArabicName="test", EnglishName = "test", EmaraaId = 3, Status = Status.Active },
+                    new State { ArabicName="test", EnglishName = "test", RegionId = 1, Status = Status.Active },
+                    new State { ArabicName="test", EnglishName = "test", RegionId = 2, Status = Status.Active },
+                    new State { ArabicName="test", EnglishName = "test", RegionId = 3, Status = Status.Active },
             };
 
             foreach (var State in StateList)
