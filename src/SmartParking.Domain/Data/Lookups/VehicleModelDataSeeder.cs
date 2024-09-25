@@ -28,24 +28,24 @@ public class VehicleModelDataSeeder : IDataSeedContributor, ITransientDependency
 			var vehicleModels = new List<VehicleModel>
 			{
                     // Models for Honda (VehicleBrandId = 1)
-                    new VehicleModel { Id = 1, EnglishName = "Civic", ArabicName = "سيفيك", VehiclesBrandId = 1 },
-				new VehicleModel { Id = 2, EnglishName = "Accord", ArabicName = "أكورد", VehiclesBrandId = 1 },
+                    new VehicleModel {  EnglishName = "Civic", ArabicName = "سيفيك", VehiclesBrandId = 1 },
+				new VehicleModel {  EnglishName = "Accord", ArabicName = "أكورد", VehiclesBrandId = 1 },
 
                     // Models for Toyota (VehicleBrandId = 2)
-                    new VehicleModel { Id = 3, EnglishName = "Corolla", ArabicName = "كورولا", VehiclesBrandId = 2 },
-				new VehicleModel { Id = 4, EnglishName = "Camry", ArabicName = "كامري", VehiclesBrandId = 2 },
+                    new VehicleModel {EnglishName = "Corolla", ArabicName = "كورولا", VehiclesBrandId = 2 },
+				new VehicleModel { EnglishName = "Camry", ArabicName = "كامري", VehiclesBrandId = 2 },
 
                     // Models for Tesla (VehicleBrandId = 3)
-                    new VehicleModel { Id = 5, EnglishName = "Model S", ArabicName = "موديل اس", VehiclesBrandId = 3 },
-				new VehicleModel { Id = 6, EnglishName = "Model 3", ArabicName = "موديل 3", VehiclesBrandId = 3 },
+                    new VehicleModel {EnglishName = "Model S", ArabicName = "موديل اس", VehiclesBrandId = 3 },
+				new VehicleModel { EnglishName = "Model 3", ArabicName = "موديل 3", VehiclesBrandId = 3 },
 
                     // Models for Ford (VehicleBrandId = 4)
-                    new VehicleModel { Id = 7, EnglishName = "Mustang", ArabicName = "موستانغ", VehiclesBrandId = 4 },
-				new VehicleModel { Id = 8, EnglishName = "F-150", ArabicName = "اف-150", VehiclesBrandId = 4 },
+                    new VehicleModel { EnglishName = "Mustang", ArabicName = "موستانغ", VehiclesBrandId = 4 },
+				new VehicleModel {  EnglishName = "F-150", ArabicName = "اف-150", VehiclesBrandId = 4 },
 
                     // Models for BMW (VehicleBrandId = 5)
-                    new VehicleModel { Id = 9, EnglishName = "X5", ArabicName = "اكس 5", VehiclesBrandId = 5 },
-				new VehicleModel { Id = 10, EnglishName = "3 Series", ArabicName = "سلسلة 3", VehiclesBrandId = 5 }
+                    new VehicleModel {  EnglishName = "X5", ArabicName = "اكس 5", VehiclesBrandId = 5 },
+				new VehicleModel {  EnglishName = "3 Series", ArabicName = "سلسلة 3", VehiclesBrandId = 5 }
 			};
 
 			// Insert the vehicle models into the repository

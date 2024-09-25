@@ -27,11 +27,11 @@ public class VehicleBrandDataSeeder : IDataSeedContributor, ITransientDependency
 			// Define the list of vehicle brands to seed
 			var vehicleBrands = new List<VehicleBrand>
 			{
-				new VehicleBrand { Id = 1, EnglishName = "Honda", ArabicName = "هوندا" },
-				new VehicleBrand { Id = 2, EnglishName = "Toyota", ArabicName = "تويوتا" },
-				new VehicleBrand { Id = 3, EnglishName = "Tesla", ArabicName = "تسلا" },
-				new VehicleBrand { Id = 4, EnglishName = "Ford", ArabicName = "فورد" },
-				new VehicleBrand { Id = 5, EnglishName = "BMW", ArabicName = "بي إم دبليو" }
+				new VehicleBrand { EnglishName = "Honda", ArabicName = "هوندا" },
+				new VehicleBrand { EnglishName = "Toyota", ArabicName = "تويوتا" },
+				new VehicleBrand { EnglishName = "Tesla", ArabicName = "تسلا" },
+				new VehicleBrand { EnglishName = "Ford", ArabicName = "فورد" },
+				new VehicleBrand { EnglishName = "BMW", ArabicName = "بي إم دبليو" }
 			};
 
 			// Insert the vehicle brands into the repository

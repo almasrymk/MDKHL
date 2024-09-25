@@ -27,11 +27,11 @@ public class PlateColorDataSeeder : IDataSeedContributor, ITransientDependency
 			// Define the list of plate colors to seed
 			var plateColors = new List<PlateColor>
 			{
-				new PlateColor { Id = 1, EnglishName = "Red", ArabicName = "أحمر" },
-				new PlateColor { Id = 2, EnglishName = "Blue", ArabicName = "أزرق" },
-				new PlateColor { Id = 3, EnglishName = "Green", ArabicName = "أخضر" },
-				new PlateColor { Id = 4, EnglishName = "Yellow", ArabicName = "أصفر" },
-				new PlateColor { Id = 5, EnglishName = "White", ArabicName = "أبيض" }
+				new PlateColor {  EnglishName = "Red", ArabicName = "أحمر" },
+				new PlateColor {  EnglishName = "Blue", ArabicName = "أزرق" },
+				new PlateColor {  EnglishName = "Green", ArabicName = "أخضر" },
+				new PlateColor {  EnglishName = "Yellow", ArabicName = "أصفر" },
+				new PlateColor {  EnglishName = "White", ArabicName = "أبيض" }
 			};
 
 			// Insert the plate colors into the repository

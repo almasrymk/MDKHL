@@ -709,7 +709,7 @@ namespace SmartParking.Migrations
                     b.ToTable("VehicleBrands");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Organizations.ContactInfo", b =>
+           // modelBuilder.Entity("SmartParking.Entities.Organizations.ContactInfo", b =>
             modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.VehicleModel", b =>
                 {
                     b.Property<int>("Id")
