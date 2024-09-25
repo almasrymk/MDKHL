@@ -22,19 +22,7 @@ public class Customer : FullAuditedEntity<Guid> , IMultiTenant
     public string OTP { get; set; } = "123456";
     public IdentificationTypes IdentificationTypes { get; set; }
     public string NationalId { get; set; }
-    public virtual ICollection<Vehicle> Vehicles { get; set; }
     public virtual ICollection<Organization> Organizations { get; set; }
 
     public Guid? TenantId { get; set; }
-}
-
-public class Vehicle : BaseEntity
-{
-   
-    public string LicensePlate { get; set; }
-    public string Model { get; set; }
-    public string Make { get; set; }
-    public int Year { get; set; }
-    public Guid CustomerId { get; set; }
-    public  virtual Customer Customer { get; set; }
 }

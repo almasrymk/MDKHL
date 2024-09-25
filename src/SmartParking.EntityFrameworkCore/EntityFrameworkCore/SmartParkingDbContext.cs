@@ -73,12 +73,13 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
     public DbSet<DefaultPackage> DefaultPackages { get; set; }
     public DbSet<GarageCategories> GarageCategories { get; set; }
-    public DbSet<Subscription> Subscriptions { get; set; }
+   // public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
     public DbSet<PackageCategory> PackageCategories { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+
 
 
 
@@ -96,7 +97,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Emaraa> Emaraas { get; set; }
     public DbSet<State> States { get; set; }
-	public DbSet<Vehicle> Vehicles { get; set; }
 	public DbSet<VehicleModel> VehicleModels { get; set; }
 	public DbSet<VehicleBrand> VehicleBrands { get; set; }
 	public DbSet<LicenceType> LicenceTypes { get; set; }
