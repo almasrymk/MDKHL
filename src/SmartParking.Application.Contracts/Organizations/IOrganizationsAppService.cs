@@ -47,4 +47,17 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <returns>successfull message of deletion</returns>
     Task<string> DeleteByIdAsync(int id);
 
+    /// <summary>
+    /// abstract method to search of organizations
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it sorted or not and search term</param>
+    /// <returns>Organization Dto</returns>
+    public Task<PagedResultDto<OrganizationDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+
+    /// <summary>
+    /// abstract method to filter of organizations
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it sorted or not and filter</param>
+    /// <returns>Organization Dto</returns>
+    public Task<PagedResultDto<OrganizationDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 }

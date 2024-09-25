@@ -24,13 +24,12 @@ namespace SmartParking.Data.Lookups;
         {
             var emaraat = new List<Emaraa>
             {
-                new Emaraa {Id = 1, CountryId = 1,  ArabicName="test", EnglishName = "test",  Status = Status.Active },
-                new Emaraa {Id = 2, CountryId = 2, ArabicName="test", EnglishName = "test", Status = Status.Inactive},
-                new Emaraa {Id = 3, CountryId = 3, ArabicName="test", EnglishName = "test", Status = Status.Active},
+                new Emaraa {  ArabicName="test", EnglishName = "test",  Status = Status.Active,CountryId = 1 },
+                new Emaraa { ArabicName="test", EnglishName = "test", Status = Status.Inactive,CountryId = 2},
+                new Emaraa { ArabicName="test", EnglishName = "test", Status = Status.Active,CountryId = 3},
 
         
             };
-
             foreach (var emaraa in emaraat)
             {
                 await _emaraaRepository.InsertAsync(emaraa);

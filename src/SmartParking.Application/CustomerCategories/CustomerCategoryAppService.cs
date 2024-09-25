@@ -18,6 +18,7 @@ namespace SmartParking.CustomerCategories;
 public class CustomerCategoryAppService : CrudAppService<CustomerCategory, CustomerCategoryDto, int, PagedAndSortedResultRequestDto, CreateUpdateCutomerCategoryDto>, ICustomerCategoryAppService
 {
     private readonly IRepository<CustomerCategory, int> _repository;
+    private List<Organization> organizations;
 
     public CustomerCategoryAppService(IRepository<CustomerCategory, int> repository) : base(repository)
     {
@@ -84,5 +85,73 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         }
 
         await base.DeleteAsync(id);
+    }
+
+    /// <summary>
+    /// method used to get list of customer category
+    /// </summary>
+    /// <param name="input">specifies max number of customer category and if it sorted or not</param>
+    /// <returns>customer categoryDto List</returns>
+    public async Task<PagedResultDto<CustomerCategoryDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        // Get the IQueryable<customer category> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply search filtering
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.Name.StartsWith(input.SearchingTerm) ||
+                or.Description.StartsWith(input.SearchingTerm) ||
+                or.Organization.EnglishName.StartsWith(input.SearchingTerm) 
+            );
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of customer category entities
+        var customerCategories = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the hotel entities to customerCategoriesDto objects
+        var customerCategoriesDto = ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(customerCategories);
+        // Return the paginated result
+        return new PagedResultDto<CustomerCategoryDto>(
+            totalCount,
+            customerCategoriesDto
+        );
+    }
+
+    /// <summary>
+    /// method used to get list of customerCategories
+    /// </summary>
+    /// <param name="input">specifies max number of customerCategories and if it filtered or not</param>
+    /// <returns>customerCategoriesDto List</returns>
+    public async Task<PagedResultDto<CustomerCategoryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        // Get the IQueryable<customerCategories> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply filtering
+        var filterExpression = BuildExpression<CustomerCategory>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of customerCategories entities
+        var customerCategories = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the customerCategories entities to customerCategoriesDto objects
+        var customerCategoriesDto = ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(customerCategories);
+        // Return the paginated result
+        return new PagedResultDto<CustomerCategoryDto>(
+            totalCount,
+            customerCategoriesDto
+        );
     }
 }

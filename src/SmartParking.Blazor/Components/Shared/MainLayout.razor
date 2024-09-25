@@ -1,4 +1,11 @@
-﻿@inherits LayoutComponentBase;
+﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
+@using SmartParking.Blazor.Components.Ui
+@using SmartParking.Localization
+@using Volo.Abp.Localization
+@using Volo.Abp.SettingManagement
+@inherits LayoutComponentBase;
+@inject IStringLocalizer<SmartParkingResource> L
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -12,17 +19,25 @@
             <Image Source="images/logo/logo.png" />
         </MudItem>
         <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
-           <div class="d-flex flex-column justify-center">
+            <div class="d-flex flex-column justify-center">
                 <h2>
-                    Dashboard
+                    @L["Dashboard"]
                 </h2>
                 <SPBreadcrumb />
-           </div>
+            </div>
             <div class="d-flex gap-3 align-center flex-wrap">
-               <SPSearch />
-                <MudImage src="images/svgs/notification.svg" Width="24" Height="24"/>
+                <SPSearch />
+                <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />
                 <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
-               <div class="d-flex align-center gap-2">
+                <MudMenu Icon="@Icons.Material.Filled.Language" Label="Language">
+                    @foreach (var language in _localizationOptions.Value.Languages)
+                    {
+                        <MudMenuItem OnClick="@(() => ChangeLanguage(language.CultureName))">
+                            <MudText>@language.DisplayName</MudText>
+                        </MudMenuItem>
+                    }
+                </MudMenu>
+                <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
                         <MudImage src="images/avatar.png" Width="49" Height="49" />
                     </MudAvatar>
@@ -31,8 +46,8 @@
                         <p class="mb-0 fw-bold">MOHAMED AHMED</p>
                         <Link Class="text-white border-bottom">Profile Details</Link>
                     </div>
-               </div>
-           </div>
+                </div>
+            </div>
         </MudItem>
 
     </header>
@@ -48,6 +63,16 @@
 </div>
 
 @code {
+    [Inject] private IOptions<AbpLocalizationOptions> _localizationOptions { get; set; }
+    [Inject] private NavigationManager Navigation { get; set; }
+
+    private void ChangeLanguage(string cultureName)
+    {
+        var uri =  Navigation.Uri.ToString();
+         uri = uri+"/?culture=" + cultureName + "&ui-culture=" + cultureName;
+        Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
+        Console.WriteLine(uri);
+    }
     MudTheme SPCustomTheme = new MudTheme()
         {
             PaletteLight = new PaletteLight()
@@ -60,6 +85,5 @@
                 Success = "#28BA24",
                 White = "FFFFFF"
             },
-           
         };
 }

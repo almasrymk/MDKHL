@@ -1,0 +1,90 @@
+﻿@using SmartParking.Garages
+@inject ISnackbar Snackbar
+@inject IGarageAppService GarageAppService
+
+<div class="modal-wrapper">
+
+    <MudDialog Class="mud-modal" >
+        <TitleContent>
+            <MudText Typo="Typo.h6">Update Garage for @Garage.Name</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem Class="w-100">
+
+                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+
+                    *@
+                    <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                        <MudGrid>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.Name"
+                                              For="@(() => Garage.Name)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="Garage name" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.MaxCapacity"
+                                              For="@(() => Garage.MaxCapacity)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Immediate="true"
+                                              Label="Garage Max Capacity" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.Code"
+                                              For="@(() => Garage.Code)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="Garage Code"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTimePicker @bind-Time="_time"
+                                               Variant="Variant.Text"
+                                               Class="w-100"
+                                               Label="Closing Hours" />
+                            </MudItem>
+
+                            <MudItem sm="6" md="6">
+
+                                <MudRadioGroup @bind-Value="@Garage.Status">
+                                    <div Class="d-flex flex-row justify-content-between">
+
+
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                    </div>
+                                </MudRadioGroup>
+                            </MudItem>
+                            @*         </MudPaper>
+
+                            *@
+                        </MudGrid>
+                    </MudForm>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudGrid Class="ps-lg-5">
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary"  OnClick="@(async () => await SubmitEdit())">update</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@(async () => await CancelEdit())">Cancel</MudButton>
+                </MudItem>
+            </MudGrid>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

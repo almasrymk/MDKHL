@@ -1,0 +1,59 @@
+﻿@page "/countries"
+@using Customs
+@using SmartParking.Lookups
+@using Volo.Abp.Application.Dtos
+@inherits AbpCrudPageBase<ICountriesAppService, CountryDto, int, PagedAndSortedResultRequestDto, CreateUpdateCountryDto>
+@inject IDialogService Dialog
+
+
+
+<MudItem>
+    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="CountryDto" MultiSelection="true" Items="countries" SortMode="SortMode.Multiple" Filterable="true">
+        <ToolBarContent>
+            <MudItem Class="d-flex justify-content-end">
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateCountryDialog(_backdropClick))">
+
+                CREATE NEW
+                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
+            </MudButton>
+            </MudItem>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="GovernorateDto" />
+            <PropertyColumn Property="x => x.ArabicName" Title="Government Arabic Name" />
+            <PropertyColumn Property="x => x.EnglishName" Title="Government English Name" />
+            <PropertyColumn Property="x => x.ArabicCapital" Title="Country Arabic Name" />
+            <PropertyColumn Property="x => x.EnglishCapital" Title="Country English Name" />
+            <TemplateColumn Title="Actions">
+                <CellTemplate >
+                    <MudItem Class="d-flex justify-content-center align-items-center">
+                        <MudIconButton 
+                                       OnClick="@(() => OpenDetailsCountryDialog(context.Item))"
+                                       Icon="@Icons.Material.Filled.Info"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Primary"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                        <MudIconButton OnClick="@(() => OpenEditCountryDialog(context.Item))"
+                                       Icon="@Icons.Material.Filled.Edit"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Secondary"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Error"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                    </MudItem>
+                    
+                </CellTemplate>
+            </TemplateColumn>
+
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="CountryDto" />
+        </PagerContent>
+    </MudDataGrid>
+</MudItem>
+
