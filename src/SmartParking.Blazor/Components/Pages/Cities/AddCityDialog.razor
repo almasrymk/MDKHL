@@ -80,12 +80,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await CitiesAppService.GetGovernmentLookupAsync(new PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = (1 - 1) * 100
-            });
-        cities = result.Items.ToList();
+        var result = await CitiesAppService.GetGovernmentLookupAsync();
+        cities = result;
     }
     private async Task Submit()
     {

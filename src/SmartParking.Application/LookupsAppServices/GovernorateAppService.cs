@@ -25,16 +25,12 @@ namespace SmartParking.LookupsAppServices
             _countryRepository = countryRepository;
         }
 
-        public async Task<PagedResultDto<CountryLookupDto>> GetCountryLookupAsync(PagedAndSortedResultRequestDto input)
+        public async Task<List<CountryLookupDto>> GetCountryLookupAsync()
         {
             var countries = await _countryRepository.GetListAsync();
             var countryList = ObjectMapper.Map<List<Country>, List<CountryLookupDto>>(countries)
 ;
-            return new PagedResultDto<CountryLookupDto>
-            {
-                Items = countryList,
-                TotalCount = countries.Count,
-            };
+            return countryList;
            
         }
     }
