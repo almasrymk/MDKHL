@@ -240,6 +240,64 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<int>("IdentificationTypes")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("IdentityUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("NationalId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OTP")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentityUserId");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Customers.Vehicle", b =>
+                {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
@@ -256,6 +314,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
@@ -282,16 +343,27 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("LicensePlate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Make")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Feature", b =>
@@ -1056,6 +1128,32 @@ namespace SmartParking.Migrations
                     b.ToTable("Garages");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GarageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("GarageId");
+
+                    b.ToTable("GarageCategories");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -1090,6 +1188,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
@@ -1146,6 +1247,8 @@ namespace SmartParking.Migrations
                     b.HasIndex("CityId");
 
                     b.HasIndex("CountryId");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("EmaraaId");
 
@@ -3464,6 +3567,26 @@ namespace SmartParking.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
+                {
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", "IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("IdentityUserId");
+
+                    b.Navigation("IdentityUser");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Customers.Vehicle", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
                 {
                     b.HasOne("SmartParking.Entities.Country", "Country")
@@ -3544,6 +3667,21 @@ namespace SmartParking.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Organizations.Category", null)
+                        .WithMany("GarageCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Organizations.Garage", null)
+                        .WithMany("GarageCategories")
+                        .HasForeignKey("GarageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
                 {
                     b.HasOne("SmartParking.Entities.City", "City")
@@ -3557,6 +3695,10 @@ namespace SmartParking.Migrations
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Customers.Customer", null)
+                        .WithMany("Organizations")
+                        .HasForeignKey("CustomerId");
 
                     b.HasOne("SmartParking.Entities.Lookups.Emaraa", "Emaraa")
                         .WithMany("Organizations")
@@ -3800,6 +3942,13 @@ namespace SmartParking.Migrations
                     b.Navigation("Governorates");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
+                {
+                    b.Navigation("Organizations");
+
+                    b.Navigation("Vehicles");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
                 {
                     b.Navigation("Cities");
@@ -3820,6 +3969,16 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", b =>
                 {
                     b.Navigation("Models");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Category", b =>
+                {
+                    b.Navigation("GarageCategories");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
+                {
+                    b.Navigation("GarageCategories");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>

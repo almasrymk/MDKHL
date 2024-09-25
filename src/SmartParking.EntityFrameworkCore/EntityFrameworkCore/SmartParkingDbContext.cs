@@ -50,6 +50,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
 
     //Identity
 
+    
     public DbSet<IdentityUser> Users { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<IdentityClaimType> ClaimTypes { get; set; }
@@ -71,7 +72,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
     public DbSet<DefaultPackage> DefaultPackages { get; set; }
+    public DbSet<GarageCategories> GarageCategories { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
     public DbSet<PackageCategory> PackageCategories { get; set; }
