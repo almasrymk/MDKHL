@@ -10,11 +10,11 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Data.Lookups;
 
-//public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
-//{
-//    private readonly IRepository<Governorate, int> _governorateRepository;
+public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
+{
+    private readonly IRepository<Governorate, int> _governorateRepository;
 
-        public async Task SeedAsync(DataSeedContext context)
+    public async Task SeedAsync(DataSeedContext context)
         {
             if (!await _governorateRepository.AnyAsync())
             {
@@ -52,4 +52,4 @@ namespace SmartParking.Data.Lookups;
             }
         }
     }
-}
+

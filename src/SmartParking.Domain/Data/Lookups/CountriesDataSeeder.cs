@@ -7,11 +7,11 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Data.Lookups;
 
-//public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
-//{
-//    private readonly IRepository<Country, int> _countryRepository;
+public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
+{
+    private readonly IRepository<Country, int> _countryRepository;
 
-        public async Task SeedAsync(DataSeedContext context)
+    public async Task SeedAsync(DataSeedContext context)
         {
             if (!await _countryRepository.AnyAsync())
             {
@@ -211,8 +211,8 @@ namespace SmartParking.Data.Lookups;
                     new Country {EnglishName = "Zimbabwe", ArabicName = "زيمبابوى", EnglishCapital = "Harare", ArabicCapital = "هرارى" }
                 };
 
-//            await this._countryRepository.InsertManyAsync(countries);
-//        }
-//    }
-//}
+        await this._countryRepository.InsertManyAsync(countries);
+    }
+}
+}
        
