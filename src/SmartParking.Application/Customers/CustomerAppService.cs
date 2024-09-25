@@ -13,6 +13,8 @@ using Volo.Abp.Identity;
 using Microsoft.AspNetCore.Identity;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using Volo.Abp.Data;
+using Abp.ObjectComparators.BooleanComparators;
+using System.ComponentModel;
 
 namespace SmartParking.Customers;
 
@@ -71,7 +73,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         try
         {
 
-            await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            if (! (await CheckIfPhoneNumberIsUnique(input.MobileNumber)))
+            {
+                throw new Exception("Phone Number is used");
+
+            }
+            var result = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            if (!result.Succeeded) { 
+                    throw new Exception( FormatErrorMessage(result) );
+            }
             await _userManager.UpdateSecurityStampAsync(customer.IdentityUser);
             await _repository.InsertAsync(customer);
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
@@ -84,6 +94,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             throw new UserFriendlyException("Registration failed: " + ex.Message);
         }
+    }
+    /// <summary>
+    /// Method used to fromat messages that has been thrown in exception
+    /// </summary>
+    /// <param name="result">IdentityResult type that has message</param>
+    /// <returns>String of contains message</returns>
+    public string FormatErrorMessage(IdentityResult result)
+    {
+        string message = string.Empty;
+        foreach (var error in result.Errors)
+        {
+            message += error.Description;
+        }
+        return message;
     }
 
 
@@ -109,4 +133,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return false;
 
     }
+
+    public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber) 
+    {
+
+        var result = await _repository.CountAsync(x => x.IdentityUser.PhoneNumber == phoneNumber);
+        if (result == 0) {
+            return true;
+        
+        }
+        return false;
+
+    }
+    
+
 }
