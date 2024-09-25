@@ -1,13 +1,9 @@
 ﻿using SmartParking.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SmartParking.Entities.Organizations;
+namespace SmartParking.DefaultPackages;
 
-public class Subscription : BaseEntity
+public class DefaultPackageDto :BaseDto
 {
     public decimal FirstHourPrice { get; set; }
     public decimal SecoundHourPrice { get; set; }
@@ -18,6 +14,5 @@ public class Subscription : BaseEntity
     public int NumberOfHours { get; set; }
     public bool IsFullDayExceeded { get; set; }
     public TimeOnly ExceededTime { get; set; }
-
     public Status Status { get; set; }
 }

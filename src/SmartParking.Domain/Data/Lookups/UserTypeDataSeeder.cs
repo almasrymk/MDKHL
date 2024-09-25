@@ -22,9 +22,9 @@ namespace SmartParking.Data
             {
                 var userTypes = new List<UserType>
                 {
-                    new UserType { Id=1,  EnglishName = "Smart Admin", ArabicName = " مدبر النظام" , },
-                    new UserType { Id=2, EnglishName = "Hotel Admin", ArabicName = "مدير الفندق" },
-                    new UserType { Id=3, EnglishName = "Customer", ArabicName = "عميل"}
+                    new UserType { EnglishName = "Smart Admin", ArabicName = " مدبر النظام" , },
+                    new UserType { EnglishName = "Hotel Admin", ArabicName = "مدير الفندق" },
+                    new UserType { EnglishName = "Customer", ArabicName = "عميل"}
                 };
              
                 await this._userTypeRepository.InsertManyAsync(userTypes);

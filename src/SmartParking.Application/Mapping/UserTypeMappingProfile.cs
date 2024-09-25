@@ -4,9 +4,9 @@ using SmartParking.Lookups;
 
 namespace SmartParking.Mapping
 {
-    public class UserTypeMapping : Profile
+    public class UserTypeMappingProfile : Profile
     {
-        public UserTypeMapping()
+        public UserTypeMappingProfile()
         {
             CreateMap<UserType, UserTypeDto>();
             CreateMap<CreateUpdateUserTypeDto, UserType>();
