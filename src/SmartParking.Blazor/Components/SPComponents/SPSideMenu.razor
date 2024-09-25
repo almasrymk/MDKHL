@@ -3,7 +3,7 @@
     <MudDrawerContainer Class="mud-height-full" >
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
-                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">Dashboard</MudNavLink>
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">Dashboard</MudNavLink>
                 <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">Organizations</MudNavLink>
                 <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.Group">My Account</MudNavLink>
                 <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="false">
