@@ -1,13 +1,16 @@
 ﻿using MudBlazor;
+using SmartParking.Cutomers;
+using SmartParking.Entities.Customers;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Identity;
 using Volo.Abp.Validation;
-
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationAdd
@@ -68,10 +71,20 @@ public partial class OrganizationAdd
             PhoneNum = PhoneNum,
             WhatsAppNum = WhatsAppNum,
         };
-
+        IdentityUserCreateDto user = new IdentityUserCreateDto()
+        {
+            UserName = EnglishName,
+            PhoneNumber = WhatsAppNum,
+            Email = ContactMail,
+            Password = "P@ssw0rd",
+            
+        };
+        
         try
         {
-            var organization = await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
+            await IdentityUserAppService.CreateAsync(user);
+            await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
+            
             ShowSnackbar("Add Successfully You Can Login Your Password Is P@ssw0rd", Severity.Success);
         }
         catch (AbpValidationException validationException)
@@ -86,11 +99,15 @@ public partial class OrganizationAdd
        
             ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
         }
-        catch (Exception ex)
-        {
+        //catch(AuthenticationException ex) 
+        //{
+        //    ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        //}
+        //catch (Exception ex)
+        //{
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
-        }
+        //    ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        //}
     }
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.

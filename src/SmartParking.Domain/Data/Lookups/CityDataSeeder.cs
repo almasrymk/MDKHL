@@ -25,8 +25,8 @@ namespace SmartParking.Data.Lookups
                     new City { ArabicName="test", EnglishName = "test", GovernorateId = 1 },
                     new City { ArabicName="test", EnglishName = "test", GovernorateId = 2 },
                     new City {  ArabicName="test", EnglishName = "test", GovernorateId = 3 },
-              
-                
+
+
                 };
 
                 foreach (var city in cities)

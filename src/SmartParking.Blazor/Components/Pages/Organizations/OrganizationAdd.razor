@@ -1,9 +1,13 @@
 ﻿@page "/organizations/add"
+@using Microsoft.AspNetCore.Identity
 @using SmartParking.Blazor.Components.LookUps
 @using SmartParking.Organizations
+@using Volo.Abp.Identity
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
+@inject IIdentityUserAppService IdentityUserAppService;
+@inject  UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 <PageTitle>Add Organization</PageTitle>
 <div>
     <MudGrid>
