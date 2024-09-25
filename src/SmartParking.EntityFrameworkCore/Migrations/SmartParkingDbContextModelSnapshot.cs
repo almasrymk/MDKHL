@@ -12,7 +12,16 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
+<<<<<<< HEAD
     partial class SmartParkingDbContextModelSnapshot : ModelSnapshot
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+    [Migration("20240917114405_enhanceCategory")]
+    partial class enhanceCategory
+========
+    partial class SmartParkingDbContextModelSnapshot : ModelSnapshot
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+>>>>>>> FixTenantIssue
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -32,15 +41,19 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+<<<<<<< HEAD
                     b.Property<string>("BrandName")
                         .HasColumnType("text");
 
+=======
+>>>>>>> FixTenantIssue
                     b.Property<string>("CameraIP")
                         .HasColumnType("text");
 
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
+<<<<<<< HEAD
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CreationTime");
@@ -87,15 +100,24 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("OrganizationId")
+=======
+                    b.Property<int>("OrganizationGarageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrganizationId")
+>>>>>>> FixTenantIssue
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+<<<<<<< HEAD
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
+=======
+>>>>>>> FixTenantIssue
                     b.Property<string>("Type")
                         .HasColumnType("text");
 
@@ -117,7 +139,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -129,7 +155,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<int>("EmaraaId")
@@ -149,7 +179,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -184,7 +218,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -196,7 +234,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishCapital")
@@ -213,7 +255,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -244,7 +290,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -256,7 +306,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishName")
@@ -269,7 +323,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -303,7 +361,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -315,7 +377,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishDescription")
@@ -333,7 +399,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -366,7 +436,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -378,7 +452,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishCapital")
@@ -395,7 +473,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -427,7 +509,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -439,7 +525,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishName")
@@ -453,7 +543,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -483,7 +577,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -495,7 +593,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<int>("EmaraaId")
@@ -504,6 +606,10 @@ namespace SmartParking.Migrations
                     b.Property<string>("EnglishName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+>>>>>>> FixTenantIssue
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -512,7 +618,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -533,6 +643,73 @@ namespace SmartParking.Migrations
                     b.ToTable("State", (string)null);
                 });
 
+<<<<<<< HEAD
+=======
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+>>>>>>> FixTenantIssue
             modelBuilder.Entity("SmartParking.Entities.Organizations.ContactInfo", b =>
                 {
                     b.Property<int>("Id")
@@ -545,7 +722,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -557,7 +738,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<bool>("IsDeleted")
@@ -567,7 +752,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -600,7 +789,15 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("OrganizationId");
 
+<<<<<<< HEAD
                     b.ToTable("ContactInfos");
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+                    b.ToTable("ContactInfos");
+========
+                    b.ToTable("Stats", (string)null);
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+>>>>>>> FixTenantIssue
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerCategory", b =>
@@ -612,7 +809,11 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -627,7 +828,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("Description")
@@ -640,7 +845,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -663,7 +872,14 @@ namespace SmartParking.Migrations
                     b.ToTable("CustomerCategories");
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("SmartParking.Entities.Organizations.DefaultPackage", b =>
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
+========
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
+>>>>>>> FixTenantIssue
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -671,6 +887,7 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+<<<<<<< HEAD
                     b.Property<decimal>("AdditionalHourPrice")
                         .HasColumnType("numeric");
 
@@ -679,6 +896,29 @@ namespace SmartParking.Migrations
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly>("CRExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<string>("ContactMail")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -690,6 +930,7 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("DeletionTime");
 
@@ -705,12 +946,24 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("Fullday")
                         .HasColumnType("numeric");
 
+=======
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<int>("EmaraaId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+>>>>>>> FixTenantIssue
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+<<<<<<< HEAD
                     b.Property<bool>("IsFullDayExceeded")
                         .HasColumnType("boolean");
 
@@ -719,12 +972,17 @@ namespace SmartParking.Migrations
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+<<<<<<< HEAD
                     b.Property<int>("NumberOfHours")
                         .HasColumnType("integer");
 
@@ -736,25 +994,176 @@ namespace SmartParking.Migrations
 
                     b.Property<decimal>("SecoundHourPrice")
                         .HasColumnType("numeric");
+=======
+                    b.Property<DateOnly>("LicenseExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNum")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StatsId")
+                        .HasColumnType("integer");
+>>>>>>> FixTenantIssue
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+<<<<<<< HEAD
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
                     b.Property<decimal>("ThirdHourPrice")
                         .HasColumnType("numeric");
+=======
+                    b.Property<string>("UnifiedLicenseNum")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WhatsAppNum")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("EmaraaId");
+
+                    b.HasIndex("StatsId");
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.OrganizationCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrganizationCategories");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.OrganizationContactInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContactMail")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NationalityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PhoneNum")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WhatsAppNum")
+                        .HasColumnType("text");
+>>>>>>> FixTenantIssue
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrganizationId");
 
+<<<<<<< HEAD
                     b.ToTable("DefaultPackages");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
+=======
+                    b.ToTable("OrganizationContactInfos");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.OrganizationCustomers", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrganizationCustomers");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.OrganizationGarage", b =>
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+>>>>>>> FixTenantIssue
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -769,7 +1178,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -781,7 +1194,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<bool>("IsDeleted")
@@ -791,7 +1208,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -849,7 +1270,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -861,7 +1286,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<int>("EmaraaId")
@@ -877,7 +1306,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -972,7 +1405,11 @@ namespace SmartParking.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ActivationDate")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<string>("ActivedBy")
                         .HasColumnType("text");
@@ -983,14 +1420,27 @@ namespace SmartParking.Migrations
                     b.Property<int>("CategoriesId")
                         .HasColumnType("integer");
 
+<<<<<<< HEAD
+=======
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
+>>>>>>> FixTenantIssue
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -1001,14 +1451,22 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DectivationDate")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("Description")
@@ -1024,7 +1482,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -1034,9 +1496,12 @@ namespace SmartParking.Migrations
                     b.Property<int?>("OrganizationId")
                         .HasColumnType("integer");
 
+<<<<<<< HEAD
                     b.Property<int>("OrgnizationId")
                         .HasColumnType("integer");
 
+=======
+>>>>>>> FixTenantIssue
                     b.Property<int>("PackageTypeId")
                         .HasColumnType("integer");
 
@@ -1044,10 +1509,17 @@ namespace SmartParking.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("PublishFrom")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("PublishTo")
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("PublishTo")
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -1061,12 +1533,21 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
+<<<<<<< HEAD
+=======
+                    b.HasIndex("CategoryId");
+
+>>>>>>> FixTenantIssue
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Packages");
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("SmartParking.Entities.Organizations.PackageCategory", b =>
+=======
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Subscription", b =>
+>>>>>>> FixTenantIssue
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1074,46 +1555,100 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+<<<<<<< HEAD
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                    b.Property<decimal>("AdditionalHourPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+<<<<<<< HEAD
                     b.Property<int>("CustomerCategoryId")
                         .HasColumnType("integer");
 
+=======
+>>>>>>> FixTenantIssue
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("DeletionTime");
 
+=======
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+                    b.Property<TimeOnly>("ExceededTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<decimal>("FirstHourPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Fullday")
+                        .HasColumnType("numeric");
+
+>>>>>>> FixTenantIssue
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+<<<<<<< HEAD
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                    b.Property<bool>("IsFullDayExceeded")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsNumberOfHoursExceeded")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+<<<<<<< HEAD
                     b.Property<int>("PackageId")
+=======
+                    b.Property<int>("NumberOfHours")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SecoundHourPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+>>>>>>> FixTenantIssue
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
+<<<<<<< HEAD
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerCategoryId");
@@ -1121,6 +1656,14 @@ namespace SmartParking.Migrations
                     b.HasIndex("PackageId");
 
                     b.ToTable("PackageCategories");
+=======
+                    b.Property<decimal>("ThirdHourPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscriptions");
+>>>>>>> FixTenantIssue
                 });
 
             modelBuilder.Entity("SmartParking.Entities.PackageType", b =>
@@ -1138,7 +1681,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -1150,7 +1697,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishDescription")
@@ -1168,7 +1719,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -1202,7 +1757,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -1214,7 +1773,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishDescription")
@@ -1232,7 +1795,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -1256,8 +1823,17 @@ namespace SmartParking.Migrations
                     b.Property<string>("ConnectionString")
                         .HasColumnType("text");
 
+<<<<<<< HEAD
                     b.Property<string>("DatabaseName")
                         .IsRequired()
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+                    b.Property<string>("DatabaseName")
+                        .IsRequired()
+========
+                    b.Property<string>("ArabicName")
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+>>>>>>> FixTenantIssue
                         .HasColumnType("text");
 
                     b.Property<string>("IpAddress")
@@ -1297,7 +1873,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -1309,7 +1889,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishName")
@@ -1323,7 +1907,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -1395,7 +1983,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ExecutionDuration");
 
                     b.Property<DateTime>("ExecutionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -1476,7 +2068,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ExecutionDuration");
 
                     b.Property<DateTime>("ExecutionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("ExecutionTime");
 
                     b.Property<string>("ExtraProperties")
@@ -1522,7 +2118,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("AuditLogId");
 
                     b.Property<DateTime>("ChangeTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("ChangeTime");
 
                     b.Property<byte>("ChangeType")
@@ -1616,7 +2216,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<string>("ExtraProperties")
@@ -1640,10 +2244,17 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(128)");
 
                     b.Property<DateTime?>("LastTryTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("NextTryTime")
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("NextTryTime")
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<byte>("Priority")
                         .ValueGeneratedOnAdd()
@@ -1974,7 +2585,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(64)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -2036,7 +2651,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("LastAccessed")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<string>("SessionId")
                         .IsRequired()
@@ -2044,7 +2663,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(128)");
 
                     b.Property<DateTime>("SignedIn")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
@@ -2083,7 +2706,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2095,7 +2722,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("Email")
@@ -2135,7 +2766,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsExternal");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -2264,13 +2899,21 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<Guid>("SourceUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<Guid>("TargetUserId")
                         .HasColumnType("uuid");
@@ -2322,7 +2965,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2403,7 +3050,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2415,7 +3066,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("DisplayName")
@@ -2439,7 +3094,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -2471,7 +3130,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2525,7 +3188,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2537,7 +3204,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("DisplayName")
@@ -2561,7 +3232,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -2613,10 +3288,17 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime?>("CreationDate")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2628,7 +3310,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("ExtraProperties")
@@ -2643,7 +3329,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -2689,7 +3379,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2701,7 +3395,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("Description")
@@ -2728,7 +3426,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -2772,10 +3474,17 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime?>("CreationDate")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -2787,11 +3496,19 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("DeletionTime");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -2805,7 +3522,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -2819,7 +3540,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("RedemptionDate")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone");
+=======
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> FixTenantIssue
 
                     b.Property<string>("ReferenceId")
                         .HasMaxLength(100)
@@ -3056,7 +3781,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime>("CreationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("CreationTime");
 
                     b.Property<Guid?>("CreatorId")
@@ -3068,7 +3797,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeleterId");
 
                     b.Property<DateTime?>("DeletionTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("DeletionTime");
 
                     b.Property<int>("EntityVersion")
@@ -3086,7 +3819,11 @@ namespace SmartParking.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
+<<<<<<< HEAD
                         .HasColumnType("timestamp with time zone")
+=======
+                        .HasColumnType("timestamp without time zone")
+>>>>>>> FixTenantIssue
                         .HasColumnName("LastModificationTime");
 
                     b.Property<Guid?>("LastModifierId")
@@ -3135,16 +3872,38 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Organizations.Organization", null)
                         .WithMany("Cameras")
+<<<<<<< HEAD
                         .HasForeignKey("OrganizationId");
+=======
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+>>>>>>> FixTenantIssue
                 });
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
                 {
+<<<<<<< HEAD
                     b.HasOne("SmartParking.Entities.Governorate", null)
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+                    b.HasOne("SmartParking.Entities.Governorate", null)
+========
+                    b.HasOne("SmartParking.Entities.Governorate", "Governorate")
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+>>>>>>> FixTenantIssue
                         .WithMany("Cities")
                         .HasForeignKey("GovernorateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917114405_enhanceCategory.Designer.cs
+========
+
+                    b.Navigation("Governorate");
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/SmartParkingDbContextModelSnapshot.cs
+>>>>>>> FixTenantIssue
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
@@ -3187,6 +3946,7 @@ namespace SmartParking.Migrations
                     b.Navigation("Organization");
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("SmartParking.Entities.Organizations.DefaultPackage", b =>
                 {
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
@@ -3196,6 +3956,8 @@ namespace SmartParking.Migrations
                     b.Navigation("Organization");
                 });
 
+=======
+>>>>>>> FixTenantIssue
             modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
                 {
                     b.HasOne("SmartParking.Entities.Organizations.Organization", null)
@@ -3242,6 +4004,7 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Package", b =>
                 {
+<<<<<<< HEAD
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("organizationPackages")
                         .HasForeignKey("OrganizationId");
@@ -3266,6 +4029,17 @@ namespace SmartParking.Migrations
                     b.Navigation("CustomerCategory");
 
                     b.Navigation("Package");
+=======
+                    b.HasOne("SmartParking.Entities.Organizations.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("SmartParking.Entities.Organizations.Organization", null)
+                        .WithMany("organizationPackages")
+                        .HasForeignKey("OrganizationId");
+
+                    b.Navigation("Category");
+>>>>>>> FixTenantIssue
                 });
 
             modelBuilder.Entity("SmartParking.Entities.TenantConnectionString", b =>

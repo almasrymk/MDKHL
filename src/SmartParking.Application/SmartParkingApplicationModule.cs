@@ -1,4 +1,5 @@
 ﻿using Volo.Abp.Account;
+using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
@@ -27,5 +28,12 @@ public class SmartParkingApplicationModule : AbpModule
         {
             options.AddMaps<SmartParkingApplicationModule>();
         });
+        Configure<AbpExceptionHandlingOptions>(options =>
+        {
+            options.SendExceptionsDetailsToClients = true;
+            options.SendStackTraceToClients = false;
+        });
+
     }
+
 }

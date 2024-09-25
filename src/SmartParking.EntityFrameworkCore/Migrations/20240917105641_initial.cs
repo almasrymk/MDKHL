@@ -7,7 +7,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SmartParking.Migrations
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
     public partial class initial : Migration
+========
+    public partial class Fixtenantissue : Migration
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -413,6 +417,7 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "Categories",
                 columns: table => new
                 {
@@ -430,13 +435,18 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "Countries",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
                     EnglishCapital = table.Column<string>(type: "text", nullable: true),
                     ArabicCapital = table.Column<string>(type: "text", nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     Status = table.Column<int>(type: "integer", nullable: false),
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -446,7 +456,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -469,7 +483,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "text", nullable: true),
                     EnglishName = table.Column<string>(type: "text", nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -492,7 +510,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -515,7 +537,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -586,6 +612,26 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
+========
+                name: "OrganizationCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "OrganizationCustomers",
                 columns: table => new
                 {
@@ -622,7 +668,10 @@ namespace SmartParking.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false),
                     ArabicDescription = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     EnglishDescription = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     Status = table.Column<int>(type: "integer", nullable: false),
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -632,7 +681,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -655,7 +708,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -668,6 +725,7 @@ namespace SmartParking.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     FirstHourPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     SecoundHourPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     ThirdHourPrice = table.Column<decimal>(type: "numeric", nullable: false),
@@ -677,6 +735,8 @@ namespace SmartParking.Migrations
                     NumberOfHours = table.Column<int>(type: "integer", nullable: false),
                     IsFullDayExceeded = table.Column<bool>(type: "boolean", nullable: false),
                     ExceededTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -687,7 +747,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "text", nullable: true),
                     EnglishName = table.Column<string>(type: "text", nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -708,7 +772,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -988,7 +1056,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -1002,7 +1074,11 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "State",
+========
+                name: "Stats",
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
@@ -1017,6 +1093,7 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -1024,6 +1101,15 @@ namespace SmartParking.Migrations
                     table.PrimaryKey("PK_State", x => x.Id);
                     table.ForeignKey(
                         name: "FK_State_Emaraas_EmaraaId",
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stats_Emaraas_EmaraaId",
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                         column: x => x.EmaraaId,
                         principalTable: "Emaraas",
                         principalColumn: "Id",
@@ -1090,8 +1176,11 @@ namespace SmartParking.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     EmaraaId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                     GovernorateId = table.Column<int>(type: "integer", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -1102,7 +1191,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -1168,7 +1261,11 @@ namespace SmartParking.Migrations
                     LicenseExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
                     CountryId = table.Column<int>(type: "integer", nullable: false),
                     EmaraaId = table.Column<int>(type: "integer", nullable: false),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     StateId = table.Column<int>(type: "integer", nullable: false),
+========
+                    StatsId = table.Column<int>(type: "integer", nullable: false),
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                     CityId = table.Column<int>(type: "integer", nullable: false),
                     PhoneNum = table.Column<string>(type: "text", nullable: true),
                     WhatsAppNum = table.Column<string>(type: "text", nullable: true),
@@ -1183,7 +1280,11 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "text", nullable: true),
                     EnglishName = table.Column<string>(type: "text", nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 },
                 constraints: table =>
                 {
@@ -1207,9 +1308,15 @@ namespace SmartParking.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                         name: "FK_Organizations_State_StateId",
                         column: x => x.StateId,
                         principalTable: "State",
+========
+                        name: "FK_Organizations_Stats_StatsId",
+                        column: x => x.StatsId,
+                        principalTable: "Stats",
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1239,6 +1346,7 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "ContactInfos",
                 columns: table => new
                 {
@@ -1272,6 +1380,8 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "CustomerCategories",
                 columns: table => new
                 {
@@ -1302,7 +1412,43 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "Garages",
+========
+                name: "OrganizationContactInfos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    NationalityId = table.Column<int>(type: "integer", nullable: false),
+                    PhoneNum = table.Column<string>(type: "text", nullable: true),
+                    WhatsAppNum = table.Column<string>(type: "text", nullable: true),
+                    ContactMail = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationContactInfos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrganizationContactInfos_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrganizationGarages",
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -1323,9 +1469,15 @@ namespace SmartParking.Migrations
                 },
                 constraints: table =>
                 {
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     table.PrimaryKey("PK_Garages", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Garages_Organizations_OrganizationId",
+========
+                    table.PrimaryKey("PK_OrganizationGarages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrganizationGarages_Organizations_OrganizationId",
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -1333,12 +1485,17 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "Packages",
+========
+                name: "OrganizationPackages",
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PackageTypeId = table.Column<int>(type: "integer", nullable: false),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     CategoriesId = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
@@ -1354,6 +1511,12 @@ namespace SmartParking.Migrations
                     CategoryId = table.Column<int>(type: "integer", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: true),
+========
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Details = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -1363,6 +1526,7 @@ namespace SmartParking.Migrations
                     DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ArabicName = table.Column<string>(type: "text", nullable: true),
                     EnglishName = table.Column<string>(type: "text", nullable: true),
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -1378,6 +1542,19 @@ namespace SmartParking.Migrations
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id");
+========
+                    Notes = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationPackages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrganizationPackages_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 });
 
             migrationBuilder.CreateIndex(
@@ -1605,21 +1782,27 @@ namespace SmartParking.Migrations
                 column: "GovernorateId");
 
             migrationBuilder.CreateIndex(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "IX_ContactInfos_OrganizationId",
                 table: "ContactInfos",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "IX_CustomerCategories_OrganizationId",
                 table: "CustomerCategories",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "IX_Garages_OrganizationId",
                 table: "Garages",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "IX_Governorates_CountryId",
                 table: "Governorates",
                 column: "CountryId");
@@ -1655,6 +1838,24 @@ namespace SmartParking.Migrations
                 column: "ReferenceId");
 
             migrationBuilder.CreateIndex(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
+========
+                name: "IX_OrganizationContactInfos_OrganizationId",
+                table: "OrganizationContactInfos",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationGarages_OrganizationId",
+                table: "OrganizationGarages",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationPackages_OrganizationId",
+                table: "OrganizationPackages",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "IX_Organizations_CityId",
                 table: "Organizations",
                 column: "CityId");
@@ -1670,6 +1871,7 @@ namespace SmartParking.Migrations
                 column: "EmaraaId");
 
             migrationBuilder.CreateIndex(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "IX_Organizations_StateId",
                 table: "Organizations",
                 column: "StateId");
@@ -1693,6 +1895,16 @@ namespace SmartParking.Migrations
                 name: "IX_TenantConnectionStrings_TenantId",
                 table: "TenantConnectionStrings",
                 column: "TenantId");
+========
+                name: "IX_Organizations_StatsId",
+                table: "Organizations",
+                column: "StatsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stats_EmaraaId",
+                table: "Stats",
+                column: "EmaraaId");
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
         }
 
         /// <inheritdoc />
@@ -1774,9 +1986,12 @@ namespace SmartParking.Migrations
                 name: "Cameras");
 
             migrationBuilder.DropTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "ContactInfos");
 
             migrationBuilder.DropTable(
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "CustomerCategories");
 
             migrationBuilder.DropTable(
@@ -1786,16 +2001,53 @@ namespace SmartParking.Migrations
                 name: "Features");
 
             migrationBuilder.DropTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "Garages");
 
             migrationBuilder.DropTable(
+========
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "OpenIddictScopes");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictTokens");
 
             migrationBuilder.DropTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "OrganizationCustomers");
+========
+                name: "OrganizationCategories");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationContactInfos");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationCustomers");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationGarages");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationPackages");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationSubscriptions");
+
+            migrationBuilder.DropTable(
+                name: "PackageTypes");
+
+            migrationBuilder.DropTable(
+                name: "Screens");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "UserTypes");
+
+            migrationBuilder.DropTable(
+                name: "AbpEntityChanges");
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
 
             migrationBuilder.DropTable(
                 name: "OrganizationSubscriptions");
@@ -1834,6 +2086,7 @@ namespace SmartParking.Migrations
                 name: "OpenIddictAuthorizations");
 
             migrationBuilder.DropTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "Categories");
 
             migrationBuilder.DropTable(
@@ -1843,6 +2096,11 @@ namespace SmartParking.Migrations
                 name: "AbpTenants");
 
             migrationBuilder.DropTable(
+========
+                name: "Organizations");
+
+            migrationBuilder.DropTable(
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
                 name: "AbpAuditLogs");
 
             migrationBuilder.DropTable(
@@ -1852,7 +2110,11 @@ namespace SmartParking.Migrations
                 name: "Cities");
 
             migrationBuilder.DropTable(
+<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240917105641_initial.cs
                 name: "State");
+========
+                name: "Stats");
+>>>>>>>> FixTenantIssue:src/SmartParking.EntityFrameworkCore/Migrations/20240917073633_Fix-tenant-issue.cs
 
             migrationBuilder.DropTable(
                 name: "Governorates");
