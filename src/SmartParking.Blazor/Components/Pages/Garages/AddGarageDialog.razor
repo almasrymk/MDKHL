@@ -1,0 +1,112 @@
+﻿@using SmartParking.Garages
+@using SmartParking.Organizations
+@inject IOrganizationsAppService OrganizationAppService
+@inject ISnackbar Snackbar
+@inject IGarageAppService GarageAppService
+
+
+<div class="modal-wrapper">
+
+    <MudDialog Class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">New Garage</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem Class="w-100">
+
+                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+
+                    *@
+                    <MudForm Model="createUpdateGarage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                        <MudGrid>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="createUpdateGarage.Name"
+                                              For="@(() => createUpdateGarage.Name)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="Garage name" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="createUpdateGarage.MaxCapacity"
+                                              For="@(() => createUpdateGarage.MaxCapacity)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Immediate="true"
+                                              Label="Garage Max Capacity" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="createUpdateGarage.Code"
+                                              For="@(() => createUpdateGarage.Code)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="Will Be Automatically created"
+                                              ReadOnly="true" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTimePicker @bind-Time="_time"
+                                               Variant="Variant.Text"
+                                               Class="w-100"
+                                               Label="Closing Hours" />
+                            </MudItem>
+                            <MudItem sm="12" md="12">
+                                <MudSelect @bind-Value="@createUpdateGarage.OrganizationId" Label="Organization Id" Placeholder="Please Select">
+
+                                    @foreach (var organization in Organizations)
+                                    {
+                                        <MudSelectItem T="int" Value="@organization.Id">
+                                            @organization.EnglishName
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                            </MudItem>
+
+                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                              <div Class="d-flex flex-row justify-content-between">
+
+
+                                <MudRadioGroup @bind-Value="@createUpdateGarage.Status" Class="d-inline-flex align-content-center">
+                                    <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                    <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                    <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                </MudRadioGroup>
+                              </div>
+                            </MudItem>
+
+                            @*         </MudPaper>
+
+                            *@
+                        </MudGrid>
+                    </MudForm>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions >
+            <MudGrid Class="ps-lg-5">
+
+                <MudItem sm="6" md="6">
+
+                  <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@(() =>  SubmitCreate())">Create</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary"  OnClick="@( () => CancelCreate())">Cancel</MudButton>
+                </MudItem>
+            </MudGrid>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+
+
+<style>
+
+    .mud-modal
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+@code {
+
+}

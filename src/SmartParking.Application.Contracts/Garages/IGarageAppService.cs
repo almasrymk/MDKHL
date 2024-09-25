@@ -11,5 +11,7 @@ namespace SmartParking.Garages;
 
 public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSortedResultRequestDto,CreateUpdateGarageDto>
 {
+    Task<GarageDto> CreateAsync(CreateUpdateGarageDto input);
     Task<string> DeleteByIdAsync(int id);
+    Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input);
 }
