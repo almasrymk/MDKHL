@@ -1,7 +1,9 @@
 ﻿@page "/organizations"
 @* @page "/" *@
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
 @using SmartParking.Organizations
 @inject IOrganizationsAppService OrganizationsAppService
-
+@inject IStringLocalizer<SmartParkingResource> L
 
 <SPDataGrid PageName="organizations" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
