@@ -10,15 +10,18 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Data.Lookups;
 
-//public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
-//{
-//    private readonly IRepository<Governorate, int> _governorateRepository;
-
-        public async Task SeedAsync(DataSeedContext context)
+public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
+{
+    private readonly IRepository<Governorate, int> _governorateRepository;
+    public GovernoratesDataSeeder(IRepository<Governorate, int> governorateRepository)
+    {
+        _governorateRepository = governorateRepository;
+    }
+    public async Task SeedAsync(DataSeedContext context)
+    {
+        if (!await _governorateRepository.AnyAsync())
         {
-            if (!await _governorateRepository.AnyAsync())
-            {
-                var governorates = new List<Governorate>
+            var governorates = new List<Governorate>
                 {
                      new Governorate {  EnglishName = "Alexandria", ArabicName = "الإسكندرية", EnglishCapital = "Alexandria", ArabicCapital = "الإسكندرية", CountryId = 53 },
                      new Governorate {  EnglishName = "Ismailia", ArabicName = "الإسماعيلية", EnglishCapital = "Ismailia", ArabicCapital = "الإسماعيلية", CountryId = 53 },
@@ -48,8 +51,8 @@ namespace SmartParking.Data.Lookups;
                      new Governorate { EnglishName = "Minya", ArabicName = "المنيا", EnglishCapital = "Minya", ArabicCapital = "المنيا", CountryId = 53 },
                      new Governorate { EnglishName = "New Valley", ArabicName = "الوادي الجديد", EnglishCapital = "Kharga", ArabicCapital = "الخارجة", CountryId = 53 }
                 };
-                await this._governorateRepository.InsertManyAsync(governorates);
-            }
+            await this._governorateRepository.InsertManyAsync(governorates);
         }
     }
 }
+
