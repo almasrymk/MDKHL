@@ -1,5 +1,9 @@
 ﻿@page "/organizations/add"
 @using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Organizations
+@layout Shared.ProfileLayout
+@inject IOrganizationsAppService OrganizationAppService
+@inject ISnackbar Snackbar
 <PageTitle>Add Organization</PageTitle>
 <div>
     <MudGrid>
@@ -9,50 +13,54 @@
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="Type Here" Label="Arabic Title" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder="Type Here" Label="Arabic Name" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="Type Here" Label="English Title" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder="Type Here" Label="English Name" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField @bind-Value="IntValue" HideSpinButtons="true" Placeholder="Type Here" Label="Commercial Reg. Num." />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UnifiedLicenseNum" Placeholder="Type Here" Label="Unified License Num" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Label="Commercial Reg.Exp.Date" Placeholder="Choose your date" @bind-Date="_dateCommercial" ShowToolbar="false" />
+                            <MudNumericField Required="true"  @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder="Type Here" Label="Num Of Cameras" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="Type Here" Label="English Title" />
+                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder="Type Here" Label="Max Capacity" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField @bind-Value="IntValue" HideSpinButtons="true" Placeholder="Type Here" Label="Commercial Reg.Num." />
+                            <MudDatePicker Required="true" Label="CR Expiry Date" Placeholder="Choose your date" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Label="Licence Num.Exp.Date" Placeholder="Choose your date" @bind-Date="_dateLicence" ShowToolbar="false" />
+                            <MudDatePicker Required="true" Label="License Expiry Date" Placeholder="Choose your date" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch Label="Status Active" LabelPosition="LabelPosition.Start" Placeholder="Choose your date" @bind-Value="Basic_Switch" Color="MudBlazor.Color.Primary" />
+                            <MudNumericField Required="true" @bind-Value="EmaraaId" HideSpinButtons="true" Placeholder="Type Here" Label="Emaraa Id" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="StateId" HideSpinButtons="true" Placeholder="Type Here" Label="StateId" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSwitch Label="Status Active" LabelPosition="LabelPosition.Start" Placeholder="Choose your date" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-                        <Countrylookups SelectValue="CountrySelectValue"></Countrylookups>
-                        <GovernorateLookUps SelectValue="GovernorateSelectValue"></GovernorateLookUps>
-                       
-                        <CityLookUps SelectValue="CitySelectValue"></CityLookUps>
+                        <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
+                        <CityLookUps SelectValueChanged="SelectCity"></CityLookUps>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="Type Here" Label="Contact Phone" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="Type Here" Label="Contact Phone" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="Type Here" Label="Whatsapp Num." />
+                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="Type Here" Label="Whatsapp Num." />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="Type Here" Label="Contact Email" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="Type Here" Label="Contact Email" />
                         </MudItem>
                        
                     </MudGrid>
                    
                     <div class="d-flex justify-content-between mt-auto">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">Cancel</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit">Submit</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save" >Save</MudButton>
                     </div>
                 </MudForm>
 
@@ -113,25 +121,4 @@
 
     </MudGrid>
 </div>
-@code {
-    public int IntValue { get; set; }
-    private DateTime? _dateCommercial { get; set; }
-    private DateTime? _dateLicence { get; set; }
-    string _selectValue;
-    string _MultiValue;
 
-    bool _clearable;
-    private string[] _states =
-       {
-        "Ryadh", "Mekka", "Gedda", "Madina", "Alkhobar",
-       };
-
-    public bool Basic_Switch { get; set; } = true;
-
-    IList<IBrowserFile> _files = new List<IBrowserFile>();
-    private void UploadFiles(IBrowserFile file)
-    {
-        _files.Add(file);
-        //TODO upload the files to the server
-    }
-}
