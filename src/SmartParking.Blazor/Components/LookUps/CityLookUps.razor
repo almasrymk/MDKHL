@@ -2,11 +2,12 @@
 @using SmartParking.Lookups.City
 @inject ICitiesAppService CitiesAppService
 <MudItem sm="4">
-    <MudSelect @bind-Value="SelectValue"
+    <MudSelect 
                Variant="Variant.Text"
                Label="City"
                Placeholder="Choose"
-               Clearable="true">
+               Clearable="true"
+               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
         @foreach (var city in cities)
         {
             <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
@@ -16,7 +17,7 @@
 
 @code {
     IList<CityLookupDto> cities = new List<CityLookupDto>();
-    [Parameter] public int SelectValue { get; set; }
+    [Parameter] public EventCallback<int> SelectValueChanged { get; set; }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
