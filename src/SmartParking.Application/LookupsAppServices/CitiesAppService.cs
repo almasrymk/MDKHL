@@ -16,24 +16,31 @@ namespace SmartParking.LookupsAppServices
         ICitiesAppService
 
     {
+        private readonly IRepository<City, int> _repository;
         private readonly IRepository<Governorate, int> _governorateRepository;
 
         public CitiesAppService(IRepository<City, int> repository, IRepository<Governorate, int> governorateRepository)
         : base(repository)
         {
+            _repository = repository;
             _governorateRepository = governorateRepository;
         }
 
-        public async Task<PagedResultDto<GovernmentLookupDto>> GetGovernmentLookupAsync(PagedAndSortedResultRequestDto input)
+        public async Task<List<GovernmentLookupDto>> GetGovernmentLookupAsync()
         {
-            var countries = await _governorateRepository.GetListAsync();
-            var countryList = ObjectMapper.Map<List<Governorate>, List<GovernmentLookupDto>>(countries)
+            var governorates = await _governorateRepository.GetListAsync();
+            var governoratesList = ObjectMapper.Map<List<Governorate>, List<GovernmentLookupDto>>(governorates)
 ;
-            return new PagedResultDto<GovernmentLookupDto>
-            {
-                Items = countryList,
-                TotalCount = countries.Count,
-            };
+            return governoratesList;
+
+        }
+
+        public async Task<List<CityLookupDto>> GetCityLookupAsync()
+        {
+            var cities = await _repository.GetListAsync();
+            var citiesList = ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities)
+;
+            return citiesList;
 
         }
     }
