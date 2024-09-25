@@ -5,16 +5,11 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data
-{
-    public class UserTypeDataSeeder : IDataSeedContributor, ITransientDependency
-    {
-        private readonly IRepository<UserType, int> _userTypeRepository;
+namespace SmartParking.Data.Lookups;
 
-        public UserTypeDataSeeder(IRepository<UserType, int> userTypeRepository)
-        {
-            this._userTypeRepository = userTypeRepository;
-        }
+//public class UserTypeDataSeeder : IDataSeedContributor, ITransientDependency
+//{
+//    private readonly IRepository<UserType, int> _userTypeRepository;
 
         public async Task SeedAsync(DataSeedContext context)
         {

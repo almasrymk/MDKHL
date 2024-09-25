@@ -6,16 +6,11 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data.Lookups
-{
-    public class StateDataSeeder : IDataSeedContributor, ITransientDependency
-    {
-        private readonly IRepository<State, int> _StateRepository;
+namespace SmartParking.Data.Lookups;
 
-        public StateDataSeeder(IRepository<State, int> StateRepository)
-        {
-            _StateRepository = StateRepository;
-        }
+//public class StateDataSeeder : IDataSeedContributor, ITransientDependency
+//{
+//    private readonly IRepository<State, int> _StateRepository;
 
         public async Task SeedAsync(DataSeedContext context)
         {
@@ -27,13 +22,12 @@ namespace SmartParking.Data.Lookups
                     new State { Id = 2,ArabicName="test", EnglishName = "test", EmaraaId = 2, Status = Status.Active },
                     new State { Id = 3,ArabicName="test", EnglishName = "test", EmaraaId = 3, Status = Status.Active },
 
-                };
+//            };
 
-                foreach (var State in StateList)
-                {
-                    await _StateRepository.InsertAsync(State);
-                }
-            }
-        }
-    }
-}
+//            foreach (var State in StateList)
+//            {
+//                await _StateRepository.InsertAsync(State);
+//            }
+//        }
+//    }
+//}

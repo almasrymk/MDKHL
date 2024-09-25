@@ -416,7 +416,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Lookups.Emaraa", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -475,7 +478,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()

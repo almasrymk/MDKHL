@@ -9,14 +9,14 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Data.Lookups;
 
-public class EmaraaDataSeeder : IDataSeedContributor, ITransientDependency
-{
-    private readonly IRepository<Emaraa, int> _emaraaRepository;
+//public class EmaraaDataSeeder : IDataSeedContributor, ITransientDependency
+//{
+//    private readonly IRepository<Emaraa, int> _emaraaRepository;
 
-    public EmaraaDataSeeder(IRepository<Emaraa, int> emaraaRepository)
-    {
-        _emaraaRepository = emaraaRepository;
-    }
+//    public EmaraaDataSeeder(IRepository<Emaraa, int> emaraaRepository)
+//    {
+//        _emaraaRepository = emaraaRepository;
+//    }
 
     public async Task SeedAsync(DataSeedContext context)
     {

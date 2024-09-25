@@ -8,16 +8,11 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data.Lookups
-{
-    public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
-    {
-        private readonly IRepository<Governorate, int> _governorateRepository;
+namespace SmartParking.Data.Lookups;
 
-        public GovernoratesDataSeeder(IRepository<Governorate, int> governorateRepository)
-        {
-            this._governorateRepository = governorateRepository;
-        }
+//public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
+//{
+//    private readonly IRepository<Governorate, int> _governorateRepository;
 
         public async Task SeedAsync(DataSeedContext context)
         {

@@ -5,16 +5,11 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data.Lookups
-{
-    public class CityDataSeeder : IDataSeedContributor, ITransientDependency
-    {
-        private readonly IRepository<City, int> _cityRepository;
+namespace SmartParking.Data.Lookups;
 
-        public CityDataSeeder(IRepository<City, int> cityRepository)
-        {
-            _cityRepository = cityRepository;
-        }
+//public class CityDataSeeder : IDataSeedContributor, ITransientDependency
+//{
+//    private readonly IRepository<City, int> _cityRepository;
 
         public async Task SeedAsync(DataSeedContext context)
         {
@@ -29,11 +24,10 @@ namespace SmartParking.Data.Lookups
                 
                 };
 
-                foreach (var city in cities)
-                {
-                    await _cityRepository.InsertAsync(city);
-                }
-            }
-        }
-    }
-}
+//            foreach (var city in cities)
+//            {
+//                await _cityRepository.InsertAsync(city);
+//            }
+//        }
+//    }
+//}
