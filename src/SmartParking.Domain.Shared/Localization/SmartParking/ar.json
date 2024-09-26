@@ -43,7 +43,22 @@
     "Categories": "فئات",
     "Packages": "الحزم",
     "Users": "المستخدمين",
-    "Contact Data": "بيانات الاتصال"
+    "Contact Data": "بيانات الاتصال",
+    "Profile Details": "تفاصيل الملف الشخصي",
+    "All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles": "جميع الحقوق محفوظة لـ MDKHL 2024 - التحكم في الوصول للأشخاص والمركبات ",
+    "Hello": "مرحبًا",
+    "My Account": "حسابي",
+    "Organizations": "المنظمات",
+    "Components": "عناصر",
+    "Login": "تسجيل الدخول",
+    "Data Grid": "شبكة البيانات",
+    "Lookups": "عمليات البحث",
+    "Governments": "الحكومات",
+    "Countries": "بلدان",
+    "Cities": "المدن",
+    "Package Types": "أنواع الحزمة",
+    "Settings": "إعدادات",
+    "Profile": "حساب تعريفي"
 
   }
 }
