@@ -79322,3 +79322,283 @@ Routine = InitPostgres
 2024-09-26 14:11:06.336 +03:00 [DBG] Added 0 entity changes to the current audit log
 2024-09-26 14:11:06.338 +03:00 [DBG] Added 0 entity changes to the current audit log
 2024-09-26 14:11:06.392 +03:00 [DBG] Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+2024-09-26 14:25:06.950 +03:00 [INF] Starting web host.
+2024-09-26 14:25:45.143 +03:00 [INF] Loaded ABP modules:
+2024-09-26 14:25:45.147 +03:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-09-26 14:25:45.147 +03:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-09-26 14:25:45.147 +03:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-09-26 14:25:45.148 +03:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-09-26 14:25:45.148 +03:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-09-26 14:25:45.148 +03:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-09-26 14:25:45.148 +03:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-09-26 14:25:45.148 +03:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-09-26 14:25:45.148 +03:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-09-26 14:25:45.148 +03:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-09-26 14:25:45.148 +03:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-09-26 14:25:45.148 +03:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-09-26 14:25:45.148 +03:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-09-26 14:25:45.148 +03:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-09-26 14:25:45.148 +03:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-09-26 14:25:45.148 +03:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-09-26 14:25:45.148 +03:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-09-26 14:25:45.148 +03:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-09-26 14:25:45.149 +03:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-09-26 14:25:45.149 +03:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-09-26 14:25:45.149 +03:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-09-26 14:25:45.149 +03:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-09-26 14:25:45.149 +03:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-09-26 14:25:45.149 +03:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-09-26 14:25:45.149 +03:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-09-26 14:25:45.149 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-09-26 14:25:45.149 +03:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-09-26 14:25:45.149 +03:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-09-26 14:25:45.150 +03:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-09-26 14:25:45.150 +03:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-09-26 14:25:45.150 +03:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-09-26 14:25:45.150 +03:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-09-26 14:25:45.150 +03:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-09-26 14:25:45.150 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-09-26 14:25:45.150 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-09-26 14:25:45.150 +03:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-09-26 14:25:45.150 +03:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-09-26 14:25:45.150 +03:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-09-26 14:25:45.151 +03:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-09-26 14:25:45.151 +03:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-09-26 14:25:45.151 +03:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-09-26 14:25:45.151 +03:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-09-26 14:25:45.151 +03:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-09-26 14:25:45.151 +03:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-09-26 14:25:45.151 +03:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-09-26 14:25:45.281 +03:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-09-26 14:25:45.304 +03:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-09-26 14:25:46.207 +03:00 [INF] User profile is available. Using 'C:\Users\shsol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2024-09-26 14:25:49.790 +03:00 [INF] Initialized all ABP modules.
+2024-09-26 14:25:50.035 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/regions - null null
+2024-09-26 14:25:50.689 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-09-26 14:25:50.689 +03:00 [INF] Hosting environment: Development
+2024-09-26 14:25:50.690 +03:00 [INF] Content root path: E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor
+2024-09-26 14:25:53.666 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:53.684 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:53.687 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-09-26 14:25:53.689 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-09-26 14:25:53.690 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:53.707 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:53.708 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-09-26 14:25:53.709 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-09-26 14:25:53.710 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-09-26 14:25:53.711 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-09-26 14:25:53.712 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:53.712 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:53.714 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-09-26 14:25:53.864 +03:00 [INF] Executing endpoint '/regions (/regions)'
+2024-09-26 14:25:54.119 +03:00 [DBG] Adding entry for "18d59a72-ea18-48ee-ae07-b57a8a353129"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-09-26 14:25:54.119 +03:00 [DBG] Updating entry for "18d59a72-ea18-48ee-ae07-b57a8a353129"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-09-26 14:25:56.276 +03:00 [INF] Executed endpoint '/regions (/regions)'
+2024-09-26 14:25:56.298 +03:00 [INF] Request starting HTTP/2 POST https://localhost:44322/_blazor/disconnect - multipart/form-data; boundary=----WebKitFormBoundarydPY1PTSfKns2KujW 359
+2024-09-26 14:25:56.306 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.307 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.307 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-09-26 14:25:56.308 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-09-26 14:25:56.308 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.309 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.309 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-09-26 14:25:56.310 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-09-26 14:25:56.310 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-09-26 14:25:56.310 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-09-26 14:25:56.310 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.310 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.310 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-09-26 14:25:56.315 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:56.317 +03:00 [DBG] Removed entry for "18d59a72-ea18-48ee-ae07-b57a8a353129". 0 total observers after remove.
+2024-09-26 14:25:56.328 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_content/Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme/side-menu/css/font-bundle.css - null null
+2024-09-26 14:25:56.330 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/regions - 200 null text/html; charset=utf-8 6295.3961ms
+2024-09-26 14:25:56.336 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/SmartParking.Blazor.styles.css - null null
+2024-09-26 14:25:56.336 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/css/app.css - null null
+2024-09-26 14:25:56.336 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_framework/aspnetcore-browser-refresh.js - null null
+2024-09-26 14:25:56.337 +03:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:56.338 +03:00 [INF] Request finished HTTP/2 POST https://localhost:44322/_blazor/disconnect - 200 null null 40.1857ms
+2024-09-26 14:25:56.340 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_framework/aspnetcore-browser-refresh.js - 200 13774 application/javascript; charset=utf-8 2.9832ms
+2024-09-26 14:25:56.340 +03:00 [INF] The file /css/app.css was not modified
+2024-09-26 14:25:56.341 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/css/app.css - 304 null text/css 4.3805ms
+2024-09-26 14:25:56.349 +03:00 [INF] Sending file. Request path: '/_content/Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme/side-menu/css/font-bundle.css'. Physical path: 'C:\Users\shsol\.nuget\packages\volo.abp.aspnetcore.components.web.leptonxlitetheme\3.2.1\staticwebassets\side-menu\css\font-bundle.css'
+2024-09-26 14:25:56.350 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_content/Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme/side-menu/css/font-bundle.css - 200 48 text/css 21.9416ms
+2024-09-26 14:25:56.380 +03:00 [INF] Sending file. Request path: '/SmartParking.Blazor.styles.css'. Physical path: 'E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\obj\Debug\net8.0\scopedcss\bundle\SmartParking.Blazor.styles.css'
+2024-09-26 14:25:56.381 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/SmartParking.Blazor.styles.css - 200 6335 text/css 44.9075ms
+2024-09-26 14:25:56.507 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_vs/browserLink - null null
+2024-09-26 14:25:56.573 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_vs/browserLink - 200 null text/javascript; charset=UTF-8 64.893ms
+2024-09-26 14:25:56.736 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_blazor/initializers - null null
+2024-09-26 14:25:56.739 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.739 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.739 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-09-26 14:25:56.739 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-09-26 14:25:56.739 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.740 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.740 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-09-26 14:25:56.741 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-09-26 14:25:56.741 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-09-26 14:25:56.741 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-09-26 14:25:56.741 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.741 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.741 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-09-26 14:25:56.744 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:56.748 +03:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:56.748 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_blazor/initializers - 200 null application/json; charset=utf-8 12.5109ms
+2024-09-26 14:25:56.940 +03:00 [INF] Request starting HTTP/2 POST https://localhost:44322/_blazor/negotiate?negotiateVersion=1 - null 0
+2024-09-26 14:25:56.941 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/favicon.ico - null null
+2024-09-26 14:25:56.943 +03:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\wwwroot\favicon.ico'
+2024-09-26 14:25:56.944 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/favicon.ico - 200 3441 image/x-icon 2.7635ms
+2024-09-26 14:25:56.949 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.950 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.951 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-09-26 14:25:56.951 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-09-26 14:25:56.951 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.952 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.952 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-09-26 14:25:56.952 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-09-26 14:25:56.952 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-09-26 14:25:56.952 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-09-26 14:25:56.952 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.953 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.953 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-09-26 14:25:56.954 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:56.959 +03:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:56.960 +03:00 [INF] Request finished HTTP/2 POST https://localhost:44322/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 19.3606ms
+2024-09-26 14:25:56.976 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:44322/_blazor?id=SN7jlLlPjZvuw9RXeZALVA - null null
+2024-09-26 14:25:56.977 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.977 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-09-26 14:25:56.978 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-09-26 14:25:56.978 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-09-26 14:25:56.978 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.978 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-09-26 14:25:56.978 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-09-26 14:25:56.979 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-09-26 14:25:56.979 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-09-26 14:25:56.979 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-09-26 14:25:56.980 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.980 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-09-26 14:25:56.980 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-09-26 14:25:56.983 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-09-26 14:25:57.211 +03:00 [DBG] Adding entry for "44642614-0e8a-48b5-a898-336deecbbb32"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-09-26 14:25:57.211 +03:00 [DBG] Updating entry for "44642614-0e8a-48b5-a898-336deecbbb32"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-09-26 14:25:57.242 +03:00 [DBG] Added 0 entity changes to the current audit log
+2024-09-26 14:25:57.756 +03:00 [DBG] Added 0 entity changes to the current audit log
+2024-09-26 14:25:57.772 +03:00 [DBG] Added 0 entity changes to the current audit log
+2024-09-26 14:25:57.836 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_content/Blazorise/utilities.js?v=1.6.0.0 - null null
+2024-09-26 14:25:57.840 +03:00 [INF] Sending file. Request path: '/_content/Blazorise/utilities.js'. Physical path: 'C:\Users\shsol\.nuget\packages\blazorise\1.6.0\staticwebassets\utilities.js'
+2024-09-26 14:25:57.840 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_content/Blazorise/utilities.js?v=1.6.0.0 - 200 9864 application/javascript 3.9161ms
+2024-09-26 14:25:57.848 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_content/Blazorise/vendors/sha512.js?v=1.6.0.0 - null null
+2024-09-26 14:25:57.848 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_content/Blazorise/vendors/jsencrypt.js?v=1.6.0.0 - null null
+2024-09-26 14:25:57.852 +03:00 [INF] Sending file. Request path: '/_content/Blazorise/vendors/sha512.js'. Physical path: 'C:\Users\shsol\.nuget\packages\blazorise\1.6.0\staticwebassets\vendors\sha512.js'
+2024-09-26 14:25:57.852 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_content/Blazorise/vendors/sha512.js?v=1.6.0.0 - 200 17899 application/javascript 4.5941ms
+2024-09-26 14:25:57.853 +03:00 [INF] Sending file. Request path: '/_content/Blazorise/vendors/jsencrypt.js'. Physical path: 'C:\Users\shsol\.nuget\packages\blazorise\1.6.0\staticwebassets\vendors\jsencrypt.js'
+2024-09-26 14:25:57.856 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_content/Blazorise/vendors/jsencrypt.js?v=1.6.0.0 - 200 55434 application/javascript 8.4488ms
+2024-09-26 14:25:58.025 +03:00 [DBG] Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+2024-09-26 14:26:05.167 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/images/subscription-card.png - null null
+2024-09-26 14:26:05.200 +03:00 [INF] Sending file. Request path: '/images/subscription-card.png'. Physical path: 'E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\wwwroot\images\subscription-card.png'
+2024-09-26 14:26:05.201 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/images/subscription-card.png - 200 11117 image/png 33.651ms
