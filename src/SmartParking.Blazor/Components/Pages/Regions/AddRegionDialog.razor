@@ -1,0 +1,114 @@
+﻿@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Lookups
+@using SmartParking.Lookups.Region
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@inject IRegionAppService RegionAppService
+@inject ISnackbar Snackbar
+
+
+<MudItem class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">New Region</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.ArabicName"
+                                      For="@(() => input.ArabicName)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Label="ArabicName" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.EnglishName"
+                                      For="@(() => input.EnglishName)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Label="EnglishName" />
+                    </MudItem>
+                    <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
+
+
+                    <MudItem sm="6" Class="d-flex justify-content-center">
+                        <MudItem Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@input.Status" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                            </MudRadioGroup>
+                        </MudItem>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+        </DialogActions>
+    </MudDialog>
+
+</MudItem>
+
+
+@code {
+
+    private MudForm form;
+    public CretaeUpdateRegionDto input = new CretaeUpdateRegionDto();
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
+    private int CountrySelectValue { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private void SelectCountry(int country)
+    {
+        CountrySelectValue = country;
+    }
+    private async Task Submit()
+    {
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            try
+            {
+                await RegionAppService.CreateAsync(input);
+            }
+            catch (UserFriendlyException ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+                return;
+            }
+            Snackbar.Add("Region created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+
+        }
+        else
+        {
+            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+        }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+
+
+
+<style>
+    .mud-modal 
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

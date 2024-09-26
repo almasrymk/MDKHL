@@ -38,13 +38,13 @@ public partial class State
     }
     private Task OpenCreateStateDialog(DialogOptions options)
     {
-        return Dialog.ShowAsync<AddCityDialog>("Add City", options);
+        return Dialog.ShowAsync<AddStateDialog>("Add City", options);
     }
 
     private async Task OpenEditStateDialog(StateDto stateDto)
     {
         var parameters = new DialogParameters { ["State"] = stateDto };
-        var dialog = await Dialog.ShowAsync<EditCityDialog>("Edit State", parameters);
+        var dialog = await Dialog.ShowAsync<EditStateDialog>("Edit State", parameters);
         var result = await dialog.Result;
 
 
@@ -53,7 +53,7 @@ public partial class State
     private async Task OpenDetailsStateDialog(StateDto stateDto)
     {
         var parameters = new DialogParameters { ["State"] = stateDto };
-        var dialog = await Dialog.ShowAsync<DetailsCityDialog>("State Details", parameters);
+        var dialog = await Dialog.ShowAsync<DetailsStateDialog>("State Details", parameters);
         var result = await dialog.Result;
 
 
