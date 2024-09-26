@@ -69,7 +69,8 @@
     private void ChangeLanguage(string cultureName)
     {
         var uri =  Navigation.Uri.ToString();
-         uri = uri+"/?culture=" + cultureName + "&ui-culture=" + cultureName;
+
+        uri = uri + "?culture=" + cultureName + "&ui-culture=" + cultureName;
         Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
         Console.WriteLine(uri);
     }
