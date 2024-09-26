@@ -18,7 +18,10 @@ public partial class Organization
 
     private string termSearch;
 
-
+    private void HandleAdd()
+    {
+        Navigation.NavigateTo("/organizations/add");
+    }
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>
