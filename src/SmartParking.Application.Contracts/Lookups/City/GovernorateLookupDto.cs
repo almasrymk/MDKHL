@@ -7,7 +7,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Lookups.City;
 
-public class GovernmentLookupDto : FullAuditedEntityDto<int>
+public class GovernorateLookupDto : FullAuditedEntityDto<int>
 {
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }

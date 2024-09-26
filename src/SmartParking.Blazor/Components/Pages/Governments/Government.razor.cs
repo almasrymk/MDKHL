@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using SmartParking.Blazor.Components.Pages.Cities;
-using SmartParking.Cameras;
+﻿using MudBlazor;
 using SmartParking.Lookups;
-using SmartParking.Lookups.Governorate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,12 +40,12 @@ public partial class Government
 
 	}
 
-	private Task OpenCreateGovernmentDialog(DialogOptions options)
+	private Task OpenCreateGovernorateDialog(DialogOptions options)
 	{
 		return Dialog.ShowAsync<AddGovernmentDialog>("Add Governorate", options);
 	}
 
-	private async Task OpenEditGovernmentDialog(GovernorateDto governorateDto)
+	private async Task OpenEditGovernorateDialog(GovernorateDto governorateDto)
 	{
 		var parameters = new DialogParameters { ["Governorate"] = governorateDto };
 		var dialog = await Dialog.ShowAsync<EditGovernmentDialog>("Edit Governorate", parameters);
@@ -58,7 +54,7 @@ public partial class Government
 
 	}
 
-	private async Task OpenDetailsGovernmentDialog(GovernorateDto governorate)
+	private async Task OpenDetailsGovernorateDialog(GovernorateDto governorate)
 	{
 		var parameters = new DialogParameters { ["Governorate"] = governorate };
 		var dialog = await Dialog.ShowAsync<DetailsGovernmentDialog>("Governorate Details", parameters);

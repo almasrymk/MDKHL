@@ -25,10 +25,10 @@ namespace SmartParking.LookupsAppServices
             _governorateRepository = governorateRepository;
         }
 
-        public async Task<List<GovernmentLookupDto>> GetGovernmentLookupAsync()
+        public async Task<List<GovernorateLookupDto>> GetGovernmentLookupAsync()
         {
             var governorates = await _governorateRepository.GetListAsync();
-            var governoratesList = ObjectMapper.Map<List<Governorate>, List<GovernmentLookupDto>>(governorates)
+            var governoratesList = ObjectMapper.Map<List<Governorate>, List<GovernorateLookupDto>>(governorates)
 ;
             return governoratesList;
 

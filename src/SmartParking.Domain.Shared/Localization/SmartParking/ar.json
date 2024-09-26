@@ -43,7 +43,30 @@
     "Categories": "فئات",
     "Packages": "الحزم",
     "Users": "المستخدمين",
-    "Contact Data": "بيانات الاتصال"
-
+    "Contact Data": "بيانات الاتصال",
+    "NewCity": "مدينة جديدة",
+    "Create": "انشاء",
+    "Notes": "ملحوظات",
+    "CityCreatedSuccessfully": "تم إنشاء المدينة بنجاح",
+    "PleaseFixTheValidationErrors": "يُرجى تصحيح أخطاء التحقق",
+    "UpdateCity": "تحرير المدينة",
+    "UpdateCities": "تحرير المدن",
+    "Edit": "تحرير",
+    "CitiesDetails": "تفاصيل المدن,",
+    "CityDetails": "تفاصيل المدينة",
+    "Governorate": "محافظة",
+    "AddGovernorates": "إضافة المحافظات",
+    "NewGovernorate": "المحافظة الجديدة",
+    "Arabic Capital": "العاصمة العربية",
+    "English Capital": "العاصمة الإنجليزية",
+    "GovernorateCreatedSuccessfully": "تم إنشاء المحافظة بنجاح",
+    "GovernorateDetails": "تفاصيل المحافظة",
+    "UpdateGovernorate": "تحرير المحافظة",
+    "EditGovernorates": "نحرير المحافظات",
+    "EnterYourArabicName": "أدخل اسمك باللغة العربية",
+    "EnterYourEnglishName": "أدخل اسمك باللغة الإنجليزية",
+    "EnterYourArabicCapital": "أدخل عاصمتك باللغة العربية",
+    "EnterYourEnglishCapital": "أدخل عاصمتك باللغة الإنجليزية",
+    "EnterYourNotes": "أدخل ملاحظاتك"
   }
 }

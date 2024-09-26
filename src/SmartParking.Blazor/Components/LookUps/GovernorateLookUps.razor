@@ -1,9 +1,13 @@
-﻿@using SmartParking.Lookups
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups
 @using SmartParking.Lookups.City
- @inject ICitiesAppService CitiesAppService
+@inject ICitiesAppService CitiesAppService
+@inject IStringLocalizer<SmartParkingResource> L
+
 <MudItem sm="4">
     <MudSelect Variant="Variant.Text"
-               Label="Country"
+               Label="@L["Governorate"]"
                Placeholder="Choose"
                Clearable="true"
                ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
@@ -15,7 +19,7 @@
 </MudItem>
 
 @code {
-    IReadOnlyList<GovernmentLookupDto> governments = new List<GovernmentLookupDto>();
+    IReadOnlyList<GovernorateLookupDto> governments = new List<GovernorateLookupDto>();
     [Parameter]
     public EventCallback<int> SelectValueChanged { get; set; }
 

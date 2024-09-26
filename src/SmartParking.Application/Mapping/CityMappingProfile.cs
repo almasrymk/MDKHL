@@ -2,7 +2,6 @@
 using SmartParking.Entities;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
-using SmartParking.Lookups.Governorate;
 
 namespace SmartParking.Mapping
 {
@@ -12,7 +11,7 @@ namespace SmartParking.Mapping
         {
             CreateMap<City, CityDto>();
             CreateMap<CreateUpdateCityDto, City>();
-            CreateMap<Governorate, GovernmentLookupDto>()
+            CreateMap<Governorate, GovernorateLookupDto>()
                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicName))
                .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName))
                .ForMember(d => d.ArabicCapital, o => o.MapFrom(s => s.ArabicCapital))

@@ -8,7 +8,7 @@ namespace SmartParking.Lookups
 {
     public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedResultRequestDto,CreateUpdateCityDto>
     {
-        Task<List<GovernmentLookupDto>> GetGovernmentLookupAsync();
+        Task<List<GovernorateLookupDto>> GetGovernmentLookupAsync();
         Task<List<CityLookupDto>> GetCityLookupAsync();
 
     }

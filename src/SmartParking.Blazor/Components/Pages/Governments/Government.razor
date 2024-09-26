@@ -1,4 +1,4 @@
-﻿@page "/governments"
+﻿@page "/governorates"
 @using Customs
 @using SmartParking.Lookups
 @using Volo.Abp.Application.Dtos
@@ -11,7 +11,7 @@
     <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="GovernorateDto" MultiSelection="true" Items="governorates" SortMode="SortMode.Multiple" Filterable="true">
         <ToolBarContent>
            
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateGovernmentDialog(_backdropClick))">
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateGovernorateDialog(_backdropClick))">
                 
                 CREATE NEW
                 <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
@@ -27,13 +27,13 @@
             <TemplateColumn Title="Actions">
                 <CellTemplate>
                     <MudItem Class="d-flex justify-content-center align-items-center">
-                        <MudIconButton OnClick="@(() => OpenDetailsGovernmentDialog(context.Item))"
+                        <MudIconButton OnClick="@(() => OpenDetailsGovernorateDialog(context.Item))"
                                        Icon="@Icons.Material.Filled.Info"
                                        Variant="Variant.Filled"
                                        Color="MudBlazor.Color.Primary"
                                        Size="MudBlazor.Size.Small"
                                        Class="mx-1" />
-                        <MudIconButton OnClick="@(() => OpenEditGovernmentDialog(context.Item))"
+                        <MudIconButton OnClick="@(() => OpenEditGovernorateDialog(context.Item))"
                                        Icon="@Icons.Material.Filled.Edit"
                                        Variant="Variant.Filled"
                                        Color="MudBlazor.Color.Secondary"
