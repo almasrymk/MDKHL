@@ -45,21 +45,7 @@
 									  Label="EnglishCapital" />
 					</MudItem>
 					
-						<MudItem sm="6">
-							<MudSelect @bind-Value="@governorate.CountryId"
-									   Variant="Variant.Text"
-									   Label="Country"
-									   Placeholder="Please Select"
-									   Clearable="_clearable"
-									   AnchorOrigin="Origin.TopCenter"
-									   TransformOrigin="Origin.TopCenter">
-
-								@foreach (var country in countries)
-								{
-									<MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
-								}
-							</MudSelect>
-						</MudItem>
+						
 				</MudGrid>
 			</MudForm>
 

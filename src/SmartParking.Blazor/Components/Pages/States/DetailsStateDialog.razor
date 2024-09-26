@@ -1,0 +1,104 @@
+﻿@using SmartParking.Blazor.Components.Lookups
+@using SmartParking.Lookups
+@using SmartParking.Lookups.State
+@using Volo.Abp.Application.Dtos
+@inject IStateAppService StateAppService
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">Update State</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+
+
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="state.ArabicName"
+									  For="@(() => state.ArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="ArabicName" 
+									  Disabled/>
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="state.EnglishName"
+									  For="@(() => state.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="EnglishName" 
+									  Disabled/>
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@state.RegionId"
+								   Variant="Variant.Text"
+								   Label="Region"
+								   Placeholder="Please Select"
+								   AnchorOrigin="Origin.TopCenter"
+								   TransformOrigin="Origin.TopCenter"
+								   Disabled>
+
+							@foreach (var region in regions)
+							{
+								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+
+					<MudItem sm="6" >
+						<MudTextField @bind-Value="state.Status"
+									  For="@(() => state.Status)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="Status" />
+					</MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton OnClick="Cancel">Cancel</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+	[Parameter] public StateDto state { get; set; } = new StateDto();
+	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
+	private MudForm editForm;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await StateAppService.GetRegionLookupAsync();
+		regions = result;
+	}
+
+
+
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}
+

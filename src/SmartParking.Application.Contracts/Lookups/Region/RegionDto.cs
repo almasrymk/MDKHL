@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,4 +10,5 @@ namespace SmartParking.Lookups.Region;
 public class RegionDto : BaseDto
 {
     public int CountryId { get; set; }
+    public Status Status { get; set; }
 }

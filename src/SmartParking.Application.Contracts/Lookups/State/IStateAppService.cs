@@ -1,4 +1,4 @@
-﻿using SmartParking.Lookups.Region;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +11,6 @@ namespace SmartParking.Lookups.State;
 
 public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSortedResultRequestDto, CreateUpdateStateDto>
 {
+    Task<List<RegionLookupDto>> GetRegionLookupAsync();
 
 }

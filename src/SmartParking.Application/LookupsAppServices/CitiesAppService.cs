@@ -1,7 +1,6 @@
 ﻿using SmartParking.Entities;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
-using SmartParking.Lookups.Governorate;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;

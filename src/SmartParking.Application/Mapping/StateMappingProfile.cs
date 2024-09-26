@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
+using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using System;
 using System.Collections.Generic;
@@ -15,5 +17,9 @@ public class StateMappingProfile : Profile
 	{
 		CreateMap<State, StateDto>();
 		CreateMap<CreateUpdateStateDto, State>();
-	}
+        CreateMap<Region, RegionLookupDto>()
+                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicName))
+                .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName));
+               
+    }
 }
