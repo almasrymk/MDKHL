@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Identity;
+using MudBlazor;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Enums;
@@ -77,12 +78,14 @@ public partial class OrganizationAdd
             PhoneNumber = WhatsAppNum,
             Email = ContactMail,
             Password = "P@ssw0rd",
-            
+            RoleNames = ["admin"],
+            Name = EnglishName,
         };
         
         try
         {
             await IdentityUserAppService.CreateAsync(user);
+             await signInManager.PasswordSignInAsync(user.UserName, "P@ssw0rd", isPersistent: false, lockoutOnFailure: false);
             await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             
             ShowSnackbar("Add Successfully You Can Login Your Password Is P@ssw0rd", Severity.Success);
