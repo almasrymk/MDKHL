@@ -15,8 +15,12 @@ public partial class SPDataGrid
     [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
+    [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
+	[Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
+	[Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
+	[Parameter] public EventCallback<string> OnClickRowDelete { get; set; }
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
@@ -42,11 +46,11 @@ public partial class SPDataGrid
         ["is not empty"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
-    private void HandleAdd()
-    {
-        var uri = "/" + PageName + "/" + "add";
-        Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
-    }
+    //private void HandleAdd()
+    //{
+    //    var uri = "/" + PageName + "/" + "add";
+    //    Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
+    //}
     public async Task ClearItem(string key)
     {
 
