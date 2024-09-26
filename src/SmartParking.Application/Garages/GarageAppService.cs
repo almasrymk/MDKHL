@@ -114,4 +114,100 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         return await base.UpdateAsync(id, input);
     }
+
+    /// <summary>
+    /// method used to get list of garage
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it sorted or not</param>
+    /// <returns>GaragesDto List</returns>
+    public async Task<PagedResultDto<GarageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        // Get the IQueryable<garage> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply search filtering
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.Code.StartsWith(input.SearchingTerm) ||
+                or.Name.StartsWith(input.SearchingTerm) 
+               
+            );
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of hotel entities
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the hotel entities to hotelDto objects
+        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        Console.WriteLine(garagesDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garagesDto
+        );
+    }
+
+    /// <summary>
+    /// method used to get list of garages
+    /// </summary>
+    /// <param name="input">specifies max number of garage and if it filtered or not</param>
+    /// <returns>OrganizatioDto List</returns>
+    public async Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        // Get the IQueryable<garage> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply filtering
+        var filterExpression = BuildExpression<Garage>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of garages entities
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the garages entities to garagesDto objects
+        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        Console.WriteLine(garagesDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garagesDto
+        );
+    }
 }

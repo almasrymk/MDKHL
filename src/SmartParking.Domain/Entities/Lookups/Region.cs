@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace SmartParking.Entities.Lookups;
 
-public class Emaraa : BaseEntity
+public class Region : BaseEntity
 {
-    public Emaraa()
+    public Region()
     {
         Organizations = new List<Organization>();
         State = new List<State>();  

@@ -44,20 +44,31 @@
     "Packages": "Packages",
     "Users": "Users",
     "Contact Data": "Contact Data",
-    "Profile Details": "Profile Details",
-    "All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles": "All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles",
-    "Hello": "Hello",
-    "My Account": "My Account",
-    "Organizations": "Organizations",
-    "Components": "Components",
-    "Login": "Login",
-    "Data Grid": "Data Grid",
-    "Lookups": "Lookups",
-    "Governments": "Governments",
-    "Countries": "Countries",
-    "Cities": "Cities",
-    "Package Types": "Package Types",
-    "Settings": "Settings",
-    "Profile": "Profile"
+    "Details for Garage": "Details for Garage",
+    "Garage Name": "Garage Name",
+    "Garage Max Capacity": "Garage Max Capacity",
+    "Garage Code": "Garage Code",
+    "ClosingHours": "Closing Hours",
+    "Status": "Status",
+    "Status InActive": "InActive",
+    "Status Deleted": "Deleted",
+    "Update": "Update",
+    "Update Garage for": "Update Garage For",
+    "Add New Garage": "ِAdd New Garage",
+    "Will Be Automatically Created": "Will Be Automatically Created",
+    "OrganizationName": "Organization Name",
+    "Edit": "Edit",
+    "View Details": "View Details",
+    "Delete": "Delete"
+
+
+
+
+
+
+
+
+
+
   }
 }

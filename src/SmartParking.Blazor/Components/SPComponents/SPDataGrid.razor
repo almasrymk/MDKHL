@@ -71,7 +71,7 @@
                 }
             </MudItem>
             <MudSpacer />
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="HandleAdd">
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(()=>OnAdd.InvokeAsync())">
                 @L["CREATE NEW"]
                 <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
             </MudButton>
@@ -133,6 +133,8 @@
                         <MudMenuItem OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))">@L["Delete"]</MudMenuItem>
                     </MudMenu>
                 </CellTemplate>
+
+            </TemplateColumn>
 
             </TemplateColumn>
 

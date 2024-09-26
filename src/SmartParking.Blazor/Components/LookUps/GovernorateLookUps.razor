@@ -2,25 +2,27 @@
 @using SmartParking.Lookups.City
  @inject ICitiesAppService CitiesAppService
 <MudItem sm="4">
-    <MudSelect @bind-Value="SelectValue"
-               Variant="Variant.Text"
-               Label="Governorate"
+    <MudSelect Variant="Variant.Text"
+               Label="Country"
                Placeholder="Choose"
-               Clearable="true">
-        @foreach (var governorate in governorates)
+               Clearable="true"
+               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
+        @foreach (var government in governments)
         {
-            <MudSelectItem Value="governorate.Id">@governorate.EnglishName</MudSelectItem>
+            <MudSelectItem Value="government.Id">@government.EnglishName</MudSelectItem>
         }
     </MudSelect>
 </MudItem>
 
 @code {
-    IList<GovernmentLookupDto> governorates = new List<GovernmentLookupDto>();
-    [Parameter] public int SelectValue { get; set; }
+    IReadOnlyList<GovernmentLookupDto> governments = new List<GovernmentLookupDto>();
+    [Parameter]
+    public EventCallback<int> SelectValueChanged { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        governorates = await CitiesAppService.GetGovernmentLookupAsync();
+        governments = await CitiesAppService.GetGovernmentLookupAsync();
 
     }
 }

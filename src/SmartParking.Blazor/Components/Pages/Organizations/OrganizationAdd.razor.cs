@@ -24,7 +24,7 @@ public partial class OrganizationAdd
     private int CountrySelectValue {  get; set; }
     private int CitySelectValue {  get; set; }
 
-    public int EmaraaId { get; set; }
+    public int RegionId { get; set; }
     public int StateId { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
@@ -62,7 +62,7 @@ public partial class OrganizationAdd
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = CitySelectValue,
-            EmaraaId = EmaraaId,
+            RegionId = RegionId,
             StateId = StateId,
             ContactMail = ContactMail,
             CountryId = CountrySelectValue,

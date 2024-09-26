@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Pages.Cities;
 using SmartParking.Cameras;
 using SmartParking.Lookups;
 using SmartParking.Lookups.Governorate;
@@ -56,8 +57,18 @@ public partial class Government
 
 
 	}
-	
-	
+
+	private async Task OpenDetailsGovernmentDialog(GovernorateDto governorate)
+	{
+		var parameters = new DialogParameters { ["Governorate"] = governorate };
+		var dialog = await Dialog.ShowAsync<DetailsGovernmentDialog>("Governorate Details", parameters);
+		var result = await dialog.Result;
+
+
+	}
+
+
+
 
 
 

@@ -5,22 +5,22 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data.Lookups
+namespace SmartParking.Data.Lookups;
+
+public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
 {
-    public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
+    private readonly IRepository<Country, int> _countryRepository;
+
+	public CountriesDataSeeder(IRepository<Country, int> countryRepository)
+	{
+		_countryRepository = countryRepository;
+	}
+
+	public async Task SeedAsync(DataSeedContext context)
     {
-        private readonly IRepository<Country, int> _countryRepository;
-
-        public CountriesDataSeeder(IRepository<Country, int> countryRepository)
+        if (!await _countryRepository.AnyAsync())
         {
-            this._countryRepository = countryRepository;
-        }
-
-        public async Task SeedAsync(DataSeedContext context)
-        {
-            if (!await _countryRepository.AnyAsync())
-            {
-                var countries = new List<Country>
+            var countries = new List<Country>
                 {
                     new Country {EnglishName = "Afghanistan", ArabicName = "افغانستان", EnglishCapital = "Kabul", ArabicCapital = "كابول" },
                     new Country {EnglishName = "Albania", ArabicName = "البانيا", EnglishCapital = "Tirana", ArabicCapital = "تيرانا" },
@@ -216,9 +216,8 @@ namespace SmartParking.Data.Lookups
                     new Country {EnglishName = "Zimbabwe", ArabicName = "زيمبابوى", EnglishCapital = "Harare", ArabicCapital = "هرارى" }
                 };
 
-                await this._countryRepository.InsertManyAsync(countries);
-            }
+            await this._countryRepository.InsertManyAsync(countries);
         }
     }
 }
-           
+

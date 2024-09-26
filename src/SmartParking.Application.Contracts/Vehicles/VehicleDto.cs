@@ -9,7 +9,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Vehicles
 {
-	public class VehicleDto : FullAuditedEntity<int>
+	public class VehicleDto 
 	{
 		public int Id { get; set; }
 		public int VehicleModelId { get; set; }

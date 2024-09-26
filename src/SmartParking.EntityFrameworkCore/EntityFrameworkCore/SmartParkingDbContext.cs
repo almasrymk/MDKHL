@@ -95,7 +95,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Screen> Screens { get; set; }
     public DbSet<UserType> UserTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
-    public DbSet<Emaraa> Emaraas { get; set; }
+    public DbSet<Region> Regions { get; set; }
     public DbSet<State> States { get; set; }
 	public DbSet<VehicleModel> VehicleModels { get; set; }
 	public DbSet<VehicleBrand> VehicleBrands { get; set; }
