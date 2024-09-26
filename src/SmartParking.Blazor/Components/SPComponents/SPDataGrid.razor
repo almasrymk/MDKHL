@@ -124,7 +124,17 @@
 
 
             }
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
 
+                    <MudMenu Icon="@Icons.Material.Filled.Settings">
+                        <MudMenuItem OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))">@L["Edit"]</MudMenuItem>
+                        <MudMenuItem OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))">@L["View Details"]</MudMenuItem>
+                        <MudMenuItem>@L["Delete"]</MudMenuItem>
+                    </MudMenu>
+                </CellTemplate>
+
+            </TemplateColumn>
 
 
         </Columns>
