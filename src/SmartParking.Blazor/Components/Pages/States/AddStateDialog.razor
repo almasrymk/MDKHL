@@ -1,4 +1,5 @@
-﻿@using SmartParking.Lookups
+﻿@using SmartParking.Blazor.Components.Lookups
+@using SmartParking.Lookups
 @using SmartParking.Lookups.City
 @using SmartParking.Lookups.State
 @using Volo.Abp
@@ -32,19 +33,17 @@
                                       Variant="Variant.Text"
                                       Label="EnglishName" />
                     </MudItem>
-
+                    <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
 
 
                     <MudItem sm="6" Class="d-inline-flex justify-content-center">
-                        <div Class="d-flex flex-row justify-content-between">
-
-
+                        <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@input.Status" Class="d-inline-flex align-content-center">
                                 <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
                                 <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
                                 <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
                             </MudRadioGroup>
-                        </div>
+                        </MudItem>
                     </MudItem>
                 </MudGrid>
             </MudForm>
@@ -68,10 +67,16 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
+    private int RegionSelectValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+    private void SelectRegion(int region)
+    {
+        RegionSelectValue = region;
     }
     private async Task Submit()
     {
@@ -105,7 +110,8 @@
 
 
 <style>
-    .mud-modal {
+    .mud-modal 
+    {
         border-radius: 0 20px 0 20px;
     }
 </style>
