@@ -11,11 +11,11 @@
     "CREATE NEW": "إنشاء جديد",
     "Value": "القيمة",
     "Colmn name": "اسم العمود",
-    "Search For Organizations": "البحث عن المنظمات",
+    "Search For Organizations": "البحث عن المنشأة",
     "Filters": "المرشحات",
     "Clear All": "مسح الكل",
     "Operator": "العملية",
-    "Add Organization": "أضف منظمة",
+    "Add Organization": "أضف منشأة",
     "Main Data": "البيانات الرئيسية",
     "Type Here": "اكتب هنا",
     "Arabic Name": "الاسم العربي",
@@ -43,7 +43,24 @@
     "Categories": "فئات",
     "Packages": "الحزم",
     "Users": "المستخدمين",
-    "Contact Data": "بيانات الاتصال"
+    "Contact Data": "بيانات الاتصال",
+    "Details for Garage": "تفاصيل لجراج",
+    "Garage Name": "اسم الجراج",
+    "Garage Max Capacity": "السعة القصـوى",
+    "Garage Code": "كود الجراج",
+    "Closing Hours": "توقيت الاغـلاق",
+    "Status": "الحالة",
+    "Status InActive": "غير نـشـط",
+    "Status Deleted": "مـحـذوف",
+    "Update": "تـعديـل",
+    "Update Garage for": "تعديل بيـانـات جراج",
+    "Add New Garage": "اضــافة جـراج جـديـد",
+    "Will Be Automatically Created": "سـيـتم انشـاءه تـلقائيـًا",
+    "OrganizationName": "أسـم المنشـاة",
+    "Edit": "تعـديـل",
+    "View Details": "عـرض التفـاصيـل",
+    "Delete": "حـذف"
+
 
   }
 }
