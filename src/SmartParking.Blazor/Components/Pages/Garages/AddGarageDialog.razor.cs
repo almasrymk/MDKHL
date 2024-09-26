@@ -19,6 +19,8 @@ public partial class AddGarageDialog
     private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
 
+    TimeEditMode editMode = new TimeEditMode();
+
     protected override async Task OnInitializedAsync()
     {
         createUpdateGarage = new CreateUpdateGarageDto();
