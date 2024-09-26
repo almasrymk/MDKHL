@@ -12,7 +12,12 @@ public class StateDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<State, int> _StateRepository;
 
-    public async Task SeedAsync(DataSeedContext context)
+	public StateDataSeeder(IRepository<State, int> stateRepository)
+	{
+		_StateRepository = stateRepository;
+	}
+
+	public async Task SeedAsync(DataSeedContext context)
     {
         if (!await _StateRepository.AnyAsync())
         {

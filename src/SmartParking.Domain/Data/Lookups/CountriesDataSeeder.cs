@@ -11,11 +11,16 @@ public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<Country, int> _countryRepository;
 
-    public async Task SeedAsync(DataSeedContext context)
+	public CountriesDataSeeder(IRepository<Country, int> countryRepository)
+	{
+		_countryRepository = countryRepository;
+	}
+
+	public async Task SeedAsync(DataSeedContext context)
+    {
+        if (!await _countryRepository.AnyAsync())
         {
-            if (!await _countryRepository.AnyAsync())
-            {
-                var countries = new List<Country>
+            var countries = new List<Country>
                 {
                     new Country {EnglishName = "Afghanistan", ArabicName = "افغانستان", EnglishCapital = "Kabul", ArabicCapital = "كابول" },
                     new Country {EnglishName = "Albania", ArabicName = "البانيا", EnglishCapital = "Tirana", ArabicCapital = "تيرانا" },
@@ -211,8 +216,8 @@ public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
                     new Country {EnglishName = "Zimbabwe", ArabicName = "زيمبابوى", EnglishCapital = "Harare", ArabicCapital = "هرارى" }
                 };
 
-        await this._countryRepository.InsertManyAsync(countries);
+            await this._countryRepository.InsertManyAsync(countries);
+        }
     }
 }
-}
-       
+

@@ -28,7 +28,7 @@ public class RegionDataSeeder : IDataSeedContributor, ITransientDependency
                 new Region { ArabicName="test", EnglishName = "test", Status = Status.Inactive,CountryId = 2},
                 new Region { ArabicName="test", EnglishName = "test", Status = Status.Active,CountryId = 3},
 
-        
+
             };
             foreach (var emaraa in emaraat)
             {

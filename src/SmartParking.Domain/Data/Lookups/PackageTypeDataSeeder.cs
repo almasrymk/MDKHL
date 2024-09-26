@@ -29,7 +29,7 @@ namespace SmartParking.Data
                     new PackageType {  EnglishName = "Yearly", ArabicName = "سنوى"}
 
                 };
-             
+
                 await this._PackageTypeeRepository.InsertManyAsync(PackageTypes);
             }
         }
