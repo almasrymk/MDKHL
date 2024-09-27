@@ -4,81 +4,111 @@
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
 <MudGrid>
     <MudItem sm="4">
-        <MudPaper class="custom-rounded p-4">
-            22 Garages
+        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <MudText Class="fw-bold" Typo="Typo.h4">
+                    5
+                </MudText>
+                <MudText>
+                    Organization
+                </MudText>
+            </div>
+            <MudImage Src="images/dashboard/organizations.png" />
         </MudPaper>
     </MudItem>
     <MudItem sm="4">
-        <MudPaper class="custom-rounded p-4">
-            22 Garages
+        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <MudText Class="fw-bold" Typo="Typo.h4">
+                    22
+                </MudText>
+                <MudText>
+                    Garages
+                </MudText>
+            </div>
+            <MudImage Src="images/dashboard/garage.png" />
         </MudPaper>
     </MudItem>
     <MudItem sm="4">
-        <MudPaper class="custom-rounded p-4">
-            22 Garages
+        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <MudText Class="fw-bold" Typo="Typo.h4">
+                    154,520
+                </MudText>
+                <MudText>
+                    Customers
+                </MudText>
+            </div>
+            <MudImage Src="images/dashboard/customers.png" />
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
-        <MudPaper class="custom-rounded p-4">
-            22 Garages
+        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
+            <MudImage Src="images/dashboard/car.png" />
+            <div class="d-flex flex-column">
+                <div>
+                    <MudText Typo="Typo.body2">
+                        Car Model
+                    </MudText>
+                    <MudText Class="fw-bold" Typo="Typo.subtitle1">
+                        Toyota Corolla 2021
+                    </MudText>
+                </div>
+                <div>
+                    <MudText Typo="Typo.body2">
+                        License
+                    </MudText>
+                    <MudText Class="fw-bold" Typo="Typo.subtitle1">
+                        A R S 1234
+                    </MudText>
+                </div>
+                <div>
+                    <MudText Typo="Typo.body2">
+                        License
+                    </MudText>
+                    <MudText Class="fw-bold" Typo="Typo.subtitle1">
+                        A R S 1234
+                    </MudText>
+                </div>
+            </div>
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
-        <MudPaper Class="custom-rounded p-4">
-            22 Garages
+        <MudPaper Class="custom-rounded overflow-hidden h-100">
+            <Image Source="images/dashboard/discount.png" Fluid Class="w-100" />
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="4">
+        <MudPaper Class="custom-rounded p-3">
+            <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="_index" InputLabels="@labels" Width="300px" Height="300px" ChartOptions="@options" />
+
+        </MudPaper>
+
+    </MudItem>
+    <MudItem sm="8">
+        <MudPaper Class="custom-rounded p-3">
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="_barIndex" XAxisLabels="@XAxisLabels" Width="100%"></MudChart>
         </MudPaper>
     </MudItem>
 </MudGrid>
 
 
-<MudButton class="mt-4" Color="MudBlazor.Color.Secondary" Variant="Variant.Filled" @onclick="OpenDialog">Open Dialog</MudButton>
+<MudButton class="mt-4" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" @onclick="OpenDialog">Open Dialog</MudButton>
 
 @code {
     private void OpenDialog()
     {
         var parameters = new DialogParameters
         {
-            
+
             { nameof(SPModal.ChildContent), (RenderFragment)(builder =>
                 {
-                    builder.OpenComponent(0, typeof(MudForm));
-                    builder.AddAttribute(1, "ChildContent", (RenderFragment)(formBuilder =>
-                    {
-                        formBuilder.OpenComponent(2, typeof(MudGrid));
-                        formBuilder.AddAttribute(3, "ChildContent", (RenderFragment)(gridBuilder =>
-                        {
-                            gridBuilder.OpenComponent(4, typeof(MudItem));
-                            gridBuilder.AddAttribute(5, "xs", 6); // Changed to int
-                            gridBuilder.AddAttribute(6, "ChildContent", (RenderFragment)(itemBuilder =>
-                            {
-                                itemBuilder.OpenComponent(7, typeof(MudTextField<string>));
-                                itemBuilder.AddAttribute(8, "Label", "Name");
-                                itemBuilder.AddAttribute(9, "Required", true);
-                                itemBuilder.AddAttribute(10, "RequiredError", "Name is required!");
-                                itemBuilder.CloseComponent();
-                            }));
-                            gridBuilder.CloseComponent();
+                    builder.OpenComponent(0, typeof(SPSampleForm));
 
-                            gridBuilder.OpenComponent(11, typeof(MudItem));
-                            gridBuilder.AddAttribute(12, "xs", 6); // Changed to int
-                            gridBuilder.AddAttribute(13, "ChildContent", (RenderFragment)(itemBuilder =>
-                            {
-                                itemBuilder.OpenComponent(14, typeof(MudTextField<string>));
-                                itemBuilder.AddAttribute(15, "Label", "Email");
-                                itemBuilder.AddAttribute(16, "Required", true);
-                                itemBuilder.AddAttribute(17, "RequiredError", "Email is required!");
-                                itemBuilder.CloseComponent();
-                            }));
-                            gridBuilder.CloseComponent();
-
-                            // Add more items for password and number here as needed
-                        }));
-                        formBuilder.CloseComponent();
-                    }));
                     builder.CloseComponent();
                 })
             }
@@ -86,5 +116,29 @@
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<SPModal>("Form Dialog", parameters, options);
+
     }
+
+    ChartOptions options = new ChartOptions();
+
+    protected override void OnInitialized()
+    {
+        string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
+        options.ChartPalette = colors;
+        options.ShowLegend = true;
+        options.LineStrokeWidth = 10;
+    }
+    double[] data = { 77, 25, 20 };
+    private int _index = -1;
+    string[] labels = { "Paid", "Due ", "Confirmed" };
+
+
+
+    private int _barIndex = -1;
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() {  Data = new double[] { 40, 20, 25, 27, 46, 60, 48 } },
+        new ChartSeries() {  Data = new double[] { 19, 24, 35, 13, 28, 15, 13 } },
+    };
+    public string[] XAxisLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }

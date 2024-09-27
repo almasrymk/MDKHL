@@ -22,11 +22,11 @@ namespace SmartParking.Data
             {
                 var PackageTypes = new List<PackageType>
                 {
-                    new PackageType { Id=1, EnglishName = "Daily", ArabicName = "يومى" , },
-                    new PackageType { Id=2, EnglishName = "Weekly", ArabicName = "اسبوعى" },
-                    new PackageType { Id=3, EnglishName = "Monthly", ArabicName = "شهرى"},
-                    new PackageType { Id=4, EnglishName = "Quarterly", ArabicName = "ربع سنوى"},
-                    new PackageType { Id=5, EnglishName = "Yearly", ArabicName = "سنوى"}
+                    new PackageType {  EnglishName = "Daily", ArabicName = "يومى" , },
+                    new PackageType {  EnglishName = "Weekly", ArabicName = "اسبوعى" },
+                    new PackageType {  EnglishName = "Monthly", ArabicName = "شهرى"},
+                    new PackageType {  EnglishName = "Quarterly", ArabicName = "ربع سنوى"},
+                    new PackageType {  EnglishName = "Yearly", ArabicName = "سنوى"}
 
                 };
              

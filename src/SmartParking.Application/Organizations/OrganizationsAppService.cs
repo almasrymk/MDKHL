@@ -5,7 +5,9 @@ using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using SmartParking.Validations.Organizations;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -14,6 +16,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Organizations;
 
@@ -148,6 +151,108 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         }
         return await base.UpdateAsync(id, input);
+    }
+
+    /// <summary>
+    /// method used to get list of organizations
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it sorted or not</param>
+    /// <returns>OrganizatioDto List</returns>
+    public async Task<PagedResultDto<OrganizationDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        // Get the IQueryable<organization> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply search filtering
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.ArabicName.StartsWith(input.SearchingTerm) ||
+                or.EnglishName.StartsWith(input.SearchingTerm) ||
+                or.Code.StartsWith(input.SearchingTerm) ||
+                or.Country.ArabicName.StartsWith(input.SearchingTerm) ||
+                or.Country.EnglishName.StartsWith(input.SearchingTerm) ||
+                or.State.EnglishName.StartsWith(input.SearchingTerm) ||
+                or.State.ArabicName.StartsWith(input.SearchingTerm) ||
+                or.City.EnglishName.StartsWith(input.SearchingTerm) ||
+                or.City.ArabicName.StartsWith(input.SearchingTerm)
+            );
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+            
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of hotel entities
+        var organizations = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the hotel entities to hotelDto objects
+        var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
+        Console.WriteLine(organizationsDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<OrganizationDto>(
+            totalCount,
+            organizationsDto
+        );
+    }
+
+    /// <summary>
+    /// method used to get list of organizations
+    /// </summary>
+    /// <param name="input">specifies max number of organization and if it filtered or not</param>
+    /// <returns>OrganizatioDto List</returns>
+    public async Task<PagedResultDto<OrganizationDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        // Get the IQueryable<organization> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply filtering
+        var filterExpression = BuildExpression<Organization>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of organizations entities
+        var organizations = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the organizations entities to organizationsDto objects
+        var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
+        Console.WriteLine(organizationsDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<OrganizationDto>(
+            totalCount,
+            organizationsDto
+        );
     }
 }
  

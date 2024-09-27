@@ -1,8 +1,10 @@
-﻿@inherits LayoutComponentBase;
-
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inherits LayoutComponentBase;
+@inject IStringLocalizer<SmartParkingResource> L
 <MudDialogProvider />
 <MudSnackbarProvider />
-<MudThemeProvider />
+<MudThemeProvider Theme="CustomTheme" />
 
 <div>
     <MudLayout Class="auth-layout">
@@ -12,7 +14,7 @@
                     <Image Source="/images/svgs/arabic.svg" />
                     <MudText class="text-white">عربي</MudText>
                 </div>
-                <MudGrid Class="d-flex align-items-center flex-1">
+                <MudGrid Class="d-flex align-items-center flex-1 mb-5">
                     <MudItem xs="12" md="6" Class="d-flex justify-content-center justify-content-md-start">
                         <Image Source="/images/logo/auth-logo.png" Style="max-width: 100%;" />
                     </MudItem>
@@ -23,9 +25,26 @@
                         </MudCard>
                     </MudItem>
                 </MudGrid>
-                <p class="text-center text-white">All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles</p>
+                <p class="text-center text-white mt-5">@L["All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles"]</p>
             </MudMainContent>
         </MudContainer>
     </MudLayout>
 </div>
 
+
+@code {
+    MudTheme CustomTheme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Primary = "#0D5480",
+                Secondary = "#16B7D3",
+                GrayLight = "#F2F2F2",
+                Dark = "#434341",
+                WarningLighten = "#CE3333",
+                Success = "#28BA24",
+                White = "FFFFFF"
+            },
+
+        };
+}

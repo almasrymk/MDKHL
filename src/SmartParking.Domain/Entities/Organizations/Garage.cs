@@ -19,4 +19,6 @@ public class Garage : FullAuditedEntity<int> , IMultiTenant
     public Status Status { get; set; }
 
     public Guid? TenantId { get; set; }
+    public virtual ICollection<GarageCategories> GarageCategories { get; set; }
+
 }

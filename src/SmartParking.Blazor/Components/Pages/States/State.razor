@@ -1,0 +1,58 @@
+﻿@page "/states"
+@using Customs
+@using SmartParking.Lookups
+@using SmartParking.Lookups.State
+@using Volo.Abp.Application.Dtos
+@inherits AbpCrudPageBase<IStateAppService, StateDto, int, PagedAndSortedResultRequestDto, CreateUpdateStateDto>
+@inject IDialogService Dialog
+
+
+
+<MudItem>
+    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="StateDto" MultiSelection="true" Items="states" SortMode="SortMode.Multiple" Filterable="true">
+        <ToolBarContent>
+
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateStateDialog(_backdropClick))">
+
+                CREATE NEW
+                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
+            </MudButton>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="StateDto" />
+            <PropertyColumn Property="x => x.ArabicName" Title="State Arabic Name" />
+            <PropertyColumn Property="x => x.EnglishName" Title="State English Name" />
+            <PropertyColumn Property="x => x.Status" Title="Status" />
+
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
+                    <MudItem Class="d-flex justify-content-center align-items-center">
+                        <MudIconButton OnClick="@(() => OpenDetailsStateDialog(context.Item))"
+                                       Icon="@Icons.Material.Filled.Info"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Primary"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                        <MudIconButton OnClick="@(() => OpenEditStateDialog(context.Item))"
+                                       Icon="@Icons.Material.Filled.Edit"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Secondary"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Error"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                    </MudItem>
+
+                </CellTemplate>
+            </TemplateColumn>
+
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="StateDto" />
+        </PagerContent>
+    </MudDataGrid>
+</MudItem>
+

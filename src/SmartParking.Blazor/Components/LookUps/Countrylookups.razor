@@ -1,0 +1,32 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using SmartParking.Lookups.Governorate
+ @inject IGovernorateAppService GovernorateAppService
+ @inject IStringLocalizer<SmartParkingResource> L
+<MudItem sm="4">
+    <MudSelect 
+               Variant="Variant.Text"
+               Label="@L["Country"]"
+               Placeholder="@L["Choose"]"
+               Clearable="true"
+               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
+        @foreach (var country in countries)
+        {
+            <MudSelectItem T="int"  Value="country.Id">@country.EnglishName</MudSelectItem>
+        }
+    </MudSelect>
+</MudItem>
+
+@code {
+    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    [Parameter]
+    public EventCallback<int> SelectValueChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        countries = await GovernorateAppService.GetCountryLookupAsync();
+         
+    }
+}

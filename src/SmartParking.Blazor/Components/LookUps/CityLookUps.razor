@@ -1,0 +1,30 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using SmartParking.Lookups.City
+@inject ICitiesAppService CitiesAppService
+@inject IStringLocalizer<SmartParkingResource> L
+<MudItem sm="4">
+    <MudSelect 
+               Variant="Variant.Text"
+               Label="@L["City"]"
+               Placeholder="@L["Choose"]"
+               Clearable="true"
+               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
+        @foreach (var city in cities)
+        {
+            <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
+        }
+    </MudSelect>
+</MudItem>
+
+@code {
+    IList<CityLookupDto> cities = new List<CityLookupDto>();
+    [Parameter] public EventCallback<int> SelectValueChanged { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        cities = await CitiesAppService.GetCityLookupAsync();
+
+    }
+}

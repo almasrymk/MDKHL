@@ -1,0 +1,165 @@
+﻿@page "/my-account"
+@* @page "/organizations/add" *@
+@layout Shared.ProfileLayout
+<PageTitle>My Account</PageTitle>
+<div>
+    <MudGrid>
+        <MudItem sm="8">
+            <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                <h3 Color="fw-bold">Main Data</h3>
+                <MudForm Class="flex-grow-1 mt-4">
+                    <MudGrid>
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="Type Here" Label="Arabic Title" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="Type Here" Label="English Title" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField @bind-Value="IntValue" HideSpinButtons="true" Placeholder="Type Here" Label="Commercial Reg. Num." />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudDatePicker Label="Only Calendar" @bind-Date="_date" ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect @bind-Value="_selectValue"
+                                       Variant="Variant.Text"
+                                       Label="governorate"
+                                       Placeholder="Placeholder"
+                                       HelperText="Helper Text"
+                                       Clearable="_clearable">
+                                @foreach (var state in _states)
+                                {
+                                    <MudSelectItem Value="state">@state</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect @bind-Value="_MultiValue"
+                                       Variant="Variant.Text"
+                                       Label="city"
+                                       Placeholder="Multi Select"
+                                       HelperText="Helper Text"
+                                       MultiSelection="true"
+                                       Clearable="_clearable">
+                                @foreach (var state in _states)
+                                {
+                                    <MudSelectItem Value="state">@state</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="Type Here" Label="Arabic Title" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSwitch Label="Status Active" LabelPosition="LabelPosition.Start" @bind-Value="Basic_Switch" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="12">
+                            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+                                <ActivatorContent>
+                                    <div class="border-bottom border-dark pb-3">
+                                        <div class="p-3 rounded bg-dark bg-opacity-10 d-inline-block cursor-pointer">
+                                            <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Title="Add" />
+                                        </div>
+                                        <MudLink Underline="Underline.Always" Color="MudBlazor.Color.Secondary" Class="ms-4 cursor-pointer">Or Browse from Computer</MudLink>
+                                    </div>
+                                </ActivatorContent>
+                            </MudFileUpload>
+                            @if (_files != null)
+                            {
+                                <MudList T="string">
+                                    @foreach (var file in _files)
+                                    {
+                                        <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">
+                                            @file.Name <code>@file.Size bytes</code>
+                                        </MudListItem>
+                                    }
+                                </MudList>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                    <div class="d-flex justify-content-between mt-auto">
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">Cancel</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit">Submit</MudButton>
+                    </div>
+                </MudForm>
+
+            </MudPaper>
+        </MudItem>
+        <MudItem sm="4">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <MudText>My Profile</MudText>
+                    <MudLink Underline="Underline.Always" Href="/edit-profile">Edit Profile</MudLink>
+                </div>
+                <div class="d-flex flex-column align-content-center gap-4 p-5">
+                    <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
+                    <div class="d-flex flex-column align-items-center">
+                        <MudText Class="fw-bold">Ahmed Mohamed</MudText>
+                        <MudText>A.Mohamed@mdkhl.com</MudText>
+                    </div>
+                </div>
+                <MudGrid Class="mt-3">
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Garages</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Subscriptions</MudLink>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Categories</MudLink>
+
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Packages</MudLink>
+
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Users</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Contact Data</MudLink>
+                        </MudPaper>
+                    </MudItem>
+
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+</div>
+@code {
+    public int IntValue { get; set; }
+    private DateTime? _date = DateTime.Today;
+
+    string _selectValue;
+    string _MultiValue;
+
+    bool _clearable;
+    private string[] _states =
+       {
+        "Ryadh", "Mekka", "Gedda", "Madina", "Alkhobar",
+       };
+
+    public bool Basic_Switch { get; set; } = true;
+
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+        //TODO upload the files to the server
+    }
+}

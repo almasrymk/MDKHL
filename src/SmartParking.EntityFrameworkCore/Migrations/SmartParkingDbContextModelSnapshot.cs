@@ -109,7 +109,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.City", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -132,9 +135,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("EmaraaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("EnglishName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -156,8 +156,13 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+<<<<<<< HEAD
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+=======
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+>>>>>>> SmartParking_Dev
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -175,7 +180,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicCapital")
                         .HasColumnType("text");
@@ -238,14 +246,8 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ArabicName")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
@@ -263,8 +265,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("EnglishName")
-                        .HasColumnType("text");
+                    b.Property<int>("IdentificationTypes")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("IdentityUserId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -280,16 +285,26 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+<<<<<<< HEAD
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+=======
+                    b.Property<string>("NationalId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OTP")
+                        .HasColumnType("text");
+>>>>>>> SmartParking_Dev
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("Customers");
                 });
@@ -297,7 +312,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Feature", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicDescription")
                         .HasMaxLength(1000)
@@ -360,7 +378,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicCapital")
                         .HasColumnType("text");
@@ -423,10 +444,13 @@ namespace SmartParking.Migrations
                     b.ToTable("Governorates", (string)null);
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Lookups.Emaraa", b =>
+            modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -481,13 +505,16 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Emaraas", (string)null);
+                    b.ToTable("Regions", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -510,9 +537,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("EmaraaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("EnglishName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -531,8 +555,13 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+<<<<<<< HEAD
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+=======
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+>>>>>>> SmartParking_Dev
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -542,9 +571,231 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmaraaId");
+                    b.HasIndex("RegionId");
 
                     b.ToTable("State", (string)null);
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("PlateColorId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlateColorId");
+
+                    b.ToTable("LicenceTypes");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlateColors");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleBrands");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.VehicleModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.Property<int>("VehiclesBrandId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehiclesBrandId");
+
+                    b.ToTable("VehicleModels");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.ContactInfo", b =>
@@ -837,6 +1088,30 @@ namespace SmartParking.Migrations
                     b.ToTable("Garages");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GarageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GarageId");
+
+                    b.ToTable("GarageCategories");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -872,6 +1147,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
@@ -879,9 +1157,6 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
-
-                    b.Property<int>("EmaraaId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
@@ -909,6 +1184,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
 
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("StateId")
                         .HasColumnType("integer");
 
@@ -930,7 +1208,9 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("EmaraaId");
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("RegionId");
 
                     b.HasIndex("StateId");
 
@@ -1061,11 +1341,19 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
+<<<<<<< HEAD
                     b.Property<TimeOnly>("PublishFrom")
                         .HasColumnType("time without time zone");
 
                     b.Property<TimeOnly>("PublishTo")
                         .HasColumnType("time without time zone");
+=======
+                    b.Property<DateTime>("PublishFrom")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("PublishTo")
+                        .HasColumnType("timestamp without time zone");
+>>>>>>> SmartParking_Dev
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -1143,7 +1431,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.PackageType", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicDescription")
                         .HasMaxLength(1000)
@@ -1272,7 +1563,10 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.UserType", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -1322,6 +1616,82 @@ namespace SmartParking.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserTypes", (string)null);
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Vehicles.Vehicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("BelongToCompany")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("LicenceTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModelYear")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PlateColorId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.Property<int>("VehicleBrandId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VehicleModelId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LicenceTypeId");
+
+                    b.HasIndex("PlateColorId");
+
+                    b.HasIndex("VehicleBrandId");
+
+                    b.HasIndex("VehicleModelId");
+
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -3132,6 +3502,15 @@ namespace SmartParking.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
+                {
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", "IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("IdentityUserId");
+
+                    b.Navigation("IdentityUser");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
                 {
                     b.HasOne("SmartParking.Entities.Country", "Country")
@@ -3145,11 +3524,33 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Lookups.Emaraa", null)
+                    b.HasOne("SmartParking.Entities.Lookups.Region", null)
                         .WithMany("State")
-                        .HasForeignKey("EmaraaId")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", "PlateColor")
+                        .WithMany("Types")
+                        .HasForeignKey("PlateColorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlateColor");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.VehicleModel", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", "VehiclesBrand")
+                        .WithMany("Models")
+                        .HasForeignKey("VehiclesBrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VehiclesBrand");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.ContactInfo", b =>
@@ -3190,6 +3591,15 @@ namespace SmartParking.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Organizations.Garage", null)
+                        .WithMany("GarageCategories")
+                        .HasForeignKey("GarageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
                 {
                     b.HasOne("SmartParking.Entities.City", "City")
@@ -3204,9 +3614,13 @@ namespace SmartParking.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartParking.Entities.Lookups.Emaraa", "Emaraa")
+                    b.HasOne("SmartParking.Entities.Customers.Customer", null)
                         .WithMany("Organizations")
-                        .HasForeignKey("EmaraaId")
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("SmartParking.Entities.Lookups.Region", "Region")
+                        .WithMany("Organizations")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3220,7 +3634,7 @@ namespace SmartParking.Migrations
 
                     b.Navigation("Country");
 
-                    b.Navigation("Emaraa");
+                    b.Navigation("Region");
 
                     b.Navigation("State");
                 });
@@ -3253,6 +3667,55 @@ namespace SmartParking.Migrations
                     b.Navigation("Package");
                 });
 
+<<<<<<< HEAD
+=======
+            modelBuilder.Entity("SmartParking.Entities.TenantConnectionString", b =>
+                {
+                    b.HasOne("Volo.Abp.TenantManagement.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Vehicles.Vehicle", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", "LicenceType")
+                        .WithMany()
+                        .HasForeignKey("LicenceTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", "PlateColor")
+                        .WithMany()
+                        .HasForeignKey("PlateColorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", "VehicleBrand")
+                        .WithMany()
+                        .HasForeignKey("VehicleBrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleModel", "VehicleModel")
+                        .WithMany()
+                        .HasForeignKey("VehicleModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LicenceType");
+
+                    b.Navigation("PlateColor");
+
+                    b.Navigation("VehicleBrand");
+
+                    b.Navigation("VehicleModel");
+                });
+
+>>>>>>> SmartParking_Dev
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog", null)
@@ -3400,16 +3863,36 @@ namespace SmartParking.Migrations
                     b.Navigation("Governorates");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
+                {
+                    b.Navigation("Organizations");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
                 {
                     b.Navigation("Cities");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Lookups.Emaraa", b =>
+            modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>
                 {
                     b.Navigation("Organizations");
 
                     b.Navigation("State");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", b =>
+                {
+                    b.Navigation("Types");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", b =>
+                {
+                    b.Navigation("Models");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
+                {
+                    b.Navigation("GarageCategories");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Organization", b =>
