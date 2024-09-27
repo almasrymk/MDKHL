@@ -1,12 +1,14 @@
-﻿@using SmartParking.Cameras
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cameras
 @using SmartParking.Enums
+@using SmartParking.Localization
 @using Volo.Abp
 @inject IDialogService DialogService
-
+@inject IStringLocalizer<SmartParkingResource> L
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">New Government</MudText>
+            <MudText Typo="Typo.h6">@L["New Camera"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudGrid>
@@ -19,52 +21,52 @@
                                 <MudTextField @bind-Value="cameraDto.Name"
                                               For="@(() => cameraDto.Name)"
                                               Immediate="true"
-                                              Label="Name" />
+                                              Label="@L["Name"]" />
                             </MudItem>
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.Model"
                                               For="@(() => cameraDto.Model)"
                                               Immediate="true"
-                                              Label="Model" />
+                                              Label="@L["Model"]" />
                             </MudItem>
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.MainType"
                                               For="@(() => cameraDto.MainType)"
                                               Immediate="true"
-                                              Label="MainType" />
+                                              Label="@L["MainType"]" />
                             </MudItem>
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.BrandName"
                                               For="@(() => cameraDto.BrandName)"
                                               Immediate="true"
-                                              Label="BrandName" />
+                                              Label="@L["BrandName"]" />
                             </MudItem>
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.Code"
                                               For="@(() => cameraDto.Code)"
                                               Immediate="true"
-                                              Label="Code" />
+                                              Label="@L["Code"]" />
 
                             </MudItem>
                             <MudItem sm="4">
                     <MudTextField @bind-Value="cameraDto.CameraIP"
                                   For="@(() => cameraDto.CameraIP)"
                                   Immediate="true"
-                                              Label="CameraIP" />
+                                              Label="@L["CameraIP"]" />
 
                 </MudItem>
                             <MudItem sm="4">
                     <MudTextField @bind-Value="cameraDto.MacAddress"
                                   For="@(() => cameraDto.MacAddress)"
                                   Immediate="true"
-                                              Label="MacAddress" />
+                                              Label="@L["MacAddress"]" />
 
                 </MudItem>
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.Type"
                                               For="@(() => cameraDto.Type)"
                                               Immediate="true"
-                                              Label="Type" />
+                                              Label="@L["Type"]" />
 
                             </MudItem>
 
@@ -74,9 +76,9 @@
 
 
                                     <MudRadioGroup @bind-Value="@cameraDto.Status" Class="d-inline-flex align-content-center">
-                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">@L["Deleted"]</MudRadio>
                                     </MudRadioGroup>
                                 </div>
                             </MudItem>
@@ -92,11 +94,11 @@
 
                 <MudItem sm="6" md="6">
 
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">Create</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">@L["Create"]</MudButton>
                 </MudItem>
                 <MudItem sm="6" md="6">
 
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">Cancel</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
                 </MudItem>
             </MudGrid>
         </DialogActions>
