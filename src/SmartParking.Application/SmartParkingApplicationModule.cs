@@ -2,6 +2,7 @@
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
+using Volo.Abp.FluentValidation;
 using Volo.Abp.Identity;
 using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
@@ -18,8 +19,10 @@ namespace SmartParking;
     typeof(AbpPermissionManagementApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
-    typeof(AbpSettingManagementApplicationModule)
-    )]
+    typeof(AbpSettingManagementApplicationModule),
+    typeof(AbpFluentValidationModule) //Add the FluentValidation module
+
+	)]
 public class SmartParkingApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

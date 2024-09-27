@@ -47,6 +47,6 @@ public interface IDefaultPackagesAppService
     ///// </summary>
     ///// <param name="id">id of DefaultPackage</param>
     ///// <returns>successfull message of deletion</returns>
-    //Task<string> DeleteByIdAsync(int id);
+            
 
 }

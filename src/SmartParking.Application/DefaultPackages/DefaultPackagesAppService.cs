@@ -20,8 +20,6 @@ namespace SmartParking.DefaultPackages
             _defaultPackageRepository = defaultPackageRepository;
         }
 
-        public IRepository<DefaultPackage, int> DefaultPackageRepository { get; }
-
         public async Task<DefaultPackageDto> CreateAsync(CreateUpdateDefaultPackageDto input)
         {
             var oldPackage = _defaultPackageRepository.FirstOrDefaultAsync(_ => _.OrgnizationId == input.OrgnizationId && _.Status == Enums.Status.Active);
