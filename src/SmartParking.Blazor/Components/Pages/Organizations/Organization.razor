@@ -6,4 +6,4 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 
-<SPDataGrid PageName="organizations" OnAdd="HandleAdd" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+<SPDataGrid PageName="organizations" OnAdd="HandleAdd" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
