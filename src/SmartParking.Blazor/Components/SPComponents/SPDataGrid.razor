@@ -16,7 +16,7 @@
             <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search For Organizations"]" Adornment="Adornment.End" Immediate="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
             <MudItem Class="me-2 ">
-                <MudButton OnClick="OnClickFilter" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Filter">@L["Filters"]</MudButton>
+                <MudButton OnClick="OnClickFilter" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FilterAlt"></MudButton>
 
             </MudItem>
             <MudItem>
@@ -124,17 +124,33 @@
 
 
             }
-            <TemplateColumn Title="Actions">
+            <TemplateColumn Title="@L["Actions"]">
                 <CellTemplate>
+                    <MudItem Class="d-flex justify-content-center align-items-center">
+                        <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
+                                       
+                                       Icon="@Icons.Material.Filled.Info"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Primary"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                        <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
+                                       Icon="@Icons.Material.Filled.Edit"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Secondary"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                        <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))"
+                                       Icon="@Icons.Material.Filled.Delete"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Error"
+                                       Size="MudBlazor.Size.Small"
+                                       Class="mx-1" />
+                    </MudItem>
 
-                    <MudMenu Icon="@Icons.Material.Filled.Settings">
-                        <MudMenuItem OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))">@L["Edit"]</MudMenuItem>
-                        <MudMenuItem OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))">@L["View Details"]</MudMenuItem>
-                        <MudMenuItem OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))">@L["Delete"]</MudMenuItem>
-                    </MudMenu>
                 </CellTemplate>
-
             </TemplateColumn>
+            
 
 
         </Columns>
