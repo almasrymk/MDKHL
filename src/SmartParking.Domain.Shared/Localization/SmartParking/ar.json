@@ -39,7 +39,7 @@
     "My Profile": "ملفي الشخصي",
     "Edit Profile": "تحرير الملف الشخصي",
     "Garages": "إدارة الكراجات",
-    "Subscriptions": "إشتراكاتي",
+    "Subscription": "إشتراكاتي",
     "Categories": "فئات",
     "Packages": "باقاتي",
     "Users": "المستخدمين",
@@ -74,7 +74,24 @@
     "Cities": "المدن",
     "Package Types": "أنواع الحزمة",
     "Settings": "إعدادات",
-    "Profile": "حساب تعريفي"
+    "Profile": "حساب تعريفي",
+    "New Camera": "اضافة كاميرا",
+    "Name": "الاسم",
+    "Model": "نموذج",
+    "MainType": "النوع الكاميرا",
+    "BrandName": "اسم العلامة التجارية",
+    "Code": "الكود",
+    "CameraIP": "كاميرا IP",
+    "MacAddress": "عنوان Mac",
+    "Type": "النوع",
+    "Active": "نشط",
+    "InActive": "غير نشط",
+    "Deleted": "محذوف",
+    "Create": "انشاء",
+    "Edit Camera": "تعديل الكاميرا",
+    "GarageId": "كود الجراج",
+    "Id": "كود",
+    "Actions": "إجراءات"
 
   }
 }

@@ -59,7 +59,24 @@
     "OrganizationName": "Organization Name",
     "Edit": "Edit",
     "View Details": "View Details",
-    "Delete": "Delete"
+    "Delete": "Delete",
+    "New Camera": "New Camera",
+    "Name": "Name",
+    "Model": "Model",
+    "MainType": "MainType",
+    "BrandName": "BrandName",
+    "Code": "Code",
+    "CameraIP": "CameraIP",
+    "MacAddress": "MacAddress",
+    "Type": "Type",
+    "Active": "Active",
+    "InActive": "InActive",
+    "Deleted": "Deleted",
+    "Create": "Create",
+    "Edit Camera": "Edit Camera",
+    "GarageId": "GarageId",
+    "Id": "Id",
+    "Actions": "Actions"
 
 
 
