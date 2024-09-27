@@ -1,0 +1,87 @@
+﻿@using SmartParking.Lookups
+@using SmartParking.Lookups.City
+@using Volo.Abp.Application.Dtos
+@inject ICitiesAppService CitiesAppService
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">Update Government</MudText>
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="city.ArabicName"
+									  For="@(() => city.ArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="ArabicName" 
+									  Disabled/>
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="city.EnglishName"
+									  For="@(() => city.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="EnglishName" 
+									  Disabled/>
+					</MudItem>
+
+
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@city.GovernorateId"
+								   Variant="Variant.Text"
+								   Label="Governorate"
+								   Placeholder="Please Select"
+								   Clearable="_clearable"
+								   AnchorOrigin="Origin.TopCenter"
+								   TransformOrigin="Origin.TopCenter"
+								   Disabled>
+
+							@foreach (var government in governments)
+							{
+								<MudSelectItem Value="government.Id">@government.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+		</DialogContent>
+		<DialogActions>
+			<MudButton OnClick="Cancel">Cancel</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+	[Parameter] public CityDto city { get; set; } = new CityDto();
+	public IReadOnlyList<GovernmentLookupDto> governments { get; set; } = new List<GovernmentLookupDto>();
+	private MudForm editForm;
+	bool _clearable;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await CitiesAppService.GetGovernmentLookupAsync();
+		governments = result;
+	}
+
+
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}
+

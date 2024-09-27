@@ -5,35 +5,30 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data.Lookups
+namespace SmartParking.Data.Lookups;
+
+public class CityDataSeeder : IDataSeedContributor, ITransientDependency
 {
-    public class CityDataSeeder : IDataSeedContributor, ITransientDependency
+    private readonly IRepository<City, int> _cityRepository;
+
+    public async Task SeedAsync(DataSeedContext context)
     {
-        private readonly IRepository<City, int> _cityRepository;
-
-        public CityDataSeeder(IRepository<City, int> cityRepository)
+        if (!await _cityRepository.AnyAsync())
         {
-            _cityRepository = cityRepository;
-        }
-
-        public async Task SeedAsync(DataSeedContext context)
-        {
-            if (!await _cityRepository.AnyAsync())
-            {
-                var cities = new List<City>
+            var cities = new List<City>
                 {
-                    new City { Id = 1, ArabicName="test", EnglishName = "test", GovernorateId = 1 },
-                    new City { Id = 2, ArabicName="test", EnglishName = "test", GovernorateId = 2 },
-                    new City { Id = 3, ArabicName="test", EnglishName = "test", GovernorateId = 3 },
-              
-                
+                    new City { ArabicName="test", EnglishName = "test", GovernorateId = 1 },
+                    new City { ArabicName="test", EnglishName = "test", GovernorateId = 2 },
+                    new City {  ArabicName="test", EnglishName = "test", GovernorateId = 3 },
+
+
                 };
 
-                foreach (var city in cities)
-                {
-                    await _cityRepository.InsertAsync(city);
-                }
+            foreach (var city in cities)
+            {
+                await _cityRepository.InsertAsync(city);
             }
         }
     }
 }
+

@@ -19,9 +19,9 @@ public class Organization : BaseEntity
     public int CountryId { get; set; }
     public virtual Country Country { get; set; }
 
-    public int EmaraaId { get; set; }
+    public int RegionId { get; set; }
 
-    public virtual Emaraa Emaraa { get; set; }
+    public virtual Region Region { get; set; }
 
     public int StateId { get; set; }
 

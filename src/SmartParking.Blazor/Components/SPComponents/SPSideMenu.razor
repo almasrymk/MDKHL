@@ -1,4 +1,6 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
 <div class="pt-5">
     <MudDrawerContainer Class="mud-height-full" >
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
@@ -6,9 +8,25 @@
                 <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">Dashboard</MudNavLink>
                 <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">Organizations</MudNavLink>
                 <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.Group">My Account</MudNavLink>
-                <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="false">
-                    <MudNavLink Href="/edit-profile">Profile</MudNavLink>
-                    <MudNavLink Href="/dashboard">Packages</MudNavLink>
+                <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="Components">
+                    <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Group">Login</MudNavLink>
+                    <MudNavLink Href="/data-grid" Icon="@Icons.Material.Filled.Group">Data Grid</MudNavLink>
+                                        <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">subscription</MudNavLink>
+
+
+                </MudNavGroup>
+                <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="Lookups">
+                    <MudNavLink Href="/governments" Icon="@Icons.Material.Filled.Group">Governments</MudNavLink>
+                    <MudNavLink Href="/countries" Icon="@Icons.Material.Filled.Group">Countries</MudNavLink>
+                    <MudNavLink Href="/cities" Icon="@Icons.Material.Filled.Group">Cities</MudNavLink>
+                    <MudNavLink Href="/packagetypes" Icon="@Icons.Material.Filled.Group">Package Types</MudNavLink>
+                                        <MudNavLink Href="/states" Icon="@Icons.Material.Filled.Group">States</MudNavLink>
+                    <MudNavLink Href="/regions" Icon="@Icons.Material.Filled.Group">Regions</MudNavLink>
+
+                </MudNavGroup>
+                <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
+                    <MudNavLink Href="/edit-profile">@L["Profile"]</MudNavLink>
+                    <MudNavLink Href="/dashboard">@L["Packages"]</MudNavLink>
                 </MudNavGroup>
             </MudNavMenu>
         </MudDrawer>

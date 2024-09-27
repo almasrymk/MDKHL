@@ -22,6 +22,8 @@ public class Package : BaseEntity
     public string ActivedBy { get; set; }
     public DateTime DectivationDate { get; set; }
     public string DeactivatedBy { get; set; }
-    public virtual Category Category { get; set; }
+    public int OrgnizationId { get; set; }
     public Status Status { get; set; }
+    public virtual Organization Organization { get; set; }
+
 }

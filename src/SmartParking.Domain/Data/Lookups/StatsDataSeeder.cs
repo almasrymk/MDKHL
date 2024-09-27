@@ -6,34 +6,28 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.Data.Lookups
+namespace SmartParking.Data.Lookups;
+
+public class StateDataSeeder : IDataSeedContributor, ITransientDependency
 {
-    public class StateDataSeeder : IDataSeedContributor, ITransientDependency
+    private readonly IRepository<State, int> _StateRepository;
+
+    public async Task SeedAsync(DataSeedContext context)
     {
-        private readonly IRepository<State, int> _StateRepository;
-
-        public StateDataSeeder(IRepository<State, int> StateRepository)
+        if (!await _StateRepository.AnyAsync())
         {
-            _StateRepository = StateRepository;
-        }
+            var StateList = new List<State>
+                {
+                    new State { ArabicName="test", EnglishName = "test", RegionId = 1, Status = Status.Active },
+                    new State { ArabicName="test", EnglishName = "test", RegionId = 2, Status = Status.Active },
+                    new State { ArabicName="test", EnglishName = "test", RegionId = 3, Status = Status.Active },
+            };
 
-        public async Task SeedAsync(DataSeedContext context)
-        {
-            if (!await _StateRepository.AnyAsync())
+            foreach (var State in StateList)
             {
-                var StateList = new List<State>
-                {
-                    new State { Id = 1,ArabicName="test", EnglishName = "test", EmaraaId = 1, Status = Status.Active },
-                    new State { Id = 2,ArabicName="test", EnglishName = "test", EmaraaId = 2, Status = Status.Active },
-                    new State { Id = 3,ArabicName="test", EnglishName = "test", EmaraaId = 3, Status = Status.Active },
-
-                };
-
-                foreach (var State in StateList)
-                {
-                    await _StateRepository.InsertAsync(State);
-                }
+                await _StateRepository.InsertAsync(State);
             }
         }
     }
+
 }

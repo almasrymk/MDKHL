@@ -3,7 +3,9 @@ using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Vehicles;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -64,18 +66,20 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Entities.TenantConnectionString> TenantConnectionStrings { get; set; }
 
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<Category> Categories { get; set; }
     public DbSet<ContactInfo> ContactInfos { get; set; }
     public DbSet<OrganizationCustomers> OrganizationCustomers { get; set; }
     public DbSet<Garage> Garages { get; set; }
     public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
+    public DbSet<DefaultPackage> DefaultPackages { get; set; }
     public DbSet<GarageCategories> GarageCategories { get; set; }
-    public DbSet<Subscription> Subscriptions { get; set; }
+   // public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
+    public DbSet<PackageCategory> PackageCategories { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+
 
 
 
@@ -91,9 +95,16 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>,IIdenti
     public DbSet<Screen> Screens { get; set; }
     public DbSet<UserType> UserTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
-    public DbSet<Emaraa> Emaraas { get; set; }
+    public DbSet<Region> Regions { get; set; }
     public DbSet<State> States { get; set; }
-    [NotMapped]
+	public DbSet<VehicleModel> VehicleModels { get; set; }
+	public DbSet<VehicleBrand> VehicleBrands { get; set; }
+	public DbSet<LicenceType> LicenceTypes { get; set; }
+	public DbSet<PlateColor> PlateColors { get; set; }
+
+
+
+	[NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 
     #endregion

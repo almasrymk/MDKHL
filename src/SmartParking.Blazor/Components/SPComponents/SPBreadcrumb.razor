@@ -1,5 +1,8 @@
 ﻿
-<MudBreadcrumbs Items="_items" Class="text-white"></MudBreadcrumbs>
+<div class="d-flex align-items-center gap-1">
+    <MudIcon Icon="@Icons.Material.Filled.Home" Size="MudBlazor.Size.Small" class="text-white" aria-label="home" />
+    <MudBreadcrumbs Items="_items" Class="text-white"></MudBreadcrumbs>
+</div>
 
 <style>
 
@@ -24,4 +27,5 @@
         new MudBlazor.BreadcrumbItem("Dashboard", href: "#"),
 
     };
+}
 }
