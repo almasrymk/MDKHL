@@ -34,13 +34,13 @@ public partial class OrganizationAdd
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
 
-    private void SelectCountry(int country)
+    private void SelectCountry(string country)
     {
-        CountrySelectValue = country;
+        CountrySelectValue = int.Parse(country);
     }
-    private void SelectCity(int city)
+    private void SelectCity(string city)
     {
-        CitySelectValue = city;
+        CitySelectValue = int.Parse(city);
     }
     private async Task Save()
     {

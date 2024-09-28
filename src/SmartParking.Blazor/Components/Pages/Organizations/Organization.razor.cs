@@ -130,7 +130,7 @@ public partial class Organization
         foreach (var item in organizations.Items)
         {
             var rowDef = new RowDef();
-            //rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>("Code", item.Code));
             rowDef.Cells.Add(new KeyValuePair<string, string>("English Name", item.EnglishName));
             rowDef.Cells.Add(new KeyValuePair<string, string>("Country Name", item.CountryName));
