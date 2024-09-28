@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using SmartParking.Blazor.Components.Pages.Cities;
-using SmartParking.Cameras;
+﻿using MudBlazor;
 using SmartParking.Lookups;
-using SmartParking.Lookups.Governorate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +7,9 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
 
-namespace SmartParking.Blazor.Components.Pages.Governments;
+namespace SmartParking.Blazor.Components.Pages.Governorates;
 
-public partial class Government
+public partial class Governorate
 {
 
 	private IReadOnlyList<GovernorateDto> governorates = new List<GovernorateDto>();
@@ -44,24 +40,24 @@ public partial class Government
 
 	}
 
-	private Task OpenCreateGovernmentDialog(DialogOptions options)
+	private Task OpenCreateGovernorateDialog(DialogOptions options)
 	{
-		return Dialog.ShowAsync<AddGovernmentDialog>("Add Governorate", options);
+		return Dialog.ShowAsync<AddGovernorateDialog>("Add Governorate", options);
 	}
 
-	private async Task OpenEditGovernmentDialog(GovernorateDto governorateDto)
+	private async Task OpenEditGovernorateDialog(GovernorateDto governorateDto)
 	{
 		var parameters = new DialogParameters { ["Governorate"] = governorateDto };
-		var dialog = await Dialog.ShowAsync<EditGovernmentDialog>("Edit Governorate", parameters);
+		var dialog = await Dialog.ShowAsync<EditGovernorateDialog>("Edit Governorate", parameters);
 		var result = await dialog.Result;
 
 
 	}
 
-	private async Task OpenDetailsGovernmentDialog(GovernorateDto governorate)
+	private async Task OpenDetailsGovernorateDialog(GovernorateDto governorate)
 	{
 		var parameters = new DialogParameters { ["Governorate"] = governorate };
-		var dialog = await Dialog.ShowAsync<DetailsGovernmentDialog>("Governorate Details", parameters);
+		var dialog = await Dialog.ShowAsync<DetailsGovernorateDialog>("Governorate Details", parameters);
 		var result = await dialog.Result;
 
 

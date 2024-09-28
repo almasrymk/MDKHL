@@ -10,16 +10,15 @@ namespace SmartParking.Data.Lookups;
 
 public class StateDataSeeder : IDataSeedContributor, ITransientDependency
 {
-    private readonly IRepository<State, int> _StateRepository;
+    private readonly IRepository<State, int> _stateRepository;
 
-	public StateDataSeeder(IRepository<State, int> stateRepository)
-	{
-		_StateRepository = stateRepository;
-	}
-
-	public async Task SeedAsync(DataSeedContext context)
+    public StateDataSeeder(IRepository<State, int> stateRepository)
     {
-        if (!await _StateRepository.AnyAsync())
+        _stateRepository = stateRepository;
+    }
+    public async Task SeedAsync(DataSeedContext context)
+    {
+        if (!await _stateRepository.AnyAsync())
         {
             var StateList = new List<State>
                 {
@@ -30,7 +29,7 @@ public class StateDataSeeder : IDataSeedContributor, ITransientDependency
 
             foreach (var State in StateList)
             {
-                await _StateRepository.InsertAsync(State);
+                await _stateRepository.InsertAsync(State);
             }
         }
     }

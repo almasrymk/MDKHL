@@ -1,16 +1,20 @@
-﻿@using SmartParking.Lookups
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Localization
+@using SmartParking.Lookups
 @using SmartParking.Lookups.City
 @using SmartParking.Lookups.State
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IStateAppService StateAppService
 @inject ISnackbar Snackbar
-
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["AddStates"]</PageTitle>
 
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">New State</MudText>
+                <MudText Typo="Typo.h6">@L["NewState"]</MudText>
         </TitleContent>
         <DialogContent>
 
@@ -22,7 +26,9 @@
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="ArabicName" />
+                                      Placeholder="@L["EnterYourArabicName"]"
+                                      InputType="InputType.Text"
+                                          Label="@L["Arabic Name"]" />
                     </MudItem>
 
                     <MudItem sm="6">
@@ -30,21 +36,21 @@
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="EnglishName" />
+                                          Placeholder="@L["EnterYourEnglishName"]"
+                                      InputType="InputType.Text"
+                                          Label="@L["English Name"]" />
                     </MudItem>
-
+                    <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
 
 
                     <MudItem sm="6" Class="d-inline-flex justify-content-center">
-                        <div Class="d-flex flex-row justify-content-between">
-
-
+                        <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@input.Status" Class="d-inline-flex align-content-center">
                                 <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
                                 <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
                                 <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
                             </MudRadioGroup>
-                        </div>
+                        </MudItem>
                     </MudItem>
                 </MudGrid>
             </MudForm>
@@ -52,15 +58,15 @@
         </DialogContent>
 
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 
 </MudItem>
 
 
-@code {
+    @code {
 
     private MudForm form;
     public CreateUpdateStateDto input = new CreateUpdateStateDto();
@@ -68,32 +74,47 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
+    private int RegionSelectValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
     }
+
+    private void SelectRegion(int region)
+    {
+        RegionSelectValue = region;
+    }
     private async Task Submit()
     {
+        var successedMessage = L["StateCreatedSuccessfully"];
+        var errorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
             // Call your service to create the camera
             try
             {
-                await StateAppService.CreateAsync(input);
+                CreateUpdateStateDto createUpdateStateDto = new CreateUpdateStateDto()
+                {
+                    ArabicName = input.ArabicName,
+                    EnglishName = input.EnglishName,
+                    Status = input.Status,
+                    RegionId = RegionSelectValue
+                };
+                await StateAppService.CreateAsync(createUpdateStateDto);
             }
             catch (UserFriendlyException ex)
             {
                 Snackbar.Add(ex.Message, Severity.Error);
                 return;
             }
-            Snackbar.Add("State created successfully!", Severity.Success);
+            Snackbar.Add(successedMessage, Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
 
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add(errorMessage, Severity.Error);
         }
     }
     private void Cancel()
@@ -105,7 +126,8 @@
 
 
 <style>
-    .mud-modal {
+    .mud-modal 
+    {
         border-radius: 0 20px 0 20px;
     }
 </style>

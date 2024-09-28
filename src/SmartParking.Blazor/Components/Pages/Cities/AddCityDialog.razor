@@ -1,4 +1,6 @@
-﻿@using SmartParking.Blazor.Components.LookUps
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
 @using SmartParking.Lookups.Governorate
@@ -6,12 +8,13 @@
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
 @inject ISnackbar Snackbar
-
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["Add Cities"]</PageTitle>
 
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">New City</MudText>
+            <MudText Typo="Typo.h6">"@L["NewCity"]</MudText>
         </TitleContent>
         <DialogContent>
 
@@ -23,7 +26,8 @@
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="ArabicName" />
+                                      Label="@L["Arabic Name"]"
+                                      Placeholder="@L["ُEnterYourArabicName"]" />
                     </MudItem>
 
                     <MudItem sm="6">
@@ -31,7 +35,8 @@
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="EnglishName" />
+                                      Label="@L["English Name"]"
+                                      Placeholder="@L["EnterYourEnglishName"]" />
                     </MudItem>
                     
                     <MudItem sm="6" >
@@ -39,28 +44,29 @@
                                       For="@(() => input.Notes)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="Notes" />
+                                      Label="@L["Notes"]"
+                                      Placeholder="@L["EnterYourNotes"]" />
                     </MudItem>
-                    <GovernorateLookups SelectValueChanged="SelectGovernment"></GovernorateLookups>
+                    <GovernorateLookUps SelectValueChanged="SelectGovernment"></GovernorateLookUps>
                 </MudGrid>
             </MudForm>
 
         </DialogContent>
 
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 
 </MudItem>
 
 
-@code {
+    @code {
 
     private MudForm form;
     public CreateUpdateCityDto input = new CreateUpdateCityDto();
-    public IReadOnlyList<GovernmentLookupDto> cities = new List<GovernmentLookupDto>();
+    public IReadOnlyList<GovernorateLookupDto> cities = new List<GovernorateLookupDto>();
     private int GovernmentSelectValue { get; set; }
 
     [CascadingParameter]
@@ -74,30 +80,40 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        var result = await CitiesAppService.GetGovernmentLookupAsync();
+        var result = await CitiesAppService.GetGovernorateLookupAsync();
         cities = result;
     }
     private async Task Submit()
     {
+        var successedMessage = L["CityCreatedSuccessfully"];
+        var errorMessage = L["PleaseFixTheValidationErrors"];
+
         if (form.IsValid)
         {
             // Call your service to create the camera
             try
             {
-                await CitiesAppService.CreateAsync(input);
+                CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
+                {
+                    ArabicName = input.ArabicName,
+                    EnglishName = input.EnglishName,
+                    Notes = input.Notes,
+                    GovernorateId = GovernmentSelectValue
+                };
+                await CitiesAppService.CreateAsync(createUpdateCityDto);
             }
             catch (UserFriendlyException ex)
             {
                 Snackbar.Add(ex.Message, Severity.Error);
                 return;
             }
-            Snackbar.Add("City created successfully!", Severity.Success);
+            Snackbar.Add(successedMessage, Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
 
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add(errorMessage, Severity.Error);
         }
     }
     private void Cancel()

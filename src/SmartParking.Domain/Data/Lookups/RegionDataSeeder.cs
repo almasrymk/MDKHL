@@ -13,9 +13,9 @@ public class RegionDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<Region, int> _regionRepository;
 
-    public RegionDataSeeder(IRepository<Region, int> emaraaRepository)
+    public RegionDataSeeder(IRepository<Region, int> regionRepository)
     {
-        _regionRepository = emaraaRepository;
+        _regionRepository = regionRepository;
     }
 
     public async Task SeedAsync(DataSeedContext context)

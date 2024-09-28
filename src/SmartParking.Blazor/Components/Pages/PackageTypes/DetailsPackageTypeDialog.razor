@@ -1,22 +1,26 @@
-﻿@using SmartParking.Lookups
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp.Application.Dtos
 @inject IPackageTypesAppService PackageTypesAppService
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["PackageTypesDetails"]</PageTitle>
 
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">Update Country</MudText>
+				<MudText Typo="Typo.h6">@L["PackageTypeDetails"]</MudText>
 		</TitleContent>
 		<DialogContent>
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
 					<MudItem sm="6">
 						<MudTextField @bind-Value="packageType.ArabicName"
 									  For="@(() => packageType.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="ArabicName" 
+									  Label="@L["Arabic Name"]"
 									  Disabled/>
 					</MudItem>
 
@@ -25,7 +29,7 @@
 									  For="@(() => packageType.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="EnglishName" 
+									  Label="@L["English Name"]"
 									  Disabled/>
 					</MudItem>
 
@@ -39,28 +43,30 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton OnClick="Cancel">Cancel</MudButton>
+				<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
 		</DialogActions>
 	</MudDialog>
 
 </MudItem>
 
-<style>
-	.mud-modal {
-		border-radius: 0 20px 0 20px;
-	}
-</style>
+
 
 @code {
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 	[Parameter] public PackageTypeDto packageType { get; set; } = new PackageTypeDto();
-	private MudForm editForm;
-	bool _clearable;
+
 
 	private void Cancel()
 	{
 		MudDialog.Cancel();
 	}
 }
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
 

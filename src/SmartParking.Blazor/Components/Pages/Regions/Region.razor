@@ -1,39 +1,39 @@
-﻿@page "/governments"
+﻿@page "/regions"
 @using Customs
 @using SmartParking.Lookups
+@using SmartParking.Lookups.Region
 @using Volo.Abp.Application.Dtos
-@inherits AbpCrudPageBase<IGovernorateAppService, GovernorateDto, int, PagedAndSortedResultRequestDto, CreateUpdateGovernorateDto>
+@inherits AbpCrudPageBase<IRegionAppService, RegionDto, int, PagedAndSortedResultRequestDto, CretaeUpdateRegionDto>
 @inject IDialogService Dialog
 
 
 
 <MudItem>
-    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="GovernorateDto" MultiSelection="true" Items="governorates" SortMode="SortMode.Multiple" Filterable="true">
+    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="RegionDto" MultiSelection="true" Items="regions" SortMode="SortMode.Multiple" Filterable="true">
         <ToolBarContent>
-           
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateGovernmentDialog(_backdropClick))">
-                
+
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateRegionDialog(_backdropClick))">
+
                 CREATE NEW
                 <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
             </MudButton>
         </ToolBarContent>
         <Columns>
-            <SelectColumn T="GovernorateDto" />
-            <PropertyColumn Property="x => x.ArabicName" Title="Government Arabic Name"  />
-            <PropertyColumn Property="x => x.EnglishName" Title="Government English Name" />
-            <PropertyColumn Property="x => x.CountryArabicName" Title="Country Arabic Name"  />
-            <PropertyColumn Property="x => x.CountryEnglishName" Title="Country English Name"  />
+            <SelectColumn T="RegionDto" />
+            <PropertyColumn Property="x => x.ArabicName" Title="Region Arabic Name" />
+            <PropertyColumn Property="x => x.EnglishName" Title="Region English Name" />
+            <PropertyColumn Property="x => x.Status" Title="Region Status" />
 
             <TemplateColumn Title="Actions">
                 <CellTemplate>
                     <MudItem Class="d-flex justify-content-center align-items-center">
-                        <MudIconButton OnClick="@(() => OpenDetailsGovernmentDialog(context.Item))"
+                        <MudIconButton OnClick="@(() => OpenDetailsRegionDialog(context.Item))"
                                        Icon="@Icons.Material.Filled.Info"
                                        Variant="Variant.Filled"
                                        Color="MudBlazor.Color.Primary"
                                        Size="MudBlazor.Size.Small"
                                        Class="mx-1" />
-                        <MudIconButton OnClick="@(() => OpenEditGovernmentDialog(context.Item))"
+                        <MudIconButton OnClick="@(() => OpenEditRegionDialog(context.Item))"
                                        Icon="@Icons.Material.Filled.Edit"
                                        Variant="Variant.Filled"
                                        Color="MudBlazor.Color.Secondary"
@@ -48,9 +48,10 @@
 
                 </CellTemplate>
             </TemplateColumn>
+
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="GovernorateDto" />
+            <MudDataGridPager T="RegionDto" />
         </PagerContent>
     </MudDataGrid>
 </MudItem>

@@ -1,5 +1,136 @@
-﻿<h3>EditStateDialog</h3>
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using SmartParking.Lookups.State
+@using Volo.Abp.Application.Dtos
+@inject IStateAppService StateAppService
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["EditStates"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+				<MudText Typo="Typo.h6">@L["UpdateState"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+
+
+
+					<MudItem sm="6" >
+						<MudTextField @bind-Value="state.ArabicName"
+									  For="@(() => state.ArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+										  Label="@L["Arabic Name"]" />
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="state.EnglishName"
+									  For="@(() => state.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+										  Label="@L["English Name"]" />
+					</MudItem>
+					
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@state.RegionId"
+									   Variant="Variant.Text"
+									   Label="@L["Region"]"
+									   Placeholder="@L["Choose"]"
+									   AnchorOrigin="Origin.TopCenter"
+									   TransformOrigin="Origin.TopCenter">
+
+							@foreach (var region in regions)
+							{
+								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+
+
+
+					<MudItem sm="6" Class="d-inline-flex justify-content-center">
+						<MudItem Class="d-flex flex-row justify-content-between">
+							<MudRadioGroup @bind-Value="@state.Status" Class="d-inline-flex align-content-center">
+								<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+								<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+								<MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+							</MudRadioGroup>
+						</MudItem>
+					</MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+				<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+				<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
 
 @code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+	[Parameter] public StateDto state { get; set; } = new StateDto();
+	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
+	private MudForm editForm;
+	bool _clearable;
 
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await StateAppService.GetRegionLookupAsync();
+		regions = result;
+	}
+
+
+	private async Task Save()
+	{
+		await editForm.Validate();
+		if (editForm.IsValid)
+		{
+
+			// Create the input object for update
+			var input = new CreateUpdateStateDto
+				{
+					ArabicName = state.ArabicName,
+					EnglishName = state.EnglishName,
+					Status = state.Status,
+					RegionId = state.RegionId,
+
+
+				};
+
+			// Call the update method
+			await StateAppService.UpdateAsync(state.Id, input);
+
+			// Close the dialog with a success result
+			MudDialog.Close(DialogResult.Ok(true));
+		}
+	}
+
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
 }
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+

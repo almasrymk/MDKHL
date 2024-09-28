@@ -11,16 +11,15 @@ public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<Country, int> _countryRepository;
 
-	public CountriesDataSeeder(IRepository<Country, int> countryRepository)
-	{
-		_countryRepository = countryRepository;
-	}
-
-	public async Task SeedAsync(DataSeedContext context)
+    public CountriesDataSeeder(IRepository<Country,int> countryRepository)
     {
-        if (!await _countryRepository.AnyAsync())
+        _countryRepository = countryRepository;
+    }
+    public async Task SeedAsync(DataSeedContext context)
         {
-            var countries = new List<Country>
+            if (!await _countryRepository.AnyAsync())
+            {
+                var countries = new List<Country>
                 {
                     new Country {EnglishName = "Afghanistan", ArabicName = "افغانستان", EnglishCapital = "Kabul", ArabicCapital = "كابول" },
                     new Country {EnglishName = "Albania", ArabicName = "البانيا", EnglishCapital = "Tirana", ArabicCapital = "تيرانا" },

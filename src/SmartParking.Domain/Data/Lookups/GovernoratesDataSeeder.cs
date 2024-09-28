@@ -14,12 +14,12 @@ public class GovernoratesDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<Governorate, int> _governorateRepository;
 
-	public GovernoratesDataSeeder(IRepository<Governorate, int> governorateRepository)
-	{
-		_governorateRepository = governorateRepository;
-	}
 
-	public async Task SeedAsync(DataSeedContext context)
+    public GovernoratesDataSeeder(IRepository<Governorate, int> governorateRepository)
+    {
+        _governorateRepository = governorateRepository;
+    }
+    public async Task SeedAsync(DataSeedContext context)
     {
         if (!await _governorateRepository.AnyAsync())
         {
