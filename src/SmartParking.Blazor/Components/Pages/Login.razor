@@ -22,7 +22,7 @@
     <MudLink Href="/verify-account" Class="fw-bold" Color="MudBlazor.Color.Dark">Click here to reset</MudLink>
 </div>
 
-    <MudButton Class="mt-4" ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">LOGIN</MudButton>
+        <MudButton Class="mt-4" Variant="Variant.Filled" OnClick="@( () => HandleLogin())" Color="MudBlazor.Color.Primary">LOGIN</MudButton>
 </MudForm>
 
 </MudContainer>
@@ -39,7 +39,7 @@
             if (!string.IsNullOrEmpty(token))
             {
                 // Redirect to dashboard if user is already logged in
-                NavigationManager.NavigateTo("/dashboard");
+                NavigationManager.NavigateTo("/");
             }
             isRendered = true; // Mark as rendered so that future JS operations are safe
         }

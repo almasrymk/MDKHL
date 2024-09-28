@@ -1,33 +1,91 @@
 ﻿@page "/edit-profile"
+@using Volo.Abp.Account
 @layout Shared.ProfileLayout
+
 <PageTitle>Edit Profile</PageTitle>
 <div class="w-100">
     <MudPaper Class="p-5 d-flex flex-column align-items-center justify-content-center w-100 main-layout-paper" Style="background-color: #F2F2F2;">
-        <MudForm Class="d-flex flex-column gap-4">
+        <MudForm Class="d-flex flex-column gap-4" @ref="form" OnValidSubmit="SaveChanges">
             <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
-                <MudImage Src="images/profile-avatar.png" />
+                <MudImage Src="@ProfilePictureUrl" Alt="Profile Picture" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
                     <ActivatorContent>
                         <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
                     </ActivatorContent>
                 </MudFileUpload>
             </div>
+            <MudTextField T="string" Placeholder="Type your username here" Label="Username" @bind-Value="Profile.UserName" Required="true" />
+            <MudTextField T="string" Placeholder="Type your name here" Label="Name" @bind-Value="Profile.Name" Required="true" />
+            <MudTextField T="string" Placeholder="Type your email here" Label="Email" @bind-Value="Profile.Email" Required="true" />
+            <MudTextField T="string" Placeholder="Type your phone number here" Label="Phone" @bind-Value="Profile.PhoneNumber" Required="true" />
 
-            <MudTextField T="string" Placeholder="Type your Email or Phone Number here" Label="Name" />
-            <MudTextField T="string" Placeholder="Type your Email or Phone Number here" Label="Email" />
-            <MudTextField T="string" Placeholder="Type your Email or Phone Number here" Label="Phone" />
             <div class="d-flex align-items-center gap-3 mt-4">
                 <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">CHANGE PASSWORD</MudButton>
-                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled">SAVE CHANGES</MudButton>
+                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="@(() =>  SaveChanges())">SAVE CHANGES</MudButton>
             </div>
         </MudForm>
     </MudPaper>
 </div>
+
 @code {
+    private MudForm form;
+    private string ProfilePictureUrl = "images/profile-avatar.png"; // Default profile picture
+    private UpdateProfileDto Profile = new UpdateProfileDto(); // Profile object for binding
+
+    // Inject the profile service and snackbar
+    [Inject] private IProfileAppService ProfileAppService { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
+
     IList<IBrowserFile> _files = new List<IBrowserFile>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetProfile();
+        StateHasChanged();
+    }
+
+    private async Task GetProfile()
+    {
+        try
+        {
+            var profile = await ProfileAppService.GetAsync();
+            Profile.Name = profile.Name;
+            Profile.Email = profile.Email;
+            Profile.PhoneNumber = profile.PhoneNumber;
+            Profile.UserName = profile.UserName;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading profile: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            
+            await form.Validate();
+
+            if (form.IsValid)
+            {
+                await ProfileAppService.UpdateAsync(Profile);
+                Snackbar.Add("Profile updated successfully!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Form validation failed. Please check the fields.", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating profile: {ex.Message}", Severity.Error);
+        }
+    }
+
     private void UploadFiles(IBrowserFile file)
     {
         _files.Add(file);
-        //TODO upload the files to the server
+        // TODO: upload the files to the server
     }
 }
