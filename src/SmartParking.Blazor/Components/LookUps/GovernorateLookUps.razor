@@ -25,7 +25,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        governorates = await CitiesAppService.GetGovernmentLookupAsync();
+        governorates = await CitiesAppService.GetGovernorateLookupAsync();
 
     }
 }

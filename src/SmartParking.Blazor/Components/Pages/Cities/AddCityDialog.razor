@@ -80,7 +80,7 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        var result = await CitiesAppService.GetGovernmentLookupAsync();
+        var result = await CitiesAppService.GetGovernorateLookupAsync();
         cities = result;
     }
     private async Task Submit()

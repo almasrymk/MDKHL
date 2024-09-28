@@ -1,57 +1,17 @@
 ﻿@page "/cities"
 @using Customs
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
 @using SmartParking.Lookups
 @using Volo.Abp.Application.Dtos
 @inherits AbpCrudPageBase<ICitiesAppService, CityDto, int, PagedAndSortedResultRequestDto, CreateUpdateCityDto>
 @inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
 
 
+<h3>@L["Cities"]</h3>
 
-<MudItem>
-    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="CityDto" MultiSelection="true" Items="cities" SortMode="SortMode.Multiple" Filterable="true">
-        <ToolBarContent>
+<SPDataGrid PageName="cities" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateCity" OnClickRowDelete="OnClickRowDelete">
 
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateCityDialog(_backdropClick))">
-
-                CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
-            </MudButton>
-        </ToolBarContent>
-        <Columns>
-            <SelectColumn T="CityDto" />
-            <PropertyColumn Property="x => x.ArabicName" Title="City Arabic Name" />
-            <PropertyColumn Property="x => x.EnglishName" Title="City English Name" />
-            <PropertyColumn Property="x => x.GovernorateId" Title="City English Name" />
-
-            <TemplateColumn Title="Actions">
-                <CellTemplate>
-                    <MudItem Class="d-flex justify-content-center align-items-center">
-                        <MudIconButton OnClick="@(() => OpenDetailsCityDialog(context.Item))"
-                                       Icon="@Icons.Material.Filled.Info"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Primary"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                        <MudIconButton OnClick="@(() => OpenEditCityDialog(context.Item))"
-                                       Icon="@Icons.Material.Filled.Edit"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Secondary"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Error"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                    </MudItem>
-
-                </CellTemplate>
-            </TemplateColumn>
-
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="CityDto" />
-        </PagerContent>
-    </MudDataGrid>
-</MudItem>
-
+</SPDataGrid>
