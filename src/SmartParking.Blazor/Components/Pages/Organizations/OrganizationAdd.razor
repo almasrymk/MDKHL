@@ -42,7 +42,7 @@
                             <MudDatePicker Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="EmaraaId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Emaraa Id"]" />
+                            <MudNumericField Required="true" @bind-Value="RegionId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Emaraa Id"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField Required="true" @bind-Value="StateId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["State Id"]" />
@@ -53,7 +53,7 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
-                        <CityLookups SelectValueChanged="SelectCity"></CityLookups>
+                        <CityLookUps SelectValueChanged="SelectCity"></CityLookUps>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
                         </MudItem>

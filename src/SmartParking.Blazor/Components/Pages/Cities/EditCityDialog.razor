@@ -53,7 +53,7 @@
 		</DialogContent>
 		<DialogActions>
 			<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
+				<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await Save())">@L["Edit"]</MudButton>
 		</DialogActions>
 	</MudDialog>
 
@@ -64,10 +64,12 @@
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 	[Parameter] public CityDto city { get; set; } = new CityDto();
+	[Parameter] public CreateUpdateCityDto input { get; set; } = new CreateUpdateCityDto();
 	public IReadOnlyList<GovernorateLookupDto> governorates { get; set; } = new List<GovernorateLookupDto>();
 	private MudForm editForm;
 	bool _clearable;
-	
+	[Parameter] public int UpdatedId { get; set; }
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -92,7 +94,7 @@
 			};
 
 			// Call the update method
-			await CitiesAppService.UpdateAsync(city.Id, input);
+			await CitiesAppService.UpdateAsync(UpdatedId, input);
 
 			// Close the dialog with a success result
 			MudDialog.Close(DialogResult.Ok(true));

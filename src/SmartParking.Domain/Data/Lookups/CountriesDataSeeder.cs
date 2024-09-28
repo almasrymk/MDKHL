@@ -215,8 +215,8 @@ public class CountriesDataSeeder : IDataSeedContributor, ITransientDependency
                     new Country {EnglishName = "Zimbabwe", ArabicName = "زيمبابوى", EnglishCapital = "Harare", ArabicCapital = "هرارى" }
                 };
 
-        await this._countryRepository.InsertManyAsync(countries);
+            await this._countryRepository.InsertManyAsync(countries);
+        }
     }
 }
-}
-       
+

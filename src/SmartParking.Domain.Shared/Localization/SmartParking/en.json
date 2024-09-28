@@ -96,7 +96,13 @@
     "StateDetails": "State Details",
     "EditStates": "Edit States",
     "UpdateState": "Update State",
-    "StateCreatedSuccessfully": "State Created Successfully"
-
+    "StateCreatedSuccessfully": "State Created Successfully",
+    "Cities": "Cities",
+    "Countries": "Countries",
+    "Governorates": "Governorates",
+    "PackageTypes": "Package Types",
+    "States": "States",
+    "Regions": "Regions",
+    "Lookups": "Lookups"
   }
 }

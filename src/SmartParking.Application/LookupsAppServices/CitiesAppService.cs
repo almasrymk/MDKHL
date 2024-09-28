@@ -1,6 +1,4 @@
 ﻿using SmartParking.Entities;
-using SmartParking.Entities.Organizations;
-using SmartParking.Garages;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
 using System;
@@ -11,7 +9,6 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.LookupsAppServices
 {

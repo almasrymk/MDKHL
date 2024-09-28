@@ -1,51 +1,20 @@
 ﻿@page "/garages"
 @using Customs
+@using Microsoft.Extensions.Localization
 @using SmartParking.Garages
 @using FluentValidation
 @using Enums
+@using SmartParking.Localization
 @using SmartParking.Organizations
 @inject IDialogService DialogService
 @inject IGarageAppService GarageAppService
 @inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
 
 
-<h3>Garages</h3>
 
-<div>
-    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="GarageDto" MultiSelection="true" Items="@Garages" SortMode="SortMode.Multiple" Filterable="true"
-                 Hideable="true" >
-        <ToolBarContent>
-            <MudTextField Elevation="2" Placeholder="Search For Organizations" Adornment="Adornment.End" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
-            <MudSpacer />
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="CreateGarage">
-                CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
-            </MudButton>
-        </ToolBarContent>
-        <Columns>
-            <SelectColumn T="GarageDto" />
-            <PropertyColumn Property="x => x.Code" Title="Garage Code" Sortable="false" Filterable="false" />
-            <PropertyColumn Property="x => x.Name" Title="Name" />
-            <PropertyColumn Property="x => x.MaxCapacity" Title="Max Capacity" />
-            <PropertyColumn Property="x => x.ClosingHours" Title="Closing Hours" />
-            <PropertyColumn Property="x => x.Status" Title="Status" />
-            <TemplateColumn Title="Actions">
-                <CellTemplate >
+<h3>@L["Garages"]</h3>
 
-                    <MudMenu Icon="@Icons.Material.Filled.Settings">
-                        <MudMenuItem OnClick="@(e => OnClickRowEdit(context.Item))">Edit</MudMenuItem>
-                        <MudMenuItem OnClick="@(e => OnClickRowView(context.Item))">View Details</MudMenuItem>
-                        <MudMenuItem>Delete</MudMenuItem>
-                    </MudMenu>
-                </CellTemplate>
-
-            </TemplateColumn>
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="GarageDto" />
-        </PagerContent>
-    </MudDataGrid>
-</div>
+<SPDataGrid PageName="garages" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 

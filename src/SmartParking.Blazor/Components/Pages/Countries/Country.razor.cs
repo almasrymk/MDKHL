@@ -1,8 +1,8 @@
 ﻿using MudBlazor;
-using SmartParking.Blazor.Components.Pages.Governorates;
+using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Lookups;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
@@ -10,49 +10,267 @@ namespace SmartParking.Blazor.Components.Pages.Countries;
 
 public partial class Country
 {
-	private IReadOnlyList<CountryDto> countries = new List<CountryDto>();
-	private int currentPage = 1;
-	private int pageSize = 100;
-	//Dialog
-
-	private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
 
 
+    private int TotalItem;
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
+    public int RowPerPage { get; set; } = 10; // Default value is 10
 
-	private async Task GetData()
-	{
-		var result = await AppService.GetListAsync(new PagedAndSortedResultRequestDto
-		{
-			MaxResultCount = pageSize,
-			SkipCount = (currentPage - 1) * pageSize
-		});
+    private TableData itemData = new TableData();
 
-		countries = result.Items.ToList();
-		StateHasChanged();
-	}
-	protected override async Task OnInitializedAsync()
-	{
+    private string termSearch;
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
-		await base.OnInitializedAsync();
-		await GetData();
 
-	}
 
-	private Task OpenCreateCountryDialog(DialogOptions options)
-	{
-		return Dialog.ShowAsync<AddCountryDialog>("Add Country", options);
-	}
+    /// <summary>
+    /// filter for hotels on the server side using the hotel columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    {
+        // Log the search term to the console for debugging purposes
 
-	private async Task OpenEditCountryDialog(CountryDto countryDto)
-	{
-		var parameters = new DialogParameters { ["Country"] = countryDto };
-		var dialog = await Dialog.ShowAsync<EditCountryDialog>("Edit Country", parameters);
-		var result = await dialog.Result;
-	}
-	private async Task OpenDetailsCountryDialog(CountryDto countryDto)
-	{
-		var parameters = new DialogParameters { ["Country"] = countryDto };
-		var dialog = await Dialog.ShowAsync<DetailsCountryDialog>("Details Country", parameters);
-		var result = await dialog.Result;
-	}
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndFilteredResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var countriesDto = await AppService.Filter(input);
+
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)countriesDto.TotalCount;
+        CreateTable(countriesDto);
+
+
+    }
+    /// <summary>
+    /// Searches for hotels on the server side using the hotel code search term.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
+    {
+        // Log the search term to the console for debugging purposes
+        Console.WriteLine(pageInfo.SearchTerm);
+
+        // Update the term used for searching with the provided search term
+        termSearch = pageInfo.SearchTerm;
+
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
+        };
+
+        // Call the service to perform the search based on the input parameters
+        var countryDto = await AppService.Search(input);
+
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)countryDto.TotalCount;
+        CreateTable(countryDto);
+    }
+    /// <summary>
+    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// </summary>
+    /// <param name="page">The page number for which to fetch the data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+    {
+
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        Console.WriteLine(RowPerPage);
+        // Create a request object for paged and sorted data
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+
+        // Retrieve the list of organizations from the server
+        var countriesDto = await AppService.GetListAsync(input);
+        TotalItem = (int)countriesDto.TotalCount;
+        CreateTable(countriesDto);
+
+    }
+
+    private void CreateTable(PagedResultDto<CountryDto> countries)
+    {
+        // Initialize table data to be displayed, setting the table's name and whether to show the header
+        var tableData = new TableData()
+        {
+            Name = "Countries",
+            ShowHeader = true
+        };
+
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "ArabicName", Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "EnglishName", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "ArabicCapital", Name = "ArabicCapital", IsFilterable = true, PropertyNmae = "ArabicCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "EnglishCapital", Name = "EnglishCapital", IsFilterable = true, PropertyNmae = "EnglishCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+        foreach (var item in countries.Items)
+        {
+            var rowDef = new RowDef();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("ArabicName", item.ArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("EnglishName", item.EnglishName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("ArabicCapital", item.ArabicCapital));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("EnglishCapital", item.EnglishCapital));
+
+
+
+            tableData.Rows.Add(rowDef);
+        }
+        itemData = tableData;
+    }
+
+    private Task CreateCountry()
+    {
+
+
+        return DialogService.ShowAsync<AddCountryDialog>("Simple Dialog", options);
+
+
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var countryDto = await AppService.GetAsync(id);
+
+        var createUpdateCountry = new CreateUpdateCountryDto
+        {
+            ArabicName = countryDto.ArabicName,
+            EnglishName = countryDto.EnglishName,
+            ArabicCapital = countryDto.ArabicCapital,
+            EnglishCapital = countryDto.EnglishCapital,
+            Notes = countryDto.Notes,
+           
+        };
+
+
+
+        var parameters = new DialogParameters
+        {
+            ["CountryDto"] = countryDto,
+            ["UpdatedId"] = id
+        };
+
+
+        return await DialogService.ShowAsync<EditCountryDialog>("Edit Country", parameters);
+
+    }
+    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var countriesDto = await AppService.GetAsync(id);
+
+
+        var parameters = new DialogParameters
+        {
+            ["Countries"] = countriesDto,
+        };
+
+
+        return await DialogService.ShowAsync<DetailsCountryDialog>("View Country", parameters);
+    }
+
+    private async Task OnClickRowDelete(string row)
+    {
+        var id = int.Parse(row);
+        try
+        {
+
+            await AppService.DeleteAsync(id);
+            ShowSnackbar("Country Deleted Successfully ", Severity.Success);
+
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar(ex.Message, Severity.Error);
+        }
+
+    }
+
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
+
+    {
+
+        Snackbar.Clear();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+
+    }
+    //private IReadOnlyList<CountryDto> countries = new List<CountryDto>();
+    //private int currentPage = 1;
+    //private int pageSize = 100;
+    ////Dialog
+
+    //private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+
+
+
+    //private async Task GetData()
+    //{
+    //	var result = await AppService.GetListAsync(new PagedAndSortedResultRequestDto
+    //	{
+    //		MaxResultCount = pageSize,
+    //		SkipCount = (currentPage - 1) * pageSize
+    //	});
+
+    //	countries = result.Items.ToList();
+    //	StateHasChanged();
+    //}
+    //protected override async Task OnInitializedAsync()
+    //{
+
+    //	await base.OnInitializedAsync();
+    //	await GetData();
+
+    //}
+
+    //private Task OpenCreateCountryDialog(DialogOptions options)
+    //{
+    //	return Dialog.ShowAsync<AddCountryDialog>("Add Country", options);
+    //}
+
+    //private async Task OpenEditCountryDialog(CountryDto countryDto)
+    //{
+    //	var parameters = new DialogParameters { ["Country"] = countryDto };
+    //	var dialog = await Dialog.ShowAsync<EditCountryDialog>("Edit Country", parameters);
+    //	var result = await dialog.Result;
+    //}
+    //private async Task OpenDetailsCountryDialog(CountryDto countryDto)
+    //{
+    //	var parameters = new DialogParameters { ["Country"] = countryDto };
+    //	var dialog = await Dialog.ShowAsync<DetailsCountryDialog>("Details Country", parameters);
+    //	var result = await dialog.Result;
+    //}
 }

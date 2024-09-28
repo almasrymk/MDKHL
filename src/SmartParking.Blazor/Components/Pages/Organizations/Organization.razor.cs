@@ -18,7 +18,14 @@ public partial class Organization
 
     private string termSearch;
 
-
+    private void HandleEdit(RowDef row)
+    {
+        Navigation.NavigateTo("/organizations/update/" + row.Cells[0].Value,true);
+    }
+    private void HandleAdd()
+    {
+        Navigation.NavigateTo("/organizations/add",true);
+    }
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>

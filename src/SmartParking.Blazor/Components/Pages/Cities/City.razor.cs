@@ -1,13 +1,8 @@
 ﻿using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Garages;
-using SmartParking.Blazor.Components.Pages.Governorates;
-using SmartParking.Garages;
 using SmartParking.Lookups;
-using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
@@ -120,13 +115,10 @@ public partial class City
             ShowHeader = true
         };
 
-
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = true, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = "City Arabic Name", Name = "City Arabic Name", IsFilterable = true, PropertyNmae = "City Arabic Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = "City English Name", Name = "City English Name", IsFilterable = true, PropertyNmae = "City English Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Governorate Arabic Name", Name = "Governorate Arabic Name", IsFilterable = true, PropertyNmae = "Governorate Arabic Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Governorate English Name", Name = "Governorate English Name", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Governorate Notes", Name = "Governorate Notes", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Text });
+       
 
         foreach (var item in cities.Items)
         {
@@ -134,11 +126,6 @@ public partial class City
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>("City Arabic Name", item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>("City English Name", item.EnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Governorate Arabic Name", item.GovernorateArabicName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Governorate English Name", item.GovernorateEnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Governorate Notes", item.GovernorateNotes));
-
-
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
@@ -163,6 +150,8 @@ public partial class City
             ArabicName = cityDto.ArabicName,
             EnglishName = cityDto.EnglishName,
             Notes= cityDto.Notes,
+            GovernorateId = cityDto.GovernorateId,
+            Id = id
         };
 
 
@@ -177,6 +166,8 @@ public partial class City
         return await Dialog.ShowAsync<EditCityDialog>("Edit City", parameters);
 
     }
+
+
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);

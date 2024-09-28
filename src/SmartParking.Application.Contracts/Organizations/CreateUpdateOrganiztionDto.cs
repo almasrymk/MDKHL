@@ -22,7 +22,7 @@ public class CreateUpdateOrganiztionDto
     public DateOnly LicenseExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public int CountryId { get; set; }
 
-    public int EmaraaId { get; set; }
+    public int RegionId { get; set; }
 
     public int StateId { get; set; }
 
