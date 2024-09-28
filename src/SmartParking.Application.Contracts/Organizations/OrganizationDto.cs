@@ -9,15 +9,35 @@ namespace SmartParking.Organizations;
 
 public class OrganizationDto
 {
-    public  int  Id { get; set; }
-    public string Code { get; set; }
+    public int Id { get; set; }
+    public string ArabicName { get; set; }
     public string EnglishName { get; set; }
+
+    public string UnifiedLicenseNum { get; set; }
+    // public Guid TenantId { get; set; }
+
+    public int NumOfCameras { get; set; }
+
+    public int MaxCapacity { get; set; }
+    public DateOnly CRExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateOnly LicenseExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public int CountryId { get; set; }
+
+    public int RegionId { get; set; }
+    public string RegionName { get; set; }
+
+    public int StateId { get; set; }
+
+    public int CityId { get; set; }
+    public string PhoneNum { get; set; }
+    public string WhatsAppNum { get; set; }
+    public string ContactMail { get; set; }
+
+    public Status? Status { get; set; }
+    public string Code { get; set; }
     public string CountryName { get; set; }
     public string StateName { get; set; }
     public string CityName { get; set; }
-    public int MaxCapacity { get; set; }
-    public int NumOfCameras { get; set; }
-    public Status Status { get; set; }
 
 
 }
