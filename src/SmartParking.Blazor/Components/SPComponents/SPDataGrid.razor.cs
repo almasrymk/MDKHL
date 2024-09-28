@@ -28,7 +28,7 @@ public partial class SPDataGrid
     private string sort;
     MudDataGrid<RowDef> dataGrid;
     private bool _ascending = true;
-    public string sortString = "Code";
+    public string sortString = "Id";
     public bool ClickFilter { get; set; } = false;
     private string SelectedColumn { get; set; }
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
