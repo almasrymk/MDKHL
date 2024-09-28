@@ -1,16 +1,20 @@
-﻿@using SmartParking.Blazor.Components.LookUps
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Region
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["AddRegions"]</PageTitle>
 
 
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">New Region</MudText>
+                <MudText Typo="Typo.h6">@L["NewRegion"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
@@ -20,7 +24,9 @@
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="ArabicName" />
+                                          Placeholder="@L["EnterYourArabicName"]"
+                                          InputType="InputType.Text"
+                                      Label="@L["Arabic Name"]" />
                     </MudItem>
 
                     <MudItem sm="6">
@@ -28,7 +34,9 @@
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="EnglishName" />
+                                          Placeholder="@L["EnterYourEnglishName"]"
+                                          InputType="InputType.Text"
+                                          Label="@L["English Name"]" />
                     </MudItem>
                     <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
 
@@ -48,15 +56,15 @@
         </DialogContent>
 
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 
 </MudItem>
 
 
-@code {
+    @code {
 
     private MudForm form;
     public CretaeUpdateRegionDto input = new CretaeUpdateRegionDto();
@@ -77,25 +85,34 @@
     }
     private async Task Submit()
     {
+        var successedMessage = L["RegionCreatedSuccessfully"];
+        var errorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
             // Call your service to create the camera
             try
             {
-                await RegionAppService.CreateAsync(input);
+                CretaeUpdateRegionDto createUpdateRegionDto = new CretaeUpdateRegionDto()
+                {
+                    ArabicName = input.ArabicName,
+                    EnglishName = input.EnglishName,
+                    Status = input.Status,
+                    CountryId = CountrySelectValue
+                };
+                await RegionAppService.CreateAsync(createUpdateRegionDto);
             }
             catch (UserFriendlyException ex)
             {
                 Snackbar.Add(ex.Message, Severity.Error);
                 return;
             }
-            Snackbar.Add("Region created successfully!", Severity.Success);
+            Snackbar.Add(successedMessage, Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
 
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add(errorMessage, Severity.Error);
         }
     }
     private void Cancel()

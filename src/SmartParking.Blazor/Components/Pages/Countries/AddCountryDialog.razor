@@ -1,55 +1,66 @@
-﻿@using SmartParking.Lookups
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject ICountriesAppService CountriesAppService
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["AddCountries"]</PageTitle>
 
-
-<div class="modal-wrapper">
+<MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">New Country</MudText>
+                <MudText Typo="Typo.h6">@L["NewCountry"]</MudText>
         </TitleContent>
         <DialogContent>
-
-
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="6" >
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="ArabicName" />
+                                      Label="@L["Arabic Name"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["EnterYourArabicName"]" />
                     </MudItem>
 
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="6" >
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="EnglishName" />
+                                      Label="@L["English Name"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["EnterYourEnglishName"]" />
                     </MudItem>
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="6" >
                         <MudTextField @bind-Value="input.ArabicCapital"
                                       For="@(() => input.ArabicCapital)"
                                       Immediate="true"
-                                      Label="ArabicCapital" />
+                                      Label="@L["Arabic Capital"]" 
+                                      InputType="InputType.Text" 
+                                      Placeholder="@L["EnterYourArabicCapital"]" />
                     </MudItem>
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="6" >
                         <MudTextField @bind-Value="input.EnglishCapital"
                                       For="@(() => input.EnglishCapital)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="EnglishCapital" />
+                                      Label="@L["English Capital"]"
+                                      InputType="InputType.Text" 
+                                      Placeholder="@L["EnterYourEnglishCapital"]" />
                     </MudItem>
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="6" >
                         <MudTextField @bind-Value="input.Notes"
                                       For="@(() => input.Notes)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Label="Notes" />
+                                      Label="@L["Notes"]"
+                                      InputType="InputType.Text" 
+                                      Placeholder="@L["EnterYourNotes"]" />
                     </MudItem>
                   
                 </MudGrid>
@@ -58,18 +69,12 @@
         </DialogContent>
 
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 
-</div>
-
-<style>
-    .mud-modal {
-        border-radius: 0 20px 0 20px;
-    }
-</style>
+</MudItem>
 
 @code {
 
@@ -83,6 +88,8 @@
     
     private async Task Submit()
     {
+        var successedMessage = L["CountryCreatedSuccessfully"];
+        var errorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
             // Call your service to create the camera
@@ -95,13 +102,13 @@
                 Snackbar.Add(ex.Message, Severity.Error);
                 return;
             }
-            Snackbar.Add("Country created successfully!", Severity.Success);
+            Snackbar.Add(successedMessage, Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
 
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add(errorMessage, Severity.Error);
         }
     }
     private void Cancel()
@@ -109,3 +116,10 @@
         MudDialog.Cancel();
     }
 }
+
+<style>
+    .mud-modal 
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

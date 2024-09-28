@@ -57,7 +57,7 @@ public partial class PackageType
     private async Task OpenDetailsPackageTypeDialog(PackageTypeDto packageTypeDto)
     {
         var parameters = new DialogParameters { ["Package Type"] = packageTypeDto };
-        var dialog = await Dialog.ShowAsync<EditPackageTypeDialog>("Edit Package Type", parameters);
+        var dialog = await Dialog.ShowAsync<DetailsPackageTypeDialog>("Package Type Details", parameters);
         var result = await dialog.Result;
     }
 }

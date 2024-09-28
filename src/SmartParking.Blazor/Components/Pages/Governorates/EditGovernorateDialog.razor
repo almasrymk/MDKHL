@@ -7,7 +7,9 @@
 @inject IGovernorateAppService GovernorateAppService
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["EditGovernorates"]</PageTitle>
-<div class="modal-wrapper">
+
+
+<MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["UpdateGovernorate"]</MudText>
@@ -21,7 +23,7 @@
 					
 
 
-					<MudItem sm="6" md="6">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="governorate.ArabicName"
 									  For="@(() => governorate.ArabicName)"
 									  Immediate="true"
@@ -30,7 +32,7 @@
 									  InputType="InputType.Text" />
 					</MudItem>
 
-					<MudItem sm="6" md="6">
+					<MudItem sm="6" >
 						<MudTextField @bind-Value="governorate.EnglishName"
 									  For="@(() => governorate.EnglishName)"
 									  Immediate="true"
@@ -38,14 +40,14 @@
 									  Label="@L["English Name"]"
 									  InputType="InputType.Text" />
 					</MudItem>
-					<MudItem sm="6" md="6">
+					<MudItem sm="6" >
 						<MudTextField @bind-Value="governorate.ArabicCapital"
 									  For="@(() => governorate.ArabicCapital)"
 									  Immediate="true"
 									  Label="@L["Arabic Capital"]"
 									  InputType="InputType.Text" />
 					</MudItem>
-					<MudItem sm="6" md="6">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="governorate.EnglishCapital"
 									  For="@(() => governorate.EnglishCapital)"
 									  Immediate="true"
@@ -53,14 +55,16 @@
 									  Label="@L["English Capital"]"
 									  InputType="InputType.Text" />
 					</MudItem>
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@governorate.CountryId"
-								   Variant="Variant.Text"
-								   Label="@L["Country"]"
-								   Placeholder="@L["Choose"]"
-								   Clearable="_clearable"
-								   AnchorOrigin="Origin.TopCenter"
-								   TransformOrigin="Origin.TopCenter">
+
+
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@governorate.CountryId"
+									   Variant="Variant.Text"
+									   Label="@L["Governorate"]"
+									   Placeholder="@L["Choose"]"
+									   Clearable="_clearable"
+									   AnchorOrigin="Origin.TopCenter"
+									   TransformOrigin="Origin.TopCenter" >
 
 							@foreach (var country in countries)
 							{
@@ -83,13 +87,9 @@
 		</DialogActions>
 	</MudDialog>
 
-</div>
+</MudItem>
 
-<style>
-	.mud-modal {
-		border-radius: 0 20px 0 20px;
-	}
-</style>
+
 
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -97,6 +97,7 @@
 	public IReadOnlyList<CountryLookupDto> countries { get; set; } = new List<CountryLookupDto>();
 	private MudForm editForm;
 	bool _clearable;
+	
 
 
 	protected override async Task OnInitializedAsync()
@@ -113,7 +114,7 @@
 
 			// Create the input object for update
 			var input = new CreateUpdateGovernorateDto
-				{
+			{
 					ArabicName = governorate.ArabicName,
 					EnglishName = governorate.EnglishName,
 					ArabicCapital = governorate.ArabicCapital,
@@ -122,7 +123,7 @@
 					CountryId = governorate.CountryId,
 					
 
-				};
+			};
 
 			// Call the update method
 			await GovernorateAppService.UpdateAsync(governorate.Id, input);
@@ -138,4 +139,11 @@
 		MudDialog.Cancel();
 	}
 }
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
 

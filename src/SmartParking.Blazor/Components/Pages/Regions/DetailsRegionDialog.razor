@@ -1,15 +1,19 @@
-﻿@using SmartParking.Blazor.Components.LookUps
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Governorate
 @using SmartParking.Lookups.Region
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
 @inject IGovernorateAppService GovernorateAppService
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["RegionsDetails"]</PageTitle>
 
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">Update Region</MudText>
+				<MudText Typo="Typo.h6">@L["RegionDetails"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -21,7 +25,8 @@
 									  For="@(() => region.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="ArabicName" />
+									  Label="@L["Arabic Name"]"
+									  Disabled/>
 					</MudItem>
 
 					<MudItem sm="6">
@@ -29,14 +34,15 @@
 									  For="@(() => region.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="EnglishName" />
+									  Label="@L["English Name"]"
+									  Disabled/>
 					</MudItem>
 
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@region.CountryId"
 								   Variant="Variant.Text"
-								   Label="Country"
-								   Placeholder="Please Select"
+								   Label="@L["Country"]"
+								   Placeholder="@L["Choose"]"
 								   AnchorOrigin="Origin.TopCenter"
 								   TransformOrigin="Origin.TopCenter"
 								   Disabled>
@@ -53,8 +59,8 @@
 						<MudTextField @bind-Value="region.Status"
 									  For="@(() => region.Status)"
 									  Immediate="true"
-									  Disabled=true
-									  Label="Status" />
+									  Disabled
+									  Label="@L["Status"]" />
 					</MudItem>
 
 				</MudGrid>
@@ -65,17 +71,11 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton OnClick="Cancel">Cancel</MudButton>
+			<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
 		</DialogActions>
 	</MudDialog>
 
 </MudItem>
-
-<style>
-	.mud-modal {
-		border-radius: 0 20px 0 20px;
-	}
-</style>
 
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -95,3 +95,10 @@
 	}
 }
 
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
 
-namespace SmartParking.Blazor.Components.Pages.Governments;
+namespace SmartParking.Blazor.Components.Pages.Governorates;
 
-public partial class Government
+public partial class Governorate
 {
 
 	private IReadOnlyList<GovernorateDto> governorates = new List<GovernorateDto>();
@@ -42,13 +42,13 @@ public partial class Government
 
 	private Task OpenCreateGovernorateDialog(DialogOptions options)
 	{
-		return Dialog.ShowAsync<AddGovernmentDialog>("Add Governorate", options);
+		return Dialog.ShowAsync<AddGovernorateDialog>("Add Governorate", options);
 	}
 
 	private async Task OpenEditGovernorateDialog(GovernorateDto governorateDto)
 	{
 		var parameters = new DialogParameters { ["Governorate"] = governorateDto };
-		var dialog = await Dialog.ShowAsync<EditGovernmentDialog>("Edit Governorate", parameters);
+		var dialog = await Dialog.ShowAsync<EditGovernorateDialog>("Edit Governorate", parameters);
 		var result = await dialog.Result;
 
 
@@ -57,7 +57,7 @@ public partial class Government
 	private async Task OpenDetailsGovernorateDialog(GovernorateDto governorate)
 	{
 		var parameters = new DialogParameters { ["Governorate"] = governorate };
-		var dialog = await Dialog.ShowAsync<DetailsGovernmentDialog>("Governorate Details", parameters);
+		var dialog = await Dialog.ShowAsync<DetailsGovernorateDialog>("Governorate Details", parameters);
 		var result = await dialog.Result;
 
 

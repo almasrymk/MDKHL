@@ -1,5 +1,5 @@
 ﻿using MudBlazor;
-using SmartParking.Blazor.Components.Pages.Governments;
+using SmartParking.Blazor.Components.Pages.Governorates;
 using SmartParking.Lookups;
 using System.Collections.Generic;
 using System.Linq;

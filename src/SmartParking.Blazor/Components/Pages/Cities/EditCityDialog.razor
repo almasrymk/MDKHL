@@ -34,14 +34,13 @@
 					</MudItem>
 
 
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@city.GovernorateId"
-								   Variant="Variant.Text"
-								   Label="@L["Governorate"]"
-								   Placeholder="Please Select"
-								   Clearable="_clearable"
-								   AnchorOrigin="Origin.TopCenter"
-								   TransformOrigin="Origin.TopCenter">
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@city.GovernorateId"
+									   Variant="Variant.Text"
+									   Label="@L["Governorate"]"
+									   Placeholder="@L["Choose"]"
+									   AnchorOrigin="Origin.TopCenter"
+									   TransformOrigin="Origin.TopCenter" >
 
 							@foreach (var governorate in governorates)
 							{
@@ -67,8 +66,8 @@
 	[Parameter] public CityDto city { get; set; } = new CityDto();
 	public IReadOnlyList<GovernorateLookupDto> governorates { get; set; } = new List<GovernorateLookupDto>();
 	private MudForm editForm;
-
 	bool _clearable;
+	
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -84,7 +83,7 @@
 
 			// Create the input object for update
 			var input = new CreateUpdateCityDto
-				{
+			{
 					ArabicName = city.ArabicName,
 					EnglishName = city.EnglishName,
 					Notes = city.Notes,

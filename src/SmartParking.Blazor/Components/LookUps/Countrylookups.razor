@@ -19,9 +19,8 @@
 </MudItem>
 
 @code {
-    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
-    [Parameter]
-    public EventCallback<int> SelectValueChanged { get; set; }
+    IList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    [Parameter] public EventCallback<int> SelectValueChanged { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

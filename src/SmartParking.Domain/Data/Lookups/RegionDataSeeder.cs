@@ -13,9 +13,9 @@ public class RegionDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<Region, int> _regionRepository;
 
-    public RegionDataSeeder(IRepository<Region, int> emaraaRepository)
+    public RegionDataSeeder(IRepository<Region, int> regionRepository)
     {
-        _regionRepository = emaraaRepository;
+        _regionRepository = regionRepository;
     }
 
     public async Task SeedAsync(DataSeedContext context)
@@ -28,7 +28,7 @@ public class RegionDataSeeder : IDataSeedContributor, ITransientDependency
                 new Region { ArabicName="test", EnglishName = "test", Status = Status.Inactive,CountryId = 2},
                 new Region { ArabicName="test", EnglishName = "test", Status = Status.Active,CountryId = 3},
 
-        
+
             };
             foreach (var emaraa in emaraat)
             {

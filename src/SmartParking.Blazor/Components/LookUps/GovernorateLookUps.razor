@@ -8,25 +8,24 @@
 <MudItem sm="4">
     <MudSelect Variant="Variant.Text"
                Label="@L["Governorate"]"
-               Placeholder="Choose"
+               Placeholder="@L["Choose"]"
                Clearable="true"
                ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
-        @foreach (var government in governments)
+        @foreach (var governorate in governorates)
         {
-            <MudSelectItem Value="government.Id">@government.EnglishName</MudSelectItem>
+            <MudSelectItem  T="int" Value="governorate.Id">@governorate.EnglishName</MudSelectItem>
         }
     </MudSelect>
 </MudItem>
 
 @code {
-    IReadOnlyList<GovernorateLookupDto> governments = new List<GovernorateLookupDto>();
-    [Parameter]
-    public EventCallback<int> SelectValueChanged { get; set; }
+    IList<GovernorateLookupDto> governorates = new List<GovernorateLookupDto>();
+    [Parameter] public EventCallback<int> SelectValueChanged { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        governments = await CitiesAppService.GetGovernmentLookupAsync();
+        governorates = await CitiesAppService.GetGovernmentLookupAsync();
 
     }
 }

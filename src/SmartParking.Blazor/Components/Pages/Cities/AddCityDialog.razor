@@ -62,7 +62,7 @@
 </MudItem>
 
 
-@code {
+    @code {
 
     private MudForm form;
     public CreateUpdateCityDto input = new CreateUpdateCityDto();
@@ -93,7 +93,14 @@
             // Call your service to create the camera
             try
             {
-                await CitiesAppService.CreateAsync(input);
+                CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
+                {
+                    ArabicName = input.ArabicName,
+                    EnglishName = input.EnglishName,
+                    Notes = input.Notes,
+                    GovernorateId = GovernmentSelectValue
+                };
+                await CitiesAppService.CreateAsync(createUpdateCityDto);
             }
             catch (UserFriendlyException ex)
             {
