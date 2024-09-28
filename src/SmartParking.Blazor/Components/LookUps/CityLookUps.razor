@@ -11,7 +11,8 @@
                Placeholder="@L["Choose"]"
                Clearable="true"
                @bind-Value="name"
-               OnClose="ChangeSelect">
+               OnClose="ChangeSelect"
+               ReadOnly="Read">
         @foreach (var city in cities)
         {
             <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
@@ -23,6 +24,8 @@
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     [Parameter] public EventCallback<string> SelectValueChanged { get; set; }
     [Parameter] public string City { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    private bool Read;
     private string name;
     private async Task ChangeSelect()
     {
@@ -43,6 +46,7 @@
     protected override Task OnParametersSetAsync()
     {
         name = City;
+        Read = ReadOnly;
         return base.OnParametersSetAsync();
     }
     protected override async Task OnInitializedAsync()

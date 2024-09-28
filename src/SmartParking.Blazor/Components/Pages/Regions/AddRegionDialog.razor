@@ -79,9 +79,9 @@
         await base.OnInitializedAsync();
     }
 
-    private void SelectCountry(int country)
+    private void SelectCountry(string country)
     {
-        CountrySelectValue = country;
+        CountrySelectValue = int.Parse(country);
     }
     private async Task Submit()
     {

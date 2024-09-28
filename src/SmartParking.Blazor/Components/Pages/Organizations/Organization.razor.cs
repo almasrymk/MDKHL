@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
+using MudBlazor;
+using System.Security.Authentication;
+using Volo.Abp;
+using Abp.Runtime.Validation;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -18,6 +23,54 @@ public partial class Organization
 
     private string termSearch;
 
+    private async Task HandleDelete(string id)
+    {
+        
+        try
+        {
+
+
+            await OrganizationsAppService.DeleteAsync(int.Parse(id));
+
+            ShowSnackbar("Deleted Successfully ", Severity.Success);
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        }
+    }
+    /// <summary>
+    /// Displays a snackbar notification with the specified message and severity.
+    /// </summary>
+    /// <param name="message">The message to display in the snackbar.</param>
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+    void ShowSnackbar(string message, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+    }
+    private void HandleView(RowDef row)
+    {
+        Navigation.NavigateTo("/organizations/view/" + row.Cells[0].Value, true);
+    }
     private void HandleEdit(RowDef row)
     {
         Navigation.NavigateTo("/organizations/update/" + row.Cells[0].Value,true);

@@ -11,7 +11,8 @@
                Placeholder="@L["Choose"]"
                Clearable="true"
                @bind-Value="name"
-               OnClose="ChangeSelect">
+               OnClose="ChangeSelect"
+               ReadOnly="Read">
         @foreach (var country in countries)
         {
             <MudSelectItem  Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
@@ -24,6 +25,8 @@
     [Parameter]
     public EventCallback<string> SelectValueChanged { get; set; }
     [Parameter] public string Country { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    private bool Read;
     private string name;
     private async Task ChangeSelect()
     {
@@ -44,6 +47,7 @@
     protected override Task OnParametersSetAsync()
     {
         name = Country;
+        Read = ReadOnly;
         return base.OnParametersSetAsync();
     }
     protected override async Task OnInitializedAsync()

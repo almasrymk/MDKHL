@@ -39,9 +39,6 @@
                             <MudDatePicker Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="RegionId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Emaraa Id"]" />
-                        </MudItem>
-                        <MudItem sm="4">
                             <MudNumericField Required="true" @bind-Value="StateId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["State Id"]" />
                         </MudItem>
                         <MudItem sm="4">
@@ -49,7 +46,7 @@
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-                        
+                        <RegionLookups SelectValueChanged="SelectRegion" Region="@RegionNameEdit"></RegionLookups>
                         <Countrylookups SelectValueChanged="SelectCountry" Country="@CountryNameEdit"></Countrylookups>
                         <CityLookUps SelectValueChanged="SelectCity" City="@CityNameEdit"></CityLookUps>
                         <MudItem sm="4">

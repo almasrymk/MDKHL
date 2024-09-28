@@ -92,7 +92,8 @@
     "GarageId": "كود الجراج",
     "Id": "كود",
     "Actions": "إجراءات",
-    "Edit Organization": "تعديل منشأة"
+    "Edit Organization": "تعديل منشأة",
+    "View Organization": "عرض المنشأة"
 
   }
 }

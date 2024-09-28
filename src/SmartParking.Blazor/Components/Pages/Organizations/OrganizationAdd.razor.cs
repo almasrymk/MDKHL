@@ -24,7 +24,7 @@ public partial class OrganizationAdd
     private int CountrySelectValue {  get; set; }
     private int CitySelectValue {  get; set; }
 
-    public int RegionId { get; set; }
+    public int RegionSelectValue { get; set; }
     public int StateId { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
@@ -37,6 +37,10 @@ public partial class OrganizationAdd
     private void SelectCountry(string country)
     {
         CountrySelectValue = int.Parse(country);
+    }
+    private void SelectRegion(string region)
+    {
+        RegionSelectValue = int.Parse(region);
     }
     private void SelectCity(string city)
     {
@@ -62,7 +66,7 @@ public partial class OrganizationAdd
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = CitySelectValue,
-            RegionId = RegionId,
+            RegionId = RegionSelectValue,
             StateId = StateId,
             ContactMail = ContactMail,
             CountryId = CountrySelectValue,
