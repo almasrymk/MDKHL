@@ -10,10 +10,11 @@
                Label="@L["Country"]"
                Placeholder="@L["Choose"]"
                Clearable="true"
-               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
+               @bind-Value="name"
+               OnClose="ChangeSelect">
         @foreach (var country in countries)
         {
-            <MudSelectItem   Value="country.Id">@country.EnglishName</MudSelectItem>
+            <MudSelectItem  Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
         }
     </MudSelect>
 </MudItem>
@@ -21,12 +22,36 @@
 @code {
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     [Parameter]
-    public EventCallback<int> SelectValueChanged { get; set; }
+    public EventCallback<string> SelectValueChanged { get; set; }
+    [Parameter] public string Country { get; set; }
+    private string name;
+    private async Task ChangeSelect()
+    {
+        int parsedValue;
+        if (int.TryParse(name, out parsedValue))
+        {
+            // The value is a number (integer)
+            await SelectValueChanged.InvokeAsync(name);
+        }
+        else
+        {
+            // The value is a string
+            await SelectValueChanged.InvokeAsync("0");
 
+        }
+
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        name = Country;
+        return base.OnParametersSetAsync();
+    }
     protected override async Task OnInitializedAsync()
     {
+        
         await base.OnInitializedAsync();
         countries = await GovernorateAppService.GetCountryLookupAsync();
-         
+        
+
     }
 }
