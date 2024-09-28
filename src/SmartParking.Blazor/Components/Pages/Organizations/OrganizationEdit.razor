@@ -49,8 +49,9 @@
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-                        <Countrylookups SelectValueChanged="SelectCountry" CountryName="@CountryNameEdit"></Countrylookups>
-                        <CityLookUps SelectValueChanged="SelectCity"></CityLookUps>
+                        
+                        <Countrylookups SelectValueChanged="SelectCountry" Country="@CountryNameEdit"></Countrylookups>
+                        <CityLookUps SelectValueChanged="SelectCity" City="@CityNameEdit"></CityLookUps>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
                         </MudItem>

@@ -15,7 +15,8 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationEdit
 {
-    private string CityName { get; set; }
+    private bool CountryClicked = false;
+    private string CityNameEdit { get; set; }
     private string CountryNameEdit { get; set; }
     [Parameter] 
     public string Id { get; set; }  // Capture string ID
@@ -37,13 +38,13 @@ public partial class OrganizationEdit
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
 
-    private void SelectCountry(int country)
+    private void SelectCountry(string country)
     {
-        CountrySelectValue = country;
+        CountrySelectValue = int.Parse(country);
     }
-    private void SelectCity(int city)
+    private void SelectCity(string city)
     {
-        CitySelectValue = city;
+        CitySelectValue =int.Parse(city);
     }
     private async Task Update()
     {
@@ -119,6 +120,11 @@ public partial class OrganizationEdit
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
+    private void ClickCountry()
+    {
+        //CountryClicked = true;
+        CountryNameEdit = "";
+    }
     private async Task FetchData()
     {
          
@@ -136,7 +142,7 @@ public partial class OrganizationEdit
         }
         MaxCapacity = organization.MaxCapacity;
         CountryNameEdit =  organization.CountryName;
-        CityName= organization.CityName;
+        CityNameEdit = organization.CityName;
     }
     protected override async Task OnInitializedAsync()
     {
