@@ -45,14 +45,17 @@
     }
     protected override Task OnParametersSetAsync()
     {
-        name = City;
+        if (City.IsNullOrEmpty() == false)
+        {
+            name = City;
+        }
         Read = ReadOnly;
         return base.OnParametersSetAsync();
     }
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         cities = await CitiesAppService.GetCityLookupAsync();
+        await base.OnInitializedAsync();
 
     }
 }

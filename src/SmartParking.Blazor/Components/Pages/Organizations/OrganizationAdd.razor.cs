@@ -1,10 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Enums;
+using SmartParking.Lookups.City;
+using SmartParking.Lookups.Governorate;
+using SmartParking.Lookups.State;
+using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -23,9 +29,9 @@ public partial class OrganizationAdd
     public int MaxCapacity { get; set; }
     private int CountrySelectValue {  get; set; }
     private int CitySelectValue {  get; set; }
+    private int StateSelectValue {  get; set; }
 
     public int RegionSelectValue { get; set; }
-    public int StateId { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
 
@@ -34,18 +40,20 @@ public partial class OrganizationAdd
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
 
-    private void SelectCountry(string country)
+    IList<StateLookupDto> states = new List<StateLookupDto>();
+    IList<RegionLookupDto> regions = new List<RegionLookupDto>();
+    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    IList<CityLookupDto> cities = new List<CityLookupDto>();
+    protected override async Task OnInitializedAsync()
     {
-        CountrySelectValue = int.Parse(country);
+        await base.OnInitializedAsync();
+        states = await StateAppService.GetStateLookupAsync();
+        regions = await StateAppService.GetRegionLookupAsync();
+        countries = await GovernorateAppService.GetCountryLookupAsync();
+        cities = await CitiesAppService.GetCityLookupAsync();
     }
-    private void SelectRegion(string region)
-    {
-        RegionSelectValue = int.Parse(region);
-    }
-    private void SelectCity(string city)
-    {
-        CitySelectValue = int.Parse(city);
-    }
+   
+    
     private async Task Save()
     {
 
@@ -67,7 +75,7 @@ public partial class OrganizationAdd
             MaxCapacity = MaxCapacity,
             CityId = CitySelectValue,
             RegionId = RegionSelectValue,
-            StateId = StateId,
+            StateId = StateSelectValue,
             ContactMail = ContactMail,
             CountryId = CountrySelectValue,
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),

@@ -13,6 +13,7 @@
 @inject IIdentityUserAppService IdentityUserAppService;
 @inject UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
+@inject NavigationManager Navigation
 <PageTitle>@L["View Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -39,13 +40,11 @@
                             <MudDatePicker ReadOnly="true" Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" Required="true" @bind-Value="StateId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["State Id"]" />
-                        </MudItem>
-                        <MudItem sm="4">
                             <MudSwitch ReadOnly="true" Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <StateLookups ReadOnly="true" SelectValueChanged="SelectRegion" State="@RegionNameEdit"></StateLookups>
                         <RegionLookups ReadOnly="true" SelectValueChanged="SelectRegion" Region="@RegionNameEdit"></RegionLookups>
                         <Countrylookups ReadOnly="true" SelectValueChanged="SelectCountry" Country="@CountryNameEdit"></Countrylookups>
                         <CityLookUps ReadOnly="true" SelectValueChanged="SelectCity" City="@CityNameEdit"></CityLookUps>
@@ -62,8 +61,7 @@
                     </MudGrid>
 
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Update">@L["Save"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Back">@L["Back"]</MudButton>
                     </div>
                 </MudForm>
 

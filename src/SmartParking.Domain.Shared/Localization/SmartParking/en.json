@@ -135,6 +135,7 @@
     "PackageTypes": "Package Types",
     "States": "States",
     "Regions": "Regions",
-    "Lookups": "Lookups"
-  }
+    "Lookups": "Lookups",
+    "Back": "Back"
+  } 
 }
