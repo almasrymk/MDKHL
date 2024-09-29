@@ -6,12 +6,18 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using System;
 using Volo.Abp;
+using SmartParking.Lookups.City;
+using SmartParking.Lookups.Governorate;
+using SmartParking.Lookups.State;
+using System.Collections.Generic;
+using Abp.Runtime.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationView
 {
-    
+
+    private bool CountryClicked = false;
     private string CityNameEdit { get; set; }
     private string CountryNameEdit { get; set; }
     private string RegionNameEdit { get; set; }
@@ -23,11 +29,11 @@ public partial class OrganizationView
     public string UnifiedLicenseNum { get; set; }
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
-    private int CountrySelectValue { get; set; }
-    private int CitySelectValue { get; set; }
+    private string CountrySelectValue { get; set; }
+    private string CitySelectValue { get; set; }
 
-    public int RegionSelectValue { get; set; }
-    public int StateSelectValue { get; set; }
+    public string RegionSelectValue { get; set; }
+    public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
 
@@ -35,30 +41,12 @@ public partial class OrganizationView
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
-    private void SelectState(string state)
-    {
-        if (state != "0")
-            StateSelectValue = int.Parse(state);
-    }
-    private void SelectRegion(string region)
-    {
-        if (region != "0")
-            RegionSelectValue = int.Parse(region);
-    }
-    private void SelectCountry(string country)
-    {
-        if (country != "0")
-            CountrySelectValue = int.Parse(country);
-    }
-    private void SelectCity(string city)
-    {
-        if (city != "0")
-            CitySelectValue = int.Parse(city);
-    }
-   private void Back()
-    {
-        Navigation.NavigateTo("/organizations");
-    }
+
+    IList<StateLookupDto> states = new List<StateLookupDto>();
+    IList<RegionLookupDto> regions = new List<RegionLookupDto>();
+    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    IList<CityLookupDto> cities = new List<CityLookupDto>();
+
     private async Task FetchData()
     {
 
@@ -80,23 +68,35 @@ public partial class OrganizationView
         CountryNameEdit = organization.CountryName;
         CityNameEdit = organization.CityName;
         RegionNameEdit = organization.RegionName;
-        RegionNameEdit = organization.StateName;
+        StateSelectValue = organization.StateId.ToString();
         ContactMail = ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = PhoneNum;
         WhatsAppNum = WhatsAppNum;
-        CitySelectValue = organization.CityId;
-        CountrySelectValue = organization.CountryId;
-        RegionSelectValue = organization.RegionId;
-        StateSelectValue = organization.StateId;
+        CitySelectValue = organization.CityId.ToString();
+        CountrySelectValue = organization.CountryId.ToString();
+        RegionSelectValue = organization.RegionId.ToString();
     }
     protected override async Task OnInitializedAsync()
     {
-
+        states = await StateAppService.GetStateLookupAsync();
+        regions = await StateAppService.GetRegionLookupAsync();
+        countries = await GovernorateAppService.GetCountryLookupAsync();
+        cities = await CitiesAppService.GetCityLookupAsync();
         await FetchData();
         await base.OnInitializedAsync();
 
 
     }
+    private void Back()
+    {
+        Navigation.NavigateTo("/organizations");
+    }
+    private void ViewGarages()
+    {
+        Navigation.NavigateTo("/garages");
+    }
+
+
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
@@ -27,11 +28,10 @@ public partial class OrganizationAdd
     public string UnifiedLicenseNum { get; set; }
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
-    private int CountrySelectValue {  get; set; }
-    private int CitySelectValue {  get; set; }
-    private int StateSelectValue {  get; set; }
-
-    public int RegionSelectValue { get; set; }
+    private string CountrySelectValue {  get; set; }
+    private string CitySelectValue {  get; set; }
+    private string StateSelectValue {  get; set; }
+    public string RegionSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
 
@@ -73,11 +73,11 @@ public partial class OrganizationAdd
             UnifiedLicenseNum = UnifiedLicenseNum,
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
-            CityId = CitySelectValue,
-            RegionId = RegionSelectValue,
-            StateId = StateSelectValue,
+            CityId = int.Parse(CitySelectValue),
+            RegionId = int.Parse(RegionSelectValue),
+            StateId = int.Parse(StateSelectValue),
             ContactMail = ContactMail,
-            CountryId = CountrySelectValue,
+            CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
             LicenseExpiryDate = DateOnly.FromDateTime(LicenseExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
@@ -134,5 +134,13 @@ public partial class OrganizationAdd
         Snackbar.Clear();
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+    }
+    private void ViewGarages()
+    {
+        Navigation.NavigateTo("/garages");
+    }
+    private void ViewSubscription()
+    {
+        Navigation.NavigateTo("/subscription");
     }
 }
