@@ -6,7 +6,10 @@
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
+
 @inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -89,8 +92,8 @@
 									  Label="@L["MacAddress"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Id"
-									  For="@(() => Camera.Id)"
+						<MudTextField @bind-Value="UpdatedId"
+									  For="@(() => UpdatedId)"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["Id"]" />
@@ -118,11 +121,11 @@
 			<MudGrid Class="ps-lg-5">
 				<MudItem sm="6" md="6">
 
-					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">@L["Update"]</MudButton>
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit">@L["Update"]</MudButton>
 				</MudItem>
 				<MudItem sm="6" md="6">
 
-					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="CancelEdit">@L["Cancel"]</MudButton>
 				</MudItem>
 			</MudGrid>
 		</DialogActions>
@@ -138,11 +141,14 @@
 </style>
 
 @code {
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public CameraDto Camera { get; set; } = new CameraDto();
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter] public CreateUpdateCameraDto Camera { get; set; }
+	[Parameter]
+	public int UpdatedId { get; set; }
 	public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
-	private MudForm form;
 	bool _clearable;
+	private MudForm form;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -152,39 +158,31 @@
 				SkipCount = (1 - 1) * 100
 			});
 		Garages = result.Items.ToList();
+		await base.OnInitializedAsync();
 	}
 
-	private async Task Save()
+	private async Task SubmitEdit()
 	{
-		await form.Validate();
-		if (form.IsValid)
+		try
 		{
 
-			// Create the input object for update
-			var input = new CreateUpdateCameraDto
-				{
-					Name = Camera.Name,
-					Type = Camera.Type,
-					GarageId = Camera.GarageId,
-					Model = Camera.Model,
-					BrandName = Camera.BrandName,
-					CameraIP = Camera.CameraIP,
-					MacAddress = Camera.MacAddress,
-					Status = Camera.Status
+			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
+			Snackbar.Add("Camera Updated Successfully", Severity.Success);
+			MudDialogAdd.Close(DialogResult.Ok(true));
 
-				};
-
-			// Call the update method
-			await CamerasAppService.UpdateAsync(Camera.Id, input);
-
-			// Close the dialog with a success result
-			MudDialog.Close(DialogResult.Ok(true));
+		}
+		catch (Exception e)
+		{
+			Snackbar.Add(e.Message, Severity.Error);
 		}
 	}
 
-
-	private void Cancel()
+	private async Task CancelEdit()
 	{
-		MudDialog.Cancel();
+		MudDialogAdd.Cancel();
+
+
 	}
+
+	
 }

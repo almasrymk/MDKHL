@@ -1,7 +1,21 @@
-﻿@using SmartParking.Cameras
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cameras
+@using SmartParking.Localization
 @inject ICamerasAppService CamerasAppService
 @inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/cameras"
 
+
+<h3>@L["Cameras"]</h3>
+
+<SPDataGrid PageName="cameras" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+
+
+
+
+@* 
 @page "/cameras"
 @using Customs
 
@@ -46,25 +60,5 @@
     </MudDataGrid>
 </div>
 
-@code {
-    private string _searchString = string.Empty;
-
-    private async Task RowClicked(DataGridRowClickEventArgs<CameraDto> args)
-    {
-        // Handle row click
-    }
-
-    private async Task RowRightClicked(DataGridRowClickEventArgs<CameraDto> args)
-    {
-        // Handle right-click row actions
-    }
-
-    private async Task SelectedItemsChanged(HashSet<CameraDto> selectedItems)
-    {
-        // Handle selected item changes
-    }
-
-
-}
-
+ *@
 
