@@ -1,5 +1,7 @@
-﻿using MudBlazor;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Localization;
 using SmartParking.Lookups;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,7 @@ public partial class Country
     private string termSearch;
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
 
     /// <summary>
@@ -165,7 +168,7 @@ public partial class Country
 
         var parameters = new DialogParameters
         {
-            ["CountryDto"] = countryDto,
+            ["country"] = countryDto,
             ["UpdatedId"] = id
         };
 
@@ -182,7 +185,7 @@ public partial class Country
 
         var parameters = new DialogParameters
         {
-            ["Countries"] = countriesDto,
+            ["country"] = countriesDto,
         };
 
 
@@ -191,12 +194,14 @@ public partial class Country
 
     private async Task OnClickRowDelete(string row)
     {
+        var successMessage = _localizer["CountryDeletedSuccessfully"];
+
         var id = int.Parse(row);
         try
         {
 
             await AppService.DeleteAsync(id);
-            ShowSnackbar("Country Deleted Successfully ", Severity.Success);
+            ShowSnackbar(successMessage, Severity.Success);
 
         }
         catch (Exception ex)
@@ -228,49 +233,5 @@ public partial class Country
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
-    //private IReadOnlyList<CountryDto> countries = new List<CountryDto>();
-    //private int currentPage = 1;
-    //private int pageSize = 100;
-    ////Dialog
-
-    //private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
-
-
-
-    //private async Task GetData()
-    //{
-    //	var result = await AppService.GetListAsync(new PagedAndSortedResultRequestDto
-    //	{
-    //		MaxResultCount = pageSize,
-    //		SkipCount = (currentPage - 1) * pageSize
-    //	});
-
-    //	countries = result.Items.ToList();
-    //	StateHasChanged();
-    //}
-    //protected override async Task OnInitializedAsync()
-    //{
-
-    //	await base.OnInitializedAsync();
-    //	await GetData();
-
-    //}
-
-    //private Task OpenCreateCountryDialog(DialogOptions options)
-    //{
-    //	return Dialog.ShowAsync<AddCountryDialog>("Add Country", options);
-    //}
-
-    //private async Task OpenEditCountryDialog(CountryDto countryDto)
-    //{
-    //	var parameters = new DialogParameters { ["Country"] = countryDto };
-    //	var dialog = await Dialog.ShowAsync<EditCountryDialog>("Edit Country", parameters);
-    //	var result = await dialog.Result;
-    //}
-    //private async Task OpenDetailsCountryDialog(CountryDto countryDto)
-    //{
-    //	var parameters = new DialogParameters { ["Country"] = countryDto };
-    //	var dialog = await Dialog.ShowAsync<DetailsCountryDialog>("Details Country", parameters);
-    //	var result = await dialog.Result;
-    //}
+  
 }

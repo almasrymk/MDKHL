@@ -158,3 +158,13 @@
   }
   
 }
+    "Lookups": "جداول",
+    "GovernorateDeletedSuccessfully": "تم حذف المحافظة بنجاح",
+    "CityDeletedSuccessfully": "تم حذف المدينة بنجاح,",
+    "CountryDeletedSuccessfully": "تم حذف الدولة بنجاح",
+    "PackageTypeDeletedSuccessfully": "تم حذف نوع الحزمة بنجاح",
+    "RegionDeletedSuccessfully": "تم حذف المنطقة بنجاح",
+    "StateDeletedSuccessfully": "تم حذف الولاية بنجاح,"
+
+  }
+}

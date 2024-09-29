@@ -31,13 +31,7 @@
 									  Label="@L["English Name"]" />
 					</MudItem>
 					
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="packageType.Notes"
-									  For="@(() => packageType.Notes)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["Notes"]" />
-					</MudItem>
+					
 
 				</MudGrid>
 			</MudForm>
@@ -59,44 +53,4 @@
 		border-radius: 0 20px 0 20px;
 	}
 </style>
-
-@code {
-
-
-
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public PackageTypeDto packageType { get; set; } = new PackageTypeDto();
-	private MudForm editForm;
-	bool _clearable;
-
-
-
-	private async Task Save()
-	{
-		await editForm.Validate();
-		if (editForm.IsValid)
-		{
-
-			// Create the input object for update
-			var input = new CreateUpdatePackageTypeDto
-			{
-				ArabicName = packageType.ArabicName,
-				EnglishName = packageType.EnglishName,
-				Notes = packageType.Notes,
-			};
-
-			// Call the update method
-			await PackageTypesAppService.UpdateAsync(packageType.Id, input);
-
-			// Close the dialog with a success result
-			MudDialog.Close(DialogResult.Ok(true));
-		}
-	}
-
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
 

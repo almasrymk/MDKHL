@@ -10,7 +10,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["AddGovernorates"]</PageTitle>
 
-<div class="modal-wrapper">
+<MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
             <MudText Typo="Typo.h6">@L["NewGovernorate"]</MudText>
@@ -77,70 +77,8 @@
         </DialogActions>
     </MudDialog>
 
-</div>
+</MudItem>
 
-
-
-@code {
-
-    private MudForm form;
-    public CreateUpdateGovernorateDto input = new CreateUpdateGovernorateDto();
-    public IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
-    private int CountrySelectValue { get; set; }
-
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    bool _clearable;
-
-
-    private void SelectCountry(string country)
-    {
-        CountrySelectValue =int.Parse(country);
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await GovernorateAppService.GetCountryLookupAsync();
-        countries = result;
-    }
-    private async Task Submit()
-    {
-        var successedMessage = L["GovernorateCreatedSuccessfully"];
-        var errorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
-            try
-            {
-                CreateUpdateGovernorateDto createUpdateGovernorate = new CreateUpdateGovernorateDto()
-                {
-                        ArabicName = input.ArabicName,
-                        EnglishName = input.EnglishName,
-                        ArabicCapital = input.ArabicCapital,
-                        EnglishCapital = input.EnglishCapital,
-                        Notes = input.Notes,
-                        CountryId = CountrySelectValue,
-                };
-                await GovernorateAppService.CreateAsync(createUpdateGovernorate);
-            }
-            catch (UserFriendlyException ex)
-            {
-                Snackbar.Add(ex.Message, Severity.Error);
-                return;
-            }
-            Snackbar.Add(successedMessage, Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
-
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
-    }
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-}
 
 <style>
     .mud-modal 
