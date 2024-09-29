@@ -58,9 +58,10 @@
                                        Clearable="true"
                                        @bind-Value="@StateSelectValue"
                                       >
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var state in states)
                                 {
+
+                             
                                     <MudSelectItem Value="@state.Id">@state.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
@@ -74,7 +75,6 @@
                                        
                                        @bind-Value="@RegionSelectValue"
                                        >
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
                                     <MudSelectItem Value="@region.Id">@region.EnglishName</MudSelectItem>
@@ -88,7 +88,6 @@
                                        Clearable="true"
                                        @bind-Value="@CountrySelectValue"
                                        >
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
                                     <MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
@@ -102,7 +101,6 @@
                                        Clearable="true"
                                        @bind-Value="@CitySelectValue"
                                       >
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var city in cities)
                                 {
                                     <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
