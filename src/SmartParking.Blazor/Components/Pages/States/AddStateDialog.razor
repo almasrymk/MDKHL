@@ -4,9 +4,12 @@
 @using SmartParking.Lookups.State
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+
 @inject IStateAppService StateAppService
 @inject ISnackbar Snackbar
-
+@inject IStringLocalizer<SmartParkingResource> L
 
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -33,6 +36,17 @@
                                       Variant="Variant.Text"
                                       Label="EnglishName" />
                     </MudItem>
+                  @*   <MudItem sm="4" md="4">
+                        <MudSelect @bind-Value="@input.RegionId" Label="@L["Region"]" Placeholder="Please Select">
+
+                            @foreach (var region in regions)
+                            {
+                                <MudSelectItem T="int" Value="@region.Id">
+                                    @region.EnglishName
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem> *@
                     <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
 
 
@@ -63,6 +77,7 @@
 
     private MudForm form;
     public CreateUpdateStateDto input = new CreateUpdateStateDto();
+    public IReadOnlyList<RegionLookupDto> regions = new List<RegionLookupDto>();
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
@@ -71,6 +86,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var regions = await StateAppService.GetRegionLookupAsync();
         await base.OnInitializedAsync();
     }
 

@@ -4,8 +4,11 @@
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
 @inject ICitiesAppService CitiesAppService
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
 
 
 <MudItem class="modal-wrapper">
@@ -33,7 +36,17 @@
                                       Variant="Variant.Text"
                                       Label="EnglishName" />
                     </MudItem>
-                    
+                    <MudItem sm="4" md="4">
+                        <MudSelect @bind-Value="@input.GovernorateId" Label="@L["Governments"]" Placeholder="Please Select">
+
+                            @foreach (var government in governments)
+                            {
+                                <MudSelectItem T="int" Value="@government.Id">
+                                    @government.EnglishName
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
                     <MudItem sm="6" >
                         <MudTextField @bind-Value="input.Notes"
                                       For="@(() => input.Notes)"
@@ -60,7 +73,7 @@
 
     private MudForm form;
     public CreateUpdateCityDto input = new CreateUpdateCityDto();
-    public IReadOnlyList<GovernmentLookupDto> cities = new List<GovernmentLookupDto>();
+    public IReadOnlyList<GovernmentLookupDto> governments = new List<GovernmentLookupDto>();
     private int GovernmentSelectValue { get; set; }
 
     [CascadingParameter]
@@ -75,7 +88,7 @@
     protected override async Task OnInitializedAsync()
     {
         var result = await CitiesAppService.GetGovernmentLookupAsync();
-        cities = result;
+        governments = result;
     }
     private async Task Submit()
     {

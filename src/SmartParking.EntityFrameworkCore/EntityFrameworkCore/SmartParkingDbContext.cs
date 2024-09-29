@@ -132,7 +132,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
             // Apply a global query filter to the Tenant entity
             b.HasQueryFilter(t => !t.IsDeleted); // Example filter for soft deletion
         });
-
         builder.ApplyConfigurationsFromAssembly(typeof(SmartParkingDbContext).Assembly);
         /* Configure your own tables/entities inside here */
 

@@ -58,7 +58,15 @@
     "Cities": "المدن",
     "Package Types": "أنواع الحزمة",
     "Settings": "إعدادات",
-    "Profile": "حساب تعريفي"
+    "Profile": "حساب تعريفي",
+    "Package Type": "نوع الباقة",
+    "Price": "السعر",
+    "Description": "الوصف",
+    "Status": "الحالة",
+    "published": "الاتاحة للعملاء",
+    "Publish From": "الاتاحة من",
+    "Publish To": "الاتاحة إلى",
+    "Region": "المنطقة"
 
   }
 }

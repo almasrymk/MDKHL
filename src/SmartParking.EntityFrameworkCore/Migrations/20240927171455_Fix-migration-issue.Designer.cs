@@ -13,13 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
-    [Migration("20240926105320_fix-package-issue")]
-    partial class fixpackageissue
-========
-    [Migration("20240925100159_initialMigrations")]
-    partial class initialMigrations
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
+    [Migration("20240927171455_Fix-migration-issue")]
+    partial class Fixmigrationissue
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,9 +138,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("EmaraaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("EnglishName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -169,6 +161,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -291,22 +286,15 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-========
                     b.Property<string>("NationalId")
                         .HasColumnType("text");
 
                     b.Property<string>("OTP")
                         .HasColumnType("text");
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
 
                     b.HasKey("Id");
 
@@ -450,7 +438,7 @@ namespace SmartParking.Migrations
                     b.ToTable("Governorates", (string)null);
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Lookups.Emaraa", b =>
+            modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -511,7 +499,7 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Emaraas", (string)null);
+                    b.ToTable("Regions", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
@@ -543,9 +531,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("EmaraaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("EnglishName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -567,6 +552,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -575,13 +563,11 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmaraaId");
+                    b.HasIndex("RegionId");
 
                     b.ToTable("State", (string)null);
                 });
 
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
-========
             modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", b =>
                 {
                     b.Property<int>("Id")
@@ -626,12 +612,14 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
                     b.Property<int>("PlateColorId")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -684,9 +672,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -737,9 +727,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -790,9 +782,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("VehiclesBrandId")
                         .HasColumnType("integer");
@@ -804,7 +798,6 @@ namespace SmartParking.Migrations
                     b.ToTable("VehicleModels");
                 });
 
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
             modelBuilder.Entity("SmartParking.Entities.Organizations.ContactInfo", b =>
                 {
                     b.Property<int>("Id")
@@ -997,12 +990,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-========
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
                     b.Property<int>("NumberOfHours")
                         .HasColumnType("integer");
 
@@ -1019,12 +1009,7 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
                         .HasColumnType("uuid");
-========
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
 
                     b.Property<decimal>("ThirdHourPrice")
                         .HasColumnType("numeric");
@@ -1173,9 +1158,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("EmaraaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
 
@@ -1202,6 +1184,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
 
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("StateId")
                         .HasColumnType("integer");
 
@@ -1225,7 +1210,7 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("EmaraaId");
+                    b.HasIndex("RegionId");
 
                     b.HasIndex("StateId");
 
@@ -1293,12 +1278,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("ArabicName")
                         .HasColumnType("text");
 
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
-========
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("integer");
-
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
@@ -3537,9 +3516,9 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Lookups.Emaraa", null)
+                    b.HasOne("SmartParking.Entities.Lookups.Region", null)
                         .WithMany("State")
-                        .HasForeignKey("EmaraaId")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -3631,9 +3610,9 @@ namespace SmartParking.Migrations
                         .WithMany("Organizations")
                         .HasForeignKey("CustomerId");
 
-                    b.HasOne("SmartParking.Entities.Lookups.Emaraa", "Emaraa")
+                    b.HasOne("SmartParking.Entities.Lookups.Region", "Region")
                         .WithMany("Organizations")
-                        .HasForeignKey("EmaraaId")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3647,7 +3626,7 @@ namespace SmartParking.Migrations
 
                     b.Navigation("Country");
 
-                    b.Navigation("Emaraa");
+                    b.Navigation("Region");
 
                     b.Navigation("State");
                 });
@@ -3659,28 +3638,6 @@ namespace SmartParking.Migrations
                         .HasForeignKey("OrganizationId");
 
                     b.Navigation("Organization");
-<<<<<<<< HEAD:src/SmartParking.EntityFrameworkCore/Migrations/20240926105320_fix-package-issue.Designer.cs
-========
-                });
-
-            modelBuilder.Entity("SmartParking.Entities.Organizations.PackageCategory", b =>
-                {
-                    b.HasOne("SmartParking.Entities.Organizations.CustomerCategory", "CustomerCategory")
-                        .WithMany()
-                        .HasForeignKey("CustomerCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SmartParking.Entities.Organizations.Package", "Package")
-                        .WithMany()
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerCategory");
-
-                    b.Navigation("Package");
->>>>>>>> SmartParking_Dev:src/SmartParking.EntityFrameworkCore/Migrations/20240925100159_initialMigrations.Designer.cs
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.PackageCategory", b =>
@@ -3894,7 +3851,7 @@ namespace SmartParking.Migrations
                     b.Navigation("Cities");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Lookups.Emaraa", b =>
+            modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>
                 {
                     b.Navigation("Organizations");
 

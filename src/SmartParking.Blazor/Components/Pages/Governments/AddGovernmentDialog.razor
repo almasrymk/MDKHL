@@ -3,8 +3,12 @@
 @using SmartParking.Lookups.Governorate
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+
 @inject IGovernorateAppService GovernorateAppService
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
 
 
 <div class="modal-wrapper">
@@ -44,6 +48,17 @@
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Label="EnglishCapital" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudSelect @bind-Value="@input.CountryId" Label="@L["Country"]" Placeholder="Please Select">
+
+                            @foreach (var country in countries)
+                            {
+                                <MudSelectItem T="int" Value="@country.Id">
+                                    @country.EnglishName
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="input.Notes"
