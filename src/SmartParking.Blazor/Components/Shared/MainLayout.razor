@@ -6,6 +6,8 @@
 @using Volo.Abp.SettingManagement
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
+
+
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -44,7 +46,7 @@
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
                         <p class="mb-0 fw-bold">MOHAMED AHMED</p>
-                        <Link Class="text-white border-bottom"  href="/my-account">@L["Profile Details"]</Link>
+                        <Link Class="text-white border-bottom">@L["Profile Details"]</Link>
                     </div>
                 </div>
             </div>
@@ -69,7 +71,8 @@
     private void ChangeLanguage(string cultureName)
     {
         var uri =  Navigation.Uri.ToString();
-         uri = uri+"/?culture=" + cultureName + "&ui-culture=" + cultureName;
+
+        uri = uri + "?culture=" + cultureName + "&ui-culture=" + cultureName;
         Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
         Console.WriteLine(uri);
     }

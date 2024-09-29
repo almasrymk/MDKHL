@@ -5,13 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
-namespace SmartParking.Lookups.City;
+namespace SmartParking.Lookups.State;
 
-public class GovernmentLookupDto : FullAuditedEntityDto<int>
+public class StateLookupDto : FullAuditedEntityDto<int>
 {
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
-    public string ArabicCapital { get; set; }
-    public string EnglishCapital { get; set; }
-
 }

@@ -12,5 +12,7 @@ namespace SmartParking.Lookups.State;
 public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSortedResultRequestDto, CreateUpdateStateDto>
 {
     Task<List<RegionLookupDto>> GetRegionLookupAsync();
+    Task<List<StateLookupDto>> GetStateLookupAsync();
+
 
 }

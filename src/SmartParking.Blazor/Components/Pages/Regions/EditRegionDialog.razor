@@ -1,15 +1,19 @@
-﻿@using SmartParking.Blazor.Components.LookUps
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Governorate
 @using SmartParking.Lookups.Region
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
 @inject IGovernorateAppService GovernorateAppService
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["EditRegions"]</PageTitle>
 
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">Update Region</MudText>
+				<MudText Typo="Typo.h6">@L["UpdateRegion"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -21,7 +25,7 @@
 									  For="@(() => region.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="ArabicName" />
+									  Label="@L["Arabic Name"]" />
 					</MudItem>
 
 					<MudItem sm="6">
@@ -29,10 +33,23 @@
 									  For="@(() => region.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="EnglishName" />
+								      Label="@L["English Name"]" />
 					</MudItem>
 
-					<Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@region.CountryId"
+									   Variant="Variant.Text"
+									   Label="@L["Country"]"
+									   Placeholder="@L["Choose"]"
+									   AnchorOrigin="Origin.TopCenter"
+									   TransformOrigin="Origin.TopCenter" >
+
+							@foreach (var country in countries)
+							{
+								<MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
 
 
 					<MudItem sm="6" Class="d-inline-flex justify-content-center">
@@ -53,18 +70,14 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton OnClick="Cancel">Cancel</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">Edit</MudButton>
+			<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
 		</DialogActions>
 	</MudDialog>
 
 </MudItem>
 
-<style>
-	.mud-modal {
-		border-radius: 0 20px 0 20px;
-	}
-</style>
+
 
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -72,7 +85,6 @@
 	public IReadOnlyList<CountryLookupDto> countries { get; set; } = new List<CountryLookupDto>();
 	private MudForm editForm;
 	bool _clearable;
-	private int CountrySelectValue { get; set; }
 
 
 	protected override async Task OnInitializedAsync()
@@ -81,10 +93,7 @@
 		countries = result;
 	}
 
-	private void SelectCountry(int country)
-	{
-		CountrySelectValue = country;
-	}
+	
 
 	private async Task Save()
 	{
@@ -94,14 +103,14 @@
 
 			// Create the input object for update
 			var input = new CretaeUpdateRegionDto
-				{
+			{
 					ArabicName = region.ArabicName,
 					EnglishName = region.EnglishName,
 					Status = region.Status,
 					CountryId = region.CountryId,
 
 
-				};
+			};
 
 			// Call the update method
 			await RegionAppService.UpdateAsync(region.Id, input);
@@ -117,4 +126,9 @@
 		MudDialog.Cancel();
 	}
 }
-
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>

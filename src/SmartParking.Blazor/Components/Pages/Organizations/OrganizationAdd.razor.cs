@@ -16,7 +16,7 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationAdd
 {
-    public string ArabicName { get; set; }
+    public string ArabicName { get; set; } 
     public string EnglishName { get; set; }
     public string UnifiedLicenseNum { get; set; }
     public int NumOfCameras { get; set; }
@@ -24,7 +24,7 @@ public partial class OrganizationAdd
     private int CountrySelectValue {  get; set; }
     private int CitySelectValue {  get; set; }
 
-    public int EmaraaId { get; set; }
+    public int RegionId { get; set; }
     public int StateId { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
@@ -62,7 +62,7 @@ public partial class OrganizationAdd
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = CitySelectValue,
-            EmaraaId = EmaraaId,
+            RegionId = RegionId,
             StateId = StateId,
             ContactMail = ContactMail,
             CountryId = CountrySelectValue,
@@ -102,15 +102,15 @@ public partial class OrganizationAdd
        
             ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
         }
-        //catch(AuthenticationException ex) 
-        //{
-        //    ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
-        //}
-        //catch (Exception ex)
-        //{
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-        //    ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
-        //}
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        }
     }
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.

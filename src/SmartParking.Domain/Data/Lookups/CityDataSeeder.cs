@@ -11,6 +11,10 @@ public class CityDataSeeder : IDataSeedContributor, ITransientDependency
 {
     private readonly IRepository<City, int> _cityRepository;
 
+    public CityDataSeeder(IRepository<City, int> cityRepository)
+    {
+        _cityRepository = cityRepository;
+    }
     public async Task SeedAsync(DataSeedContext context)
     {
         if (!await _cityRepository.AnyAsync())

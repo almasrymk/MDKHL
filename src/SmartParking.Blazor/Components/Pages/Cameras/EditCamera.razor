@@ -1,13 +1,16 @@
-﻿@using SmartParking.Cameras
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cameras
 @using SmartParking.Enums
 @using SmartParking.Garages
+@using SmartParking.Localization
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
+@inject IStringLocalizer<SmartParkingResource> L
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">New Government</MudText>
+			<MudText Typo="Typo.h6">@L["Edit Camera"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -18,8 +21,8 @@
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@Camera.GarageId"
 								   Variant="Variant.Text"
-								   Label="GarageName"
-								   Placeholder="Please Select"
+								   Label="@L["Garage Name"]"
+								   Placeholder="Choose"
 								   Clearable="_clearable">
 							@foreach (var garage in Garages)
 							{
@@ -34,7 +37,7 @@
 									  For="@(() => Camera.GarageId)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="GarageId" />
+									  Label="@L["GarageId"]" />
 					</MudItem>
 
 
@@ -45,7 +48,7 @@
 									  For="@(() => Camera.Name)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="Name" />
+									  Label="@L["Name"]" />
 					</MudItem>
 
 
@@ -54,7 +57,7 @@
 									  For="@(() => Camera.Model)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="Model" />
+									  Label="@L["Model"]" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
@@ -62,55 +65,48 @@
 									  For="@(() => Camera.Type)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="Type" />
+									  Label="@L["Type"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.BrandName"
 									  For="@(() => Camera.BrandName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="BrandName" />
+									  Label="@L["BrandName"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.CameraIP"
 									  For="@(() => Camera.CameraIP)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="CameraIP" />
+									  Label="@L["CameraIP"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.MacAddress"
 									  For="@(() => Camera.MacAddress)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="MacAddress" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.MacAddress"
-									  For="@(() => Camera.MacAddress)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="MacAddress" />
+									  Label="@L["MacAddress"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Id"
 									  For="@(() => Camera.Id)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="Id" />
+									  Label="@L["Id"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Type"
 									  For="@(() => Camera.Type)"
 									  Immediate="true"
-									  Label="Type" />
+									  Label="@L["Type"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Status"
 									  For="@(() => Camera.Status)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="Status" />
+									  Label="@L["Status"]" />
 					</MudItem>
 				</MudGrid>
 			</MudForm>
@@ -122,11 +118,11 @@
 			<MudGrid Class="ps-lg-5">
 				<MudItem sm="6" md="6">
 
-					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">update</MudButton>
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">@L["Update"]</MudButton>
 				</MudItem>
 				<MudItem sm="6" md="6">
 
-					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">Cancel</MudButton>
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
 				</MudItem>
 			</MudGrid>
 		</DialogActions>

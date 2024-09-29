@@ -13,7 +13,7 @@
                ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
         @foreach (var city in cities)
         {
-            <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
+            <MudSelectItem T="int" Value="city.Id">@city.EnglishName</MudSelectItem>
         }
     </MudSelect>
 </MudItem>
