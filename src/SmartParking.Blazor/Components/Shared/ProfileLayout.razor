@@ -1,24 +1,24 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
-@inherits LayoutComponentBase;
+@using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
+@inject ICurrentUser CurrentUser
+@inherits LayoutComponentBase
+
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
 <MudPopoverProvider />
+
 <div class="main-layout-gradient d-flex flex-column">
-
     <header class="bg-transparent px-5 py-10 d-flex">
-
         <MudItem Style="width:240px">
             <Image Source="images/logo/logo.png" />
         </MudItem>
         <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
             <div class="d-flex flex-column justify-center">
-                <h2>
-                    @L["My Account"]
-                </h2>
+                <h2>@L["My Account"]</h2>
                 <SPBreadcrumb />
             </div>
             <div class="d-flex gap-3 align-center flex-wrap">
@@ -31,18 +31,19 @@
                     </MudAvatar>
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
-                        <p class="mb-0 fw-bold">MOHAMED AHMED</p>
+                        <p class="mb-0 fw-bold">@UserName</p>
                         <Link Class="text-white border-bottom">@L["Profile Details"]</Link>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </MudItem>
+            </MudItem>
+        </header>
 
-    </header>
-    <div Class="d-flex me-5 flex-grow-1">
-        <SPSideMenu />
-         @Body 
+        <div Class="d-flex me-5 flex-grow-1">
+            <SPSideMenu />
+            @Body
     </div>
+
     <footer class="text-center text-white my-5">
         @L["All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles"]
     </footer>
@@ -60,7 +61,15 @@
                 WarningLighten = "#CE3333",
                 Success = "#28BA24",
                 White = "FFFFFF"
-            },
-
+            }
         };
+
+    private string UserName { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+        UserName = CurrentUser.Name ?? "Guest";
+      
+    }
 }

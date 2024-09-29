@@ -3,6 +3,7 @@ using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,6 +57,7 @@ namespace SmartParking.Blazor;
     typeof(AbpIdentityBlazorServerModule),
     typeof(AbpTenantManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule)
+   
    )]
 public class SmartParkingBlazorModule : AbpModule
 {
@@ -95,6 +97,10 @@ public class SmartParkingBlazorModule : AbpModule
                 options.AddDevelopmentEncryptionAndSigningCertificate = false;
             });
 
+            Configure<RazorPagesOptions>(options =>
+            {
+                options.Conventions.AuthorizePage("/Login");
+            });
             PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
             {
                 serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", "2b5c13c0-67ec-4632-b2fd-789c99c2e8f2");
@@ -129,6 +135,7 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
+
         context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
@@ -258,7 +265,8 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseCorrelationId();
         app.UseStaticFiles();
         app.UseRouting();
-        app.UseAuthentication();
+        app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints
+        app.UseAuthorization();
         app.UseAbpOpenIddictValidation();
 
         if (MultiTenancyConsts.IsEnabled)
@@ -268,7 +276,7 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseUnitOfWork();
         app.UseDynamicClaims();
         app.UseAntiforgery();
-        app.UseAuthorization();
+      
 
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>

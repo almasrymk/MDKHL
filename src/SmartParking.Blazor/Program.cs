@@ -9,6 +9,7 @@ using Serilog.Events;
 using Microsoft.JSInterop;
 using Blazorise.Bootstrap5;
 using MudBlazor.Services;
+using Blazored.LocalStorage;
 
 
 
@@ -40,12 +41,14 @@ public class Program
                 .UseSerilog();
 
             builder.Services.AddMudServices();
+            builder.Services.AddBlazoredLocalStorage();
 
             await builder.AddApplicationAsync<SmartParkingBlazorModule>();
             //builder.Services.AddBlazorise()
             //                .AddBootstrapProviders()
             //                .AddFontAwesomeIcons();
             //builder.Services.AddBlazoriseRichTextEdit();
+
 
             var app = builder.Build();
             await app.InitializeApplicationAsync();
