@@ -39,13 +39,11 @@
                             <MudDatePicker Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="StateId" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["State Id"]" />
-                        </MudItem>
-                        <MudItem sm="4">
                             <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <StateLookups SelectValueChanged="SelectState" State="@StateNameEdit"></StateLookups>
                         <RegionLookups SelectValueChanged="SelectRegion" Region="@RegionNameEdit"></RegionLookups>
                         <Countrylookups SelectValueChanged="SelectCountry" Country="@CountryNameEdit"></Countrylookups>
                         <CityLookUps SelectValueChanged="SelectCity" City="@CityNameEdit"></CityLookUps>

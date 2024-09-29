@@ -32,14 +32,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     
 
-    /// <summary>
-    /// Method that used to create new garage to specific organization
-    /// </summary>
-    /// <param name="input">input is createupdateGarageDto type
-    /// holds data from presentation layer
-    /// </param>
-    /// <returns>Dto of created garage</returns>
-    /// <exception cref="EntityNotFoundException"> exception is returned when garage id isnot exists </exception>
+   /// <inheritdoc/>
+
     public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
     {
         var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
@@ -74,15 +68,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         Code += (input + 1);
         return Code;
     }
-    /// <summary>
-    /// methods that deletes garage.
-    /// it takes garage id as parameter , checks if it exists
-    /// if don't it throws an exception
-    /// if exists it deletes it , changes its status to deleted
-    /// </summary>
-    /// <param name="id">garage id</param>
-    /// <returns>string</returns>
-    /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
+    /// <inheritdoc/>
     public new async Task<string> DeleteByIdAsync(int id)
     {
         var garage = await base.GetAsync(id);
@@ -97,14 +83,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             return EnumValues.GetEnumDescription(GarageValidations.GarageDeleteion);
         }
     }
-    /// <summary>
-    /// A method used to update Garage
-    /// </summary>
-    /// <param name="id">Id of garage</param>
-    /// <param name="input">Dto of updated garage</param>
-    /// <returns></returns>
-    /// <exception cref="EntityNotFoundException">An exception will be thrown if no organization id found in database</exception>
 
+    /// <inheritdoc/>
     public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
     {
         var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
@@ -115,11 +95,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         return await base.UpdateAsync(id, input);
     }
 
-    /// <summary>
-    /// method used to get list of garage
-    /// </summary>
-    /// <param name="input">specifies max number of organization and if it sorted or not</param>
-    /// <returns>GaragesDto List</returns>
+    /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
@@ -165,11 +141,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         );
     }
 
-    /// <summary>
-    /// method used to get list of garages
-    /// </summary>
-    /// <param name="input">specifies max number of garage and if it filtered or not</param>
-    /// <returns>OrganizatioDto List</returns>
+
+    /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository

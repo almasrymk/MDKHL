@@ -11,6 +11,7 @@
                Placeholder="@L["Choose"]"
                Clearable="true"
                AnchorOrigin="Origin.TopCenter"
+               T="string"
                @bind-Value="name"
                OnClose="ChangeSelect"
                ReadOnly ="Read">
@@ -46,7 +47,9 @@
     }
     protected override Task OnParametersSetAsync()
     {
-        name = Region;
+       
+            name = Region;
+        
         Read = ReadOnly;
         return base.OnParametersSetAsync();
     }

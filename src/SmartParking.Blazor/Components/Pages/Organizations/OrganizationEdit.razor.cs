@@ -19,6 +19,7 @@ public partial class OrganizationEdit
     private string CityNameEdit { get; set; }
     private string CountryNameEdit { get; set; }
     private string RegionNameEdit { get; set; }
+    private string StateNameEdit { get; set; }
     [Parameter] 
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; } 
@@ -39,6 +40,11 @@ public partial class OrganizationEdit
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
 
+    private void SelectState(string state)
+    {
+        if (state != "0")
+            RegionSelectValue = int.Parse(state);
+    }
     private void SelectRegion(string region)
     {
         if(region!="0")
