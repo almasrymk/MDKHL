@@ -46,15 +46,19 @@
     }
     protected override Task OnParametersSetAsync()
     {
-        name = Country;
+        if (Country.IsNullOrEmpty() == false)
+        {
+            name = Country;
+        }
+        
         Read = ReadOnly;
         return base.OnParametersSetAsync();
     }
     protected override async Task OnInitializedAsync()
     {
         
-        await base.OnInitializedAsync();
         countries = await GovernorateAppService.GetCountryLookupAsync();
+        await base.OnInitializedAsync();
         
 
     }

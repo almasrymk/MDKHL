@@ -15,6 +15,7 @@ public partial class OrganizationView
     private string CityNameEdit { get; set; }
     private string CountryNameEdit { get; set; }
     private string RegionNameEdit { get; set; }
+    private string StateNameEdit { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; }
@@ -26,7 +27,7 @@ public partial class OrganizationView
     private int CitySelectValue { get; set; }
 
     public int RegionSelectValue { get; set; }
-    public int StateId { get; set; }
+    public int StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
 
@@ -34,7 +35,11 @@ public partial class OrganizationView
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
-
+    private void SelectState(string state)
+    {
+        if (state != "0")
+            StateSelectValue = int.Parse(state);
+    }
     private void SelectRegion(string region)
     {
         if (region != "0")
@@ -50,11 +55,10 @@ public partial class OrganizationView
         if (city != "0")
             CitySelectValue = int.Parse(city);
     }
-    private async Task Update()
+   private void Back()
     {
-        
+        Navigation.NavigateTo("/organizations");
     }
-   
     private async Task FetchData()
     {
 
@@ -76,7 +80,7 @@ public partial class OrganizationView
         CountryNameEdit = organization.CountryName;
         CityNameEdit = organization.CityName;
         RegionNameEdit = organization.RegionName;
-        StateId = StateId;
+        RegionNameEdit = organization.StateName;
         ContactMail = ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
@@ -85,6 +89,7 @@ public partial class OrganizationView
         CitySelectValue = organization.CityId;
         CountrySelectValue = organization.CountryId;
         RegionSelectValue = organization.RegionId;
+        StateSelectValue = organization.StateId;
     }
     protected override async Task OnInitializedAsync()
     {

@@ -10,10 +10,12 @@
                Label="@L["State"]"
                Placeholder="@L["Choose"]"
                Clearable="true"
-               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
+               @bind-Value="@name"
+               OnClose="ChangeSelect"
+               ReadOnly="Read">
                 @foreach (var state in states)
                 {
-                    <MudSelectItem T="int" Value="state.Id">@state.EnglishName</MudSelectItem>
+                    <MudSelectItem  Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
                 }
     </MudSelect>
 </MudItem>
@@ -21,8 +23,37 @@
 @code {
     IList<StateLookupDto> states = new List<StateLookupDto>();
 
-    [Parameter] public EventCallback<int> SelectValueChanged { get; set; }
+    [Parameter] public EventCallback<string> SelectValueChanged { get; set; }
+    [Parameter] public string State { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    private bool Read;
+    private string name;
+    private async Task ChangeSelect()
+    {
+        int parsedValue;
+        if (int.TryParse(name, out parsedValue))
+        {
+            // The value is a number (integer)
+            await SelectValueChanged.InvokeAsync(name);
+        }
+        else
+        {
+            // The value is a string
+            await SelectValueChanged.InvokeAsync("0");
 
+        }
+
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        if (State.IsNullOrEmpty() == false)
+        {
+            name = State;
+        }
+        
+        Read = ReadOnly;
+        return base.OnParametersSetAsync();
+    }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
