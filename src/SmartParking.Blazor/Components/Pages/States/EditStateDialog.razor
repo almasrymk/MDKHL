@@ -15,8 +15,6 @@
 		</TitleContent>
 		<DialogContent>
 
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
 				<MudGrid>
 
@@ -79,53 +77,6 @@
 	</MudDialog>
 
 </MudItem>
-
-@code {
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public StateDto state { get; set; } = new StateDto();
-	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
-	private MudForm editForm;
-	bool _clearable;
-
-
-	protected override async Task OnInitializedAsync()
-	{
-		var result = await StateAppService.GetRegionLookupAsync();
-		regions = result;
-	}
-
-
-	private async Task Save()
-	{
-		await editForm.Validate();
-		if (editForm.IsValid)
-		{
-
-			// Create the input object for update
-			var input = new CreateUpdateStateDto
-				{
-					ArabicName = state.ArabicName,
-					EnglishName = state.EnglishName,
-					Status = state.Status,
-					RegionId = state.RegionId,
-
-
-				};
-
-			// Call the update method
-			await StateAppService.UpdateAsync(state.Id, input);
-
-			// Close the dialog with a success result
-			MudDialog.Close(DialogResult.Ok(true));
-		}
-	}
-
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
 
 <style>
 	.mud-modal 

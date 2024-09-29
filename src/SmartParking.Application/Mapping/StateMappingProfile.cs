@@ -20,6 +20,8 @@ public class StateMappingProfile : Profile
         CreateMap<Region, RegionLookupDto>()
                 .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicName))
                 .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName));
-               
+        CreateMap<State, StateLookupDto>()
+				.ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicName))
+				.ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName));      
     }
 }

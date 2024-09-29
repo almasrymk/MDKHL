@@ -66,24 +66,4 @@
 	}
 </style>
 
-@code {
-
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public CityDto city { get; set; } = new CityDto();
-	public IReadOnlyList<GovernorateLookupDto> governorates { get; set; } = new List<GovernorateLookupDto>();
-
-
-	protected override async Task OnInitializedAsync()
-	{
-		var result = await CitiesAppService.GetGovernorateLookupAsync();
-		governorates = result;
-	}
-
-
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
 

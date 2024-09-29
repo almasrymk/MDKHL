@@ -59,50 +59,6 @@
 
 </MudItem>
 
-@code {
-
-
-
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public CountryDto country { get; set; } = new CountryDto();
-	private MudForm editForm;
-	bool _clearable;
-
-	
-
-	private async Task Save()
-	{
-		await editForm.Validate();
-		if (editForm.IsValid)
-		{
-
-			// Create the input object for update
-			var input = new CreateUpdateCountryDto
-			{
-					ArabicName = country.ArabicName,
-					EnglishName = country.EnglishName,
-					ArabicCapital = country.ArabicCapital,
-					EnglishCapital = country.EnglishCapital,
-					Notes = country.Notes,
-			};
-
-			// Call the update method
-			await CountriesAppService.UpdateAsync(country.Id, input);
-
-			// Close the dialog with a success result
-			MudDialog.Close(DialogResult.Ok(true));
-		}
-	}
-
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
-
-
-
 <style>
 	.mud-modal 
 	{

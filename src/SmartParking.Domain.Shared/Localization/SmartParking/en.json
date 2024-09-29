@@ -103,6 +103,12 @@
     "PackageTypes": "Package Types",
     "States": "States",
     "Regions": "Regions",
-    "Lookups": "Lookups"
+    "Lookups": "Lookups",
+    "GovernorateDeletedSuccessfully": "Governorate Deleted Successfully",
+    "CityDeletedSuccessfully": "City Deleted Successfully",
+    "CountryDeletedSuccessfully": "Country Deleted Successfully",
+    "PackageTypeDeletedSuccessfully": "Package Type Deleted Successfully",
+    "RegionDeletedSuccessfully": "Region Deleted Successfully",
+    "StateDeletedSuccessfully": "State Deleted Successfully"
   }
 }

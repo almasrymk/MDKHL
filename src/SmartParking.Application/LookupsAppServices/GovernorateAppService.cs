@@ -3,6 +3,8 @@ using SmartParking.Lookups;
 using SmartParking.Lookups.Governorate;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -18,11 +20,60 @@ namespace SmartParking.LookupsAppServices
                                           IGovernorateAppService
     {
         private readonly IRepository<Country, int> _countryRepository;
+        private readonly IRepository<Governorate, int> _governorateRepository;
 
-        public GovernorateAppService(IRepository<Governorate, int> repository, IRepository<Country, int> countryRepository)
-        : base(repository)
+        public GovernorateAppService(IRepository<Governorate, int> governorateRepository, IRepository<Country, int> countryRepository)
+        : base(governorateRepository)
         {
+            _governorateRepository = governorateRepository;
             _countryRepository = countryRepository;
+        }
+
+        /// <summary>
+        /// method used to get list of governorates
+        /// </summary>
+        /// <param name="input">specifies max number of governorate and if it filtered or not</param>
+        /// <returns>GovernorateDto List</returns>
+
+        public async Task<PagedResultDto<GovernorateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+        {
+            // Get the IQueryable<governorate> from the repository
+            var queryable = await _governorateRepository.GetQueryableAsync();
+            // Apply filtering
+            var filterExpression = BuildExpression<Governorate>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var governorates = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the garages entities to garagesDto objects
+            var governorateDto = ObjectMapper.Map<List<Governorate>, List<GovernorateDto>>(governorates);
+            Console.WriteLine(governorateDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<GovernorateDto>(
+                totalCount,
+                governorateDto
+            );
         }
 
         public async Task<List<CountryLookupDto>> GetCountryLookupAsync()
@@ -32,6 +83,56 @@ namespace SmartParking.LookupsAppServices
 ;
             return countryList;
            
+        }
+
+        /// <summary>
+        /// method used to get list of governorates
+        /// </summary>
+        /// <param name="input">specifies max number of governorate and if it filtered or not</param>
+        /// <returns>GovernorateDto List</returns>
+        public async Task<PagedResultDto<GovernorateDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+        {
+            // Get the IQueryable<governorate> from the repository
+            var queryable = await _governorateRepository.GetQueryableAsync();
+            // Apply search filtering
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+
+                queryable = queryable.Where(c =>
+                    c.ArabicName.StartsWith(input.SearchingTerm) ||
+                    c.EnglishName.StartsWith(input.SearchingTerm)
+
+                );
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of hotel entities
+            var governorates = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var governorateDto = ObjectMapper.Map<List<Governorate>, List<GovernorateDto>>(governorates);
+            Console.WriteLine(governorateDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<GovernorateDto>(
+                totalCount,
+                governorateDto
+            );
         }
     }
 }

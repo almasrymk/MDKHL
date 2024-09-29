@@ -63,21 +63,6 @@
 </MudItem>
 
 
-
-@code {
-
-
-
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public CountryDto country { get; set; } = new CountryDto();
-
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
-
 <style>
 	.mud-modal 
 	{

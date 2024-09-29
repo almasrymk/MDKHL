@@ -1,57 +1,16 @@
 ﻿@page "/governorates"
 @using Customs
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
 @using SmartParking.Lookups
 @using Volo.Abp.Application.Dtos
 @inherits AbpCrudPageBase<IGovernorateAppService, GovernorateDto, int, PagedAndSortedResultRequestDto, CreateUpdateGovernorateDto>
 @inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
 
 
+<h3>@L["Governorates"]</h3>
 
-<MudItem>
-    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="GovernorateDto" MultiSelection="true" Items="governorates" SortMode="SortMode.Multiple" Filterable="true">
-        <ToolBarContent>
-           
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenCreateGovernorateDialog(_backdropClick))">
-                
-                CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
-            </MudButton>
-        </ToolBarContent>
-        <Columns>
-            <SelectColumn T="GovernorateDto" />
-            <PropertyColumn Property="x => x.ArabicName" Title="Government Arabic Name"  />
-            <PropertyColumn Property="x => x.EnglishName" Title="Government English Name" />
-            <PropertyColumn Property="x => x.CountryArabicName" Title="Country Arabic Name"  />
-            <PropertyColumn Property="x => x.CountryEnglishName" Title="Country English Name"  />
-
-            <TemplateColumn Title="Actions">
-                <CellTemplate>
-                    <MudItem Class="d-flex justify-content-center align-items-center">
-                        <MudIconButton OnClick="@(() => OpenDetailsGovernorateDialog(context.Item))"
-                                       Icon="@Icons.Material.Filled.Info"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Primary"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                        <MudIconButton OnClick="@(() => OpenEditGovernorateDialog(context.Item))"
-                                       Icon="@Icons.Material.Filled.Edit"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Secondary"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Error"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                    </MudItem>
-
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="GovernorateDto" />
-        </PagerContent>
-    </MudDataGrid>
-</MudItem>
+<SPDataGrid PageName="governorates" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGovernorate" OnClickRowDelete="OnClickRowDelete" />
 

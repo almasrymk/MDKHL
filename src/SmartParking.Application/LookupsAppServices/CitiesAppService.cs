@@ -48,13 +48,13 @@ namespace SmartParking.LookupsAppServices
 
 
         /// <summary>
-        /// method used to get list of garage
+        /// method used to get list of cities
         /// </summary>
-        /// <param name="input">specifies max number of organization and if it sorted or not</param>
-        /// <returns>GaragesDto List</returns>
+        /// <param name="input">specifies max number of city and if it sorted or not</param>
+        /// <returns>CityDto List</returns>
         public async Task<PagedResultDto<CityDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
-            // Get the IQueryable<garage> from the repository
+            // Get the IQueryable<city> from the repository
             var queryable = await _repository.GetQueryableAsync();
             // Apply search filtering
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
@@ -100,13 +100,13 @@ namespace SmartParking.LookupsAppServices
 
 
         /// <summary>
-        /// method used to get list of garages
+        /// method used to get list of cities
         /// </summary>
-        /// <param name="input">specifies max number of garage and if it filtered or not</param>
-        /// <returns>OrganizatioDto List</returns>
+        /// <param name="input">specifies max number of city and if it filtered or not</param>
+        /// <returns>CityDto List</returns>
         public async Task<PagedResultDto<CityDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
-            // Get the IQueryable<garage> from the repository
+            // Get the IQueryable<city> from the repository
             var queryable = await _repository.GetQueryableAsync();
             // Apply filtering
             var filterExpression = BuildExpression<City>.BuildFilterExpression(input.filters);
