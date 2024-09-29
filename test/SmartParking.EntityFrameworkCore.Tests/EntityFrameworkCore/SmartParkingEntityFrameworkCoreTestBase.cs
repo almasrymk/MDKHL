@@ -1,8 +1,8 @@
-﻿//using Volo.Abp;
+﻿using Volo.Abp;
 
-//namespace SmartParking.EntityFrameworkCore;
+namespace SmartParking.EntityFrameworkCore;
 
-//public abstract class SmartParkingEntityFrameworkCoreTestBase : SmartParkingTestBase<SmartParkingEntityFrameworkCoreTestModule>
-//{
+public abstract class SmartParkingEntityFrameworkCoreTestBase : SmartParkingTestBase<SmartParkingEntityFrameworkCoreTestModule>
+{
 
-//}
+}

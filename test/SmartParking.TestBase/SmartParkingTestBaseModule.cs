@@ -29,7 +29,7 @@ public class SmartParkingTestBaseModule : AbpModule
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        SeedTestData(context);
+        //SeedTestData(context);
     }
 
     private static void SeedTestData(ApplicationInitializationContext context)
