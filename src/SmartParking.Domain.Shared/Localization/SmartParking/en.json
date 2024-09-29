@@ -141,9 +141,7 @@
     "CountryDeletedSuccessfully": "Country Deleted Successfully",
     "PackageTypeDeletedSuccessfully": "Package Type Deleted Successfully",
     "RegionDeletedSuccessfully": "Region Deleted Successfully",
-    "StateDeletedSuccessfully": "State Deleted Successfully"
-  }
-    "Lookups": "Lookups",
+    "StateDeletedSuccessfully": "State Deleted Successfully",
     "Back": "Back"
   } 
 }
