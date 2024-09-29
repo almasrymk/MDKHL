@@ -17,7 +17,6 @@ public partial class AddCityDialog
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-    bool _clearable;
 
     private void SelectGovernment(int Government)
     {
