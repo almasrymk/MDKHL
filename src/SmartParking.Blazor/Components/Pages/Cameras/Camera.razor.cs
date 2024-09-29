@@ -27,19 +27,15 @@ public partial class Camera
     private TableData itemData = new TableData();
 
     private string termSearch;
-    //private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
-    //Dialog
-    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-    private readonly DialogOptions _closeButton = new() { CloseButton = true };
-    private readonly DialogOptions _noHeader = new() { NoHeader = true };
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
-    private readonly DialogOptions _fullScreen = new() { FullScreen = true, CloseButton = true };
-    private readonly DialogOptions _topCenter = new() { Position = DialogPosition.TopCenter };
-    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
-
-    private async Task HandleFilter(PageChangeEventArgs pageInfo)
+	/// <summary>
+	/// filter for cameras on the server side using the camera columns.
+	/// </summary>
+	/// <param name="columnFilter">The name of column to filter for among cameras.</param>
+	/// <returns>Returns a task that represents the asynchronous operation.</returns>
+	private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
 
@@ -61,8 +57,12 @@ public partial class Camera
 
 
     }
-
-    private async Task HandleSearch(PageChangeEventArgs pageInfo)
+	/// <summary>
+	/// Searches for cameras on the server side using the cameras code search term.
+	/// </summary>
+	/// <param name="searchTerm">The term to search for among cameras.</param>
+	/// <returns>Returns a task that represents the asynchronous operation.</returns>
+	private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
         Console.WriteLine(pageInfo.SearchTerm);
@@ -86,8 +86,12 @@ public partial class Camera
         TotalItem = (int)camerasDto.TotalCount;
         CreateTable(camerasDto);
     }
-
-    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+	/// <summary>
+	/// Fetches the table data for the specified page and updates the table with the retrieved data.
+	/// </summary>
+	/// <param name="page">The page number for which to fetch the data.</param>
+	/// <returns>A task that represents the asynchronous operation.</returns>
+	private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
         CurrentPage = pageInfo.PageNumber;
@@ -130,7 +134,6 @@ public partial class Camera
             rowDef.Cells.Add(new KeyValuePair<string, string>("MacAddress", item.MacAddress));
             rowDef.Cells.Add(new KeyValuePair<string, string>("Type", item.Type));
             rowDef.Cells.Add(new KeyValuePair<string, string>("Status", item.Status.ToString()));
-            //rowDef.Cells.Add(new KeyValuePair<string, string>("Max Capacity", item.MaxCapacity.ToString()));
 
 
             tableData.Rows.Add(rowDef);
@@ -230,7 +233,17 @@ public partial class Camera
         }
 
     }
-    void ShowSnackbar(string message, Severity severity)
+	/// <summary>
+
+	/// Displays a snackbar notification with the specified message and severity.
+
+	/// </summary>
+
+	/// <param name="message">The message to display in the snackbar.</param>
+
+	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+	void ShowSnackbar(string message, Severity severity)
 
     {
 
@@ -243,37 +256,7 @@ public partial class Camera
     }
 
 
-    //private async Task GetData()
-    //{
-    //    var result = await CamerasAppService.GetListAsync(new PagedAndSortedResultRequestDto
-    //    {
-    //        MaxResultCount = pageSize,
-    //        SkipCount = (currentPage - 1) * pageSize
-    //    });
-
-    //    // If GetListAsync now returns a plain list, no need for result.Items, just assign directly
-    //    cameras = result.Items.ToList(); // This will now be a List<CameraDto>
-    //    CreateTable(cameras);
-
-    //    StateHasChanged();
-    //}
-    //protected override async Task OnInitializedAsync()
-    //{
-
-    //    await base.OnInitializedAsync();
-    //    await GetData();
-
-    //}
-
-    //private async Task OpenEditDialog(CameraDto camera)
-    //{
-    //    var parameters = new DialogParameters { ["Camera"] = camera };
-    //    var dialog = Dialog.Show<EditCamera>("Edit Camera", parameters);
-    //    var result = await dialog.Result;
-
-       
-    //}
-
+  
 
 
 }
