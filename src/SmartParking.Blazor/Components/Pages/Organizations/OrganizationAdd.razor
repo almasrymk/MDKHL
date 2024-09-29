@@ -17,6 +17,7 @@
 @inject  UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
 <PageTitle>@L["Add Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -58,11 +59,10 @@
                                        Clearable="true"
                                        @bind-Value="@StateSelectValue"
                                       >
+                                
                                 @foreach (var state in states)
                                 {
-
-                             
-                                    <MudSelectItem Value="@state.Id">@state.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -75,9 +75,10 @@
                                        
                                        @bind-Value="@RegionSelectValue"
                                        >
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
-                                    <MudSelectItem Value="@region.Id">@region.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -88,9 +89,10 @@
                                        Clearable="true"
                                        @bind-Value="@CountrySelectValue"
                                        >
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
-                                    <MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -101,9 +103,10 @@
                                        Clearable="true"
                                        @bind-Value="@CitySelectValue"
                                       >
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var city in cities)
                                 {
-                                    <MudSelectItem Value="city.Id">@city.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -143,12 +146,12 @@
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Garages"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewGarages">@L["Garages"]</MudLink>
                         </MudPaper>
                     </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Subscriptions"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewSubscription">@L["Subscriptions"]</MudLink>
                         </MudPaper>
                     </MudItem>
 
