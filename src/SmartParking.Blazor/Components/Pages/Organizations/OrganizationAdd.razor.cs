@@ -24,7 +24,7 @@ public partial class OrganizationAdd
     private int CountrySelectValue {  get; set; }
     private int CitySelectValue {  get; set; }
 
-    public int RegionId { get; set; }
+    public int RegionSelectValue { get; set; }
     public int StateId { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
@@ -34,13 +34,17 @@ public partial class OrganizationAdd
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
 
-    private void SelectCountry(int country)
+    private void SelectCountry(string country)
     {
-        CountrySelectValue = country;
+        CountrySelectValue = int.Parse(country);
     }
-    private void SelectCity(int city)
+    private void SelectRegion(string region)
     {
-        CitySelectValue = city;
+        RegionSelectValue = int.Parse(region);
+    }
+    private void SelectCity(string city)
+    {
+        CitySelectValue = int.Parse(city);
     }
     private async Task Save()
     {
@@ -62,7 +66,7 @@ public partial class OrganizationAdd
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = CitySelectValue,
-            RegionId = RegionId,
+            RegionId = RegionSelectValue,
             StateId = StateId,
             ContactMail = ContactMail,
             CountryId = CountrySelectValue,

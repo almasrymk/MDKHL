@@ -93,9 +93,9 @@
     bool _clearable;
 
 
-    private void SelectCountry(int country)
+    private void SelectCountry(string country)
     {
-        CountrySelectValue = country;
+        CountrySelectValue =int.Parse(country);
     }
     protected override async Task OnInitializedAsync()
     {

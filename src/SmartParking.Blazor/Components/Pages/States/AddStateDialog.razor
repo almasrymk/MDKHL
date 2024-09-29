@@ -81,9 +81,9 @@
         await base.OnInitializedAsync();
     }
 
-    private void SelectRegion(int region)
+    private void SelectRegion(string region)
     {
-        RegionSelectValue = region;
+        RegionSelectValue = int.Parse(region);
     }
     private async Task Submit()
     {

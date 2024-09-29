@@ -10,17 +10,45 @@
                Label="@L["City"]"
                Placeholder="@L["Choose"]"
                Clearable="true"
-               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
+               @bind-Value="name"
+               OnClose="ChangeSelect"
+               ReadOnly="Read">
         @foreach (var city in cities)
         {
-            <MudSelectItem T="int" Value="city.Id">@city.EnglishName</MudSelectItem>
+            <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
         }
     </MudSelect>
 </MudItem>
 
 @code {
     IList<CityLookupDto> cities = new List<CityLookupDto>();
-    [Parameter] public EventCallback<int> SelectValueChanged { get; set; }
+    [Parameter] public EventCallback<string> SelectValueChanged { get; set; }
+    [Parameter] public string City { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    private bool Read;
+    private string name;
+    private async Task ChangeSelect()
+    {
+        int parsedValue;
+        if (int.TryParse(name, out parsedValue))
+        {
+            // The value is a number (integer)
+            await SelectValueChanged.InvokeAsync(name);
+        }
+        else
+        {
+            // The value is a string
+            await SelectValueChanged.InvokeAsync("0");
+
+        }
+
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        name = City;
+        Read = ReadOnly;
+        return base.OnParametersSetAsync();
+    }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
