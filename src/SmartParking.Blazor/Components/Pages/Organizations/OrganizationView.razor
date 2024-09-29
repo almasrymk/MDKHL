@@ -5,16 +5,21 @@
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @using SmartParking.Localization
+@using SmartParking.Lookups
+@using SmartParking.Lookups.State
 @using SmartParking.Organizations
 @using Volo.Abp.Identity
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
+@inject IStateAppService StateAppService
+ @inject IGovernorateAppService GovernorateAppService
+ @inject ICitiesAppService CitiesAppService
 @inject IIdentityUserAppService IdentityUserAppService;
 @inject UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject NavigationManager Navigation
-<PageTitle>@L["View Organization"]</PageTitle>
+<PageTitle>@L["Edit Organization"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="8">
@@ -24,44 +29,85 @@
                     <MudGrid>
 
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder="@L["Type Here"]" Label="@L["English Name"]" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder="@L["Type Here"]" Label="@L["English Name"]" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" Required="true" @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Num Of Cameras"]" />
+                            <MudNumericField Required="true" @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Num Of Cameras"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Max Capacity"]" />
+                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Max Capacity"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker ReadOnly="true" Required="true" Label="@L["CR Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
+                            <MudDatePicker Required="true" Label="@L["CR Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker ReadOnly="true" Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
+                            <MudDatePicker Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch ReadOnly="true" Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-                        <StateLookups ReadOnly="true" SelectValueChanged="SelectRegion" State="@RegionNameEdit"></StateLookups>
-                        <RegionLookups ReadOnly="true" SelectValueChanged="SelectRegion" Region="@RegionNameEdit"></RegionLookups>
-                        <Countrylookups ReadOnly="true" SelectValueChanged="SelectCountry" Country="@CountryNameEdit"></Countrylookups>
-                        <CityLookUps ReadOnly="true" SelectValueChanged="SelectCity" City="@CityNameEdit"></CityLookUps>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["State"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       @bind-Value="@StateSelectValue">
+
+                                @foreach (var state in states)
+                                {
+                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="@L["Type Here"]" Label="@L["Whatsapp Num"]" />
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["Region"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       AnchorOrigin="Origin.TopCenter"
+                                       @bind-Value="@RegionSelectValue">
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                @foreach (var region in regions)
+                                {
+                                    <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["Country"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       @bind-Value="@CountrySelectValue">
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                @foreach (var country in countries)
+                                {
+                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
                         </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["City"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       @bind-Value="@CitySelectValue">
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                @foreach (var city in cities)
+                                {
+                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+
 
                     </MudGrid>
 
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Back">@L["Back"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Back">@L["Back"]</MudButton>
                     </div>
                 </MudForm>
 
@@ -83,7 +129,7 @@
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Garages"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewGarages">@L["Garages"]</MudLink>
                         </MudPaper>
                     </MudItem>
                     <MudItem sm="6">
