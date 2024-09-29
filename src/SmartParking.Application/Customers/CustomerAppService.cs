@@ -31,12 +31,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _identityUserAppService= identityUserAppService;
         _userManager=userManager;
     }
-    /// <summary>
-    /// A method used to register customer
-    /// Method uses create customer method to create customer
-    /// </summary>
-    /// <param name="input">Customer create dto</param>
-    /// <returns>A dto for created customer</returns>
+    /// <inheritdoc/>
+    
     public async Task<CustomerDto> RegisterAsync(CreateUpdateCustomerDto input)
     {
              return await CreateAsync(input);
@@ -45,10 +41,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
 
-    /// <summary>
-    /// Method Used to create random otp
-    /// </summary>
-    /// <returns>string of generated otp</returns>
+
+    /// <inheritdoc/>
 
     public string GenerateOtp()
     {
@@ -57,16 +51,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-
-    /// <summary>
-    /// Method to add customer to database
-    /// It depends on UserManager to add identity user to User Table
-    /// User Manager confirms that user has SecurityStamp
-    /// Calls repository to add customer to databas
-    /// </summary>
-    /// <param name="input">Customer create dto</param>
-    /// <returns>A dto for created customer</returns>
-    /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
+    /// <inheritdoc/>
     public override async Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
         var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
@@ -110,14 +95,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return message;
     }
 
-
-    /// <summary>
-    /// Method used to verify user otp
-    /// </summary>
-    /// <param name="input">Otp dto</param>
-    /// <returns>boolean depends on operation status</returns>
-    /// <exception cref="NotImplementedException">Throws exception if no user with that id in database</exception>
-
+    /// <inheritdoc/>
     public async Task<bool> VerifyOtpAsync(OtpVerificationDto input)
     {
         var cutsomer = await _repository.FindAsync(input.CustomerId);
@@ -133,6 +111,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return false;
 
     }
+
+    /// <summary>
+    /// Method used to check if phone number is uniquer per user.
+    /// </summary>
+    /// <param name="phoneNumber">Required to check phone number</param>
+    /// <returns>bool</returns>
 
     public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber) 
     {
