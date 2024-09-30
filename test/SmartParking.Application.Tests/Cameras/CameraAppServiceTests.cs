@@ -10,12 +10,12 @@ using Xunit;
 
 namespace SmartParking.Cameras;
 
-public abstract class  CameraAppService_Tests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
+public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
 {
     private ICamerasAppService _cameraAppService;
 
-    protected CameraAppService_Tests()
+    protected CameraAppServiceTests()
     {
         _cameraAppService=GetRequiredService<ICamerasAppService>();
     }
