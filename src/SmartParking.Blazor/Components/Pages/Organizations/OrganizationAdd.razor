@@ -18,6 +18,7 @@
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+
 <PageTitle>@L["Add Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -42,10 +43,11 @@
                             <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Max Capacity"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Required="true" Label="@L["CR Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
+                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label="@L["CR Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
+                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
+                                            Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
