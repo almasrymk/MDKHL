@@ -27,6 +27,7 @@ namespace SmartParking.Data.Lookups
         private readonly IRepository<PlateColor, int> _plateColorRepository;
         private readonly IRepository<LicenceType, int> _licenceTypeRepository;
         private readonly IRepository<Organization, int> _organizationRepostory;
+        private readonly IRepository<Garage, int> _garageRepostory;
 
         public DataSeeder(
             IRepository<Country, int> countryRepository,
@@ -36,7 +37,9 @@ namespace SmartParking.Data.Lookups
             IRepository<State, int> stateRepository,
             IRepository<PlateColor, int> plateColorRepository,
             IRepository<LicenceType, int> licenceTypeRepository,
-            IRepository<Organization,int> organization)
+            IRepository<Organization,int> organization,
+            IRepository<Garage, int> garageRepostory)
+
         {
             _countryRepository = countryRepository;
             _governorateRepository = governorateRepository;
@@ -46,6 +49,7 @@ namespace SmartParking.Data.Lookups
             _licenceTypeRepository = licenceTypeRepository;
             _organizationRepostory = organization;
             _plateColorRepository = plateColorRepository;
+            _garageRepostory = garageRepostory;
         }
 
         public async Task SeedAsync(DataSeedContext context)
@@ -136,7 +140,43 @@ namespace SmartParking.Data.Lookups
                     Status = Status.Active,
                 };
                 await _organizationRepostory.InsertAsync(organization,autoSave:true);
+                var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
+
+
+                await _garageRepostory.InsertAsync(
+                    new Garage
+                    {
+                      Code = "O000001-G-01",
+                      Name = "Main Garage",
+                      MaxCapacity = 150,
+                      ClosingHours = new TimeOnly(22, 0), 
+                      OrganizationId = organizationTest.Id,
+                      Status = Status.Active
+                    },
+                    autoSave: true
+                );
+
+                await _garageRepostory.InsertAsync(
+                    new Garage
+                    {
+                        Code = "O000001-G-02",
+                        Name = "Secondary Garage",
+                        MaxCapacity = 100,
+                        ClosingHours = new TimeOnly(20, 0), 
+                        OrganizationId = organizationTest.Id,
+                        Status = Status.Active
+                    },
+                    autoSave: true
+                );
+
+
+
+
+
+
+
             }
+
             if (!await _plateColorRepository.AnyAsync())
             {
                 if (!await _plateColorRepository.AnyAsync())
