@@ -49,4 +49,13 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <exception cref="NotImplementedException">Throws exception if no user with that id in database</exception>    /// <inheritdoc/>
 
     Task<bool> VerifyOtpAsync(OtpVerificationDto input);
+
+    /// <summary>
+    /// Method used to check if phone number is uniquer per user.
+    /// </summary>
+    /// <param name="phoneNumber">Required to check phone number</param>
+    /// <returns>bool</returns>
+
+    Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber);
+
 }

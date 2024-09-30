@@ -1,0 +1,73 @@
+﻿@page "/register"
+@using SmartParking.Cutomers
+@layout Shared.ProfileLayout
+@inject ICustomerAppService CustomerAppService
+@inject ISnackbar Snackbar
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<PageTitle>Register</PageTitle>
+<div>
+    <MudGrid>
+        <MudItem sm="8">
+            <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                <h3 Color="fw-bold">Register</h3>
+                <MudForm Class="flex-grow-1 mt-4">
+                    <MudGrid>
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.FullName" Label="Name" Required />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="Email" @bind-Value="createUpdateCustomerDto.Email" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="Password" @bind-Value="createUpdateCustomerDto.Password"/>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="Repeat Password" @bind-Value="createUpdateCustomerDto.RepeatPassword"/>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string" InputType="InputType.Telephone" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" @bind-Value="createUpdateCustomerDto.MobileNumber" Required/>
+                        </MudItem> 
+
+                    </MudGrid>
+                    <div class="d-flex justify-content-between mt-auto">
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">Cancel</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit" OnClick=" HandleSubmit">Submit</MudButton>
+                    </div>
+                </MudForm>
+
+            </MudPaper>
+        </MudItem>
+        <MudItem sm="4">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <MudText>My Profile</MudText>
+                    <MudLink Underline="Underline.Always" Href="/edit-profile">Edit Profile</MudLink>
+                </div>
+                <div class="d-flex flex-column align-content-center gap-4 p-5">
+                    <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
+                    <div class="d-flex flex-column align-items-center">
+                        <MudText Class="fw-bold">Ahmed Mohamed</MudText>
+                        <MudText>A.Mohamed@mdkhl.com</MudText>
+                    </div>
+                </div>
+                <MudGrid Class="mt-3">
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Invoice</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">Cars</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+</div>
+
