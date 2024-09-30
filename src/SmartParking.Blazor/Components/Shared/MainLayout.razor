@@ -33,14 +33,18 @@
             <div class="d-flex gap-3 align-center flex-wrap">
                 <SPSearch />
                 <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />
-                <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
-                <MudMenu Icon="@Icons.Material.Filled.Language" Label="Language">
+                <MudMenu>   
+                    <ActivatorContent>
+                        <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
+                    </ActivatorContent>
+                    <ChildContent>
                     @foreach (var language in _localizationOptions.Value.Languages)
                     {
                         <MudMenuItem OnClick="@(() => ChangeLanguage(language.CultureName))">
                             <MudText>@language.DisplayName</MudText>
                             </MudMenuItem>
                     }
+                    </ChildContent>
                 </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">

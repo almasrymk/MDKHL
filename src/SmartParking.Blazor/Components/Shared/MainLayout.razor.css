@@ -1,8 +1,4 @@
-﻿.main-layout-gradient {
-    background: rgb(13,84,128);
-    background: linear-gradient(90deg, rgba(13,84,128,0.9809173669467787) 37%, rgba(22,183,211,1) 100%);
-    min-height: 100vh;
-}
+﻿
 ::deep .main-layout-paper {
     background-color: #F2F2F2;   
 }

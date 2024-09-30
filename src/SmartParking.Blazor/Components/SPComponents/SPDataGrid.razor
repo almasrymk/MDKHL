@@ -11,91 +11,93 @@
 @inject IStringLocalizer<SmartParkingResource> L
 <div>
     <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" MultiSelection="true" SortMode="SortMode.Single" Filterable="true"
-                 Hideable="true" >
+                 Hideable="true">
         <ToolBarContent>
-            <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search For Organizations"]" Adornment="Adornment.End" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
-            <MudItem Class="me-2 ">
-                <MudButton OnClick="OnClickFilter" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FilterAlt"></MudButton>
+            <div class="d-flex flex-column w-100">
+                <div class="w-100 d-flex align-center">
+                    <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search For Organizations"]" Adornment="Adornment.End" Immediate="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
+                    <div Class="ms-2" @onclick="OnClickFilter">
+                        <MudIcon Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIcon>
+                    </div>
+                    <MudItem>
+                        @if (ColumnsFilterApply.Count > 0)
+                        {
+                            <MudGrid Justify="Justify.SpaceBetween" Class=" align-center ">
 
-            </MudItem>
-            <MudItem>
-                @if (ClickFilter)
-                {
-                    <MudGrid Justify="Justify.SpaceBetween" Class=" align-center   flex-row flex-nowrap">
-
-                        <MudItem xl="10" Class="d-flex flex-row flex-nowrap align-center">
-                            <MudItem>
-                                @L["Select Column"]:
-                                <MudSelect Variant="Variant.Outlined" @bind-Value="@SelectedColumn" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                                    @foreach (var column in Data.Columns)
+                                <MudItem Class="d-flex align-center pt-0">
+                                    @foreach (var value in ColumnsFilterApply)
                                     {
-                                        @if (column.IsFilterable)
-                                        {
-                                            <MudSelectItem Value="@column.PropertyNmae">@column.DisplayName</MudSelectItem>
-                                        }
-
+                                        <MudItem Class="d-flex align-center">
+                                            <MudChip Class="custom-chip-filter" T="string">@(value ?? "Select Column is Null")</MudChip>
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Close" OnClick="@(()=>ClearItem(value))"></MudIconButton>
+                                        </MudItem>
                                     }
-                                </MudSelect>
-                            </MudItem>
-                            @if (Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
-                            {
-                                <MudItem>
-                                    @L["Operator"]:
-                                    <MudSelect Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                </MudItem>
 
-                                        @foreach (var column in StringOperator)
+                                <MudButton OnClick="ClearAll">@L["Clear All"]</MudButton>
+
+                            </MudGrid>
+                        }
+                    </MudItem>
+                    <MudSpacer />
+                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(()=>OnAdd.InvokeAsync())">
+                        @L["CREATE NEW"]
+                        <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
+                    </MudButton>
+
+                </div>
+                <div class="mt-3">
+                    @if (ClickFilter)
+                    {
+                        <MudGrid Justify="Justify.SpaceBetween" Class=" align-center w-100  flex-row flex-nowrap">
+
+                            <MudItem sm="12" Class="d-flex flex-row flex-nowrap align-end">
+                                <MudItem>
+                                    @L["Select Column"]:
+                                    <MudSelect Variant="Variant.Outlined" @bind-Value="@SelectedColumn" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                        @foreach (var column in Data.Columns)
                                         {
-                                            <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                            @if (column.IsFilterable)
+                                            {
+                                                <MudSelectItem Value="@column.PropertyNmae">@column.DisplayName</MudSelectItem>
+                                            }
+
                                         }
                                     </MudSelect>
                                 </MudItem>
-                            }
-                            @if (SelectOperator.Value != "IsNullOrEmpty")
-                            {
-                                <MudItem>
-                                    @L["Value"]:
-                                    <MudTextField @bind-Value="FilterValue" Placeholder="@L["Value"]" Variant="Variant.Outlined" />
-                                </MudItem>
-                            }
-                        </MudItem>
+                                @if (Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
+                                {
+                                    <MudItem>
+                                        @L["Operator"]:
+                                        <MudSelect Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
 
-                        <!--Buttons Filter Button -->
-                        <MudItem xl="2">
-                            <MudButton Class="clear-btn" Variant="Variant.Outlined" OnClick="CloseFilter">@L["Cancel"]</MudButton>
-                            <MudButton Class="apply-filter-btn" Variant="Variant.Outlined" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
+                                            @foreach (var column in StringOperator)
+                                            {
+                                                <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                }
+                                @if (SelectOperator.Value != "IsNullOrEmpty")
+                                {
+                                    <MudItem>
+                                        @L["Value"]:
+                                        <MudTextField @bind-Value="FilterValue" Placeholder="@L["Value"]" Variant="Variant.Outlined" Margin="MudBlazor.Margin.Dense" />
+                                    </MudItem>
+                                }
+                            </MudItem>
 
-                        </MudItem>
+                            <!--Buttons Filter Button -->
+                            <MudItem xl="2" Class="d-flex align-center gap-2">
+                                <MudButton Class="clear-btn" Variant="Variant.Outlined" OnClick="CloseFilter">@L["Cancel"]</MudButton>
+                                <MudButton Class="apply-filter-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
 
-                    </MudGrid>
-                }
-            </MudItem>
-            <MudSpacer />
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(()=>OnAdd.InvokeAsync())">
-                @L["CREATE NEW"]
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
-            </MudButton>
-            <MudItem>
-                @if (ColumnsFilterApply.Count > 0)
-                {
-                    <MudGrid Justify="Justify.SpaceBetween" Class=" align-center ">
-
-                        <MudItem Class="d-flex align-center pt-0">
-                            @foreach (var value in ColumnsFilterApply)
-                            {
-                                <MudItem Class="d-flex align-center">
-                                    <MudChip Class="custom-chip-filter" T="string">@(value ?? "Select Column is Null")</MudChip>
-                                    <MudIconButton Icon="@Icons.Material.Outlined.Close" OnClick="@(()=>ClearItem(value))"></MudIconButton>
-                                </MudItem>
-
-                            }
-                        </MudItem>
-
-                        <MudButton OnClick="ClearAll">@L["Clear All"]</MudButton>
-
-                    </MudGrid>
-                }
-            </MudItem>
+                            </MudItem>
+                        </MudGrid>
+                    }
+                </div>
+            </div>
         </ToolBarContent>
         <Columns>
             <SelectColumn />
@@ -128,7 +130,6 @@
                 <CellTemplate>
                     <MudItem Class="d-flex justify-content-center align-items-center">
                         <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
-                                       
                                        Icon="@Icons.Material.Filled.Info"
                                        Variant="Variant.Filled"
                                        Color="MudBlazor.Color.Primary"
@@ -150,7 +151,7 @@
 
                 </CellTemplate>
             </TemplateColumn>
-            
+
 
 
         </Columns>
