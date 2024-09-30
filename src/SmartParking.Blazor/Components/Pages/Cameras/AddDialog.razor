@@ -1,10 +1,14 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Cameras
 @using SmartParking.Enums
+@using SmartParking.Garages
 @using SmartParking.Localization
 @using Volo.Abp
+@using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IGarageAppService GaragesAppService
+
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -17,6 +21,28 @@
                     *@
                     <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                         <MudGrid>
+                            <MudItem sm="6">
+                                <MudSelect @bind-Value="@cameraDto.GarageId"
+                                           Variant="Variant.Text"
+                                           Label="@L["Garage Name"]"
+                                           Placeholder="Choose"
+                                           Clearable="_clearable">
+                                    @foreach (var garage in Garages)
+                                    {
+                                        <MudSelectItem Value="garage.Id">@garage.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="cameraDto.GarageId"
+                                              For="@(() => cameraDto.GarageId)"
+                                              Immediate="true"
+                                              Disabled=true
+                                              Label="@L["GarageId"]" />
+                            </MudItem>
+
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.Name"
                                               For="@(() => cameraDto.Name)"
@@ -124,6 +150,18 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
+    public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                MaxResultCount = 100,
+                SkipCount = (1 - 1) * 100
+            });
+        Garages = result.Items.ToList();
+        await base.OnInitializedAsync();
+    }
     private async Task Submit()
     {
         if (form.IsValid)

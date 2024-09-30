@@ -101,6 +101,8 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GarageId");
+
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Cameras");
@@ -3477,9 +3479,15 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Cameras.Camera", b =>
                 {
+                    b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
+                        .WithMany()
+                        .HasForeignKey("GarageId");
+
                     b.HasOne("SmartParking.Entities.Organizations.Organization", null)
                         .WithMany("Cameras")
                         .HasForeignKey("OrganizationId");
+
+                    b.Navigation("Garage");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
