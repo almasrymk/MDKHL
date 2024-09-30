@@ -31,7 +31,7 @@ public partial class EditRegionDialog
         {
 
             // Create the input object for update
-            var input = new CretaeUpdateRegionDto
+            var input = new CreateUpdateRegionDto
             {
                 ArabicName = region.ArabicName,
                 EnglishName = region.EnglishName,

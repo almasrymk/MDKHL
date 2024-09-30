@@ -1,16 +1,14 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.PackageTypes;
 using SmartParking.Localization;
-using SmartParking.Lookups;
 using SmartParking.Lookups.Region;
-using SmartParking.Lookups.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Regions;
 
