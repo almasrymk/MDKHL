@@ -55,7 +55,7 @@ public abstract class CountryAppServiceTests<TStartupModule> : SmartParkingAppli
     }
 
     [Fact]
-    public async Task Should_Not_Create_A_Season_Without_ArabicName()
+    public async Task Should_Not_Create_A_Country_Without_ArabicName()
     {
         var exception = await Assert.ThrowsAsync<DbUpdateException>(async () =>
         {
