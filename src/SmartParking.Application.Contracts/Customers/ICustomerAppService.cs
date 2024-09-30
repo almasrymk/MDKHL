@@ -23,13 +23,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
     Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);
 
-    /// <summary>
-    /// A method used to register customer
-    /// Method uses create customer method to create customer
-    /// </summary>
-    /// <param name="input">Customer create dto</param>
-    /// <returns>A dto for created customer</returns>
-    Task<CustomerDto> RegisterAsync(CreateUpdateCustomerDto input);
+   
     /// <summary>
     /// Method Used to create random otp
     /// </summary>

@@ -10,15 +10,13 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 public partial class CustomerRegister
 {
     public CreateUpdateCustomerDto createUpdateCustomerDto = new CreateUpdateCustomerDto();
-    public async Task HandleSubmit()
+    public async  Task HandleSubmit()
     {
         try
         {
-            //var result = await CustomerAppService.CheckIfPhoneNumberIsUnique(createUpdateCustomerDto.MobileNumber);
-            //if (result == false) {
-            //    throw new Exception("Phone Number is already used");
-            //}
-            var customer = await CustomerAppService.RegisterAsync(createUpdateCustomerDto);
+            createUpdateCustomerDto.UserName = createUpdateCustomerDto.FullName;
+            createUpdateCustomerDto.NationalId = "1478963250";
+            var customer =  await CustomerAppService.CreateAsync(createUpdateCustomerDto);
             Console.WriteLine(customer);
             if (customer != null)
             {

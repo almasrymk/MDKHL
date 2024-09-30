@@ -32,14 +32,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _identityUserAppService= identityUserAppService;
         _userManager=userManager;
     }
-    /// <inheritdoc/>
-    
-    public async Task<CustomerDto> RegisterAsync(CreateUpdateCustomerDto input)
-    {
-             return await CreateAsync(input);
-    }
-
-
+  
 
 
 
@@ -53,7 +46,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
     /// <inheritdoc/>
-    public async Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
+    public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
         var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
         try
@@ -118,10 +111,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber) 
     {
         var query = await _repository.GetQueryableAsync();
-        var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber);
-        var cnt = await result.ToListAsync();
+        query = query.AsNoTracking();
+        var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
 
-        if (cnt.Count == 0) {
+        if (result.Count == 0) {
             return true;
         
         }

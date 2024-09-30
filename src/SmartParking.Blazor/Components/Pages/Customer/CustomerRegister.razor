@@ -29,12 +29,13 @@
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField T="string" InputType="InputType.Telephone" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" @bind-Value="createUpdateCustomerDto.MobileNumber" Required/>
-                        </MudItem> 
+                        </MudItem>
+                       
 
                     </MudGrid>
                     <div class="d-flex justify-content-between mt-auto">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">Cancel</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit" OnClick=" HandleSubmit">Submit</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit" OnClick="HandleSubmit">Submit</MudButton>
                     </div>
                 </MudForm>
 
