@@ -28,6 +28,7 @@ namespace SmartParking.Data.Lookups
         private readonly IRepository<LicenceType, int> _licenceTypeRepository;
         private readonly IRepository<Organization, int> _organizationRepostory;
         private readonly IRepository<Garage, int> _garageRepostory;
+        private readonly IRepository<Camera, int> _cameraRepostory;
 
         public DataSeeder(
             IRepository<Country, int> countryRepository,
@@ -38,7 +39,8 @@ namespace SmartParking.Data.Lookups
             IRepository<PlateColor, int> plateColorRepository,
             IRepository<LicenceType, int> licenceTypeRepository,
             IRepository<Organization,int> organization,
-            IRepository<Garage, int> garageRepostory)
+            IRepository<Garage, int> garageRepostory,
+            IRepository<Camera, int> cameraRepostory)
 
         {
             _countryRepository = countryRepository;
@@ -50,6 +52,7 @@ namespace SmartParking.Data.Lookups
             _organizationRepostory = organization;
             _plateColorRepository = plateColorRepository;
             _garageRepostory = garageRepostory;
+            _cameraRepostory = cameraRepostory;
         }
 
         public async Task SeedAsync(DataSeedContext context)
@@ -169,7 +172,44 @@ namespace SmartParking.Data.Lookups
                     autoSave: true
                 );
 
+                var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.Name == "Main Garage");
 
+
+                await _cameraRepostory.InsertAsync(
+                    new Camera
+                    {
+                        GarageId = garageTest.Id,    // Link camera to the found Garage
+                        Name = "Camera One",         // Provide valid camera name
+                        Model = "Model X",           // Add the model of the camera
+                        MainType = "Type A",         // Add the main type
+                        BrandName = "Brand Z",       // Add the brand name
+                        Code = "CAM001",             // Add a unique code
+                        CameraIP = "192.168.1.10",   // Add camera IP address
+                        MacAddress = "00:11:22:33:44:55", // Add MAC address
+                        Type = "Outdoor",            // Set camera type
+                        Status = Status.Active,      // Set the status of the camera
+                        TenantId = null              // Set TenantId if multi-tenant, or null
+                    },
+                    autoSave: true
+                );
+
+                await _cameraRepostory.InsertAsync(
+                    new Camera
+                    {
+                        GarageId = garageTest.Id,    // Link camera to the found Garage
+                        Name = "Camera Two",         // Provide valid camera name
+                        Model = "Model X",           // Add the model of the camera
+                        MainType = "Type A",         // Add the main type
+                        BrandName = "Brand Z",       // Add the brand name
+                        Code = "CAM001",             // Add a unique code
+                        CameraIP = "192.168.1.11",   // Add camera IP address
+                        MacAddress = "00:11:22:33:44:55", // Add MAC address
+                        Type = "Outdoor",            // Set camera type
+                        Status = Status.Active,      // Set the status of the camera
+                        TenantId = null              // Set TenantId if multi-tenant, or null
+                    },
+                    autoSave: true
+                );
 
 
 
@@ -216,6 +256,8 @@ namespace SmartParking.Data.Lookups
                     }
                 }
             }
+            
+            
         }
     }
 }

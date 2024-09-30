@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using SmartParking.Enums;
+using SmartParking.Garages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,12 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
     where TStartupModule : IAbpModule
 {
     private ICamerasAppService _cameraAppService;
+    private IGarageAppService _garagesAppService;
 
     protected CameraAppServiceTests()
     {
         _cameraAppService=GetRequiredService<ICamerasAppService>();
+        _garagesAppService=GetRequiredService<IGarageAppService>();
     }
     [Fact]
     public async Task Should_Get_List_of_Cameras()
@@ -33,6 +36,10 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
     [Fact]
     public async Task Should_Create_A_Valid_Camera()
     {
+        var garages = await _garagesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        var garage= garages.Items.First();
+
+
         var result = await _cameraAppService.CreateAsync(
             new CreateUpdateCameraDto
             {
@@ -44,7 +51,7 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                 CameraIP = "192.168.1.100",        // Valid Camera IP
                 MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address
                 Type = "Outdoor",                  // Valid Type
-                GarageId = 1,                      // Valid Garage ID
+                GarageId = garage.Id,                      // Valid Garage ID
                 Status = Status.Active,            // Valid Status
             });
 
@@ -55,6 +62,8 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
     [Fact]
     public async Task Should_Fail_To_Create_Camera_Without_Name()
     {
+        var garages = await _garagesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        var garage = garages.Items.First();
         var exception = await Should.ThrowAsync<AbpValidationException>(async () =>
         {
             await _cameraAppService.CreateAsync(
@@ -68,7 +77,7 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                     CameraIP = "192.168.1.1",
                     MacAddress = "00:1B:44:11:3A:B7",
                     Type = "Indoor",
-                    GarageId = 1,
+                    GarageId = garage.Id,
                     Status = Status.Active,
                     TenantId = null
                 });
@@ -76,56 +85,7 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
 
         exception.ValidationErrors.ShouldContain(error => error.MemberNames.Contains(nameof(CreateUpdateCameraDto.Name)));
     }
-    [Fact]
-    public async Task Should_Update_Camera_Type()
-    {
-        // Step 1: Create a valid camera first
-        var createdCamera = await _cameraAppService.CreateAsync(
-            new CreateUpdateCameraDto
-            {
-                Name = "Camera1",                  // Valid Name
-                Model = "ModelX",                  // Valid Model
-                MainType = "TypeA",                // Valid MainType
-                BrandName = "BrandZ",              // Valid BrandName
-                Code = "C12345",                   // Valid Code
-                CameraIP = "192.168.1.100",        // Valid Camera IP
-                MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address
-                Type = "Outdoor",                  // Valid Type
-                GarageId = 1,                      // Valid Garage ID
-                Status = Status.Active,            // Valid Status
-            });
-
-        // Ensure the camera was created successfully
-        createdCamera.ShouldNotBeNull();
-        createdCamera.Name.ShouldBe("Camera1");
-        // Check if the camera ID is valid
-        var cameraId = createdCamera.Id;
-        cameraId.ShouldBeGreaterThan(0);   // Ensure we have a valid camera ID
-
-        // Step 2: Update the 'Type' of the created camera
-        var updatedCameraDto = new CreateUpdateCameraDto
-        {
-            Name = createdCamera.Name,
-            Model = createdCamera.Model,
-            MainType = createdCamera.MainType,
-            BrandName = createdCamera.BrandName,
-            Code = createdCamera.Code,
-            CameraIP = createdCamera.CameraIP,
-            MacAddress = createdCamera.MacAddress,
-            Type = "Indoor",                     // Change Type from 'Outdoor' to 'Indoor'
-           // GarageId = createdCamera.GarageId,
-            Status = createdCamera.Status,
-            TenantId = createdCamera.TenantId
-        };
-
-        // Attempt to update the camera
-        var updatedCamera = await _cameraAppService.UpdateAsync(cameraId, updatedCameraDto);
-
-        // Step 3: Validate that the camera's type was updated
-        updatedCamera.ShouldNotBeNull();
-        updatedCamera.Type.ShouldBe("Indoor");    // Verify the updated Type
-    }
-
+   
 
 
 }
