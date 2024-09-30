@@ -7,7 +7,8 @@
 @inject IGovernorateAppService GovernorateAppService
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["GovernoratesDetails"]</PageTitle>
-<div class="modal-wrapper">
+
+<MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["GovernorateDetails"]</MudText>
@@ -16,7 +17,7 @@
 
 
 
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
 				<MudGrid>
 
 
@@ -82,35 +83,8 @@
 		</DialogActions>
 	</MudDialog>
 
-</div>
+</MudItem>
 
-
-
-@code {
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public GovernorateDto governorate { get; set; } = new GovernorateDto();
-	public IReadOnlyList<CountryLookupDto> countries { get; set; } = new List<CountryLookupDto>();
-	private int CountrySelectValue { get; set; }
-	private MudForm editForm;
-	bool _clearable;
-
-
-
-	private void SelectCountry(int country)
-	{
-		CountrySelectValue = country;
-	}
-	protected override async Task OnInitializedAsync()
-	{
-		var result = await GovernorateAppService.GetCountryLookupAsync();
-		countries = result;
-	}
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
 
 <style>
 	.mud-modal 

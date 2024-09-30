@@ -18,3 +18,7 @@
 ::deep .data-grid-search .mud-input.mud-input-underline:after {
     content: none !important;
 }
+
+::deep .mud-table-toolbar{
+    height:auto !important;
+}

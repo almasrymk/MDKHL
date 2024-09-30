@@ -1,6 +1,12 @@
-﻿using MudBlazor;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
+using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.PackageTypes;
+using SmartParking.Localization;
+using SmartParking.Lookups;
 using SmartParking.Lookups.Region;
 using SmartParking.Lookups.State;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,51 +16,214 @@ namespace SmartParking.Blazor.Components.Pages.Regions;
 
 public partial class Region
 {
-    private IReadOnlyList<RegionDto> regions = new List<RegionDto>();
-    private int currentPage = 1;
-    private int pageSize = 100;
+    private int TotalItem;
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
+    public int RowPerPage { get; set; } = 10; // Default value is 10
 
-    private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+    private TableData itemData = new TableData();
+
+    private string termSearch;
+
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
 
-    protected override async Task OnInitializedAsync()
+    /// <summary>
+    /// filter for cities on the server side using the city columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among city.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
+        // Log the search term to the console for debugging purposes
 
-        await base.OnInitializedAsync();
-        await GetData();
-    }
-
-    private async Task GetData()
-    {
-        var result = await AppService.GetListAsync(new PagedAndSortedResultRequestDto
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
-            MaxResultCount = pageSize,
-            SkipCount = (currentPage - 1) * pageSize
-        });
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var regionDto = await AppService.Filter(input);
 
-        regions = result.Items.ToList();
-        StateHasChanged();
-    }
-    private Task OpenCreateRegionDialog(DialogOptions options)
-    {
-        return Dialog.ShowAsync<AddRegionDialog>("Add Region", options);
-    }
-
-    private async Task OpenEditRegionDialog(RegionDto regionDto)
-    {
-        var parameters = new DialogParameters { ["Region"] = regionDto };
-        var dialog = await Dialog.ShowAsync<EditRegionDialog>("Edit Region", parameters);
-        var result = await dialog.Result;
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)regionDto.TotalCount;
+        CreateTable(regionDto);
 
 
     }
 
-    private async Task OpenDetailsRegionDialog(RegionDto region)
+    /// <summary>
+    /// Searches for hotels on the server side using the hotel code search term.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        var parameters = new DialogParameters { ["Region"] = region };
-        var dialog = await Dialog.ShowAsync<DetailsRegionDialog>("Region Details", parameters);
-        var result = await dialog.Result;
+        // Log the search term to the console for debugging purposes
+        Console.WriteLine(pageInfo.SearchTerm);
 
+        // Update the term used for searching with the provided search term
+        termSearch = pageInfo.SearchTerm;
+
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
+        };
+
+        // Call the service to perform the search based on the input parameters
+        var regionDto = await AppService.Search(input);
+
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)regionDto.TotalCount;
+        CreateTable(regionDto);
+    }
+
+    /// <summary>
+    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// </summary>
+    /// <param name="page">The page number for which to fetch the data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+    {
+
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        Console.WriteLine(RowPerPage);
+        // Create a request object for paged and sorted data
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+
+        // Retrieve the list of cities from the server
+        var regionDto = await AppService.GetListAsync(input);
+        TotalItem = (int)regionDto.TotalCount;
+        CreateTable(regionDto);
+
+    }
+
+    private void CreateTable(PagedResultDto<RegionDto> regions)
+    {
+        // Initialize table data to be displayed, setting the table's name and whether to show the header
+        var tableData = new TableData()
+        {
+            Name = "Regions",
+            ShowHeader = true
+        };
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = true, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Region Arabic Name", Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Region English Name", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+
+
+        foreach (var item in regions.Items)
+        {
+            var rowDef = new RowDef();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("Region Arabic Name", item.ArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("Region English Name", item.EnglishName));
+
+
+            tableData.Rows.Add(rowDef);
+        }
+        itemData = tableData;
+    }
+
+    private Task CreateRegion()
+    {
+
+
+        return Dialog.ShowAsync<AddRegionDialog>("Simple Dialog", options);
+
+
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var regionDto = await AppService.GetAsync(id);
+
+
+        var parameters = new DialogParameters
+        {
+            ["region"] = regionDto,
+            ["UpdatedId"] = id
+        };
+
+
+        return await Dialog.ShowAsync<EditRegionDialog>("Edit Region", parameters);
+
+    }
+
+
+    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    {
+
+        var id = int.Parse(row.Cells[0].Value);
+
+        var regionDto = await AppService.GetAsync(id);
+
+
+        var parameters = new DialogParameters
+        {
+            ["region"] = regionDto,
+        };
+
+
+        return await Dialog.ShowAsync<DetailsRegionDialog>("View Region", parameters);
+    }
+
+    private async Task OnClickRowDelete(string row)
+    {
+        var successMessage = _localizer["RegionDeletedSuccessfully"];
+
+        var id = int.Parse(row);
+        try
+        {
+
+            await AppService.DeleteAsync(id);
+            ShowSnackbar(successMessage, Severity.Success);
+
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar(ex.Message, Severity.Error);
+        }
+
+    }
+
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
+
+    {
+
+        Snackbar.Clear();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
 }

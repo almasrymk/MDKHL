@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
 
@@ -21,6 +25,7 @@ public partial class UpdateGarageDialog
     protected override Task OnInitializedAsync()
     {
         _time = Garage.ClosingHours.ToTimeSpan();
+        Console.WriteLine(_time);
 
         return base.OnInitializedAsync();
     }
@@ -32,13 +37,30 @@ public partial class UpdateGarageDialog
             Garage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
 
             await GarageAppService.UpdateAsync(UpdatedId, Garage);
-            Snackbar.Add("Garage Updated Successfully", Severity.Success);
+            ShowSnackbar("Garage Updated Successfully", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
 
         }
-        catch (Exception e)
+        catch (AbpValidationException validationException)
         {
-            Snackbar.Add(e.Message, Severity.Error);
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
         }
     }
 
@@ -47,5 +69,16 @@ public partial class UpdateGarageDialog
         MudDialogAdd.Cancel();
 
 
+    }
+    /// <summary>
+    /// Displays a snackbar notification with the specified message and severity.
+    /// </summary>
+    /// <param name="message">The message to display in the snackbar.</param>
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+    void ShowSnackbar(string message, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 }

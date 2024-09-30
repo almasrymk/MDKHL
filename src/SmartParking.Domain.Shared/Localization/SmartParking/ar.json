@@ -7,7 +7,7 @@
     "Dashboard": "لوحة التحكم",
     "Select Column": "اختر العمود",
     "Cancel": "إلغاء",
-    "Apply Filter": "تطبيق الفلتر",
+    "Apply Filter": "تطبيق",
     "CREATE NEW": "إنشاء جديد",
     "Value": "القيمة",
     "Colmn name": "اسم العمود",
@@ -154,7 +154,13 @@
     "Actions": "إجراءات",
     "Edit Organization": "تعديل منشأة",
     "View Organization": "عرض المنشأة",
-    "Back": "رجوع"
+    "Back": "رجوع",
+    "GovernorateDeletedSuccessfully": "تم حذف المحافظة بنجاح",
+    "CityDeletedSuccessfully": "تم حذف المدينة بنجاح,",
+    "CountryDeletedSuccessfully": "تم حذف الدولة بنجاح",
+    "PackageTypeDeletedSuccessfully": "تم حذف نوع الحزمة بنجاح",
+    "RegionDeletedSuccessfully": "تم حذف المنطقة بنجاح",
+    "StateDeletedSuccessfully": "تم حذف الولاية بنجاح,"
+
   }
-  
 }

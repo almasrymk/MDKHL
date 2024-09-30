@@ -51,18 +51,6 @@
 
 
 
-@code {
-
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public PackageTypeDto packageType { get; set; } = new PackageTypeDto();
-
-
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
-}
-
 <style>
 	.mud-modal 
 	{

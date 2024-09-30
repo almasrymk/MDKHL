@@ -34,7 +34,7 @@ namespace SmartParking.LookupsAppServices
         /// <returns>CountryDto List</returns>
         public async Task<PagedResultDto<CountryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
-            // Get the IQueryable<garage> from the repository
+            // Get the IQueryable<country> from the repository
             var queryable = await _countryRepository.GetQueryableAsync();
             // Apply filtering
             var filterExpression = BuildExpression<Country>.BuildFilterExpression(input.filters);
@@ -80,7 +80,7 @@ namespace SmartParking.LookupsAppServices
         /// <returns>Country Dto List</returns>
         public async Task<PagedResultDto<CountryDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
-            // Get the IQueryable<garage> from the repository
+            // Get the IQueryable<country> from the repository
             var queryable = await _countryRepository.GetQueryableAsync();
             // Apply search filtering
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))

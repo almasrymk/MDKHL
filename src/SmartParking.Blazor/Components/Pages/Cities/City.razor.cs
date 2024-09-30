@@ -1,5 +1,7 @@
-﻿using MudBlazor;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Localization;
 using SmartParking.Lookups;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,7 @@ public partial class City
 
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
 
     /// <summary>
@@ -158,7 +161,7 @@ public partial class City
 
         var parameters = new DialogParameters
         {
-            ["City"] = createUpdateCityDto,
+            ["City"] = cityDto,
             ["UpdatedId"] = id
         };
 
@@ -186,12 +189,14 @@ public partial class City
 
     private async Task OnClickRowDelete(string row)
     {
+        var successMessage = _localizer["CityDeletedSuccessfully"];
+
         var id = int.Parse(row);
         try
         {
 
             await AppService.DeleteAsync(id);
-            ShowSnackbar("City Deleted Successfully ", Severity.Success);
+            ShowSnackbar(successMessage, Severity.Success);
 
         }
         catch (Exception ex)

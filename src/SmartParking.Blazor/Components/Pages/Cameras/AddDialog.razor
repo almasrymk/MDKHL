@@ -21,6 +21,7 @@
                                 <MudTextField @bind-Value="cameraDto.Name"
                                               For="@(() => cameraDto.Name)"
                                               Immediate="true"
+                                              Required="true"
                                               Label="@L["Name"]" />
                             </MudItem>
                             <MudItem sm="4">
@@ -66,6 +67,7 @@
                                 <MudTextField @bind-Value="cameraDto.Type"
                                               For="@(() => cameraDto.Type)"
                                               Immediate="true"
+                                              Required="true"
                                               Label="@L["Type"]" />
 
                             </MudItem>
@@ -138,7 +140,7 @@
             }
             catch(Exception e)
             {
-                Snackbar.Add("Fill Items", Severity.Error);
+                Snackbar.Add("Fill Requried Items", Severity.Error);
                 return;
             }
             Snackbar.Add("Camera created successfully!", Severity.Success);

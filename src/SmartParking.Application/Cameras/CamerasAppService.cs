@@ -72,7 +72,15 @@ namespace SmartParking.Cameras
             else
                 return await base.GetAsync(id);
         }
-
+        /// <summary>
+        /// methods that deletes camera.
+        /// it takes camera id as parameter , checks if it exists
+        /// if don't it throws an exception
+        /// if exists it deletes it , changes its status to deleted
+        /// </summary>
+        /// <param name="id">camera id</param>
+        /// <returns>string</returns>
+        /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
         public override async Task DeleteAsync(int id)
         {
             var camera = await GetAsync(id);
@@ -88,7 +96,14 @@ namespace SmartParking.Cameras
             }
             await base.DeleteAsync(id);
         }
-
+        /// <summary>
+        /// Method that used to create new camera to specific organization
+        /// </summary>
+        /// <param name="input">input is createupdateCameraDto type
+        /// holds data from presentation layer
+        /// </param>
+        /// <returns>Dto of created camera</returns>
+        /// <exception cref="UserFriendlyException"> exception is returned when Camera IP is duplicate </exception>
         public override async Task<CameraDto> CreateAsync(CreateUpdateCameraDto input)
         {
             if (await CheckIPUnique(input.CameraIP) == 1)
@@ -108,6 +123,11 @@ namespace SmartParking.Cameras
             else
                 return await base.CreateAsync(input);
         }
+        /// <summary>
+        /// method used to Check if IP is unqiue or not
+        /// </summary>
+        /// <param name="cameraIP">Added Camera IP</param>
+        /// <returns>1 if IP Exists</returns>
         private async Task<int> CheckIPUnique(string cameraIP)
         {
             // Use FirstOrDefaultAsync to find the camera by IP

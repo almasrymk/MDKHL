@@ -1,6 +1,11 @@
-﻿using MudBlazor;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
+using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cities;
+using SmartParking.Blazor.Components.Pages.Governorates;
+using SmartParking.Localization;
 using SmartParking.Lookups;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,54 +15,222 @@ namespace SmartParking.Blazor.Components.Pages.PackageTypes;
 
 public partial class PackageType
 {
-    private IReadOnlyList<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
-    private int currentPage = 1;
-    private int pageSize = 100;
-    //Dialog
+    private int TotalItem;
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
+    public int RowPerPage { get; set; } = 10; // Default value is 10
 
-    private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+    private TableData itemData = new TableData();
+
+    private string termSearch;
+
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
 
-    protected override async Task OnInitializedAsync()
+
+    /// <summary>
+    /// filter for cities on the server side using the city columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among city.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
+        // Log the search term to the console for debugging purposes
 
-        await base.OnInitializedAsync();
-        await GetData();
-
-    }
-
-
-    private async Task GetData()
-    {
-        var result = await AppService.GetListAsync(new PagedAndSortedResultRequestDto
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
-            MaxResultCount = pageSize,
-            SkipCount = (currentPage - 1) * pageSize
-        });
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var packageTypeDto = await AppService.Filter(input);
 
-        packageTypes = result.Items.ToList();
-        StateHasChanged();
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)packageTypeDto.TotalCount;
+        CreateTable(packageTypeDto);
+
+
     }
 
-
-    private Task OpenCreatePackageTypeDialog(DialogOptions options)
+    /// <summary>
+    /// Searches for hotels on the server side using the hotel code search term.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        return Dialog.ShowAsync<AddPackageTypeDialog>("Add Package Type", options);
+        // Log the search term to the console for debugging purposes
+        Console.WriteLine(pageInfo.SearchTerm);
+
+        // Update the term used for searching with the provided search term
+        termSearch = pageInfo.SearchTerm;
+
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
+        };
+
+        // Call the service to perform the search based on the input parameters
+        var packageTypeDto = await AppService.Search(input);
+
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)packageTypeDto.TotalCount;
+        CreateTable(packageTypeDto);
     }
 
-    private async Task OpenEditPackageTypeDialog(PackageTypeDto packageTypeDto)
+    /// <summary>
+    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// </summary>
+    /// <param name="page">The page number for which to fetch the data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        var parameters = new DialogParameters { ["Package Type"] = packageTypeDto };
-        var dialog = await Dialog.ShowAsync<EditPackageTypeDialog>("Edit Package Type", parameters);
-        var result = await dialog.Result;
 
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        Console.WriteLine(RowPerPage);
+        // Create a request object for paged and sorted data
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+
+        // Retrieve the list of cities from the server
+        var packageTypeDto = await AppService.GetListAsync(input);
+        TotalItem = (int)packageTypeDto.TotalCount;
+        CreateTable(packageTypeDto);
 
     }
 
-    private async Task OpenDetailsPackageTypeDialog(PackageTypeDto packageTypeDto)
+    private void CreateTable(PagedResultDto<PackageTypeDto> packageTypes)
     {
-        var parameters = new DialogParameters { ["Package Type"] = packageTypeDto };
-        var dialog = await Dialog.ShowAsync<DetailsPackageTypeDialog>("Package Type Details", parameters);
-        var result = await dialog.Result;
+        // Initialize table data to be displayed, setting the table's name and whether to show the header
+        var tableData = new TableData()
+        {
+            Name = "Packages",
+            ShowHeader = true
+        };
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = true, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Package Type Arabic Name", Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Package Type English Name", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+       
+
+
+        foreach (var item in packageTypes.Items)
+        {
+            var rowDef = new RowDef();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("Package Type Arabic Name", item.ArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("Package Type English Name", item.EnglishName));
+            
+
+            tableData.Rows.Add(rowDef);
+        }
+        itemData = tableData;
     }
+
+    private Task CreatePackageType()
+    {
+
+
+        return Dialog.ShowAsync<AddPackageTypeDialog>("Simple Dialog", options);
+
+
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var packageTypeDto = await AppService.GetAsync(id);
+
+        var createUpdatePackageTypeDto = new CreateUpdateGovernorateDto()
+        {
+            ArabicName = packageTypeDto.ArabicName,
+            EnglishName = packageTypeDto.EnglishName,
+            Notes = packageTypeDto.Notes,
+        };
+
+
+
+        var parameters = new DialogParameters
+        {
+            ["packageType"] = packageTypeDto,
+            ["UpdatedId"] = id
+        };
+
+
+        return await Dialog.ShowAsync<EditPackageTypeDialog>("Edit PackageType", parameters);
+
+    }
+
+
+    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var packageTypeDto = await AppService.GetAsync(id);
+
+
+        var parameters = new DialogParameters
+        {
+            ["packageType"] = packageTypeDto,
+        };
+
+
+        return await Dialog.ShowAsync<DetailsPackageTypeDialog>("View PackageType", parameters);
+    }
+
+    private async Task OnClickRowDelete(string row)
+    {
+        var successMessage = _localizer["PackageTypeDeletedSuccessfully"];
+        var id = int.Parse(row);
+        try
+        {
+
+            await AppService.DeleteAsync(id);
+            ShowSnackbar(successMessage, Severity.Success);
+
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar(ex.Message, Severity.Error);
+        }
+
+    }
+
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
+
+    {
+
+        Snackbar.Clear();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+
+    }
+
 }

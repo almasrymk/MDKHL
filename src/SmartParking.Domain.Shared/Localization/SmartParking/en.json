@@ -7,7 +7,7 @@
     "Dashboard": "Dashboard",
     "Select Column:": "Select Column",
     "Cancel": "Cancel",
-    "Apply Filter": "Apply Filter",
+    "Apply Filter": "Apply",
     "CREATE NEW": "CREATE NEW",
     "Value": "Value",
     "Colmn name": "Colmn name",
@@ -136,6 +136,12 @@
     "States": "States",
     "Regions": "Regions",
     "Lookups": "Lookups",
+    "GovernorateDeletedSuccessfully": "Governorate Deleted Successfully",
+    "CityDeletedSuccessfully": "City Deleted Successfully",
+    "CountryDeletedSuccessfully": "Country Deleted Successfully",
+    "PackageTypeDeletedSuccessfully": "Package Type Deleted Successfully",
+    "RegionDeletedSuccessfully": "Region Deleted Successfully",
+    "StateDeletedSuccessfully": "State Deleted Successfully",
     "Back": "Back"
   } 
 }
