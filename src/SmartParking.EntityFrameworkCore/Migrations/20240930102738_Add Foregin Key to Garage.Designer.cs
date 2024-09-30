@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20240929094530_init")]
-    partial class init
+    [Migration("20240930102738_Add Foregin Key to Garage")]
+    partial class AddForeginKeytoGarage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,6 +103,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GarageId");
 
                     b.HasIndex("OrganizationId");
 
@@ -3480,9 +3482,17 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Cameras.Camera", b =>
                 {
+                    b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
+                        .WithMany()
+                        .HasForeignKey("GarageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SmartParking.Entities.Organizations.Organization", null)
                         .WithMany("Cameras")
                         .HasForeignKey("OrganizationId");
+
+                    b.Navigation("Garage");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
