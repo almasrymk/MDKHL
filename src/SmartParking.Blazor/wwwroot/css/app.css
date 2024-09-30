@@ -14,7 +14,14 @@ input:-webkit-autofill {
 
 .main-layout-gradient {
     background: rgb(13,84,128);
-    background: linear-gradient(90deg, rgba(13,84,128,0.9809173669467787) 37%, rgba(22,183,211,1) 100%);
+    background: linear-gradient(90deg, #0D5480 53%, #16B7D3 100%);
     min-height: 100vh;
 }
 
+:dir(rtl) .main-layout-gradient {
+    background: linear-gradient(90deg,#16B7D3 -36%, #0D5480 53%);
+}
+
+:dir(rtl) .fa-chevron-left, .fa-chevron-right {
+    transform: rotate(180deg);
+}

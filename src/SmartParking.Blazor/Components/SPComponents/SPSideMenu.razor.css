@@ -11,7 +11,13 @@
     align-items:center;
     justify-content:center;
 }
-
+::deep :dir(rtl) .side-menu-toggler {
+    left: unset;
+    right: 200px;
+}
+::deep .mud-drawer--closed .mud-nav-link-expand-icon {
+    display: none;
+}
 ::deep .side-menu-toggler:hover {
     background-color: white;
 }

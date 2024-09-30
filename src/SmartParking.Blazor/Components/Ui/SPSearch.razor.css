@@ -23,3 +23,6 @@
 ::deep .mud-input.mud-input-underline:after, .mud-input-underline:before {
     border-bottom: 2px solid white !important;
 }
+::deep .mud-input-label-inputcontrol {
+    left: unset
+}
