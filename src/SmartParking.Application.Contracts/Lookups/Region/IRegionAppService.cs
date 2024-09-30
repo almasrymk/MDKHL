@@ -9,7 +9,7 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Lookups.Region;
 
-public interface IRegionAppService : ICrudAppService<RegionDto, int, PagedAndSortedResultRequestDto, CretaeUpdateRegionDto>
+public interface IRegionAppService : ICrudAppService<RegionDto, int, PagedAndSortedResultRequestDto, CreateUpdateRegionDto>
 {
     /// <summary>
     /// abstract method to search of regions

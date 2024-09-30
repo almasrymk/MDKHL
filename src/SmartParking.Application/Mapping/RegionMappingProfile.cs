@@ -16,6 +16,6 @@ public class RegionMappingProfile : Profile
 	public RegionMappingProfile()
 	{
 		CreateMap<Region, RegionDto>();
-		CreateMap<CretaeUpdateRegionDto, Region>();
+		CreateMap<CreateUpdateRegionDto, Region>();
 	}
 }

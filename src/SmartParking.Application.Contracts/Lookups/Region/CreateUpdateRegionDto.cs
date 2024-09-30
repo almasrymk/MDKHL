@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Lookups.Region;
 
-public class CretaeUpdateRegionDto 
+public class CreateUpdateRegionDto 
 {
 	public string ArabicName { get; set; }
 	public string EnglishName { get; set; }
