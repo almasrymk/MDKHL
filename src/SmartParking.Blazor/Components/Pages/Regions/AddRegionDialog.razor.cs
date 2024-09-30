@@ -9,7 +9,7 @@ namespace SmartParking.Blazor.Components.Pages.Regions;
 public partial class AddRegionDialog
 {
     private MudForm form;
-    public CretaeUpdateRegionDto input = new CretaeUpdateRegionDto();
+    public CreateUpdateRegionDto input = new CreateUpdateRegionDto();
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
@@ -34,7 +34,7 @@ public partial class AddRegionDialog
             // Call your service to create the camera
             try
             {
-                CretaeUpdateRegionDto createUpdateRegionDto = new CretaeUpdateRegionDto()
+                CreateUpdateRegionDto createUpdateRegionDto = new CreateUpdateRegionDto()
                 {
                     ArabicName = input.ArabicName,
                     EnglishName = input.EnglishName,
