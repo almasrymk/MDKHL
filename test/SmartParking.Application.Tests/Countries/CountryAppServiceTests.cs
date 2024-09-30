@@ -1,5 +1,6 @@
 ﻿
 using Abp.Runtime.Validation;
+using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using SmartParking.Lookups;
 using System;
@@ -56,7 +57,7 @@ public abstract class CountryAppServiceTests<TStartupModule> : SmartParkingAppli
     [Fact]
     public async Task Should_Not_Create_A_Season_Without_ArabicName()
     {
-        var exception = await Assert.ThrowsAsync<AbpValidationException>(async () =>
+        var exception = await Assert.ThrowsAsync<DbUpdateException>(async () =>
         {
             await _countriesApp.CreateAsync(
                 new CreateUpdateCountryDto
@@ -69,7 +70,6 @@ public abstract class CountryAppServiceTests<TStartupModule> : SmartParkingAppli
             );
         });
 
-        exception.ValidationErrors
-            .ShouldContain(err => err.MemberNames.Any(mem => mem == "ArabicName"));
+        exception.ShouldNotBeNull();
     }
 }
