@@ -45,7 +45,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<PlateColor, PlateColorDto>();
 		CreateMap<CreateUpdatePlateColorDto, PlateColor>();
 
-		CreateMap<LicenceType, LicenceTypeDto>();
+		CreateMap<LicenceType, LicenceTypeDto>()
+            .ForMember(dto=>dto.PlateColorEnglishName,opt=>opt.MapFrom(entity=>entity.PlateColor.EnglishName))
+            .ForMember(dto => dto.PlateColorArabicName, opt => opt.MapFrom(entity => entity.PlateColor.ArabicName));
 		CreateMap<CreateUpdateLicenceTypeDto, LicenceType>();
 
 		CreateMap<VehicleBrand, VehicleBrandDto>();

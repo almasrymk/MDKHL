@@ -1,0 +1,129 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Lookups.PlateColor
+@using SmartParking.Vehicles.LookUps
+@using Volo.Abp.Application.Dtos
+@inject IPlateColorsAppService PlateColorsAppService
+@inject ILicenceTypesAppService LicenceTypessAppService
+
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Edit Camera"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@LicenceType.PlateColorId"
+								   Variant="Variant.Text"
+								   Label="@L["PlateColor Name"]"
+								   Placeholder="Choose"
+								   Required="true"
+								   Clearable="_clearable">
+							@foreach (var platecolor in plateColors)
+							{
+								<MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="LicenceType.ArabicName"
+									  For="@(() => LicenceType.ArabicName)"
+									  Immediate="true"
+									  Label="@L["ArabicName"]" />
+					</MudItem>
+
+					<MudItem sm="4">
+						<MudTextField @bind-Value="LicenceType.EnglishName"
+									  For="@(() => LicenceType.EnglishName)"
+									  Immediate="true"
+									  Required="true"
+									  Label="@L["EnglishName"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			<MudGrid Class="ps-lg-5">
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit">@L["Update"]</MudButton>
+				</MudItem>
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="CancelEdit">@L["Cancel"]</MudButton>
+				</MudItem>
+			</MudGrid>
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Inject] ILicenceTypesAppService LicenceTypesAppService { get; set; }
+
+	[Parameter] public CreateUpdateLicenceTypeDto LicenceType { get; set; }
+	[Parameter]
+	public int UpdatedId { get; set; }
+	bool _clearable;
+	private MudForm form;
+	IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await PlateColorsAppService.GetListAsync(new PagedAndSortedResultRequestDto
+			{
+				MaxResultCount = 100,
+				SkipCount = (1 - 1) * 100
+			});
+		plateColors = result.Items.ToList();
+		await base.OnInitializedAsync();
+	}
+
+	private async Task SubmitEdit()
+	{
+		try
+		{
+
+			await LicenceTypesAppService.UpdateAsync(UpdatedId, LicenceType);
+			Snackbar.Add("LicenceType Updated Successfully", Severity.Success);
+			MudDialogAdd.Close(DialogResult.Ok(true));
+
+		}
+		catch (Exception e)
+		{
+			Snackbar.Add(e.Message, Severity.Error);
+		}
+	}
+
+	private async Task CancelEdit()
+	{
+		MudDialogAdd.Cancel();
+
+
+	}
+
+
+}
