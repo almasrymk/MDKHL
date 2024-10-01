@@ -39,7 +39,6 @@ public class SmartParkingDomainSharedModule : AbpModule
         {
             options.FileSets.AddEmbedded<SmartParkingDomainSharedModule>();
         });
-
         Configure<AbpLocalizationOptions>(options =>
         {
             options.Resources
@@ -48,7 +47,10 @@ public class SmartParkingDomainSharedModule : AbpModule
                 .AddVirtualJson("/Localization/SmartParking");
 
             options.DefaultResourceType = typeof(SmartParkingResource);
+            
         });
+      
+
 
         Configure<AbpExceptionLocalizationOptions>(options =>
         {
