@@ -24,7 +24,10 @@ public partial class City
 
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-
+    public City(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
+    }
     /// <summary>
     /// filter for cities on the server side using the city columns.
     /// </summary>
@@ -118,17 +121,17 @@ public partial class City
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = true, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "City Arabic Name", Name = "City Arabic Name", IsFilterable = true, PropertyNmae = "City Arabic Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "City English Name", Name = "City English Name", IsFilterable = true, PropertyNmae = "City English Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = true, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Name"], Name = "City Arabic Name", IsFilterable = true, PropertyNmae = "City Arabic Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "City English Name", IsFilterable = true, PropertyNmae = "City English Name", IsSortable = true, TypeFilter = TypeFilter.Text });
        
 
         foreach (var item in cities.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("City Arabic Name", item.ArabicName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("City English Name", item.EnglishName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Arabic Name"], item.ArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Name"], item.EnglishName));
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;

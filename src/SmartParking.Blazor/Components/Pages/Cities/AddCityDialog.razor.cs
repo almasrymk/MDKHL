@@ -67,7 +67,7 @@ public partial class AddCityDialog
             {
                 foreach (var validationError in validationException.ValidationErrors)
                 {
-                    Snackbar.Add($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                    Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
                 }
             }
             catch (BusinessException ex)

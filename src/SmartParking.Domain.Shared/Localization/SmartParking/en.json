@@ -142,6 +142,27 @@
     "PackageTypeDeletedSuccessfully": "Package Type Deleted Successfully",
     "RegionDeletedSuccessfully": "Region Deleted Successfully",
     "StateDeletedSuccessfully": "State Deleted Successfully",
-    "Back": "Back"
+    "Back": "Back",
+    "Can'tCreateCity": "Can't Create City",
+    "CityUpdatedSuccessfully": "City Updated Successfully",
+    "Can'tUpdateCity": "Can't Update City",
+    "CountryCreatedSuccessfully": "Country Created Successfully",
+    "Can'tCreateCountry": "Can't Create Country",
+    "CountryUpdatedSuccessfully": "Country Updated Successfully",
+    "Can'tUpdateCountry": "Can't Update Country",
+    "Can'tCreateGovernorate": "Can't Create Governorate",
+    "GovernorateUpdatedSuccessfully": "Governorate Updated Successfully",
+    "Can'tUpdateGovernorate": "Can't Update Governorate",
+    "Can'tCreatePackageType": "Can't Create Package Type",
+    "PackageTypeUpdatedSuccessfully": "Package Type Updated Successfully",
+    "Can'tUpdatePackageType": "Can't Update Package Type",
+    "Can'tCreateRegion": "Can't Create Region",
+    "RegionUpdatedSuccessfully": "Region Updated Successfully",
+    "Can'tUpdateRegion": "Can't Update Region",
+    "Can'tCreateState": "Can't Create State",
+    "StateUpdatedSuccessfully": "State Updated Successfully",
+    "Can'tUpdateState": "Can't Update State",
+    "CountryArabicName": "Country Arabic Name",
+    "CountryEnglishName": "CountryEnglishName"
   } 
 }
