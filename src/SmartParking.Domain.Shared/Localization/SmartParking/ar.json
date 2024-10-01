@@ -160,7 +160,39 @@
     "CountryDeletedSuccessfully": "تم حذف الدولة بنجاح",
     "PackageTypeDeletedSuccessfully": "تم حذف نوع الحزمة بنجاح",
     "RegionDeletedSuccessfully": "تم حذف المنطقة بنجاح",
-    "StateDeletedSuccessfully": "تم حذف الولاية بنجاح,"
+    "StateDeletedSuccessfully": "تم حذف الولاية بنجاح,",
+    "Rows Per Page": "عدد الصفوف بالصفحة",
+    "PlateColors": "الوان اللوحات",
+    "PlateColor": "لون اللوحة",
+    "New Plate": "لوحة جديدة",
+    "ArabicName": "الاسم بالعربي",
+    "EnglishName": "الاسم الانجليزي",
+    "Edit PlateColor": "تعديل لون اللوحة",
+    "View PlateColor": "أعرض لوحة",
+    "Cameras": "الكاميرات",
+    "cameras": "الكاميرات",
+
+    "LicenceTypes": "انواع التراخيص",
+    "New LicenceType": "اضافة نوع ترخيص",
+    "PlateColor Name": "لون اللوحة",
+    "Edit LicenceType": "تعديل نوع الترخيص",
+    "View LicenceType": "عرض نوع التخريص",
+    "VehicleBrands": "ماركات السيارات",
+    "New VehicleBrand": "اضافة ماركة سيارة",
+    "Edit VehicleBrand": "تعديل ماركة سيارة",
+    "View VehicleBrand": "عرض ماركة سيارة",
+    "New VehicleModel": "اضافة موديل سيارة",
+    "VehiclesBrand Name": "ماركة السيارة",
+    "Edit VehicleModel": "تعديل موديل السيارة",
+    "VehicleModel": "موديل السيارة",
+    "View VehicleModel": "عرض موديل السيارة",
+    "VehicleModels": "موديلات السيارة"
+
+
+
+
+
+
 
   }
 }
