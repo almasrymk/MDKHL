@@ -1,5 +1,4 @@
 ﻿@using Microsoft.Extensions.Localization
-@using SmartParking.Cameras
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Lookups.PlateColor
@@ -27,6 +26,7 @@
                                 <MudTextField @bind-Value="plateColorDro.ArabicName"
                                               For="@(() => plateColorDro.ArabicName)"
                                               Immediate="true"
+                                              Required="true"
                                               Label="@L["ArabicName"]" />
                             </MudItem>
 

@@ -1,0 +1,20 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.PlateColor
+@using SmartParking.Lookups.VehicleBrand
+@inject IVehicleBrandsAppService VehicleBrandsAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/vehicleBrands"
+
+
+<h3>@L["VehicleBrands"]</h3>
+
+<SPDataGrid PageName="vehicleBrands" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateVehicleBrand(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+
+
+
+
+
+
