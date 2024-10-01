@@ -53,7 +53,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 		CreateMap<VehicleBrand, VehicleBrandDto>();
 		CreateMap<CreateUpdateVehicleBrandDto, VehicleBrand>();
 
-		CreateMap<VehicleModel, VehicleModelDto>();
+		CreateMap<VehicleModel, VehicleModelDto>()
+             .ForMember(dto => dto.VehicleBrandEnglishName, opt => opt.MapFrom(entity => entity.VehiclesBrand.EnglishName))
+            .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
 		CreateMap<CreateUpdateVehicleModelDto, VehicleModel>();
 
 		CreateMap<Vehicle, VehicleDto>();

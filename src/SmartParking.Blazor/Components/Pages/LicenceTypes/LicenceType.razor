@@ -1,11 +1,12 @@
-﻿@inject ILicenceTypesAppService LicenceTypesAppService
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@inject ILicenceTypesAppService LicenceTypesAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @page "/licenceTypes"
-@using Microsoft.Extensions.Localization
-@using SmartParking.Localization
-@using SmartParking.Lookups.LicenceType
+
 
 
 <h3>@L["LicenceTypes"]</h3>

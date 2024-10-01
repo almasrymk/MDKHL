@@ -5,8 +5,7 @@
 @using SmartParking.Vehicles.LookUps
 @using Volo.Abp.Application.Dtos
 @inject IPlateColorsAppService PlateColorsAppService
-@inject ILicenceTypesAppService LicenceTypessAppService
-
+@inject ILicenceTypesAppService LicenceTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
@@ -81,7 +80,6 @@
 @code {
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
-	[Inject] ILicenceTypesAppService LicenceTypesAppService { get; set; }
 
 	[Parameter] public CreateUpdateLicenceTypeDto LicenceType { get; set; }
 	[Parameter]
