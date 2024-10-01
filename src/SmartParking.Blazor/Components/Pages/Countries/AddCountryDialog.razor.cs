@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Countries;
 
@@ -18,29 +21,53 @@ public partial class AddCountryDialog
 
     private async Task Submit()
     {
-        var successedMessage = L["CountryCreatedSuccessfully"];
-        var errorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
-            try
-            {
-                await CountriesAppService.CreateAsync(input);
-            }
-            catch (UserFriendlyException ex)
-            {
-                Snackbar.Add(ex.Message, Severity.Error);
-                return;
-            }
-            Snackbar.Add(successedMessage, Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+		var successedMessage = L["CountryCreatedSuccessfully"];
+		var errorMessage = L["Can'tCreateCountry"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
-    }
+
+		// Call your service to create the country
+		try
+		{
+			CreateUpdateCountryDto createUpdateCountryDto = new CreateUpdateCountryDto()
+			{
+				ArabicName = input.ArabicName,
+				EnglishName = input.EnglishName,
+				Notes = input.Notes,
+				ArabicCapital = input.ArabicCapital,
+				EnglishCapital = input.EnglishCapital,	
+			};
+
+			var coutnry = await CountriesAppService.CreateAsync(createUpdateCountryDto);
+			if (coutnry != null)
+			{
+				Snackbar.Add(successedMessage, Severity.Success);
+				MudDialog.Close(DialogResult.Ok(true));
+			}
+
+			else
+			{
+				Snackbar.Add(errorMessage, Severity.Error);
+
+			}
+		}
+		catch (AbpValidationException validationException)
+		{
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				Snackbar.Add($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+			}
+		}
+		catch (BusinessException ex)
+		{
+			Snackbar.Add($"Failed to add country: {ex.Code} + ", Severity.Error);
+
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Failed to add country: {ex.Message} + ", Severity.Error);
+		}
+	}
     private void Cancel()
     {
         MudDialog.Cancel();

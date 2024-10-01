@@ -2,8 +2,12 @@
 using MudBlazor;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
@@ -26,10 +30,11 @@ public partial class EditCityDialog
 
     private async Task Save()
     {
-        await editForm.Validate();
-        if (editForm.IsValid)
+        var successedMessage = L["CityUpdatedSuccessfully"];
+        var errorMessage = L["Can'tUpdateCity"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        try
         {
-
             // Create the input object for update
             var input = new CreateUpdateCityDto
             {
@@ -41,11 +46,37 @@ public partial class EditCityDialog
             };
 
             // Call the update method
-            await CitiesAppService.UpdateAsync(UpdatedId, input);
 
-            // Close the dialog with a success result
-            MudDialog.Close(DialogResult.Ok(true));
+            var cities = await CitiesAppService.UpdateAsync(UpdatedId, input);
+            if (cities != null)
+            {
+                Snackbar.Add(successedMessage, Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+            else
+            {
+                Snackbar.Add(errorMessage, Severity.Error);
+
+            }
         }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                Snackbar.Add($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+            Snackbar.Add($"Failed to update city: {ex.Code} + ", Severity.Error);
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to update city: {ex.Message} + ", Severity.Error);
+        }
+        
     }
 
 
