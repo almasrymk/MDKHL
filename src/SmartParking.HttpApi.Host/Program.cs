@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenIddict.Abstractions;
 using Serilog;
 using Serilog.Events;
 
@@ -32,6 +33,26 @@ public class Program
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
+            builder.Services.AddOpenIddict()
+    .AddServer(options =>
+    {
+        // Enable the client credentials flow
+        options.AllowClientCredentialsFlow();
+
+        // Register the signing and encryption credentials
+        options.AddDevelopmentEncryptionCertificate()
+               .AddDevelopmentSigningCertificate();
+
+        // Enable the token endpoint
+        options.SetTokenEndpointUris("/connect/token");
+
+        // Set the token endpoint permissions
+        options.RegisterScopes(OpenIddictConstants.Scopes.OpenId);
+
+        options.UseAspNetCore()
+            .EnableTokenEndpointPassthrough();
+    });
+
             await builder.AddApplicationAsync<SmartParkingHttpApiHostModule>();
             var app = builder.Build();
             await app.InitializeApplicationAsync();
