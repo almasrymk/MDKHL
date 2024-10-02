@@ -30,7 +30,6 @@ public partial class SPDataGrid
     private bool _ascending = true;
     public string sortString = "Id";
     public bool ClickFilter { get; set; } = false;
-    public bool CheckOperator { get; set; } = false;
     private string SelectedColumn { get; set; }
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
 
@@ -47,15 +46,6 @@ public partial class SPDataGrid
         ["is not empty"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
-    //private Task SelectProperty(string value)
-    //{
-    //    SelectedColumn = value;
-    //    if (Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
-    //    {
-    //        CheckOperator = true;
-    //    }
-    //    return Task.CompletedTask;
-    //}
         public async Task ClearItem(string key)
     {
 
@@ -106,10 +96,6 @@ public partial class SPDataGrid
     }
     private void OnClickFilter()
     {
-        if (!SelectedColumn.IsNullOrEmpty()&&Data.Columns.First(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
-        {
-            CheckOperator = true;
-        }
         ClickFilter = true;
     }
     private async Task OnSearch(string text)

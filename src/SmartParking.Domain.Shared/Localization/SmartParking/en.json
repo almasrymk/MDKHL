@@ -142,6 +142,32 @@
     "PackageTypeDeletedSuccessfully": "Package Type Deleted Successfully",
     "RegionDeletedSuccessfully": "Region Deleted Successfully",
     "StateDeletedSuccessfully": "State Deleted Successfully",
-    "Back": "Back"
+    "Back": "Back",
+    "Rows Per Page": "Rows Per Page",
+    "PlateColors": "PlateColors",
+    "PlateColor": "PlateColor",
+    "New Plate": "New Plate",
+    "ArabicName": "ArabicName",
+    "EnglishName": "EnglishName",
+    "Edit PlateColor": "Edit PlateColor",
+    "View PlateColor": "View PlateColor",
+    "Cameras": "Cameras",
+    "cameras": "cameras",
+    "LicenceTypes": "LicenceTypes",
+    "New LicenceType": "New LicenceType",
+    "PlateColor Name": "PlateColor Name",
+    "Edit LicenceType": "Edit LicenceType",
+    "View LicenceType": "View LicenceType",
+    "VehicleBrands": "VehicleBrands",
+    "New VehicleBrand": "New VehicleBrand",
+    "Edit VehicleBrand": "Edit VehicleBrand",
+    "View VehicleBrand": "View VehicleBrand",
+    "New VehicleModel": "New VehicleModel",
+    "VehiclesBrand Name": "VehiclesBrand Name",
+    "Edit VehicleModel": "Edit VehicleModel",
+    "VehicleModel": "VehicleModel",
+    "View VehicleModel": "View VehicleModel",
+    "VehicleModels": "VehicleModels"
+
   } 
 }

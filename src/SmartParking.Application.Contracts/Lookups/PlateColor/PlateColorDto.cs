@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Lookups.PlateColor
 {
-    public class PlateColorDto : FullAuditedEntityDto<int>
+    public class PlateColorDto : BaseDto
     {
         public string ArabicName { get; set; }
         public string EnglishName { get; set; }

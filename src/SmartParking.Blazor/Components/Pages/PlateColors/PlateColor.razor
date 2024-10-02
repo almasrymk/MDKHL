@@ -1,0 +1,20 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cameras
+@using SmartParking.Localization
+@using SmartParking.Lookups.PlateColor
+@inject IPlateColorsAppService PlateColorsAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/plateColors"
+
+
+<h3>@L["PlateColors"]</h3>
+
+<SPDataGrid PageName=@L["PlateColors"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreatePlateColor(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+
+
+
+
+
+
