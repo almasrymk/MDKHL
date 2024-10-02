@@ -1,0 +1,20 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@inject IGarageTransactionsAppService GarageTransactionsAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/garageTransactions"
+
+
+<h3>@L["GarageTransactions"]</h3>
+
+<SPDataGrid PageName=@L["GarageTransactions"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateGarageTransaction(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+
+
+
+
+
+
+

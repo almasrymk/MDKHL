@@ -1,0 +1,159 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["New GarageTransaction"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem sm="8">
+                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                    *@
+                    <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                        <MudGrid>
+
+
+
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="garageTransactionDto.OrganizationID"
+                                              For="@(() => garageTransactionDto.OrganizationID)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["OrganizationID"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="garageTransactionDto.GarageId"
+                                              For="@(() => garageTransactionDto.GarageId)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["GarageId"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="garageTransactionDto.CameraId"
+                                              For="@(() => garageTransactionDto.CameraId)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["CameraId"]" />
+                            </MudItem>
+
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="garageTransactionDto.PlateNnumber"
+                                              For="@(() => garageTransactionDto.PlateNnumber)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["PlateNnumber"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="garageTransactionDto.SnapTime"
+                                              For="@(() => garageTransactionDto.SnapTime)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["SnapTime"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="garageTransactionDto.AccurateTime"
+                                              For="@(() => garageTransactionDto.AccurateTime)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["AccurateTime"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="garageTransactionDto.Type"
+                                              For="@(() => garageTransactionDto.Type)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["Type"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="garageTransactionDto.VehiclePicture"
+                                              For="@(() => garageTransactionDto.VehiclePicture)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["VehiclePicture"]" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudForm>
+                    @*         </MudPaper>
+                    *@
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudGrid Class="ps-lg-5">
+
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">@L["Create"]</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
+                </MudItem>
+            </MudGrid>
+        </DialogActions>
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] IGarageTransactionsAppService GarageTransactionsAppService { get; set; } // Assuming you have a service to handle the camera creation
+
+    private MudForm form;
+    private CreateUpdateGarageTransactionDto garageTransactionDto = new CreateUpdateGarageTransactionDto();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnInitializedAsync();
+    }
+    private async Task Submit()
+    {
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            try
+            {
+                await GarageTransactionsAppService.CreateAsync(garageTransactionDto);
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add("Fill Requried Items", Severity.Error);
+                return;
+            }
+            Snackbar.Add("GarageTransaction created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+
+        }
+        else
+        {
+            Snackbar.Add("Fill Requried Items", Severity.Error);
+        }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

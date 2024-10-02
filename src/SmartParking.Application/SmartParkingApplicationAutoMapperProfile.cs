@@ -2,10 +2,12 @@
 using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Garages;
+using SmartParking.GarageTransactions;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
@@ -60,5 +62,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 		CreateMap<Vehicle, VehicleDto>();
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();
+
+		CreateMap<GarageTransaction, GarageTransactionDto>();
+		CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();
 	}
 }
