@@ -1,0 +1,84 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Lookups.VehicleModel
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["View VehicleModel"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+
+
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="VehicleModel.ArabicName"
+									  For="@(() => VehicleModel.ArabicName)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["ArabicName"]" />
+					</MudItem>
+
+					<MudItem sm="4">
+						<MudTextField @bind-Value="VehicleModel.EnglishName"
+									  For="@(() => VehicleModel.EnglishName)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["EnglishName"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			<MudGrid Class="ps-lg-5">
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="OnCloseViewOnly">@L["Cancel"]</MudButton>
+				</MudItem>
+			</MudGrid>
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter] public CreateUpdateVehicleModelDto VehicleModel { get; set; }
+
+	bool _clearable;
+	private MudForm form;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+
+
+	private void OnCloseViewOnly()
+	{
+		MudDialogAdd.Cancel();
+
+	}
+
+}
