@@ -11,6 +11,8 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Users;
 using Abp.Json;
+using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SmartParking;
 // Service Implementation
@@ -35,7 +37,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         // Step 1: Validate the user's credentials
         var user = await _userManager.FindByEmailAsync(input.Username);
-
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
             return new LoginResult
@@ -44,8 +45,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 ErrorMessage = "Invalid credentials."
             };
         }
-
-        
         await _signInManager.SignInAsync(user, isPersistent: false);
 
         var claims = new List<Claim>
@@ -54,29 +53,29 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             new Claim(OpenIddictConstants.Claims.Username, user.UserName),
             // Add additional claims as needed
         };
-
-      
         var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
         var principal = new ClaimsPrincipal(identity);
-
-   
-        var descriptor = new OpenIddictTokenDescriptor
-        {
-            Subject = user.Id.ToString(),
-            Principal = principal,
-            CreationDate = DateTimeOffset.UtcNow,
-            ExpirationDate = DateTimeOffset.UtcNow.AddHours(1),
-            Payload = user.ToJsonString(),
-            Type = OpenIddictConstants.TokenTypes.Bearer.ToString(),
-        };
-
-     
-        var token = await _tokenManager.CreateAsync(descriptor);
-
         return new LoginResult
         {
             Success = true,
-            AccessToken = token?.ToString() ?? string.Empty  //not work true but login have a bug
+            AccessToken = await GenerateTokenAsync(user) ?? string.Empty 
         };
     }
+
+    public async Task<string> GenerateTokenAsync(IdentityUser user)
+    {
+        var principal = await _signInManager.CreateUserPrincipalAsync(user);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(principal.Claims),
+            Expires = DateTime.Now.AddHours(1),
+            SigningCredentials = creds
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
+
 }
