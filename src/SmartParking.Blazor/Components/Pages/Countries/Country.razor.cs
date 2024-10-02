@@ -25,7 +25,10 @@ public partial class Country
 
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-
+    public Country(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
+    }
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>
@@ -118,20 +121,20 @@ public partial class Country
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "ArabicName", Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "EnglishName", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "ArabicCapital", Name = "ArabicCapital", IsFilterable = true, PropertyNmae = "ArabicCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "EnglishCapital", Name = "EnglishCapital", IsFilterable = true, PropertyNmae = "EnglishCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Name"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Name"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Capital"], Name = "ArabicCapital", IsFilterable = true, PropertyNmae = "ArabicCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Capital"], Name = "EnglishCapital", IsFilterable = true, PropertyNmae = "EnglishCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         foreach (var item in countries.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("ArabicName", item.ArabicName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("EnglishName", item.EnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("ArabicCapital", item.ArabicCapital));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("EnglishCapital", item.EnglishCapital));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Arabic Name"], item.ArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Name"], item.EnglishName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Arabic Capital"], item.ArabicCapital));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Capital"], item.EnglishCapital));
 
 
 

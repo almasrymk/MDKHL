@@ -18,8 +18,8 @@
     "Add Organization": "أضف منشأة",
     "Main Data": "البيانات الرئيسية",
     "Type Here": "اكتب هنا",
-    "Arabic Name": "الاسم العربي",
-    "English Name": "الاسم الانجليزي",
+    "Arabic Name": "الاسم باللغة العربية ",
+    "English Name": "الاسم باللغة بالانجليزية",
     "Unified License Num": "الرقم الموحد",
     "Num Of Cameras": "عدد الكاميرات",
     "Max Capacity": "السعة القصوى",
@@ -95,7 +95,7 @@
     "StatesDetails": "تفاصيل الولايات",
     "StateDetails": "تفاصيل الولاية",
     "EditStates": "تحرير الولايات",
-    "UpdateState": "تحديث الولاية",
+    "UpdateState": "تحرير الولاية",
     "StateCreatedSuccessfully": "تم إنشاء الولاية بنجاح",
     "Cities": "مدن",
     "Countries": "دول",
@@ -193,6 +193,28 @@
 
 
 
+    "StateDeletedSuccessfully": "تم حذف الولاية بنجاح,",
+    "Can'tCreateCity": "لا يمكن إنشاء المدينة",
+    "CityUpdatedSuccessfully": "تم تحرير المدينة بنجاح",
+    "Can'tUpdateCity": "لا يمكن نحرير المدينة",
+    "CountryCreatedSuccessfully": "تم إنشاء الدولة بنجاح",
+    "Can'tCreateCountry": "لا يمكن إنشاء الدولة",
+    "CountryUpdatedSuccessfully": "تم تحرير الدولة بنجاح",
+    "Can'tUpdateCountry": "لا يمكن تحرير الدولة",
+    "Can'tCreateGovernorate": "لا يمكن إنشاء محافظة",
+    "GovernorateUpdatedSuccessfully": "تم تحرير المحافظة بنجاح",
+    "Can'tUpdateGovernorate": "لا يمكن تحرير المحافظة",
+    "Can'tCreatePackageType": "لا يمكن إنشاء نوع الحزمة",
+    "PackageTypeUpdatedSuccessfully": "تم تحرير نوع الحزمة بنجاح",
+    "Can'tUpdatePackageType": "لا يمكن تحرير نوع الحزمة",
+    "Can'tCreateRegion": "لا يمكن إنشاء المنطقة",
+    "RegionUpdatedSuccessfully": "تم تحرير المنطقة بنجاح",
+    "Can'tUpdateRegion": "لا يمكن تحرير المنطقة",
+    "Can'tCreateState": "لا يمكن إنشاء الولاية",
+    "StateUpdatedSuccessfully": "تم تحرير الولاية بنجاح",
+    "Can'tUpdateState": "لا يمكن تحرير الولاية",
+    "CountryArabicName": "إسم البلد باللغة العربية",
+    "CountryEnglishName": "اسم البلد باللغة الانجليزية"
 
   }
 }

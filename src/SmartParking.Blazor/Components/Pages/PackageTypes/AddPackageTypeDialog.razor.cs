@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups;
+using SmartParking.LookupsAppServices;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.PackageTypes;
 
@@ -18,28 +22,48 @@ public partial class AddPackageTypeDialog
 
     private async Task Submit()
     {
-        var successedMessage = L["PackageTypeCreatedSuccessfully"];
-        var errorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
+
+		    var successedMessage = L["PackageTypeCreatedSuccessfully"];
+		    var errorMessage = L["Can'tCreatePackageType"];
+            var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
+        
+            // Call your service to create the packageType
             try
             {
-                await PackageTypesAppService.CreateAsync(input);
-            }
-            catch (UserFriendlyException ex)
-            {
-                Snackbar.Add(ex.Message, Severity.Error);
-                return;
-            }
-            Snackbar.Add(successedMessage, Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+			
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
+			    var packageTypes =  await PackageTypesAppService.CreateAsync(input);
+			    if (packageTypes != null)
+                {
+                    Snackbar.Add(successedMessage, Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+
+                else
+                {
+                    Snackbar.Add(errorMessage, Severity.Error);
+
+                }
+            }
+            catch (AbpValidationException validationException)
+            {
+                foreach (var validationError in validationException.ValidationErrors)
+                {
+                    Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                }
+            }
+            catch (BusinessException ex)
+            {
+                Snackbar.Add($"Failed to add package type: {ex.Code} + ", Severity.Error);
+
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Failed to package type {ex.Message} + ", Severity.Error);
+            }
+
+
     }
     private void Cancel()
     {

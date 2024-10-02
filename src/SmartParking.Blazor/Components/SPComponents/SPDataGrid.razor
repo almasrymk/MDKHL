@@ -127,9 +127,9 @@
 
                 @if (Data.Columns.Last().DisplayName == header.DisplayName)
                 {
-                    <TemplateColumn Title="@L["Actions"]">
-                        <CellTemplate>
-                            <MudItem Class="d-flex justify-content-center align-items-center">
+                <TemplateColumn Title="@L["Actions"]" CellClass="d-flex justify-content-start align-items-center">
+                        <CellTemplate >
+                            <MudItem Class="d-flex justify-content-start align-items-center">
                                 <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
                                                Icon="@Icons.Material.Filled.Info"
                                                Variant="Variant.Filled"
@@ -164,3 +164,4 @@
     </MudDataGrid>
 
 </div>
+

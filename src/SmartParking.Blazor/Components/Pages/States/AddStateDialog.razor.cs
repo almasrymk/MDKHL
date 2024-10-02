@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups.State;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.States;
 
@@ -27,35 +30,52 @@ public partial class AddStateDialog
     }
     private async Task Submit()
     {
-        var successedMessage = L["StateCreatedSuccessfully"];
-        var errorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
-            try
-            {
-                CreateUpdateStateDto createUpdateStateDto = new CreateUpdateStateDto()
-                {
-                    ArabicName = input.ArabicName,
-                    EnglishName = input.EnglishName,
-                    Status = input.Status,
-                    RegionId = RegionSelectValue
-                };
-                await StateAppService.CreateAsync(createUpdateStateDto);
-            }
-            catch (UserFriendlyException ex)
-            {
-                Snackbar.Add(ex.Message, Severity.Error);
-                return;
-            }
-            Snackbar.Add(successedMessage, Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+		var successedMessage = L["StateCreatedSuccessfully"];
+		var errorMessage = L["Can'tCreateState"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
+
+		// Call your service to create the state
+		try
+		{
+			CreateUpdateStateDto createUpdateStateDto = new CreateUpdateStateDto()
+			{
+				ArabicName = input.ArabicName,
+				EnglishName = input.EnglishName,
+				Status = input.Status,
+				RegionId = RegionSelectValue
+			};
+
+			var regions = await StateAppService.CreateAsync(createUpdateStateDto);
+			if (regions != null)
+			{
+				Snackbar.Add(successedMessage, Severity.Success);
+				MudDialog.Close(DialogResult.Ok(true));
+			}
+
+			else
+			{
+				Snackbar.Add(errorMessage, Severity.Error);
+
+			}
+		}
+		catch (AbpValidationException validationException)
+		{
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+			}
+		}
+		catch (BusinessException ex)
+		{
+			Snackbar.Add($"Failed to add state: {ex.Code} + ", Severity.Error);
+
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Failed to state: {ex.Message} + ", Severity.Error);
+		}
+
     }
     private void Cancel()
     {
