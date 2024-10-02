@@ -1,0 +1,128 @@
+﻿@using SmartParking.Lookups
+@using SmartParking.Packages
+@using SmartParking.Organizations
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+
+@inject ISnackbar Snackbar
+@inject IPackagesAppService packagesAppService
+@inject IOrganizationsAppService organizationAppService
+@inject IPackageTypesAppService packageTypesAppService
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div class="modal-wrapper">
+    <MudDialog Class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">New Package</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem Class="w-100">
+                    <MudForm Model="CreateUpdatePackage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-120 h-120 main-layout-paper">
+                        <MudGrid>
+                            <MudItem sm="4" md="4">
+                                <MudTextField @bind-Value="CreateUpdatePackage.ArabicName"
+                                              For="@(() => CreateUpdatePackage.ArabicName)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="@L["Arabic Name"]" />
+                            </MudItem>
+                            <MudItem sm="4" md="4">
+                                <MudTextField @bind-Value="CreateUpdatePackage.EnglishName"
+                                              For="@(() => CreateUpdatePackage.EnglishName)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="@L["English Name"]" />
+                            </MudItem>
+                            <MudItem sm="4" md="4">
+                                <MudTextField @bind-Value="CreateUpdatePackage.Price"
+                                              For="@(() => CreateUpdatePackage.Price)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="@L["Price"]" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudSwitch Label="@L["published"]" 
+                                LabelPosition="LabelPosition.Start"
+                                Placeholder="@L["published"]" 
+                                @bind-Value="CreateUpdatePackage.published"
+                                Color="MudBlazor.Color.Primary" />
+                            </MudItem>
+
+                            <MudItem sm="4" md="4">
+                                <MudTextField @bind-time="CreateUpdatePackage.PublishFrom"
+                                              For="@(() => CreateUpdatePackage.PublishFrom)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="@L["Publish From"]" />
+                            </MudItem>
+
+                            <MudItem sm="4" md="4">
+                                <MudTextField @bind-time="CreateUpdatePackage.PublishTo"
+                                              For="@(() => CreateUpdatePackage.PublishTo)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              Label="@L["Publish To"]" />
+                            </MudItem>
+                            <MudItem sm="4" md="4">
+                                <MudSelect @bind-Value="@CreateUpdatePackage.OrgnizationId" Label="@L["Organizations"]" Placeholder="Please Select">
+
+                                    @foreach (var organization in organizations)
+                                    {
+                                        <MudSelectItem T="int" Value="@organization.Id">
+                                            @organization.EnglishName
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem sm="4" md="4">
+                                <MudSelect @bind-Value="@CreateUpdatePackage.PackageTypeId" Label="@L["Package Type"]" Placeholder="Please Select">
+
+                                    @foreach (var type in packageTypes)
+                                    {
+                                        <MudSelectItem T="int" Value="@type.Id">
+                                            @type.EnglishName
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                                <div Class="d-flex flex-row justify-content-between">
+                                    <MudRadioGroup @bind-Value="@CreateUpdatePackage.Status" Class="d-inline-flex align-content-center">
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudGrid Class="ps-lg-7">
+
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@(() =>  SubmitCreate())">Create</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@( () => CancelCreate())">Cancel</MudButton>
+
+                </MudItem>
+                
+            </MudGrid>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+
+
+<style>
+
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+@code {
+
+}
