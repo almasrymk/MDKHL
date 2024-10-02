@@ -1,7 +1,7 @@
 
 
 button,a[type="button"] {
-    border-radius: 0 10px 0 10px !important;
+    border-radius: 0 10px 0 10px ;
 }
 
 .custom-rounded {

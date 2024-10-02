@@ -33,6 +33,12 @@
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Subscription"]</MudNavLink>
                 </MudNavGroup>
             </MudNavMenu>
+        <MudButton Variant="Variant.Filled" Class="logout-button rounded-0 mt-20">
+                Logout
+        </MudButton>
+            <div class="icon-logout-button mt-20">
+                <MudIcon Icon="@Icons.Material.Filled.Logout" />
+        </div>
         </MudDrawer>
         <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler">
             <i class="fa fa-chevron-left"></i>
