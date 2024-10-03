@@ -75,24 +75,30 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if (SelectOperator.Key.Contains("not"))
-            IsNot = true;
-        FilterRequestDto filterEventArgs = new FilterRequestDto()
+        if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && !FilterValue.IsNullOrEmpty())
         {
-            FilterProperty = SelectedColumn,
-            FilterValue = FilterValue,
-            FilterOperator = SelectOperator.Value,
-            IsNot = IsNot,
-            TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter
-        };
-        ColumnsFilter.Add(filterEventArgs);
-        ColumnsFilterApply.Add(SelectedColumn);
-        ClickFilter = false;
-        await dataGrid.ReloadServerData();
-        SelectedColumn = "";
-        FilterValue = "";
-        SelectOperator = default;
-        IsNot = false;
+            if (SelectOperator.Key.Contains("not"))
+                IsNot = true;
+            FilterRequestDto filterEventArgs = new FilterRequestDto()
+            {
+                FilterProperty = SelectedColumn,
+                FilterValue = FilterValue,
+                FilterOperator = SelectOperator.Value,
+                IsNot = IsNot,
+                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter
+            };
+            ColumnsFilter.Add(filterEventArgs);
+            ColumnsFilterApply.Add(SelectedColumn);
+
+            ClickFilter = false;
+            await dataGrid.ReloadServerData();
+            SelectedColumn = "";
+            FilterValue = "";
+            SelectOperator = default;
+            IsNot = false;
+        }
+           
+      
     }
     private void OnClickFilter()
     {

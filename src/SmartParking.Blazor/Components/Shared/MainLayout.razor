@@ -4,13 +4,13 @@
 @using Microsoft.Extensions.Options
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
+@using System.Globalization
 @using Volo.Abp.Localization
 @using Volo.Abp.SettingManagement
 @using Volo.Abp.Users
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser CurrentUser
-@inject HttpClient Http
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -35,16 +35,15 @@
                 <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />
                 <MudMenu>   
                     <ActivatorContent>
-                        <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
+                        <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                            <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                        </div>
                     </ActivatorContent>
-                    <ChildContent>
-                        @foreach (var language in _localizationOptions.Value.Languages.Where(l => l.CultureName == "en" || l.CultureName == "ar"))
-                        {
-                        <MudMenuItem OnClick="@(() => ChangeLanguage(language.CultureName))" >
-                            <MudText>@language.DisplayName</MudText>
-                            </MudMenuItem>
-                    }
-                    </ChildContent>
+   @*                  <ChildContent>
+                        <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                            <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                        </div>
+                    </ChildContent> *@
                 </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
@@ -75,51 +74,19 @@
     [Inject] private IOptions<AbpLocalizationOptions> _localizationOptions { get; set; }
     [Inject] private NavigationManager Navigation { get; set; }
 
-
     private string UserName { get; set; }
-
     protected override void OnInitialized()
     {
-
         UserName = CurrentUser.Name ?? "Guest";
 
     }
-    private async Task ChangeLanguage(string cultureName)
+    private void ChangeLanguage()
     {
-
-        // Define the data to be sent in the POST request
-        var requestData = new Dictionary<string, string>
-        {
-            { "culture", cultureName },
-            { "returnUrl", Navigation.Uri.ToString() }
-        };
-        Console.WriteLine(Navigation.Uri.ToString());
-        // Create a POST request to the API
-        var content = new FormUrlEncodedContent(requestData);
-        // Post the request to the SetLanguage API
-        var response = await Http.PostAsync($"{Navigation.BaseUri.ToString()}api/SetLanguage?culture={cultureName}&returnUrl={Navigation.Uri.ToString()}", null);
-        // Check if the response is successful
-        if (response.IsSuccessStatusCode)
-        {
-            // Handle the successful response (e.g., navigate to the return URL)
-            var newUrl = response.RequestMessage.RequestUri.ToString();
-            Navigation.NavigateTo(newUrl, forceLoad: true);
-        }
-        else
-        {
-            // Handle error (optional)
-            Console.WriteLine("Failed to set language");
-        }
-    
-      
-
-       // LanguageService.SetLanguage(cultureName);
-        // Optionally force a page reload to apply the culture change immediately
-        //Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-        // var uri = Navigation.Uri.ToString();
-
-        // uri = uri + "?culture=" + cultureName + "&ui-culture=" + cultureName;
-        /* avigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change */
+        Navigation.NavigateTo("api/SetLanguage",  true); 
+    }
+    private string LocaleImgSrc()
+    {
+        return CultureInfo.CurrentCulture.Name == "en" ? "images/svgs/arabic.svg" : "images/svgs/english.svg";
     }
 
     MudTheme SPCustomTheme = new MudTheme()

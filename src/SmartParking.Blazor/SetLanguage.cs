@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Globalization;
+using System.Linq;
 
 namespace SmartParking.Blazor;
 
@@ -9,15 +12,18 @@ namespace SmartParking.Blazor;
 [ApiController]
 public class SetLanguage : ControllerBase
 {
-    [HttpPost]
-    public IActionResult SetLanguages(string culture, string returnUrl)
+    public IActionResult SetLanguages()
     {
+        IRequestCultureFeature culture = HttpContext.Features.Get<IRequestCultureFeature>();
         Response.Cookies.Append(
             CookieRequestCultureProvider.DefaultCookieName,
-            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
-        );
+            CookieRequestCultureProvider.MakeCookieValue(
+                new RequestCulture(new string[] { "en", "ar" }
+                .Where(option => option != culture.RequestCulture.Culture.Name)
+                .FirstOrDefault(), new string[] { "en", "ar" }
+                .Where(option => option != culture.RequestCulture.Culture.Name)
+        .FirstOrDefault())));
 
-        return Redirect("/organizations");
+        return LocalRedirect("/");
     }
 }
