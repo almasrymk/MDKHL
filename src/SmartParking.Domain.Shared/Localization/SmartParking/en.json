@@ -54,7 +54,7 @@
     "Status Deleted": "Deleted",
     "Update": "Update",
     "Update Garage for": "Update Garage For",
-    "Add New Garage": "�Add New Garage",
+    "Add New Garage": "Add New Garage",
     "Will Be Automatically Created": "Will Be Automatically Created",
     "OrganizationName": "Organization Name",
     "Edit": "Edit",
@@ -174,8 +174,11 @@
     "SnapTime": "SnapTime",
     "OrganizationID": "OrganizationID",
     "CameraId": "CameraId",
-    "View GarageTransaction": "View GarageTransaction"
-
-
+    "View GarageTransaction": "View GarageTransaction",
+    "View Camera": "View Camera",
+    "PlateColorArabicName": "PlateColorArabicName",
+    "PlateColorEnglishName": "PlateColorEnglishName",
+    "VehicleBrandArabicName": "VehicleBrandArabicName",
+    "VehicleBrandEnglishName": "VehicleBrandEnglishName"
   } 
 }

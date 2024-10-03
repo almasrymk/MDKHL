@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System;
 using SmartParking.Lookups.VehicleBrand;
 using Volo.Abp.Application.Dtos;
+using Microsoft.Extensions.Localization;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.VehicleBrands;
 
@@ -27,13 +29,18 @@ public partial class VehicleBrand
 	private string termSearch;
 
 	private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-	/// <summary>
-	/// filter for cameras on the server side using the camera columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among cameras.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    public VehicleBrand(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
+    }
+    /// <summary>
+    /// filter for cameras on the server side using the camera columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among cameras.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
 	{
 		// Log the search term to the console for debugging purposes
 
@@ -121,16 +128,16 @@ public partial class VehicleBrand
 		};
 
 
-		tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = "ArabicName", Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = "EnglishName", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		
 		foreach (var item in vehicleBrands.Items)
 		{
 			var rowDef = new RowDef();
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>("ArabicName", item.ArabicName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>("EnglishName", item.EnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
 			//rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
 

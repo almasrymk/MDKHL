@@ -212,6 +212,12 @@
     "SnapTime": "وقت التصوير",
     "OrganizationID": "رقم المنظمة",
     "CameraId": "رقم الكاميرا",
-    "View GarageTransaction": "عرض حركة داخل الكراج"
+    "View GarageTransaction": "عرض حركة داخل الكراج",
+    "View Camera": "أعرض كاميرا",
+    "PlateColorArabicName": "لون اللوحة بالعربي",
+    "PlateColorEnglishName": "لون اللوحة بالانجليزية",
+    "VehicleBrandArabicName": "ماركة السيارة بالعربي",
+    "VehicleBrandEnglishName": "ماركة السيارة بالانجليزية"
+
   }
 }
