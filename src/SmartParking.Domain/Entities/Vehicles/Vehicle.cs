@@ -17,8 +17,8 @@ namespace SmartParking.Entities.Vehicles
         public int VehicleModelId { get; set; }
         public virtual VehicleBrand VehicleBrand { get; set; }
 		public int VehicleBrandId { get; set; }
-
-		public virtual PlateColor PlateColor { get; set; }
+        public string PlateNumber { get; set; }
+        public virtual PlateColor PlateColor { get; set; }
 		public int PlateColorId { get; set; }
 
 		public virtual LicenceType LicenceType { get; set; }

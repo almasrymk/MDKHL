@@ -2,6 +2,7 @@
 using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
@@ -78,7 +79,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
     public DbSet<PackageCategory> PackageCategories { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
-
+    public DbSet<Invoice> Invoices { get; set; }
 
 
 
