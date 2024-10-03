@@ -17,6 +17,6 @@ public class CreateUpdateInvoiceDto : EntityDto<int>
     public int OrganizationId { get; set; }
     public int GarageId { get; set; }
     public int VehicleId { get; set; }
-    public int PackageId { get; set; }
+    // public int PackageId { get; set; }
 
 }

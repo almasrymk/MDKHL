@@ -68,7 +68,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Invoice,InvoiceDto>()
             .ForMember(d=>d.GarageName,o=>o.MapFrom(s=>s.Garage.Name))
             .ForMember(d=>d.OrganizationArabicName,o=>o.MapFrom(s=>s.Organization.ArabicName))
-            .ForMember(d=>d.PackageArabicName,o=>o.MapFrom(s=>s.Package.ArabicName))
             .ForMember(d => d.PlateNumber, o => o.MapFrom(s => s.Vehicle.PlateNumber));
 
         CreateMap<CreateUpdateInvoiceDto, Invoice>();

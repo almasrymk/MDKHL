@@ -23,7 +23,7 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public virtual Garage Garage { get; set; }
     public int VehicleId { get; set; }
     public virtual Vehicle Vehicle { get; set; }
-    public int PackageId { get; set; }
-    public virtual Package Package { get; set; }
+    // public int PackageId { get; set; }
+    // public virtual Package Package { get; set; }
     public Guid? TenantId { get; set; }
 }
