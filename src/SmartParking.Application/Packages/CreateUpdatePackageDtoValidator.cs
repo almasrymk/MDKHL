@@ -36,19 +36,19 @@ namespace SmartParking.Packages
 				.WithMessage("Price must not have more than two decimal places and must be less than 18 digits.");
 
 			RuleFor(x => x.PublishFrom)
-		.LessThanOrEqualTo(x => x.PublishTo).WithMessage("Start time must be before or equal to the end time.")
-		.Must(BeAValidTime).WithMessage("Start time is not a valid time.");
+		.LessThanOrEqualTo(x => x.PublishTo).WithMessage("Start time must be before or equal to the end time.");
+		////.Must(BeAValidTime).WithMessage("Start time is not a valid time.");
 
-			RuleFor(x => x.PublishTo)
-				.Must(BeAValidTime).WithMessage("End time is not a valid time.");
+			RuleFor(x => x.PublishTo);
+				//.Must(BeAValidTime).WithMessage("End time is not a valid time.");
 
 		}
 
-		private bool BeAValidTime(TimeOnly time)
-		{
-			var startOfDay = new TimeOnly(12, 0);  // 12:00 PM (noon)
-			var endOfDay = new TimeOnly(23, 59);   // 23:59 PM (considering midnight as the end of the day)
-			return time >= startOfDay && time <= endOfDay;
-		}
+		//private bool BeAValidTime(TimeOnly time)
+		//{
+		//	var startOfDay = new TimeOnly(12, 0);  // 12:00 PM (noon)
+		//	var endOfDay = new TimeOnly(23, 59);   // 23:59 PM (considering midnight as the end of the day)
+		//	return time >= startOfDay && time <= endOfDay;
+		//}
 	}
 }

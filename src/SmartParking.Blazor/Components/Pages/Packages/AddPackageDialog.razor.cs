@@ -18,7 +18,8 @@ public partial class AddPackageDialog
     public CreateUpdatePackageDto CreateUpdatePackage { get; set; }
     private List<OrganizationDto> organizations = new List<OrganizationDto>();
     private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
-
+    private TimeSpan? timeSpanFrom;
+    private TimeSpan? timeSpanTo;
     protected override async Task OnInitializedAsync()
     {
         CreateUpdatePackage = new CreateUpdatePackageDto();
@@ -26,8 +27,28 @@ public partial class AddPackageDialog
         organizations = organizationsList.Items.ToList();
         var packageTypesList = await packageTypesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         packageTypes = packageTypesList.Items.ToList();
+        timeSpanFrom = CreateUpdatePackage.PublishFrom.ToTimeSpan();
+        timeSpanTo = CreateUpdatePackage.PublishTo.ToTimeSpan();
+    }
+    private void OnTimeFromChanged(TimeSpan? value)
+    {
+        // Handle null case and update CreateUpdatePackage.PublishFrom
+        if (value.HasValue)
+        {
+            timeSpanFrom = value;
+            CreateUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+        }
     }
 
+    private void OnTimeToChanged(TimeSpan? value)
+    {
+        // Handle null case and update CreateUpdatePackage.PublishTo
+        if (value.HasValue)
+        {
+            timeSpanTo = value;
+            CreateUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        }
+    }
     private async void SubmitCreate()
     {
         try

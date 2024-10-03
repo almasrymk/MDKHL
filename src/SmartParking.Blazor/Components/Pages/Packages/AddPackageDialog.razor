@@ -41,29 +41,8 @@
                                               Class="w-100"
                                               Label="@L["Price"]" />
                             </MudItem>
-                            <MudItem sm="4">
-                                <MudSwitch Label="@L["published"]" 
-                                LabelPosition="LabelPosition.Start"
-                                Placeholder="@L["published"]" 
-                                @bind-Value="CreateUpdatePackage.published"
-                                Color="MudBlazor.Color.Primary" />
-                            </MudItem>
 
-                            <MudItem sm="4" md="4">
-                                <MudTextField @bind-time="CreateUpdatePackage.PublishFrom"
-                                              For="@(() => CreateUpdatePackage.PublishFrom)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                              Label="@L["Publish From"]" />
-                            </MudItem>
 
-                            <MudItem sm="4" md="4">
-                                <MudTextField @bind-time="CreateUpdatePackage.PublishTo"
-                                              For="@(() => CreateUpdatePackage.PublishTo)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                              Label="@L["Publish To"]" />
-                            </MudItem>
                             <MudItem sm="4" md="4">
                                 <MudSelect @bind-Value="@CreateUpdatePackage.OrgnizationId" Label="@L["Organizations"]" Placeholder="Please Select">
 
@@ -86,12 +65,43 @@
                                     }
                                 </MudSelect>
                             </MudItem>
-                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+
+                            <MudItem sm="4" md="4">
+                                <MudTimePicker Variant="Variant.Text"
+                                               Class="w-100"
+                                               TimeChanged="OnTimeFromChanged"
+                                               Label="@L["Publish From"]" />
+                            </MudItem>
+
+                            <MudItem sm="4" md="4">
+                                <MudTimePicker Variant="Variant.Text"
+                                               Class="w-100"
+                                               TimeChanged="OnTimeToChanged"
+                                               Label="@L["Publish To"]" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudSwitch Label="@L["published"]"
+                                           LabelPosition="LabelPosition.Start"
+                                           Placeholder="@L["published"]"
+                                           @bind-Value="CreateUpdatePackage.published"
+                                           Color="MudBlazor.Color.Primary" />
+                            </MudItem>
+                            <MudItem sm="12">
+                                <MudTextField @bind-Value="CreateUpdatePackage.Description"
+                                              For="@(() => CreateUpdatePackage.Description)"
+                                              Variant="Variant.Outlined"
+                                              Class="w-100"
+                                              Lines="5"
+                                              Label="@L["Description"]" />
+
+                            </MudItem>
+
+                            <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                                 <div Class="d-flex flex-row justify-content-between">
-                                    <MudRadioGroup @bind-Value="@CreateUpdatePackage.Status" Class="d-inline-flex align-content-center">
-                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+                                    <MudRadioGroup @bind-SelectedValue="@Enums.Status.Active" @bind-Value="@CreateUpdatePackage.Status" Class="d-inline-flex align-content-center">
+                                        <MudRadio Value="@((int)Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                        <MudRadio Value="@((int)Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                        @* <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio> *@
                                     </MudRadioGroup>
                                 </div>
                             </MudItem>
@@ -109,7 +119,7 @@
                     <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@( () => CancelCreate())">Cancel</MudButton>
 
                 </MudItem>
-                
+
             </MudGrid>
         </DialogActions>
     </MudDialog>
@@ -124,5 +134,5 @@
     }
 </style>
 @code {
-
 }
+
