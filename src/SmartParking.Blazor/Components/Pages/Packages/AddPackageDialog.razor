@@ -18,25 +18,25 @@
         <DialogContent>
             <MudGrid>
                 <MudItem Class="w-100">
-                    <MudForm Model="CreateUpdatePackage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-120 h-120 main-layout-paper">
+                    <MudForm Model="createUpdatePackage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-120 h-120 main-layout-paper">
                         <MudGrid>
                             <MudItem sm="4" md="4">
-                                <MudTextField @bind-Value="CreateUpdatePackage.ArabicName"
-                                              For="@(() => CreateUpdatePackage.ArabicName)"
+                                <MudTextField @bind-Value="createUpdatePackage.ArabicName"
+                                              For="@(() => createUpdatePackage.ArabicName)"
                                               Variant="Variant.Text"
                                               Class="w-100"
                                               Label="@L["Arabic Name"]" />
                             </MudItem>
                             <MudItem sm="4" md="4">
-                                <MudTextField @bind-Value="CreateUpdatePackage.EnglishName"
-                                              For="@(() => CreateUpdatePackage.EnglishName)"
+                                <MudTextField @bind-Value="createUpdatePackage.EnglishName"
+                                              For="@(() => createUpdatePackage.EnglishName)"
                                               Variant="Variant.Text"
                                               Class="w-100"
                                               Label="@L["English Name"]" />
                             </MudItem>
                             <MudItem sm="4" md="4">
-                                <MudTextField @bind-Value="CreateUpdatePackage.Price"
-                                              For="@(() => CreateUpdatePackage.Price)"
+                                <MudTextField @bind-Value="createUpdatePackage.Price"
+                                              For="@(() => createUpdatePackage.Price)"
                                               Variant="Variant.Text"
                                               Class="w-100"
                                               Label="@L["Price"]" />
@@ -44,7 +44,7 @@
 
 
                             <MudItem sm="4" md="4">
-                                <MudSelect @bind-Value="@CreateUpdatePackage.OrgnizationId" Label="@L["Organizations"]" Placeholder="Please Select">
+                                <MudSelect @bind-Value="@createUpdatePackage.OrgnizationId" Label="@L["Organizations"]" Placeholder="Please Select">
 
                                     @foreach (var organization in organizations)
                                     {
@@ -55,7 +55,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem sm="4" md="4">
-                                <MudSelect @bind-Value="@CreateUpdatePackage.PackageTypeId" Label="@L["Package Type"]" Placeholder="Please Select">
+                                <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["Package Type"]" Placeholder="Please Select">
 
                                     @foreach (var type in packageTypes)
                                     {
@@ -83,12 +83,12 @@
                                 <MudSwitch Label="@L["published"]"
                                            LabelPosition="LabelPosition.Start"
                                            Placeholder="@L["published"]"
-                                           @bind-Value="CreateUpdatePackage.published"
+                                           @bind-Value="createUpdatePackage.published"
                                            Color="MudBlazor.Color.Primary" />
                             </MudItem>
                             <MudItem sm="12">
-                                <MudTextField @bind-Value="CreateUpdatePackage.Description"
-                                              For="@(() => CreateUpdatePackage.Description)"
+                                <MudTextField @bind-Value="createUpdatePackage.Description"
+                                              For="@(() => createUpdatePackage.Description)"
                                               Variant="Variant.Outlined"
                                               Class="w-100"
                                               Lines="5"
@@ -98,10 +98,9 @@
 
                             <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                                 <div Class="d-flex flex-row justify-content-between">
-                                    <MudRadioGroup @bind-SelectedValue="@Enums.Status.Active" @bind-Value="@CreateUpdatePackage.Status" Class="d-inline-flex align-content-center">
-                                        <MudRadio Value="@((int)Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-                                        <MudRadio Value="@((int)Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
-                                        @* <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio> *@
+                                    <MudRadioGroup @bind-Value="@createUpdatePackage.Status" Class="d-inline-flex align-content-center">
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
                                     </MudRadioGroup>
                                 </div>
                             </MudItem>

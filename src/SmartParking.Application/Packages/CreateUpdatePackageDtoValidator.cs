@@ -25,9 +25,9 @@ namespace SmartParking.Packages
 				.NotEmpty()
 				.WithMessage("Package Type is invalid");
 
-			RuleFor(x => x.Status)
-				.NotEmpty()
-				.WithMessage("Status is invalid");
+			//RuleFor(x => x.Status)
+			//	.NotEmpty()
+			//	.WithMessage("Status is invalid");
 
 			RuleFor(x => x.Price)
 				.GreaterThan(0)

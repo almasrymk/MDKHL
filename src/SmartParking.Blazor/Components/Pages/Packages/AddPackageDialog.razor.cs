@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Enums;
 using SmartParking.Lookups;
 using SmartParking.Organizations;
 using SmartParking.Packages;
@@ -15,20 +16,20 @@ public partial class AddPackageDialog
 {
     [CascadingParameter]
     private MudDialogInstance MudDialogAdd { get; set; }
-    public CreateUpdatePackageDto CreateUpdatePackage { get; set; }
+    public CreateUpdatePackageDto createUpdatePackage { get; set; }
     private List<OrganizationDto> organizations = new List<OrganizationDto>();
     private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
     protected override async Task OnInitializedAsync()
     {
-        CreateUpdatePackage = new CreateUpdatePackageDto();
+        createUpdatePackage = new CreateUpdatePackageDto();
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         organizations = organizationsList.Items.ToList();
         var packageTypesList = await packageTypesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         packageTypes = packageTypesList.Items.ToList();
-        timeSpanFrom = CreateUpdatePackage.PublishFrom.ToTimeSpan();
-        timeSpanTo = CreateUpdatePackage.PublishTo.ToTimeSpan();
+        timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
+        timeSpanTo = createUpdatePackage.PublishTo.ToTimeSpan();
     }
     private void OnTimeFromChanged(TimeSpan? value)
     {
@@ -36,7 +37,7 @@ public partial class AddPackageDialog
         if (value.HasValue)
         {
             timeSpanFrom = value;
-            CreateUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+            createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
         }
     }
 
@@ -46,15 +47,15 @@ public partial class AddPackageDialog
         if (value.HasValue)
         {
             timeSpanTo = value;
-            CreateUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+            createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
         }
     }
     private async void SubmitCreate()
     {
         try
         {
-            var garage = await packagesAppService.CreateAsync(CreateUpdatePackage);
-            if (garage != null)
+            var package = await packagesAppService.CreateAsync(createUpdatePackage);
+            if (package != null)
             {
                 Snackbar.Add("Package Has been created Successfully", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
@@ -72,7 +73,8 @@ public partial class AddPackageDialog
     }
     private async Task CancelCreate()
     {
-        CreateUpdatePackage = new CreateUpdatePackageDto();
+        createUpdatePackage = new CreateUpdatePackageDto();
         MudDialogAdd.Cancel();
     }
+  
 }
