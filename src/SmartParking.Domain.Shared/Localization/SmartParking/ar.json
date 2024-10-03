@@ -205,6 +205,13 @@
     "View VehicleModel": "عرض موديل السيارة",
     "Welcome": "مرحباً",
     "Whatsapp Num": "واتس أب التواصل",
-    "Will Be Automatically Created": "سـيـتم انشـاءه تـلقائيـًا"
+    "Will Be Automatically Created": "سـيـتم انشـاءه تـلقائيـًا",
+    "GarageTransactions": "الحركات داخل الكراجات",
+    "PlateNumber": "رقم اللوحة",
+    "AccurateTime": "الوقت الفعلي",
+    "SnapTime": "وقت التصوير",
+    "OrganizationID": "رقم المنظمة",
+    "CameraId": "رقم الكاميرا",
+    "View GarageTransaction": "عرض حركة داخل الكراج"
   }
 }

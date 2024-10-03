@@ -1,4 +1,5 @@
 ﻿using Abp.UI;
+using Microsoft.AspNetCore.Http;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.GarageTransactions;
@@ -29,11 +30,11 @@ public class GarageTransactionsAppService:
     private readonly IRepository<Garage, int> _GarageRepository;
     private readonly IRepository<Organization, int> _OrganizationRepository;
     private readonly IRepository<Camera, int> _CameraRepository;
-
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser;
 
-    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository) : base(repository)
+    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
@@ -41,6 +42,7 @@ public class GarageTransactionsAppService:
         _GarageRepository = garagerepository;
         _OrganizationRepository = organizationRepository;
         _CameraRepository = cameraRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
     public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
@@ -56,15 +58,28 @@ public class GarageTransactionsAppService:
 	}
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
+
+        // Get the current base URL dynamically
+        var request = _httpContextAccessor.HttpContext.Request;
+        var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+
+        // Add full URL to VehiclePicture field
+
         if (_currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                return await base.GetAsync(id);
+                var garageTransaction = await base.GetAsync(id);
+                garageTransaction.VehiclePicture = $"{baseUrl}{garageTransaction.VehiclePicture}";
+                return garageTransaction;
             }
         }
         else
-            return await base.GetAsync(id);
+        {
+            var garageTransaction = await base.GetAsync(id);
+            garageTransaction.VehiclePicture = $"{baseUrl}{garageTransaction.VehiclePicture}";
+            return garageTransaction;
+        }
     }
     public async Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
 	{

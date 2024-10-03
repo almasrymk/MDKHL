@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System;
 using SmartParking.GarageTransactions;
 using Volo.Abp.Application.Dtos;
+using Microsoft.Extensions.Localization;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 {
@@ -27,13 +29,19 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		private string termSearch;
 
 		private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+        private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-		/// <summary>
-		/// filter for cameras on the server side using the camera columns.
-		/// </summary>
-		/// <param name="columnFilter">The name of column to filter for among cameras.</param>
-		/// <returns>Returns a task that represents the asynchronous operation.</returns>
-		private async Task HandleFilter(PageChangeEventArgs pageInfo)
+        public GarageTransaction(IStringLocalizer<SmartParkingResource> localizer)
+        {
+            _localizer = localizer;
+        }
+
+        /// <summary>
+        /// filter for cameras on the server side using the camera columns.
+        /// </summary>
+        /// <param name="columnFilter">The name of column to filter for among cameras.</param>
+        /// <returns>Returns a task that represents the asynchronous operation.</returns>
+        private async Task HandleFilter(PageChangeEventArgs pageInfo)
 		{
 			// Log the search term to the console for debugging purposes
 
@@ -121,20 +129,20 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			};
 
 
-			tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = "PlateNumber", Name = "PlateNumber", IsFilterable = true, PropertyNmae = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = "AccurateTime", Name = "AccurateTime", IsFilterable = true, PropertyNmae = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = "SnapTime", Name = "SnapTime", IsFilterable = true, PropertyNmae = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = "Type", Name = "Type", IsFilterable = true, PropertyNmae = "Type", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyNmae = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyNmae = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyNmae = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyNmae = "Type", IsSortable = true, TypeFilter = TypeFilter.Text });
 
             foreach (var item in garageTransactions.Items)
 			{
 				var rowDef = new RowDef();
 				rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-				rowDef.Cells.Add(new KeyValuePair<string, string>("PlateNumber", item.PlateNnumber));
-				rowDef.Cells.Add(new KeyValuePair<string, string>("AccurateTime", item.AccurateTime.ToString()));
-				rowDef.Cells.Add(new KeyValuePair<string, string>("SnapTime", item.SnapTime.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>("Type", item.Type));
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNnumber));
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.Type));
 
                 //rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
@@ -182,8 +190,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 		private async Task<IDialogReference> OnClickRowView(RowDef row)
 		{
-            ShowSnackbar("Not Working", Severity.Warning);
-            return null;
+           
             Console.WriteLine("View Button");
 
 			var id = int.Parse(row.Cells[0].Value);
@@ -198,6 +205,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				PlateNnumber=garageTransactionDto.PlateNnumber,
 				VehiclePicture=garageTransactionDto.VehiclePicture,
 				Type=garageTransactionDto.Type,
+				
 			};
 
 			var parameters = new DialogParameters
@@ -206,11 +214,13 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			};
 
 
-			return await Dialog.ShowAsync<EditPlateColor>("View GarageTransaction", parameters);
+			return await Dialog.ShowAsync<ViewGarageTransaction>("View GarageTransaction", parameters);
 		}
 
-		private async Task OnClickRowDelete(string row)
+		private async Task<Task> OnClickRowDelete(string row)
 		{
+			ShowSnackbar("Service Not Allowed", Severity.Warning);
+			return Task.CompletedTask;
 			var id = int.Parse(row);
 			try
 			{
@@ -221,7 +231,6 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"+ex.Message);
 				ShowSnackbar(ex.Message, Severity.Error);
 			}
 

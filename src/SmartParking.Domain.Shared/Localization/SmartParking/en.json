@@ -167,7 +167,15 @@
     "Edit VehicleModel": "Edit VehicleModel",
     "VehicleModel": "VehicleModel",
     "View VehicleModel": "View VehicleModel",
-    "VehicleModels": "VehicleModels"
+    "VehicleModels": "VehicleModels",
+    "GarageTransactions": "GarageTransactions",
+    "PlateNumber": "PlateNumber",
+    "AccurateTime": "AccurateTime",
+    "SnapTime": "SnapTime",
+    "OrganizationID": "OrganizationID",
+    "CameraId": "CameraId",
+    "View GarageTransaction": "View GarageTransaction"
+
 
   } 
 }
