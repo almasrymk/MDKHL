@@ -12,6 +12,13 @@ using System.IdentityModel.Tokens.Jwt;
 using SmartParking.Authentication;
 using Volo.Abp.Identity;
 using System.Linq;
+using System.IO;
+using SmartParking.Entities.Organizations;
+using Volo.Abp.Domain.Entities;
+using System.Data.Entity;
+using System.ComponentModel.DataAnnotations;
+using Polly;
+using Microsoft.AspNetCore.Http;
 
 namespace SmartParking;
 // Service Implementation
@@ -22,19 +29,43 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager;
     private readonly IIdentityRoleAppService _roleAppService;
+    private readonly IHttpContextAccessor _httpContext;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
         UserManager<IdentityUser> userManager,
         IOpenIddictTokenManager tokenManager,
-        IIdentityRoleAppService roleAppService
+        IIdentityRoleAppService roleAppService,
+        IHttpContextAccessor httpContext
         )
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _tokenManager = tokenManager;
         _roleAppService = roleAppService;
+        _httpContext = httpContext;
     }
+
+    public async Task<UserDataDto> GetUserDataAsync()
+    {
+        if (!CurrentUser.IsAuthenticated)
+        {
+            return new UserDataDto
+            {
+               Success =  false,
+               ErrorMessage = "You are Not authenticated!"
+            };
+        }
+       var Id =  CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
+       var user = await _userManager.FindByIdAsync(Id);
+
+        return new  UserDataDto{
+            Success = true,
+            FullName = user.UserName,
+            Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
+        };
+    }
+
     public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
     {
 
