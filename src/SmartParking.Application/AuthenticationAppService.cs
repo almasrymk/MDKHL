@@ -10,7 +10,6 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Volo.Abp.Application.Services;
 using System.IdentityModel.Tokens.Jwt;
 using SmartParking.Authentication;
-using Volo.Abp.Identity;
 using System.Linq;
 using System.IO;
 using SmartParking.Entities.Organizations;
@@ -19,6 +18,9 @@ using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
 using Polly;
 using Microsoft.AspNetCore.Http;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 
 namespace SmartParking;
 // Service Implementation
@@ -28,22 +30,47 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager;
-    private readonly IIdentityRoleAppService _roleAppService;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly IRepository<IdentityUser, Guid> _userRepository;
+    IIdentityRoleRepository _roleRepository;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
         UserManager<IdentityUser> userManager,
         IOpenIddictTokenManager tokenManager,
-        IIdentityRoleAppService roleAppService,
-        IHttpContextAccessor httpContext
+        IHttpContextAccessor httpContext,
+        IRepository<IdentityUser, Guid> userRepository,
+        IIdentityRoleRepository roleRepository
         )
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _tokenManager = tokenManager;
-        _roleAppService = roleAppService;
         _httpContext = httpContext;
+        _userRepository = userRepository;
+        _roleRepository = roleRepository;
+    }
+
+    public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
+    {
+        try
+        {
+            var user = await CheckPhoneIsUnique(phone);
+            return new forgetpasswordDto
+            {
+                Success = false,
+                UserId = user.Id.ToString(),
+            };
+        }
+        catch (Exception ex)
+        {
+            return new forgetpasswordDto
+            {
+                Success = false,
+                ErrorMessage = ex.Message
+            };
+        }
+     
     }
 
     public async Task<UserDataDto?> GetUserDataAsync()
@@ -102,20 +129,19 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
     {
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
-        var roles = await _roleAppService.GetAllListAsync();
-        ;
-        if (roles.Items.FirstOrDefault(x => x.Name == "user") is null)
-        {
-            var role = new IdentityRoleCreateDto { Name = "user",IsDefault=true,IsPublic=true};
-
-           await _roleAppService.CreateAsync(role);
+        var role = await _roleRepository.FindByNormalizedNameAsync("user".ToUpper());
+        if (role is null)
+        { 
+            var roleCreate = new Volo.Abp.Identity.IdentityRole(GuidGenerator.Create(), "user", CurrentTenant.Id);
+            await _roleRepository.InsertAsync(roleCreate);
         }
-         
+
+        
 
         try
         {
            var createdUser= await _userManager.CreateAsync(user, input.Password);
-
+            await _userManager.SetPhoneNumberAsync(user, input.Phone);
             if (!createdUser.Succeeded)
             {
                 throw new Exception(message:createdUser.Errors.FirstOrDefault()?.Description);
@@ -165,5 +191,15 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+    private async Task<IdentityUser> CheckPhoneIsUnique(string phone)
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone); 
 
+        if (user == null) 
+        {
+            throw new ValidationException("User with this phone number does not exist.");
+        }
+        return user;
+
+    }
 }

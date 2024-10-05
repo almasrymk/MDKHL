@@ -13,6 +13,6 @@ public interface IAuthenticationAppService : IApplicationService
 {
     Task<LoginResultDto> LoginAsync(LoginInputDto input);
     Task<RegisterResultDto> RegisterAsync(RegisterInputDto input);
-    Task<UserDataDto?> GetUserDataAsync();
-
+    Task<UserDataDto> GetUserDataAsync();
+    Task <forgetpasswordDto> ForgetPasswordAsync(string phone);
 }
