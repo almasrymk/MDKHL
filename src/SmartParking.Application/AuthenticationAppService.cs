@@ -25,6 +25,7 @@ using Volo.Abp.Identity;
 namespace SmartParking;
 // Service Implementation
 
+/// <inheritdoc/>
 public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
 {
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -50,7 +51,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _userRepository = userRepository;
         _roleRepository = roleRepository;
     }
-
+    /// <inheritdoc/>
     public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
     {
         try
@@ -72,7 +73,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
      
     }
-
+    /// <inheritdoc/>
     public async Task<UserDataDto?> GetUserDataAsync()
     {
         if (!CurrentUser.IsAuthenticated)
@@ -92,7 +93,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
         };
     }
-
+    /// <inheritdoc/>
     public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
     {
 
@@ -125,22 +126,21 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             Role = roles.FirstOrDefault(),
         };
     }
-
+    /// <inheritdoc/>
     public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
     {
-        var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
-        var role = await _roleRepository.FindByNormalizedNameAsync("user".ToUpper());
-        if (role is null)
-        { 
-            var roleCreate = new Volo.Abp.Identity.IdentityRole(GuidGenerator.Create(), "user", CurrentTenant.Id);
-            await _roleRepository.InsertAsync(roleCreate);
-        }
-
-        
 
         try
         {
-           var createdUser= await _userManager.CreateAsync(user, input.Password);
+            await CheckPhoneIsUnique(input.Phone);
+            var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
+            var role = await _roleRepository.FindByNormalizedNameAsync("user".ToUpper());
+            if (role is null)
+            {
+                var roleCreate = new Volo.Abp.Identity.IdentityRole(GuidGenerator.Create(), "user", CurrentTenant.Id);
+                await _roleRepository.InsertAsync(roleCreate);
+            }
+            var createdUser= await _userManager.CreateAsync(user, input.Password);
             await _userManager.SetPhoneNumberAsync(user, input.Phone);
             if (!createdUser.Succeeded)
             {
@@ -175,7 +175,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
        
     }
-
+    /// <summary>
+    /// Generates a JWT token for the specified user.
+    /// </summary>
+    /// <param name="user">The user for whom the token will be generated.</param>
+    /// <returns>A string representing the generated JWT token.</returns>
     private async Task<string> GenerateTokenAsync(IdentityUser user)
     {
         var principal = await _signInManager.CreateUserPrincipalAsync(user);
@@ -191,6 +195,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+    /// <summary>
+    /// Checks if the provided phone number is unique and associated with a user.
+    /// </summary>
+    /// <param name="phone">The phone number to check for uniqueness.</param>
+    /// <returns>The <see cref="IdentityUser"/> associated with the phone number if it exists.</returns>
+    /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
     private async Task<IdentityUser> CheckPhoneIsUnique(string phone)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone); 
@@ -201,5 +211,37 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
         return user;
 
+    }
+    /// <inheritdoc/>
+    public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
+    {
+        if (!CurrentUser.IsAuthenticated)
+        {
+            return new BaseResultDto
+            {
+                Success = false,
+                ErrorMessage = "You are Not authenticated!"
+            };
+        }
+        var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
+        var user = await _userManager.FindByIdAsync(Id);
+        if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
+        {
+           await _userManager.ChangePasswordAsync(user,input.CurrentPassword, input.NewPassword);
+        }
+        else
+        {
+            return new BaseResultDto
+            {
+                Success = false,
+                ErrorMessage = "Incorrect password."
+            };
+            
+        }
+        
+        return new BaseResultDto
+        {
+            Success = true
+        };
     }
 }

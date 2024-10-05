@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Authentication;
 
-public class UserDataDto
+public class UserDataDto : BaseResultDto
 {
     public string FullName { get; set; }
     public string Image { get; set; }
-    public bool Success { get; set; }
-    public string ErrorMessage { get; set; }
 }
