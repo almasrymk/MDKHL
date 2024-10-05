@@ -32,12 +32,12 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <returns>Organization Dto</returns>
     Task<OrganizationDto> GetAsync(int id);
 
-/// <summary>
-/// abstract method used to update organization
-/// </summary>
-/// <param name="id">organization id</param>
-/// <param name="input">dto of create organization</param>
-/// <returns>organization dto of update one</returns>
+    /// <summary>
+    /// abstract method used to update organization
+    /// </summary>
+    /// <param name="id">organization id</param>
+    /// <param name="input">dto of create organization</param>
+    /// <returns>organization dto of update one</returns>
     Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input);
 
     /// <summary>
@@ -60,4 +60,9 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <param name="input">specifies max number of organization and if it sorted or not and filter</param>
     /// <returns>Organization Dto</returns>
     public Task<PagedResultDto<OrganizationDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+    /// <summary>
+    /// Retrieves a list of all organizations asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing a list of <see cref="OrganizationDto"/> objects.</returns>
+    public Task<List<OrganizationDto>> GetAllMobileAsync();
 }
