@@ -15,6 +15,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 
@@ -24,14 +25,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 {
     private readonly IRepository<Organization, int> _repository;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
+    private readonly IIdentityUserAppService _userAppService;
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService) : base(repository)
     {
         _repository = repository;
         _customerCategoryAppService = customerCategoryAppService;
          _softDeleteFilter = softDeleteFilter;
+        _userAppService = userAppService;
     }
     /// <summary>
     /// methods that creates an organization
@@ -43,6 +46,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     /// <exception cref="BusinessException">throws an exception when same UnifiedLicenseNum exists </exception>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
+        IdentityUserCreateDto user = new IdentityUserCreateDto()
+        {
+            UserName = input.EnglishName,
+            PhoneNumber = input.WhatsAppNum,
+            Email = input.ContactMail,
+            Password = "P@ssw0rd",
+            RoleNames = ["admin"],
+            Name = input.EnglishName,
+            IsActive = true
+        };
+        await _userAppService.CreateAsync(user);
         var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
         Console.WriteLine($"count of unified license number {query.Count}");
         if (query.Count>0)
