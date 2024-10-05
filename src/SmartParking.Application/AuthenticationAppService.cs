@@ -46,7 +46,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _httpContext = httpContext;
     }
 
-    public async Task<UserDataDto> GetUserDataAsync()
+    public async Task<UserDataDto?> GetUserDataAsync()
     {
         if (!CurrentUser.IsAuthenticated)
         {
