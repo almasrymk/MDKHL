@@ -2,6 +2,7 @@
 using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
 using SmartParking.DefaultPackages;
+using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
@@ -13,9 +14,10 @@ using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
+using SmartParking.Mobile.Banners;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
-using SmartParking.Packages;
+//using SmartParking.Packages;
 using SmartParking.Vehicles;
 
 namespace SmartParking;
@@ -65,8 +67,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 		CreateMap<Vehicle, VehicleDto>();
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();
 
-        CreateMap<Package, PackageDto>();
-        CreateMap<CreateUpdatePackageDto, Package>();
+        //CreateMap<Package, PackageDto>();
+        //CreateMap<CreateUpdatePackageDto, Package>();
 
         CreateMap<Invoice,InvoiceDto>()
             .ForMember(d=>d.GarageName,o=>o.MapFrom(s=>s.Garage.Name))
@@ -74,6 +76,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.PlateNumber, o => o.MapFrom(s => s.Vehicle.PlateNumber));
 
         CreateMap<CreateUpdateInvoiceDto, Invoice>();
+
+
+        CreateMap<Banner, BannerDto>();
+        CreateMap<CreateUpdateBannerDto, Banner>();
 
 
         CreateMap<DefaultPackage, DefaultPackageDto>();

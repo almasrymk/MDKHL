@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
@@ -69,5 +70,42 @@ public static class SmartParkingModuleExtensionConfigurator
          * See the documentation for more:
          * https://docs.abp.io/en/abp/latest/Module-Entity-Extensions
          */
+
+
+               ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<string>( //property type: string
+                               "OtpCode", //property name
+                               property =>
+                               {
+                                   //validation rules
+                                   //property.Attributes.Add(new RequiredAttribute());
+                                   property.Attributes.Add(new StringLengthAttribute(64) { MinimumLength = 4 });
+
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+                                   //...other configurations for this property
+                               }
+                           );
+
+                           user.AddOrUpdateProperty<DateTime>( //property type: string
+                               "OtpExpirationDate", //property name
+                               property =>
+                               {
+                                   //validation rules
+                                   //property.Attributes.Add(new RequiredAttribute());
+                                   property.Attributes.Add(new RequiredAttribute());
+
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+                                   //...other configurations for this property
+                               }
+                           );
+                       });
+                   });
+
     }
 }

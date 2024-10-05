@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
+using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
@@ -80,9 +81,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<PackageCategory> PackageCategories { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
-
-
-
+    public DbSet<Banner> Banners { get; set; }
 
 
     #endregion

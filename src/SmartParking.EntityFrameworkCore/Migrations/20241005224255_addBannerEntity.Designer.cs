@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20241003084312_enhanceInInvoiceEntity")]
-    partial class enhanceInInvoiceEntity
+    [Migration("20241005224255_addBannerEntity")]
+    partial class addBannerEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2596,6 +2596,15 @@ namespace SmartParking.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("NormalizedUserName");
+
+                    b.Property<string>("OtpCode")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
+
+                    b.Property<DateTime>("OtpExpirationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)

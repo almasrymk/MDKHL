@@ -8,7 +8,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Invoices;
 
-public class CreateUpdateInvoiceDto : EntityDto<int>
+public class CreateUpdateInvoiceDto 
 {
     public string InvoiceId { get; set; }
     public int TotalHours { get; set; }
