@@ -23,6 +23,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Data;
 using SmartParking.Enums;
+using Microsoft.Extensions.Configuration;
 
 namespace SmartParking;
 // Service Implementation
@@ -36,6 +37,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<IdentityUser, Guid> _userRepository;
     IIdentityRoleRepository _roleRepository;
+    private readonly IConfiguration _config;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -43,7 +45,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IOpenIddictTokenManager tokenManager,
         IHttpContextAccessor httpContext,
         IRepository<IdentityUser, Guid> userRepository,
-        IIdentityRoleRepository roleRepository
+        IIdentityRoleRepository roleRepository,
+        IConfiguration config
         )
     {
         _signInManager = signInManager;
@@ -52,6 +55,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _httpContext = httpContext;
         _userRepository = userRepository;
         _roleRepository = roleRepository;
+        _config = config;
     }
     /// <inheritdoc/>
     public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
@@ -182,17 +186,29 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private async Task<string> GenerateTokenAsync(IdentityUser user)
     {
         var principal = await _signInManager.CreateUserPrincipalAsync(user);
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var roles = await _userManager.GetRolesAsync(user);
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        // Create the claims, including the roles
+        var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Id.ToString())  // Use the user's ID as the name identifier
+            };
+
+        // Add each role as a claim
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(principal.Claims),
-            Expires = DateTime.Now.AddHours(1),
-            SigningCredentials = creds
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.Now.AddMinutes(120),
+            Issuer = _config["Jwt:Issuer"],
+            Audience = _config["Jwt:Issuer"],
+            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
         };
-        var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        string tokenString = tokenHandler.WriteToken(token);
+        
+        return tokenString;
     }
     /// <summary>
     /// Checks if the provided phone number is unique and associated with a user.

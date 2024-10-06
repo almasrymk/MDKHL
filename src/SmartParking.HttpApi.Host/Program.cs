@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using Serilog;
 using Serilog.Events;
@@ -52,7 +56,9 @@ public class Program
         options.UseAspNetCore()
             .EnableTokenEndpointPassthrough();
     });
-
+            
+            
+            
             await builder.AddApplicationAsync<SmartParkingHttpApiHostModule>();
             var app = builder.Build();
             await app.InitializeApplicationAsync();
