@@ -3,8 +3,6 @@ using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
 using SmartParking.DefaultPackages;
 using SmartParking.Entities.Cameras;
-using SmartParking.Entities.Invoices;
-using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
