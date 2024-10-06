@@ -1,0 +1,126 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["View GarageTransaction"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.Type"
+									  For="@(() => GarageTransaction.Type)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["Type"]" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.PlateNnumber"
+									  For="@(() => GarageTransaction.PlateNnumber)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["PlateNnumber"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.SnapTime"
+									  For="@(() => GarageTransaction.SnapTime)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["SnapTime"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.AccurateTime"
+									  For="@(() => GarageTransaction.AccurateTime)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["AccurateTime"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.OrganizationID"
+									  For="@(() => GarageTransaction.OrganizationID)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["OrganizationID"]" />
+					</MudItem>
+				
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.GarageId"
+									  For="@(() => GarageTransaction.GarageId)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["GarageId"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="GarageTransaction.CameraId"
+									  For="@(() => GarageTransaction.CameraId)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["CameraId"]" />
+					</MudItem>
+					<MudItem sm="12" md="12" class="d-flex justify-center">
+						<MudImage Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
+					</MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			            <div class="overflow-hidden px-5 w-100">
+
+			<MudGrid >
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="OnCloseViewOnly">@L["Cancel"]</MudButton>
+				</MudItem>
+			</MudGrid>
+			</div>
+
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter] public CreateUpdateGarageTransactionDto GarageTransaction { get; set; }
+
+	bool _clearable;
+	private MudForm form;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+
+
+	private void OnCloseViewOnly()
+	{
+		MudDialogAdd.Cancel();
+
+	}
+
+}
