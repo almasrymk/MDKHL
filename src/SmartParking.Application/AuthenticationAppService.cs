@@ -22,6 +22,7 @@ using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Data;
+using SmartParking.Enums;
 
 namespace SmartParking;
 // Service Implementation
@@ -137,13 +138,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             await CheckPhoneIsUnique(input.Phone);
             var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
-            user.SetProperty("UserTypeId", 1);
-            var role = await _roleRepository.FindByNormalizedNameAsync("customer".ToUpper());
-            if (role is null)
-            {
-                var roleCreate = new Volo.Abp.Identity.IdentityRole(GuidGenerator.Create(), "customer", CurrentTenant.Id);
-                await _roleRepository.InsertAsync(roleCreate);
-            }
+           
             var createdUser= await _userManager.CreateAsync(user, input.Password);
             await _userManager.SetPhoneNumberAsync(user, input.Phone);
             if (!createdUser.Succeeded)
@@ -151,7 +146,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 throw new Exception(message:createdUser.Errors.FirstOrDefault()?.Description);
             }
             
-            await _userManager.AddToRoleAsync(user, "customer");
+            await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
 
             var claims = new List<Claim>
         {
