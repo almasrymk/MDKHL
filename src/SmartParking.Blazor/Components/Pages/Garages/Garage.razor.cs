@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Customs;
 using SmartParking.Garages;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
@@ -26,15 +28,19 @@ public partial class Garage
 
     private string termSearch;
 	private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
+    public Garage(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
+    }
 
-
-	/// <summary>
-	/// filter for hotels on the server side using the hotel columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among hotel.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    /// <summary>
+    /// filter for hotels on the server side using the hotel columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
 
@@ -121,19 +127,19 @@ public partial class Garage
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Code", Name = "Code", IsFilterable = true, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Name", Name = "Name", IsFilterable = true, PropertyNmae = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyNmae = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Code", item.Code));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Name", item.Name));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Status", item.Status.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Max Capacity", item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Name"], item.Name));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
 
 
             tableData.Rows.Add(rowDef);

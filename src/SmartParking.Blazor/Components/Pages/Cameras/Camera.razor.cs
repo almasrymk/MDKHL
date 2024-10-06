@@ -1,8 +1,10 @@
-﻿using MudBlazor;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Cameras;
 using SmartParking.Garages;
+using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
@@ -29,13 +31,19 @@ public partial class Camera
     private string termSearch;
 
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-	/// <summary>
-	/// filter for cameras on the server side using the camera columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among cameras.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    public Camera(IStringLocalizer<SmartParkingResource> localizer)
+    {
+       _localizer = localizer;
+    }
+
+    /// <summary>
+    /// filter for cameras on the server side using the camera columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among cameras.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
 
@@ -122,18 +130,18 @@ public partial class Camera
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "MacAddress", Name = "MacAddress", IsFilterable = true, PropertyNmae = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Type", Name = "Type", IsFilterable = true, PropertyNmae = "Type", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = true, PropertyNmae = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyNmae = "Type", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in cameras.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("MacAddress", item.MacAddress));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Type", item.Type));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Status", item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.Type));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
 
 
             tableData.Rows.Add(rowDef);

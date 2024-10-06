@@ -31,13 +31,19 @@ public partial class PlateColor
 	private string termSearch;
 
 	private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+	private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-	/// <summary>
-	/// filter for cameras on the server side using the camera columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among cameras.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+	public PlateColor(IStringLocalizer<SmartParkingResource> localizer)
+    {
+		_localizer = localizer;
+	}
+
+    /// <summary>
+    /// filter for cameras on the server side using the camera columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among cameras.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
 	{
 		// Log the search term to the console for debugging purposes
 
@@ -125,17 +131,17 @@ public partial class PlateColor
 		};
 
 
-		tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = "ArabicName", Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = "EnglishName", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
 		foreach (var item in plateColors.Items)
 		{
 			var rowDef = new RowDef();
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>("ArabicName", item.ArabicName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>("EnglishName", item.EnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
 			//rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
 
