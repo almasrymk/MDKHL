@@ -1,3 +1,4 @@
+using Abp.Threading;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Menus;
+using SmartParking.Data.Lookups;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
@@ -31,6 +33,7 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.Data;
 using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
@@ -248,7 +251,18 @@ public class SmartParkingBlazorModule : AbpModule
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
+        AsyncHelper.RunSync(async () =>
+        {
+            using (var scope = context.ServiceProvider.CreateScope())
+            {
+                var dataSeeder = scope.ServiceProvider.GetRequiredService<RolesDataSeeder>();
 
+                // Pass a DataSeedContext here
+                var dataSeedContext = new DataSeedContext();
+
+                await dataSeeder.SeedAsync(dataSeedContext);
+            }
+        });
         app.UseAbpRequestLocalization();
 
         if (env.IsDevelopment())
