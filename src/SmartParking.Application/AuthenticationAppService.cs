@@ -24,10 +24,11 @@ using Volo.Abp.Identity;
 using Volo.Abp.Data;
 using SmartParking.Enums;
 using Microsoft.Extensions.Configuration;
+using Volo.Abp;
 
 namespace SmartParking;
 // Service Implementation
-
+[RemoteService(IsEnabled = false)]
 /// <inheritdoc/>
 public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
 {
@@ -62,7 +63,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         try
         {
-            var user = await CheckPhoneIsUnique(phone);
+            var user = await CheckPhoneISFound(phone);
             return new forgetpasswordDto
             {
                 Success = false,
@@ -79,17 +80,22 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
      
     }
+
+    private async Task<IdentityUser> CheckPhoneISFound(string phone)
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
+
+        if (user == null)
+        {
+            throw new ValidationException("User with this phone number does Not exist.");
+        }
+        return user;
+    }
+
     /// <inheritdoc/>
     public async Task<UserDataDto?> GetUserDataAsync()
     {
-        if (!CurrentUser.IsAuthenticated)
-        {
-            return new UserDataDto
-            {
-               Success =  false,
-               ErrorMessage = "You are Not authenticated!"
-            };
-        }
+        
        var Id =  CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
        var user = await _userManager.FindByIdAsync(Id);
 
