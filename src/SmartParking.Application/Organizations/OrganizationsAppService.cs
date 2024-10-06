@@ -46,9 +46,10 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             PhoneNumber = input.WhatsAppNum,
             Email = input.ContactMail,
             Password = "P@ssw0rd",
-            RoleNames = ["admin"],
+            RoleNames = ["OrganizationAdmin"],
             Name = input.EnglishName,
-            IsActive = true
+            IsActive = true,
+            
         };
         await _userAppService.CreateAsync(user);
         var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);

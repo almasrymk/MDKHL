@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
+using Volo.Abp.Data;
 
 namespace SmartParking;
 // Service Implementation
@@ -122,8 +123,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return new LoginResultDto
         {
             Success = true,
-            AccessToken = await GenerateTokenAsync(user) ?? string.Empty ,
+            AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
             Role = roles.FirstOrDefault(),
+            Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
+            TenantId = CurrentTenant.Id.ToString()
         };
     }
     /// <inheritdoc/>
@@ -134,10 +137,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             await CheckPhoneIsUnique(input.Phone);
             var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
-            var role = await _roleRepository.FindByNormalizedNameAsync("user".ToUpper());
+            user.SetProperty("UserTypeId", 1);
+            var role = await _roleRepository.FindByNormalizedNameAsync("customer".ToUpper());
             if (role is null)
             {
-                var roleCreate = new Volo.Abp.Identity.IdentityRole(GuidGenerator.Create(), "user", CurrentTenant.Id);
+                var roleCreate = new Volo.Abp.Identity.IdentityRole(GuidGenerator.Create(), "customer", CurrentTenant.Id);
                 await _roleRepository.InsertAsync(roleCreate);
             }
             var createdUser= await _userManager.CreateAsync(user, input.Password);
@@ -147,7 +151,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 throw new Exception(message:createdUser.Errors.FirstOrDefault()?.Description);
             }
             
-            await _userManager.AddToRoleAsync(user, "user");
+            await _userManager.AddToRoleAsync(user, "customer");
 
             var claims = new List<Claim>
         {
@@ -205,9 +209,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone); 
 
-        if (user == null) 
+        if (user != null) 
         {
-            throw new ValidationException("User with this phone number does not exist.");
+            throw new ValidationException("User with this phone number does  exist.");
         }
         return user;
 
