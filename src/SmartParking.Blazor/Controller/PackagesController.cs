@@ -20,7 +20,7 @@ public class PackagesController : ControllerBase
         _packages = package;
     }
     [HttpGet("{oragnizationId}")]
-    [Authorize(Roles = "Mdkhl")]
+    [Authorize]
     public Task<List<PackageDto>> GetAllPakageByOrganization(int oragnizationId)
     {
         return _packages.GetListPackageByOrganizationId(oragnizationId);
