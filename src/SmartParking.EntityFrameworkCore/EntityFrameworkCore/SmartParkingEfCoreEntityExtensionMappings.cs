@@ -44,7 +44,7 @@ public static class SmartParkingEfCoreEntityExtensionMappings
             ObjectExtensionManager.Instance
                 .MapEfCoreProperty<IdentityUser, int>(
                     "UserTypeId",
-                    (entityBuilder, propertyBuilder) => { propertyBuilder.HasMaxLength(500000); }
+                    (entityBuilder, propertyBuilder) => { }
                 );
 
             /* See the documentation for more:
@@ -65,7 +65,7 @@ public static class SmartParkingEfCoreEntityExtensionMappings
                "OtpExpirationDate",
                (entityBuilder, propertyBuilder) =>
                {
-                   propertyBuilder.HasDefaultValue(new DateTime());
+                   propertyBuilder.HasDefaultValue(DateTime.Now);
                }
                );
         });

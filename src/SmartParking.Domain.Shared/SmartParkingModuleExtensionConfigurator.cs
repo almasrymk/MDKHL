@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection.Emit;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
@@ -97,7 +98,6 @@ public static class SmartParkingModuleExtensionConfigurator
                                {
                                    //validation rules
                                    //property.Attributes.Add(new RequiredAttribute());
-                                   property.Attributes.Add(new RequiredAttribute());
 
                                    property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
 
@@ -106,6 +106,28 @@ public static class SmartParkingModuleExtensionConfigurator
                            );
                        });
                    });
+        ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<int>( //property type: string
+                               "UserTypeId", //property name
+                               property =>
+                               {
+                                   //validation rules
+                                   //property.Attributes.Add(new RequiredAttribute());
+                                   
+                                  
 
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+                                   //...other configurations for this property
+                               }
+                           );
+
+                          
+                       });
+                   });
     }
 }
