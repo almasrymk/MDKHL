@@ -53,7 +53,7 @@ public class SmartParkingEntityFrameworkCoreTestModule : AbpModule
         {
             options.Configure(context =>
             {
-                context.DbContextOptions.UseNpgsql(_sqliteConnection);
+                context.DbContextOptions.UseSqlite(_sqliteConnection);
             });
         });
     }
@@ -69,7 +69,7 @@ public class SmartParkingEntityFrameworkCoreTestModule : AbpModule
         connection.Open();
 
         var options = new DbContextOptionsBuilder<SmartParkingDbContext>()
-            .UseNpgsql(connection)
+            .UseSqlite(connection)
             .Options;
 
         using (var context = new SmartParkingDbContext(options))

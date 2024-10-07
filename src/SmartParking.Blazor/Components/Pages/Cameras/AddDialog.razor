@@ -1,22 +1,45 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Cameras
 @using SmartParking.Enums
+@using SmartParking.Garages
 @using SmartParking.Localization
 @using Volo.Abp
+@using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IGarageAppService GaragesAppService
+
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
             <MudText Typo="Typo.h6">@L["New Camera"]</MudText>
         </TitleContent>
         <DialogContent>
-            <MudGrid>
-                <MudItem sm="8">
-                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                    *@
+            
                     <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                         <MudGrid>
+                            <MudItem sm="6">
+                                <MudSelect @bind-Value="@cameraDto.GarageId"
+                                           Variant="Variant.Text"
+                                           Label="@L["Garage Name"]"
+                                           Placeholder="Choose"
+                                           Clearable="_clearable">
+                                    @foreach (var garage in Garages)
+                                    {
+                                        <MudSelectItem Value="garage.Id">@garage.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="cameraDto.GarageId"
+                                              For="@(() => cameraDto.GarageId)"
+                                              Immediate="true"
+                                              Disabled=true
+                                              Label="@L["GarageId"]" />
+                            </MudItem>
+
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="cameraDto.Name"
                                               For="@(() => cameraDto.Name)"
@@ -73,7 +96,7 @@
                             </MudItem>
 
                       
-                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                            <MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
                                 <div Class="d-flex flex-row justify-content-between">
 
 
@@ -86,23 +109,24 @@
                             </MudItem>
                         </MudGrid>
                     </MudForm>
-                    @*         </MudPaper>
-                    *@
-                </MudItem>
-            </MudGrid>
+                   
         </DialogContent>
-        <DialogActions>
-            <MudGrid Class="ps-lg-5">
+        <DialogActions >
+            <div class="overflow-hidden px-5 w-100">
 
-                <MudItem sm="6" md="6">
+
+            <MudGrid >
+
+                <MudItem sm="6" >
 
                     <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">@L["Create"]</MudButton>
                 </MudItem>
-                <MudItem sm="6" md="6">
+                <MudItem sm="6" >
 
                     <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
                 </MudItem>
             </MudGrid>
+            </div>
         </DialogActions>
         
     </MudDialog>
@@ -124,6 +148,18 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
+    public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                MaxResultCount = 100,
+                SkipCount = (1 - 1) * 100
+            });
+        Garages = result.Items.ToList();
+        await base.OnInitializedAsync();
+    }
     private async Task Submit()
     {
         if (form.IsValid)

@@ -46,7 +46,7 @@ public partial class SPDataGrid
         ["is not empty"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
-    public async Task ClearItem(string key)
+        public async Task ClearItem(string key)
     {
 
 

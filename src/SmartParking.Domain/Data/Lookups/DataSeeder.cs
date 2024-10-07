@@ -1,6 +1,8 @@
 ﻿using SmartParking.Entities;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -24,7 +26,9 @@ namespace SmartParking.Data.Lookups
         private readonly IRepository<State, int> _stateRepository;
         private readonly IRepository<PlateColor, int> _plateColorRepository;
         private readonly IRepository<LicenceType, int> _licenceTypeRepository;
-
+        private readonly IRepository<Organization, int> _organizationRepostory;
+        private readonly IRepository<Garage, int> _garageRepostory;
+        private readonly IRepository<Camera, int> _cameraRepostory;
 
         public DataSeeder(
             IRepository<Country, int> countryRepository,
@@ -33,7 +37,11 @@ namespace SmartParking.Data.Lookups
             IRepository<Region, int> regionRepository,
             IRepository<State, int> stateRepository,
             IRepository<PlateColor, int> plateColorRepository,
-            IRepository<LicenceType, int> licenceTypeRepository)
+            IRepository<LicenceType, int> licenceTypeRepository,
+            IRepository<Organization,int> organization,
+            IRepository<Garage, int> garageRepostory,
+            IRepository<Camera, int> cameraRepostory)
+
         {
             _countryRepository = countryRepository;
             _governorateRepository = governorateRepository;
@@ -41,7 +49,10 @@ namespace SmartParking.Data.Lookups
             _regionRepository = regionRepository;
             _stateRepository = stateRepository;
             _licenceTypeRepository = licenceTypeRepository;
+            _organizationRepostory = organization;
             _plateColorRepository = plateColorRepository;
+            _garageRepostory = garageRepostory;
+            _cameraRepostory = cameraRepostory;
         }
 
         public async Task SeedAsync(DataSeedContext context)
@@ -50,12 +61,12 @@ namespace SmartParking.Data.Lookups
             {
 
                 var countries = new List<Country>
-        {
+                {
                     new Country {EnglishName = "Egypt", ArabicName = "مصر", EnglishCapital = "Cairo", ArabicCapital = "القاهرة" },
                     new Country {EnglishName = "United Kingdom", ArabicName = "المملكة المتحدة", EnglishCapital = "London", ArabicCapital = "لندن" },
                     new Country {EnglishName = "United States", ArabicName = "الولايات المتحدة الامريكية", EnglishCapital = "Washington", ArabicCapital = "واشنطن" },
                     new Country {EnglishName = "Algeria", ArabicName = "الجزائر", EnglishCapital = "Algiers", ArabicCapital = "الجزائر العاصمة" },
-        };
+                };
 
                 foreach (var country in countries)
                 {
@@ -63,14 +74,14 @@ namespace SmartParking.Data.Lookups
                 }
                 var egypt = await _countryRepository.FirstOrDefaultAsync(c => c.EnglishName == "Egypt");
                 var governorates = new List<Governorate>
-        {
-            new Governorate {  EnglishName = "Alexandria", ArabicName = "الإسكندرية", EnglishCapital = "Alexandria", ArabicCapital = "الإسكندرية", CountryId = egypt.Id },
+                {
+                   new Governorate {  EnglishName = "Alexandria", ArabicName = "الإسكندرية", EnglishCapital = "Alexandria", ArabicCapital = "الإسكندرية", CountryId = egypt.Id },
                      new Governorate {  EnglishName = "Ismailia", ArabicName = "الإسماعيلية", EnglishCapital = "Ismailia", ArabicCapital = "الإسماعيلية", CountryId = egypt.Id },
                      new Governorate {  EnglishName = "Aswan", ArabicName = "أسوان", EnglishCapital = "Aswan", ArabicCapital = "أسوان", CountryId = egypt.Id },
                      new Governorate {  EnglishName = "Asyut", ArabicName = "أسيوط", EnglishCapital = "Asyut", ArabicCapital = "أسيوط", CountryId = egypt.Id },
                      new Governorate {  EnglishName = "Luxor", ArabicName = "الأقصر", EnglishCapital = "Luxor", ArabicCapital = "الأقصر", CountryId = egypt.Id },
                      new Governorate { EnglishName = "Red Sea", ArabicName = "البحر الأحمر", EnglishCapital = "Hurghada", ArabicCapital = "الغردقة", CountryId = egypt.Id },
-        };
+                };
 
                 foreach (var governorate in governorates)
                 {
@@ -78,23 +89,23 @@ namespace SmartParking.Data.Lookups
                 }
                 var alx = await _governorateRepository.FirstOrDefaultAsync(g => g.EnglishName == "Alexandria");
                 var cities = new List<City>
-        {
+                {
                     new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id },
                     new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id },
                     new City {  ArabicName="test", EnglishName = "test", GovernorateId = alx.Id },
-        };
+                };
 
                 foreach (var city in cities)
                 {
                     await _cityRepository.InsertAsync(city, autoSave: true);
                 }
-
+                var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
                 var regions = new List<Region>
-        {
+                {
                 new Region { ArabicName="test", EnglishName = "test",  Status = Status.Active,CountryId = egypt.Id },
                 new Region { ArabicName="test", EnglishName = "test", Status = Status.Inactive,CountryId = egypt.Id},
                 new Region { ArabicName="test", EnglishName = "test", Status = Status.Active,CountryId = egypt.Id},
-        };
+                };
 
                 foreach (var region in regions)
                 {
@@ -102,17 +113,110 @@ namespace SmartParking.Data.Lookups
                 }
                 var test = await _regionRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
                 var States = new List<State>
-        {
+                {
                     new State { ArabicName="test", EnglishName = "test",   RegionId = test.Id,  Status = Status.Active },
                     new State { ArabicName="test", EnglishName = "test",  RegionId = test.Id, Status = Status.Active },
                     new State { ArabicName="test", EnglishName = "test",  RegionId = test.Id, Status = Status.Active },
-        };
+                };
 
                 foreach (var State in States)
                 {
                     await _stateRepository.InsertAsync(State, autoSave: true);
                 }
+                var stateTest = await _stateRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
+                var organization = new Organization
+                {
+                    ArabicName = "الشركة الأولى",
+                    EnglishName = "First Organization",
+                    Notes = "This is a sample organization",
+                    Code = "00001",
+                    UnifiedLicenseNum = "920123451",
+                    CRExpiryDate = new DateOnly(2025, 12, 31),
+                    LicenseExpiryDate = new DateOnly(2026, 12, 31),
+                    CountryId = egypt.Id,
+                    RegionId = test.Id,
+                    StateId = stateTest.Id,
+                    CityId = cityTest.Id,
+                    PhoneNum = "012345678",
+                    WhatsAppNum = "+966531234567",
+                    ContactMail = "contact@organization.com",
+                    Status = Status.Active,
+                };
+                await _organizationRepostory.InsertAsync(organization,autoSave:true);
+                var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
+
+
+                await _garageRepostory.InsertAsync(
+                    new Garage
+                    {
+                      Code = "O000001-G-01",
+                      Name = "Main Garage",
+                      MaxCapacity = 150,
+                      ClosingHours = new TimeOnly(22, 0), 
+                      OrganizationId = organizationTest.Id,
+                      Status = Status.Active
+                    },
+                    autoSave: true
+                );
+
+                await _garageRepostory.InsertAsync(
+                    new Garage
+                    {
+                        Code = "O000001-G-02",
+                        Name = "Secondary Garage",
+                        MaxCapacity = 100,
+                        ClosingHours = new TimeOnly(20, 0), 
+                        OrganizationId = organizationTest.Id,
+                        Status = Status.Active
+                    },
+                    autoSave: true
+                );
+
+                var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.Name == "Main Garage");
+
+
+                await _cameraRepostory.InsertAsync(
+                    new Camera
+                    {
+                        GarageId = garageTest.Id,    // Link camera to the found Garage
+                        Name = "Camera One",         // Provide valid camera name
+                        Model = "Model X",           // Add the model of the camera
+                        MainType = "Type A",         // Add the main type
+                        BrandName = "Brand Z",       // Add the brand name
+                        Code = "CAM001",             // Add a unique code
+                        CameraIP = "192.168.1.10",   // Add camera IP address
+                        MacAddress = "00:11:22:33:44:55", // Add MAC address
+                        Type = "Outdoor",            // Set camera type
+                        Status = Status.Active,      // Set the status of the camera
+                        TenantId = null              // Set TenantId if multi-tenant, or null
+                    },
+                    autoSave: true
+                );
+
+                await _cameraRepostory.InsertAsync(
+                    new Camera
+                    {
+                        GarageId = garageTest.Id,    // Link camera to the found Garage
+                        Name = "Camera Two",         // Provide valid camera name
+                        Model = "Model X",           // Add the model of the camera
+                        MainType = "Type A",         // Add the main type
+                        BrandName = "Brand Z",       // Add the brand name
+                        Code = "CAM001",             // Add a unique code
+                        CameraIP = "192.168.1.11",   // Add camera IP address
+                        MacAddress = "00:11:22:33:44:55", // Add MAC address
+                        Type = "Outdoor",            // Set camera type
+                        Status = Status.Active,      // Set the status of the camera
+                        TenantId = null              // Set TenantId if multi-tenant, or null
+                    },
+                    autoSave: true
+                );
+
+
+
+
+
             }
+
             if (!await _plateColorRepository.AnyAsync())
             {
                 if (!await _plateColorRepository.AnyAsync())
@@ -152,6 +256,8 @@ namespace SmartParking.Data.Lookups
                     }
                 }
             }
+            
+            
         }
     }
 }

@@ -1,0 +1,132 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.VehicleBrand
+@using SmartParking.Lookups.VehicleModel
+@using Volo.Abp.Application.Dtos
+
+@inject IVehicleModelsAppService VehicleModelsAppService
+@inject IVehicleBrandsAppService VehiclesBrandsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Edit VehicleModel"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@VehicleModel.VehiclesBrandId"
+								   Variant="Variant.Text"
+								   Label="@L["VehiclesBrand Name"]"
+								   Placeholder="Choose"
+								   Required="true"
+								   Clearable="_clearable">
+							@foreach (var vehicleBrand in VehicleBrands)
+							{
+								<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="VehicleModel.ArabicName"
+									  For="@(() => VehicleModel.ArabicName)"
+									  Immediate="true"
+									  Label="@L["ArabicName"]" />
+					</MudItem>
+
+					<MudItem sm="4">
+						<MudTextField @bind-Value="VehicleModel.EnglishName"
+									  For="@(() => VehicleModel.EnglishName)"
+									  Immediate="true"
+									  Required="true"
+									  Label="@L["EnglishName"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			            <div class="overflow-hidden px-5 w-100">
+
+
+			<MudGrid >
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit">@L["Update"]</MudButton>
+				</MudItem>
+				<MudItem sm="6" md="6">
+
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="CancelEdit">@L["Cancel"]</MudButton>
+				</MudItem>
+			</MudGrid>
+			</div>
+
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+
+	[Parameter] public CreateUpdateVehicleModelDto VehicleModel { get; set; }
+	[Parameter]
+	public int UpdatedId { get; set; }
+	bool _clearable;
+	private MudForm form;
+	IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await VehiclesBrandsAppService.GetListAsync(new PagedAndSortedResultRequestDto
+			{
+				MaxResultCount = 100,
+				SkipCount = (1 - 1) * 100
+			});
+		VehicleBrands = result.Items.ToList();
+		await base.OnInitializedAsync();
+	}
+
+	private async Task SubmitEdit()
+	{
+		try
+		{
+
+			await VehicleModelsAppService.UpdateAsync(UpdatedId, VehicleModel);
+			Snackbar.Add("VehicleModel Updated Successfully", Severity.Success);
+			MudDialogAdd.Close(DialogResult.Ok(true));
+
+		}
+		catch (Exception e)
+		{
+			Snackbar.Add(e.Message, Severity.Error);
+		}
+	}
+
+	private async Task CancelEdit()
+	{
+		MudDialogAdd.Cancel();
+
+
+	}
+
+
+}

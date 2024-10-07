@@ -55,7 +55,7 @@
                             <MudItem sm="12" Class="d-flex flex-row flex-nowrap align-end">
                                 <MudItem>
                                     @L["Select Column"]:
-                                    <MudSelect Variant="Variant.Outlined" @bind-Value="@SelectedColumn" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                    <MudSelect  Variant="Variant.Outlined" @bind-Value="@SelectedColumn" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                                         @foreach (var column in Data.Columns)
                                         {
                                             @if (column.IsFilterable)
@@ -66,11 +66,12 @@
                                         }
                                     </MudSelect>
                                 </MudItem>
-                                @if (Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
+                            @if (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
+                                
                                 {
                                     <MudItem>
                                         @L["Operator"]:
-                                        <MudSelect Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                        <MudSelect  Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
 
                                             @foreach (var column in StringOperator)
                                             {
@@ -124,40 +125,43 @@
                     </CellTemplate>
                 </TemplateColumn>
 
+                @if (Data.Columns.Last().DisplayName == header.DisplayName)
+                {
+                <TemplateColumn Title="@L["Actions"]" CellClass="d-flex justify-content-start align-items-center">
+                        <CellTemplate >
+                            <MudItem Class="d-flex justify-content-start align-items-center">
+                                <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
+                                               Icon="@Icons.Material.Filled.Info"
+                                               Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Primary"
+                                               Size="MudBlazor.Size.Small"
+                                               Class="mx-1" />
+                                <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
+                                               Icon="@Icons.Material.Filled.Edit"
+                                               Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Secondary"
+                                               Size="MudBlazor.Size.Small"
+                                               Class="mx-1" />
+                                <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))"
+                                               Icon="@Icons.Material.Filled.Delete"
+                                               Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Error"
+                                               Size="MudBlazor.Size.Small"
+                                               Class="mx-1" />
+                            </MudItem>
 
+                        </CellTemplate>
+                    </TemplateColumn>
+                }
             }
-            <TemplateColumn Title="@L["Actions"]">
-                <CellTemplate>
-                    <MudItem Class="d-flex justify-content-center align-items-center">
-                        <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
-                                       Icon="@Icons.Material.Filled.Info"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Primary"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                        <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
-                                       Icon="@Icons.Material.Filled.Edit"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Secondary"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                        <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))"
-                                       Icon="@Icons.Material.Filled.Delete"
-                                       Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Error"
-                                       Size="MudBlazor.Size.Small"
-                                       Class="mx-1" />
-                    </MudItem>
-
-                </CellTemplate>
-            </TemplateColumn>
 
 
 
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="RowDef" />
+            <MudDataGridPager T="RowDef" RowsPerPageString="@L["Rows Per Page"]" />
         </PagerContent>
     </MudDataGrid>
 
 </div>
+

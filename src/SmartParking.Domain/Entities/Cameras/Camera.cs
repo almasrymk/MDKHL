@@ -1,4 +1,5 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ public class Camera : FullAuditedEntity<int>, IMultiTenant
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }
     public string Type { get; set; }
+    public virtual Garage Garage { get; set; }
     public int GarageId { get; set; }
     public Status Status { get; set; }
     public Guid? TenantId { get; set; }

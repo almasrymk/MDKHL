@@ -1,10 +1,10 @@
-//using SmartParking.Samples;
-//using Xunit;
+using SmartParking.Samples;
+using Xunit;
 
-//namespace SmartParking.EntityFrameworkCore.Applications;
+namespace SmartParking.EntityFrameworkCore.Applications;
 
-//[Collection(SmartParkingTestConsts.CollectionDefinitionName)]
-//public class EfCoreSampleAppServiceTests : SampleAppServiceTests<SmartParkingEntityFrameworkCoreTestModule>
-//{
+[Collection(SmartParkingTestConsts.CollectionDefinitionName)]
+public class EfCoreSampleAppServiceTests : SampleAppServiceTests<SmartParkingEntityFrameworkCoreTestModule>
+{
 
-//}
+}

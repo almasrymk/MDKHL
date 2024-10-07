@@ -12,6 +12,9 @@ namespace SmartParking.Lookups.LicenceType
 		public string ArabicName { get; set; }
 		public string EnglishName { get; set; }
 		public int PlateColorId { get; set; }
+        public string  PlateColorArabicName { get; set; }
+        public string PlateColorEnglishName { get; set; }
 
-	}
+
+    }
 }

@@ -1,17 +1,21 @@
 ﻿using AutoMapper;
 using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
+using SmartParking.DefaultPackages;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Garages;
+using SmartParking.Invoices;
+using SmartParking.GarageTransactions;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
+using SmartParking.Packages;
 using SmartParking.Vehicles;
 
 namespace SmartParking;
@@ -45,13 +49,17 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<PlateColor, PlateColorDto>();
 		CreateMap<CreateUpdatePlateColorDto, PlateColor>();
 
-		CreateMap<LicenceType, LicenceTypeDto>();
+		CreateMap<LicenceType, LicenceTypeDto>()
+            .ForMember(dto=>dto.PlateColorEnglishName,opt=>opt.MapFrom(entity=>entity.PlateColor.EnglishName))
+            .ForMember(dto => dto.PlateColorArabicName, opt => opt.MapFrom(entity => entity.PlateColor.ArabicName));
 		CreateMap<CreateUpdateLicenceTypeDto, LicenceType>();
 
 		CreateMap<VehicleBrand, VehicleBrandDto>();
 		CreateMap<CreateUpdateVehicleBrandDto, VehicleBrand>();
 
-		CreateMap<VehicleModel, VehicleModelDto>();
+		CreateMap<VehicleModel, VehicleModelDto>()
+             .ForMember(dto => dto.VehicleBrandEnglishName, opt => opt.MapFrom(entity => entity.VehiclesBrand.EnglishName))
+            .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
 		CreateMap<CreateUpdateVehicleModelDto, VehicleModel>();
 
 		CreateMap<Vehicle, VehicleDto>();

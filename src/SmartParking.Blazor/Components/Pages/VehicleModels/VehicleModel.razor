@@ -1,0 +1,14 @@
+﻿@inject IVehicleModelsAppService VehicleModelsAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/vehicleModels"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.VehicleModel
+
+
+
+<h3>@L["VehicleModel"]</h3>
+
+<SPDataGrid PageName="VehicleModel" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateVehicleModel(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>

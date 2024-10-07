@@ -77,4 +77,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\GarageTransactionsImages\" />
+  </ItemGroup>
+
 </Project>

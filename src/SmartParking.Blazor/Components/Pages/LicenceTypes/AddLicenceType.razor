@@ -1,0 +1,132 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Lookups.PlateColor
+@using Volo.Abp.Application.Dtos
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["New LicenceType"]</MudText>
+        </TitleContent>
+        <DialogContent>
+           
+                    <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                        <MudGrid>
+
+                            <MudItem sm="6">
+                                <MudSelect @bind-Value="@licenceTypeDto.PlateColorId"
+                                           Variant="Variant.Text"
+                                           Label="@L["PlateColor Name"]"
+                                           Placeholder="Choose"
+                                           Required="true"
+                                           Clearable="_clearable">
+                                    @foreach (var platecolor in plateColors)
+                                    {
+                                        
+                                        <MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="licenceTypeDto.ArabicName"
+                                              For="@(() => licenceTypeDto.ArabicName)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["ArabicName"]" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="licenceTypeDto.EnglishName"
+                                              For="@(() => licenceTypeDto.EnglishName)"
+                                              Immediate="true"
+                                              Required="true"
+                                              Label="@L["EnglishName"]" />
+                            </MudItem>
+
+
+                        </MudGrid>
+                    </MudForm>
+                 
+        </DialogContent>
+        <DialogActions>
+            <div class="overflow-hidden px-5 w-100">
+
+                <MudGrid >
+
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">@L["Create"]</MudButton>
+                </MudItem>
+                <MudItem sm="6" md="6">
+
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
+                </MudItem>
+            </MudGrid>
+            </div>
+
+        </DialogActions>
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] ILicenceTypesAppService LicenceTypesAppService { get; set; } 
+    [Inject] IPlateColorsAppService  PlateColorsAppService { get; set; }
+    IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
+
+    private MudForm form;
+    private CreateUpdateLicenceTypeDto licenceTypeDto = new CreateUpdateLicenceTypeDto();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await PlateColorsAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                MaxResultCount = 100,
+                SkipCount = (1 - 1) * 100
+            });
+        plateColors = result.Items.ToList();
+        await base.OnInitializedAsync();
+    }
+    private async Task Submit()
+    {
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            try
+            {
+                await LicenceTypesAppService.CreateAsync(licenceTypeDto);
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add("Fill Requried Items", Severity.Error);
+                return;
+            }
+            Snackbar.Add("LicenceType created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+
+        }
+        else
+        {
+            Snackbar.Add("Fill Requried Items", Severity.Error);
+        }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

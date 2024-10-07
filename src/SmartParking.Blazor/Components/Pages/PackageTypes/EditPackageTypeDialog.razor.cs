@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups;
+using SmartParking.LookupsAppServices;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.PackageTypes;
 
@@ -19,25 +24,53 @@ public partial class EditPackageTypeDialog
 
     private async Task Save()
     {
-        await editForm.Validate();
-        if (editForm.IsValid)
-        {
 
-            // Create the input object for update
-            var input = new CreateUpdatePackageTypeDto
-            {
-                ArabicName = packageType.ArabicName,
-                EnglishName = packageType.EnglishName,
-                Notes = packageType.Notes,
-                Id = UpdatedId
-            };
+		var successedMessage = L["PackageTypeUpdatedSuccessfully"];
+		var errorMessage = L["Can'tUpdatePackageType"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		try
+		{
+			// Create the input object for update
+			var input = new CreateUpdatePackageTypeDto
+			{
+				ArabicName = packageType.ArabicName,
+				EnglishName = packageType.EnglishName,
+				Notes = packageType.Notes,
+				Id = UpdatedId
+			};
 
-            // Call the update method
-            await PackageTypesAppService.UpdateAsync(UpdatedId, input);
+			// Call the update method
 
-            // Close the dialog with a success result
-            MudDialog.Close(DialogResult.Ok(true));
-        }
+			var packageTypes = await PackageTypesAppService.UpdateAsync(UpdatedId, input);
+			if (packageTypes != null)
+			{
+				Snackbar.Add(successedMessage, Severity.Success);
+				MudDialog.Close(DialogResult.Ok(true));
+			}
+
+			else
+			{
+				Snackbar.Add(errorMessage, Severity.Error);
+
+			}
+		}
+		catch (AbpValidationException validationException)
+		{
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+			}
+		}
+		catch (BusinessException ex)
+		{
+			Snackbar.Add($"Failed to update package type: {ex.Code} + ", Severity.Error);
+
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Failed to package type: {ex.Message} + ", Severity.Error);
+		}
+		
     }
 
 

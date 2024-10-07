@@ -5,6 +5,11 @@ using SmartParking.Lookups;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
+using SmartParking.Garages;
+using Volo.Abp.Validation;
+using System.Linq;
+using Blazorise;
+using System;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
@@ -17,7 +22,6 @@ public partial class AddCityDialog
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-    bool _clearable;
 
     private void SelectGovernment(int Government)
     {
@@ -31,11 +35,11 @@ public partial class AddCityDialog
     private async Task Submit()
     {
         var successedMessage = L["CityCreatedSuccessfully"];
-        var errorMessage = L["PleaseFixTheValidationErrors"];
+        var errorMessage = L["Can'tCreateCity"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
+        
+            // Call your service to create the city
             try
             {
                 CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
@@ -45,24 +49,45 @@ public partial class AddCityDialog
                     Notes = input.Notes,
                     GovernorateId = GovernmentSelectValue
                 };
-                await CitiesAppService.CreateAsync(createUpdateCityDto);
-            }
-            catch (UserFriendlyException ex)
-            {
-                Snackbar.Add(ex.Message, Severity.Error);
-                return;
-            }
-            Snackbar.Add(successedMessage, Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
+                var city = await CitiesAppService.CreateAsync(createUpdateCityDto);
+                if (city != null)
+                {
+                    Snackbar.Add(successedMessage, Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+
+                else
+                {
+                    Snackbar.Add(errorMessage, Severity.Error);
+
+                }
+            }
+            catch (AbpValidationException validationException)
+            {
+                foreach (var validationError in validationException.ValidationErrors)
+                {
+                    Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                }
+            }
+            catch (BusinessException ex)
+            {
+                Snackbar.Add($"Failed to add city: {ex.Code} + ", Severity.Error);
+
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Failed to add city: {ex.Message} + ", Severity.Error);
+            }
+
+
     }
+        
+        
+    
     private void Cancel()
     {
         MudDialog.Cancel();
     }
+    
 }

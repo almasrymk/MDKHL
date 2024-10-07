@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups.State;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.States;
 
@@ -25,27 +29,54 @@ public partial class EditStateDialog
 
     private async Task Save()
     {
-        await editForm.Validate();
-        if (editForm.IsValid)
-        {
+		var successedMessage = L["StateUpdatedSuccessfully"];
+		var errorMessage = L["Can'tUpdateState"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		try
+		{
+			// Create the input object for update
+			var input = new CreateUpdateStateDto
+			{
+				ArabicName = state.ArabicName,
+				EnglishName = state.EnglishName,
+				Status = state.Status,
+				RegionId = state.RegionId,
 
-            // Create the input object for update
-            var input = new CreateUpdateStateDto
-            {
-                ArabicName = state.ArabicName,
-                EnglishName = state.EnglishName,
-                Status = state.Status,
-                RegionId = state.RegionId,
 
+			};
 
-            };
+			// Call the update method
 
-            // Call the update method
-            await StateAppService.UpdateAsync(UpdatedId, input);
+			var regions = await StateAppService.UpdateAsync(UpdatedId, input);
 
-            // Close the dialog with a success result
-            MudDialog.Close(DialogResult.Ok(true));
-        }
+			if (regions != null)
+			{
+				Snackbar.Add(successedMessage, Severity.Success);
+				MudDialog.Close(DialogResult.Ok(true));
+			}
+
+			else
+			{
+				Snackbar.Add(errorMessage, Severity.Error);
+
+			}
+		}
+		catch (AbpValidationException validationException)
+		{
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+			}
+		}
+		catch (BusinessException ex)
+		{
+			Snackbar.Add($"Failed to update state: {ex.Code} + ", Severity.Error);
+
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Failed to state: {ex.Message} + ", Severity.Error);
+		}
     }
 
 

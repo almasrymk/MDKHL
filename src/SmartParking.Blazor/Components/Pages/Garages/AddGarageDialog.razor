@@ -16,12 +16,7 @@
             <MudText Typo="Typo.h6">@L["Add New Garage"]</MudText>
         </TitleContent>
         <DialogContent>
-            <MudGrid>
-                <MudItem Class="w-100">
-
-                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-
-                    *@
+           
                     <MudForm Model="createUpdateGarage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                         <MudGrid>
                             <MudItem sm="6" md="6">
@@ -90,11 +85,12 @@
                             *@
                         </MudGrid>
                     </MudForm>
-                </MudItem>
-            </MudGrid>
+              
         </DialogContent>
         <DialogActions >
-            <MudGrid Class="ps-lg-5">
+                        <div class="overflow-hidden px-5 w-100">
+
+            <MudGrid >
 
                 <MudItem sm="6" md="6">
 
@@ -105,6 +101,8 @@
                     <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@( () => CancelCreate())">@L["Cancel"]</MudButton>
                 </MudItem>
             </MudGrid>
+            </div>
+
         </DialogActions>
     </MudDialog>
 </div>

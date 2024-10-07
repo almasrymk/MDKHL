@@ -17,7 +17,7 @@ namespace SmartParking.LookupsAppServices;
 
 public class RegionAppService : CrudAppService<Region, RegionDto,
 									int, PagedAndSortedResultRequestDto,
-									CretaeUpdateRegionDto>,
+									CreateUpdateRegionDto>,
 		IRegionAppService
 {
 	public readonly IRepository<Region, int> _regionRepository;

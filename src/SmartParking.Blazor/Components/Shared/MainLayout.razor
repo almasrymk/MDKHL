@@ -38,8 +38,8 @@
                         <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
                     </ActivatorContent>
                     <ChildContent>
-                    @foreach (var language in _localizationOptions.Value.Languages)
-                    {
+                        @foreach (var language in _localizationOptions.Value.Languages.Where(l => l.CultureName == "en" || l.CultureName == "ar"))
+                        {
                         <MudMenuItem OnClick="@(() => ChangeLanguage(language.CultureName))">
                             <MudText>@language.DisplayName</MudText>
                             </MudMenuItem>

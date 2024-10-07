@@ -18,4 +18,5 @@ public class CreateUpdateCustomerDto
     public string MobileNumber { get; set; }
     public IdentificationTypes IdentificationType { get; set; }
     public string NationalId { get; set; }
+    public bool isActive { get; set; } = true;
 }
