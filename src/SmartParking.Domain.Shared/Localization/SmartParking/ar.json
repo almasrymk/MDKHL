@@ -217,7 +217,18 @@
     "PlateColorArabicName": "لون اللوحة بالعربي",
     "PlateColorEnglishName": "لون اللوحة بالانجليزية",
     "VehicleBrandArabicName": "ماركة السيارة بالعربي",
-    "VehicleBrandEnglishName": "ماركة السيارة بالانجليزية"
+    "VehicleBrandEnglishName": "ماركة السيارة بالانجليزية",
+    "Email": "البريـد الالكترونـي",
+    "UserName": "اسـم المستـخدم",
+    "NationalId": "رقـم الهويـة",
+    "MobileNumber": "رقـم الجـوال",
+    "ModelYear": "سنـة الموديـل",
+    "BelongToCompany": "تـابعـة لمؤسسـة",
+    "CompanyName": "أسـم المؤسسـة",
+    "Submit": "ارسـال",
+    "VehicleBrand": "مـاركة السيارة",
+    "LicenceType": "نوع التراخيـص",
+    "Customers": "العمـلاء"
 
   }
 }
