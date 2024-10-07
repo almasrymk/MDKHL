@@ -95,9 +95,6 @@ public static class SmartParkingModuleExtensionConfigurator
                                "OtpExpirationDate", //property name
                                property =>
                                {
-                                   //validation rules
-                                   //property.Attributes.Add(new RequiredAttribute());
-                                   property.Attributes.Add(new RequiredAttribute());
 
                                    property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
 

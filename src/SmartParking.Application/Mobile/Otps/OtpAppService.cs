@@ -58,17 +58,17 @@ public class OtpAppService : ApplicationService, IOtpService
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         if (user is null)
         {
-            Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "user isn ot Found"
-            });
+            return Result.Invalid(new ValidationError
+                   {
+                        ErrorMessage = "user isnot Found"
+                   });
         }
 
         if (user?.GetProperty<string>("OtpCode") == otp && user.GetProperty<DateTime>("OtpExpirationDate") >= DateTime.UtcNow)
         {
             // OTP is valid, clear OTP fields
             user.SetProperty("OtpCode", null);
-            user.SetProperty("OtpExpirationDate", new DateTime());
+            user.SetProperty("OtpExpirationDate", DateTime.UtcNow);
             await _userRepository.UpdateAsync(user);
 
             return Result.Success(true);
@@ -87,18 +87,18 @@ public class OtpAppService : ApplicationService, IOtpService
     {
         if (userId.ToString() is null)
         {
-            Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "User Id Not valid"
-            });
+           return Result.Invalid(new ValidationError
+                  {
+                    ErrorMessage = "User Id Not valid"
+                  });
         }
         var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
         if (user is null)
         {
-            Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "User Not Found"
-            });
+            return Result.Invalid(new ValidationError
+                   {
+                        ErrorMessage = "User Not Found"
+                   });
         }
 
         var otp = "1234"; // call GenerateRandomOtp function   
@@ -116,10 +116,10 @@ public class OtpAppService : ApplicationService, IOtpService
         var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
         if (user is null)
         {
-            Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "User Not Found"
-            });
+            return Result.Invalid(new ValidationError
+                   {
+                        ErrorMessage = "User Not Found"
+                   });
         }
 
         var otp = "1234"; // call GenerateRandomOtp function   
