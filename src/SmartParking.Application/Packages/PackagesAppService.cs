@@ -1,4 +1,5 @@
-﻿using AutoMapper.Internal.Mappers;
+﻿
+using AutoMapper.Internal.Mappers;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Bases;
 using SmartParking.Entities.Organizations;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
@@ -71,8 +73,17 @@ namespace SmartParking.DefaultPackages
 				totalCount,
 				ObjectMapper.Map<List<Package>, List<PackageDto>>(packages));
 		}
+		///<inheritdoc>/>
+        [RemoteService(IsEnabled = false)]
+        public async Task<List<PackageDto>> GetListPackageByOrganizationId(int organizationId)
+        {
+			var query = await _packageRepository.GetQueryableAsync();
+			var pakages =await query.Where(_ => _.OrgnizationId == organizationId).ToListAsync();
+			var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
+			return pakagesMap;
+        }
 
-		public Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
+        public Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
 		{
 			throw new NotImplementedException();
 		}

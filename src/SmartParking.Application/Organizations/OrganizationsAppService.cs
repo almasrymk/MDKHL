@@ -6,6 +6,7 @@ using SmartParking.Enums;
 using SmartParking.Validations.Organizations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 
@@ -24,25 +26,32 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 {
     private readonly IRepository<Organization, int> _repository;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
+    private readonly IIdentityUserAppService _userAppService;
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService) : base(repository)
     {
         _repository = repository;
         _customerCategoryAppService = customerCategoryAppService;
          _softDeleteFilter = softDeleteFilter;
+        _userAppService = userAppService;
     }
-    /// <summary>
-    /// methods that creates an organization
-    /// checks if an organization with same UnifiedLicenseNum
-    /// if it exists it throws an exception
-    /// </summary>
-    /// <param name="input">Organization Create Dto</param>
-    /// <returns><OrganizationDto</returns>
-    /// <exception cref="BusinessException">throws an exception when same UnifiedLicenseNum exists </exception>
+    ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
+        IdentityUserCreateDto user = new IdentityUserCreateDto()
+        {
+            UserName = input.EnglishName,
+            PhoneNumber = input.WhatsAppNum,
+            Email = input.ContactMail,
+            Password = "P@ssw0rd",
+            RoleNames = ["OrganizationAdmin"],
+            Name = input.EnglishName,
+            IsActive = true,
+            
+        };
+        await _userAppService.CreateAsync(user);
         var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
         Console.WriteLine($"count of unified license number {query.Count}");
         if (query.Count>0)
@@ -58,11 +67,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
 
     }
-    /// <summary>
-    /// method used to get list of organizations
-    /// </summary>
-    /// <param name="input">specifies max number of organization and if it sorted or not</param>
-    /// <returns>OrganizatioDto List</returns>
+    ///<inheritdoc/>
 
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
@@ -78,11 +83,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         
 
     }
-    /// <summary>
-    /// method to get organization by its id
-    /// </summary>
-    /// <param name="id">organizationID</param>
-    /// <returns>OrganizationDto</returns>
+    ///<inheritdoc/>
     public override async Task<OrganizationDto> GetAsync(int id)
     {
         if (CurrentUser.IsInRole("admin"))
@@ -96,12 +97,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         
         return await base.GetAsync(id);
     }
-    /// <summary>
-    /// method used to create unique code of organization depends on its id
-    ///
-    /// </summary>
-    /// <param name="id">OrganizationId</param>
-    /// <returns>StringContainsOrganizationCode</returns>
+    ///<inheritdoc/>
     private string CodeGenerator(int id)
     {
         var idLen =(int) Math.Floor(Math.Log10(id) + 1);
@@ -111,13 +107,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         Code += (id);
         return Code;
     }
-    /// <summary>
-    /// method to soft delete organization 
-    /// checks if organization exists
-    /// </summary>
-    /// <param name="id">organizationID</param>
-    /// <returns>Successfully Deletion message</returns>
-    /// <exception cref="EntityNotFoundException">Exception is thrown when Organization Not found</exception>
+    ///<inheritdoc/>
 
 
     public new async Task<string> DeleteByIdAsync(int id)
@@ -134,13 +124,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
         }
     }
-    /// <summary>
-    /// method to Update organization 
-    /// checks if organization exists
-    /// </summary>
-    /// <param name="id">organizationID</param>
-    /// <returns>Organization Dto of updated version</returns>
-    /// <exception cref="EntityNotFoundException">Exception is thrown when Organization Not found</exception>
+    ///<inheritdoc/>
 
     public override async Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input)
     {
@@ -153,11 +137,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         return await base.UpdateAsync(id, input);
     }
 
-    /// <summary>
-    /// method used to get list of organizations
-    /// </summary>
-    /// <param name="input">specifies max number of organization and if it sorted or not</param>
-    /// <returns>OrganizatioDto List</returns>
+    ///<inheritdoc/>
     public async Task<PagedResultDto<OrganizationDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<organization> from the repository
@@ -209,11 +189,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         );
     }
 
-    /// <summary>
-    /// method used to get list of organizations
-    /// </summary>
-    /// <param name="input">specifies max number of organization and if it filtered or not</param>
-    /// <returns>OrganizatioDto List</returns>
+    ///<inheritdoc/>
     public async Task<PagedResultDto<OrganizationDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<organization> from the repository
@@ -253,6 +229,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             totalCount,
             organizationsDto
         );
+    }
+    ///<inheritdoc/>
+    [RemoteService(IsEnabled = false)]
+    public async Task<List<OrganizationDto>> GetAllMobileAsync()
+    {
+        
+            var organizations = await _repository.GetListAsync();
+            var organizationsMap = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
+            return organizationsMap;
+        
     }
 }
  

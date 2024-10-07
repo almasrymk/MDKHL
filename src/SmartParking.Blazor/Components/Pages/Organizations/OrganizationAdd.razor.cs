@@ -84,20 +84,12 @@ public partial class OrganizationAdd
             PhoneNum = PhoneNum,
             WhatsAppNum = WhatsAppNum,
         };
-        IdentityUserCreateDto user = new IdentityUserCreateDto()
-        {
-            UserName = EnglishName,
-            PhoneNumber = WhatsAppNum,
-            Email = ContactMail,
-            Password = "P@ssw0rd",
-            RoleNames = ["admin"],
-            Name = EnglishName,
-        };
+       
         
         try
         {
-            await IdentityUserAppService.CreateAsync(user);
-             await signInManager.PasswordSignInAsync(user.UserName, "P@ssw0rd", isPersistent: false, lockoutOnFailure: false);
+           
+             
             await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             
             ShowSnackbar("Add Successfully You Can Login Your Password Is P@ssw0rd", Severity.Success);
