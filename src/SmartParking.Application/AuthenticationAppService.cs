@@ -23,6 +23,8 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Data;
 using SmartParking.Enums;
+using Microsoft.Extensions.Configuration;
+using Volo.Abp;
 
 namespace SmartParking;
 // Service Implementation
@@ -36,6 +38,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<IdentityUser, Guid> _userRepository;
     IIdentityRoleRepository _roleRepository;
+    private readonly IConfiguration _config;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -43,7 +46,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IOpenIddictTokenManager tokenManager,
         IHttpContextAccessor httpContext,
         IRepository<IdentityUser, Guid> userRepository,
-        IIdentityRoleRepository roleRepository
+        IIdentityRoleRepository roleRepository,
+        IConfiguration config
         )
     {
         _signInManager = signInManager;
@@ -52,16 +56,18 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _httpContext = httpContext;
         _userRepository = userRepository;
         _roleRepository = roleRepository;
+        _config = config;
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
     {
         try
         {
-            var user = await CheckPhoneIsUnique(phone);
+            var user = await CheckPhoneISFound(phone);
             return new forgetpasswordDto
             {
-                Success = false,
+                Success = true,
                 UserId = user.Id.ToString(),
             };
         }
@@ -75,17 +81,23 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
      
     }
+
+    private async Task<IdentityUser> CheckPhoneISFound(string phone)
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
+
+        if (user == null)
+        {
+            throw new ValidationException("User with this phone number does Not exist.");
+        }
+        return user;
+    }
+
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<UserDataDto?> GetUserDataAsync()
     {
-        if (!CurrentUser.IsAuthenticated)
-        {
-            return new UserDataDto
-            {
-               Success =  false,
-               ErrorMessage = "You are Not authenticated!"
-            };
-        }
+        
        var Id =  CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
        var user = await _userManager.FindByIdAsync(Id);
 
@@ -96,6 +108,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
     {
 
@@ -131,6 +144,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
     {
 
@@ -212,16 +226,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
+
     public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
     {
-        if (!CurrentUser.IsAuthenticated)
-        {
-            return new BaseResultDto
-            {
-                Success = false,
-                ErrorMessage = "You are Not authenticated!"
-            };
-        }
+
         var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
         var user = await _userManager.FindByIdAsync(Id);
         if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
