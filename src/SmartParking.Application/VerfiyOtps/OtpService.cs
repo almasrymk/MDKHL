@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.Results;
 using SmartParking.VerifyOtps;
 using System;
 using System.Linq;
@@ -71,5 +72,60 @@ public class OtpService : ApplicationService,IOtpService
     private string GenerateRandomOtp()
     {
         return _random.Next(0, (int)Math.Pow(10, OtpLength)).ToString($"D{OtpLength}");
+    }
+
+
+    public async Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId)
+    {
+        if (userId.ToString() is null)
+        {
+            Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "User Not Found"
+            });
+        }
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user is null)
+        {
+            Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "User Not Found"
+            });
+        }
+
+        var otp = "1234"; // call GenerateRandomOtp function   
+        user.SetProperty("OtpCode", otp);
+        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+
+        // Update the user with OTP in the database
+        await _userRepository.UpdateAsync(user);
+
+        return Result.Success(otp);
+    }
+
+    public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtpAsync(Guid userId)
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user is null)
+        {
+            Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "User Not Found"
+            });
+        }
+
+        var otp = "1234"; // call GenerateRandomOtp function   
+        user.SetProperty("OtpCode", otp);
+        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+
+        // Update the user with OTP in the database
+        await _userRepository.UpdateAsync(user);
+
+        return Result.Success(
+        new ForgetPasswordOtpDto
+        {
+            UserId = user.Id,
+        });
+
     }
 }
