@@ -1,4 +1,6 @@
 ﻿using SmartParking.Entities.Customers;
+using SmartParking.Garages;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,5 +53,24 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <returns>bool</returns>
 
     Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber);
+    
+    /// <summary>
+    /// Method used to get vehicles for specific customer
+    /// </summary>
+    /// <param name="customerId">Customer Id</param>
+    /// <returns>list of vehichles</returns>
+    Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomer(Guid customerId);
 
+	/// <summary>
+	/// abstract method to search of customers
+	/// </summary>
+	/// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
+	/// <returns>customer Dto</returns>
+	public Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+	/// <summary>
+	/// abstract method to filter of customers
+	/// </summary>
+	/// <param name="input">specifies max number of customers and if it sorted or not and filter</param>
+	/// <returns>customer Dto</returns>
+	public Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 }

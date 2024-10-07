@@ -12,7 +12,8 @@ namespace SmartParking.Vehicles
 	public class VehicleDto 
 	{
 		public int Id { get; set; }
-		public int VehicleModelId { get; set; }
+        public Guid CustomerId { get; set; }
+        public int VehicleModelId { get; set; }
 		public int VehicleBrandId { get; set; }
 		public int PlateColorId { get; set; }
 		public int LicenceTypeId { get; set; }

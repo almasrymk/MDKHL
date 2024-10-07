@@ -9,7 +9,9 @@ namespace SmartParking.Vehicles
 	public class CreateUpdateVehicleDto
 	{
 		public int VehicleModelId { get; set; }
-		public int VehicleBrandId { get; set; }
+
+        public Guid CustomerId { get; set; }
+        public int VehicleBrandId { get; set; }
 		public int PlateColorId { get; set; }
 		public int LicenceTypeId { get; set; }
 		public string ModelYear { get; set; }
