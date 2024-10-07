@@ -17,6 +17,7 @@ using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using SmartParking.Packages;
 using SmartParking.Vehicles;
+using SmartParking.Entities.GarageTransactions;
 
 namespace SmartParking;
 
@@ -64,5 +65,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 		CreateMap<Vehicle, VehicleDto>();
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();
-	}
+
+        CreateMap<GarageTransaction, GarageTransactionDto>();
+        CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();
+    }
 }

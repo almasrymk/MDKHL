@@ -148,14 +148,13 @@ public class GarageTransactionsAppService:
     public override Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
       
-            input.VehiclePicture = SaveBase64Image(input.VehiclePicture);
+           input.VehiclePicture = SaveBase64Image(input);
+        if (input.VehiclePicture == null)
+            return null;
         
       
 
 
-        if (CheckForeginKeys(input) == -1)
-            throw new UserFriendlyException("Invalid CameraId,GarageId or Organization Id");
-            
         
         return base.CreateAsync(input);
     }
@@ -173,8 +172,9 @@ public class GarageTransactionsAppService:
     }
 
     // Function to convert base64 string to image and save it
-    private string SaveBase64Image(string base64Image)
+    private string SaveBase64Image(CreateUpdateGarageTransactionDto input)
     {
+        string base64Image=input.VehiclePicture;
         try
         {
             // Validate the base64 string format
@@ -184,7 +184,7 @@ public class GarageTransactionsAppService:
             }
 
             // Define the path where the image will be saved
-            string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages");
+            string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages",input.OrganizationID.ToString(), input.GarageId.ToString(), input.CameraId.ToString());
 
             // Ensure the directory exists
             if (!Directory.Exists(wwwRootPath))
@@ -210,41 +210,23 @@ public class GarageTransactionsAppService:
             File.WriteAllBytes(fullPath, imageBytes);
 
             // Return the relative path for storing in the database
-            return $"/GarageTransactionsImages/{fileName}";
+            return $"/GarageTransactionsImages/{input.OrganizationID}/{input.GarageId}/{input.CameraId}/{fileName}";
         }
-        catch (FormatException ex)
-        {
-            throw new UserFriendlyException("The provided image is not a valid Base64 string", ex);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            throw new UserFriendlyException("Failed to save the image due to insufficient permissions", ex);
-        }
+        //catch (FormatException ex)
+        //{
+        //    throw new UserFriendlyException("The provided image is not a valid Base64 string", ex);
+        //}
+        //catch (UnauthorizedAccessException ex)
+        //{
+        //    throw new UserFriendlyException("Failed to save the image due to insufficient permissions", ex);
+        //}
         catch (Exception ex)
         {
-            throw new UserFriendlyException("An error occurred while saving the image", ex);
+            return null;
+            // throw new UserFriendlyException("An error occurred while saving the image", ex);
         }
     }
 
 
-    private int  CheckForeginKeys(CreateUpdateGarageTransactionDto input)
-	{
-        try
-        {
-            var realCamera = _CameraRepository.GetAsync(input.CameraId).Result;
-            var realGarage = _GarageRepository.GetAsync(realCamera.Id).Result;
-            var realOrg = _OrganizationRepository.GetAsync(realGarage.OrganizationId).Result;
-            if(realCamera == null || realGarage.Id!=input.GarageId||realOrg.Id!=input.OrganizationID)
-                return -1 ;
-
-        }
-        catch (Exception ex)
-        {
-            return -1;
-        }
-
-        return 1;
-
-
-    }
+  
 }
