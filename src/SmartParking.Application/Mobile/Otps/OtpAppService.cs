@@ -29,18 +29,18 @@ public class OtpAppService : ApplicationService, IOtpService
     {
         if (phoneNumber is null)
         {
-            Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "Phone Number is not valid"
-            });
+            return Result.Invalid(new ValidationError
+                   {
+                        ErrorMessage = "Phone Number is not valid"
+                   });
         }
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         if (user is null)
         {
-            Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "user isn ot Found"
-            });
+             return Result.Invalid(new ValidationError
+                    {
+                          ErrorMessage = "user isnot Found"
+                    });
         }
 
         var otp = "1234"; // call GenerateRandomOtp function   
@@ -64,17 +64,24 @@ public class OtpAppService : ApplicationService, IOtpService
                    });
         }
 
-        if (user?.GetProperty<string>("OtpCode") == otp && user.GetProperty<DateTime>("OtpExpirationDate") >= DateTime.UtcNow)
+        var storedOtp = user?.GetProperty<string>("OtpCode");
+        var otpExpirationDate = user?.GetProperty<DateTime>("OtpExpirationDate");
+        bool flag = false;
+        var currentTime= DateTime.Now;
+        // Check if the provided OTP matches the stored OTP and if the OTP has not expired
+        if (storedOtp == otp && otpExpirationDate >= currentTime   )
         {
             // OTP is valid, clear OTP fields
             user.SetProperty("OtpCode", null);
             user.SetProperty("OtpExpirationDate", DateTime.UtcNow);
             await _userRepository.UpdateAsync(user);
 
-            return Result.Success(true);
+            // Return success result with true
+            flag = true;
         }
 
-        return Result.Success(false);
+        // If OTP is invalid or expired, return false
+        return flag == true ?Result.Success(true):Result.Success(false);
     }
 
     private string GenerateRandomOtp()
