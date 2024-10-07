@@ -2734,7 +2734,7 @@ namespace SmartParking.Migrations
                     b.Property<DateTime>("OtpExpirationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                        .HasDefaultValue(new DateTime(2024, 10, 7, 14, 41, 0, 772, DateTimeKind.Utc).AddTicks(5460));
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)
