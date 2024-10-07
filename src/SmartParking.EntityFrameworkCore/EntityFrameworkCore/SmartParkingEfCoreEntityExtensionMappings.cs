@@ -47,7 +47,7 @@ public static class SmartParkingEfCoreEntityExtensionMappings
                     (entityBuilder, propertyBuilder) => { propertyBuilder.HasMaxLength(500000); }
                 );
 
-             * See the documentation for more:
+            /* See the documentation for more:
              * https://docs.abp.io/en/abp/latest/Customizing-Application-Modules-Extending-Entities
              */
 

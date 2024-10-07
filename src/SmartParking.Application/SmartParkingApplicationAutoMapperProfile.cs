@@ -19,6 +19,7 @@ using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 //using SmartParking.Packages;
 using SmartParking.Vehicles;
+using SmartParking.Entities.Invoices;
 
 namespace SmartParking;
 
