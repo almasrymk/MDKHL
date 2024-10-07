@@ -6,6 +6,7 @@ using SmartParking.Authentication;
 using SmartParking.Organizations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp;
 
 namespace SmartParking.Blazor.Controller;
 
@@ -44,7 +45,7 @@ public class AuthenticationsController : ControllerBase
         return await _authenticationApp.GetUserDataAsync();
     }
     [HttpPost("changePassword")]
-    [Authorize]
+    [IgnoreAntiforgeryToken]
     public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
     {
         return await _authenticationApp.ChangePassword(input);

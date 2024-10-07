@@ -28,7 +28,7 @@ using Volo.Abp;
 
 namespace SmartParking;
 // Service Implementation
-[RemoteService(IsEnabled = false)]
+
 /// <inheritdoc/>
 public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
 {
@@ -59,6 +59,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _config = config;
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
     {
         try
@@ -66,7 +67,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             var user = await CheckPhoneISFound(phone);
             return new forgetpasswordDto
             {
-                Success = false,
+                Success = true,
                 UserId = user.Id.ToString(),
             };
         }
@@ -93,6 +94,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
 
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<UserDataDto?> GetUserDataAsync()
     {
         
@@ -106,6 +108,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
     {
 
@@ -141,6 +144,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
     public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
     {
 
@@ -192,29 +196,17 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private async Task<string> GenerateTokenAsync(IdentityUser user)
     {
         var principal = await _signInManager.CreateUserPrincipalAsync(user);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var roles = await _userManager.GetRolesAsync(user);
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-        // Create the claims, including the roles
-        var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Id.ToString())  // Use the user's ID as the name identifier
-            };
-
-        // Add each role as a claim
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddMinutes(120),
-            Issuer = _config["Jwt:Issuer"],
-            Audience = _config["Jwt:Issuer"],
-            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
+            Subject = new ClaimsIdentity(principal.Claims),
+            Expires = DateTime.Now.AddHours(1),
+            SigningCredentials = creds
         };
+        var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        string tokenString = tokenHandler.WriteToken(token);
-        
-        return tokenString;
+        return tokenHandler.WriteToken(token);
     }
     /// <summary>
     /// Checks if the provided phone number is unique and associated with a user.
@@ -234,16 +226,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
     /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
+
     public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
     {
-        if (!CurrentUser.IsAuthenticated)
-        {
-            return new BaseResultDto
-            {
-                Success = false,
-                ErrorMessage = "You are Not authenticated!"
-            };
-        }
+
         var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
         var user = await _userManager.FindByIdAsync(Id);
         if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
