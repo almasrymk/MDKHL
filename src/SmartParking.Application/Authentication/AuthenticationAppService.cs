@@ -9,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Volo.Abp.Application.Services;
 using System.IdentityModel.Tokens.Jwt;
-using SmartParking.Authentication;
 using System.Linq;
 using System.IO;
 using SmartParking.Entities.Organizations;
@@ -26,7 +25,7 @@ using SmartParking.Enums;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp;
 
-namespace SmartParking;
+namespace SmartParking.Authentication;
 // Service Implementation
 
 /// <inheritdoc/>
@@ -78,7 +77,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 ErrorMessage = ex.Message
             };
         }
-     
+
     }
 
     private async Task<IdentityUser> CheckPhoneISFound(string phone)
@@ -95,11 +94,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <inheritdoc/>
     public async Task<UserDataDto?> GetUserDataAsync()
     {
-        
-       var Id =  CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
-       var user = await _userManager.FindByIdAsync(Id);
 
-        return new  UserDataDto{
+        var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
+        var user = await _userManager.FindByIdAsync(Id);
+
+        return new UserDataDto
+        {
             Success = true,
             FullName = user.UserName,
             Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
@@ -149,14 +149,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             await CheckPhoneIsUnique(input.Phone);
             var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
-           
-            var createdUser= await _userManager.CreateAsync(user, input.Password);
+            user.SetProperty("UserTypeId", 3);
+            var createdUser = await _userManager.CreateAsync(user, input.Password);
             await _userManager.SetPhoneNumberAsync(user, input.Phone);
             if (!createdUser.Succeeded)
             {
-                throw new Exception(message:createdUser.Errors.FirstOrDefault()?.Description);
+                throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
             }
-            
+
             await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
 
             var claims = new List<Claim>
@@ -173,7 +173,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 AccessToken = await GenerateTokenAsync(user) ?? string.Empty
             };
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             return new RegisterResultDto
             {
@@ -181,9 +181,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 ErrorMessage = ex.Message,
             };
         }
-       
 
-       
+
+
     }
     /// <summary>
     /// Generates a JWT token for the specified user.
@@ -213,9 +213,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
     private async Task<IdentityUser> CheckPhoneIsUnique(string phone)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone); 
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
 
-        if (user != null) 
+        if (user != null)
         {
             throw new ValidationException("User with this phone number does  exist.");
         }
@@ -231,7 +231,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var user = await _userManager.FindByIdAsync(Id);
         if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
         {
-           await _userManager.ChangePasswordAsync(user,input.CurrentPassword, input.NewPassword);
+            await _userManager.ChangePasswordAsync(user, input.CurrentPassword, input.NewPassword);
         }
         else
         {
@@ -240,9 +240,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 Success = false,
                 ErrorMessage = "Incorrect password."
             };
-            
+
         }
-        
+
         return new BaseResultDto
         {
             Success = true
