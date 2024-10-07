@@ -1,4 +1,4 @@
-﻿@page "/regions"
+﻿@page "/invoices"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Invoices
 @using SmartParking.Localization
@@ -11,5 +11,5 @@
 
 <h3>@L["Invoices"]</h3>
 
-<SPDataGrid PageName="invoices" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter"  OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateRegion"  />
+<SPDataGrid PageName="invoices" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter"  OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateInvoice"  />
 

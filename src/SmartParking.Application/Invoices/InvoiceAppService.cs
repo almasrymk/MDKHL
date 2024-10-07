@@ -1,11 +1,8 @@
 ﻿using SmartParking.Entities.Invoices;
-using SmartParking.Entities.Organizations;
-using SmartParking.Garages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -79,7 +76,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
             queryable = queryable.Where(or =>
                 
-                or.Invoicetype.ToString() == input.SearchingTerm);
+                or.InvoiceType.ToString() == input.SearchingTerm);
         }
         if (!input.Sorting.IsNullOrEmpty())
         {

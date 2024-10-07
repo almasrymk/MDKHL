@@ -10,10 +10,10 @@ namespace SmartParking.Invoices;
 
 public class CreateUpdateInvoiceDto 
 {
-    public string InvoiceId { get; set; }
+    public string InvoiceNumber { get; set; }
     public int TotalHours { get; set; }
     public decimal InvoicePrice { get; set; }
-    public InvoiceType Invoicetype { get; set; }
+    public InvoiceType InvoiceType { get; set; }
     public int OrganizationId { get; set; }
     public int GarageId { get; set; }
     public int VehicleId { get; set; }

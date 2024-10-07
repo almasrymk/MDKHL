@@ -217,7 +217,11 @@
     "PlateColorArabicName": "لون اللوحة بالعربي",
     "PlateColorEnglishName": "لون اللوحة بالانجليزية",
     "VehicleBrandArabicName": "ماركة السيارة بالعربي",
-    "VehicleBrandEnglishName": "ماركة السيارة بالانجليزية"
+    "VehicleBrandEnglishName": "ماركة السيارة بالانجليزية",
+    "InvoiceNumber": "رقم الفاتورة",
+    "InvoicePrice": "سعر الفاتورة",
+    "InvoiceType": "نوع الفاتورة",
+    "Invoices": "الفواتير"
 
   }
 }

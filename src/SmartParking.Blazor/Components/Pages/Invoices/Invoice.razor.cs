@@ -125,9 +125,9 @@ public partial class Invoice
         };
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = true, PropertyNmae = "InvoiceId", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceNumber"], Name = "InvoiceNumber", IsFilterable = true, PropertyNmae = "InvoiceNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = true, PropertyNmae = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Invoicetype"], Name = "Invoicetype", IsFilterable = true, PropertyNmae = "Invoicetype", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = true, PropertyNmae = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
 
@@ -135,9 +135,9 @@ public partial class Invoice
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceId"], item.InvoiceId));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceNumber"], item.InvoiceNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Invoicetype"], item.Invoicetype.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], item.InvoiceType.ToString()));
 
 
             tableData.Rows.Add(rowDef);
@@ -145,11 +145,11 @@ public partial class Invoice
         itemData = tableData;
     }
 
-    private Task CreateRegion()
+    private Task CreateInvoice()
     {
 
 
-        return Dialog.ShowAsync<AddRegionDialog>("Simple Dialog", options);
+        return Dialog.ShowAsync<AddInvoiceDialog>("Simple Dialog", options);
 
 
     }

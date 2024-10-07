@@ -179,6 +179,10 @@
     "PlateColorArabicName": "PlateColorArabicName",
     "PlateColorEnglishName": "PlateColorEnglishName",
     "VehicleBrandArabicName": "VehicleBrandArabicName",
-    "VehicleBrandEnglishName": "VehicleBrandEnglishName"
+    "VehicleBrandEnglishName": "VehicleBrandEnglishName",
+    "InvoiceNumber": "Invoice Number",
+    "InvoicePrice": "Invoice Price",
+    "InvoiceType": "Invoice Type",
+    "Invoices": "Invoices"
   } 
 }

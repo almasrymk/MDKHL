@@ -597,13 +597,13 @@ namespace SmartParking.Migrations
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("InvoiceId")
+                    b.Property<string>("InvoiceNumber")
                         .HasColumnType("text");
 
                     b.Property<decimal>("InvoicePrice")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("Invoicetype")
+                    b.Property<int>("InvoiceType")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -2731,10 +2731,8 @@ namespace SmartParking.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)");
 
-                    b.Property<DateTime>("OtpExpirationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValue(new DateTime(2024, 10, 7, 14, 41, 0, 772, DateTimeKind.Utc).AddTicks(5460));
+                    b.Property<DateTime?>("OtpExpirationDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)

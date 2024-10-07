@@ -8,7 +8,7 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Mobile.Otps;
 
-public interface IOtpService : IApplicationService
+public interface IOtpAppService : IApplicationService
 {
     public Task<Result<string>> GenerateOtpAsync(string phoneNumber);
     public Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId);

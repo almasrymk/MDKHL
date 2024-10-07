@@ -6,14 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Mobile.Invoices;
 
+[RemoteService(IsEnabled = false)]
 public class InvoicesAppService : ApplicationService, IInvoicesAppService
 {
     private readonly IRepository<Invoice, int> _invoiceRepoistory;
