@@ -10,7 +10,7 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Mobile.Vehicles;
 
-public interface IVehicleService 
+public interface IVehicleAppService : IApplicationService
 {
     Task<Result<VehicleDto>> CreateAsync(CreateUpdateVehicleDto input);
     Task<Result<PagedResultDto<VehicleDto>>> GetListAsync(PagedAndSortedResultRequestDto input);

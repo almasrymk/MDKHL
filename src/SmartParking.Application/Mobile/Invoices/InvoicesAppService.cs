@@ -1,5 +1,6 @@
 ﻿using SmartParking.Entities.Invoices;
 using SmartParking.Invoices;
+using SmartParking.MobileInvoices;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.MobileInvoices;
+namespace SmartParking.Mobile.Invoices;
 
 public class InvoicesAppService : ApplicationService, IInvoicesAppService
 {

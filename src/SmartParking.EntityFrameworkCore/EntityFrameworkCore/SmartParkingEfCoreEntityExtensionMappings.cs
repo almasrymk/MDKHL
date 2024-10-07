@@ -40,7 +40,7 @@ public static class SmartParkingEfCoreEntityExtensionMappings
              * See the documentation for more:
              * https://docs.abp.io/en/abp/latest/Customizing-Application-Modules-Extending-Entities
              */
-
+            var OtpValiditySeconds = 40;
             ObjectExtensionManager.Instance
                 .MapEfCoreProperty<IdentityUser, int>(
                     "UserTypeId",
@@ -65,7 +65,7 @@ public static class SmartParkingEfCoreEntityExtensionMappings
                "OtpExpirationDate",
                (entityBuilder, propertyBuilder) =>
                {
-                   propertyBuilder.HasDefaultValue(new DateTime());
+                   propertyBuilder.HasDefaultValue(DateTime.UtcNow.AddSeconds(OtpValiditySeconds));
                }
                );
         });
