@@ -58,36 +58,41 @@ public class VehicleService : ApplicationService, IVehicleService
     public async Task<Result<PagedResultDto<VehicleDto>>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
 
-
-        var queryable = await _vehicleRepository.GetListAsync();
-
-        //if (!input.Sorting.IsNullOrEmpty())
+        // Check if the user is authenticated
+        //if (!_currentUser.IsInRole("admin"))
         //{
-        //    if (input.Sorting.Contains("DESC"))
-        //    {
-        //        var sorting = input.Sorting.Split(' ').ToList();
-        //        queryable = queryable.OrderBy(sorting[0] + " descending");
-        //    }
-        //    else
-        //    {
-        //        queryable = queryable.OrderBy(input.Sorting);
-        //    }
-
+        //    return Result<VehicleDto>.Error("User is not authenticated");
         //}
-        // Get the total count of filtered records
-        //var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        //queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of hotel entities
-        //var vehicles = await AsyncExecuter.ToListAsync(queryable);
+        var queryable = await _vehicleRepository.GetQueryableAsync();
+
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        //Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        //Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        //Execute the query and get the list of hotel entities
+        var vehicles = await AsyncExecuter.ToListAsync(queryable);
 
         // Map the hotel entities to hotelDto objects
-        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(queryable);
+        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
         // Return the paginated result
         return new Result<PagedResultDto<VehicleDto>>(
            new PagedResultDto<VehicleDto>
-           (10, vehiclesDto)
+           (totalCount, vehiclesDto)
        );
 
     }
