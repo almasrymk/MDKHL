@@ -121,7 +121,7 @@ public partial class City
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = true, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Name"], Name = "City Arabic Name", IsFilterable = true, PropertyNmae = "City Arabic Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Name"], Name = "City English Name", IsFilterable = true, PropertyNmae = "City English Name", IsSortable = true, TypeFilter = TypeFilter.Text });
        

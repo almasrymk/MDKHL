@@ -47,6 +47,27 @@ public static class SmartParkingEfCoreEntityExtensionMappings
                     (entityBuilder, propertyBuilder) => { propertyBuilder.HasMaxLength(500000); }
                 );
 
+             * See the documentation for more:
+             * https://docs.abp.io/en/abp/latest/Customizing-Application-Modules-Extending-Entities
+             */
+
+            ObjectExtensionManager.Instance
+            .MapEfCoreProperty<IdentityUser, string>(
+                "OtpCode",
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(4);
+                }
+                );
+
+            ObjectExtensionManager.Instance
+           .MapEfCoreProperty<IdentityUser, DateTime>(
+               "OtpExpirationDate",
+               (entityBuilder, propertyBuilder) =>
+               {
+                   propertyBuilder.HasDefaultValue(new DateTime());
+               }
+               );
         });
     }
 }

@@ -13,6 +13,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -36,6 +37,8 @@ public class SmartParkingEntityFrameworkCoreModule : AbpModule
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         SmartParkingEfCoreEntityExtensionMappings.Configure();
+
+        
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -56,6 +59,7 @@ public class SmartParkingEntityFrameworkCoreModule : AbpModule
 
             options.UseNpgsql();
         });
+
 
     }
 }

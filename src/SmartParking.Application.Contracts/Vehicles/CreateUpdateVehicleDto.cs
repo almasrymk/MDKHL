@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Vehicles
 {
-	public class CreateUpdateVehicleDto
-	{
+	public class CreateUpdateVehicleDto  
+    {
 		public int VehicleModelId { get; set; }
 		public int VehicleBrandId { get; set; }
 		public int PlateColorId { get; set; }
