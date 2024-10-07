@@ -10,8 +10,8 @@
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 <div>
-    <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" MultiSelection="true" SortMode="SortMode.Single" Filterable="true"
-                 Hideable="true">
+    <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" SortMode="SortMode.Single" Filterable="true"
+                 >
         <ToolBarContent>
             <div class="d-flex flex-column w-100">
                 <div class="w-100 d-flex align-center">
@@ -101,14 +101,14 @@
             </div>
         </ToolBarContent>
         <Columns>
-            <SelectColumn />
+           
 
             @foreach (var header in Data.Columns)
             {
                 @if (header.DisplayName == "Id")
                     continue;
 
-                <TemplateColumn DragAndDropEnabled="true" Resizable="true">
+                <TemplateColumn >
                     <HeaderTemplate>
                         @header.DisplayName
                         @if (header.IsSortable)
