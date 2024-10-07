@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SmartParking.Enums;
-using SmartParking.Organizations;
 using SmartParking.Packages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SmartParking.Blazor.Controller;
+namespace SmartParking.Controllers;
 
 [Route("api/mobile/[controller]")]
 [ApiController]

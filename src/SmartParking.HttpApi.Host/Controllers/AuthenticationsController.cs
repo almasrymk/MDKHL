@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MudBlazor;
 using SmartParking.Authentication;
-using SmartParking.Organizations;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Volo.Abp;
 
-namespace SmartParking.Blazor.Controller;
+namespace SmartParking.Controllers;
 
 [Route("api/mobile/[controller]")]
 [ApiController]
