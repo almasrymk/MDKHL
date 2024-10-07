@@ -4,6 +4,7 @@ using SmartParking.Entities.Vehicles;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Results;
+using SmartParking.Validations.Vehicles;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,13 @@ using Volo.Abp.Users;
 
 namespace SmartParking.Mobile;
 
-public class VehicleService : ApplicationService, IVehicleService 
+public class VehicleAppService : ApplicationService, IVehicleAppService 
 {
     public readonly IRepository<Vehicle, int> _vehicleRepository;
     public readonly ICurrentUser _currentUser;
     private IDataFilter _dataFilter;
 
-    public VehicleService(IRepository<Vehicle, int> vehicleRepository , ICurrentUser currentUser, IDataFilter dataFilter) 
+    public VehicleAppService(IRepository<Vehicle, int> vehicleRepository , ICurrentUser currentUser, IDataFilter dataFilter) 
     {
         _vehicleRepository = vehicleRepository;
         _currentUser = currentUser;
@@ -40,9 +41,11 @@ public class VehicleService : ApplicationService, IVehicleService
             //{
             //    return Result<VehicleDto>.Error("User is not authenticated");
             //}
+
+            
             var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleDto, Vehicle>(input);
 
-             var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle,autoSave:true);
+            var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle,autoSave:true);
 
             var vehicleDto = ObjectMapper.Map<Vehicle,VehicleDto >(vehicle);
 
@@ -59,36 +62,39 @@ public class VehicleService : ApplicationService, IVehicleService
     {
 
 
-        var queryable = await _vehicleRepository.GetListAsync();
+        var queryable = await _vehicleRepository.GetQueryableAsync();
 
-        //if (!input.Sorting.IsNullOrEmpty())
-        //{
-        //    if (input.Sorting.Contains("DESC"))
-        //    {
-        //        var sorting = input.Sorting.Split(' ').ToList();
-        //        queryable = queryable.OrderBy(sorting[0] + " descending");
-        //    }
-        //    else
-        //    {
-        //        queryable = queryable.OrderBy(input.Sorting);
-        //    }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
 
-        //}
-        // Get the total count of filtered records
-        //var totalCount = await AsyncExecuter.CountAsync(queryable);
+        }
+       // Get the total count of filtered records
+       var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        //queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of hotel entities
-        //var vehicles = await AsyncExecuter.ToListAsync(queryable);
+        //Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        //Execute the query and get the list of hotel entities
 
-        // Map the hotel entities to hotelDto objects
-        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(queryable);
-        // Return the paginated result
-        return new Result<PagedResultDto<VehicleDto>>(
-           new PagedResultDto<VehicleDto>
-           (10, vehiclesDto)
-       );
+
+            var vehicles = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
+            // Return the paginated result
+            return new Result<PagedResultDto<VehicleDto>>(
+               new PagedResultDto<VehicleDto>
+               (totalCount, vehiclesDto)
+           );
+        
 
     }
 
