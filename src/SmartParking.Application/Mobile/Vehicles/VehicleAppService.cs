@@ -16,7 +16,7 @@ using Volo.Abp.Users;
 
 
 namespace SmartParking.Mobile.Vehicles;
-
+    
 public class VehicleAppService : ApplicationService, IVehicleService
 {
     public readonly IRepository<Vehicle, int> _vehicleRepository;

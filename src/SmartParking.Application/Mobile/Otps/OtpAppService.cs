@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Results;
-using SmartParking.VerifyOtps;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
