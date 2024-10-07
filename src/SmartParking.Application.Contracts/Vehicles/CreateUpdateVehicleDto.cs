@@ -17,6 +17,5 @@ namespace SmartParking.Vehicles
 		public bool BelongToCompany { get; set; }
 		public string? CompanyName { get; set; }
         public string PlateNumber { get; set; }
-        public Guid? TenantId { get; set; }
 	}
 }

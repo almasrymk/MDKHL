@@ -10,63 +10,72 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 
-namespace SmartParking.VerfiyOtps;
+namespace SmartParking.Mobile.Otps;
 
-public class OtpService : ApplicationService,IOtpService
+public class OtpAppService : ApplicationService, IOtpService
 {
     private readonly Random _random;
     private const int OtpLength = 4;
     private const int OtpValiditySecounds = 40;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
 
-    public OtpService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository)
+    public OtpAppService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository)
     {
         //_userManager = userManager;
         _random = new Random();
         _userRepository = userRepository;
 
     }
-    public async Task<string> GenerateOtpAsync(string phoneNumber)
+    public async Task<Result<string>> GenerateOtpAsync(string phoneNumber)
     {
-        if(phoneNumber is null)
+        if (phoneNumber is null)
         {
-            throw new UserFriendlyException("Phone Number Not valid");
+            Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "Phone Number is not valid"
+            });
         }
-        var user = await _userRepository.FirstOrDefaultAsync(u=>u.PhoneNumber == phoneNumber);
-        if (user == null)
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        if (user is null)
         {
-            throw new UserFriendlyException("User not found.");
+            Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "user isn ot Found"
+            });
         }
 
         var otp = "1234"; // call GenerateRandomOtp function   
-        user.SetProperty("OtpCode",otp);
-        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpCode", otp);
+        user?.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);
 
-        return otp ;  
+        return Result.Success(otp);
     }
 
-    public async Task<bool> VerifyOtpAsync(string phoneNumber, string otp)
+    public async Task<Result<bool>> VerifyOtpAsync(string phoneNumber, string otp)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-        if (user == null)
+        if (user is null)
         {
-            throw new UserFriendlyException("User not found.");
+            Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "user isn ot Found"
+            });
         }
 
-        if (user.GetProperty<string>("OtpCode") == otp && user.GetProperty<DateTime>("OtpExpirationDate") >= DateTime.UtcNow)
+        if (user?.GetProperty<string>("OtpCode") == otp && user.GetProperty<DateTime>("OtpExpirationDate") >= DateTime.UtcNow)
         {
             // OTP is valid, clear OTP fields
             user.SetProperty("OtpCode", null);
             user.SetProperty("OtpExpirationDate", new DateTime());
             await _userRepository.UpdateAsync(user);
 
-            return true;
+            return Result.Success(true);
         }
 
-        return false;
+        return Result.Success(false);
     }
 
     private string GenerateRandomOtp()
@@ -81,7 +90,7 @@ public class OtpService : ApplicationService,IOtpService
         {
             Result.Invalid(new ValidationError
             {
-                ErrorMessage = "User Not Found"
+                ErrorMessage = "User Id Not valid"
             });
         }
         var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
@@ -94,8 +103,8 @@ public class OtpService : ApplicationService,IOtpService
         }
 
         var otp = "1234"; // call GenerateRandomOtp function   
-        user.SetProperty("OtpCode", otp);
-        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpCode", otp);
+        user?.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);
@@ -115,8 +124,8 @@ public class OtpService : ApplicationService,IOtpService
         }
 
         var otp = "1234"; // call GenerateRandomOtp function   
-        user.SetProperty("OtpCode", otp);
-        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpCode", otp);
+        user?.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);

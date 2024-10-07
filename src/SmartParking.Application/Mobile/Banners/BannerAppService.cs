@@ -1,7 +1,6 @@
 ﻿using SmartParking.Entities.Banners;
 using SmartParking.Entities.Invoices;
 using SmartParking.Invoices;
-using SmartParking.Mobile.Banners;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -12,12 +11,12 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
-namespace SmartParking.Mobile;
+namespace SmartParking.Mobile.Banners;
 
 public class BannerAppService : ApplicationService, IBannerAppService
 {
     private readonly IRepository<Banner, int> _bannerRepository;
-    public BannerAppService(IRepository<Banner,int> bannerRepository)
+    public BannerAppService(IRepository<Banner, int> bannerRepository)
     {
         _bannerRepository = bannerRepository;
     }
@@ -52,7 +51,7 @@ public class BannerAppService : ApplicationService, IBannerAppService
     public async Task<Result<List<BannerDto>>> GetListAsync()
     {
         var banner = await _bannerRepository.GetListAsync();
-        
+
         // Map the Banner entities to BannerDto objects
         var bannersDto = ObjectMapper.Map<List<Banner>, List<BannerDto>>(banner);
         // Return the paginated result

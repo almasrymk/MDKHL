@@ -1,8 +1,6 @@
-﻿
-using SmartParking.Entities.Invoices;
+﻿using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Invoices;
-using SmartParking.Mobile.Vehicles;
 using SmartParking.Results;
 using SmartParking.Vehicles;
 using System;
@@ -17,15 +15,15 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Users;
 
 
-namespace SmartParking.Mobile;
+namespace SmartParking.Mobile.Vehicles;
 
-public class VehicleService : ApplicationService, IVehicleService 
+public class VehicleAppService : ApplicationService, IVehicleService
 {
     public readonly IRepository<Vehicle, int> _vehicleRepository;
     public readonly ICurrentUser _currentUser;
     private IDataFilter _dataFilter;
 
-    public VehicleService(IRepository<Vehicle, int> vehicleRepository , ICurrentUser currentUser, IDataFilter dataFilter) 
+    public VehicleAppService(IRepository<Vehicle, int> vehicleRepository, ICurrentUser currentUser, IDataFilter dataFilter)
     {
         _vehicleRepository = vehicleRepository;
         _currentUser = currentUser;
@@ -42,11 +40,11 @@ public class VehicleService : ApplicationService, IVehicleService
             //}
             var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleDto, Vehicle>(input);
 
-             var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle,autoSave:true);
+            var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle, autoSave: true);
 
-            var vehicleDto = ObjectMapper.Map<Vehicle,VehicleDto >(vehicle);
+            var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
 
-            return Result<VehicleDto>.Success(vehicleDto,"Vehicle Add Succesuffuly");
+            return Result<VehicleDto>.Success(vehicleDto, "Vehicle Add Succesuffuly");
         }
         catch (Exception ex)
         {
