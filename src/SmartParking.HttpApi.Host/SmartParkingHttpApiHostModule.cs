@@ -62,13 +62,7 @@ public class SmartParkingHttpApiHostModule : AbpModule
                 options.UseAspNetCore();
             });
         });
-        PreConfigure<OpenIddictServerBuilder>(builder =>
-        {
-            builder.SetAuthorizationCodeLifetime(TimeSpan.FromMinutes(30));
-            builder.SetAccessTokenLifetime(TimeSpan.FromMinutes(30));
-            builder.SetIdentityTokenLifetime(TimeSpan.FromMinutes(30));
-            builder.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
-        });
+       
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -93,36 +87,7 @@ public class SmartParkingHttpApiHostModule : AbpModule
         {
             options.IsDynamicClaimsEnabled = true;
         });
-        // Add JWT Bearer authentication
-
-        context.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = "youtCompanyIssuer.com",
-                ValidAudience = "youtCompanyIssuer.com",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"))
-            };
-        });
-
-        // Disable cookie-based authentication
-        context.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.HttpOnly = true;
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-            options.SlidingExpiration = true;
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        });
+        
         
     }
 

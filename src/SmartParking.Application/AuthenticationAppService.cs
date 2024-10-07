@@ -59,7 +59,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _config = config;
     }
     /// <inheritdoc/>
-    [RemoteService(IsEnabled = false)]
     public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
     {
         try
@@ -94,7 +93,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
 
     /// <inheritdoc/>
-    [RemoteService(IsEnabled = false)]
     public async Task<UserDataDto?> GetUserDataAsync()
     {
         
@@ -144,7 +142,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
     }
     /// <inheritdoc/>
-    [RemoteService(IsEnabled = false)]
     public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
     {
 
@@ -226,7 +223,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
     /// <inheritdoc/>
-    [RemoteService(IsEnabled = false)]
 
     public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
     {
