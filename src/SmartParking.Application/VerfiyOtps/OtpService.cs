@@ -2,45 +2,54 @@
 using Microsoft.EntityFrameworkCore;
 using SmartParking.VerifyOtps;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.VerfiyOtps;
 
 public class OtpService : ApplicationService,IOtpService
 {
-    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private readonly Random _random;
     private const int OtpLength = 4;
     private const int OtpValiditySecounds = 40;
-    public OtpService(UserManager<Volo.Abp.Identity.IdentityUser> userManager)
+    private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
+
+    public OtpService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository)
     {
-        _userManager = userManager;
+        //_userManager = userManager;
         _random = new Random();
+        _userRepository = userRepository;
+
     }
-    public async Task<string> GenerateOtpAsync(string mobileNumber)
+    public async Task<string> GenerateOtpAsync(string phoneNumber)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(m=>m.PhoneNumber == mobileNumber);
+        if(phoneNumber is null)
+        {
+            throw new UserFriendlyException("Phone Number Not valid");
+        }
+        var user = await _userRepository.FirstOrDefaultAsync(u=>u.PhoneNumber == phoneNumber);
         if (user == null)
         {
             throw new UserFriendlyException("User not found.");
         }
 
-        var otp = GenerateRandomOtp();
+        var otp = "1234"; // call GenerateRandomOtp function   
         user.SetProperty("OtpCode",otp);
         user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
-        await _userManager.UpdateAsync(user);
+        await _userRepository.UpdateAsync(user);
 
-        return "1234";
+        return otp ;  
     }
 
-    public async Task<bool> VerifyOtpAsync(string mobileNumber, string otp)
+    public async Task<bool> VerifyOtpAsync(string phoneNumber, string otp)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == mobileNumber);
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         if (user == null)
         {
             throw new UserFriendlyException("User not found.");
@@ -51,7 +60,7 @@ public class OtpService : ApplicationService,IOtpService
             // OTP is valid, clear OTP fields
             user.SetProperty("OtpCode", null);
             user.SetProperty("OtpExpirationDate", new DateTime());
-            await _userManager.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user);
 
             return true;
         }

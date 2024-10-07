@@ -9,8 +9,8 @@ namespace SmartParking.VerifyOtps;
 
 public interface IOtpService : IApplicationService
 {
-    public Task<string> GenerateOtpAsync(string mobileNumber);
-    public Task<bool> VerifyOtpAsync(string mobileNumber, string otp);
+    public Task<string> GenerateOtpAsync(string phoneNumber);
+    public Task<bool> VerifyOtpAsync(string phoneNumber, string otp);
 
 
 }

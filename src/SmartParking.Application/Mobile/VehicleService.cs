@@ -59,35 +59,35 @@ public class VehicleService : ApplicationService, IVehicleService
     {
 
 
-        var queryable = await _vehicleRepository.GetQueryableAsync();
+        var queryable = await _vehicleRepository.GetListAsync();
 
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
+        //if (!input.Sorting.IsNullOrEmpty())
+        //{
+        //    if (input.Sorting.Contains("DESC"))
+        //    {
+        //        var sorting = input.Sorting.Split(' ').ToList();
+        //        queryable = queryable.OrderBy(sorting[0] + " descending");
+        //    }
+        //    else
+        //    {
+        //        queryable = queryable.OrderBy(input.Sorting);
+        //    }
 
-        }
+        //}
         // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        //var totalCount = await AsyncExecuter.CountAsync(queryable);
 
         // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        //queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         // Execute the query and get the list of hotel entities
-        var vehicles = await AsyncExecuter.ToListAsync(queryable);
+        //var vehicles = await AsyncExecuter.ToListAsync(queryable);
 
         // Map the hotel entities to hotelDto objects
-        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
+        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(queryable);
         // Return the paginated result
         return new Result<PagedResultDto<VehicleDto>>(
            new PagedResultDto<VehicleDto>
-           (totalCount, vehiclesDto)
+           (10, vehiclesDto)
        );
 
     }
