@@ -55,7 +55,7 @@ public partial class CustomerRegister
         }
 
     }
-
+   
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.
     /// </summary>

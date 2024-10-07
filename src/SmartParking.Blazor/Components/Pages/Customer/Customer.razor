@@ -1,0 +1,16 @@
+﻿@page "/customers"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@inject IDialogService DialogService
+@inject ICustomerAppService CustomerAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+
+
+
+<h3>@L["Customers"]</h3>
+
+<SPDataGrid PageName="Customers" Data="@itemData" OnAdd="HandleAdd" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnClickRowEdit="CreateVehicle" OnClickRowView="ShowVehiclesForCustomer"></SPDataGrid>
+
