@@ -1408,6 +1408,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("UnifiedLicenseNum")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("WhatsAppNum")
                         .HasColumnType("text");
 
