@@ -15,6 +15,7 @@ using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using Volo.Abp.Data;
 using Abp.ObjectComparators.BooleanComparators;
 using System.ComponentModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartParking.Customers;
 
@@ -31,14 +32,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _identityUserAppService= identityUserAppService;
         _userManager=userManager;
     }
-    /// <inheritdoc/>
-    
-    public async Task<CustomerDto> RegisterAsync(CreateUpdateCustomerDto input)
-    {
-             return await CreateAsync(input);
-    }
-
-
+  
 
 
 
@@ -52,13 +46,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
     /// <inheritdoc/>
-    public override async Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
+    public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
         var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
         try
         {
-
-            if (! (await CheckIfPhoneNumberIsUnique(input.MobileNumber)))
+            var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
+            if (result1 == false)
             {
                 throw new Exception("Phone Number is used");
 
@@ -85,7 +79,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// </summary>
     /// <param name="result">IdentityResult type that has message</param>
     /// <returns>String of contains message</returns>
-    public string FormatErrorMessage(IdentityResult result)
+    public  string FormatErrorMessage(IdentityResult result)
     {
         string message = string.Empty;
         foreach (var error in result.Errors)
@@ -112,17 +106,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-    /// <summary>
-    /// Method used to check if phone number is uniquer per user.
-    /// </summary>
-    /// <param name="phoneNumber">Required to check phone number</param>
-    /// <returns>bool</returns>
+    /// <inheritdoc/>
 
     public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber) 
     {
+        var query = await _repository.GetQueryableAsync();
+        query = query.AsNoTracking();
+        var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
 
-        var result = await _repository.CountAsync(x => x.IdentityUser.PhoneNumber == phoneNumber);
-        if (result == 0) {
+        if (result.Count == 0) {
             return true;
         
         }
