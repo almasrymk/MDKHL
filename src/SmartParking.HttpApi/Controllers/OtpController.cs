@@ -18,25 +18,25 @@ public class OtpController : AbpController
         _otpAppService = otpAppService;
     }
 
-    [HttpPost("GenerateOtp")]
+    [HttpPost("generateOtp")]
     [Authorize(Roles = "admin")]
     public async Task<Result<string>> GenerateOtp([FromQuery] string phoneNumber)
     {
         return await _otpAppService.GenerateOtpAsync(phoneNumber);
     }
-    [HttpPost("VerfiyOtp")]
+    [HttpPost("verfiyOtp")]
     [Authorize(Roles = "admin")]
     public async Task<Result<bool>> VerfiyOtp([FromQuery] string phoneNumber, string otp)
     {
         return await _otpAppService.VerifyOtpAsync(phoneNumber,  otp);
     }
-    [HttpPost("RequestOtp")]
+    [HttpPost("requestOtp")]
     [Authorize(Roles = "admin")]
     public async Task<Result<string>> RequestOtp([FromQuery] Guid userId)
     {
         return await _otpAppService.GenerateOtpByUserIdAsync(userId);
     }
-    [HttpPost("ForgetPasswordOtp")]
+    [HttpPost("forgetPasswordOtp")]
     [Authorize(Roles = "admin")]
     public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtp([FromQuery] Guid userId)
     {
