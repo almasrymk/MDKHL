@@ -233,8 +233,7 @@
     "Password": ":كلمـة المرور",
     "Passport": "البـاسبور",
     "FullName": "الاسـم بالكـامل",
-    "Register": "تسجـيـل مستخدم"
-    "VehicleBrandEnglishName": "ماركة السيارة بالانجليزية",
+    "Register": "تسجـيـل مستخدم",
     "InvoiceNumber": "رقم الفاتورة",
     "InvoicePrice": "سعر الفاتورة",
     "InvoiceType": "نوع الفاتورة",
@@ -259,6 +258,5 @@
     "Total": "المجموع",
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء"
-
   }
 }
