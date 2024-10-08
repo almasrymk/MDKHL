@@ -30,13 +30,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
         user.SetProperty("OtpCode",null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            user.SetProperty("UserTypeId", 1);
-        }else if (CurrentUser.IsInRole(RolesType.Organization.ToString()))
-        {
-            user.SetProperty("UserTypeId", 2);
-        }
+        user.SetProperty("UserTypeId", input.UserType);
         var createdUser = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         if (!createdUser.Succeeded)
