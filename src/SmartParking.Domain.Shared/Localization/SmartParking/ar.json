@@ -228,7 +228,37 @@
     "Submit": "ارسـال",
     "VehicleBrand": "مـاركة السيارة",
     "LicenceType": "نوع التراخيـص",
-    "Customers": "العمـلاء"
-
+    "Customers": "العمـلاء",
+    "Repeat Password": "اعـادة ادخال كلمة المرور",
+    "Password": ":كلمـة المرور",
+    "Passport": "البـاسبور",
+    "FullName": "الاسـم بالكـامل",
+    "Register": "تسجـيـل مستخدم",
+    "InvoiceNumber": "رقم الفاتورة",
+    "InvoicePrice": "سعر الفاتورة",
+    "InvoiceType": "نوع الفاتورة",
+    "Invoices": "الفواتير",
+    "AddInvoices": "إضافة الفواتير",
+    "Vehicles": "المركبات",
+    "TotalHours": "عدد الساعات",
+    "InvoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
+    "Can'tCreateInvoice": "لا يمكن إنشاء فاتورة",
+    "OrganizationArabicName": "المنظمة باللغة العربية",
+    "GarageName": "اسم الجراج",
+    "InvoiceDetails": "تفاصيل الفاتورة",
+    "Print": "طباعة",
+    "ChoosePaymentMethod": "اختر طريقة الدفع",
+    "Discount": "تخفيض",
+    "TypeDiscountCode": "اكتب كود الخصم",
+    "AddDiscount%": "إضافة خصم %",
+    "Apply": "تطبق",
+    "Summary": "ملخص",
+    "DueValue": "القيمة المستحقة",
+    "VAT": "ضريبة القيمة المضافة",
+    "Total": "المجموع",
+    "CONFIRM": "تاكيد",
+    "CANCEL": "إلغاء"
+    "PackageTypeEnglishName": "نوع الباقة بالانجليزية"
+    
   }
 }

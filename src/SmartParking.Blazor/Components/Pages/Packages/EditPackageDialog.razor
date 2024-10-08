@@ -1,1 +1,203 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Packages
+@using Volo.Abp.Validation
+@inject IPackagesAppService PackagesAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Edit Package"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="Package.ArabicName"
+                                      For="@(() => Package.ArabicName)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label="@L["Arabic Name"]" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="Package.EnglishName"
+                                      For="@(() => Package.EnglishName)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label="@L["English Name"]" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="Package.Price"
+                                      For="@(() => Package.Price)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label="@L["Price"]" />
+                    </MudItem>
+
+
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="Package.OrgnizationId"
+                                      For="@(() => Package.OrgnizationId)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label="@L["OrgnizationId"]" />
+                    </MudItem>
+
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="Package.PackageType.EnglishName"
+                                      For="@(() => Package.PackageType.EnglishName)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label="@L["PackageType EnglishName"]" />
+                    </MudItem>
+
+                    <MudItem sm="4" md="4">
+                        <MudTimePicker Variant="Variant.Text"
+                                       Class="w-100"
+                                       TimeChanged="OnTimeFromChanged"
+                                       Label="@L["Publish From"]" />
+                    </MudItem>
+
+                    <MudItem sm="4" md="4">
+                        <MudTimePicker Variant="Variant.Text"
+                                       Class="w-100"
+                                       TimeChanged="OnTimeToChanged"
+                                       Label="@L["Publish To"]" />
+                    </MudItem>
+                    <MudItem sm="4">
+                        <MudSwitch Label="@L["published"]"
+                                   LabelPosition="LabelPosition.Start"
+                                   Placeholder="@L["published"]"
+                                   @bind-Value="Package.published"
+                                   Disabled='true'
+                                   Color="MudBlazor.Color.Primary" />
+                    </MudItem>
+                    <MudItem sm="12">
+                        <MudTextField @bind-Value="Package.Description"
+                                      For="@(() => Package.Description)"
+                                      Variant="Variant.Outlined"
+                                      Class="w-100"
+                                      Lines="5"
+                                      Disabled='true'
+                                      Label="@L["Description"]" />
+
+                    </MudItem>
+
+                    <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
+                        <div Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@Package.Status" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                            </MudRadioGroup>
+                        </div>
+                    </MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			<div class="overflow-hidden px-5 w-100">
+
+
+				<MudGrid>
+					<MudItem sm="6" md="6">
+
+						<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit">@L["Update"]</MudButton>
+					</MudItem>
+					<MudItem sm="6" md="6">
+
+						<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="CancelEdit">@L["Cancel"]</MudButton>
+					</MudItem>
+				</MudGrid>
+			</div>
+
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialogAdd { get; set; }
+    [Parameter] public CreateUpdatePackageDto Package { get; set; }
+    [Parameter]
+    public int UpdatedId { get; set; }
+    bool _clearable;
+    private MudForm form;
+    private TimeSpan? timeSpanFrom;
+    private TimeSpan? timeSpanTo;
+    protected override async Task OnInitializedAsync()
+    {
+        timeSpanFrom = Package.PublishFrom.ToTimeSpan();
+        timeSpanTo = Package.PublishTo.ToTimeSpan();
+        await base.OnInitializedAsync();
+    }
+    private void OnTimeFromChanged(TimeSpan? value)
+    {
+        // Handle null case and update CreateUpdatePackage.PublishFrom
+        if (value.HasValue)
+        {
+            timeSpanFrom = value;
+            Package.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+        }
+    }
+    private void OnTimeToChanged(TimeSpan? value)
+    {
+        // Handle null case and update CreateUpdatePackage.PublishTo
+        if (value.HasValue)
+        {
+            timeSpanTo = value;
+            Package.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        }
+    }
+    private async Task SubmitEdit()
+    {
+        try
+        {
+
+            await PackagesAppService.UpdateAsync(UpdatedId, Package);
+            Snackbar.Add("Package Updated Successfully", Severity.Success);
+            MudDialogAdd.Close(DialogResult.Ok(true));
+
+        }
+        catch (AbpValidationException ex)
+        {
+            foreach (var validationError in ex.ValidationErrors)
+            {
+                Snackbar.Add($"{validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception e)
+		{
+			Snackbar.Add(e.Message, Severity.Error);
+		}
+	}
+
+	private async Task CancelEdit()
+	{
+	    	MudDialogAdd.Cancel();
+
+
+	}
+
+
+}

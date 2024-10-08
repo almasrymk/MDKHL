@@ -1,58 +1,14 @@
-﻿@page "/packages"
-@using Customs
+﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Packages
-@using Volo.Abp.Application.Dtos
-@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
-
-@inject IPackagesAppService packageAppService
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
+@inject IPackagesAppService PackagesAppService
+@inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
-
-<h3>Packages</h3>
-
-<div>
-    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="PackageDto" MultiSelection="true" Items="@packages" SortMode="SortMode.Multiple" Filterable="true"
-                 Hideable="true">
-        <ToolBarContent>
-            <MudTextField Elevation="2" Placeholder="Search For Organizations" Adornment="Adornment.End" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
-            <MudSpacer />
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="CreatePackage">
-                CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
-            </MudButton>
-        </ToolBarContent>
-        <Columns>
-            <SelectColumn T="PackageDto" />
-            <PropertyColumn Property="x => x.EnglishName" Title="@L["Arabic Name"]" Sortable="false" Filterable="false" />
-            <PropertyColumn Property="x => x.PackageTypeEnglishName" Title="@L["Package Type"]" />
-            <PropertyColumn Property="x => x.Price" Title="@L["Price"]" />
-            <PropertyColumn Property="x => x.Description" Title="@L["Description"]" />
-            <PropertyColumn Property="x => x.Status" Title="@L["Status"]" />
-            <PropertyColumn Property="x => x.published" Title="@L["published"]" />
-
-            <TemplateColumn Title="Actions">
-                <CellTemplate>
-                    <MudMenu Icon="@Icons.Material.Filled.Settings">
-                        <MudMenuItem OnClick="@(e => OnClickRowEdit(context.Item))">Edit</MudMenuItem>
-@*                         <MudMenuItem OnClick="@ShowMessage()">test</MudMenuItem>
- *@                        <MudMenuItem>Delete</MudMenuItem>
-                    </MudMenu>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="PackageDto" />
-        </PagerContent>
-    </MudDataGrid>
-</div>
+@inject ISnackbar Snackbar
+@page "/packages"
 
 
+<h3>@L["Packages"]</h3>
 
-
-
-
-
+<SPDataGrid PageName="packages" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 

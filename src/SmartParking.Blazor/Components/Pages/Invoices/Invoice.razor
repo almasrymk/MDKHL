@@ -1,0 +1,14 @@
+﻿@page "/invoices"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using Volo.Abp.Application.Dtos
+@inherits AbpCrudPageBase<IInvoiceAppService, InvoiceDto, int, PagedAndSortedResultRequestDto, CreateUpdateInvoiceDto>
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<MudText Typo="Typo.h6">@L["Invoices"]</MudText>
+<SPDataGrid PageName="@L["Invoices"]" Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="HandleAdd" OnFiltering="HandleFilter" OnClickRowView="HandleView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
+

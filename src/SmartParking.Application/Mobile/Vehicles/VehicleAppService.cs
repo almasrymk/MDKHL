@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -14,6 +15,9 @@ using Volo.Abp.Users;
 
 
 namespace SmartParking.Mobile.Vehicles;
+
+[RemoteService(IsEnabled = false)]
+
 public class VehicleAppService : ApplicationService, IVehicleAppService
 {
     public readonly IRepository<Vehicle, int> _vehicleRepository;

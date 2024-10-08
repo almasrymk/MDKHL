@@ -305,6 +305,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -597,13 +600,13 @@ namespace SmartParking.Migrations
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("InvoiceId")
+                    b.Property<string>("InvoiceNumber")
                         .HasColumnType("text");
 
                     b.Property<decimal>("InvoicePrice")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("Invoicetype")
+                    b.Property<int>("InvoiceType")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -1566,6 +1569,8 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("OrganizationId");
 
+                    b.HasIndex("PackageTypeId");
+
                     b.ToTable("Packages");
                 });
 
@@ -1837,6 +1842,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
@@ -2731,10 +2739,8 @@ namespace SmartParking.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)");
 
-                    b.Property<DateTime>("OtpExpirationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                    b.Property<DateTime?>("OtpExpirationDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)
@@ -3921,7 +3927,15 @@ namespace SmartParking.Migrations
                         .WithMany("organizationPackages")
                         .HasForeignKey("OrganizationId");
 
+                    b.HasOne("SmartParking.Entities.PackageType", "PackageType")
+                        .WithMany()
+                        .HasForeignKey("PackageTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Organization");
+
+                    b.Navigation("PackageType");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.PackageCategory", b =>

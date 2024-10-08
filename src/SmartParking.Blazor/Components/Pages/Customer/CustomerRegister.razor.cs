@@ -14,8 +14,7 @@ public partial class CustomerRegister
     {
         try
         {
-            createUpdateCustomerDto.UserName = createUpdateCustomerDto.FullName;
-            createUpdateCustomerDto.NationalId = "1478963250";
+            createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
             var customer =  await CustomerAppService.CreateAsync(createUpdateCustomerDto);
             Console.WriteLine(customer);
             if (customer != null)
@@ -68,6 +67,10 @@ public partial class CustomerRegister
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 
+    public void HandleCancel()
+    {
+        Navigation.NavigateTo("/customers", true);
 
+    }
 
 }

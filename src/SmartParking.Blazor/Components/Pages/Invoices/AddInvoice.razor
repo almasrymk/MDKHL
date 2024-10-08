@@ -1,0 +1,154 @@
+﻿@page "/invoices/add"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Garages
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Vehicles
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@inject IInvoiceAppService InvoiceAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inject IGarageAppService GarageAppService
+@inject IVehiclesAppService VehiclesAppService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+<PageTitle>@L["AddInvoices"]</PageTitle>
+
+
+
+
+<MudItem>
+    <MudGrid>
+        <MudItem sm="8">
+            <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                <MudText Typo="Typo.h6" Class="fw-bold">@L["Invoices"]</MudText>
+                <MudForm Class="flex-grow-1 mt-4">
+                    <MudGrid>
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="input.InvoiceNumber" Placeholder="@L["InvoiceNumber"]" Label="@L["InvoiceNumber"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="int" InputType="InputType.Number" @bind-Value="input.TotalHours" Placeholder="@L["TotalHours"]" Label="@L["TotalHours"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="decimal" InputType="InputType.Number" @bind-Value="input.InvoicePrice" Placeholder="@L["InvoicePrice"]" Label="@L["InvoicePrice"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["Organizations"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       Required="true"
+                                       @bind-Value="input.OrganizationId">
+
+                                @foreach (var organization in organizations)
+                                {
+                                    <MudSelectItem Value="@organization.Id">@organization.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                       
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["Garages"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       Required ="true"
+                                       @bind-Value="input.GarageId">
+
+                                @foreach (var garage in garages)
+                                {
+                                    <MudSelectItem Value="@garage.Id">@garage.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                                  
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["Vehicles"]"
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       Required="true"
+                                       @bind-Value="input.VehicleId">
+
+                                @foreach (var vehicle in vehicles)
+                                {
+                                    <MudSelectItem Value="@vehicle.Id">@vehicle.Platenumber</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                      
+
+                    </MudGrid>
+
+                    <MudItem class="d-flex justify-content-between mt-auto">
+                        <MudButton OnClick="Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">@L["Print"]</MudButton>
+                    </MudItem>
+                </MudForm>
+
+            </MudPaper>
+        </MudItem>
+        <MudItem sm="4">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+                
+                    <MudText Typo="Typo.h5">@L["ChoosePaymentMethod"]</MudText>
+               <MudItem>
+                   <MudText Class="mb-3" Typo="Typo.h5">@L["Discount"]</MudText>
+                    <MudItem Class="d-flex justify-content-between align-items-end">
+                         <MudTextField @bind-Value="code" Placeholder="@L["TypeDiscountCode"]" Label="@L["AddDiscount%"]" ></MudTextField>
+                        <MudLink Underline="Underline.Always" Color="MudBlazor.Color.Tertiary">@L["Apply"]</MudLink>
+
+
+                    </MudItem>
+               </MudItem>
+                <MudText Class="mb-3 mt-3" Typo="Typo.h5">@L["Summary"]</MudText>
+
+                    <MudGrid >
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.h6">@L["DueValue"]</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                            <MudText Typo="Typo.h6">620.00 SAR</MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.h6">@L["VAT"]</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                            <MudText Typo="Typo.h6">45.00 SAR</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.h6">@L["Discount"]</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                            <MudText Typo="Typo.h6">-400.00 SAR</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                            <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">265.00 SAR</MudText>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid Class="mt-4">
+                        <MudItem xs="12" Class="text-center">
+                            <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["CONFIRM"]</MudButton>
+                        </MudItem>
+                        <MudItem xs="12" Class="text-center mt-2">
+                            <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark">@L["CANCEL"]</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                   
+              
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+</MudItem>

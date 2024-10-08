@@ -1,0 +1,157 @@
+﻿@page "/invoices/details/{Id:int}"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Garages
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Vehicles
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@inject IInvoiceAppService InvoiceAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inject IGarageAppService GarageAppService
+@inject IVehiclesAppService VehiclesAppService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+<PageTitle>@L["InvoiceDetails"]</PageTitle>
+
+<MudItem>
+    <MudGrid>
+        <MudItem sm="8">
+            <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                <MudText Typo="Typo.h3" Class="fw-bold">@L["InvoiceDetails"]</MudText>
+                <MudForm Class="flex-grow-1 mt-4">
+                    <MudGrid>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="InvoiceNumber"
+                                          For="@(() => InvoiceNumber)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["InvoiceNumber"]"
+                                          Disabled />
+                        </MudItem>
+                        
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="TotalHours"
+                             For="@(() => TotalHours)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["TotalHours"]"
+                            Disabled />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="InvoicePrice"
+                                          For="@(() => InvoicePrice)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["InvoicePrice"]"
+                                          Disabled />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="InvoiceType"
+                                          For="@(() =>InvoiceType)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["InvoiceType"]"
+                                          Disabled />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="OrganizationArabicName"
+                                          For="@(() => OrganizationArabicName)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["OrganizationArabicName"]"
+                                          Disabled />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="GarageName"
+                                          For="@(() => GarageName)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["GarageName"]"
+                                          Disabled />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="PlateNumber"
+                                          For="@(() => PlateNumber)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["PlateNumber"]"
+                                          Disabled />
+                        </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+
+
+                    </MudGrid>
+
+                    <MudItem class="d-flex justify-content-between mt-auto">
+                        <MudButton OnClick="Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Print"]</MudButton>
+                    </MudItem>
+                </MudForm>
+
+            </MudPaper>
+        </MudItem>
+
+        <MudItem sm="4">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+
+                <MudText Typo="Typo.h5">@L["ChoosePaymentMethod"]</MudText>
+                <MudItem>
+                    <MudText Class="mb-3" Typo="Typo.h5">@L["Discount"]</MudText>
+                    <MudItem Class="d-flex justify-content-between align-items-end">
+                        <MudTextField @bind-Value="code" Placeholder="@L["TypeDiscountCode"]" Label="@L["AddDiscount%"]"></MudTextField>
+                        <MudLink Underline="Underline.Always" Color="MudBlazor.Color.Tertiary">@L["Apply"]</MudLink>
+
+
+                    </MudItem>
+                </MudItem>
+                <MudText Class="mb-3 mt-3" Typo="Typo.h5">@L["Summary"]</MudText>
+
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudText Typo="Typo.h6">@L["DueValue"]</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="text-end">
+                        <MudText Typo="Typo.h6">620.00 SAR</MudText>
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudText Typo="Typo.h6">@L["VAT"]</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="text-end">
+                        <MudText Typo="Typo.h6">45.00 SAR</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText Typo="Typo.h6">@L["Discount"]</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="text-end">
+                        <MudText Typo="Typo.h6">-400.00 SAR</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="text-end">
+                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">265.00 SAR</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <MudGrid Class="mt-4">
+                    <MudItem xs="12" Class="text-center">
+                        <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["CONFIRM"]</MudButton>
+                    </MudItem>
+                    <MudItem xs="12" Class="text-center mt-2">
+                        <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark">@L["CANCEL"]</MudButton>
+                    </MudItem>
+                </MudGrid>
+
+
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+</MudItem>
+

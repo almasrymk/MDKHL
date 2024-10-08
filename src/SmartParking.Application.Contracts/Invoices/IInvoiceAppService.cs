@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Garages;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -25,5 +26,18 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <param name="input"> PagedAndSortedResultRequestDto</param>
     /// <returns>PagedResultDto of Invoice Dto</returns>
     public Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    /// <summary>
+    /// abstract method to search of invoices
+    /// </summary>
+    /// <param name="input">specifies max number of invoice and if it sorted or not and search term</param>
+    /// <returns>InvoiceDto</returns>
+    public Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+
+    /// <summary>
+    /// abstract method to filter of invoices
+    /// </summary>
+    /// <param name="input">specifies max number of invoices and if it sorted or not and filter</param>
+    /// <returns>InvoiceDto</returns>
+    public Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
 }
