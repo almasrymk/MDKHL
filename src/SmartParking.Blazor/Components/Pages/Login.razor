@@ -73,7 +73,7 @@
                         // Store a flag or token if needed
                         await LocalStorage.SetItemAsync("authToken", "dummyToken"); // You can customize this
 
-
+                        Snackbar.Add("Login successful! Redirecting to your dashboard...", Severity.Success);
                         NavigationManager.NavigateTo("/dashboard");
                     }
                     else
