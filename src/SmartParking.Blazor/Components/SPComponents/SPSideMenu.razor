@@ -6,7 +6,6 @@
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
-                <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.Group">@L["My Account"]</MudNavLink>
                 <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Group">@L["Login"]</MudNavLink>
                 <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
                 <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
@@ -28,10 +27,6 @@
                 <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
                     <MudNavLink Href="/edit-profile">@L["Profile"]</MudNavLink>
                     <MudNavLink Href="/packages">@L["Packages"]</MudNavLink>
-                    <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">subscription</MudNavLink>
-                </MudNavGroup>
-                <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="@L["Components"]">
-                    <MudNavLink Href="/data-grid" Icon="@Icons.Material.Filled.Group">@L["Data Grid"]</MudNavLink>
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Subscription"]</MudNavLink>
                 </MudNavGroup>
             </MudNavMenu>
