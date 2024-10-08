@@ -305,6 +305,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1566,6 +1569,8 @@ namespace SmartParking.Migrations
 
                     b.HasIndex("OrganizationId");
 
+                    b.HasIndex("PackageTypeId");
+
                     b.ToTable("Packages");
                 });
 
@@ -1837,6 +1842,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
@@ -3919,7 +3927,15 @@ namespace SmartParking.Migrations
                         .WithMany("organizationPackages")
                         .HasForeignKey("OrganizationId");
 
+                    b.HasOne("SmartParking.Entities.PackageType", "PackageType")
+                        .WithMany()
+                        .HasForeignKey("PackageTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Organization");
+
+                    b.Navigation("PackageType");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.PackageCategory", b =>
