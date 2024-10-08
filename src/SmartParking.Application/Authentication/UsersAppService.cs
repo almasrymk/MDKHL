@@ -31,6 +31,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
         user.SetProperty("OtpCode",null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
         user.SetProperty("UserTypeId", input.UserType);
+        user.SetProperty("OrganizationId", input.OrganizationId);
         var createdUser = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         if (!createdUser.Succeeded)

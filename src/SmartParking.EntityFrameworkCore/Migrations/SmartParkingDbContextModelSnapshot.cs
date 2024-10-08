@@ -1408,9 +1408,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("UnifiedLicenseNum")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("WhatsAppNum")
                         .HasColumnType("text");
 
@@ -2737,6 +2734,10 @@ namespace SmartParking.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("NormalizedUserName");
+
+                    b.Property<int>("OrganizationId")
+                        .HasMaxLength(500000)
+                        .HasColumnType("integer");
 
                     b.Property<string>("OtpCode")
                         .HasMaxLength(4)

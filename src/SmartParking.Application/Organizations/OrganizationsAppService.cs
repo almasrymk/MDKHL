@@ -43,6 +43,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
+        
+        var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
+        Console.WriteLine($"count of unified license number {query.Count}");
+        if (query.Count>0)
+        {
+            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.UnifiedLicenseNumUnifiedLicenseNum) + query.First().ArabicName);
+
+        }
+        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
+        await _repository.InsertAsync(organization,autoSave:true);
         UserCreateDto user = new UserCreateDto()
         {
             UserName = input.EnglishName,
@@ -52,19 +62,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             RoleNames = [RolesType.Organization.ToString()],
             Name = input.EnglishName,
             IsActive = true,
-            UserType = 1
+            UserType = 1,
+            OrganizationId = organization.Id,   
         };
-       var userCreated =  await _usersAppService.CreateAsync(user);
-        var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
-        Console.WriteLine($"count of unified license number {query.Count}");
-        if (query.Count>0)
-        {
-            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.UnifiedLicenseNumUnifiedLicenseNum) + query.First().ArabicName);
-
-        }
-        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
-        organization.UserId = userCreated.Id;
-        await _repository.InsertAsync(organization,autoSave:true);
+        
+        var userCreated = await _usersAppService.CreateAsync(user);
         organization.Code = CodeGenerator(organization.Id);
         await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name =EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description=EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);

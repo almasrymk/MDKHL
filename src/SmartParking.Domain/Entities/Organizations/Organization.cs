@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups;
 using SmartParking.Enums;
 using System;
@@ -32,13 +33,11 @@ public class Organization : BaseEntity
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
     public Status Status { get; set; } = Status.Active;
-    public Guid UserId  { get; set; }
     public virtual ICollection<Garage> OrganizationGarages { get; set; }
     public virtual ICollection<Camera> Cameras { get; set; }
     public virtual ICollection<Package> organizationPackages { get; set; }
     public virtual ICollection<ContactInfo> organizationContactInfos { get; set; }
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
-
 
 
 }
