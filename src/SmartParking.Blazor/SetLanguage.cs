@@ -12,6 +12,7 @@ namespace SmartParking.Blazor;
 [ApiController]
 public class SetLanguage : ControllerBase
 {
+    [HttpGet]
     public IActionResult SetLanguages()
     {
         IRequestCultureFeature culture = HttpContext.Features.Get<IRequestCultureFeature>();

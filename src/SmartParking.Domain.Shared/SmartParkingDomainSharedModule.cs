@@ -42,7 +42,7 @@ public class SmartParkingDomainSharedModule : AbpModule
         Configure<AbpLocalizationOptions>(options =>
         {
             options.Resources
-                .Add<SmartParkingResource>("ar")
+                .Add<SmartParkingResource>("en")
                 .AddBaseTypes(typeof(AbpValidationResource))
                 .AddVirtualJson("/Localization/SmartParking");
 
