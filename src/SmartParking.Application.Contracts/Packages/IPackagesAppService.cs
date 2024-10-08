@@ -1,10 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using SmartParking.Cameras;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Application.Services;
 
 namespace SmartParking.Packages
 {
-	public interface IPackagesAppService
+	public interface IPackagesAppService:
+         ICrudAppService<
+        PackageDto,
+        int,
+        PagedAndSortedResultRequestDto,
+        CreateUpdatePackageDto
+        >
     {
         /// <summary>
         /// Retrieves a list of packages associated with a specified organization ID.
@@ -17,21 +25,22 @@ namespace SmartParking.Packages
 		/// </summary>
 		/// <param name="input">Create Package dto</param>
 		/// <returns>Package Dto</returns>
-		Task<PackageDto> CreateAsync(CreateUpdatePackageDto input);
+		//Task<PackageDto> CreateAsync(CreateUpdatePackageDto input);
 
-		/// <summary>
-		/// abstract method to get list of Packages
-		/// </summary>
-		/// <param name="input">specifies max number of Packages and if it sorted or not</param>
-		/// <returns>Package Dto</returns>
-		Task<PagedResultDto<PackageDto>> GetListAsync(PackageListDto input);
+        /// <summary>
+        /// abstract method to get list of Packages
+        /// </summary>
+        /// <param name="input">specifies max number of Packages and if it sorted or not</param>
+        /// <returns>Package Dto</returns>
+        //Task<PagedResultDto<PackageDto>> GetListAsync(PackageListDto input);
+        //public Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
-		/// <summary>
-		/// abstract method to get Package by id
-		/// </summary>
-		/// <param name="id">id of Package</param>
-		/// <returns>Package Dto</returns>
-		Task<PackageDto> GetAsync(int id);
+        /// <summary>
+        /// abstract method to get Package by id
+        /// </summary>
+        /// <param name="id">id of Package</param>
+        /// <returns>Package Dto</returns>
+        //Task<PackageDto> GetAsync(int id);
 
 		/// <summary>
 		/// abstract method to get Packages by OrgnizationId
@@ -40,7 +49,7 @@ namespace SmartParking.Packages
 		/// <param name="input">specifies max number of Packages and if it sorted or not</param>
 		/// 
 		/// <returns>Package Dto</returns>
-		Task<PagedResultDto<PackageDto>> GetbyOrganizationAsync(PackageListDto input , int OrgnizationId);
+		//Task<PagedResultDto<PackageDto>> GetbyOrganizationAsync(PackageListDto input , int OrgnizationId);
 
 		/// <summary>
 		/// abstract method used to update Package
@@ -49,14 +58,21 @@ namespace SmartParking.Packages
 		/// <param name="input">updated Package dto</param>
 		/// <returns>updated Package dto</returns>
 		/// 
-		Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input);
+		//Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input);
 
-		///// <summary>
-		///// abstract method to delete DefaultPackage
-		///// </summary>
-		///// <param name="id">id of DefaultPackage</param>
-		///// <returns>successfull message of deletion</returns>
-		
+        ///// <summary>
+        ///// abstract method to delete DefaultPackage
+        ///// </summary>
+        ///// <param name="id">id of DefaultPackage</param>
+        ///// <returns>successfull message of deletion</returns>
+        public Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
-	}
+        /// <summary>
+        /// abstract method to filter of cameras
+        /// </summary>
+        /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
+        /// <returns>Camera Dto</returns>
+        public Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    }
 }
