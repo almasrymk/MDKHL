@@ -9,8 +9,6 @@ namespace SmartParking.Entities.Subscriptions;
 
 public class SubscriptionType : FullAuditedEntity<int>
 {
-    public string Monthly { get; set; }
-    public string Quarterly { get; set; }
-    public string Yearly { get; set; }
+    public string Type { get; set; }
 
 }

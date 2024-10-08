@@ -22,5 +22,6 @@ public class Subscription : FullAuditedEntity<int>, IMultiTenant
     public int NumberOfCustomers { get; set; }
     public int NumberOfMobileCustomers { get; set; }
     public int SubscriptionTypeId { get; set; }
+    public virtual SubscriptionType SubscriptionType { get; set; }
     public Guid? TenantId { get; set; }
 }
