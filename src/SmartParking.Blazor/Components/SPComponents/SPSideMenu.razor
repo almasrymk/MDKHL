@@ -1,6 +1,15 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using System.Text.Json
+@using Volo.Abp.Account
 @inject IStringLocalizer<SmartParkingResource> L
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject ISnackbar Snackbar
+@inject Microsoft.AspNetCore.Identity.SignInManager<Volo.Abp.Identity.IdentityUser> SignInManager
+
+
 <div class="pt-5">
     <MudDrawerContainer Class="mud-height-full" >
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
@@ -35,7 +44,7 @@
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Subscription"]</MudNavLink>
                 </MudNavGroup>
             </MudNavMenu>
-        <MudButton Variant="Variant.Filled" Class="logout-button rounded-0 mt-20">
+        <MudButton Variant="Variant.Filled" Class="logout-button rounded-0 mt-20" OnClick="HandleLogout">
                 Logout
         </MudButton>
             <div class="icon-logout-button mt-20">
@@ -53,6 +62,37 @@
     private bool _open = true;
     private bool _expanded = true;
     private void ToggleDrawer() => _open = !_open;
+
+    public async Task HandleLogout()
+    {
+        try
+        {
+            var response = await Http.GetAsync($"{NavigationManager.BaseUri}api/account/logout");
+            if (response.IsSuccessStatusCode)
+            {
+
+                
+                    // Store a flag or token if needed
+                    await LocalStorage.RemoveItemAsync("authToken"); // You can customize this
+
+                    Snackbar.Add("Login successful! Redirecting to your dashboard...", Severity.Success);
+                    NavigationManager.NavigateTo("/login");
+                
+                    Snackbar.Add("Logged out successfully", Severity.Success);
+                
+            }
+            else
+            {
+                Snackbar.Add("Log out failed", Severity.Error);
+            }
+            
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
 
 }
 
