@@ -179,6 +179,19 @@
     "PlateColorArabicName": "PlateColorArabicName",
     "PlateColorEnglishName": "PlateColorEnglishName",
     "VehicleBrandArabicName": "VehicleBrandArabicName",
-    "VehicleBrandEnglishName": "VehicleBrandEnglishName"
+    "VehicleBrandEnglishName": "VehicleBrandEnglishName",
+    "Email": "Email",
+    "UserName": "UserName",
+    "NationalId": "National ID",
+    "MobileNumber": "Mobile Number",
+    "ModelYear": "Model Year",
+    "BelongToCompany": "Belong to Company",
+    "CompanyName": "Company Name",
+    "Submit": "Submit",
+    "VehicleBrand": "Vehicle Brand",
+    "LicenceType": "Licence Type",
+    "Customers": "Customers"
+
+
   } 
 }

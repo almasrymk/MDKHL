@@ -12,7 +12,7 @@ namespace SmartParking.Entities.Vehicles
     public class Vehicle : FullAuditedEntity<int>, IMultiTenant
 	{
         public int Id { get; set; }
-
+        public Guid CustomerId { get; set; }
         public virtual VehicleModel VehicleModel { get; set; }
         public int VehicleModelId { get; set; }
         public virtual VehicleBrand VehicleBrand { get; set; }
