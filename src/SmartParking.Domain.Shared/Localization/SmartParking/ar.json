@@ -228,7 +228,11 @@
     "Submit": "ارسـال",
     "VehicleBrand": "مـاركة السيارة",
     "LicenceType": "نوع التراخيـص",
-    "Customers": "العمـلاء"
+    "Customers": "العمـلاء",
+    "Repeat Password": "اعـادة ادخال كلمة المرور",
+    "Password": ":كلمـة المرور",
+    "Passport": "البـاسبور",
+    "FullName": "الاسـم بالكـامل"
 
   }
 }
