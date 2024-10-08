@@ -190,7 +190,14 @@
     "Submit": "Submit",
     "VehicleBrand": "Vehicle Brand",
     "LicenceType": "Licence Type",
-    "Customers": "Customers"
+    "Customers": "Customers",
+    "Repeat Password": "Repeat Password",
+    "Password": "Password",
+    "Passport": "Passport",
+    "FullName": "Full Name",
+    "Register": "Register"
+
+
 
 
   } 

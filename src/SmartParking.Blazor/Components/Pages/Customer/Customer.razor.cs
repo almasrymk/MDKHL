@@ -118,26 +118,30 @@ public partial class Customer
         Navigation.NavigateTo("/customers/register", true);
     }
 
-    private void CreateTable(PagedResultDto<CustomerDto> garages)
+    private void CreateTable(PagedResultDto<CustomerDto> customers)
 	{
 		// Initialize table data to be displayed, setting the table's name and whether to show the header
 		var tableData = new TableData()
 		{
-			Name = "Garages",
+			Name = "Customers",
 			ShowHeader = true
 		};
 
 
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyNmae = "UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["FullName"], Name = "FullName", IsFilterable = true, PropertyNmae = "FullName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyNmae = "Email", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NationalId"], Name = "NationalId", IsFilterable = true, PropertyNmae = "NationalId", IsSortable = true, TypeFilter = TypeFilter.Enum });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
-		foreach (var item in garages.Items)
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = false, PropertyNmae = "MobileNumber", IsSortable = false, TypeFilter = TypeFilter.Number });
+		foreach (var item in customers.Items)
 		{
 			var rowDef = new RowDef();
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserName"], item.UserName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["FullName"], item.FullName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.Email));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NationalId"], item.NationalId));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MobileNumber"], item.MobileNumber));

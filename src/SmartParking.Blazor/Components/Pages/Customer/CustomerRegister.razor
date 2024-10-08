@@ -7,8 +7,10 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
 
-<PageTitle>Register</PageTitle>
+
+<PageTitle>@L["Register"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="8">
@@ -17,26 +19,40 @@
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.FullName" Label="Name" Required />
+                            <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.FullName" Label="@L["Name"]" Required />
+                        </MudItem> 
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.ArabicName" Label="@L["ArabicName"]" Required />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="Email" @bind-Value="createUpdateCustomerDto.Email" />
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="Password" @bind-Value="createUpdateCustomerDto.Password"/>
+                            <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="@L["Password"]" @bind-Value="createUpdateCustomerDto.Password" Required />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="Repeat Password" @bind-Value="createUpdateCustomerDto.RepeatPassword"/>
+                            <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="@L["Repeat Password"]" @bind-Value="createUpdateCustomerDto.RepeatPassword" Required/>
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField T="string" InputType="InputType.Telephone" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" @bind-Value="createUpdateCustomerDto.MobileNumber" Required/>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string"  Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required/>
+                        </MudItem>
+                        <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                            <MudItem Class="d-flex flex-row justify-content-between">
+                                <MudRadioGroup @bind-Value="@createUpdateCustomerDto.IdentificationType" Class="d-inline-flex align-content-center">
+                                    <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                                    <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                                </MudRadioGroup>
+                            </MudItem>
                         </MudItem>
                        
 
                     </MudGrid>
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">"@L["Cancel"]"</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit">"@L["Submit"]"</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="HandleCancel">@L["Cancel"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit">@L["Submit"]</MudButton>
                     </div>
                 </MudForm>
 
