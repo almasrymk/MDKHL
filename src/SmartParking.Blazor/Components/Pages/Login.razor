@@ -60,34 +60,39 @@
 
         try
         {
-            var response = await Http.PostAsync($"{NavigationManager.BaseUri}api/account/login", requestContent);
-            if (response.IsSuccessStatusCode)
+            if (form.IsValid)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var loginResponse = JsonSerializer.Deserialize<LoginResponse>(content);
-
-                if (loginResponse.result == 1) // Assuming 1 means success
+                var response = await Http.PostAsync($"{NavigationManager.BaseUri}api/account/login", requestContent);
+                if (response.IsSuccessStatusCode)
                 {
-                    // Store a flag or token if needed
-                    await LocalStorage.SetItemAsync("authToken", "dummyToken"); // You can customize this
+                    var content = await response.Content.ReadAsStringAsync();
+                    var loginResponse = JsonSerializer.Deserialize<LoginResponse>(content);
+
+                    if (loginResponse.result == 1) // Assuming 1 means success
+                    {
+                        // Store a flag or token if needed
+                        await LocalStorage.SetItemAsync("authToken", "dummyToken"); // You can customize this
 
 
-                    NavigationManager.NavigateTo("/dashboard");
+                        NavigationManager.NavigateTo("/dashboard");
+                    }
+                    else
+                    {
+                        Snackbar.Add($"Login failed: {loginResponse.description}", Severity.Error);
+                    }
                 }
                 else
                 {
-                    Snackbar.Add($"Login failed: {loginResponse.description}", Severity.Error);
+                    Snackbar.Add("Login failed. Please check your credentials.", Severity.Error);
                 }
-            }
-            else
-            {
-                Snackbar.Add("Login failed. Please check your credentials.", Severity.Error);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
+
+
     }
 
     public class LoginModel
