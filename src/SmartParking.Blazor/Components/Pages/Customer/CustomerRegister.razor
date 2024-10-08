@@ -36,9 +36,6 @@
                         <MudItem sm="4">
                             <MudTextField T="string" InputType="InputType.Telephone" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" @bind-Value="createUpdateCustomerDto.MobileNumber" Required/>
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField T="string"  Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required/>
-                        </MudItem>
                         <MudItem sm="6" Class="d-inline-flex justify-content-center">
                             <MudItem Class="d-flex flex-row justify-content-between">
                                 <MudRadioGroup @bind-Value="@createUpdateCustomerDto.IdentificationType" Class="d-inline-flex align-content-center">
@@ -46,6 +43,9 @@
                                     <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
                                 </MudRadioGroup>
                             </MudItem>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField T="string"  Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required/>
                         </MudItem>
                        
 
