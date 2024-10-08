@@ -1,4 +1,5 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.Entities;
+using SmartParking.Enums;
 using System;
 
 namespace SmartParking.Packages
@@ -8,7 +9,9 @@ namespace SmartParking.Packages
         public int Id { get; set; }
         public string ArabicName { get; set; }
 		public string EnglishName { get; set; }
-		public int PackageTypeId { get; set; }
+        public PackageType PackageType { get; set; }
+
+        public int PackageTypeId { get; set; }
         public string PackageTypeArabicName { get; set; }
         public string PackageTypeEnglishName { get; set; }
         public decimal Price { get; set; }
