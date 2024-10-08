@@ -67,6 +67,10 @@ public partial class CustomerRegister
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 
+    public void HandleCancel()
+    {
+        Navigation.NavigateTo("/customers", true);
 
+    }
 
 }

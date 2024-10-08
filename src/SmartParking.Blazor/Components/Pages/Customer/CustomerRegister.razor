@@ -7,8 +7,10 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
 
-<PageTitle>Register</PageTitle>
+
+<PageTitle>@L["Register"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="8">
@@ -49,7 +51,7 @@
 
                     </MudGrid>
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Cancel"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="HandleCancel">@L["Cancel"]</MudButton>
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit">@L["Submit"]</MudButton>
                     </div>
                 </MudForm>
