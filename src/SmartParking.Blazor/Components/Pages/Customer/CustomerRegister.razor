@@ -1,8 +1,9 @@
-﻿@page "/register"
+﻿@page "/customers/register"
 @using SmartParking.Cutomers
 @layout Shared.ProfileLayout
 @inject ICustomerAppService CustomerAppService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
@@ -34,8 +35,8 @@
 
                     </MudGrid>
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">Cancel</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit" OnClick="HandleSubmit">Submit</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">"@L["Cancel"]"</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit">"@L["Submit"]"</MudButton>
                     </div>
                 </MudForm>
 
