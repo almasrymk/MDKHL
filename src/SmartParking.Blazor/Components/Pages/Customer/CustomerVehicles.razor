@@ -7,16 +7,39 @@
 
 <div class="modal-wrapper">
     <MudDialog Class="mud-modal">
-
         <TitleContent>
             <MudText Typo="Typo.h6">@L["Details for Customer"] @Customer.FullName</MudText>
         </TitleContent>
+
         <DialogContent>
             <MudGrid>
-                <MudItem Class="w-100 h-auto">
+                <MudItem xs="12">
                     <MudGrid>
-                        <MudTable T="VehicleDto" Items="vehicles" Breakpoint="MudBlazor.Breakpoint.LgAndUp">
+                        <MudItem xs="12" sm="4">
+                            <MudTextField T="string" @bind-Value="Customer.FullName" Label="@L["Name"]" Disabled="true" FullWidth="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="4">
+                            <MudTextField T="string" @bind-Value="Customer.ArabicName" Label="@L["ArabicName"]" Disabled="true" FullWidth="true" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" sm="4">
+                            <MudTextField T="string" Label="@L["NationalId"]" @bind-Value="Customer.NationalId" Disabled="true" FullWidth="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" Label="@L["Email"]" @bind-Value="Customer.Email" Disabled="true" FullWidth="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" Label="@L["Contact Phone"]" @bind-Value="Customer.MobileNumber" Disabled="true" FullWidth="true" />
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
 
+                <MudDivider />
+
+                <MudItem xs="12">
+                    <MudText>@Customer.FullName Vehicles</MudText>
+                    <MudGrid>
+                        <MudTable T="VehicleDto" Items="vehicles" Breakpoint="MudBlazor.Breakpoint.LgAndUp" Class="w-100">
                             <HeaderContent>
                                 <MudTh>@L["ModelYear"]</MudTh>
                                 <MudTh>@L["PlateNumber"]</MudTh>
@@ -28,30 +51,21 @@
                                 <MudTd DataLabel="@L["PlateNumber"]">@context.Platenumber</MudTd>
                                 <MudTd DataLabel="@L["BelongToCompany"]">@context.BelongToCompany</MudTd>
                                 <MudTd DataLabel="@L["CompanyName"]">@context.CompanyName</MudTd>
-
-                           
                             </RowTemplate>
-                            
                         </MudTable>
-
                     </MudGrid>
-
                 </MudItem>
             </MudGrid>
         </DialogContent>
 
-
         <DialogActions>
             <div class="overflow-hidden px-5 w-100">
-
                 <MudGrid>
                     <MudItem sm="6" md="6">
-
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="OnCloseViewOnly">@L["Cancel"]</MudButton>
                     </MudItem>
                 </MudGrid>
             </div>
-
         </DialogActions>
     </MudDialog>
 
