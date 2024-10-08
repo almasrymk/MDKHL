@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Regions;
 using SmartParking.Localization;
-using SmartParking.Lookups.Region;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Invoices;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -25,7 +24,6 @@ public partial class Invoice
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
     public Invoice(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
@@ -115,7 +113,7 @@ public partial class Invoice
 
     }
 
-    private void CreateTable(PagedResultDto<InvoiceDto> regions)
+    private void CreateTable(PagedResultDto<InvoiceDto> invoices)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -131,7 +129,7 @@ public partial class Invoice
 
 
 
-        foreach (var item in regions.Items)
+        foreach (var item in invoices.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
@@ -145,34 +143,14 @@ public partial class Invoice
         itemData = tableData;
     }
 
-    private Task CreateInvoice()
+    private void HandleAdd()
     {
-
-
-        return Dialog.ShowAsync<AddInvoiceDialog>("Simple Dialog", options);
-
-
+        Navigation.NavigateTo("/invoices/add", true);
     }
-
-
-    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    private void HandleView(RowDef row)
     {
-
-        var id = int.Parse(row.Cells[0].Value);
-
-        var regionDto = await AppService.GetAsync(id);
-
-
-        var parameters = new DialogParameters
-        {
-            ["region"] = regionDto,
-        };
-
-
-        return await Dialog.ShowAsync<DetailsRegionDialog>("View Region", parameters);
+        Navigation.NavigateTo("/invoices/details/" + row.Cells[0].Value, true);
     }
-
-
     /// <summary>
 
     /// Displays a snackbar notification with the specified message and severity.

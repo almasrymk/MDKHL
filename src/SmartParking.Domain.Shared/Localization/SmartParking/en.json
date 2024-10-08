@@ -183,6 +183,28 @@
     "InvoiceNumber": "Invoice Number",
     "InvoicePrice": "Invoice Price",
     "InvoiceType": "Invoice Type",
-    "Invoices": "Invoices"
+    "Invoices": "Invoices",
+    "AddInvoices": "Add Invoices",
+    "Organization": "Organization",
+    "Vehicles": "Vehicles",
+    "TotalHours": "Total Hours",
+    "InvoiceCreatedSuccessfully": "Invoice Created Successfully",
+    "Can'tCreateInvoice": "Can't Create Invoice",
+    "OrganizationArabicName": "Organization Arabic Name",
+    "GarageName": "Garage Name",
+    "InvoiceDetails": "Invoice Details",
+    "Print": "Print",
+    "ChoosePaymentMethod": "Choose Payment Method",
+    "Discount": "Discount",
+    "TypeDiscountCode": "Type discount code",
+    "AddDiscount%": "Add Discount %",
+    "Apply": "Apply",
+    "Summary": "Summary",
+    "DueValue": "Due Value",
+    "VAT": "VAT",
+    "Total": "Total",
+    "CONFIRM": "CONFIRM",
+    "CANCEL": "CANCEL"
+
   } 
 }

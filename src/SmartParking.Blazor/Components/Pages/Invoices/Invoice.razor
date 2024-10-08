@@ -7,9 +7,8 @@
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
+@inject NavigationManager Navigation
 
-
-<h3>@L["Invoices"]</h3>
-
-<SPDataGrid PageName="invoices" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter"  OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateInvoice"  />
+<MudText Typo="Typo.h6">@L["Invoices"]</MudText>
+<SPDataGrid PageName="@L["Invoices"]" Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="HandleAdd" OnFiltering="HandleFilter" OnClickRowView="HandleView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 
