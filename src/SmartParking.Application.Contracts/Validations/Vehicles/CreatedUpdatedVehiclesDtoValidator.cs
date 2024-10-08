@@ -17,6 +17,7 @@ public class CreatedUpdatedVehiclesDtoValidator:AbstractValidator<CreateUpdateVe
 		RuleFor(x => x.PlateColorId).NotEmpty();
 		RuleFor(x => x.LicenceTypeId).NotEmpty();
 		RuleFor(x => x.ModelYear).NotEmpty();
+		RuleFor(x => x.PlateNumber).NotEmpty();
 		// Check that BelongToCompany is not null and if it's true, ensure CompanyName is provided
 		RuleFor(x => x.BelongToCompany)
 			.Must(b => b != null)
