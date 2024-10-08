@@ -221,5 +221,17 @@
     "Passport": "Passport",
     "FullName": "Full Name",
     "Register": "Register"
+    "Customers": "Customers",
+
+    "PackageTypeEnglishName": "PackageTypeEnglishName",
+    "Price": "Price",
+    "Description": "Description",
+    "published": "published",
+    "Organizations": "Organizations",
+    "Package Type": "Package Type",
+    "Publish From": "Publish From",
+    "Publish To": "Publish To"
+
+
   } 
 }
