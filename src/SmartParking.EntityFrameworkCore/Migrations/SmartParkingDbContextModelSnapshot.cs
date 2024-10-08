@@ -305,6 +305,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1838,6 +1841,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
@@ -2734,7 +2740,7 @@ namespace SmartParking.Migrations
                     b.Property<DateTime>("OtpExpirationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                        .HasDefaultValue(new DateTime(2024, 10, 8, 15, 57, 59, 487, DateTimeKind.Local).AddTicks(4428));
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)
@@ -2783,7 +2789,6 @@ namespace SmartParking.Migrations
                         .HasColumnName("UserName");
 
                     b.Property<int>("UserTypeId")
-                        .HasMaxLength(500000)
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
