@@ -1,4 +1,5 @@
 ﻿using Scriban.Syntax;
+using SmartParking.Authentication;
 using SmartParking.CustomerCategories;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
@@ -25,14 +26,16 @@ namespace SmartParking.Organizations;
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
+    private readonly IUsersAppService _usersAppService;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
     private readonly IIdentityUserAppService _userAppService;
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository ,IUsersAppService usersAppService, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService) : base(repository)
     {
         _repository = repository;
+        _usersAppService = usersAppService;
         _customerCategoryAppService = customerCategoryAppService;
          _softDeleteFilter = softDeleteFilter;
         _userAppService = userAppService;
@@ -40,18 +43,18 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
-        IdentityUserCreateDto user = new IdentityUserCreateDto()
+        UserCreateDto user = new UserCreateDto()
         {
             UserName = input.EnglishName,
             PhoneNumber = input.WhatsAppNum,
             Email = input.ContactMail,
             Password = "P@ssw0rd",
-            RoleNames = ["OrganizationAdmin"],
+            RoleNames = [RolesType.Organization.ToString()],
             Name = input.EnglishName,
             IsActive = true,
-            
+            UserType = 1
         };
-        await _userAppService.CreateAsync(user);
+       var userCreated =  await _usersAppService.CreateAsync(user);
         var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
         Console.WriteLine($"count of unified license number {query.Count}");
         if (query.Count>0)
@@ -60,6 +63,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         }
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
+        organization.UserId = userCreated.Id;
         await _repository.InsertAsync(organization,autoSave:true);
         organization.Code = CodeGenerator(organization.Id);
         await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name =EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description=EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});

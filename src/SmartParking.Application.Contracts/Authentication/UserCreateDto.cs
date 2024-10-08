@@ -12,5 +12,5 @@ namespace SmartParking.Authentication;
 
 public class UserCreateDto: IdentityUserCreateDto
 {
-   
+    public int UserType { get; set; }
 }
