@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Results;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -11,7 +9,9 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Mobile.Otps;
 
-public class OtpAppService : ApplicationService, IOtpService
+[RemoteService(IsEnabled = false)]
+
+public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly Random _random;
     private const int OtpLength = 4;
@@ -72,8 +72,8 @@ public class OtpAppService : ApplicationService, IOtpService
         if (storedOtp == otp && otpExpirationDate >= currentTime   )
         {
             // OTP is valid, clear OTP fields
-            user.SetProperty("OtpCode", null);
-            user.SetProperty("OtpExpirationDate", DateTime.UtcNow);
+            user?.SetProperty("OtpCode", null);
+            user?.SetProperty("OtpExpirationDate", DateTime.UtcNow);
             await _userRepository.UpdateAsync(user);
 
             // Return success result with true

@@ -1,17 +1,17 @@
 ﻿using SmartParking.Entities.Banners;
-using SmartParking.Entities.Invoices;
-using SmartParking.Invoices;
+
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Mobile.Banners;
+
+[RemoteService(IsEnabled = false)]
 
 public class BannerAppService : ApplicationService, IBannerAppService
 {

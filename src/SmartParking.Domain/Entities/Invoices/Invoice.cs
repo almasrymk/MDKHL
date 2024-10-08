@@ -13,10 +13,10 @@ namespace SmartParking.Entities.Invoices;
 
 public class Invoice : FullAuditedEntity<int> , IMultiTenant
 {
-    public string InvoiceId { get; set; }
+    public string InvoiceNumber { get; set; }
     public int TotalHours { get; set; }
     public decimal InvoicePrice { get; set; }
-    public InvoiceType Invoicetype { get; set; }
+    public InvoiceType InvoiceType { get; set; }
     public int OrganizationId { get; set; }
     public virtual Organization Organization { get; set; }
     public int GarageId  { get; set; }
