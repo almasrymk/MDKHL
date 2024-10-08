@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
 
@@ -25,6 +26,8 @@ namespace SmartParking.Packages
         public string ActivedBy { get; set; }
         public DateTime DectivationDate { get; set; }
         public string DeactivatedBy { get; set; }
+        //public  Organization Organization { get; set; }
+
         public int OrgnizationId { get; set; }
         public string OrganizationArabicName { get; set; }
         public string OrganizationEnglishName { get; set; }

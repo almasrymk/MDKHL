@@ -179,8 +179,8 @@ public partial class Package
 			PublishFrom = packageDto.PublishFrom,
 			PublishTo = packageDto.PublishTo,
 			Status = packageDto.Status,
-		
-
+			PackageType=packageDto.PackageType,
+			//Organization=packageDto.Organization,
 
 		};
 
@@ -217,6 +217,8 @@ public partial class Package
             PublishFrom = packageDto.PublishFrom,
             PublishTo = packageDto.PublishTo,
             Status = packageDto.Status,
+            PackageType = packageDto.PackageType,
+           // Organization = packageDto.Organization,
 
         };
 

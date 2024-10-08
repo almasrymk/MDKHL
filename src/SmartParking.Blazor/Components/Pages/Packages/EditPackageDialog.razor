@@ -52,12 +52,12 @@
                     </MudItem>
 
                     <MudItem sm="4" md="4">
-                        <MudTextField @bind-Value="Package.PackageTypeId"
-                                      For="@(() => Package.PackageTypeId)"
+                        <MudTextField @bind-Value="Package.PackageType.EnglishName"
+                                      For="@(() => Package.PackageType.EnglishName)"
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["PackageTypeId"]" />
+                                      Label="@L["PackageType EnglishName"]" />
                     </MudItem>
 
                     <MudItem sm="4" md="4">
