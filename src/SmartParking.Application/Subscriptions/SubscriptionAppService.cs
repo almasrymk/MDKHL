@@ -169,7 +169,6 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         {
 
             queryable = queryable.Where(sub =>
-                sub.SubscriptionType.ToString().StartsWith(input.SearchingTerm) ||
                 sub.Status.ToString().StartsWith(input.SearchingTerm)
             );
         }
