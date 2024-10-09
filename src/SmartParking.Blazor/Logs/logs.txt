@@ -115667,3 +115667,1010 @@ Volo.Abp.AbpException: Can not parse json string. '"' is invalid after a value. 
 2024-10-08 17:49:53.853 +03:00 [INF] Application is shutting down...
 2024-10-08 17:49:53.862 +03:00 [DBG] Stopped background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
 2024-10-08 17:49:53.862 +03:00 [DBG] Stopped background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-10-09 10:42:37.181 +03:00 [INF] Starting web host.
+2024-10-09 10:43:22.023 +03:00 [INF] Loaded ABP modules:
+2024-10-09 10:43:22.026 +03:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-10-09 10:43:22.026 +03:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-10-09 10:43:22.027 +03:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-10-09 10:43:22.027 +03:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-10-09 10:43:22.027 +03:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-10-09 10:43:22.027 +03:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-10-09 10:43:22.027 +03:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-10-09 10:43:22.027 +03:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-10-09 10:43:22.027 +03:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-10-09 10:43:22.027 +03:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-10-09 10:43:22.027 +03:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-10-09 10:43:22.027 +03:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-10-09 10:43:22.027 +03:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-10-09 10:43:22.027 +03:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-10-09 10:43:22.027 +03:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-10-09 10:43:22.027 +03:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-10-09 10:43:22.027 +03:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-10-09 10:43:22.027 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-10-09 10:43:22.027 +03:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-10-09 10:43:22.027 +03:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-10-09 10:43:22.027 +03:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-10-09 10:43:22.028 +03:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-10-09 10:43:22.028 +03:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-10-09 10:43:22.028 +03:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-10-09 10:43:22.028 +03:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-10-09 10:43:22.029 +03:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-10-09 10:43:22.029 +03:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-10-09 10:43:22.029 +03:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-10-09 10:43:22.029 +03:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-10-09 10:43:22.029 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-10-09 10:43:22.029 +03:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-10-09 10:43:22.029 +03:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-10-09 10:43:22.029 +03:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-10-09 10:43:22.029 +03:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-10-09 10:43:22.029 +03:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-10-09 10:43:22.029 +03:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-10-09 10:43:22.029 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-10-09 10:43:22.030 +03:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-10-09 10:43:22.030 +03:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-10-09 10:43:22.030 +03:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-10-09 10:43:22.030 +03:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-10-09 10:43:22.030 +03:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-10-09 10:43:22.030 +03:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-10-09 10:43:22.030 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-10-09 10:43:22.030 +03:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-10-09 10:43:22.030 +03:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-10-09 10:43:22.030 +03:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-10-09 10:43:22.031 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-10-09 10:43:22.031 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-10-09 10:43:22.031 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-10-09 10:43:22.031 +03:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-10-09 10:43:22.031 +03:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-10-09 10:43:22.031 +03:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-10-09 10:43:22.031 +03:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-10-09 10:43:22.031 +03:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-10-09 10:43:22.031 +03:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-10-09 10:43:22.031 +03:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-10-09 10:43:22.164 +03:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-10-09 10:43:22.225 +03:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-10-09 10:43:27.355 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:43:27.355 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:43:27.355 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:43:27.651 +03:00 [ERR] 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetQueryableAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetListAsync(Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.UpdateChangedPermissionGroupsAsync(IEnumerable`1 permissionGroupRecords)
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule.<>c__DisplayClass8_0.<<SaveStaticPermissionsToDatabaseAsync>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.AsyncPolicy.<>c__DisplayClass40_0.<<ImplementationAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.Retry.AsyncRetryEngine.ImplementationAsync[TResult](Func`3 action, Context context, CancellationToken cancellationToken, ExceptionPredicates shouldRetryExceptionPredicates, ResultPredicates`1 shouldRetryResultPredicates, Func`5 onRetryAsync, Int32 permittedRetryCount, IEnumerable`1 sleepDurationsEnumerable, Func`4 sleepDurationProvider, Boolean continueOnCapturedContext)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+2024-10-09 10:43:27.651 +03:00 [ERR] 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetQueryableAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetListAsync(Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.UpdateChangedFeatureGroupsAsync(IEnumerable`1 featureGroupRecords)
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule.<>c__DisplayClass8_0.<<SaveStaticFeaturesToDatabaseAsync>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.AsyncPolicy.<>c__DisplayClass40_0.<<ImplementationAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.Retry.AsyncRetryEngine.ImplementationAsync[TResult](Func`3 action, Context context, CancellationToken cancellationToken, ExceptionPredicates shouldRetryExceptionPredicates, ResultPredicates`1 shouldRetryResultPredicates, Func`5 onRetryAsync, Int32 permittedRetryCount, IEnumerable`1 sleepDurationsEnumerable, Func`4 sleepDurationProvider, Boolean continueOnCapturedContext)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+2024-10-09 10:43:27.651 +03:00 [ERR] 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetQueryableAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetListAsync(Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.SettingManagement.StaticSettingSaver.UpdateChangedSettingsAsync(List`1 SettingRecords)
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous(IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapter.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.SettingManagement.AbpSettingManagementDomainModule.<>c__DisplayClass8_0.<<SaveStaticSettingsToDatabaseAsync>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.AsyncPolicy.<>c__DisplayClass40_0.<<ImplementationAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.Retry.AsyncRetryEngine.ImplementationAsync[TResult](Func`3 action, Context context, CancellationToken cancellationToken, ExceptionPredicates shouldRetryExceptionPredicates, ResultPredicates`1 shouldRetryResultPredicates, Func`5 onRetryAsync, Int32 permittedRetryCount, IEnumerable`1 sleepDurationsEnumerable, Func`4 sleepDurationProvider, Boolean continueOnCapturedContext)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+2024-10-09 10:43:27.653 +03:00 [ERR] ---------- Exception Data ----------
+Severity = FATAL
+InvariantSeverity = FATAL
+SqlState = 28000
+MessageText = no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+File = auth.c
+Line = 542
+Routine = ClientAuthentication
+
+2024-10-09 10:43:27.653 +03:00 [ERR] ---------- Exception Data ----------
+Severity = FATAL
+InvariantSeverity = FATAL
+SqlState = 28000
+MessageText = no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+File = auth.c
+Line = 542
+Routine = ClientAuthentication
+
+2024-10-09 10:43:27.653 +03:00 [ERR] ---------- Exception Data ----------
+Severity = FATAL
+InvariantSeverity = FATAL
+SqlState = 28000
+MessageText = no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+File = auth.c
+Line = 542
+Routine = ClientAuthentication
+
+2024-10-09 10:43:27.725 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:43:27.731 +03:00 [FTL] Host terminated unexpectedly!
+Volo.Abp.AbpInitializationException: An error occurred during the initialize Volo.Abp.Modularity.OnApplicationInitializationModuleLifecycleContributor phase of the module SmartParking.Blazor.SmartParkingBlazorModule, SmartParking.Blazor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Identity.EntityFrameworkCore.EfCoreIdentityRoleRepository.FindByNormalizedNameAsync(String normalizedRoleName, Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at SmartParking.Data.Lookups.RolesDataSeeder.SeedAsync(DataSeedContext context) in E:\Work\MDKHL\SmartParking\src\SmartParking.Domain\Data\Lookups\RolesDataSeeder.cs:line 27
+   at SmartParking.Blazor.SmartParkingBlazorModule.<>c__DisplayClass12_0.<<OnApplicationInitialization>b__0>d.MoveNext() in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\SmartParkingBlazorModule.cs:line 263
+--- End of stack trace from previous location ---
+   at Nito.AsyncEx.Synchronous.TaskExtensions.WaitAndUnwrapException(Task task)
+   at Nito.AsyncEx.AsyncContext.<>c__DisplayClass15_0.<Run>b__0(Task t)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Nito.AsyncEx.Synchronous.TaskExtensions.WaitAndUnwrapException(Task task)
+   at Nito.AsyncEx.AsyncContext.Run(Func`1 action)
+   at Abp.Threading.AsyncHelper.RunSync(Func`1 action)
+   at SmartParking.Blazor.SmartParkingBlazorModule.OnApplicationInitialization(ApplicationInitializationContext context) in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\SmartParkingBlazorModule.cs:line 254
+   at Volo.Abp.Modularity.AbpModule.OnApplicationInitializationAsync(ApplicationInitializationContext context)
+   at Volo.Abp.Modularity.OnApplicationInitializationModuleLifecycleContributor.InitializeAsync(ApplicationInitializationContext context, IAbpModule module)
+   at Volo.Abp.Modularity.ModuleManager.InitializeModulesAsync(ApplicationInitializationContext context)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+   --- End of inner exception stack trace ---
+   at Volo.Abp.Modularity.ModuleManager.InitializeModulesAsync(ApplicationInitializationContext context)
+   at Volo.Abp.AbpApplicationBase.InitializeModulesAsync()
+   at Volo.Abp.AbpApplicationWithExternalServiceProvider.InitializeAsync(IServiceProvider serviceProvider)
+   at Microsoft.AspNetCore.Builder.AbpApplicationBuilderExtensions.InitializeApplicationAsync(IApplicationBuilder app)
+   at SmartParking.Blazor.Program.Main(String[] args) in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\Program.cs:line 54
+2024-10-09 10:43:57.775 +03:00 [INF] Starting web host.
+2024-10-09 10:44:03.454 +03:00 [INF] Loaded ABP modules:
+2024-10-09 10:44:03.456 +03:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-10-09 10:44:03.457 +03:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-10-09 10:44:03.457 +03:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-10-09 10:44:03.457 +03:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-10-09 10:44:03.457 +03:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-10-09 10:44:03.457 +03:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-10-09 10:44:03.457 +03:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-10-09 10:44:03.457 +03:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-10-09 10:44:03.457 +03:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-10-09 10:44:03.457 +03:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-10-09 10:44:03.457 +03:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-10-09 10:44:03.457 +03:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-10-09 10:44:03.457 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-10-09 10:44:03.457 +03:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-10-09 10:44:03.457 +03:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-10-09 10:44:03.458 +03:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-10-09 10:44:03.458 +03:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-10-09 10:44:03.458 +03:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-10-09 10:44:03.458 +03:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-10-09 10:44:03.458 +03:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-10-09 10:44:03.458 +03:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-10-09 10:44:03.458 +03:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-10-09 10:44:03.458 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-10-09 10:44:03.458 +03:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-10-09 10:44:03.458 +03:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-10-09 10:44:03.458 +03:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-10-09 10:44:03.458 +03:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-10-09 10:44:03.459 +03:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-10-09 10:44:03.459 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-10-09 10:44:03.459 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-10-09 10:44:03.459 +03:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-10-09 10:44:03.459 +03:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-10-09 10:44:03.460 +03:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-10-09 10:44:03.460 +03:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-10-09 10:44:03.460 +03:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-10-09 10:44:03.460 +03:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-10-09 10:44:03.460 +03:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-10-09 10:44:03.460 +03:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-10-09 10:44:03.460 +03:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-10-09 10:44:03.460 +03:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-10-09 10:44:03.461 +03:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-10-09 10:44:03.578 +03:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-10-09 10:44:03.604 +03:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-10-09 10:44:07.568 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:44:07.568 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:44:07.568 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:44:07.613 +03:00 [ERR] 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetQueryableAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetListAsync(Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.UpdateChangedFeatureGroupsAsync(IEnumerable`1 featureGroupRecords)
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.StaticFeatureSaver.SaveAsync()
+   at Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule.<>c__DisplayClass8_0.<<SaveStaticFeaturesToDatabaseAsync>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.AsyncPolicy.<>c__DisplayClass40_0.<<ImplementationAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.Retry.AsyncRetryEngine.ImplementationAsync[TResult](Func`3 action, Context context, CancellationToken cancellationToken, ExceptionPredicates shouldRetryExceptionPredicates, ResultPredicates`1 shouldRetryResultPredicates, Func`5 onRetryAsync, Int32 permittedRetryCount, IEnumerable`1 sleepDurationsEnumerable, Func`4 sleepDurationProvider, Boolean continueOnCapturedContext)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+2024-10-09 10:44:07.613 +03:00 [ERR] 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetQueryableAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetListAsync(Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.SettingManagement.StaticSettingSaver.UpdateChangedSettingsAsync(List`1 SettingRecords)
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Volo.Abp.SettingManagement.StaticSettingSaver.SaveAsync()
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous(IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapter.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.SettingManagement.AbpSettingManagementDomainModule.<>c__DisplayClass8_0.<<SaveStaticSettingsToDatabaseAsync>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.AsyncPolicy.<>c__DisplayClass40_0.<<ImplementationAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.Retry.AsyncRetryEngine.ImplementationAsync[TResult](Func`3 action, Context context, CancellationToken cancellationToken, ExceptionPredicates shouldRetryExceptionPredicates, ResultPredicates`1 shouldRetryResultPredicates, Func`5 onRetryAsync, Int32 permittedRetryCount, IEnumerable`1 sleepDurationsEnumerable, Func`4 sleepDurationProvider, Boolean continueOnCapturedContext)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+2024-10-09 10:44:07.614 +03:00 [ERR] 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetQueryableAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetListAsync(Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.UpdateChangedPermissionGroupsAsync(IEnumerable`1 permissionGroupRecords)
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.StaticPermissionSaver.SaveAsync()
+   at Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule.<>c__DisplayClass8_0.<<SaveStaticPermissionsToDatabaseAsync>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.AsyncPolicy.<>c__DisplayClass40_0.<<ImplementationAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Polly.Retry.AsyncRetryEngine.ImplementationAsync[TResult](Func`3 action, Context context, CancellationToken cancellationToken, ExceptionPredicates shouldRetryExceptionPredicates, ResultPredicates`1 shouldRetryResultPredicates, Func`5 onRetryAsync, Int32 permittedRetryCount, IEnumerable`1 sleepDurationsEnumerable, Func`4 sleepDurationProvider, Boolean continueOnCapturedContext)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+2024-10-09 10:44:07.622 +03:00 [ERR] ---------- Exception Data ----------
+Severity = FATAL
+InvariantSeverity = FATAL
+SqlState = 28000
+MessageText = no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+File = auth.c
+Line = 542
+Routine = ClientAuthentication
+
+2024-10-09 10:44:07.622 +03:00 [ERR] ---------- Exception Data ----------
+Severity = FATAL
+InvariantSeverity = FATAL
+SqlState = 28000
+MessageText = no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+File = auth.c
+Line = 542
+Routine = ClientAuthentication
+
+2024-10-09 10:44:07.623 +03:00 [ERR] ---------- Exception Data ----------
+Severity = FATAL
+InvariantSeverity = FATAL
+SqlState = 28000
+MessageText = no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+File = auth.c
+Line = 542
+Routine = ClientAuthentication
+
+2024-10-09 10:44:09.767 +03:00 [ERR] An error occurred using the connection to database 'SmartParking-DB-Dev' on server 'tcp://94.130.239.82:5432'.
+2024-10-09 10:44:09.791 +03:00 [FTL] Host terminated unexpectedly!
+Volo.Abp.AbpInitializationException: An error occurred during the initialize Volo.Abp.Modularity.OnApplicationInitializationModuleLifecycleContributor phase of the module SmartParking.Blazor.SmartParkingBlazorModule, SmartParking.Blazor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 28000: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextWithTransactionAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.CreateDbContextAsync(IUnitOfWork unitOfWork, String connectionStringName, String connectionString)
+   at Volo.Abp.Uow.EntityFrameworkCore.UnitOfWorkDbContextProvider`1.GetDbContextAsync()
+   at Volo.Abp.Domain.Repositories.EntityFrameworkCore.EfCoreRepository`2.GetDbSetAsync()
+   at Volo.Abp.Identity.EntityFrameworkCore.EfCoreIdentityRoleRepository.FindByNormalizedNameAsync(String normalizedRoleName, Boolean includeDetails, CancellationToken cancellationToken)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at SmartParking.Data.Lookups.RolesDataSeeder.SeedAsync(DataSeedContext context) in E:\Work\MDKHL\SmartParking\src\SmartParking.Domain\Data\Lookups\RolesDataSeeder.cs:line 27
+   at SmartParking.Blazor.SmartParkingBlazorModule.<>c__DisplayClass12_0.<<OnApplicationInitialization>b__0>d.MoveNext() in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\SmartParkingBlazorModule.cs:line 263
+--- End of stack trace from previous location ---
+   at Nito.AsyncEx.Synchronous.TaskExtensions.WaitAndUnwrapException(Task task)
+   at Nito.AsyncEx.AsyncContext.<>c__DisplayClass15_0.<Run>b__0(Task t)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Nito.AsyncEx.Synchronous.TaskExtensions.WaitAndUnwrapException(Task task)
+   at Nito.AsyncEx.AsyncContext.Run(Func`1 action)
+   at Abp.Threading.AsyncHelper.RunSync(Func`1 action)
+   at SmartParking.Blazor.SmartParkingBlazorModule.OnApplicationInitialization(ApplicationInitializationContext context) in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\SmartParkingBlazorModule.cs:line 254
+   at Volo.Abp.Modularity.AbpModule.OnApplicationInitializationAsync(ApplicationInitializationContext context)
+   at Volo.Abp.Modularity.OnApplicationInitializationModuleLifecycleContributor.InitializeAsync(ApplicationInitializationContext context, IAbpModule module)
+   at Volo.Abp.Modularity.ModuleManager.InitializeModulesAsync(ApplicationInitializationContext context)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28000
+    MessageText: no pg_hba.conf entry for host "41.44.188.12", user "postgres", database "SmartParking-DB-Dev", no encryption
+    File: auth.c
+    Line: 542
+    Routine: ClientAuthentication
+   --- End of inner exception stack trace ---
+   at Volo.Abp.Modularity.ModuleManager.InitializeModulesAsync(ApplicationInitializationContext context)
+   at Volo.Abp.AbpApplicationBase.InitializeModulesAsync()
+   at Volo.Abp.AbpApplicationWithExternalServiceProvider.InitializeAsync(IServiceProvider serviceProvider)
+   at Microsoft.AspNetCore.Builder.AbpApplicationBuilderExtensions.InitializeApplicationAsync(IApplicationBuilder app)
+   at SmartParking.Blazor.Program.Main(String[] args) in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\Program.cs:line 54
+2024-10-09 10:46:31.758 +03:00 [INF] Starting web host.
+2024-10-09 10:46:41.934 +03:00 [INF] Loaded ABP modules:
+2024-10-09 10:46:41.936 +03:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-10-09 10:46:41.936 +03:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-10-09 10:46:41.936 +03:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-10-09 10:46:41.936 +03:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-10-09 10:46:41.936 +03:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-10-09 10:46:41.936 +03:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-10-09 10:46:41.936 +03:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-10-09 10:46:41.936 +03:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-10-09 10:46:41.936 +03:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-10-09 10:46:41.936 +03:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-10-09 10:46:41.936 +03:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-10-09 10:46:41.936 +03:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-10-09 10:46:41.936 +03:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-10-09 10:46:41.936 +03:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-10-09 10:46:41.936 +03:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-10-09 10:46:41.936 +03:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-10-09 10:46:41.937 +03:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-10-09 10:46:41.937 +03:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-10-09 10:46:41.937 +03:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-10-09 10:46:41.937 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-10-09 10:46:41.937 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-10-09 10:46:41.937 +03:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-10-09 10:46:41.937 +03:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-10-09 10:46:41.938 +03:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-10-09 10:46:41.938 +03:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-10-09 10:46:41.938 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-10-09 10:46:41.938 +03:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-10-09 10:46:41.938 +03:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-10-09 10:46:41.938 +03:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-10-09 10:46:41.938 +03:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-10-09 10:46:41.939 +03:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-10-09 10:46:41.939 +03:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-10-09 10:46:41.939 +03:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-10-09 10:46:41.939 +03:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-10-09 10:46:41.939 +03:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-10-09 10:46:41.939 +03:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-10-09 10:46:41.939 +03:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-10-09 10:46:41.939 +03:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-10-09 10:46:41.939 +03:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-10-09 10:46:41.939 +03:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-10-09 10:46:41.939 +03:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-10-09 10:46:41.939 +03:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-10-09 10:46:41.939 +03:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-10-09 10:46:41.939 +03:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-10-09 10:46:41.939 +03:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-10-09 10:46:41.939 +03:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-10-09 10:46:42.074 +03:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-10-09 10:46:42.099 +03:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-10-09 10:46:49.514 +03:00 [INF] User profile is available. Using 'C:\Users\shsol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2024-10-09 10:46:52.788 +03:00 [INF] Initialized all ABP modules.
+2024-10-09 10:46:53.020 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/ - null null
+2024-10-09 10:46:53.454 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-10-09 10:46:53.454 +03:00 [INF] Hosting environment: Development
+2024-10-09 10:46:53.454 +03:00 [INF] Content root path: E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor
+2024-10-09 10:46:55.276 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:55.310 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:55.313 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-10-09 10:46:55.316 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-10-09 10:46:55.317 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:55.348 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:55.351 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-10-09 10:46:55.356 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-10-09 10:46:55.359 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-10-09 10:46:55.360 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-10-09 10:46:55.362 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:55.362 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:55.363 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-10-09 10:46:55.691 +03:00 [INF] Executing endpoint '/ (/)'
+2024-10-09 10:46:56.319 +03:00 [DBG] Adding entry for "c9b1a1cb-ab7b-4ccb-80c9-689d9634b892"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-10-09 10:46:56.320 +03:00 [DBG] Updating entry for "c9b1a1cb-ab7b-4ccb-80c9-689d9634b892"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-10-09 10:46:56.765 +03:00 [INF] Executed endpoint '/ (/)'
+2024-10-09 10:46:56.806 +03:00 [DBG] Removed entry for "c9b1a1cb-ab7b-4ccb-80c9-689d9634b892". 0 total observers after remove.
+2024-10-09 10:46:56.816 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/ - 200 null text/html; charset=utf-8 3795.54ms
+2024-10-09 10:46:56.836 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/css/app.css - null null
+2024-10-09 10:46:56.836 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/SmartParking.Blazor.styles.css - null null
+2024-10-09 10:46:56.838 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/images/dashboard/organizations.png - null null
+2024-10-09 10:46:56.846 +03:00 [INF] The file /SmartParking.Blazor.styles.css was not modified
+2024-10-09 10:46:56.846 +03:00 [INF] The file /images/dashboard/organizations.png was not modified
+2024-10-09 10:46:56.846 +03:00 [INF] The file /css/app.css was not modified
+2024-10-09 10:46:56.848 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/SmartParking.Blazor.styles.css - 304 null text/css 12.2416ms
+2024-10-09 10:46:56.848 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/css/app.css - 304 null text/css 12.3624ms
+2024-10-09 10:46:56.848 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/images/dashboard/organizations.png - 304 null image/png 9.7858ms
+2024-10-09 10:46:56.857 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/images/dashboard/garage.png - null null
+2024-10-09 10:46:56.859 +03:00 [INF] The file /images/dashboard/garage.png was not modified
+2024-10-09 10:46:56.859 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/images/dashboard/customers.png - null null
+2024-10-09 10:46:56.859 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/images/dashboard/garage.png - 304 null image/png 1.7435ms
+2024-10-09 10:46:56.860 +03:00 [INF] The file /images/dashboard/customers.png was not modified
+2024-10-09 10:46:56.860 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/images/dashboard/customers.png - 304 null image/png 1.617ms
+2024-10-09 10:46:56.923 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/images/dashboard/car.png - null null
+2024-10-09 10:46:56.923 +03:00 [INF] The file /images/dashboard/car.png was not modified
+2024-10-09 10:46:56.924 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/images/dashboard/car.png - 304 null image/png 1.3122ms
+2024-10-09 10:46:56.926 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_framework/aspnetcore-browser-refresh.js - null null
+2024-10-09 10:46:56.929 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_framework/aspnetcore-browser-refresh.js - 200 13774 application/javascript; charset=utf-8 2.8271ms
+2024-10-09 10:46:56.942 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_vs/browserLink - null null
+2024-10-09 10:46:56.946 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/images/dashboard/discount.png - null null
+2024-10-09 10:46:56.947 +03:00 [INF] The file /images/dashboard/discount.png was not modified
+2024-10-09 10:46:56.949 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/images/dashboard/discount.png - 304 null image/png 3.4361ms
+2024-10-09 10:46:56.994 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_vs/browserLink - 200 null text/javascript; charset=UTF-8 52.4895ms
+2024-10-09 10:46:57.647 +03:00 [INF] Request starting HTTP/2 GET https://localhost:44322/_blazor/initializers - null null
+2024-10-09 10:46:57.662 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:57.664 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:57.664 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-10-09 10:46:57.669 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-10-09 10:46:57.670 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:57.671 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:57.671 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-10-09 10:46:57.671 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-10-09 10:46:57.672 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-10-09 10:46:57.672 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-10-09 10:46:57.672 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:57.672 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:57.673 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-10-09 10:46:57.683 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-10-09 10:46:57.692 +03:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-10-09 10:46:57.693 +03:00 [INF] Request finished HTTP/2 GET https://localhost:44322/_blazor/initializers - 200 null application/json; charset=utf-8 46.0749ms
+2024-10-09 10:46:57.727 +03:00 [INF] Request starting HTTP/2 POST https://localhost:44322/_blazor/negotiate?negotiateVersion=1 - null 0
+2024-10-09 10:46:57.757 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:57.758 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:57.758 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-10-09 10:46:57.758 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-10-09 10:46:57.758 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:57.759 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:57.760 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-10-09 10:46:57.760 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-10-09 10:46:57.760 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-10-09 10:46:57.761 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-10-09 10:46:57.761 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:57.761 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:57.761 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-10-09 10:46:57.763 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-10-09 10:46:57.779 +03:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-10-09 10:46:57.779 +03:00 [INF] Request finished HTTP/2 POST https://localhost:44322/_blazor/negotiate?negotiateVersion=1 - 200 316 application/json 52.087ms
+2024-10-09 10:46:57.824 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:44322/_blazor?id=6DWwpqmbA5pE-n1oOgFuhg - null null
+2024-10-09 10:46:57.837 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:57.837 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-10-09 10:46:57.837 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-10-09 10:46:57.837 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-10-09 10:46:57.837 +03:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:57.887 +03:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-10-09 10:46:57.887 +03:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-10-09 10:46:57.894 +03:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2024-10-09 10:46:58.687 +03:00 [DBG] Adding entry for "658ee205-77d6-41dc-9c00-086c3f72c2eb"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-10-09 10:46:58.688 +03:00 [DBG] Updating entry for "658ee205-77d6-41dc-9c00-086c3f72c2eb"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-10-09 10:46:58.968 +03:00 [DBG] Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.

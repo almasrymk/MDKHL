@@ -13,8 +13,6 @@ namespace SmartParking.Migrations
         {
            
 
-          
-
             migrationBuilder.CreateIndex(
                 name: "IX_Packages_PackageTypeId",
                 table: "Packages",
