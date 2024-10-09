@@ -1,0 +1,19 @@
+﻿.radio-block {
+    padding: 1rem 1.5rem;
+    box-shadow: 0px 0px 6px 0px rgba(#000000,0.25);
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid transparent;
+    cursor:pointer;
+}
+    .radio-block img{
+        width:100%;
+    }
+
+    .radio-block-input:checked + .radio-block {
+        border: 3px solid #0D5480;
+    }
