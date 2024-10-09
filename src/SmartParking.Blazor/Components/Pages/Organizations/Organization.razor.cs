@@ -10,12 +10,14 @@ using Volo.Abp;
 using Abp.Runtime.Validation;
 using System.Linq;
 using Volo.Abp.Users;
+using SmartParking.Blazor.Components.Pages.Cameras;
+using static MudBlazor.CategoryTypes;
+using SmartParking.Blazor.Components.SPComponents;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class Organization
 {
-
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -26,14 +28,19 @@ public partial class Organization
 
     private async Task HandleDelete(string id)
     {
-        
+      var dialog =   await Dialog.ShowAsync<SPDialogDelete>(); 
+      var result = await dialog.Result;
         try
         {
-
-
-            await OrganizationsAppService.DeleteAsync(int.Parse(id));
-
-            ShowSnackbar("Deleted Successfully ", Severity.Success);
+            if (!result.Canceled)
+            {
+                 await OrganizationsAppService.DeleteAsync(int.Parse(id));
+                
+                Navigation.NavigateTo("/organizations", forceLoad: true);
+               
+            }
+            
+            
         }
         catch (AbpValidationException validationException)
         {
@@ -159,7 +166,7 @@ public partial class Organization
         var organizationsDto = await OrganizationsAppService.GetListAsync(input);
         TotalItem = (int)organizationsDto.TotalCount;
         CreateTable(organizationsDto);
-
+       
     }
 
     private void CreateTable(PagedResultDto<OrganizationDto> organizations)

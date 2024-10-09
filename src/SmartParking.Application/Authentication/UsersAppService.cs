@@ -1,4 +1,5 @@
 ﻿
+using Abp.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -51,7 +53,32 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
     public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
     {
-        var users =  await _userManager.Users.Select(user => user.GetProperty("OrganizationId",organizationId)).ToListAsync();
+
+        // Create a parameter for the IdentityUser object (x => ...)
+        ParameterExpression param = Expression.Parameter(typeof(IdentityUser), "x");
+
+        // Get the method info for GetProperty<int>
+        var methodInfo = typeof(ObjectExtensions).GetMethod("GetProperty")
+            ?.MakeGenericMethod(typeof(int));
+
+        // Create an Expression to call GetProperty<int>("OrganizationId")
+        var getPropertyCall = Expression.Call(
+            methodInfo,
+            param,
+            Expression.Constant("OrganizationId") // Pass the property name
+        );
+
+        // Create the constant expression for the organizationId
+        ConstantExpression value = Expression.Constant(organizationId);
+
+        // Create an expression for x => x.GetProperty<int>("OrganizationId") == organizationId
+        Expression condition = Expression.Equal(getPropertyCall, value);
+
+        // Create the lambda expression: x => x.GetProperty<int>("OrganizationId") == organizationId
+        Expression<Func<IdentityUser, bool>> expression = Expression.Lambda<Func<IdentityUser, bool>>(condition, param);
+        Console.WriteLine("Expression"+expression);
+        var users = await _userManager.Users.Where(expression).ToListAsync();
+        Console.WriteLine(users[1].GetProperty("OrganizationId"));
         var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
         return userMap;
 
