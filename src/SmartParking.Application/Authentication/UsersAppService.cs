@@ -57,24 +57,20 @@ public class UsersAppService : ApplicationService , IUsersAppService
         // Create a parameter for the IdentityUser object (x => ...)
         ParameterExpression param = Expression.Parameter(typeof(IdentityUser), "x");
 
-        // Get the method info for GetProperty<int>
         var methodInfo = typeof(ObjectExtensions).GetMethod("GetProperty")
             ?.MakeGenericMethod(typeof(int));
 
-        // Create an Expression to call GetProperty<int>("OrganizationId")
+
         var getPropertyCall = Expression.Call(
             methodInfo,
             param,
             Expression.Constant("OrganizationId") // Pass the property name
         );
 
-        // Create the constant expression for the organizationId
         ConstantExpression value = Expression.Constant(organizationId);
 
-        // Create an expression for x => x.GetProperty<int>("OrganizationId") == organizationId
         Expression condition = Expression.Equal(getPropertyCall, value);
 
-        // Create the lambda expression: x => x.GetProperty<int>("OrganizationId") == organizationId
         Expression<Func<IdentityUser, bool>> expression = Expression.Lambda<Func<IdentityUser, bool>>(condition, param);
         Console.WriteLine("Expression"+expression);
         var users = await _userManager.Users.Where(expression).ToListAsync();

@@ -131,9 +131,9 @@ public partial class OrganizationAdd
     {
         Navigation.NavigateTo("/organizations");
     }
-    private void ViewGarages()
+    private async void ViewGarages()
     {
-        Navigation.NavigateTo("/garages");
+        var dialog = await Dialog.ShowAsync<GarageDialog>();
     }
     private void ViewSubscription()
     {

@@ -1,0 +1,29 @@
+﻿<div class="modal-wrapper ">
+    <MudDialog class="mud-modal ">
+        <TitleContent>
+            <MudText Class="fw-bold">Organization - Garage</MudText>
+        </TitleContent>
+        <DialogContent>
+           <SmartParking.Blazor.Components.Pages.Garages.Garage/>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Class=" bg-primary text-light" Color="MudBlazor.Color.Inherit" OnClick="Submit">CONFIRM</MudButton>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
