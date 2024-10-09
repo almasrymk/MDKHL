@@ -1,8 +1,10 @@
 ﻿using Scriban.Syntax;
 using SmartParking.CustomerCategories;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
+using SmartParking.Subscriptions;
 using SmartParking.Validations.Organizations;
 using System;
 using System.Collections.Generic;
@@ -27,15 +29,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     private readonly IRepository<Organization, int> _repository;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
     private readonly IIdentityUserAppService _userAppService;
+    private readonly ISubscriptionAppService _subscriptionAppService;
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService, ISubscriptionAppService subscriptionAppService) : base(repository)
     {
         _repository = repository;
         _customerCategoryAppService = customerCategoryAppService;
          _softDeleteFilter = softDeleteFilter;
         _userAppService = userAppService;
+        _subscriptionAppService = subscriptionAppService;
     }
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
@@ -239,6 +243,32 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             var organizationsMap = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
             return organizationsMap;
         
+    }
+
+    ///<inheritdoc/>
+    public async Task<SubscriptionDto> AddOrganizationForSubscription(int OrganizationId, int SubscriptionId)
+    {
+
+        var organization= await GetAsync(SubscriptionId);
+        if (organization is null)
+        {
+            throw new EntityNotFoundException(typeof(Organization), OrganizationId);
+        }
+        var subscription = await _subscriptionAppService.GetAsync(SubscriptionId);
+        if (subscription is null)
+        {
+            throw new EntityNotFoundException(typeof(Subscription), SubscriptionId);
+        }
+
+        var organizationMap = ObjectMapper.Map<OrganizationDto, Organization>(organization);
+
+        organizationMap.SubscriptionId= SubscriptionId;
+        var result = await _repository.UpdateAsync(organizationMap);
+        if(result.Subscription == null)
+        {
+            throw new BusinessException("Failed Try again");
+        }
+        return subscription;
     }
 }
  
