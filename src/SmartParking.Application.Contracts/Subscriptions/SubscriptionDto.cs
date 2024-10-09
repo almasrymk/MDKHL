@@ -16,5 +16,7 @@ public class SubscriptionDto : FullAuditedEntityDto<int>
     public SubscriptionStatus Status { get; set; }
     public DateOnly ActivationDate { get; set; }
     public DateOnly InActivationDate { get; set; }
+    public int SubscriptionTypeId { get; set; }
     public string SubscriptionType { get; set; }
+
 }

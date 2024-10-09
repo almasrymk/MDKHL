@@ -23,8 +23,7 @@ public class CreateUpdaeSubscriptionDtoValidator : AbstractValidator<CreateUpdat
         RuleFor(x => x.SubscriptionPrice)
            .NotEmpty();
 
-        RuleFor(x => x.Status)
-          .NotEmpty();
+    
 
         RuleFor(x => x.ActivationDate)
          .NotEmpty();

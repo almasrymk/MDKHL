@@ -1,0 +1,15 @@
+﻿using SmartParking.Subscriptions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
+
+namespace SmartParking.SubscriptionTypes;
+
+public class SubscriptionTypeDto : EntityDto<int>
+{
+    public string Type { get; set; }
+    public List<SubscriptionDto> Subscriptions { get; set; }  = new List<SubscriptionDto>();
+}

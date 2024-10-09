@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Invoices;
 using SmartParking.Localization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,9 +8,9 @@ using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Subscriptions;
 
-namespace SmartParking.Blazor.Components.Pages.Subscriptions;
+namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
 
-public partial class Subscriptionss
+public partial class Subscription
 {
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
@@ -24,7 +23,7 @@ public partial class Subscriptionss
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-    public Subscriptionss(IStringLocalizer<SmartParkingResource> localizer)
+    public Subscription(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
     }

@@ -10,5 +10,6 @@ namespace SmartParking.Entities.Subscriptions;
 public class SubscriptionType : FullAuditedEntity<int>
 {
     public string Type { get; set; }
+    public virtual List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
 }

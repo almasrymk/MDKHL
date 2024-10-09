@@ -31,14 +31,14 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     {
         input.Status = SubscriptionStatus.Draft;
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.CreateAsync(input);
-            }
-        }
-        else
+        //if (CurrentUser.IsInRole("MdkhlAdmin"))
+        //{
+        //    using (_dataFilter.Disable<IMultiTenant>())
+        //    {
+        //        return await base.CreateAsync(input);
+        //    }
+        //}
+        //else
             return await base.CreateAsync(input);
     }
 
@@ -71,14 +71,14 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             }
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-                using (_dataFilter.Disable<IMultiTenant>())
-                {
-                    return await base.UpdateAsync(id, input);
-                }
-        }
-        else
+        //if (CurrentUser.IsInRole("MdkhlAdmin"))
+        //{
+        //        using (_dataFilter.Disable<IMultiTenant>())
+        //        {
+        //            return await base.UpdateAsync(id, input);
+        //        }
+        //}
+        //else
              return await base.UpdateAsync(id, input);
         
     
@@ -87,27 +87,27 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     /// <inheritdoc/>
     public override async Task<SubscriptionDto> GetAsync(int id)
     {
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetAsync(id);
-            }
-        }
-        else
+        //if (CurrentUser.IsInRole("MdkhlAdmin"))
+        //{
+        //    using (_dataFilter.Disable<IMultiTenant>())
+        //    {
+        //        return await base.GetAsync(id);
+        //    }
+        //}
+        //else
             return await base.GetAsync(id);
     }
     /// <inheritdoc/>
     public override async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetListAsync(input);
-            }
-        }
-        else
+        //if (CurrentUser.IsInRole("MdkhlAdmin"))
+        //{
+        //    using (_dataFilter.Disable<IMultiTenant>())
+        //    {
+        //        return await base.GetListAsync(input);
+        //    }
+        //}
+        //else
             return await base.GetListAsync(input);
     }
 
@@ -120,14 +120,14 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             throw new EntityNotFoundException(typeof(Subscription), id);
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                await base.DeleteAsync(id);
-            }
-        }
-        else
+        //if (CurrentUser.IsInRole("MdkhlAdmin"))
+        //{
+        //    using (_dataFilter.Disable<IMultiTenant>())
+        //    {
+        //        await base.DeleteAsync(id);
+        //    }
+        //}
+        //else
              await base.DeleteAsync(id);
     }
 

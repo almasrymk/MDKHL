@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Lookups.Governorate;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -54,4 +56,7 @@ public interface ISubscriptionAppService : ICrudAppService<SubscriptionDto,int, 
     /// <param name="input">specifies max number of subscriptions and if it sorted or not and filter</param>
     /// <returns>SubscriptionDto</returns>
     public Task<PagedResultDto<SubscriptionDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    
+
 }

@@ -294,6 +294,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             
         };
 
+         var subscriptionTest = await _subscriptionRepository.InsertAsync(subscription, autoSave: true);
+
 
     }
 
