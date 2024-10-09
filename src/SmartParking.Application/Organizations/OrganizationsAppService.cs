@@ -36,15 +36,13 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository ,IUsersAppService usersAppService, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter) : base(repository)
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService, ISubscriptionAppService subscriptionAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter,  IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService) : base(repository)
     {
         _repository = repository;
         _usersAppService = usersAppService;
         _customerCategoryAppService = customerCategoryAppService;
          _softDeleteFilter = softDeleteFilter;
         
-        _userAppService = userAppService;
         _subscriptionAppService = subscriptionAppService;
     }
     ///<inheritdoc/>
@@ -248,7 +246,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     public async Task<SubscriptionDto> AddOrganizationForSubscription(int OrganizationId, int SubscriptionId)
     {
 
-        var organization= await GetAsync(SubscriptionId);
+        var organization= await _repository.GetAsync(OrganizationId);
         if (organization is null)
         {
             throw new EntityNotFoundException(typeof(Organization), OrganizationId);
@@ -259,15 +257,13 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             throw new EntityNotFoundException(typeof(Subscription), SubscriptionId);
         }
 
-        var organizationMap = ObjectMapper.Map<OrganizationDto, Organization>(organization);
-
-        organizationMap.SubscriptionId= SubscriptionId;
-        var result = await _repository.UpdateAsync(organizationMap);
-        if(result.Subscription == null)
+        organization.SubscriptionId= SubscriptionId;
+        var result = await _repository.UpdateAsync(organization,autoSave:true);
+        if(result.Subscription is null)
         {
             throw new BusinessException("Failed Try again");
         }
-        return subscription;
+        return await _subscriptionAppService.GetAsync(SubscriptionId);
     }
 }
  

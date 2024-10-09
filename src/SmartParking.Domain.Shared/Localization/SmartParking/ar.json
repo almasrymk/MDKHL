@@ -258,13 +258,11 @@
     "Total": "المجموع",
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء",
-    "PackageTypeEnglishName": "نوع الباقة بالانجليزية"
-    "CANCEL": "إلغاء",
     "PackageTypeEnglishName": "نوع الباقة بالانجليزية",
     "SubscriptionName": "اسم الاشتراك",
     "SubscriptionType": "نوع الاشتراك",
     "SubscriptionPrice": "سعر الاشتراك",
-    "SubscriptionStatus": "حالة الاشتراك",
+    "SubscriptionStatus": "حالة الاشتراك"
     
   }
 }

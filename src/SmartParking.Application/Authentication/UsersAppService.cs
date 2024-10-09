@@ -51,7 +51,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
     public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
     {
-        var users =  await _userManager.Users.Select(user => user.GetProperty("OrganizationId",organizationId)).ToListAsync();
+        var users =  await _userManager.Users.ToListAsync();
         var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
         return userMap;
 
