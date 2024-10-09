@@ -125,14 +125,14 @@
                     </MudGrid>
                    
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Cancel"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">@L["Save"]</MudButton>
                     </div>
                 </MudForm>
 
             </MudPaper>
         </MudItem>
-        <MudItem sm="4">
+        @* <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                 <div class="d-flex justify-content-between align-items-center">
                     <MudText>@L["My Profile"]</MudText>
@@ -183,7 +183,7 @@
 
                 </MudGrid>
             </MudPaper>
-        </MudItem>
+        </MudItem> *@
 
     </MudGrid>
 </div>

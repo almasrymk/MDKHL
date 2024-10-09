@@ -1,6 +1,8 @@
 ﻿@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Routing
 @using Microsoft.Extensions.Options
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject IOptions<AbpRouterOptions> RouterOptions
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="RouterOptions.Value.AdditionalAssemblies">
     <Found Context="routeData">
@@ -11,3 +13,24 @@
         </AuthorizeRouteView>
     </Found>
 </Router>
+@code{
+ //    private bool isRendered;
+ //    protected override async Task OnAfterRenderAsync(bool firstRender)
+ //    {
+ //        if (firstRender)
+ //        {
+ //            var token = await LocalStorage.GetItemAsync<string>("authToken");
+ //            if (string.IsNullOrEmpty(token))
+ //            {
+ //                // Redirect to dashboard if user is already logged in
+ //                Navigation.NavigateTo("/login");
+ //            }
+ //            isRendered = true; // Mark as rendered so that future JS operations are safe
+ //        }
+ //    }
+ // protected override async Task OnInitializedAsync()
+ //    {
+ //        if (!isRendered) return; // Avoid any operations during prerendering
+        
+ //    }
+}

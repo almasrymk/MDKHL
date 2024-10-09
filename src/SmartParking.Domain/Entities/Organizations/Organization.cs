@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
@@ -42,7 +43,6 @@ public class Organization : BaseEntity
     public int? SubscriptionId { get; set; }
 
     public virtual Subscription  Subscription { get; set; }
-
 
 
 }

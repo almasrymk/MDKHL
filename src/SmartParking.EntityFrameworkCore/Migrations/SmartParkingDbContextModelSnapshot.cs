@@ -2868,6 +2868,10 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("NormalizedUserName");
 
+                    b.Property<int>("OrganizationId")
+                        .HasMaxLength(500000)
+                        .HasColumnType("integer");
+
                     b.Property<string>("OtpCode")
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)");
