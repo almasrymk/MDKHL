@@ -11,7 +11,7 @@ using SmartParking.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
-public partial class Subscription
+public partial class Subscriptionss
 {
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
@@ -24,7 +24,7 @@ public partial class Subscription
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-    public Subscription(IStringLocalizer<SmartParkingResource> localizer)
+    public Subscriptionss(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
     }
