@@ -24,6 +24,8 @@ public class Package : BaseEntity
     public string DeactivatedBy { get; set; }
     public int OrgnizationId { get; set; }
     public Status Status { get; set; }
+    public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
+
     public virtual Organization Organization { get; set; }
 
 }

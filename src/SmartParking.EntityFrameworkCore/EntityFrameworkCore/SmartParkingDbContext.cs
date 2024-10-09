@@ -85,6 +85,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
 
     public DbSet<GarageTransaction> GarageTransactions { get; set; }
+    public DbSet<CustomerPackage> CustomerPackages { get; set; }
 
 
     public DbSet<Banner> Banners { get; set; }
