@@ -262,10 +262,7 @@
     "SubscriptionName": "اسم الاشتراك",
     "SubscriptionType": "نوع الاشتراك",
     "SubscriptionPrice": "سعر الاشتراك",
-    "SubscriptionStatus": "حالة الاشتراك"
-
-    "CANCEL": "إلغاء",
-    "PackageTypeEnglishName": "نوع الباقة بالانجليزية"
+    "SubscriptionStatus": "حالة الاشتراك",
     
   }
 }
