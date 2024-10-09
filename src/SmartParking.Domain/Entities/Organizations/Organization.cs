@@ -1,5 +1,6 @@
 ﻿using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,10 @@ public class Organization : BaseEntity
     public virtual ICollection<Package> organizationPackages { get; set; }
     public virtual ICollection<ContactInfo> organizationContactInfos { get; set; }
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
+
+    public int? SubscriptionId { get; set; }
+
+    public virtual Subscription  Subscription { get; set; }
 
 
 
