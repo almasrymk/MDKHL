@@ -24,6 +24,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using SmartParking.Entities.Subscriptions;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -82,12 +83,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<PackageCategory> PackageCategories { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
-
-
     public DbSet<GarageTransaction> GarageTransactions { get; set; }
-
-
     public DbSet<Banner> Banners { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
 
 
     #endregion
