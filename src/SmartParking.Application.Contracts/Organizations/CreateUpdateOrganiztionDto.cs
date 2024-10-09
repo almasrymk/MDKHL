@@ -31,6 +31,8 @@ public class CreateUpdateOrganiztionDto
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
 
+    public int? SubscriptionId { get; set; }
+
     public Status? Status { get; set; }
 
 }

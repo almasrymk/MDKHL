@@ -27,6 +27,7 @@ public class OrganizationDto
     public string RegionName { get; set; }
 
     public int StateId { get; set; }
+    public  int SubscriptionId { get; set; }
 
     public int CityId { get; set; }
     public string PhoneNum { get; set; }

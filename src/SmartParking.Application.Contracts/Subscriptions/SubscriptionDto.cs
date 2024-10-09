@@ -1,4 +1,5 @@
 ﻿using SmartParking.Enums;
+using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,4 +18,6 @@ public class SubscriptionDto : FullAuditedEntityDto<int>
     public DateOnly ActivationDate { get; set; }
     public DateOnly InActivationDate { get; set; }
     public string SubscriptionType { get; set; }
+
+    public List<OrganizationDto> Organizations { get; set; }
 }
