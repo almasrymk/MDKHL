@@ -5,6 +5,7 @@ using OpenIddict.Abstractions;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -46,5 +47,13 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
 
      
+    }
+
+    public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
+    {
+        var users =  await _userManager.Users.Select(user => user.GetProperty("OrganizationId",organizationId)).ToListAsync();
+        var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
+        return userMap;
+
     }
 }

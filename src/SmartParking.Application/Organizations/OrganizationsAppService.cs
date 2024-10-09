@@ -1,4 +1,5 @@
-﻿using Scriban.Syntax;
+﻿using Microsoft.AspNetCore.Authorization;
+using Scriban.Syntax;
 using SmartParking.Authentication;
 using SmartParking.CustomerCategories;
 using SmartParking.Entities.Organizations;
@@ -28,17 +29,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     private readonly IRepository<Organization, int> _repository;
     private readonly IUsersAppService _usersAppService;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
-    private readonly IIdentityUserAppService _userAppService;
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository ,IUsersAppService usersAppService, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IIdentityUserAppService userAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository ,IUsersAppService usersAppService, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter) : base(repository)
     {
         _repository = repository;
         _usersAppService = usersAppService;
         _customerCategoryAppService = customerCategoryAppService;
          _softDeleteFilter = softDeleteFilter;
-        _userAppService = userAppService;
+        
     }
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
@@ -74,34 +74,23 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     }
     ///<inheritdoc/>
-
+    [Authorize(Roles = "Mdkhl")]
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (CurrentUser.IsInRole("admin")){
-
+        
             using (_softDeleteFilter.Disable<IMultiTenant>())
             {
                 return await base.GetListAsync(input);
             }
-        }
-        
-            return await base.GetListAsync(input);
-        
-
     }
     ///<inheritdoc/>
     public override async Task<OrganizationDto> GetAsync(int id)
     {
-        if (CurrentUser.IsInRole("admin"))
-        {
-
+        
             using (_softDeleteFilter.Disable<IMultiTenant>())
             {
                 return await base.GetAsync(id);
             }
-        }
-        
-        return await base.GetAsync(id);
     }
     ///<inheritdoc/>
     private string CodeGenerator(int id)
@@ -118,6 +107,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public new async Task<string> DeleteByIdAsync(int id)
     {
+        
         var orgaization = await GetAsync(id);
 
         if (orgaization is null)
