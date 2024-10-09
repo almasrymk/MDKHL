@@ -89,7 +89,7 @@ public partial class OrganizationEdit
            
             await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
 
-            ShowSnackbar("Add Successfully You Can Login Your Password Is P@ssw0rd", Severity.Success);
+            ShowSnackbar("Update Orgainzation Successfully", Severity.Success);
         }
         catch (AbpValidationException validationException)
         {
@@ -123,6 +123,10 @@ public partial class OrganizationEdit
         Snackbar.Clear();
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+    }
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/organizations");
     }
     private async Task FetchData()
     {

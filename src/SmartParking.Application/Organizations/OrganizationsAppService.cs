@@ -74,7 +74,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     }
     ///<inheritdoc/>
-    [Authorize(Roles = "Mdkhl")]
+    //[Authorize(Roles = "Mdkhl")]
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         
