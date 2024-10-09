@@ -9,7 +9,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Subscriptions;
 
-namespace SmartParking.Blazor.Components.Pages.Subscriptions;
+namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
 
 public partial class Subscription
 {
