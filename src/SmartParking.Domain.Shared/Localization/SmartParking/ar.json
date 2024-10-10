@@ -258,7 +258,13 @@
     "Total": "المجموع",
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء",
-    "PackageTypeEnglishName": "نوع الباقة بالانجليزية"
-    
+    "PackageTypeEnglishName": "نوع الباقة بالانجليزية",
+    "Assign Package": "تخصيص باقة",
+    "Package Name": "اسم الباقة",
+    "Expired": "منتهية الصلاحية",
+    "Assign": "تخصيص",
+    "Assign Garage": "تخصيص جراج"
+
+
   }
 }

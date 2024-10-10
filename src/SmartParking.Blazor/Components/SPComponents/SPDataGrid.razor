@@ -148,6 +148,15 @@
                                                Color="MudBlazor.Color.Error"
                                                Size="MudBlazor.Size.Small"
                                                Class="mx-1" />
+                                    @if(OnClickAssign.HasDelegate)
+                                    {
+                                    <MudIconButton OnClick="@(e => OnClickAssign.InvokeAsync(context.Item.Cells[0].Value))"
+                                               Icon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                               Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Tertiary"
+                                               Size="MudBlazor.Size.Small"
+                                               Class="mx-1" />
+                                    }
                             </MudItem>
 
                         </CellTemplate>
