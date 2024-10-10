@@ -173,7 +173,12 @@ public partial class OrganizationEdit
     }
     private async Task ViewGarages()
     {
-        var dialog = await Dialog.ShowAsync<GarageDialog>();
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
     }
     private void ViewSubscription()
     {
