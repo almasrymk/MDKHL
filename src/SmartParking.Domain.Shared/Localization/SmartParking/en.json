@@ -229,12 +229,32 @@
     "Package Type": "Package Type",
     "Publish From": "Publish From",
     "Publish To": "Publish To",
-
-    "Assign Package": "Assign Package",
-    "Package Name": "Package Name",
-    "Expired": "Expired",
-    "Assign": "Assign",
-    "Assign Garage": "Assign Garage"
+    "SubscriptionName": "Subscription Name",
+    "SubscriptionType": "Subscription Type",
+    "SubscriptionPrice": "Subscription Price",
+    "SubscriptionStatus": "Subscription Status",
+    "SubscriptionDescription": "Subscription Description",
+    "ActivationDate": "Activation Date",
+    "InActivationDate": "InActivation Date",
+    "NumberOfCustomers": "Number Of Customers",
+    "NumberOfCameras": "Number Of Cameras",
+    "NumbersOfGarages": "Numbers Of Garages",
+    "NumberOfMobileCustomers": "Number Of Mobile Customers",
+    "SubscriptionTypes": "Subscription Types",
+    "EnterYourSubscriptionName": "Enter Your Subscription Name",
+    "EnterYourSubscriptionDescription": "Enter Your Subscription Description",
+    "EnterYourSubscriptionPrice": "Enter Your Subscription Price",
+    "EnterYourActivationDate": "Enter Your Activation Date",
+    "EnterYourInActivationDate": "Enter Your InActivation Date",
+    "EnterYourNumberOfCustomers": "Enter Your Number Of Customers",
+    "EnterYourNumberOfCameras": "Enter Your Number Of Cameras",
+    "EnterYourNumbersOfGarages": "Enter Your Numbers Of Garages",
+    "EnterYourNumberOfMobileCustomers": "Enter Your Number Of Mobile Customers",
+    "AddSubscription": "Add Subscription",
+    "NewSubscription": "New Subscription",
+    "SubscriptionDetails": "Subscription Details",
+    "EditSubscription": "Edit Subscription",
+    "UpdateSubscription": "Update Subscription"
 
 
   } 

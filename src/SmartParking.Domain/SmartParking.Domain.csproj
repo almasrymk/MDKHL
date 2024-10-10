@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\NewFolder\**" />
+    <EmbeddedResource Remove="Entities\NewFolder\**" />
+    <None Remove="Entities\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SmartParking.Domain.Shared\SmartParking.Domain.Shared.csproj" />
   </ItemGroup>
 

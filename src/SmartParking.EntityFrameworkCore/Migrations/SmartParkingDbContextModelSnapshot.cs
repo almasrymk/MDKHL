@@ -1763,6 +1763,134 @@ namespace SmartParking.Migrations
                     b.ToTable("Screens", (string)null);
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("ActivationDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<DateOnly>("InActivationDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("NumberOfCameras")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfCustomers")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfMobileCustomers")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumbersOfGarages")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SubscriptionDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SubscriptionName")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("SubscriptionPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SubscriptionTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionTypeId");
+
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Subscriptions.SubscriptionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionTypes");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.UserType", b =>
                 {
                     b.Property<int>("Id")
@@ -3959,6 +4087,17 @@ namespace SmartParking.Migrations
                     b.Navigation("CustomerCategory");
 
                     b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Subscriptions.SubscriptionType", "SubscriptionType")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionType");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Vehicles.Vehicle", b =>

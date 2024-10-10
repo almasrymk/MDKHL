@@ -23,6 +23,9 @@ using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using Volo.Abp.Identity;
 using SmartParking.Authentication;
+using SmartParking.Entities.Subscriptions;
+using SmartParking.Subscriptions;
+using SmartParking.SubscriptionTypes;
 using SmartParking.CustomerPackages;
 
 namespace SmartParking;
@@ -102,6 +105,20 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
 
         CreateMap<IdentityUser, UserDto>();
-    }
+
+        CreateMap<Subscription, SubscriptionDto>()
+            .ForMember(d=>d.SubscriptionType,o=>o.MapFrom(s=>s.SubscriptionType.Type))
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
+
+        CreateMap<CreateUpdateSubscriptionDto, Subscription>();
+
+
+        CreateMap<SubscriptionType, SubscriptionTypeDto>()
+           .ForMember(d => d.Type, o => o.MapFrom(s => s.Type));
+
+		CreateMap<CreateUpdateSubscriptionTypeDto, SubscriptionType>();
+		CreateMap<SubscriptionType, SubscriptionTypeLookupDto>()
+			.ForMember(d => d.SubscriptionType, o => o.MapFrom(s => s.Type));
+	}
 }
 
