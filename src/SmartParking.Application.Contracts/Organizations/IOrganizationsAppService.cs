@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Subscriptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -65,4 +66,11 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// </summary>
     /// <returns>A task representing the asynchronous operation, containing a list of <see cref="OrganizationDto"/> objects.</returns>
     public Task<List<OrganizationDto>> GetAllMobileAsync();
+    /// <summary>
+    /// Method adds specific subscription for an organization.
+    /// </summary>
+    /// <param name="OrganizationId">OrganizationId</param>
+    /// <param name="SubscriptionId">SubscriptionId</param>
+    /// <returns>SubscriptionDto</returns>
+    Task<SubscriptionDto> AddOrganizationForSubscription(int OrganizationId , int SubscriptionId);
 }

@@ -131,6 +131,37 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 await _stateRepository.InsertAsync(State, autoSave: true);
             }
             var stateTest = await _stateRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
+            var subscriptionTypes = new List<SubscriptionType>
+        {
+            new SubscriptionType {Type = "Monthly"},
+            new SubscriptionType {Type = "Quarterly"},
+            new SubscriptionType {Type = "Yearly"},
+        };
+
+            foreach (var subscriptionType in subscriptionTypes)
+            {
+                await _subscriptionTypeRepository.InsertAsync(subscriptionType, autoSave: true);
+            }
+
+            var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.Type == "Monthly");
+
+            var subscription = new Subscription
+            {
+                SubscriptionName = "Premium Plan",
+                SubscriptionPrice = 49.99m,
+                SubscriptionDescription = "Access to all features with no limits.",
+                Status = SubscriptionStatus.Draft,
+                ActivationDate = new DateOnly(2024, 10, 1),
+                InActivationDate = new DateOnly(2025, 10, 1),
+                NumbersOfGarages = 5,
+                NumberOfCameras = 10,
+                NumberOfCustomers = 100,
+                NumberOfMobileCustomers = 50,
+                SubscriptionTypeId = subscriptionTypeTest.Id,
+
+            };
+            var subscriptionTest = await _subscriptionRepository.InsertAsync(subscription, autoSave: true);
+
             var organization = new Organization
             {
                 ArabicName = "الشركة الأولى",
@@ -148,6 +179,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 WhatsAppNum = "+966531234567",
                 ContactMail = "contact@organization.com",
                 Status = Status.Active,
+                SubscriptionId= subscriptionTest.Id,
             };
             await _organizationRepostory.InsertAsync(organization,autoSave:true);
             var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
@@ -218,10 +250,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 autoSave: true
             );
 
-
-
-
-
         }
 
         if (!await _plateColorRepository.AnyAsync())
@@ -262,18 +290,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     await _licenceTypeRepository.InsertAsync(licenceType, autoSave: true);
                 }
             }
-        }
-
-        var subscriptionTypes = new List<SubscriptionType>
-        {
-            new SubscriptionType {Type = "Monthly"},
-            new SubscriptionType {Type = "Quarterly"},
-            new SubscriptionType {Type = "Yearly"},
-        };
-
-        foreach (var subscriptionType in subscriptionTypes)
-        {
-            await _subscriptionTypeRepository.InsertAsync(subscriptionType, autoSave: true);
         }
 
         var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.Type == "Monthly");

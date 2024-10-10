@@ -1,4 +1,5 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,5 +24,6 @@ public class Subscription : FullAuditedEntity<int>, IMultiTenant
     public int NumberOfMobileCustomers { get; set; }
     public int SubscriptionTypeId { get; set; }
     public virtual SubscriptionType SubscriptionType { get; set; }
+    public virtual ICollection<Organization> Organizations { get; set; }
     public Guid? TenantId { get; set; }
 }

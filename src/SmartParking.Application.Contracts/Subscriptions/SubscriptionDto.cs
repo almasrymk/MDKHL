@@ -1,4 +1,5 @@
 ﻿using SmartParking.Enums;
+using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,4 +24,6 @@ public class SubscriptionDto : FullAuditedEntityDto<int>
     public int NumberOfCustomers { get; set; }
     public int NumberOfMobileCustomers { get; set; }
 
+
+    public List<OrganizationDto> Organizations { get; set; }
 }

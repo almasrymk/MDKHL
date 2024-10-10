@@ -1402,6 +1402,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("SubscriptionId")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
@@ -1422,6 +1425,8 @@ namespace SmartParking.Migrations
                     b.HasIndex("RegionId");
 
                     b.HasIndex("StateId");
+
+                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("Organizations");
                 });
@@ -4044,6 +4049,10 @@ namespace SmartParking.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartParking.Entities.Subscriptions.Subscription", "Subscription")
+                        .WithMany("Organizations")
+                        .HasForeignKey("SubscriptionId");
+
                     b.Navigation("City");
 
                     b.Navigation("Country");
@@ -4051,6 +4060,8 @@ namespace SmartParking.Migrations
                     b.Navigation("Region");
 
                     b.Navigation("State");
+
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Package", b =>
@@ -4325,6 +4336,11 @@ namespace SmartParking.Migrations
                     b.Navigation("organizationContactInfos");
 
                     b.Navigation("organizationPackages");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
+                {
+                    b.Navigation("Organizations");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
