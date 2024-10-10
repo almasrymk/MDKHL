@@ -17,6 +17,9 @@ using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static MudBlazor.CategoryTypes;
+using SmartParking.Blazor.Components.Pages.Subscriptionss;
+using SmartParking.Entities.Subscriptions;
+using SmartParking.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -180,6 +183,7 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
     }
+ 
     private async Task ViewPackages()
     {
         var id = int.Parse(Id);
@@ -189,8 +193,16 @@ public partial class OrganizationEdit
         };
 		var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
 	}
-    private void ViewSubscription()
+    private async Task ViewSubscription()
     {
-        Navigation.NavigateTo("/subscription");
+        var id = int.Parse(Id);
+        //change it to garage.subscription
+        var subscription = SubscriptionAppService.GetAsync(1).Result;
+
+        var parameters = new DialogParameters
+        {
+            ["subscription"] = subscription
+        };
+        await Dialog.ShowAsync<DetailsSubscriptionDialog>("view DetailsSubscription", parameters);
     }
 }
