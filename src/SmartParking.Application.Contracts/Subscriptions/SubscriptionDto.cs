@@ -18,5 +18,9 @@ public class SubscriptionDto : FullAuditedEntityDto<int>
     public DateOnly InActivationDate { get; set; }
     public int SubscriptionTypeId { get; set; }
     public string SubscriptionType { get; set; }
+    public int NumbersOfGarages { get; set; }
+    public int NumberOfCameras { get; set; }
+    public int NumberOfCustomers { get; set; }
+    public int NumberOfMobileCustomers { get; set; }
 
 }

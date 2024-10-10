@@ -1,0 +1,40 @@
+﻿@using SmartParking.Subscriptions
+@using Volo.Abp.Application.Dtos
+@inject ISubscriptionAppService SubscriptionsAppService
+
+
+
+@foreach (var subscription in subscriptions.Items)
+{
+
+
+    <div>
+        <MudText Color="MudBlazor.Color.Primary" Class="fw-bold" Align="Align.Center" Typo="Typo.h5">@subscription.SubscriptionName</MudText>
+        <div class="subscription-card">
+            <div class="d-flex flex-column gap-1 text-white align-items-center rounded-circle subscription-circle">
+                <div class="price">
+                    <MudText>SAR</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h2">@subscription.SubscriptionPrice</MudText>
+                    <MudText>@subscription.SubscriptionType</MudText>
+                </div>
+
+            </div>
+            <ul class="d-flex flex-column gap-2">
+                <li class="d-flex align-items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title="Favorite" />
+                    <MudText>3 Organization</MudText>
+                </li>
+                <li class="d-flex align-items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title="Favorite" />
+                    <MudText>@subscription.NumbersOfGarages Garages</MudText>
+                </li>
+                <li class="d-flex align-items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title="Favorite" />
+                    <MudText>@subscription.NumberOfCustomers Customers</MudText>
+                </li>
+            </ul>
+            <MudButton Variant="Variant.Filled" FullWidth="true" class="mx-3 mt-5" Color="MudBlazor.Color.Primary">CHECKOUT</MudButton>
+        </div>
+    </div>
+}
+
