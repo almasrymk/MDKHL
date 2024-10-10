@@ -1,10 +1,12 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using Microsoft.Extensions.Logging;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
@@ -15,16 +17,24 @@ namespace SmartParking.GarageTransactionEndPoints
         private readonly IGarageTransactionsAppService _garageTransactionsAppService;
         private readonly IRepository<Camera, int> _cameraRepository;
         private readonly IRepository<Garage, int> _garageRepository;
+        private readonly ILogger<GarageTransactionEndPointsAppService> _logger;
 
-        public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, IRepository<Camera, int> cameraRepository, IRepository<Garage, int> garageRepository)
+        public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
+            IRepository<Camera, int> cameraRepository, IRepository<Garage, int> garageRepository, ILogger<GarageTransactionEndPointsAppService> logger)
         {
             _garageTransactionsAppService = garageTransactionsAppService;
             _cameraRepository = cameraRepository;
             _garageRepository = garageRepository;
+            _logger = logger;
         }
         public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
         {
+           
+            _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize( new {input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName})}");
             var camera= GetCamera(input.DeviceID);
+            input.PlateNumber ??= "123456";//input.PlateNnumber;
+
+            _logger.LogError($"{DateTime.Now} ====>  Camera ID {camera.Id}");
             if (camera == null)
                 return await Task.FromResult(false);
             var cameraId = camera.Id;
@@ -39,11 +49,15 @@ namespace SmartParking.GarageTransactionEndPoints
                 CameraId=cameraId,
                 GarageId=garageId,
                 OrganizationID=organizationId,
-                Type=camera.Type
+                TenantId = camera.TenantId,
+                Type =camera.Type
             };
             
                 var  garageTransactionDto= await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                if (garageTransactionDto != null) 
+
+            _logger.LogError($"{DateTime.Now} ====> transaction created {garageTransactionDto.Id}");
+
+            if (garageTransactionDto != null) 
                     return await Task.FromResult(true);
                 else 
                     return await Task.FromResult(false);

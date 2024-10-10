@@ -291,31 +291,5 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 }
             }
         }
-
-        var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.Type == "Monthly");
-
-        var subscription = new Subscription
-        {
-            SubscriptionName = "Premium Plan",
-            SubscriptionPrice = 49.99m,
-            SubscriptionDescription = "Access to all features with no limits.",
-            Status = SubscriptionStatus.Draft, 
-            ActivationDate = new DateOnly(2024, 10, 1),
-            InActivationDate = new DateOnly(2025, 10, 1),
-            NumbersOfGarages = 5,
-            NumberOfCameras = 10,
-            NumberOfCustomers = 100,
-            NumberOfMobileCustomers = 50,
-            SubscriptionTypeId = subscriptionTypeTest.Id, 
-            
-        };
-
-         var subscriptionTest = await _subscriptionRepository.InsertAsync(subscription, autoSave: true);
-
-
     }
-
-
-
-
 }

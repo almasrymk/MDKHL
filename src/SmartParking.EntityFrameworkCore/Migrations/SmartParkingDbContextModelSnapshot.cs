@@ -1137,6 +1137,65 @@ namespace SmartParking.Migrations
                     b.ToTable("CustomerCategories");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CustomerPackageStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("CustomerPackages");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.DefaultPackage", b =>
                 {
                     b.Property<int>("Id")
@@ -3992,6 +4051,25 @@ namespace SmartParking.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerPackage", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
+                        .WithMany("CustomerPackages")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Organizations.Package", "Package")
+                        .WithMany("CustomerPackages")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Package");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Organizations.DefaultPackage", b =>
                 {
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
@@ -4103,7 +4181,7 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
                 {
                     b.HasOne("SmartParking.Entities.Subscriptions.SubscriptionType", "SubscriptionType")
-                        .WithMany()
+                        .WithMany("Subscriptions")
                         .HasForeignKey("SubscriptionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4295,6 +4373,8 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
                 {
+                    b.Navigation("CustomerPackages");
+
                     b.Navigation("Organizations");
                 });
 
@@ -4338,9 +4418,19 @@ namespace SmartParking.Migrations
                     b.Navigation("organizationPackages");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Organizations.Package", b =>
+                {
+                    b.Navigation("CustomerPackages");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
                 {
                     b.Navigation("Organizations");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Subscriptions.SubscriptionType", b =>
+                {
+                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

@@ -10,17 +10,17 @@ namespace SmartParking.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Organizations_Subscriptions_SubscriptionId",
-                table: "Organizations");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Organizations_Subscriptions_SubscriptionId",
+            //    table: "Organizations");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "SubscriptionId",
-                table: "Organizations",
-                type: "integer",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "integer");
+            //migrationBuilder.AlterColumn<int>(
+            //    name: "SubscriptionId",
+            //    table: "Organizations",
+            //    type: "integer",
+            //    nullable: true,
+            //    oldClrType: typeof(int),
+            //    oldType: "integer");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Organizations_Subscriptions_SubscriptionId",
