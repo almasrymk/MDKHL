@@ -14,12 +14,14 @@ namespace SmartParking.Packages
         CreateUpdatePackageDto
         >
     {
-        /// <summary>
-        /// Retrieves a list of packages associated with a specified organization ID.
-        /// </summary>
-        /// <param name="organizationId">The ID of the organization whose packages are to be retrieved.</param>
-        /// <returns>A task representing the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the organization.</returns>
-        Task<List<PackageDto>> GetListPackageByOrganizationId(int organizationId);
+        public Task<PagedResultDto<PackageDto>> GetPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
+
+		/// <summary>
+		/// Retrieves a list of packages associated with a specified organization ID.
+		/// </summary>
+		/// <param name="organizationId">The ID of the organization whose packages are to be retrieved.</param>
+		/// <returns>A task representing the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the organization.</returns>
+		Task<List<PackageDto>> GetListPackageByOrganizationId(int organizationId);
 		/// <summary>
 		/// abstract method to create Package
 		/// </summary>
