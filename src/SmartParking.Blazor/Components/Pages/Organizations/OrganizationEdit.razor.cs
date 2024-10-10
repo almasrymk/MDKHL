@@ -180,6 +180,15 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
     }
+    private async Task ViewPackages()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+		var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
+	}
     private void ViewSubscription()
     {
         Navigation.NavigateTo("/subscription");

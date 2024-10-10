@@ -5,6 +5,7 @@ using SmartParking.Bases;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
+using SmartParking.Garages;
 using SmartParking.Packages;
 using System;
 using System.Collections.Generic;
@@ -160,4 +161,18 @@ public class PackagesAppService : CrudAppService<
             packagesDto
         );
     }
+	public async Task<PagedResultDto<PackageDto>> GetPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
+	{
+		var query = await _repository.GetQueryableAsync();
+		query.Where(x => x.OrgnizationId == organizationId);
+		var totalCount = await AsyncExecuter.CountAsync(query);
+		query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+		query.OrderBy(x => x.EnglishName);
+		var garages = await AsyncExecuter.ToListAsync(query);
+		var garagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(garages);
+		return new PagedResultDto<PackageDto>(
+		   totalCount,
+		   garagesDto
+	   );
+	}
 }
