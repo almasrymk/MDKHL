@@ -1,0 +1,123 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
+@using SmartParking.Localization
+@using SmartParking.SubscriptionTypes
+@using SmartParking.Subscriptions
+@inject ISubscriptionAppService SubscriptionAppService
+@inject ISubscriptionTypeAppService SubscriptionTypeAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["EditSubscription"]</PageTitle>
+
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["UpdateSubscription"]</MudText>
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+
+
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.SubscriptionName"
+                                      For="@(() => subscription.SubscriptionName)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Placeholder="@L["ُEnterYourSubscriptionName"]"
+                                      Label="@L["SubscriptionName"]"
+                                      InputType="InputType.Text"
+                                      Required="true" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.SubscriptionDescription"
+                                      For="@(() => subscription.SubscriptionDescription)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Placeholder="@L["EnterYourSubscriptionDescription"]"
+                                      Label="@L["SubscriptionDescription"]"
+                                      InputType="InputType.Text"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.SubscriptionPrice"
+                                      For="@(() => subscription.SubscriptionPrice)"
+                                      Immediate="true"
+                                      Placeholder="@L["EnterYourSubscriptionPrice"]"
+                                      Label="@L["SubscriptionPrice"]"
+                                      InputType="InputType.Number"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudDatePicker @bind-Date="_activateDate"
+                                      
+                                       Variant="Variant.Text"
+                                       Placeholder="@L["EnterYourActivationDate"]"
+                                       Label="@L["ActivationDate"]"
+                                       Required="true"
+                                       Editable="true"
+                                       ShowToolbar="false" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudDatePicker @bind-Date="_inActivateDate"
+                                     
+                                       Variant="Variant.Text"
+                                       Placeholder="@L["EnterYourInActivationDate"]"
+                                       Label="@L["InActivationDate"]"
+                                       Required="true"
+                                       ShowToolbar="false" />
+                    </MudItem>
+                    
+                    <MudItem sm="6">
+                        <MudSelect Variant="Variant.Text"
+                                   Label="@L["SubscriptionTypes"]"
+                                   Placeholder="@L["Choose"]"
+                                   Clearable="true"
+                                   Required="true"
+                                   AnchorOrigin="Origin.TopCenter"
+                                   TransformOrigin="Origin.TopCenter"
+                                   @bind-Value="subscription.SubscriptionTypeId">
+
+                            @foreach (var subscription in subscriptions)
+                            {
+                                <MudSelectItem Value="@subscription.Id">@subscription.SubscriptionType</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+
+                    <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                        <MudItem Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@subscription.Status" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
+                                <MudRadio Value="@(SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                <MudRadio Value="@(SubscriptionStatus.Draft)" Color="MudBlazor.Color.Warning">Draft</MudRadio>
+                            </MudRadioGroup>
+                        </MudItem>
+                    </MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+
+<style>
+	.mud-modal
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>

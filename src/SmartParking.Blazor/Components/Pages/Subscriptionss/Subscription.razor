@@ -1,0 +1,14 @@
+﻿@page "/subscriptions"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Subscriptions
+@using Volo.Abp.Application.Dtos
+@inherits AbpCrudPageBase<ISubscriptionAppService, SubscriptionDto, int, PagedAndSortedResultRequestDto, CreateUpdateSubscriptionDto>
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<MudText Typo="Typo.h6">@L["Subscriptions"]</MudText>
+<SPDataGrid PageName="@L["Subscriptions"]" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnAdd="CreateSubscription" OnClickRowView="OnClickRowView" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
+

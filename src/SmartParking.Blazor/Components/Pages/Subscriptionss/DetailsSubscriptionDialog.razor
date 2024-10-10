@@ -1,0 +1,103 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.SubscriptionTypes
+@using SmartParking.Subscriptions
+@inject ISubscriptionAppService SubscriptionAppService
+@inject ISubscriptionTypeAppService SubscriptionTypeAppService
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["SubscriptionDetails"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["SubscriptionDetails"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+				<MudGrid>
+
+
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionName"
+									  For="@(() => subscription.SubscriptionName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["SubscriptionName"]"
+									  Disabled />
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionDescription"
+									  For="@(() => subscription.SubscriptionDescription)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["SubscriptionDescription"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionPrice"
+									  For="@(() => subscription.SubscriptionPrice)"
+									  Immediate="true"
+									  Disabled
+									  Label="@L["SubscriptionPrice"]" />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.ActivationDate"
+									  For="@(() => subscription.ActivationDate)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["ActivationDate"]"
+									  Disabled />
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.InActivationDate"
+									  For="@(() => subscription.InActivationDate)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["InActivationDate"]"
+									  Disabled />
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.Status"
+									  For="@(() => subscription.Status)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["SubscriptionStatus"]"
+									  Disabled />
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionType"
+									  For="@(() => subscription.SubscriptionType)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["SubscriptionType"]"
+									  Disabled />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+
+<style>
+	.mud-modal
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>

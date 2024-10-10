@@ -259,12 +259,32 @@
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء",
     "PackageTypeEnglishName": "نوع الباقة بالانجليزية",
-    "Assign Package": "تخصيص باقة",
-    "Package Name": "اسم الباقة",
-    "Expired": "منتهية الصلاحية",
-    "Assign": "تخصيص",
-    "Assign Garage": "تخصيص جراج"
-
+    "SubscriptionName": "اسم الاشتراك",
+    "SubscriptionType": "نوع الاشتراك",
+    "SubscriptionPrice": "سعر الاشتراك",
+    "SubscriptionStatus": "حالة الاشتراك",
+    "SubscriptionDescription": "وصف الاشتراك",
+    "ActivationDate": "تاريــخ التفعيل",
+    "InActivationDate": "تاريــخ انهاء التفعيل",
+    "NumberOfCustomers": "الحد الاقصى للمستخدمين",
+    "NumberOfCameras": "الحد الاقصى لعدد الكاميرات",
+    "NumbersOfGarages": "الحد الاقصى لعدد الكراجات",
+    "NumberOfMobileCustomers": "الحد الاقصى لمستخدمى الموبايل",
+    "SubscriptionTypes": "أنواع الاشتراك",
+    "EnterYourSubscriptionName": "أدخل اسم الاشتراك الخاص بك",
+    "EnterYourSubscriptionDescription": "أدخل وصف الاشتراك الخاص بك",
+    "EnterYourSubscriptionPrice": "أدخل سعر الاشتراك الخاص بك",
+    "EnterYourActivationDate": "أدخل تاريخ التفعيل الخاص بك",
+    "EnterYourInActivationDate": "أدخل تاريخ انهاء التفعيل الخاص بك",
+    "EnterYourNumberOfCustomers": "أدخل عدد المستخدمين الخاص بك",
+    "EnterYourNumberOfCameras": "أدخل عدد الكاميرات الخاصة بك",
+    "EnterYourNumbersOfGarages": "أدخل عدد الكراجات الخاصة بك",
+    "EnterYourNumberOfMobileCustomers": "أدخل عدد لمستخدمى الموبايل الخاص بك",
+    "AddSubscription": "إضافة الاشتراك",
+    "NewSubscription": "اشتراك جديد",
+    "SubscriptionDetails": "تفاصيل الاشتراك",
+    "EditSubscription": "تحرير الاشتراك",
+    "UpdateSubscription": "تحرير الاشتراك"
 
   }
 }
