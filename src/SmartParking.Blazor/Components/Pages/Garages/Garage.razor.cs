@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Customs;
+using SmartParking.Cameras;
 using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Organizations;
@@ -13,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
+using static MudBlazor.CategoryTypes;
 
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
@@ -155,7 +158,33 @@ public partial class Garage
 
 
     }
-    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+	public async Task<IDialogReference> AssignOrganization(string id)
+	{
+		var Gid = int.Parse(id);
+		var garageDto = await GarageAppService.GetAsync(Gid);
+
+		var createUpdateGarage = new CreateUpdateGarageDto
+		{
+	        ClosingHours = garageDto.ClosingHours,
+            Code = garageDto.Code,
+            MaxCapacity = garageDto.MaxCapacity,
+            Name = garageDto.Name,
+            OrganizationId = garageDto.OrganizationId,
+            Status = garageDto.Status
+		};
+
+
+
+		var parameters = new DialogParameters
+		{
+			["UpdatedId"] = Gid,
+			["Garage"] = createUpdateGarage
+		};
+
+		return await DialogService.ShowAsync<AssignOrganizationDialog>("Assign Garage", parameters);
+
+	}
+	private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id =int.Parse(row.Cells[0].Value);
 
