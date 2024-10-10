@@ -52,24 +52,23 @@
                                       Required="true" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="subscription.ActivationDate"
-                                      For="@(() => subscription.ActivationDate)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourActivationDate"]"
-                                      Label="@L["ActivationDate"]"
-                                      InputType="InputType.Date"
-                                      Required="true" />
+                        <MudDatePicker @bind-Date="_activateDate"
+                                      
+                                       Variant="Variant.Text"
+                                       Placeholder="@L["EnterYourActivationDate"]"
+                                       Label="@L["ActivationDate"]"
+                                       Required="true"
+                                       Editable="true"
+                                       ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="subscription.InActivationDate"
-                                      For="@(() => subscription.InActivationDate)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourInActivationDate"]"
-                                      InputType="InputType.Date"
-                                      Label="@L["InActivationDate"]"
-                                      Required="true" />
+                        <MudDatePicker @bind-Date="_inActivateDate"
+                                     
+                                       Variant="Variant.Text"
+                                       Placeholder="@L["EnterYourInActivationDate"]"
+                                       Label="@L["InActivationDate"]"
+                                       Required="true"
+                                       ShowToolbar="false" />
                     </MudItem>
                     
                     <MudItem sm="6">
@@ -80,7 +79,7 @@
                                    Required="true"
                                    AnchorOrigin="Origin.TopCenter"
                                    TransformOrigin="Origin.TopCenter"
-                                   @bind-Value="subscription.SubscriptionName">
+                                   @bind-Value="subscription.SubscriptionTypeId">
 
                             @foreach (var subscription in subscriptions)
                             {

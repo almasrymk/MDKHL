@@ -11,12 +11,16 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Entities.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
 
 public partial class AddSubscriptionDialog
 {
     private MudForm form;
+    private DateTime? _activateDate = new DateTime();
+    private DateTime? _inActivateDate = new DateTime();
+
     public CreateUpdateSubscriptionDto input = new CreateUpdateSubscriptionDto();
     public List<SubscriptionTypeLookupDto> subscriptions = new List<SubscriptionTypeLookupDto>();
 
@@ -29,6 +33,8 @@ public partial class AddSubscriptionDialog
         var result = await SubscriptionTypeAppService.GetSubscriptionTypeLookupAsync();
         subscriptions = result;
     }
+   
+
     private async Task Submit()
     {
         var successedMessage = L["SubscriptionCreatedSuccessfully"];
@@ -40,6 +46,9 @@ public partial class AddSubscriptionDialog
         // Call your service to create the subscription
         try
         {
+            input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
+
+            input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
 
             var subscription = await SubscriptionAppService.CreateAsync(input);
 

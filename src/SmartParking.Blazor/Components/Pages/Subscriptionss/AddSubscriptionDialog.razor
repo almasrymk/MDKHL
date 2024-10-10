@@ -49,24 +49,24 @@
                                       Required="true" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="input.ActivationDate"
-                                      For="@(() => input.ActivationDate)"
-                                      Immediate="true"
+                        <MudDatePicker 
+                                      @bind-Date="_activateDate"
+                                       @bind-value="_activateDate"
                                       Variant="Variant.Text"
                                       Placeholder="@L["EnterYourActivationDate"]"
                                       Label="@L["ActivationDate"]"
-                                      InputType="InputType.Date" 
-                                      Required="true" />
+                                      Required="true"
+                                      ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="input.InActivationDate"
-                                      For="@(() => input.InActivationDate)"
-                                      Immediate="true"
+                        <MudDatePicker 
+                                      @bind-Date = "_inActivateDate"
+                                      @bind-value="_inActivateDate"
                                       Variant="Variant.Text"
                                       Placeholder="@L["EnterYourInActivationDate"]"
-                                      InputType="InputType.Date"
                                       Label="@L["InActivationDate"]"
-                                      Required="true"/>
+                                      Required="true"
+                                      ShowToolbar="false"/>
                     </MudItem>
                     <MudItem sm="6">
                         <MudTextField @bind-Value="input.NumberOfCustomers"

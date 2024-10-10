@@ -9,6 +9,7 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Entities.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
 
@@ -21,10 +22,22 @@ public partial class EditSubscriptionDialog
 
     private MudForm editForm;
 
+    private DateTime? _activateDate = new DateTime();
+
+    private DateTime? _inActivateDate = new DateTime();
+
+    private DateOnly activate;
+    private DateOnly inActivate;
     bool _clearable;
     [Parameter] public int UpdatedId { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        activate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
+        subscription.ActivationDate = activate;
+
+        inActivate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.Now);
+        subscription.InActivationDate = activate;
+
         var result = await SubscriptionTypeAppService.GetSubscriptionTypeLookupAsync();
         subscriptions = result;
     }
@@ -36,6 +49,10 @@ public partial class EditSubscriptionDialog
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
+
+            
+
+
             // Create the input object for update
             var input = new CreateUpdateSubscriptionDto
             {
@@ -44,9 +61,9 @@ public partial class EditSubscriptionDialog
                 SubscriptionPrice = subscription.SubscriptionPrice,
                 Status = subscription.Status,
                 SubscriptionTypeId = subscription.SubscriptionTypeId,
-                ActivationDate = subscription.ActivationDate,
-                InActivationDate = subscription.InActivationDate,
-
+                ActivationDate = activate,
+                InActivationDate = inActivate,
+               
             };
 
             // Call the update method

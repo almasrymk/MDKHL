@@ -125,7 +125,8 @@ public partial class Subscription
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionName"], Name = "SubscriptionName", IsFilterable = false, PropertyNmae = "SubscriptionName", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionType", IsFilterable = true, PropertyNmae = "SubscriptionType", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyNmae = "SubscriptionDescription", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionType", IsFilterable = true, PropertyNmae = "SubscriptionType", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyNmae = "SubscriptionPrice", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionStatus"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Text });
 
@@ -136,7 +137,8 @@ public partial class Subscription
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionName"], item.SubscriptionName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionType"], item.SubscriptionType));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionDescription"], item.SubscriptionDescription));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionType"], item.SubscriptionType));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"], item.SubscriptionPrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionStatus"], item.Status.ToString()));
 
