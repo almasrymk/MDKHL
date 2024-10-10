@@ -16,6 +16,7 @@ using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -170,9 +171,9 @@ public partial class OrganizationEdit
 
 
     }
-    private void ViewGarages()
+    private async Task ViewGarages()
     {
-        Navigation.NavigateTo("/garages");
+        var dialog = await Dialog.ShowAsync<GarageDialog>();
     }
     private void ViewSubscription()
     {
