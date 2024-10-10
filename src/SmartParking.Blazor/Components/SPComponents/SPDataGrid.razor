@@ -136,18 +136,39 @@
                                                Color="MudBlazor.Color.Primary"
                                                Size="MudBlazor.Size.Small"
                                                Class="mx-1" />
-                                <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
-                                               Icon="@Icons.Material.Filled.Edit"
+                                @if (OnClickCar.HasDelegate)
+                                {
+                                    <MudIconButton OnClick="@(e => OnClickCar.InvokeAsync(context.Item))"
+                                                   Icon="@Icons.Material.Filled.CarRental"
+                                                   Variant="Variant.Filled"
+                                                   Color="MudBlazor.Color.Secondary"
+                                                   Size="MudBlazor.Size.Small"
+                                                   Class="mx-1" />
+                                }
+                                @if (OnClickRowEdit.HasDelegate)
+                                {
+                                    <MudIconButton OnClick
+                                    ="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
+                                    Icon="@Icons.Material.Filled.Edit"
                                                Variant="Variant.Filled"
                                                Color="MudBlazor.Color.Secondary"
                                                Size="MudBlazor.Size.Small"
-                                               Class="mx-1" />
+                                               Class="mx-1" />}
                                 <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))"
                                                Icon="@Icons.Material.Filled.Delete"
                                                Variant="Variant.Filled"
                                                Color="MudBlazor.Color.Error"
                                                Size="MudBlazor.Size.Small"
                                                Class="mx-1" />
+                                    @if(OnClickAssign.HasDelegate)
+                                    {
+                                    <MudIconButton OnClick="@(e => OnClickAssign.InvokeAsync(context.Item.Cells[0].Value))"
+                                               Icon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                               Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Tertiary"
+                                               Size="MudBlazor.Size.Small"
+                                               Class="mx-1" />
+                                    }
                             </MudItem>
 
                         </CellTemplate>

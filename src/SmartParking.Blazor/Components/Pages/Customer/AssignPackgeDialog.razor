@@ -1,0 +1,139 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.CustomerPackages
+@using SmartParking.Localization
+@using SmartParking.Packages
+@using Volo.Abp.Application.Dtos
+@inject ICustomerPackagesAppService CustomerPackagesAppService
+@inject IPackagesAppService PackagesAppService
+
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Assign Package"]</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@CustomerPackage.PackageId"
+								   Variant="Variant.Text"
+								   Label="@L["Package Name"]"
+								   Placeholder="Choose"
+								   Clearable="_clearable">
+							@foreach (var garage in Packages)
+							{
+								<MudSelectItem Value="garage.Id">@garage.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+
+
+
+
+					<MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
+						<div Class="d-flex flex-row justify-content-between">
+
+
+							<MudRadioGroup @bind-Value="@CustomerPackage.CustomerPackageStatus" Class="d-inline-flex align-content-center">
+								<MudRadio Value="@(Enums.CustomerPackageStatus.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+								<MudRadio Value="@(Enums.CustomerPackageStatus.InActive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
+								<MudRadio Value="@(Enums.CustomerPackageStatus.Expired)" Color="MudBlazor.Color.Warning">@L["Expired"]</MudRadio>
+							</MudRadioGroup>
+						</div>
+					</MudItem>
+
+
+				
+
+
+			
+
+				
+				
+				
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			<div class="overflow-hidden px-5 w-100">
+
+
+				<MudGrid>
+					<MudItem sm="6" md="6">
+
+						<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit">@L["Assign"]</MudButton>
+					</MudItem>
+					<MudItem sm="6" md="6">
+
+						<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="CancelEdit">@L["Cancel"]</MudButton>
+					</MudItem>
+				</MudGrid>
+			</div>
+
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	public CreateUpdateCustomerPackageDto CustomerPackage = new CreateUpdateCustomerPackageDto();
+	[Parameter]
+	public Guid CustomerId { get; set; }
+	public List<PackageDto> Packages { get; set; } = new List<PackageDto>();
+	bool _clearable;
+	private MudForm form;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await PackagesAppService.GetListAsync(new PagedAndSortedResultRequestDto
+			{
+				MaxResultCount = 100,
+				SkipCount = (1 - 1) * 100
+			});
+		Packages = result.Items.ToList();
+		await base.OnInitializedAsync();
+	}
+
+	private async Task SubmitEdit()
+	{
+		try
+		{
+			CustomerPackage.CustomerId = CustomerId;
+			await CustomerPackagesAppService.CreateAsync(CustomerPackage);
+			Snackbar.Add("CustomerPackage Assigned Successfully", Severity.Success);
+			MudDialogAdd.Close(DialogResult.Ok(true));
+
+		}
+		catch (Exception e)
+		{
+			Snackbar.Add(e.Message, Severity.Error);
+		}
+	}
+
+	private async Task CancelEdit()
+	{
+		MudDialogAdd.Cancel();
+
+
+	}
+
+
+}

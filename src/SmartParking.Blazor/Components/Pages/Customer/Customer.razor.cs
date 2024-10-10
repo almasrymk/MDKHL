@@ -11,6 +11,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Cameras;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -182,20 +183,31 @@ public partial class Customer
 
 	}
 
+   public async Task<IDialogReference> AssignPackage(string id)
+	{
+        var Gid = Guid.Parse(id);
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = Gid,
+        };
+
+        return await DialogService.ShowAsync<AssignPackgeDialog>("Assign Package", parameters);
+
+    }
 
 
+    /// <summary>
 
-	/// <summary>
+    /// Displays a snackbar notification with the specified message and severity.
 
-	/// Displays a snackbar notification with the specified message and severity.
+    /// </summary>
 
-	/// </summary>
+    /// <param name="message">The message to display in the snackbar.</param>
 
-	/// <param name="message">The message to display in the snackbar.</param>
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
 
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-	void ShowSnackbar(string message, Severity severity)
+    void ShowSnackbar(string message, Severity severity)
 
 	{
 

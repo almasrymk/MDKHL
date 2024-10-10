@@ -20,7 +20,7 @@
 
 <h2>Sign In</h2>
 <MudContainer Class="d-flex justify-content-center my-5">
-    <MudForm @ref="form" OnValidSubmit="@HandleLogin()" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
+    <MudForm @ref="form" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
         <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder="Type your Email or Phone Number here" Label="Email Address / Phone Number" Required="true" />
         <MudTextField @bind-Value="loginModel.Password" T="string" Placeholder="Type your password here" Label="Password" InputType="InputType.Password" Required="true" />
         <div class="d-flex align-items-center justify-content-center gap-1">

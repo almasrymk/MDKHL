@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Customer;
 using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Cameras;
 using SmartParking.Garages;
@@ -153,8 +154,40 @@ public partial class Camera
     {
         return Dialog.ShowAsync<AddDialog>("Add Camera", options);
     }
+	public async Task<IDialogReference> AssignGarage(string id)
+	{
+		var Gid = int.Parse(id);
+		var cameraDto = await CamerasAppService.GetAsync(Gid);
 
-    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+		var createUpdateCamera = new CreateUpdateCameraDto
+		{
+			Name = cameraDto.Name,
+			Code = cameraDto.Code,
+			Status = cameraDto.Status,
+			BrandName = cameraDto.BrandName,
+			CameraIP = cameraDto.CameraIP,
+			GarageId = cameraDto.GarageId,
+			MacAddress = cameraDto.MacAddress,
+			MainType = cameraDto.MainType,
+			Model = cameraDto.Model,
+			TenantId = cameraDto.TenantId,
+			Type = cameraDto.Type,
+
+
+		};
+
+
+
+		var parameters = new DialogParameters
+		{
+			["UpdatedId"] = Gid,
+            ["Camera"] = createUpdateCamera
+		};
+
+		return await Dialog.ShowAsync<AssignGarageDialog>("Assign Garage", parameters);
+
+	}
+	private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
 
