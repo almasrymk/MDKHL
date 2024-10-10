@@ -77,7 +77,7 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && !FilterValue.IsNullOrEmpty())
+        if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
         {
             if (SelectOperator.Key.Contains("not"))
                 IsNot = true;

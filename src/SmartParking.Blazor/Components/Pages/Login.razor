@@ -7,12 +7,18 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject IAccountAppService accountAppService
+@inherits SmartParkingComponentBase
+
 @inject ISnackbar Snackbar
 
+@if (!CurrentUser.IsAuthenticated)
+{
+    <a class="btn btn-primary" href="Account/Login"><i class="fa fa-sign-in"></i> @L["Login"]</a>
+}
 <PageTitle>Login</PageTitle>
 
 <h2>Sign In</h2>
-
 <MudContainer Class="d-flex justify-content-center my-5">
     <MudForm @ref="form" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
         <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder="Type your Email or Phone Number here" Label="Email Address / Phone Number" Required="true" />
@@ -49,6 +55,7 @@
     {
         if (!isRendered) return; // Avoid any operations during prerendering
 
+
         var loginRequest = new
         {
             userNameOrEmailAddress = loginModel.UserNameOrEmailAddress,
@@ -57,11 +64,13 @@
         };
 
         var requestContent = new StringContent(JsonSerializer.Serialize(loginRequest), System.Text.Encoding.UTF8, "application/json");
-
+        
         try
         {
             if (form.IsValid)
             {
+
+                
                 var response = await Http.PostAsync($"{NavigationManager.BaseUri}api/account/login", requestContent);
                 if (response.IsSuccessStatusCode)
                 {
