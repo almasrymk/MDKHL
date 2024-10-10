@@ -8,7 +8,7 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Shared.MainLayout)">
             <NotAuthorized>
-                <SmartParking.Blazor.Components.Pages.Login/>
+                <RedirectToLogin />
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>
