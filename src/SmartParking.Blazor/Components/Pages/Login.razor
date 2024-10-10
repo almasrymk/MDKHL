@@ -1,10 +1,10 @@
 ﻿@page "/login"
+
 @layout Shared.AuthLayout
 @using System.Text.Json
-@using SmartParking.Authentication
 @using Volo.Abp.Account
 @using Volo.Abp.Identity
-@inject IAuthenticationAppService AuthenticationAppService
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject ISnackbar Snackbar
@@ -14,19 +14,18 @@
 <h2>Sign In</h2>
 
 <MudContainer Class="d-flex justify-content-center my-5">
-    <MudForm @ref="form" OnValidSubmit="HandleLogin" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
+    <MudForm @ref="form" OnValidSubmit="@HandleLogin()" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
         <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder="Type your Email or Phone Number here" Label="Email Address / Phone Number" Required="true" />
         <MudTextField @bind-Value="loginModel.Password" T="string" Placeholder="Type your password here" Label="Password" InputType="InputType.Password" Required="true" />
         <div class="d-flex align-items-center justify-content-center gap-1">
             <p class="m-0">Forget Your Password Don't worry ..</p>
             <MudLink Href="/verify-account" Class="fw-bold" Color="MudBlazor.Color.Dark">Click here to reset</MudLink>
         </div>
+
         <MudButton Class="mt-4" Variant="Variant.Filled" OnClick="@( () => HandleLogin())" Color="MudBlazor.Color.Primary">LOGIN</MudButton>
     </MudForm>
+
 </MudContainer>
-
-
-
 @code {
     private MudForm form;
     private LoginModel loginModel = new LoginModel();
@@ -48,37 +47,63 @@
 
     private async Task HandleLogin()
     {
-        if (!isRendered) return; 
+        if (!isRendered) return; // Avoid any operations during prerendering
 
-        var loginRequest = new LoginInputDto
+        var loginRequest = new
         {
-            Username = loginModel.UserNameOrEmailAddress,
-            Password = loginModel.Password
+            userNameOrEmailAddress = loginModel.UserNameOrEmailAddress,
+            password = loginModel.Password,
+            rememberMe = true
         };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(loginRequest), System.Text.Encoding.UTF8, "application/json");
 
         try
         {
-            var loginResult = await  AuthenticationAppService.LoginAsync(loginRequest);
+            if (form.IsValid)
+            {
+                var response = await Http.PostAsync($"{NavigationManager.BaseUri}api/account/login", requestContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var loginResponse = JsonSerializer.Deserialize<LoginResponse>(content);
 
-            if (loginResult.Success)
-            {
-                await LocalStorage.SetItemAsync("authToken", loginResult.AccessToken);
-                NavigationManager.NavigateTo("/dashboard");
-            }
-            else
-            {
-                Snackbar.Add($"Login failed: {loginResult.ErrorMessage}", Severity.Error);
+                    if (loginResponse.result == 1) // Assuming 1 means success
+                    {
+                        // Store a flag or token if needed
+                        await LocalStorage.SetItemAsync("authToken", "dummyToken"); // You can customize this
+
+                        Snackbar.Add("Login successful! Redirecting to your dashboard...", Severity.Success);
+                        NavigationManager.NavigateTo("/dashboard");
+                    }
+                    else
+                    {
+                        Snackbar.Add($"Login failed: {loginResponse.description}", Severity.Error);
+                    }
+                }
+                else
+                {
+                    Snackbar.Add("Login failed. Please check your credentials.", Severity.Error);
+                }
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+            Console.WriteLine($"An error occurred: {ex.Message}");
         }
+
+
     }
 
     public class LoginModel
     {
         public string UserNameOrEmailAddress { get; set; }
         public string Password { get; set; }
+    }
+
+    public class LoginResponse
+    {
+        public int result { get; set; }
+        public string description { get; set; }
     }
 }

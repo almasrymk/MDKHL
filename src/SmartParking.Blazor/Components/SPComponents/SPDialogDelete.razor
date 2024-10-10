@@ -1,0 +1,30 @@
+﻿
+<div class="modal-wrapper text-center">
+    <MudDialog class="mud-modal text-center">
+        <TitleContent >
+            <MudText Class="fw-bold">Proceed with Process</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText>Do you wish to proceed with this process ...?</MudText>
+        </DialogContent>
+        <DialogActions >
+            <MudButton Class=" bg-primary text-light"  Color="MudBlazor.Color.Inherit" OnClick="Submit">CONFIRM</MudButton>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

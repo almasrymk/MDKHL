@@ -29,28 +29,28 @@
                     <MudGrid>
 
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder="@L["Type Here"]" Label="@L["English Name"]" />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder="@L["Type Here"]" Label="@L["English Name"]" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Num Of Cameras"]" />
+                            <MudNumericField ReadOnly="true" @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Num Of Cameras"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Max Capacity"]" />
+                            <MudNumericField ReadOnly="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Max Capacity"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Required="true" Label="@L["CR Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
+                            <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Required="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
+                            <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]" Placeholder="@L["Choose your date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["Status Active"]" ReadOnly="true" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect ReadOnly="true" Variant="Variant.Text"
                                        Label="@L["State"]"
                                        Placeholder="@L["Choose"]"
                                        Clearable="true"
@@ -63,7 +63,7 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect ReadOnly="true" Variant="Variant.Text"
                                        Label="@L["Region"]"
                                        Placeholder="@L["Choose"]"
                                        Clearable="true"
@@ -77,7 +77,7 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect ReadOnly="true" Variant="Variant.Text"
                                        Label="@L["Country"]"
                                        Placeholder="@L["Choose"]"
                                        Clearable="true"
@@ -90,7 +90,7 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect ReadOnly="true" Variant="Variant.Text"
                                        Label="@L["City"]"
                                        Placeholder="@L["Choose"]"
                                        Clearable="true"

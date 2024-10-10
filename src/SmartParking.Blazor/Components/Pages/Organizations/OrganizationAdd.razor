@@ -18,7 +18,7 @@
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
-
+@inject IDialogService Dialog
 <PageTitle>@L["Add Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -125,7 +125,7 @@
                     </MudGrid>
                    
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Cancel"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">@L["Save"]</MudButton>
                     </div>
                 </MudForm>

@@ -115,11 +115,24 @@ public static class SmartParkingModuleExtensionConfigurator
                                "UserTypeId", //property name
                                property =>
                                {
-                                   //validation rules
-                                   //property.Attributes.Add(new RequiredAttribute());
-                                   
-                                  
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
 
+                                   //...other configurations for this property
+                               }
+                           );
+
+                          
+                       });
+                   });
+        ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<int>( //property type: string
+                               "OrganizationId", //property name
+                               property =>
+                               {
                                    property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
 
                                    //...other configurations for this property

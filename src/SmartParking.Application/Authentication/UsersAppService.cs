@@ -1,11 +1,14 @@
 ﻿
+using Abp.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -30,13 +33,8 @@ public class UsersAppService : ApplicationService , IUsersAppService
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
         user.SetProperty("OtpCode",null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            user.SetProperty("UserTypeId", 1);
-        }else if (CurrentUser.IsInRole(RolesType.Organization.ToString()))
-        {
-            user.SetProperty("UserTypeId", 2);
-        }
+        user.SetProperty("UserTypeId", input.UserType);
+        user.SetProperty("OrganizationId", input.OrganizationId);
         var createdUser = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         if (!createdUser.Succeeded)
@@ -51,5 +49,34 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
 
      
+    }
+
+    public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
+    {
+
+        // Create a parameter for the IdentityUser object (x => ...)
+        ParameterExpression param = Expression.Parameter(typeof(IdentityUser), "x");
+
+        var methodInfo = typeof(ObjectExtensions).GetMethod("GetProperty")
+            ?.MakeGenericMethod(typeof(int));
+
+
+        var getPropertyCall = Expression.Call(
+            methodInfo,
+            param,
+            Expression.Constant("OrganizationId") // Pass the property name
+        );
+
+        ConstantExpression value = Expression.Constant(organizationId);
+
+        Expression condition = Expression.Equal(getPropertyCall, value);
+
+        Expression<Func<IdentityUser, bool>> expression = Expression.Lambda<Func<IdentityUser, bool>>(condition, param);
+        Console.WriteLine("Expression"+expression);
+        var users = await _userManager.Users.Where(expression).ToListAsync();
+        Console.WriteLine(users[1].GetProperty("OrganizationId"));
+        var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
+        return userMap;
+
     }
 }

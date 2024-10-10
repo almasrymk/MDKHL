@@ -127,9 +127,13 @@ public partial class OrganizationAdd
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
-    private void ViewGarages()
+    private void Cancel()
     {
-        Navigation.NavigateTo("/garages");
+        Navigation.NavigateTo("/organizations");
+    }
+    private async void ViewGarages()
+    {
+        var dialog = await Dialog.ShowAsync<GarageDialog>();
     }
     private void ViewSubscription()
     {

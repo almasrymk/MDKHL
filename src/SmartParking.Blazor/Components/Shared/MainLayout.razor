@@ -1,16 +1,16 @@
-﻿@using Microsoft.Extensions.Localization
+﻿
+@using Abp.Web.Http
+@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
+@using System.Globalization
 @using Volo.Abp.Localization
 @using Volo.Abp.SettingManagement
 @using Volo.Abp.Users
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser CurrentUser
-
-
-
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -35,16 +35,15 @@
                 <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />
                 <MudMenu>   
                     <ActivatorContent>
-                        <MudImage src="images/svgs/arabic.svg" Width="24" Height="24" />
+                        <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                            <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                        </div>
                     </ActivatorContent>
-                    <ChildContent>
-                        @foreach (var language in _localizationOptions.Value.Languages.Where(l => l.CultureName == "en" || l.CultureName == "ar"))
-                        {
-                        <MudMenuItem OnClick="@(() => ChangeLanguage(language.CultureName))">
-                            <MudText>@language.DisplayName</MudText>
-                            </MudMenuItem>
-                    }
-                    </ChildContent>
+   @*                  <ChildContent>
+                        <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                            <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                        </div>
+                    </ChildContent> *@
                 </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
@@ -75,22 +74,19 @@
     [Inject] private IOptions<AbpLocalizationOptions> _localizationOptions { get; set; }
     [Inject] private NavigationManager Navigation { get; set; }
 
-
     private string UserName { get; set; }
-
     protected override void OnInitialized()
     {
-
         UserName = CurrentUser.Name ?? "Guest";
 
     }
-
-    private void ChangeLanguage(string cultureName)
+    private void ChangeLanguage()
     {
-        var uri = Navigation.Uri.ToString();
-
-        uri = uri + "?culture=" + cultureName + "&ui-culture=" + cultureName;
-        Navigation.NavigateTo(uri, forceLoad: true); // Reload the page to apply the language change
+        Navigation.NavigateTo("api/SetLanguage",  true); 
+    }
+    private string LocaleImgSrc()
+    {
+        return CultureInfo.CurrentCulture.Name == "en" ? "images/svgs/arabic.svg" : "images/svgs/english.svg";
     }
 
     MudTheme SPCustomTheme = new MudTheme()
