@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Subscriptions;
+using SmartParking.Blazor.Components.Pages.Governorates;
+using SmartParking.Lookups;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
 
@@ -142,5 +144,103 @@ public partial class Subscription
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+    }
+
+
+    private Task CreateSubscription()
+    {
+
+
+        return Dialog.ShowAsync<AddSubscriptionDialog>("Simple Dialog", options);
+
+
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var subscriptionDto = await AppService.GetAsync(id);
+
+        var createUpdateSubscriptionDto = new CreateUpdateSubscriptionDto()
+        {
+           SubscriptionName = subscriptionDto.SubscriptionName,
+           SubscriptionDescription = subscriptionDto.SubscriptionDescription,
+           SubscriptionPrice = subscriptionDto.SubscriptionPrice,
+           ActivationDate =  subscriptionDto .ActivationDate,
+           InActivationDate = subscriptionDto.InActivationDate,
+           SubscriptionTypeId = subscriptionDto.SubscriptionTypeId,
+           Status = subscriptionDto.Status,
+
+        };
+
+
+
+        var parameters = new DialogParameters
+        {
+            ["subscription"] = subscriptionDto,
+            ["UpdatedId"] = id
+        };
+
+
+        return await Dialog.ShowAsync<EditSubscriptionDialog>("Edit Subscription", parameters);
+
+    }
+
+
+    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var subscriptionDto = await AppService.GetAsync(id);
+
+
+        var parameters = new DialogParameters
+        {
+            ["subscription"] = subscriptionDto,
+        };
+
+
+        return await Dialog.ShowAsync<DetailsSubscriptionDialog>("View Subscription", parameters);
+    }
+
+    private async Task OnClickRowDelete(string row)
+    {
+        var successMessage = _localizer["SubscriptionDeletedSuccessfully"];
+
+        var id = int.Parse(row);
+        try
+        {
+
+            await AppService.DeleteAsync(id);
+            ShowSnackbar(successMessage, Severity.Success);
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar(ex.Message, Severity.Error);
+        }
+
+    }
+
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
+
+    {
+
+        Snackbar.Clear();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+
     }
 }

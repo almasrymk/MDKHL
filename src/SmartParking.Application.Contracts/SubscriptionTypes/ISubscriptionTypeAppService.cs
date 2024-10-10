@@ -8,9 +8,9 @@ namespace SmartParking.SubscriptionTypes;
 
 public interface ISubscriptionTypeAppService : ICrudAppService<SubscriptionTypeDto,int,PagedAndSortedResultRequestDto,CreateUpdateSubscriptionTypeDto>
 {
-    /// <summary>
-    /// abstract method to get of subscriptionTypes
-    /// </summary>
-    /// <returns>SubscriptionTypeDto</returns>
-    Task<List<SubscriptionTypeLookupDto>> GetSubscriptionTypeLookupAsync();
+	/// <summary>
+	/// abstract method to get of subscriptionTypes
+	/// </summary>
+	/// <returns>SubscriptionTypeLookupDto</returns>
+	Task<List<SubscriptionTypeLookupDto>> GetSubscriptionTypeLookupAsync();
 }

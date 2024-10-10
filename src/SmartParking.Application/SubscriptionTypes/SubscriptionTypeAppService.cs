@@ -1,7 +1,4 @@
-﻿using SmartParking.Entities;
-using SmartParking.Entities.Subscriptions;
-using SmartParking.Subscriptions;
-using System;
+﻿using SmartParking.Entities.Subscriptions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -19,10 +16,11 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         _subscriptionTypeRepository = subscriptionTypeRepository;
     }
 
-    public async Task<List<SubscriptionTypeDto>> GetSubscriptionTypeLookupAsync()
-    {
-        var subscriptionTypes = await _subscriptionTypeRepository.GetListAsync();
-        var mappedSubscriptionTypes = ObjectMapper.Map<List<SubscriptionType>, List<SubscriptionTypeDto>>(subscriptionTypes);
-        return mappedSubscriptionTypes;
-    }
+	public async Task<List<SubscriptionTypeLookupDto>> GetSubscriptionTypeLookupAsync()
+	{
+		var subscriptionTypes = await _subscriptionTypeRepository.GetListAsync();
+		var subscriptionTypesList = ObjectMapper.Map<List<SubscriptionType>, List<SubscriptionTypeLookupDto>>(subscriptionTypes)
+;
+		return subscriptionTypesList;
+	}
 }
