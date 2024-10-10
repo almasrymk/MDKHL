@@ -23,6 +23,7 @@ using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using Volo.Abp.Identity;
 using SmartParking.Authentication;
+using SmartParking.CustomerPackages;
 
 namespace SmartParking;
 
@@ -96,6 +97,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<GarageTransaction, GarageTransactionDto>();
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();
+
+        CreateMap<CustomerPackage, CustomerPackageDto>();
+        CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
 
         CreateMap<IdentityUser, UserDto>();
     }

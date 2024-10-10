@@ -228,7 +228,13 @@
     "Organizations": "Organizations",
     "Package Type": "Package Type",
     "Publish From": "Publish From",
-    "Publish To": "Publish To"
+    "Publish To": "Publish To",
+
+    "Assign Package": "Assign Package",
+    "Package Name": "Package Name",
+    "Expired": "Expired",
+    "Assign": "Assign",
+    "Assign Garage": "Assign Garage"
 
 
   } 

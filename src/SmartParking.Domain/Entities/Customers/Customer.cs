@@ -24,6 +24,6 @@ public class Customer : FullAuditedEntity<Guid> , IMultiTenant
     public string NationalId { get; set; }
     public string ArabicName { get; set; }
     public virtual ICollection<Organization> Organizations { get; set; }
-
+    public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
     public Guid? TenantId { get; set; }
 }
