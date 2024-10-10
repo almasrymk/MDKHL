@@ -51,24 +51,23 @@
                                       InputType="InputType.Number"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                     <MudItem sm="6">
                         <MudDatePicker @bind-Date="_activateDate"
-                                      
                                        Variant="Variant.Text"
                                        Placeholder="@L["EnterYourActivationDate"]"
                                        Label="@L["ActivationDate"]"
                                        Required="true"
-                                       Editable="true"
-                                       ShowToolbar="false" />
+                                       ShowToolbar="false" 
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudDatePicker @bind-Date="_inActivateDate"
-                                     
                                        Variant="Variant.Text"
                                        Placeholder="@L["EnterYourInActivationDate"]"
                                        Label="@L["InActivationDate"]"
                                        Required="true"
-                                       ShowToolbar="false" />
+                                       ShowToolbar="false" 
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                     </MudItem>
                     
                     <MudItem sm="6">
