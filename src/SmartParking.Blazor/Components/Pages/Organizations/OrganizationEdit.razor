@@ -8,6 +8,8 @@
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
+@using SmartParking.SubscriptionTypes
+@using SmartParking.Subscriptions
 @using Volo.Abp.Identity
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
@@ -20,6 +22,7 @@
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
+@inject ISubscriptionAppService SubscriptionAppService
 <PageTitle>@L["Edit Organization"]</PageTitle>
 <div>
     <MudGrid>
