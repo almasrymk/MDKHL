@@ -151,11 +151,11 @@ public partial class OrganizationEdit
         CityNameEdit = organization.CityName;
         RegionNameEdit = organization.RegionName;
         StateSelectValue = organization.StateId.ToString();
-        ContactMail = ContactMail;
+        ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        PhoneNum = PhoneNum;
-        WhatsAppNum = WhatsAppNum;
+        PhoneNum = organization.PhoneNum;
+        WhatsAppNum = organization.WhatsAppNum;
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();

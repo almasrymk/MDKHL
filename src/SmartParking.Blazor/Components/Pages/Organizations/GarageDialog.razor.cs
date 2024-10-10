@@ -35,7 +35,12 @@ public partial class GarageDialog
 
     private Task CreateGarage()
     {
-        return Dialog.ShowAsync<AddGarageDialog>();
+       
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = organizationId
+        };
+        return Dialog.ShowAsync<AddGarageDialogInOrganization>("AddGarageDialogInOrganization", parameters);
     }
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
