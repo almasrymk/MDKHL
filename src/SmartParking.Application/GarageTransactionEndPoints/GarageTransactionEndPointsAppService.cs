@@ -53,7 +53,7 @@ namespace SmartParking.GarageTransactionEndPoints
                 Type =camera.Type
             };
             
-                var  garageTransactionDto= await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+            var  garageTransactionDto= await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
             _logger.LogError($"{DateTime.Now} ====> transaction created {garageTransactionDto.Id}");
 

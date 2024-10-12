@@ -1,4 +1,5 @@
 ﻿using Abp.UI;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
@@ -177,34 +178,20 @@ public class GarageTransactionsAppService:
         string base64Image=input.VehiclePicture;
         try
         {
-            // Validate the base64 string format
-            if (string.IsNullOrEmpty(base64Image) || !base64Image.Contains(","))
-            {
-                throw new ArgumentException("Invalid base64 image format");
-            }
 
-            // Define the path where the image will be saved
-            string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages",input.OrganizationID.ToString(), input.GarageId.ToString(), input.CameraId.ToString());
+            var imageFormat = "jpg"; // Adjust formats as needed
+                                     // CheckBase64(ref base64Image, ref imageFormat);
+            CreateBase64Image(ref base64Image);
+           var imageBytes = Convert.FromBase64String(base64Image);
 
-            // Ensure the directory exists
-            if (!Directory.Exists(wwwRootPath))
-            {
-                Directory.CreateDirectory(wwwRootPath);
-            }
+            var imageDirectoryPath =  CreateImageDirectory(input);
 
-            // Extract the image format and base64 content
-            var base64Parts = base64Image.Split(',');
-            if (base64Parts.Length < 2)
-            {
-                throw new ArgumentException("Invalid base64 image data");
-            }
 
-            var imageFormat = base64Parts[0].Contains("png") ? "png" : "jpg"; // Adjust formats as needed
-            var imageBytes = Convert.FromBase64String(base64Parts[1]);
+            
 
             // Generate a unique name for the image
             string fileName = $"{Guid.NewGuid()}.{imageFormat}";
-            string fullPath = Path.Combine(wwwRootPath, fileName);
+            string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
             // Save the image to the specified path
             File.WriteAllBytes(fullPath, imageBytes);
@@ -227,6 +214,56 @@ public class GarageTransactionsAppService:
         }
     }
 
+    private void CreateBase64Image(ref string base64Image)
+    {
+        if (!base64Image.Contains(","))
+        {
+            byte[] imageBytes = Convert.FromBase64String(base64Image);
+            base64Image = Convert.ToBase64String(imageBytes);
+        }
+        else
+        {
+            base64Image = base64Image.Split(',')[1];
+        }
+    }
 
-  
+    private string CreateImageDirectory(CreateUpdateGarageTransactionDto input)
+    {
+        // Define the path where the image will be saved
+        string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages", input.OrganizationID.ToString(), input.GarageId.ToString(), input.CameraId.ToString());
+
+        // Ensure the directory exists
+        if (!Directory.Exists(ImageDirectoryPath))
+        {
+            Directory.CreateDirectory(ImageDirectoryPath);
+        }
+        return ImageDirectoryPath;
+    }
+    
+    private void CheckBase64(ref string base64Image, ref string imageFormat)
+    {
+
+        // Validate the base64 string format
+        if (!base64Image.Contains(","))
+        {
+            // Extract the image format and base64 content
+            var base64Parts = base64Image.Split(',');
+            base64Image = base64Parts[1];
+            imageFormat = base64Parts[0] switch
+            {
+                var x when x.Contains("jpeg") => "jpg",
+                var x when x.Contains("webp") => "webp",
+                var x when x.Contains("png") => "png",
+                _ => "jpg"
+            };
+           
+        }
+
+        if (string.IsNullOrEmpty(base64Image))
+        {
+            throw new ArgumentException("The provided image is not a valid Base64 string");
+        }
+       
+
+    }
 }
