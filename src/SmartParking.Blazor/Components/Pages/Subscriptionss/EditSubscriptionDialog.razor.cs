@@ -26,17 +26,12 @@ public partial class EditSubscriptionDialog
 
     private DateTime? _inActivateDate = new DateTime();
 
-    private DateOnly activate;
-    private DateOnly inActivate;
     bool _clearable;
     [Parameter] public int UpdatedId { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        activate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
-        subscription.ActivationDate = activate;
-
-        inActivate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.Now);
-        subscription.InActivationDate = activate;
+        _activateDate = subscription.ActivationDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
+        _inActivateDate = subscription.InActivationDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
 
         var result = await SubscriptionTypeAppService.GetSubscriptionTypeLookupAsync();
         subscriptions = result;
@@ -61,8 +56,8 @@ public partial class EditSubscriptionDialog
                 SubscriptionPrice = subscription.SubscriptionPrice,
                 Status = subscription.Status,
                 SubscriptionTypeId = subscription.SubscriptionTypeId,
-                ActivationDate = activate,
-                InActivationDate = inActivate,
+                ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.MinValue),
+                InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue),
                
             };
 

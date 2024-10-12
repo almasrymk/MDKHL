@@ -10,5 +10,5 @@
 @inject NavigationManager Navigation
 
 <MudText Typo="Typo.h6">@L["Subscriptions"]</MudText>
-<SPDataGrid PageName="@L["Subscriptions"]" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnAdd="CreateSubscription" OnClickRowView="OnClickRowView" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
+<SPDataGrid PageName="@L["Subscriptions"]" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowDelete="OnClickRowDelete" OnClickRowEdit="OnClickRowEdit" OnAdd="CreateSubscription" OnClickRowView="OnClickRowView" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 

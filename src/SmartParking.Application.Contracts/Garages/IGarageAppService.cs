@@ -34,6 +34,12 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <returns>Garage dto of update one</returns>
 
     Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input);
+    /// <summary>
+    /// Retrieves the garage details associated with a specific organization.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task representing the asynchronous operation, with a <see cref="GarageDto"/> containing the garage details.</returns>
+    Task<PagedResultDto<GarageDto>> GetGarageByOrganization(PagedAndSortedResultRequestDto input  , int organizationId);
 
     /// <summary>
     /// abstract method to search of garages
