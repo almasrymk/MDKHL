@@ -1,15 +1,20 @@
 using Abp.Threading;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Menus;
@@ -18,7 +23,10 @@ using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq.Dynamic.Core;
+using System.Security.Claims;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
@@ -44,6 +52,7 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Blazor;
 
@@ -138,10 +147,19 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
-
+        context.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.Name = ".AspNetCore.Identity.Application"; 
+            options.LoginPath = "/login";
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60); 
+            options.SlidingExpiration = true; 
+            
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+        });
         context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
+
             options.IsDynamicClaimsEnabled = true;
         });
     }
@@ -202,7 +220,8 @@ public class SmartParkingBlazorModule : AbpModule
             options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartParking API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) => true);
+                options.DocInclusionPredicate((docName, description) => 
+                true);
                 options.CustomSchemaIds(type => type.FullName);
             }
         );
