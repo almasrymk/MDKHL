@@ -33,15 +33,15 @@ public partial class UsersDialog
         _localizer = localizer;
     }
 
-    private Task CreateUser()
-    {
+    //private Task CreateUser()
+    //{
 
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = organizationId
-        };
-        return Dialog.ShowAsync<AddGarageDialogInOrganization>("AddGarageDialogInOrganization", parameters);
-    }
+    //    var parameters = new DialogParameters
+    //    {
+    //        ["organizationId"] = organizationId
+    //    };
+    //    return Dialog.ShowAsync<AddGarageDialogInOrganization>("AddGarageDialogInOrganization", parameters);
+    //}
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>
