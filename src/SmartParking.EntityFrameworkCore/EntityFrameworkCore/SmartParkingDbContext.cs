@@ -74,7 +74,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Garage> Garages { get; set; }
     public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
-    public DbSet<DefaultPackage> DefaultPackages { get; set; }
     public DbSet<GarageCategories> GarageCategories { get; set; }
    // public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
@@ -85,8 +84,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<GarageTransaction> GarageTransactions { get; set; }
     public DbSet<CustomerPackage> CustomerPackages { get; set; }
-
-
     public DbSet<Banner> Banners { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<SubscriptionType> SubscriptionTypes { get; set; }

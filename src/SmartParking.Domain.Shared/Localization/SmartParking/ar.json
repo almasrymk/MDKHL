@@ -294,7 +294,16 @@
     "SubscriptionSlotNumber": "رقم فتحة الاشتراك",
     "EnterYourSubscriptionSlotNumber": "أدخل رقم فتحة الاشتراك الخاص بك",
     "EnterYourNumberOfOrganizations": "أدخل عدد المنظمات الخاصة بك",
-    "NumberOfOrganizations": "عدد المنظمات"
+    "NumberOfOrganizations": "عدد المنشاءات",
+    "FirstHourPrice": "سعر الساعة الأولى",
+    "SecondHourPrice": "سعر الساعة الثانية",
+    "ThirdHourPrice": "سعر الساعة الثالثة",
+    "AdditionalHourPrice": "سعر الساعة الإضافية",
+    "NumberOfHours": "عدد الساعات",
+    "ExceededTime": "تجاوزت الوقت",
+    "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
+    "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
+    "FullDay": "يوم كامل"
 
   }
 }

@@ -93,11 +93,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Banner, BannerDto>();
         CreateMap<CreateUpdateBannerDto, Banner>();
 
-
-        CreateMap<DefaultPackage, DefaultPackageDto>();
-        CreateMap<CreateUpdateDefaultPackageDto, DefaultPackage>();
-    
-
         CreateMap<GarageTransaction, GarageTransactionDto>();
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();
 

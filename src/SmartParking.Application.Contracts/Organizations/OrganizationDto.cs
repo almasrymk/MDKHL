@@ -22,23 +22,27 @@ public class OrganizationDto
     public DateOnly CRExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public DateOnly LicenseExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public int CountryId { get; set; }
-
     public int RegionId { get; set; }
     public string RegionName { get; set; }
-
     public int StateId { get; set; }
     public  int SubscriptionId { get; set; }
-
     public int CityId { get; set; }
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
-
     public Status? Status { get; set; }
     public string Code { get; set; }
     public string CountryName { get; set; }
     public string StateName { get; set; }
     public string CityName { get; set; }
-
+    public decimal FirstHourPrice { get; set; }
+    public decimal SecondHourPrice { get; set; }
+    public decimal ThirdHourPrice { get; set; }
+    public decimal AdditionalHourPrice { get; set; }
+    public decimal FullDay { get; set; }
+    public bool IsNumberOfHoursExceeded { get; set; }
+    public int NumberOfHours { get; set; }
+    public bool IsFullDayExceeded { get; set; }
+    public TimeOnly ExceededTime { get; set; }
 
 }
