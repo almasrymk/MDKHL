@@ -230,7 +230,7 @@
     "LicenceType": "نوع التراخيـص",
     "Customers": "العمـلاء",
     "Repeat Password": "اعـادة ادخال كلمة المرور",
-    "Password": ":كلمـة المرور",
+    "Password": "كلمـة المرور",
     "Passport": "البـاسبور",
     "FullName": "الاسـم بالكـامل",
     "Register": "تسجـيـل مستخدم",
@@ -293,7 +293,7 @@
     "Confirm New Password": "تـأكيـد كلمة المـرور",
     "Show Password": "اظـهار كلمـة المـرور",
     "Sign In": "تسـجيـل الـدخـول",
-    "Email Address /  User Name": "البـريـد الالـكترونـي / اسـم المستـخدم",
+    "Email Address / User Name": "البـريـد الالـكترونـي / اسـم المستـخدم",
     "Forget Your Password Don't worry ..": "نسـيت كلمـة المـرور لا تقلق ...",
     "Click here to reset": "أضغـط لاعـادة التعيين",
     "Calender Only": "تـاريـخ فـقط",
@@ -319,6 +319,12 @@
     "Organization Subscription": "اشتراك المنشأة",
     "Checkout": "الدفع",
     "Favorite": "المفضلة",
-    "Status Draft": "مسودة"
+    "Status Draft": "مسودة",
+    "Logout": "تسجـيل الخـروج",
+    "Country Name": "اسـم البلـد",
+    "State Name": "اسـم الامـارة",
+    "City Name": "اسـم المدينة"
+
+
   }
 }
