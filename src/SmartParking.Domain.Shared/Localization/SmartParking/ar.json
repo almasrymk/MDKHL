@@ -343,6 +343,17 @@
     "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
     "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
     "FullDay": "يوم كامل"
+    "City Name": "اسـم المدينة",
+    "SubscriptionCreatedSuccessfully": "تم إنشاء الاشتراك بنجاح",
+    "Can'tCreateSubscription": "لا يمكن إنشاء الاشتراك",
+    "SubscriptionUpdatedSuccessfully": "تم تحرير الاشتراك بنجاح",
+    "Can'tUpdateSubscription": "لا يمكن تحرير الاشتراك",
+    "FailedToAddSubscription": "فشل في إضافة الاشتراك :",
+    "FailedTo0UpdateSubscription :": "فشل في تحرير الاشتراك :",
+    "SubscriptionSlotNumber": "رقم فتحة الاشتراك",
+    "EnterYourSubscriptionSlotNumber": "أدخل رقم فتحة الاشتراك الخاص بك",
+    "EnterYourNumberOfOrganizations": "أدخل عدد المنظمات الخاصة بك",
+    "NumberOfOrganizations": "عدد المنظمات"
 
   }
 }

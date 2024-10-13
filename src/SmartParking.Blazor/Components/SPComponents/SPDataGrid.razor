@@ -15,11 +15,19 @@
         <ToolBarContent>
             <div class="d-flex flex-column w-100">
                 <div class="w-100 d-flex align-center">
-                    <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search"]" Adornment="Adornment.End" Immediate="true"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
-                    <div Class="ms-2" @onclick="OnClickFilter">
-                        <MudIcon Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIcon>
-                    </div>
+                    @if (OnSearching.HasDelegate)
+                    {
+                        <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search"]" Adornment="Adornment.End" Immediate="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
+                    }
+                    
+                    @if (OnFiltering.HasDelegate)
+                    {
+                        <div Class="ms-2" @onclick="OnClickFilter">
+                            <MudIcon Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIcon>
+                        </div>
+                    }
+                    
                     <MudItem>
                         @if (ColumnsFilterApply.Count > 0)
                         {

@@ -209,6 +209,15 @@ public partial class OrganizationEdit
             ["organizationId"] = id
         };
 		var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
+	}    
+    private async Task ViewUsers()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+		var dialog = await Dialog.ShowAsync<UsersDialog>("view users", parameters);
 	}
     private async Task ViewSubscription()
     {

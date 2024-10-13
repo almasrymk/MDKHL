@@ -321,6 +321,18 @@
     "FullDayExceeded": "FullDay Exceeded",
     "FullDay": "FullDay"
 
+    "City Name": "City Name",
+    "SubscriptionCreatedSuccessfully": "Subscription Created Successfully",
+    "Can'tCreateSubscription": "Can't Create Subscription",
+    "SubscriptionUpdatedSuccessfully": "Subscription Updated Successfully",
+    "Can'tUpdateSubscription": "Can't Update Subscription",
+    "FailedToAddSubscription": "Failed To Add Subscription :",
+    "FailedTo0UpdateSubscription :": "Failed To Update Subscription :",
+    "SubscriptionSlotNumber": "Subscription Slot Number",
+    "EnterYourSubscriptionSlotNumber": "Enter Your Subscription Slot Number",
+    "EnterYourNumberOfOrganizations": "Enter Your Number Of Organizations",
+    "NumberOfOrganizations": "Number Of Organizations"
+
 
   } 
 }
