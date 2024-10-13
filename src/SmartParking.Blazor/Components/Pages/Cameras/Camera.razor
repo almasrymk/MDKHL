@@ -8,9 +8,10 @@
 @page "/cameras"
 
 
-<h3>@L["Cameras"]</h3>
+<PageTitle>@L["Cameras"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Cameras"]</MudText>
 
-<SPDataGrid PageName="cameras" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignGarage"></SPDataGrid>
+<SPDataGrid PageName=@L["Cameras"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignGarage"></SPDataGrid>
 
 
 
