@@ -40,8 +40,7 @@ public partial class AddSubscriptionDialog
         var successedMessage = L["SubscriptionCreatedSuccessfully"];
         var errorMessage = L["Can'tCreateSubscription"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-
+        var failedError = L["FailedToAddSubscription :"];
 
         // Call your service to create the subscription
         try
@@ -74,12 +73,12 @@ public partial class AddSubscriptionDialog
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"Failed to add subscription: {ex.Code} + ", Severity.Error);
+            Snackbar.Add($"{failedError} {ex.Code} + ", Severity.Error);
 
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to add subscription: {ex.Message} + ", Severity.Error);
+            Snackbar.Add($"{failedError} {ex.Message} + ", Severity.Error);
         }
 
     }

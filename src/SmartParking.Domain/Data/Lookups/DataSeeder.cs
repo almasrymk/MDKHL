@@ -157,6 +157,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 NumberOfCameras = 10,
                 NumberOfCustomers = 100,
                 NumberOfMobileCustomers = 50,
+                NumberOfOrganizations = 50,
+                SubscriptionSlotNumber = 10,
                 SubscriptionTypeId = subscriptionTypeTest.Id,
 
             };

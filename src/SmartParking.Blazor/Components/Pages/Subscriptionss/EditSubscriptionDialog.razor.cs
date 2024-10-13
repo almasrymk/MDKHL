@@ -42,6 +42,8 @@ public partial class EditSubscriptionDialog
         var successedMessage = L["SubscriptionUpdatedSuccessfully"];
         var errorMessage = L["Can'tUpdateSubscription"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        var failedError = L["FailedToUpdateSubscription :"];
+
         try
         {
 
@@ -86,12 +88,12 @@ public partial class EditSubscriptionDialog
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"Failed to update subscription: {ex.Code} + ", Severity.Error);
+            Snackbar.Add($"{failedError} {ex.Code} + ", Severity.Error);
 
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to update subscription: {ex.Message} + ", Severity.Error);
+            Snackbar.Add($"{failedError} {ex.Message} + ", Severity.Error);
         }
 
 

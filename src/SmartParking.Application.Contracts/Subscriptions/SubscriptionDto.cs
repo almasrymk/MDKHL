@@ -23,7 +23,7 @@ public class SubscriptionDto : FullAuditedEntityDto<int>
     public int NumberOfCameras { get; set; }
     public int NumberOfCustomers { get; set; }
     public int NumberOfMobileCustomers { get; set; }
-
-
+    public int NumberOfOrganizations { get; set; }
+    public int SubscriptionSlotNumber { get; set; }
     public List<OrganizationDto> Organizations { get; set; }
 }
