@@ -16,6 +16,10 @@ using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static MudBlazor.CategoryTypes;
+using SmartParking.Blazor.Components.Pages.Subscriptionss;
+using SmartParking.Entities.Subscriptions;
+using SmartParking.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -150,11 +154,11 @@ public partial class OrganizationEdit
         CityNameEdit = organization.CityName;
         RegionNameEdit = organization.RegionName;
         StateSelectValue = organization.StateId.ToString();
-        ContactMail = ContactMail;
+        ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        PhoneNum = PhoneNum;
-        WhatsAppNum = WhatsAppNum;
+        PhoneNum = organization.PhoneNum;
+        WhatsAppNum = organization.WhatsAppNum;
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();
@@ -170,12 +174,35 @@ public partial class OrganizationEdit
 
 
     }
-    private void ViewGarages()
+    private async Task ViewGarages()
     {
-        Navigation.NavigateTo("/garages");
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
     }
-    private void ViewSubscription()
+ 
+    private async Task ViewPackages()
     {
-        Navigation.NavigateTo("/subscription");
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+		var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
+	}
+    private async Task ViewSubscription()
+    {
+        var id = int.Parse(Id);
+        //change it to garage.subscription
+        var subscription = SubscriptionAppService.GetAsync(1).Result;
+
+        var parameters = new DialogParameters
+        {
+            ["subscription"] = subscription
+        };
+        await Dialog.ShowAsync<DetailsSubscriptionDialog>("view DetailsSubscription", parameters);
     }
 }

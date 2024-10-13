@@ -15,7 +15,7 @@
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
-                <MudNavLink Href="/Account/login" Icon="@Icons.Material.Filled.Group">@L["Login"]</MudNavLink>
+                <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Group">@L["Login"]</MudNavLink>
                 <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
                 <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
@@ -43,10 +43,13 @@
                 </MudNavGroup>
                 <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
                     <MudNavLink Href="/edit-profile">@L["Profile"]</MudNavLink>
+                    <MudNavLink Href="/packages">@L["Packages"]</MudNavLink>
+                    <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">subscription</MudNavLink>
                 </MudNavGroup>
-            @*     <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="@L["Components"]">
+                 <MudNavGroup Icon="@Icons.Material.Filled.Collections" Title="@L["Components"]">
                     <MudNavLink Href="/data-grid" Icon="@Icons.Material.Filled.Group">@L["Data Grid"]</MudNavLink>
-                </MudNavGroup> *@
+                    <MudNavLink Href="/subscriptions" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
+                </MudNavGroup>
             </MudNavMenu>
         <MudButton Variant="Variant.Filled" Class="logout-button rounded-0 mt-20" OnClick="HandleLogout">
                 Logout
@@ -67,35 +70,9 @@
     private bool _expanded = true;
     private void ToggleDrawer() => _open = !_open;
 
-    public async Task HandleLogout()
+    public  void HandleLogout()
     {
-        try
-        {
-            var response = await Http.GetAsync($"{NavigationManager.BaseUri}api/account/logout");
-            if (response.IsSuccessStatusCode)
-            {
-
-                
-                    // Store a flag or token if needed
-                    await LocalStorage.RemoveItemAsync("authToken"); // You can customize this
-
-                    Snackbar.Add("Login successful! Redirecting to your dashboard...", Severity.Success);
-                    NavigationManager.NavigateTo("/login");
-                
-                    Snackbar.Add("Logged out successfully", Severity.Success);
-                
-            }
-            else
-            {
-                Snackbar.Add("Log out failed", Severity.Error);
-            }
-            
-            
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-        }
+        NavigationManager.NavigateTo("/logOut", true);
     }
 
 }

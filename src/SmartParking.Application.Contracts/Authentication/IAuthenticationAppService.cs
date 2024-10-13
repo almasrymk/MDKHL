@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IdentityUser = Volo.Abp.Identity.IdentityUser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,13 @@ public interface IAuthenticationAppService : IApplicationService
     /// <param name="input">The login input containing username and password.</param>
     /// <returns>A <see cref="LoginResultDto"/> containing the result of the login attempt.</returns>
     Task<LoginResultDto> LoginAsync(LoginInputDto input);
+    /// <summary>
+    /// Logs in a user with the provided input.
+    /// </summary>
+    /// <param name="input">The login input containing username and password.</param>
+    /// <returns>A <see cref="IdentityUser"/> containing the result of the login attempt.</returns>
+    Task<IdentityUser> LoginForWebAsync(LoginInputDto input);
+    Task LogOutAsync();
 
     /// <summary>
     /// Registers a new user with the provided input.

@@ -1,0 +1,27 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Packages
+@inject IPackagesAppService PackagesAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+<div class="modal-wrapper ">
+    <MudDialog class="mud-modal ">
+        <TitleContent>
+            <MudText Class="fw-bold">Organization - Garage</MudText>
+        </TitleContent>
+        <DialogContent>
+            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreatePackage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+        </DialogContent>
+        <DialogActions>
+
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

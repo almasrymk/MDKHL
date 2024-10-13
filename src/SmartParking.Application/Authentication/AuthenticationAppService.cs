@@ -140,6 +140,23 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
             TenantId = CurrentTenant.Id.ToString()
         };
+    } 
+    /// <inheritdoc/>
+    [RemoteService(IsEnabled = false)]
+    public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
+    {
+
+
+        // Step 1: Validate the user's credentials
+        var user = await _userManager.FindByNameAsync(input.Username);
+        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+        {
+            return user;
+        }
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+       
+        return user;
     }
     /// <inheritdoc/>
     public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
@@ -247,5 +264,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             Success = true
         };
+    }
+    /// <inheritdoc/>
+    public async Task LogOutAsync()
+    {
+        await _signInManager.SignOutAsync();
     }
 }

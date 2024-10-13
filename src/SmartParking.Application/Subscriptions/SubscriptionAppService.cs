@@ -1,7 +1,9 @@
 ﻿
 
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
+using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
@@ -31,14 +34,14 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     {
         input.Status = SubscriptionStatus.Draft;
 
-        //if (CurrentUser.IsInRole("MdkhlAdmin"))
-        //{
-        //    using (_dataFilter.Disable<IMultiTenant>())
-        //    {
-        //        return await base.CreateAsync(input);
-        //    }
-        //}
-        //else
+        if (CurrentUser.IsInRole("MdkhlAdmin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+        else
             return await base.CreateAsync(input);
     }
 
@@ -71,15 +74,15 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             }
         }
 
-        //if (CurrentUser.IsInRole("MdkhlAdmin"))
-        //{
-        //        using (_dataFilter.Disable<IMultiTenant>())
-        //        {
-        //            return await base.UpdateAsync(id, input);
-        //        }
-        //}
-        //else
-             return await base.UpdateAsync(id, input);
+        if (CurrentUser.IsInRole("MdkhlAdmin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.UpdateAsync(id, input);
+            }
+        }
+        else
+            return await base.UpdateAsync(id, input);
         
     
     }
@@ -87,27 +90,27 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     /// <inheritdoc/>
     public override async Task<SubscriptionDto> GetAsync(int id)
     {
-        //if (CurrentUser.IsInRole("MdkhlAdmin"))
-        //{
-        //    using (_dataFilter.Disable<IMultiTenant>())
-        //    {
-        //        return await base.GetAsync(id);
-        //    }
-        //}
-        //else
+        if (CurrentUser.IsInRole("MdkhlAdmin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetAsync(id);
+            }
+        }
+        else
             return await base.GetAsync(id);
     }
     /// <inheritdoc/>
     public override async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        //if (CurrentUser.IsInRole("MdkhlAdmin"))
-        //{
-        //    using (_dataFilter.Disable<IMultiTenant>())
-        //    {
-        //        return await base.GetListAsync(input);
-        //    }
-        //}
-        //else
+        if (CurrentUser.IsInRole("MdkhlAdmin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetListAsync(input);
+            }
+        }
+        else
             return await base.GetListAsync(input);
     }
 
@@ -120,15 +123,15 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             throw new EntityNotFoundException(typeof(Subscription), id);
         }
 
-        //if (CurrentUser.IsInRole("MdkhlAdmin"))
-        //{
-        //    using (_dataFilter.Disable<IMultiTenant>())
-        //    {
-        //        await base.DeleteAsync(id);
-        //    }
-        //}
-        //else
-             await base.DeleteAsync(id);
+        if (CurrentUser.IsInRole("MdkhlAdmin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                await base.DeleteAsync(id);
+            }
+        }
+        else
+            await base.DeleteAsync(id);
     }
 
     /// <inheritdoc/>
@@ -141,6 +144,19 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
         }
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -168,22 +184,35 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
 
-            queryable = queryable.Where(sub =>
-                sub.Status.ToString().StartsWith(input.SearchingTerm)
+            queryable = queryable.Where(or =>
+                or.SubscriptionName.StartsWith(input.SearchingTerm) ||
+                 or.SubscriptionDescription.StartsWith(input.SearchingTerm)
             );
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
         }
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
         // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-
-        // Execute the query and get the list of subscription entities
-
+        // Execute the query and get the list of hotel entities
         var subscriptions = await AsyncExecuter.ToListAsync(queryable);
 
-        // Map the hotel entities to subscriptionsDto objects
+        // Map the hotel entities to hotelDto objects
         var subscriptionsDto = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
+        Console.WriteLine(subscriptionsDto.Count);
         // Return the paginated result
         return new PagedResultDto<SubscriptionDto>(
             totalCount,

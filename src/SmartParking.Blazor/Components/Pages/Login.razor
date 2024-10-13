@@ -1,18 +1,11 @@
-﻿@* @page "/login"
- *@
+﻿@page "/login"
+
 @layout Shared.AuthLayout
-@using System.Text.Json
-@using Volo.Abp.Account
-@using Volo.Abp.Identity
-@inject HttpClient Http
 @inject NavigationManager NavigationManager
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@inject ISnackbar Snackbar
 
 <PageTitle>Login</PageTitle>
 
 <h2>Sign In</h2>
-
 <MudContainer Class="d-flex justify-content-center my-5">
     <MudForm @ref="form" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
         <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder="Type your Email or Phone Number here" Label="Email Address / Phone Number" Required="true" />
@@ -29,70 +22,10 @@
 @code {
     private MudForm form;
     private LoginModel loginModel = new LoginModel();
-    private bool isRendered;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void HandleLogin()
     {
-        if (firstRender)
-        {
-            var token = await LocalStorage.GetItemAsync<string>("authToken");
-            if (!string.IsNullOrEmpty(token))
-            {
-                // Redirect to dashboard if user is already logged in
-                NavigationManager.NavigateTo("/");
-            }
-            isRendered = true; // Mark as rendered so that future JS operations are safe
-        }
-    }
-
-    private async Task HandleLogin()
-    {
-        if (!isRendered) return; // Avoid any operations during prerendering
-
-        var loginRequest = new
-        {
-            userNameOrEmailAddress = loginModel.UserNameOrEmailAddress,
-            password = loginModel.Password,
-            rememberMe = true
-        };
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(loginRequest), System.Text.Encoding.UTF8, "application/json");
-
-        try
-        {
-            if (form.IsValid)
-            {
-                var response = await Http.PostAsync($"{NavigationManager.BaseUri}api/account/login", requestContent);
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var loginResponse = JsonSerializer.Deserialize<LoginResponse>(content);
-
-                    if (loginResponse.result == 1) // Assuming 1 means success
-                    {
-                        // Store a flag or token if needed
-                        await LocalStorage.SetItemAsync("authToken", "dummyToken"); // You can customize this
-
-                        Snackbar.Add("Login successful! Redirecting to your dashboard...", Severity.Success);
-                        NavigationManager.NavigateTo("/dashboard");
-                    }
-                    else
-                    {
-                        Snackbar.Add($"Login failed: {loginResponse.description}", Severity.Error);
-                    }
-                }
-                else
-                {
-                    Snackbar.Add("Login failed. Please check your credentials.", Severity.Error);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-        }
-
-
+        NavigationManager.NavigateTo($"api/Accounts?username={loginModel.UserNameOrEmailAddress}&password={loginModel.Password}", true);
     }
 
     public class LoginModel
@@ -101,9 +34,4 @@
         public string Password { get; set; }
     }
 
-    public class LoginResponse
-    {
-        public int result { get; set; }
-        public string description { get; set; }
-    }
 }

@@ -1,13 +1,16 @@
-﻿<div class="modal-wrapper ">
+﻿@using SmartParking.Garages
+@inject IGarageAppService GarageAppService
+@inject IDialogService Dialog
+<div class="modal-wrapper ">
     <MudDialog class="mud-modal ">
         <TitleContent>
             <MudText Class="fw-bold">Organization - Garage</MudText>
         </TitleContent>
         <DialogContent>
-           <SmartParking.Blazor.Components.Pages.Garages.Garage/>
+            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreateGarage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
         </DialogContent>
         <DialogActions>
-            <MudButton Class=" bg-primary text-light" Color="MudBlazor.Color.Inherit" OnClick="Submit">CONFIRM</MudButton>
+           
             <MudButton OnClick="Cancel">Cancel</MudButton>
         </DialogActions>
     </MudDialog>
@@ -18,12 +21,3 @@
         border-radius: 0 20px 0 20px;
     }
 </style>
-
-@code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
-
-    private void Cancel() => MudDialog.Cancel();
-}

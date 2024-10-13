@@ -11,6 +11,7 @@ using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using Abp.Runtime.Validation;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -49,7 +50,6 @@ public partial class OrganizationView
 
     private async Task FetchData()
     {
-
         var id = int.Parse(Id);
         var organization = await OrganizationAppService.GetAsync(id);
         EnglishName = organization.EnglishName;
@@ -69,11 +69,11 @@ public partial class OrganizationView
         CityNameEdit = organization.CityName;
         RegionNameEdit = organization.RegionName;
         StateSelectValue = organization.StateId.ToString();
-        ContactMail = ContactMail;
+        ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        PhoneNum = PhoneNum;
-        WhatsAppNum = WhatsAppNum;
+        PhoneNum = organization.PhoneNum;
+        WhatsAppNum = organization.WhatsAppNum;
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();
@@ -93,10 +93,23 @@ public partial class OrganizationView
     {
         Navigation.NavigateTo("/organizations");
     }
-    private void ViewGarages()
+    private async Task ViewGarages()
     {
-        Navigation.NavigateTo("/garages");
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<GarageDialog>("view garage", parameters);
     }
-
+    private async Task ViewPackages()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
+    }
 
 }

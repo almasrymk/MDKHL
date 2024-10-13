@@ -19,6 +19,7 @@
 @inject UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject NavigationManager Navigation
+@inject IDialogService Dialog
 <PageTitle>@L["Edit Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -102,7 +103,15 @@
                                 }
                             </MudSelect>
                         </MudItem>
-
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="@L["Type Here"]" Label="@L["Whatsapp Num"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
+                        </MudItem>
 
                     </MudGrid>
 
@@ -146,7 +155,7 @@
                     </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Packages"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackages">@L["Packages"]</MudLink>
 
                         </MudPaper>
                     </MudItem>

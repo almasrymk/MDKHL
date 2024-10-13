@@ -31,7 +31,6 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     private readonly IRepository<Organization, int> _repository;
     private readonly IUsersAppService _usersAppService;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
-    private readonly IIdentityUserAppService _userAppService;
     private readonly ISubscriptionAppService _subscriptionAppService;
 
     public IDataFilter _softDeleteFilter { get; }

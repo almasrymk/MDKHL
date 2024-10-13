@@ -5,6 +5,7 @@ using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -182,5 +183,20 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             totalCount,
             garagesDto
         );
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<GarageDto>> GetGarageByOrganization(PagedAndSortedResultRequestDto input ,int organizationId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query.Where(x => x.OrganizationId == organizationId);
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        query.OrderBy(x => x.Code);
+        var garages = await AsyncExecuter.ToListAsync(query);
+        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        return new PagedResultDto<GarageDto>(
+           totalCount,
+           garagesDto
+       );
     }
 }
