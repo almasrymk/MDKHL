@@ -78,6 +78,17 @@
                                       Label="@L["NumberOfCustomers"]"
                                       Required="true" />
                     </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.NumberOfOrganizations"
+                                      For="@(() => input.NumberOfCustomers)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Placeholder="@L["EnterYourNumberOfOrganizations"]"
+                                      InputType="InputType.Number"
+                                      Label="@L["NumberOfOrganizations"]"
+                                      Required="true" />
+                    </MudItem>
                     <MudItem sm="6">
                         <MudTextField @bind-Value="input.NumberOfCameras"
                                       For="@(() => input.NumberOfCameras)"
@@ -106,6 +117,16 @@
                                       Placeholder="@L["EnterYourNumberOfMobileCustomers"]"
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfMobileCustomers"]"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.SubscriptionSlotNumber"
+                                      For="@(() => input.SubscriptionSlotNumber)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Placeholder="@L["EnterYourSubscriptionSlotNumber"]"
+                                      InputType="InputType.Number"
+                                      Label="@L["SubscriptionSlotNumber"]"
                                       Required="true" />
                     </MudItem>
                     <MudItem sm="6">
