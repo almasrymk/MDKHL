@@ -295,9 +295,11 @@
     "Organization Subscription": "Organization Subscription",
     "Checkout": "Checkout",
     "Favorite": "Favorite",
-    "Status Draft": "Draft"
-
-
+    "Status Draft": "Draft",
+    "Logout": "Log Out",
+    "Country Name": "Country Name",
+    "State Name": "State Name",
+    "City Name": "City Name"
 
   } 
 }

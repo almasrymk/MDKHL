@@ -13,6 +13,8 @@ using Volo.Abp.Users;
 using SmartParking.Blazor.Components.Pages.Cameras;
 using static MudBlazor.CategoryTypes;
 using SmartParking.Blazor.Components.SPComponents;
+using Microsoft.Extensions.Localization;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -25,6 +27,12 @@ public partial class Organization
     private TableData itemData = new TableData();
 
     private string termSearch;
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
+
+    public Organization(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
+    }
 
     private async Task HandleDelete(string id)
     {
@@ -180,26 +188,26 @@ public partial class Organization
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Code", Name = "Code", IsFilterable = false, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "English Name", Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Country Name", Name = "CountryName", IsFilterable = true, PropertyNmae = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "State Name", Name = "StateName", IsFilterable = true, PropertyNmae = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "City Name", Name = "CityName", IsFilterable = true, PropertyNmae = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Status", Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Num Of Cameras", Name = "NumOfCameras", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = false, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Name"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyNmae = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyNmae = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyNmae = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in organizations.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Code", item.Code));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("English Name", item.EnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Country Name", item.CountryName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("State Name", item.StateName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("City Name", item.StateName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Status", item.Status.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Max Capacity", item.MaxCapacity.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Num Of Cameras", item.NumOfCameras.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Name"], item.EnglishName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.StateName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Num Of Cameras"], item.NumOfCameras.ToString()));
 
 
             tableData.Rows.Add(rowDef);
