@@ -6,6 +6,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Lookups.PlateColor;
 using System;
 using System.Collections.Generic;
@@ -146,7 +147,7 @@ public class GarageTransactionsAppService:
 		);
 	}
 
-    public override Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
+    public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
       
            input.VehiclePicture = SaveBase64Image(input);
@@ -154,10 +155,25 @@ public class GarageTransactionsAppService:
             return null;
         
       
-
+            
 
         
-        return base.CreateAsync(input);
+        var result=await base.CreateAsync(input);
+        if(result!=null)
+        {
+            var garage =await _GarageRepository.GetAsync(result.GarageId);
+            if(input.CameraType==CameraType.Entry)
+            {
+                garage.CurrnetCapicity++;
+            }
+            else if(input.CameraType==CameraType.Exit)
+            {
+                garage.CurrnetCapicity--;
+            }
+           // return result;
+        }
+        return result;
+        //return result;
     }
     public async override Task DeleteAsync(int id)
     {

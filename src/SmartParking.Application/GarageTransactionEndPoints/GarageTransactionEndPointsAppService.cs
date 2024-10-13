@@ -76,7 +76,15 @@ namespace SmartParking.GarageTransactionEndPoints
                     return await Task.FromResult(false);
 
             }
-            try
+			//Check Garage Capicity
+
+			if (GarageTransaction.CameraType == CameraType.Entry)
+			{
+				var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId);
+				if (garage.CurrnetCapicity == garage.MaxCapacity)
+					return await Task.FromResult(false);
+			}
+			try
             {
                 var  garageTransactionDto= await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 return await Task.FromResult(true);
@@ -86,6 +94,7 @@ namespace SmartParking.GarageTransactionEndPoints
 				return await Task.FromResult(false);
 
 			}
+         
 
 			//_logger.LogError($"{DateTime.Now} ====> transaction created {garageTransactionDto.Id}");
 
