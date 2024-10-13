@@ -1,6 +1,10 @@
-﻿@using SmartParking.Subscriptions
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Subscriptions
 @using Volo.Abp.Application.Dtos
 @inject ISubscriptionAppService SubscriptionsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+
 
 
 
@@ -13,7 +17,7 @@
         <div class="subscription-card">
             <div class="d-flex flex-column gap-1 text-white align-items-center rounded-circle subscription-circle">
                 <div class="price">
-                    <MudText>SAR</MudText>
+                    <MudText>@L["SAR"]</MudText>
                     <MudText Class="fw-bold" Typo="Typo.h2">@subscription.SubscriptionPrice</MudText>
                     <MudText>@subscription.SubscriptionType</MudText>
                 </div>
@@ -21,19 +25,19 @@
             </div>
             <ul class="d-flex flex-column gap-2">
                 <li class="d-flex align-items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title="Favorite" />
+                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title=@L["Favorite"] />
                     <MudText>3 Organization</MudText>
                 </li>
                 <li class="d-flex align-items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title="Favorite" />
-                    <MudText>@subscription.NumbersOfGarages Garages</MudText>
+                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title=@L["Favorite"] />
+                    <MudText>@subscription.NumbersOfGarages @L["Garages"]</MudText>
                 </li>
                 <li class="d-flex align-items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title="Favorite" />
-                    <MudText>@subscription.NumberOfCustomers Customers</MudText>
+                    <MudIcon Icon="@Icons.Material.Filled.CheckBox" Color="MudBlazor.Color.Primary" Title=@L["Favorite"] />
+                    <MudText>@subscription.NumberOfCustomers @L["Customers"]</MudText>
                 </li>
             </ul>
-            <MudButton Variant="Variant.Filled" FullWidth="true" class="mx-3 mt-5" Color="MudBlazor.Color.Primary">CHECKOUT</MudButton>
+            <MudButton Variant="Variant.Filled" FullWidth="true" class="mx-3 mt-5" Color="MudBlazor.Color.Primary">@L["Checkout"]</MudButton>
         </div>
     </div>
 }

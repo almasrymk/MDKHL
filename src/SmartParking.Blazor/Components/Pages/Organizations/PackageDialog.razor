@@ -6,16 +6,19 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 <div class="modal-wrapper ">
+
+
+    <PageTitle>@L["Organization Packages"]</PageTitle>
     <MudDialog class="mud-modal ">
         <TitleContent>
-            <MudText Class="fw-bold">Organization - Garage</MudText>
+            <MudText Class="fw-bold">@L["Organization Packages"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreatePackage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+            <SPDataGrid PageName=@L["Organization Packages"] Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreatePackage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
         </DialogContent>
         <DialogActions>
 
-            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

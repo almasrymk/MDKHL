@@ -1,27 +1,30 @@
 ﻿@page "/edit-profile"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
 @using Volo.Abp.Account
 @layout Shared.ProfileLayout
+@inject IStringLocalizer<SmartParkingResource> L
 
-<PageTitle>Edit Profile</PageTitle>
+<PageTitle>@L["Edit Profile"]</PageTitle>
 <div class="w-100">
     <MudPaper Class="p-5 d-flex flex-column align-items-center justify-content-center w-100 main-layout-paper" Style="background-color: #F2F2F2;">
         <MudForm Class="d-flex flex-column gap-4" @ref="form" OnValidSubmit="SaveChanges">
             <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
-                <MudImage Src="@ProfilePictureUrl" Alt="Profile Picture" />
+                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
                     <ActivatorContent>
                         <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
                     </ActivatorContent>
                 </MudFileUpload>
             </div>
-            <MudTextField T="string" Placeholder="Type your username here" Label="Username" @bind-Value="Profile.UserName" Required="true" />
-            <MudTextField T="string" Placeholder="Type your name here" Label="Name" @bind-Value="Profile.Name" Required="true" />
-            <MudTextField T="string" Placeholder="Type your email here" Label="Email" @bind-Value="Profile.Email" Required="true" />
-            <MudTextField T="string" Placeholder="Type your phone number here" Label="Phone" @bind-Value="Profile.PhoneNumber" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="Profile.UserName" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="Profile.Name" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="Profile.Email" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="Profile.PhoneNumber" Required="true" />
 
             <div class="d-flex align-items-center gap-3 mt-4">
-                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">CHANGE PASSWORD</MudButton>
-                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="@(() =>  SaveChanges())">SAVE CHANGES</MudButton>
+                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">@L["CHANGE PASSWORD"]</MudButton>
+                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() =>  SaveChanges())">@L["Save"]</MudButton>
             </div>
         </MudForm>
     </MudPaper>

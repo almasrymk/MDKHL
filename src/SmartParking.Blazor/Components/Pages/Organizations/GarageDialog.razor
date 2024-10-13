@@ -1,17 +1,23 @@
-﻿@using SmartParking.Garages
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Garages
+@using SmartParking.Localization
 @inject IGarageAppService GarageAppService
 @inject IDialogService Dialog
+
+@inject IStringLocalizer<SmartParkingResource> L
+
+<PageTitle>@L["Organization Garages"]</PageTitle>
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal ">
         <TitleContent>
-            <MudText Class="fw-bold">Organization - Garage</MudText>
+            <MudText Class="fw-bold">@L["Organization Garages"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreateGarage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+            <SPDataGrid PageName=@L["Organization Garages"] Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreateGarage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
         </DialogContent>
         <DialogActions>
            
-            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

@@ -8,10 +8,10 @@
 @inject ISnackbar Snackbar
 @page "/vehicleBrands"
 
+<PageTitle>@L["VehicleBrands"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["VehicleBrands"]</MudText>
 
-<h3>@L["VehicleBrands"]</h3>
-
-<SPDataGrid PageName="vehicleBrands" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateVehicleBrand(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["VehicleBrands"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateVehicleBrand(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 
 
 

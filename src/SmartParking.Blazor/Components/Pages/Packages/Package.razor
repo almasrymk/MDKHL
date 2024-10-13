@@ -7,8 +7,9 @@
 @inject ISnackbar Snackbar
 @page "/packages"
 
+<PageTitle>@L["Packages"]</PageTitle>
 
-<h3>@L["Packages"]</h3>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Packages"]</MudText>
 
-<SPDataGrid PageName="packages" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["Packages"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 

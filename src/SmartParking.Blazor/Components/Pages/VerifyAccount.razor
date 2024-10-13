@@ -1,12 +1,16 @@
 ﻿@page "/verify-account"
 @layout Shared.AuthLayout
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
 
-<PageTitle>Verify account</PageTitle>
 
-<h2>Verify Account</h2>
+<PageTitle>@L["Verify account"]</PageTitle>
+
+<h2>@L["Verify account"]</h2>
 <MudText Class="w-50 text-center">
-    we send the OTP to <a class="fw-bold" href="mailto:info@mdkhl.com">info@mdkhl.com</a>
-    enter the code bellow to verify account
+    @L["we send the OTP to"] <a class="fw-bold" href="mailto:info@mdkhl.com">info@mdkhl.com</a>
+   @L["enter the code bellow to verify account"]
 </MudText>
 
 <div>
@@ -26,11 +30,11 @@
                 </MudItem>
             }
         </MudGrid>
-        <MudText Class="text-center my-5">Didn't receive the code .. <MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">Resend</MudLink></MudText>
-        <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Type="Submit">VERIFY</MudButton>
+        <MudText Class="text-center my-5">@L["Didn't receive the code .."]<MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">@L["Resend"]</MudLink></MudText>
+        <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Type="Submit">@L["VERIFY"]</MudButton>
     </MudForm>
 </div>
-<MudText Class="text-center mt-5">if the mail is wrong change it in previous page .. <MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">Back</MudLink></MudText>
+<MudText Class="text-center mt-5">@L["if the mail is wrong change it in previous page .."] <MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">@L["Back"]</MudLink></MudText>
 @code {
     private string[] _otp = new string[5];
     private MudTextField<string>[] _otpRefs = new MudTextField<string>[5];

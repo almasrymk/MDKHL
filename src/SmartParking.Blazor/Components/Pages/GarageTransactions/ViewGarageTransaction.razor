@@ -5,6 +5,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
+<PageTitle>@L["View GarageTransaction"]</PageTitle>
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -30,6 +31,7 @@
 									  For="@(() => GarageTransaction.PlateNnumber)"
 									  Immediate="true"
 									  Disabled=true
+
 									  Label="@L["PlateNnumber"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
@@ -69,7 +71,7 @@
 									  Label="@L["CameraId"]" />
 					</MudItem>
 					<MudItem sm="12" md="12" class="d-flex justify-center">
-						<MudImage Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
+						<MudImage Src="@GarageTransaction.VehiclePicture" Alt=@L["Vehicle Image"] Width="400" Height="300" />
 					</MudItem>
 
 				</MudGrid>

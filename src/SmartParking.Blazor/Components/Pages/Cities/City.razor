@@ -8,10 +8,10 @@
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
+<PageTitle>@L["Cities"]</PageTitle>
 
+<MudText Typo="Typo.h5" Class="mb-2">@L["Cities"]</MudText>
 
-<h3>@L["Cities"]</h3>
-
-<SPDataGrid PageName="cities" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateCity" OnClickRowDelete="OnClickRowDelete">
+<SPDataGrid PageName=@L["Cities"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateCity" OnClickRowDelete="OnClickRowDelete">
 
 </SPDataGrid>

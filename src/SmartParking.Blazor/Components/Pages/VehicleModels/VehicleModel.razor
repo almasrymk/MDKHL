@@ -7,8 +7,8 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleModel
 
+<PageTitle>@L["VehicleModel"]</PageTitle>
 
-
-<h3>@L["VehicleModel"]</h3>
+<MudText Typo="Typo.h5" Class="mb-2">@L["VehicleModel"]</MudText>
 
 <SPDataGrid PageName="VehicleModel" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateVehicleModel(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
