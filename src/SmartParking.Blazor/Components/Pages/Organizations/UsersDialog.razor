@@ -1,0 +1,23 @@
+﻿@using SmartParking.Authentication
+@inject IUsersAppService UsersAppService
+@inject IDialogService Dialog
+<div class="modal-wrapper ">
+    <MudDialog class="mud-modal ">
+        <TitleContent>
+            <MudText Class="fw-bold">Organization - Users</MudText>
+        </TitleContent>
+        <DialogContent>
+            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreateUser" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+        </DialogContent>
+        <DialogActions>
+
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
