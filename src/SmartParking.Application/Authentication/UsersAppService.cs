@@ -1,20 +1,17 @@
-﻿
-using Abp.Extensions;
+﻿using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
-using SmartParking.Enums;
+using Microsoft.EntityFrameworkCore;
+using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Identity;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -22,15 +19,19 @@ namespace SmartParking.Authentication;
 public class UsersAppService : ApplicationService , IUsersAppService
 {
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IMyUserRepository _userRepository;
 
-    public UsersAppService(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager)
+    public UsersAppService(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager,IMyUserRepository userRepository)
     {
         _userManager = userManager;
+        _userRepository = userRepository;
     }
 
     public async Task<UserDto> CreateAsync(UserCreateDto input)
     {
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
+        user.Name = input.UserName;
+        user.Surname = input.Surname;
         user.SetProperty("OtpCode",null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
         user.SetProperty("UserTypeId", input.UserType);
@@ -46,35 +47,12 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
        var userDto =  ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
-
-
-     
     }
 
     public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
     {
-
-        // Create a parameter for the IdentityUser object (x => ...)
-        ParameterExpression param = Expression.Parameter(typeof(IdentityUser), "x");
-
-        var methodInfo = typeof(ObjectExtensions).GetMethod("GetProperty")
-            ?.MakeGenericMethod(typeof(int));
-
-
-        var getPropertyCall = Expression.Call(
-            methodInfo,
-            param,
-            Expression.Constant("OrganizationId") // Pass the property name
-        );
-
-        ConstantExpression value = Expression.Constant(organizationId);
-
-        Expression condition = Expression.Equal(getPropertyCall, value);
-
-        Expression<Func<IdentityUser, bool>> expression = Expression.Lambda<Func<IdentityUser, bool>>(condition, param);
-        Console.WriteLine("Expression"+expression);
-        var users = await _userManager.Users.Where(expression).ToListAsync();
-        Console.WriteLine(users[1].GetProperty("OrganizationId"));
+       
+        var users = await _userRepository.FindByOrganizationAsync(organizationId);
         var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
         return userMap;
 
