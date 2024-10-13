@@ -9,8 +9,8 @@
 @inject NavigationManager Navigation
 
 
+<PageTitle>@L["Customers"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
 
-<h3>@L["Customers"]</h3>
-
-<SPDataGrid PageName="Customers" Data="@itemData" OnAdd="HandleAdd" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnClickAssign="AssignPackage" OnClickCar="CreateVehicle" OnClickRowView="ShowVehiclesForCustomer"></SPDataGrid>
+<SPDataGrid PageName=@L["Customers"] Data="@itemData" OnAdd="HandleAdd" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnClickAssign="AssignPackage" OnClickCar="CreateVehicle" OnClickRowView="ShowVehiclesForCustomer"></SPDataGrid>
 

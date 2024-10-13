@@ -6,6 +6,8 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
+<PageTitle>@L["View Package"]</PageTitle>
+
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -25,7 +27,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["Arabic Name"]" />
+                                      Label=@L["Arabic Name"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.EnglishName"
@@ -33,7 +35,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["English Name"]" />
+                                      Label=@L["English Name"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.Price"
@@ -41,7 +43,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["Price"]" />
+                                      Label=@L["Price"] />
                     </MudItem>
 
 
@@ -51,7 +53,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["OrgnizationId"]" />
+                                      Label=@L["OrgnizationId"] />
                     </MudItem>
 
                     <MudItem sm="4" md="4">
@@ -60,21 +62,21 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["PackageTypeEnglishName"]" />
+                                      Label=@L["PackageTypeEnglishName"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.PublishFrom"
                                       For="@(() => Package.PublishFrom)"
                                       Immediate="true"
                                       Disabled=true
-                                      Label="@L["PublishFrom"]" />
+                                      Label=@L["PublishFrom"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.PublishTo"
                                       For="@(() => Package.PublishTo)"
                                       Immediate="true"
                                       Disabled=true
-                                      Label="@L["PublishTo"]" />
+                                      Label=@L["PublishTo"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.OrgnizationId"
@@ -82,13 +84,13 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["OrgnizationId"]" />
+                                      Label=@L["OrgnizationId"] />
                     </MudItem>
               
                     <MudItem sm="4">
-                        <MudSwitch Label="@L["published"]"
+                        <MudSwitch Label=@L["published"]
                                    LabelPosition="LabelPosition.Start"
-                                   Placeholder="@L["published"]"
+                                   Placeholder=@L["published"]
                                    @bind-Value="Package.published"
                                    Disabled='true'
                                    Color="MudBlazor.Color.Primary" />
@@ -100,7 +102,7 @@
                                       Class="w-100"
                                       Lines="5"
                                       Disabled='true'
-                                      Label="@L["Description"]" />
+                                      Label=@L["Description"] />
 
                     </MudItem>
 
@@ -110,7 +112,7 @@
                                       For="@(() => Package.Status)"
                                       Immediate="true"
                                       Disabled=true
-                                      Label="@L["Status"]" />
+                                      Label=@L["Status"] />
                     </MudItem>
 
 				</MudGrid>

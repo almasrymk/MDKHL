@@ -26,7 +26,8 @@
 									  For="@(() => region.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["Arabic Name"]" />
+									  Placeholder=@L["Type Here"]
+									  Label=@L["Arabic Name"] />
 					</MudItem>
 
 					<MudItem sm="6">
@@ -34,14 +35,16 @@
 									  For="@(() => region.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-								      Label="@L["English Name"]" />
+									  Placeholder=@L["Type Here"]
+									  Label=@L["English Name"] />
 					</MudItem>
 
 						<MudItem sm="6">
 							<MudSelect @bind-Value="@region.CountryId"
 									   Variant="Variant.Text"
-									   Label="@L["Country"]"
-									   Placeholder="@L["Choose"]"
+									   Label=@L["Country"]
+									   Placeholder=@L["Choose"]
+								   HelperText=@L["Helper Text"] 
 									   AnchorOrigin="Origin.TopCenter"
 									   TransformOrigin="Origin.TopCenter" >
 
@@ -56,9 +59,9 @@
 					<MudItem sm="6" Class="d-inline-flex justify-content-center">
 						<MudItem Class="d-flex flex-row justify-content-between">
 							<MudRadioGroup @bind-Value="@region.Status" Class="d-inline-flex align-content-center">
-								<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-								<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
-								<MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">Deleted</MudRadio>
+								<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+								<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+								<MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">@L["Status Deleted"]</MudRadio>
 							</MudRadioGroup>
 						</MudItem>
 					</MudItem>

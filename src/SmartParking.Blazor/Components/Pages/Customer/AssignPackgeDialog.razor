@@ -9,6 +9,8 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
+<PageTitle>@L["Assign Package"]</PageTitle>
+
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -24,7 +26,8 @@
 						<MudSelect @bind-Value="@CustomerPackage.PackageId"
 								   Variant="Variant.Text"
 								   Label="@L["Package Name"]"
-								   Placeholder="Choose"
+								   Placeholder=@L["Choose"]
+								   HelperText=@L["Helper Text"]
 								   Clearable="_clearable">
 							@foreach (var garage in Packages)
 							{

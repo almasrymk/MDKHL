@@ -8,4 +8,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 
-<SPDataGrid PageName="organizations" OnAdd="HandleAdd" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnClickRowView="HandleView" OnClickRowDelete="HandleDelete" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+<PageTitle>@L["Organizations"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Organizations"]</MudText>
+
+<SPDataGrid PageName=@L["Organizations"] OnAdd="HandleAdd" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnClickRowView="HandleView" OnClickRowDelete="HandleDelete" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>

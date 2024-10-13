@@ -11,6 +11,6 @@
 <PageTitle>@L["Countries"]</PageTitle>
 
 
-<h3>@L["Countries"]</h3>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Countries"]</MudText>
 
-<SPDataGrid PageName="Countries" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateCountry" OnClickRowDelete="OnClickRowDelete" />
+<SPDataGrid PageName=@L["Countries"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateCountry" OnClickRowDelete="OnClickRowDelete" />

@@ -7,7 +7,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
-
-<MudText Typo="Typo.h6">@L["Invoices"]</MudText>
+<PageTitle>@L["Invoices"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Invoices"]</MudText>
 <SPDataGrid PageName="@L["Invoices"]" Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="HandleAdd" OnFiltering="HandleFilter" OnClickRowView="HandleView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 

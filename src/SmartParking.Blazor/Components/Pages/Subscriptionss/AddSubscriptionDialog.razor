@@ -23,7 +23,7 @@
                                       For="@(() => input.SubscriptionName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["ُEnterYourSubscriptionName"]"
+                                      Placeholder=@L["Type Here"]
                                       Label="@L["SubscriptionName"]"
                                       InputType="InputType.Text" 
                                       Required="true"/>
@@ -34,7 +34,7 @@
                                       For="@(() => input.SubscriptionDescription)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourSubscriptionDescription"]"
+                                      Placeholder=@L["Type Here"]
                                       Label="@L["SubscriptionDescription"]"
                                       InputType="InputType.Text" 
                                       Required="true"/>
@@ -43,7 +43,7 @@
                         <MudTextField @bind-Value="input.SubscriptionPrice"
                                       For="@(() => input.SubscriptionPrice)"
                                       Immediate="true"
-                                      Placeholder="@L["EnterYourSubscriptionPrice"]"
+                                      Placeholder=@L["Type Here"]
                                       Label="@L["SubscriptionPrice"]"
                                       InputType="InputType.Number" 
                                       Required="true" />
@@ -53,8 +53,8 @@
                                       @bind-Date="_activateDate"
                                        @bind-value="_activateDate"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourActivationDate"]"
-                                      Label="@L["ActivationDate"]"
+                                       Placeholder=@L["Type Here"]
+                                       Label="@L["ActivationDate"]"
                                       Required="true"
                                       ShowToolbar="false" />
                     </MudItem>
@@ -63,8 +63,8 @@
                                       @bind-Date = "_inActivateDate"
                                       @bind-value="_inActivateDate"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourInActivationDate"]"
-                                      Label="@L["InActivationDate"]"
+                                       Placeholder=@L["Type Here"]
+                                       Label="@L["InActivationDate"]"
                                       Required="true"
                                       ShowToolbar="false"/>
                     </MudItem>
@@ -73,7 +73,7 @@
                                       For="@(() => input.NumberOfCustomers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourNumberOfCustomers"]"
+                                      Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfCustomers"]"
                                       Required="true" />
@@ -83,7 +83,7 @@
                                       For="@(() => input.NumberOfCameras)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourNumberOfCameras"]"
+                                      Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfCameras"]"
                                       Required="true" />
@@ -93,7 +93,7 @@
                                       For="@(() => input.NumbersOfGarages)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourNumbersOfGarages"]"
+                                      Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumbersOfGarages"]"
                                       Required="true" />
@@ -112,6 +112,7 @@
                         <MudSelect Variant="Variant.Text"
                                    Label="@L["SubscriptionTypes"]"
                                    Placeholder="@L["Choose"]"
+                                   HelperText=@L["Helper Text"] 
                                    Clearable="true"
                                    Required="true"
                                    AnchorOrigin="Origin.TopCenter"

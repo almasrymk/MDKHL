@@ -43,8 +43,9 @@
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@state.RegionId"
 								   Variant="Variant.Text"
-								   Label="@L["Region"]"
-								   Placeholder="@L["Choose"]"
+								   Label=@L["Region"]
+								   Placeholder=@L["Choose"]
+								   HelperText=@L["Helper Text"] 
 								   AnchorOrigin="Origin.TopCenter"
 								   TransformOrigin="Origin.TopCenter"
 								   Disabled>
