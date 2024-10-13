@@ -91,8 +91,8 @@ public class GarageTransactionsAppService:
 		{
 
 			queryable = queryable.Where(or =>
-				or.PlateNnumber.StartsWith(input.SearchingTerm) ||
-				or.Type.StartsWith(input.SearchingTerm) 
+				or.PlateNnumber.StartsWith(input.SearchingTerm) 
+				//or.Type.StartsWith(input.SearchingTerm) 
 				//or..StartsWith(input.SearchingTerm)
 
 			);
@@ -150,7 +150,7 @@ public class GarageTransactionsAppService:
     {
       
            input.VehiclePicture = SaveBase64Image(input);
-        if (input.VehiclePicture == null)
+            if (input.VehiclePicture == null)
             return null;
         
       

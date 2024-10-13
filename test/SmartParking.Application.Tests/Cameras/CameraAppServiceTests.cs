@@ -50,7 +50,8 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                 Code = "C12345",                   // Valid Code
                 CameraIP = "192.168.1.100",        // Valid Camera IP
                 MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address
-                Type = "Outdoor",                  // Valid Type
+                //Type = "Outdoor",                  // Valid Type
+                CameraType=CameraType.Exit,
                 GarageId = garage.Id,                      // Valid Garage ID
                 Status = Status.Active,            // Valid Status
             });
@@ -76,7 +77,8 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                     Code = "12345",
                     CameraIP = "192.168.1.1",
                     MacAddress = "00:1B:44:11:3A:B7",
-                    Type = "Indoor",
+                    //Type = "Indoor",
+                    CameraType = CameraType.Entry,
                     GarageId = garage.Id,
                     Status = Status.Active,
                     TenantId = null

@@ -141,7 +141,7 @@ public partial class Camera
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.Type));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.CameraType.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
 
 
@@ -171,8 +171,8 @@ public partial class Camera
 			MainType = cameraDto.MainType,
 			Model = cameraDto.Model,
 			TenantId = cameraDto.TenantId,
-			Type = cameraDto.Type,
-
+			//Type = cameraDto.Type,
+            CameraType=cameraDto.CameraType,
 
 		};
 
@@ -205,8 +205,8 @@ public partial class Camera
             MainType = cameraDto.MainType,
             Model = cameraDto.Model,
             TenantId = cameraDto.TenantId,
-            Type=cameraDto.Type,
-           
+            //Type=cameraDto.Type,
+           CameraType = cameraDto.CameraType
 
         };
 
@@ -241,7 +241,7 @@ public partial class Camera
 			MainType = cameraDto.MainType,
 			Model = cameraDto.Model,
 			TenantId = cameraDto.TenantId,
-			Type = cameraDto.Type,
+			CameraType = cameraDto.CameraType,
 
 
 		};

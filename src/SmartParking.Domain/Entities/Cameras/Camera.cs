@@ -20,7 +20,7 @@ public class Camera : FullAuditedEntity<int>, IMultiTenant
     public string Code { get; set; }
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }
-    public string Type { get; set; }
+    public CameraType CameraType { get; set; }
     public virtual Garage Garage { get; set; }
     public int GarageId { get; set; }
     public Status Status { get; set; }
