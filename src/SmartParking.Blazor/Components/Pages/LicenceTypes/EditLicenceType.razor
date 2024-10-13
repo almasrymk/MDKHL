@@ -9,6 +9,8 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
+
+<PageTitle>@L["Edit LicenceType"]</PageTitle>
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -24,7 +26,8 @@
 						<MudSelect @bind-Value="@LicenceType.PlateColorId"
 								   Variant="Variant.Text"
 								   Label="@L["PlateColor Name"]"
-								   Placeholder="Choose"
+								   Placeholder=@L["Choose"]
+								   HelperText=@L["Helper Text"]
 								   Required="true"
 								   Clearable="_clearable">
 							@foreach (var platecolor in plateColors)
@@ -37,6 +40,7 @@
 						<MudTextField @bind-Value="LicenceType.ArabicName"
 									  For="@(() => LicenceType.ArabicName)"
 									  Immediate="true"
+									  Placeholder=@L["Type Here"]
 									  Label="@L["ArabicName"]" />
 					</MudItem>
 
@@ -45,6 +49,7 @@
 									  For="@(() => LicenceType.EnglishName)"
 									  Immediate="true"
 									  Required="true"
+									  Placeholder=@L["Type Here"]
 									  Label="@L["EnglishName"]" />
 					</MudItem>
 				</MudGrid>

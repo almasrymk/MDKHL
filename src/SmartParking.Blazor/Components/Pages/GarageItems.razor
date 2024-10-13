@@ -1,4 +1,8 @@
 ﻿@page "/garage-items"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
 
 <MudGrid>
     <MudItem xs="12" sm="6" md="4" lg="2">
@@ -7,7 +11,7 @@
         </MudPaper>
         <div class="d-flex align-items-center mt-2 justify-content-between ps-2">
             <MudText Class="fw-bold" Typo="Typo.h6">
-                Garages
+                @L["Garages"]
             </MudText>
             <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
         </div>
@@ -18,7 +22,7 @@
         </MudPaper>
         <div class="d-flex align-items-center mt-2 justify-content-between ps-2">
             <MudText Class="fw-bold" Typo="Typo.h6">
-                Cameras
+                @L["Cameras"]
             </MudText>
             <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
         </div>
@@ -29,7 +33,7 @@
         </MudPaper>
         <div class="d-flex align-items-center mt-2 justify-content-between ps-2">
             <MudText Class="fw-bold" Typo="Typo.h6">
-                Packages
+                @L["Packages"]
             </MudText>
             <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
         </div>

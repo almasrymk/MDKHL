@@ -8,6 +8,7 @@
 @inject IPlateColorsAppService PlateColorsAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
+<PageTitle>@L["Edit PlateColor"]</PageTitle>
 
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
@@ -24,8 +25,8 @@
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="PlateColor.ArabicName"
 									  For="@(() => PlateColor.ArabicName)"
-									  Immediate="true"
-									  Label="@L["ArabicName"]" />
+									  Immediate="true" Placeholder=@L["Type Here"]
+									  Label=@L["ArabicName"] />
 					</MudItem>
 
 					<MudItem sm="4">
@@ -33,7 +34,8 @@
 									  For="@(() => PlateColor.EnglishName)"
 									  Immediate="true"
 									  Required="true"
-									  Label="@L["EnglishName"]" />
+									  Placeholder=@L["Type Here"]
+									  Label=@L["EnglishName"] />
 					</MudItem>
 				</MudGrid>
 			</MudForm>

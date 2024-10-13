@@ -6,6 +6,7 @@
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 
+<PageTitle>@L["New LicenceType"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -20,8 +21,9 @@
                                 <MudSelect @bind-Value="@licenceTypeDto.PlateColorId"
                                            Variant="Variant.Text"
                                            Label="@L["PlateColor Name"]"
-                                           Placeholder="Choose"
-                                           Required="true"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
+                                   Required="true"
                                            Clearable="_clearable">
                                     @foreach (var platecolor in plateColors)
                                     {
@@ -36,6 +38,7 @@
                                               For="@(() => licenceTypeDto.ArabicName)"
                                               Immediate="true"
                                               Required="true"
+                                      Placeholder=@L["Type Here"]
                                               Label="@L["ArabicName"]" />
                             </MudItem>
 
@@ -44,7 +47,8 @@
                                               For="@(() => licenceTypeDto.EnglishName)"
                                               Immediate="true"
                                               Required="true"
-                                              Label="@L["EnglishName"]" />
+                                      Placeholder=@L["Type Here"]
+                                      Label="@L["EnglishName"]" />
                             </MudItem>
 
 

@@ -8,7 +8,7 @@
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
 
-
+<PageTitle>@L["Add New Garage"]</PageTitle>
 <div class="modal-wrapper">
 
     <MudDialog Class="mud-modal">
@@ -54,7 +54,10 @@
                                                Label="@L["Closing Hours"]" />
                             </MudItem>
                             <MudItem sm="12" md="12">
-                                <MudSelect @bind-Value="@createUpdateGarage.OrganizationId" Label="@L["OrganizationName"]" Placeholder="@L[ "Choose"]">
+                                <MudSelect @bind-Value="@createUpdateGarage.OrganizationId" 
+                                Label="@L["OrganizationName"]" 
+                                Placeholder="@L[ "Choose"]"  
+                                HelperText=@L["Helper Text"]>
 
                                     @foreach (var organization in Organizations)
                                     {

@@ -6,7 +6,7 @@
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
-
+<PageTitle>@L["New VehicleBrand"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -21,8 +21,9 @@
                                 <MudSelect @bind-Value="@vehicleModelDto.VehiclesBrandId"
                                            Variant="Variant.Text"
                                            Label="@L["VehiclesBrand Name"]"
-                                           Placeholder="Choose"
-                                           Required="true"
+                                   HelperText=@L["Helper Text"]
+                                   Placeholder=@L["Choose"]
+                                   Required="true"
                                            Clearable="_clearable">
                                     @foreach (var vehicleBrand in VehicleBrands)
                                     {
@@ -36,7 +37,8 @@
                                               For="@(() => vehicleModelDto.ArabicName)"
                                               Immediate="true"
                                               Required="true"
-                                              Label="@L["ArabicName"]" />
+                                      Placeholder=@L["Type Here"]
+                                      Label="@L["ArabicName"]" />
                             </MudItem>
 
                             <MudItem sm="4">
@@ -44,7 +46,8 @@
                                               For="@(() => vehicleModelDto.EnglishName)"
                                               Immediate="true"
                                               Required="true"
-                                              Label="@L["EnglishName"]" />
+                                      Placeholder=@L["Type Here"]
+                                      Label="@L["EnglishName"]" />
                             </MudItem>
 
 

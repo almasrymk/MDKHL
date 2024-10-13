@@ -30,18 +30,19 @@
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="input.InvoiceNumber" Placeholder="@L["InvoiceNumber"]" Label="@L["InvoiceNumber"]" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="input.InvoiceNumber" Placeholder=@L["Type Here"] Label=@L["InvoiceNumber"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="int" InputType="InputType.Number" @bind-Value="input.TotalHours" Placeholder="@L["TotalHours"]" Label="@L["TotalHours"]" />
+                            <MudTextField Required="true" T="int" InputType="InputType.Number" @bind-Value="input.TotalHours" Placeholder=@L["Type Here"] Label=@L["TotalHours"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="decimal" InputType="InputType.Number" @bind-Value="input.InvoicePrice" Placeholder="@L["InvoicePrice"]" Label="@L["InvoicePrice"]" />
+                            <MudTextField Required="true" T="decimal" InputType="InputType.Number" @bind-Value="input.InvoicePrice" Placeholder=@L["Type Here"] Label=@L["InvoicePrice"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
-                                       Label="@L["Organizations"]"
-                                       Placeholder="@L["Choose"]"
+                                       Label=@L["Organizations"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
                                        Clearable="true"
                                        Required="true"
                                        @bind-Value="input.OrganizationId">
@@ -55,8 +56,9 @@
 
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
-                                       Label="@L["Garages"]"
-                                       Placeholder="@L["Choose"]"
+                                       Label=@L["Garages"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"] 
                                        Clearable="true"
                                        Required="true"
                                        @bind-Value="input.GarageId">
@@ -70,8 +72,9 @@
 
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
-                                       Label="@L["Vehicles"]"
-                                       Placeholder="@L["Choose"]"
+                                       Label=@L["Vehicles"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
                                        Clearable="true"
                                        Required="true"
                                        @bind-Value="input.VehicleId">
@@ -155,26 +158,26 @@
                         <MudText Typo="Typo.body2">@L["DueValue"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.body2">620.00 SAR</MudText>
+                        <MudText Typo="Typo.body2">620.00 @L["SAR"]</MudText>
                     </MudItem>
 
                     <MudItem xs="6">
                         <MudText Typo="Typo.body2">@L["VAT"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.body2">45.00 SAR</MudText>
+                        <MudText Typo="Typo.body2">45.00 @L["SAR"]</MudText>
                     </MudItem>
                     <MudItem xs="6">
                         <MudText Typo="Typo.body2">@L["Discount"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.body2">-400.00 SAR</MudText>
+                        <MudText Typo="Typo.body2">-400.00 @L["SAR"]</MudText>
                     </MudItem>
                     <MudItem xs="6">
                         <MudText Color="MudBlazor.Color.Primary" Typo="Typo.body1" Class="fw-bold">@L["Total"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.body1" Color="MudBlazor.Color.Primary" Class="fw-bold">265.00 SAR</MudText>
+                        <MudText Typo="Typo.body1" Color="MudBlazor.Color.Primary" Class="fw-bold">265.00 @L["SAR"]</MudText>
                     </MudItem>
                 </MudGrid>
 

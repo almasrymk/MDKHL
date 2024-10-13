@@ -12,6 +12,7 @@
 @inject IPackageTypesAppService packageTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 
+<PageTitle>@L["New Package"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -26,27 +27,32 @@
                                       For="@(() => createUpdatePackage.ArabicName)"
                                       Variant="Variant.Text"
                                       Class="w-100"
-                                      Label="@L["Arabic Name"]" />
+                                      Placeholder=@L["Type Here"]
+                                      Label=@L["Arabic Name"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="createUpdatePackage.EnglishName"
                                       For="@(() => createUpdatePackage.EnglishName)"
                                       Variant="Variant.Text"
                                       Class="w-100"
-                                      Label="@L["English Name"]" />
+                                      Placeholder=@L["Type Here"]
+                                      Label=@L["English Name"]/>
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="createUpdatePackage.Price"
                                       For="@(() => createUpdatePackage.Price)"
                                       Variant="Variant.Text"
-                                      Class="w-100"
-                                      Label="@L["Price"]" />
+                                      Class="w-100" Placeholder=@L["Type Here"]
+                                      Label=@L["Price"]/>
                     </MudItem>
 
 
                 
                     <MudItem sm="4" md="4">
-                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["Package Type"]" Placeholder="Please Select">
+                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" 
+                        Label=@L["Package Type"]
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]>
 
                             @foreach (var type in packageTypes)
                             {
@@ -61,19 +67,20 @@
                         <MudTimePicker Variant="Variant.Text"
                                        Class="w-100"
                                        TimeChanged="OnTimeFromChanged"
-                                       Label="@L["Publish From"]" />
+                                       Placeholder=@L["Time Placeholder"]
+                                       Label=@L["Publish From"] />
                     </MudItem>
 
                     <MudItem sm="4" md="4">
                         <MudTimePicker Variant="Variant.Text"
                                        Class="w-100"
                                        TimeChanged="OnTimeToChanged"
+                                       Placeholder=@L["Time Placeholder"]
                                        Label="@L["Publish To"]" />
                     </MudItem>
                     <MudItem sm="4">
                         <MudSwitch Label="@L["published"]"
                                    LabelPosition="LabelPosition.Start"
-                                   Placeholder="@L["published"]"
                                    @bind-Value="createUpdatePackage.published"
                                    Color="MudBlazor.Color.Primary" />
                     </MudItem>
@@ -83,6 +90,7 @@
                                       Variant="Variant.Outlined"
                                       Class="w-100"
                                       Lines="5"
+                                      Placeholder=@L["Type Here"]
                                       Label="@L["Description"]" />
 
                     </MudItem>
@@ -90,8 +98,8 @@
                     <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@createUpdatePackage.Status" Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
                             </MudRadioGroup>
                         </div>
                     </MudItem>

@@ -9,8 +9,9 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
+<PageTitle>@L["Governorates"]</PageTitle>
 
-<h3>@L["Governorates"]</h3>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Governorates"]</MudText>
 
-<SPDataGrid PageName="governorates" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGovernorate" OnClickRowDelete="OnClickRowDelete" />
+<SPDataGrid PageName=@L["Governorates"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGovernorate" OnClickRowDelete="OnClickRowDelete" />
 

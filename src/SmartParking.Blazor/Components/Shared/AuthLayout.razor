@@ -1,7 +1,9 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using System.Globalization
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
+<MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="CustomTheme" />
@@ -11,8 +13,13 @@
         <MudContainer MaxWidth="MaxWidth.Large" Class="auth-container">
             <MudMainContent Class="auth-content">
                 <div class="d-flex gap-2">
-                    <Image Source="/images/svgs/arabic.svg" />
-                    <MudText class="text-white">عربي</MudText>
+                    <MudMenu>
+                        <ActivatorContent>
+                            <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                                <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                            </div>
+                        </ActivatorContent>
+                    </MudMenu>
                 </div>
                 <MudGrid Class="d-flex align-items-center flex-1 mb-5">
                     <MudItem xs="12" md="6" Class="d-flex justify-content-center justify-content-md-start">
@@ -33,6 +40,8 @@
 
 
 @code {
+    [Inject] private NavigationManager Navigation { get; set; }
+
     MudTheme CustomTheme = new MudTheme()
         {
             PaletteLight = new PaletteLight()
@@ -47,4 +56,13 @@
             },
 
         };
+
+    private void ChangeLanguage()
+    {
+        Navigation.NavigateTo("api/SetLanguage", true);
+    }
+    private string LocaleImgSrc()
+    {
+        return CultureInfo.CurrentCulture.Name == "en" ? "images/svgs/arabic.svg" : "images/svgs/english.svg";
+    }
 }

@@ -6,6 +6,8 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
+
+<PageTitle>@L["Edit Package"]</PageTitle>
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -95,8 +97,8 @@
                     <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@Package.Status" Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">Active</MudRadio>
-                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">InActive</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
                             </MudRadioGroup>
                         </div>
                     </MudItem>

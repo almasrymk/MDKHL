@@ -12,9 +12,10 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 
+<PageTitle>@L["Garages"]</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-2">@L["Garages"]</MudText>
 
 
-<h3>@L["Garages"]</h3>
-
-<SPDataGrid PageName="garages" Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
+<SPDataGrid PageName=@L["Garages"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
 

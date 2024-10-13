@@ -13,11 +13,13 @@
 @inject ISnackbar Snackbar
 @inject IVehiclesAppService VehicleAppService
 
+<PageTitle>@L["Add Vehicle for Customer"]</PageTitle>
+
 <div class="modal-wrapper">
 
     <MudDialog Class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">Add Vehicle for Customer </MudText>
+            <MudText Typo="Typo.h6">@L["Add Vehicle for Customer"] </MudText>
         </TitleContent>
         <DialogContent>
 
@@ -27,7 +29,8 @@
                         <MudSelect @bind-Value="@createUpdateVehicle.PlateColorId"
                                    Variant="Variant.Text"
                                    Label="@L["PlateColor Name"]"
-                                   Placeholder="Choose"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
                             @foreach (var platecolor in plateColors)
@@ -48,7 +51,8 @@
                         <MudSelect @bind-Value="@createUpdateVehicle.VehicleModelId"
                                    Variant="Variant.Text"
                                    Label="@L["VehicleModel"]"
-                                   Placeholder="Choose"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
                             @foreach (var vehiclemodel in VehicleModels)
@@ -62,7 +66,8 @@
                         <MudSelect @bind-Value="@createUpdateVehicle.VehicleBrandId"
                                    Variant="Variant.Text"
                                    Label="@L["VehicleBrand"]"
-                                   Placeholder="Choose"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
                             @foreach (var vehiclebrand in VehicleBrands)
@@ -76,7 +81,8 @@
                         <MudSelect @bind-Value="@createUpdateVehicle.LicenceTypeId"
                                    Variant="Variant.Text"
                                    Label="@L["LicenceType"]"
-                                   Placeholder="Choose"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
                             @foreach (var licenceType in LicenceTypes)

@@ -8,8 +8,8 @@
 @inject ISnackbar Snackbar
 @page "/plateColors"
 
-
-<h3>@L["PlateColors"]</h3>
+<PageTitle>@L["PlateColors"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["PlateColors"]</MudText>
 
 <SPDataGrid PageName=@L["PlateColors"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreatePlateColor(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 
