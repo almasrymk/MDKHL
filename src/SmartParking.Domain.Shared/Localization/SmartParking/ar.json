@@ -335,6 +335,16 @@
     "State Name": "اسـم الامـارة",
     "City Name": "اسـم المدينة"
 
+    "NumberOfOrganizations": "عدد المنشاءات",
+    "FirstHourPrice": "سعر الساعة الأولى",
+    "SecondHourPrice": "سعر الساعة الثانية",
+    "ThirdHourPrice": "سعر الساعة الثالثة",
+    "AdditionalHourPrice": "سعر الساعة الإضافية",
+    "NumberOfHours": "عدد الساعات",
+    "ExceededTime": "تجاوزت الوقت",
+    "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
+    "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
+    "FullDay": "يوم كامل"
 
   }
 }

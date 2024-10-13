@@ -1196,99 +1196,6 @@ namespace SmartParking.Migrations
                     b.ToTable("CustomerPackages");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Organizations.DefaultPackage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AdditionalHourPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("ArabicName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("EnglishName")
-                        .HasColumnType("text");
-
-                    b.Property<TimeOnly>("ExceededTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<decimal>("FirstHourPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Fullday")
-                        .HasColumnType("numeric");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<bool>("IsFullDayExceeded")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsNumberOfHoursExceeded")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<int>("NumberOfHours")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrgnizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SecoundHourPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("ThirdHourPrice")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("DefaultPackages");
-                });
-
             modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
                 {
                     b.Property<int>("Id")
@@ -1388,6 +1295,9 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("AdditionalHourPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("ArabicName")
                         .HasColumnType("text");
 
@@ -1429,11 +1339,26 @@ namespace SmartParking.Migrations
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
 
+                    b.Property<TimeOnly>("ExceededTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<decimal>("FirstHourPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("FullDay")
+                        .HasColumnType("numeric");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsFullDayExceeded")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsNumberOfHoursExceeded")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
@@ -1449,11 +1374,17 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<int>("NumberOfHours")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
 
                     b.Property<int>("RegionId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("SecondHourPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("StateId")
                         .HasColumnType("integer");
@@ -1466,6 +1397,9 @@ namespace SmartParking.Migrations
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("ThirdHourPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("UnifiedLicenseNum")
                         .HasColumnType("text");
@@ -4074,15 +4008,6 @@ namespace SmartParking.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Package");
-                });
-
-            modelBuilder.Entity("SmartParking.Entities.Organizations.DefaultPackage", b =>
-                {
-                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId");
-
-                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>

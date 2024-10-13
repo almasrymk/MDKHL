@@ -309,7 +309,17 @@
     "SubscriptionSlotNumber": "Subscription Slot Number",
     "EnterYourSubscriptionSlotNumber": "Enter Your Subscription Slot Number",
     "EnterYourNumberOfOrganizations": "Enter Your Number Of Organizations",
-    "NumberOfOrganizations": "Number Of Organizations"
+    "NumberOfOrganizations": "Number Of Organizations",
+    "FirstHourPrice": "First Hour Price",
+    "SecondHourPrice": "Second Hour Price",
+    "ThirdHourPrice": "Third Hour Price",
+    "AdditionalHourPrice": "Additional Hour Price",
+    "Fullday": "Fullday",
+    "NumberOfHours": "Number Of Hours",
+    "ExceededTime": "Exceeded Time",
+    "NumberOfHoursExceeded": "Number Of Hours Exceeded",
+    "FullDayExceeded": "FullDay Exceeded",
+    "FullDay": "FullDay"
 
 
   } 

@@ -34,7 +34,15 @@ public partial class OrganizationAdd
     public string RegionSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
-
+    public decimal FirstHourPrice { get; set; }
+    public decimal SecondHourPrice { get; set; }
+    public decimal ThirdHourPrice { get; set; }
+    public decimal AdditionalHourPrice { get; set; }
+    public decimal FullDay { get; set; }
+    public bool IsNumberOfHoursExceeded { get; set; }
+    public int NumberOfHours { get; set; }
+    public bool IsFullDayExceeded { get; set; }
+    public TimeSpan? ExceededTime { get; set; }
     public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
@@ -83,6 +91,15 @@ public partial class OrganizationAdd
             Status = StatusValue,
             PhoneNum = PhoneNum,
             WhatsAppNum = WhatsAppNum,
+            FirstHourPrice = FirstHourPrice,
+            SecondHourPrice = SecondHourPrice,
+            ThirdHourPrice = ThirdHourPrice,
+            AdditionalHourPrice = AdditionalHourPrice,
+            FullDay = FullDay,
+            IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
+            NumberOfHours = NumberOfHours,
+            IsFullDayExceeded = IsFullDayExceeded,
+            ExceededTime = TimeOnly.FromTimeSpan(ExceededTime ?? TimeSpan.MinValue),
         };
        
         
