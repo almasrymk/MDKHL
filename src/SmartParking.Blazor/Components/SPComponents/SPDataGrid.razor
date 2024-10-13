@@ -109,7 +109,7 @@
 
             @foreach (var header in Data.Columns)
             {
-                @if (header.DisplayName == "Id")
+                @if (header.PropertyNmae=="Id")
                     continue;
 
                 <TemplateColumn >
