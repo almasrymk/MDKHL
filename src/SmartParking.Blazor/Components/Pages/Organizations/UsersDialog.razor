@@ -7,10 +7,9 @@
             <MudText Class="fw-bold">Organization - Users</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" ></SPDataGrid>
         </DialogContent>
         <DialogActions>
-
             <MudButton OnClick="Cancel">Cancel</MudButton>
         </DialogActions>
     </MudDialog>
