@@ -1880,6 +1880,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("NumberOfMobileCustomers")
                         .HasColumnType("integer");
 
+                    b.Property<int>("NumberOfOrganizations")
+                        .HasColumnType("integer");
+
                     b.Property<int>("NumbersOfGarages")
                         .HasColumnType("integer");
 
@@ -1894,6 +1897,9 @@ namespace SmartParking.Migrations
 
                     b.Property<decimal>("SubscriptionPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("SubscriptionSlotNumber")
+                        .HasColumnType("integer");
 
                     b.Property<int>("SubscriptionTypeId")
                         .HasColumnType("integer");

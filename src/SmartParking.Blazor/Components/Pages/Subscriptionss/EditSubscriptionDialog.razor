@@ -26,7 +26,6 @@
                                       For="@(() => subscription.SubscriptionName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["ُEnterYourSubscriptionName"]"
                                       Label="@L["SubscriptionName"]"
                                       InputType="InputType.Text"
                                       Required="true" />
@@ -37,7 +36,6 @@
                                       For="@(() => subscription.SubscriptionDescription)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourSubscriptionDescription"]"
                                       Label="@L["SubscriptionDescription"]"
                                       InputType="InputType.Text"
                                       Required="true" />
@@ -46,15 +44,59 @@
                         <MudTextField @bind-Value="subscription.SubscriptionPrice"
                                       For="@(() => subscription.SubscriptionPrice)"
                                       Immediate="true"
-                                      Placeholder="@L["EnterYourSubscriptionPrice"]"
                                       Label="@L["SubscriptionPrice"]"
                                       InputType="InputType.Number"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.NumberOfCustomers"
+                                      For="@(() => subscription.NumberOfCustomers)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Number"
+                                      Label="@L["NumberOfCustomers"]"
+                                      Required="true" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.NumberOfOrganizations"
+                                      For="@(() => subscription.NumberOfCustomers)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Number"
+                                      Label="@L["NumberOfOrganizations"]"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.NumberOfCameras"
+                                      For="@(() => subscription.NumberOfCameras)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Number"
+                                      Label="@L["NumberOfCameras"]"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.NumbersOfGarages"
+                                      For="@(() => subscription.NumbersOfGarages)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Number"
+                                      Label="@L["NumbersOfGarages"]"
+                                      Required="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.NumberOfMobileCustomers"
+                                      For="@(() => subscription.NumberOfMobileCustomers)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Number"
+                                      Label="@L["NumberOfMobileCustomers"]"
                                       Required="true" />
                     </MudItem>
                      <MudItem sm="6">
                         <MudDatePicker @bind-Date="_activateDate"
                                        Variant="Variant.Text"
-                                       Placeholder="@L["EnterYourActivationDate"]"
                                        Label="@L["ActivationDate"]"
                                        Required="true"
                                        ShowToolbar="false" 
@@ -63,13 +105,21 @@
                     <MudItem sm="6">
                         <MudDatePicker @bind-Date="_inActivateDate"
                                        Variant="Variant.Text"
-                                       Placeholder="@L["EnterYourInActivationDate"]"
                                        Label="@L["InActivationDate"]"
                                        Required="true"
                                        ShowToolbar="false" 
                                        IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                     </MudItem>
-                    
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="subscription.SubscriptionSlotNumber"
+                                      For="@(() => subscription.SubscriptionSlotNumber)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Number"
+                                      Label="@L["SubscriptionSlotNumber"]"
+                                      Required="true" />
+                    </MudItem>
                     <MudItem sm="6">
                         <MudSelect Variant="Variant.Text"
                                    Label="@L["SubscriptionTypes"]"
