@@ -12,11 +12,11 @@
 <h2>@L["Sign In"]</h2>
 <MudContainer Class="d-flex justify-content-center my-5">
     <MudForm @ref="form" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
-        <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder=@L["Type Here"] Label=@L["Email Address / Phone Number"] Required="true" />
+        <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder=@L["Type Here"] Label=@L["Email Address / User Name"] Required="true" />
         <MudTextField @bind-Value="loginModel.Password" T="string" Placeholder=@L["Type Here"] Label=@L["Password"] InputType="InputType.Password" Required="true" />
         <div class="d-flex align-items-center justify-content-center gap-1">
             <p class="m-0">@L["Forget Your Password Don't worry .."]</p>
-            <MudLink Href="/verify-account" Class="fw-bold" Color="MudBlazor.Color.Dark">Click here to reset</MudLink>
+            <MudLink Href="/verify-account" Class="fw-bold" Color="MudBlazor.Color.Dark">@L["Click here to reset"]</MudLink>
         </div>
 
         <MudButton Class="mt-4" Variant="Variant.Filled" OnClick="@( () => HandleLogin())" Color="MudBlazor.Color.Primary">@L["Sign In"]</MudButton>
