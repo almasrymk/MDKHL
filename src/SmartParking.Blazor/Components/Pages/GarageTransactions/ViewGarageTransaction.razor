@@ -1,10 +1,13 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.GarageTransactions
+@using SmartParking.Garages
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-
+@inject IGarageAppService GaragesAppService
+@inject IOrganizationsAppService OrganizationsAppService
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -47,19 +50,19 @@
 									  Label="@L["AccurateTime"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.OrganizationID"
-									  For="@(() => GarageTransaction.OrganizationID)"
+						<MudTextField @bind-Value="OrgName"
+									  For="@(() => OrgName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["OrganizationID"]" />
+									  Label="@L["Organization Name"]" />
 					</MudItem>
 				
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.GarageId"
-									  For="@(() => GarageTransaction.GarageId)"
+						<MudTextField @bind-Value="GarageName"
+									  For="@(() => GarageName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["GarageId"]" />
+									  Label="@L["Garage Name"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.CameraId"
@@ -105,13 +108,18 @@
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] public CreateUpdateGarageTransactionDto GarageTransaction { get; set; }
-
+	string OrgName="";
+	string GarageName = "";
 	bool _clearable;
 	private MudForm form;
 
 	protected override async Task OnInitializedAsync()
 	{
+		var organization = await OrganizationsAppService.GetAsync(GarageTransaction.OrganizationID);
+		OrgName = organization.EnglishName;
 
+		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
+		GarageName = Garage.Name;
 		await base.OnInitializedAsync();
 	}
 
