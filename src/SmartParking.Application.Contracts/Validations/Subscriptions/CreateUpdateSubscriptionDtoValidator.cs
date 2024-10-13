@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Validations.Subscriptions;
 
-public class CreateUpdaeSubscriptionDtoValidator : AbstractValidator<CreateUpdateSubscriptionDto>
+public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpdateSubscriptionDto>
 {
-    public CreateUpdaeSubscriptionDtoValidator()
+    public CreateUpdateSubscriptionDtoValidator()
     {
         RuleFor(x => x.SubscriptionName)
             .NotEmpty()
@@ -21,8 +21,8 @@ public class CreateUpdaeSubscriptionDtoValidator : AbstractValidator<CreateUpdat
             .NotEmpty();
 
         RuleFor(x => x.SubscriptionPrice)
-           .NotEmpty();
-
+           .NotEmpty()
+           .GreaterThan(0);
     
 
         RuleFor(x => x.ActivationDate)
