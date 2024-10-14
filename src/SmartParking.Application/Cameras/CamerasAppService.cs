@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Cameras;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,8 @@ namespace SmartParking.Cameras
             _dataFilter = dataFilter;
             _currentUser = currentUser;
         }
+
+        
         public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
             if (_currentUser.IsInRole("admin"))
@@ -112,6 +115,15 @@ namespace SmartParking.Cameras
                 {
                     Code = "DuplicateCameraIP"
                 };
+            }
+            if(input.Status!=Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
+            {
+                throw new InvalidOperationException("Invalid status value");
+            }
+
+            if (input.CameraType != CameraType.Entry && input.CameraType != CameraType.Exit )
+            {
+                throw new InvalidOperationException("Invalid status value");
             }
             if (_currentUser.IsInRole("admin"))
             {

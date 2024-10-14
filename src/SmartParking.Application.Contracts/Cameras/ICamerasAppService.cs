@@ -17,6 +17,9 @@ public interface ICamerasAppService:
         CreateUpdateCameraDto
         >
 {
+
+        Task<CameraDto> CreateAsync(CreateUpdateCameraDto input);
+
         Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input);
         Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input);
 

@@ -13,10 +13,14 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
 {
     public CreatedUpdatedCameraDtoValidator()
     {
-        RuleFor(x => x.Name).NotEmpty();
-        
+        RuleFor(x => x.Name)
+            .NotEmpty();
 
+        RuleFor(x => x.Status)
+            .NotEmpty();
 
+        RuleFor(x => x.CameraType)
+            .NotEmpty();
 
 
     }
