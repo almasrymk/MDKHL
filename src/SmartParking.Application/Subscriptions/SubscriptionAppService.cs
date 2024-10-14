@@ -32,18 +32,23 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     /// <inheritdoc/>
     public override async Task<SubscriptionDto> CreateAsync(CreateUpdateSubscriptionDto input)
     {
-        if(input.Status != SubscriptionStatus.Draft || input.Status != SubscriptionStatus.Inactive || input.Status != SubscriptionStatus.Active)
+        if(input.Status != SubscriptionStatus.Draft && input.Status !=SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
+        else
+        {
+            input.Status = SubscriptionStatus.Draft;
+        }
+
         if (input.InActivationDate <= input.ActivationDate)
         {
-            throw new InvalidOperationException("InActivationDate must be more than ActivationDate");
+            throw new InvalidOperationException("InActivationDate must be greater than ActivationDate");
 
         }
 
-        input.Status = SubscriptionStatus.Draft;
+        
 
         if (CurrentUser.IsInRole("MdkhlAdmin"))
         {
@@ -61,11 +66,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     {
         var existingSubscription = await _subscriptionRepository.GetAsync(id);
 
-        if (input.Status != SubscriptionStatus.Draft || input.Status != SubscriptionStatus.Inactive || input.Status != SubscriptionStatus.Active)
+        if (input.Status != SubscriptionStatus.Draft && input.Status != SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
+        
         // If the current status is Draft, allow it to change to Active or Inactive
         if (existingSubscription.Status == SubscriptionStatus.Draft)
         {
@@ -208,8 +214,10 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         {
 
             queryable = queryable.Where(or =>
-                or.SubscriptionName.StartsWith(input.SearchingTerm) ||
-                 or.SubscriptionDescription.StartsWith(input.SearchingTerm)
+                or.ArabicName.StartsWith(input.SearchingTerm) ||
+                or.EnglishName.StartsWith(input.SearchingTerm) ||
+                 or.SubscriptionDescription.StartsWith(input.SearchingTerm) ||
+                 or.Status.ToString().StartsWith(input.SearchingTerm)
             );
         }
         if (!input.Sorting.IsNullOrEmpty())

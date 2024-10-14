@@ -147,7 +147,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
             var subscription = new Subscription
             {
-                SubscriptionName = "Premium Plan",
+                ArabicName = "الخطة المميزة",
+                EnglishName = "Premium Plan",
                 SubscriptionPrice = 49.99m,
                 SubscriptionDescription = "Access to all features with no limits.",
                 Status = SubscriptionStatus.Draft,

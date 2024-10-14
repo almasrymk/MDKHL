@@ -8,9 +8,8 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Subscriptions;
 
-public class CreateUpdateSubscriptionDto 
+public class CreateUpdateSubscriptionDto : CreateUpdateBaseDto
 {
-    public string SubscriptionName { get; set; }
     public decimal SubscriptionPrice { get; set; }
     public string SubscriptionDescription { get; set; }
     public SubscriptionStatus Status { get; set; }

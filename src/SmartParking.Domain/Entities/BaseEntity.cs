@@ -11,6 +11,5 @@ namespace SmartParking.Entities
         public string EnglishName { get; set; }
         public Guid? TenantId { get; set; }
         public string Notes { get; set; }
-       // public Guid? TenantId { get; set; }
     }
 }
