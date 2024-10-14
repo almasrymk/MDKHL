@@ -10,9 +10,8 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Subscriptions;
 
-public class Subscription : FullAuditedEntity<int>, IMultiTenant
+public class Subscription : BaseEntity
 {
-    public string SubscriptionName { get; set; }
     public decimal SubscriptionPrice { get; set; }
     public string SubscriptionDescription { get; set; }
     public SubscriptionStatus Status { get; set; }
@@ -27,5 +26,4 @@ public class Subscription : FullAuditedEntity<int>, IMultiTenant
     public int SubscriptionTypeId { get; set; }
     public virtual SubscriptionType SubscriptionType { get; set; }
     public virtual ICollection<Organization> Organizations { get; set; }
-    public Guid? TenantId { get; set; }
 }

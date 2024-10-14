@@ -53,7 +53,8 @@ public partial class EditSubscriptionDialog
             // Create the input object for update
             var input = new CreateUpdateSubscriptionDto
             {
-                SubscriptionName = subscription.SubscriptionName,
+                ArabicName = subscription.ArabicName,
+                EnglishName = subscription.EnglishName,
                 SubscriptionDescription = subscription.SubscriptionDescription,
                 SubscriptionPrice = subscription.SubscriptionPrice,
                 Status = subscription.Status,

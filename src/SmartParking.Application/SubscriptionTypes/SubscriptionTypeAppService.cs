@@ -45,7 +45,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
     }
 
     /// <inheritdoc/>
-    public async Task<SubscriptionTypeDto> UpdateAsync(int id, CreateUpdateSubscriptionTypeDto input)
+    public override async Task<SubscriptionTypeDto> UpdateAsync(int id, CreateUpdateSubscriptionTypeDto input)
     {
         var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.Type == input.Type);
 
