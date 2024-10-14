@@ -94,6 +94,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("CameraIP")
                         .HasColumnType("text");
 
+                    b.Property<int>("CameraType")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
@@ -151,9 +154,6 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -441,6 +441,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("CameraId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("CameraType")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -486,9 +489,6 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
 
                     b.Property<string>("VehiclePicture")
                         .HasColumnType("text");
@@ -1217,6 +1217,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
+
+                    b.Property<int>("CurrnetCapicity")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
