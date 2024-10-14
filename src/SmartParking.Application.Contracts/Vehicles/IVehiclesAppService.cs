@@ -16,7 +16,9 @@ namespace SmartParking.Vehicles
 		CreateUpdateVehicleDto
 		>
 	{
-		Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+        Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input);
+
+        Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 		Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input);
 
 		Task<VehicleDto> GetAsync(int id);
