@@ -17,7 +17,7 @@ public class Garage : FullAuditedEntity<int> , IMultiTenant
     public TimeOnly ClosingHours { get; set; }
     public int OrganizationId { get; set; }
     public Status Status { get; set; }
-
+    public int CurrnetCapicity { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<GarageCategories> GarageCategories { get; set; }
 

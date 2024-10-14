@@ -4,7 +4,6 @@
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 
-<PageTitle>@L["New GarageTransaction"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -25,10 +24,7 @@
                                               For="@(() => garageTransactionDto.OrganizationID)"
                                               Immediate="true"
                                               Required="true"
-                                              Label="@L["OrganizationID"]" 
-                                              Placeholder=@L["Type Here"]
-                                              
-                                              />
+                                              Label="@L["OrganizationID"]" />
                             </MudItem>
 
                             <MudItem sm="4">
@@ -36,7 +32,6 @@
                                               For="@(() => garageTransactionDto.GarageId)"
                                               Immediate="true"
                                               Required="true"
-                                              Placeholder=@L["Type Here"]
                                               Label="@L["GarageId"]" />
                             </MudItem>
 
@@ -45,7 +40,6 @@
                                               For="@(() => garageTransactionDto.CameraId)"
                                               Immediate="true"
                                               Required="true"
-                                              Placeholder=@L["Type Here"]
                                               Label="@L["CameraId"]" />
                             </MudItem>
 
@@ -54,7 +48,6 @@
                                               For="@(() => garageTransactionDto.PlateNnumber)"
                                               Immediate="true"
                                               Required="true"
-                                              Placeholder=@L["Type Here"]
                                               Label="@L["PlateNnumber"]" />
                             </MudItem>
 
@@ -63,7 +56,6 @@
                                               For="@(() => garageTransactionDto.SnapTime)"
                                               Immediate="true"
                                               Required="true"
-                                              Placeholder=@L["Type Here"]
                                               Label="@L["SnapTime"]" />
                             </MudItem>
 
@@ -72,25 +64,16 @@
                                               For="@(() => garageTransactionDto.AccurateTime)"
                                               Immediate="true"
                                               Required="true"
-                                              Placeholder=@L["Type Here"]
                                               Label="@L["AccurateTime"]" />
                             </MudItem>
 
-                            <MudItem sm="4">
-                                <MudTextField @bind-Value="garageTransactionDto.Type"
-                                              For="@(() => garageTransactionDto.Type)"
-                                              Immediate="true"
-                                              Required="true"
-                                              Placeholder=@L["Type Here"]
-                                              Label="@L["Type"]" />
-                            </MudItem>
+                         
 
                             <MudItem sm="4">
                                 <MudTextField @bind-Value="garageTransactionDto.VehiclePicture"
                                               For="@(() => garageTransactionDto.VehiclePicture)"
                                               Immediate="true"
                                               Required="true"
-                                              Placeholder=@L["Type Here"]
                                               Label="@L["VehiclePicture"]" />
                             </MudItem>
 

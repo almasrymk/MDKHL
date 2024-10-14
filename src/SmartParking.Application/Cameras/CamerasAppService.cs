@@ -163,8 +163,8 @@ namespace SmartParking.Cameras
                     or.BrandName.StartsWith(input.SearchingTerm) ||
                     or.Code.StartsWith(input.SearchingTerm) ||
                     or.CameraIP.StartsWith(input.SearchingTerm) ||
-                    or.MacAddress.StartsWith(input.SearchingTerm) ||
-                    or.Type.StartsWith(input.SearchingTerm)
+                    or.MacAddress.StartsWith(input.SearchingTerm) 
+                    //or.Type.StartsWith(input.SearchingTerm)
                 );
             }
             // Get the total count of filtered records

@@ -87,15 +87,17 @@
                                               Label="@L["MacAddress"]" />
 
                 </MudItem>
-                            <MudItem sm="4">
-                                <MudTextField @bind-Value="cameraDto.Type"
-                                              For="@(() => cameraDto.Type)"
-                                              Immediate="true"
-                                              Required="true"
-                                              Label="@L["Type"]" />
+                          
+                    <MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
+                        <div Class="d-flex flex-row justify-content-between">
 
-                            </MudItem>
 
+                            <MudRadioGroup @bind-Value="@cameraDto.CameraType" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.CameraType.Entry)" Color="MudBlazor.Color.Primary">@L["Entry"]</MudRadio>
+                                <MudRadio Value="@(Enums.CameraType.Exit)" Color="MudBlazor.Color.Error">@L["Exit"]</MudRadio>
+                            </MudRadioGroup>
+                        </div>
+                    </MudItem>
                       
                             <MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
                                 <div Class="d-flex flex-row justify-content-between">

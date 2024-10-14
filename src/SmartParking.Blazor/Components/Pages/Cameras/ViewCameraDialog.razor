@@ -53,13 +53,7 @@
 									  Label="@L["Model"]" />
 					</MudItem>
 
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Type"
-									  For="@(() => Camera.Type)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["Type"]" />
-					</MudItem>
+					
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.BrandName"
 									  For="@(() => Camera.BrandName)"
@@ -89,8 +83,8 @@
 									  Label="@L["Id"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Type"
-									  For="@(() => Camera.Type)"
+						<MudTextField @bind-Value="Camera.CameraType"
+									  For="@(() => Camera.CameraType)"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["Type"]" />

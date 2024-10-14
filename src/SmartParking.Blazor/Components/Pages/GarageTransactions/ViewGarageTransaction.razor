@@ -1,11 +1,13 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.GarageTransactions
+@using SmartParking.Garages
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-
-<PageTitle>@L["View GarageTransaction"]</PageTitle>
+@inject IGarageAppService GaragesAppService
+@inject IOrganizationsAppService OrganizationsAppService
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -19,8 +21,8 @@
 				<MudGrid>
 
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.Type"
-									  For="@(() => GarageTransaction.Type)"
+						<MudTextField @bind-Value="GarageTransaction.CameraType"
+									  For="@(() => GarageTransaction.CameraType)"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["Type"]" />
@@ -31,7 +33,6 @@
 									  For="@(() => GarageTransaction.PlateNnumber)"
 									  Immediate="true"
 									  Disabled=true
-
 									  Label="@L["PlateNnumber"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
@@ -49,19 +50,19 @@
 									  Label="@L["AccurateTime"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.OrganizationID"
-									  For="@(() => GarageTransaction.OrganizationID)"
+						<MudTextField @bind-Value="OrgName"
+									  For="@(() => OrgName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["OrganizationID"]" />
+									  Label="@L["Organization Name"]" />
 					</MudItem>
 				
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.GarageId"
-									  For="@(() => GarageTransaction.GarageId)"
+						<MudTextField @bind-Value="GarageName"
+									  For="@(() => GarageName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["GarageId"]" />
+									  Label="@L["Garage Name"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.CameraId"
@@ -71,7 +72,7 @@
 									  Label="@L["CameraId"]" />
 					</MudItem>
 					<MudItem sm="12" md="12" class="d-flex justify-center">
-						<MudImage Src="@GarageTransaction.VehiclePicture" Alt=@L["Vehicle Image"] Width="400" Height="300" />
+						<MudImage Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
 					</MudItem>
 
 				</MudGrid>
@@ -107,13 +108,18 @@
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] public CreateUpdateGarageTransactionDto GarageTransaction { get; set; }
-
+	string OrgName="";
+	string GarageName = "";
 	bool _clearable;
 	private MudForm form;
 
 	protected override async Task OnInitializedAsync()
 	{
+		var organization = await OrganizationsAppService.GetAsync(GarageTransaction.OrganizationID);
+		OrgName = organization.EnglishName;
 
+		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
+		GarageName = Garage.Name;
 		await base.OnInitializedAsync();
 	}
 

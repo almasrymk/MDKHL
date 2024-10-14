@@ -142,7 +142,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNnumber));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.Type));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.CameraType.ToString()));
 
                 //rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
@@ -204,7 +204,8 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				SnapTime=garageTransactionDto.SnapTime,
 				PlateNnumber=garageTransactionDto.PlateNnumber,
 				VehiclePicture=garageTransactionDto.VehiclePicture,
-				Type=garageTransactionDto.Type,
+				//Type=garageTransactionDto.Type,
+				CameraType=garageTransactionDto.CameraType,
 				CameraId=garageTransactionDto.CameraId,
 				GarageId=garageTransactionDto.GarageId,
 				OrganizationID=garageTransactionDto.OrganizationID,
