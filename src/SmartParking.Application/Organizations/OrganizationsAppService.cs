@@ -22,20 +22,24 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectExtending;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Organizations;
 
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
+    private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IUsersAppService _usersAppService;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
     private readonly ISubscriptionAppService _subscriptionAppService;
+    private readonly ITenantManager _tenantManager;
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter,  IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter,  IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService,ITenantManager tenantManager,IRepository<Tenant,Guid> tenantRepository ) : base(repository)
     {
         _repository = repository;
         _usersAppService = usersAppService;
@@ -43,11 +47,26 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
          _softDeleteFilter = softDeleteFilter;
         
         _subscriptionAppService = subscriptionAppService;
+        _tenantManager = tenantManager;
+        _tenantRepository = tenantRepository;
     }
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
-        
+        var tenant = await _tenantManager.CreateAsync(input.EnglishName);
+        var input1 = new TenantCreateDto
+        {
+            Name = input.EnglishName,
+            AdminEmailAddress = input.ContactMail,
+            AdminPassword = "P@ssw0rd",
+        }; 
+        input1.MapExtraPropertiesTo(tenant);
+
+        await _tenantRepository.InsertAsync(tenant);
+
+        await CurrentUnitOfWork.SaveChangesAsync();
+        tenant.CreatorId = CurrentUser.Id;
+        await CurrentUnitOfWork.SaveChangesAsync();
         var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
         Console.WriteLine($"count of unified license number {query.Count}");
         if (query.Count>0)
@@ -68,6 +87,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             IsActive = true,
             UserType = 1,
             OrganizationId = organization.Id,   
+            TenantId = tenant.Id,
+            
         };
         
         var userCreated = await _usersAppService.CreateAsync(user);
