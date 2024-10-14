@@ -24,6 +24,8 @@ using Volo.Abp.Data;
 using SmartParking.Enums;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp;
+using Volo.Abp.TenantManagement;
+using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -38,6 +40,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IRepository<IdentityUser, Guid> _userRepository;
     IIdentityRoleRepository _roleRepository;
     private readonly IConfiguration _config;
+    private readonly IRepository<Tenant, Guid> _tenantRepository;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -46,7 +49,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IHttpContextAccessor httpContext,
         IRepository<IdentityUser, Guid> userRepository,
         IIdentityRoleRepository roleRepository,
-        IConfiguration config
+        IConfiguration config,
+        IRepository<Tenant,Guid> tenantRepository
         )
     {
         _signInManager = signInManager;
@@ -56,6 +60,16 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _userRepository = userRepository;
         _roleRepository = roleRepository;
         _config = config;
+        _tenantRepository = tenantRepository;
+    }
+    /// <inheritdoc/>
+    public async Task<Tenant> GetTenantByNameDtoAsync(string name)
+    {
+        var query = await _tenantRepository.GetQueryableAsync();
+       query=query.Where(t => t.Name == name);
+        var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
+        return tenant;
+
     }
     /// <inheritdoc/>
     public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
@@ -149,6 +163,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         // Step 1: Validate the user's credentials
         var user = await _userManager.FindByNameAsync(input.Username);
+        
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
             return user;
