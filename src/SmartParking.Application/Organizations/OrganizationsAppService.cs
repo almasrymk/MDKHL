@@ -68,6 +68,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             IsActive = true,
             UserType = 1,
             OrganizationId = organization.Id,   
+            
         };
         
         var userCreated = await _usersAppService.CreateAsync(user);

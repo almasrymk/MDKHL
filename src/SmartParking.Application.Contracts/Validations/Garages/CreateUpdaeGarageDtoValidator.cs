@@ -22,6 +22,8 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
            .WithMessage("Time must be in the format HH:MM.").NotEmpty();
         RuleFor(x=>x.MaxCapacity).NotEmpty().GreaterThan(0).LessThan(999);
         RuleFor(x => x.OrganizationId).NotEmpty().GreaterThan(0);
-
+        RuleFor(x => x.Status)         
+            .Must(value => Enum.IsDefined(typeof(Enums.Status), value))
+         .WithMessage("The value must be between 0 and 2.");
     }
 }

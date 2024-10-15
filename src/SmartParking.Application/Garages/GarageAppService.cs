@@ -48,6 +48,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
         return await base.CreateAsync(input);
     }
+
+
     /// <summary>
     /// Method is used to create a code for garage
     /// </summary>
