@@ -342,7 +342,8 @@
     "ExceededTime": "تجاوزت الوقت",
     "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
     "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
-    "FullDay": "يوم كامل"
+    "FullDay": "يوم كامل",
+    "Customer Categories": "فئـات العمـلاء"
 
 
   }

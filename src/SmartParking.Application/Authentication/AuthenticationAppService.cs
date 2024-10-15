@@ -120,7 +120,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
     }
     /// <inheritdoc/>
-    [RemoteService(IsEnabled = false)]
     public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
     {
 
