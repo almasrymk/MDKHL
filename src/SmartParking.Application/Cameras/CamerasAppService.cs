@@ -116,16 +116,16 @@ namespace SmartParking.Cameras
                     Code = "DuplicateCameraIP"
                 };
             }
-            if(input.Status!=Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
-            {
-                throw new InvalidOperationException("Invalid status value");
-            }
+            //if(input.Status!=Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
+            //{
+            //    throw new InvalidOperationException("Invalid status value");
+            //}
 
-            if (input.CameraType != CameraType.Entry && input.CameraType != CameraType.Exit )
-            {
-                throw new InvalidOperationException("Invalid status value");
-            }
-            if (_currentUser.IsInRole("admin"))
+            //if (input.CameraType != CameraType.Entry && input.CameraType != CameraType.Exit )
+            //{
+            //    throw new InvalidOperationException("Invalid status value");
+            //}
+            if (_currentUser.IsInRole("Mdkhl"))
             {
                 using (_dataFilter.Disable<IMultiTenant>())
                 {
