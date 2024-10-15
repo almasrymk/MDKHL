@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Customers;
+﻿using SmartParking.Cameras;
+using SmartParking.Entities.Customers;
 using SmartParking.Garages;
 using SmartParking.Vehicles;
 using System;
@@ -31,6 +32,12 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <returns>string of generated otp</returns>
     string GenerateOtp();
+    /// <summary>
+    /// Method used to get all customers
+    /// </summary>
+    /// <param name="input">Input used for pagination</param>
+    /// <returns>Paged Result of Customers</returns>
+    Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
 
 

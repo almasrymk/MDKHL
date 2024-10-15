@@ -1,4 +1,5 @@
-﻿using SmartParking.Organizations;
+﻿using SmartParking.Cutomers;
+using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
@@ -54,4 +55,13 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <param name="input">specifies max number of garages and if it sorted or not and filter</param>
     /// <returns>Garage Dto</returns>
     public Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+
+
+    /// <summary>
+    /// Method used to get all garages
+    /// </summary>
+    /// <param name="input">Input used for pagination</param>
+    /// <returns>Paged Result of Garages</returns>
+    Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 }

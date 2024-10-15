@@ -18,6 +18,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
 
 namespace SmartParking.Garages;
 
@@ -25,13 +26,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 {
     private readonly IRepository<Garage> _repository;
     private readonly OrganizationsAppService _organizationsAppService;
-    private IDataFilter _datafilter;
+    private IDataFilter _dataFilter;
+    private ICurrentUser _currentUser;
 
-    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService , IDataFilter datafilter) : base(repository)
+    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService , IDataFilter datafilter,ICurrentUser currentUser) : base(repository)
     {
         _repository = repository;
         _organizationsAppService = organizationsAppService;
-        _datafilter = datafilter;
+        _dataFilter = datafilter;
+        _currentUser = currentUser;
     }
 
 
@@ -204,5 +207,19 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                garagesDto
            );
         
+    }
+
+    /// <inheritdoc/>
+    public async override Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        if (_currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetListAsync(input);
+            }
+        }
+        else
+            return await base.GetListAsync(input);
     }
 }

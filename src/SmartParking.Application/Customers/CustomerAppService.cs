@@ -21,6 +21,8 @@ using SmartParking.Entities.Vehicles;
 using SmartParking.Vehicles;
 using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 
 namespace SmartParking.Customers;
 
@@ -30,14 +32,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private readonly IRepository<Vehicle, int> _repositoryVehicle;
     private IIdentityUserAppService _identityUserAppService;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
+    private  IDataFilter _dataFilter;
+    private readonly ICurrentUser _currentUser;
 
 
-    public CustomerAppService(IRepository<Customer, Guid> repository,IIdentityUserAppService identityUserAppService , UserManager<Volo.Abp.Identity.IdentityUser> userManager, IRepository<Vehicle, int> repositoryVehicle) : base(repository)
+    public CustomerAppService(IRepository<Customer, Guid> repository,IIdentityUserAppService identityUserAppService , UserManager<Volo.Abp.Identity.IdentityUser> userManager, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter , ICurrentUser currentUser) : base(repository)
     {
         _repository = repository;
         _identityUserAppService= identityUserAppService;
         _userManager=userManager;
         _repositoryVehicle=repositoryVehicle;
+        _dataFilter=dataFilter;
+        _currentUser=currentUser;
     }
   
 
@@ -244,5 +250,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
        );
 
 
+    }
+
+    public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        if (_currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetListAsync(input);
+            }
+        }
+        else
+            return await base.GetListAsync(input);
     }
 }
