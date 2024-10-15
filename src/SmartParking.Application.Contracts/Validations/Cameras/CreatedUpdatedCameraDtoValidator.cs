@@ -17,10 +17,10 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
             .NotEmpty();
 
         RuleFor(x => x.Status)
-            .NotEmpty();
+            .IsInEnum();
 
         RuleFor(x => x.CameraType)
-            .NotEmpty();
+            .IsInEnum();
 
 
     }
