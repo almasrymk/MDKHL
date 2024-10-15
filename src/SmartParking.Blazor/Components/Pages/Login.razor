@@ -33,8 +33,6 @@
 
     private async void HandleLogin()
     {
-        var tenantt = await authentication.GetTenantByNameDtoAsync(loginModel.UserNameOrEmailAddress);
-        CurrentTenant.Change(tenantt.Id);
 
         NavigationManager.NavigateTo($"api/Accounts?username={loginModel.UserNameOrEmailAddress}&password={loginModel.Password}", true);
     }
