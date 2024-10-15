@@ -73,4 +73,13 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 	/// <param name="input">specifies max number of customers and if it sorted or not and filter</param>
 	/// <returns>customer Dto</returns>
 	public Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    /// <summary>
+    /// Retrieves the customers details associated with a specific organization.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task representing the asynchronous operation, with a <see cref="CustomerDto"/> containing the customer details.</returns>
+    Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
+
+
 }
