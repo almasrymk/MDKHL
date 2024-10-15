@@ -31,7 +31,7 @@ public class AccountsController : ControllerBase
     {
         
         var tenant =await _authenticationApp.GetTenantByNameDtoAsync(username);
-        currentTenant.Change(tenant.Id);
+        currentTenant.Change(tenant?.Id??null);
         LoginInputDto loginInputDto = new LoginInputDto()
         {
             Username = username,
