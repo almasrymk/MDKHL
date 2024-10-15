@@ -75,6 +75,6 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x => x.ExceededTime)
             .NotEmpty()
-            .GreaterThanOrEqualTo(TimeOnly.FromTimeSpan(TimeSpan.MinValue));
+            .GreaterThanOrEqualTo(TimeOnly.FromTimeSpan(TimeSpan.Zero));
     }
 }
