@@ -69,7 +69,7 @@
                             <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudTimePicker Required="true" Label="@L["ExceededTime"]" AmPm="true" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ExceededTime" ShowToolbar="false" />
+                            <MudTimePicker Required="true" Label="@L["ExceededTime"]"  Placeholder="@L["Type Here"]"  @bind-Time="ExceededTime" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
