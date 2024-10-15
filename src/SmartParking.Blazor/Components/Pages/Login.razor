@@ -3,8 +3,12 @@
 @layout Shared.AuthLayout
 @inject NavigationManager NavigationManager
 @using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
 @inject IStringLocalizer<SmartParkingResource> L
+@inject ICurrentTenant CurrentTenant
+@inject IAuthenticationAppService authentication
 
 
 <PageTitle>@L["Sign In"]</PageTitle>
@@ -27,8 +31,11 @@
     private MudForm form;
     private LoginModel loginModel = new LoginModel();
 
-    private void HandleLogin()
+    private async void HandleLogin()
     {
+        var tenantt = await authentication.GetTenantByNameDtoAsync(loginModel.UserNameOrEmailAddress);
+        CurrentTenant.Change(tenantt.Id);
+
         NavigationManager.NavigateTo($"api/Accounts?username={loginModel.UserNameOrEmailAddress}&password={loginModel.Password}", true);
     }
 

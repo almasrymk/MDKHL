@@ -29,7 +29,8 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
     public async Task<UserDto> CreateAsync(UserCreateDto input)
     {
-        var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
+        var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
+        
         user.Name = input.UserName;
         user.Surname = input.Surname;
         user.SetProperty("OtpCode",null);

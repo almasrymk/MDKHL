@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Authentication;
 
@@ -14,6 +15,15 @@ namespace SmartParking.Authentication;
 /// </summary>
 public interface IAuthenticationAppService : IApplicationService
 {
+    /// <summary>
+    /// Retrieves a <see cref="Tenant"/> entity by its name asynchronously.
+    /// </summary>
+    /// <param name="name">The name of the tenant to retrieve.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains 
+    /// the <see cref="Tenant"/> entity corresponding to the specified name.
+    /// </returns>
+    public Task<Tenant> GetTenantByNameDtoAsync(string name);
     /// <summary>
     /// Logs in a user with the provided input.
     /// </summary>
