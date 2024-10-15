@@ -19,14 +19,25 @@
                     <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                         <MudGrid>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="input.SubscriptionName"
-                                      For="@(() => input.SubscriptionName)"
+                        <MudTextField @bind-Value="input.ArabicName"
+                                      For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      Label="@L["SubscriptionName"]"
+                                      Placeholder="@L["ُType Here"]"
+                                      Label="@L["Arabic Name"]"
                                       InputType="InputType.Text" 
                                       Required="true"/>
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.EnglishName"
+                                      For="@(() => input.EnglishName)"
+                                      Immediate="true"
+                                      Variant="Variant.Text"
+                                      Placeholder="@L["ُType Here"]"
+                                      Label="@L["English Name"]"
+                                      InputType="InputType.Text"
+                                      Required="true" />
                     </MudItem>
 
                     <MudItem sm="6">
@@ -34,7 +45,7 @@
                                       For="@(() => input.SubscriptionDescription)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
+                                      Placeholder="@L["Type Here"]"
                                       Label="@L["SubscriptionDescription"]"
                                       InputType="InputType.Text" 
                                       Required="true"/>

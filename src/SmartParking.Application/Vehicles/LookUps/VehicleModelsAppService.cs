@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleModel;
 using System;
@@ -9,17 +10,42 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
 public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleModelDto>, IVehicleModelsAppService
 {
     private readonly IRepository<VehicleModel, int> _repository;
+    private IDataFilter _dataFilter;
 
-    public VehicleModelsAppService(IRepository<VehicleModel, int> repository) : base(repository)
+    public VehicleModelsAppService(IRepository<VehicleModel, int> repository, IDataFilter dataFilter) : base(repository)
 	{
         _repository = repository;
+        _dataFilter = dataFilter;
+    }
+    /// <inheritdoc/>
+    public override async Task DeleteAsync(int id)
+    {
+        var vehicleModel = await _repository.GetAsync(id);
+
+        if (vehicleModel is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+        if (CurrentUser.IsInRole("MdkhlAdmin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                await base.DeleteAsync(id);
+            }
+        }
+        else
+            await base.DeleteAsync(id);
     }
     public async Task<PagedResultDto<VehicleModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {

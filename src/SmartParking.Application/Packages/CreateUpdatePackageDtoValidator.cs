@@ -23,6 +23,7 @@ namespace SmartParking.Packages
 
 			RuleFor(x => x.PackageTypeId)
 				.NotEmpty()
+				.GreaterThan(0)
 				.WithMessage("Package Type is invalid");
 
 			//RuleFor(x => x.Status)

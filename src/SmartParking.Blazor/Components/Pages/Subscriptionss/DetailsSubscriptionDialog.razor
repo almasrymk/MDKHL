@@ -22,11 +22,21 @@
 
 
 					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.SubscriptionName"
-									  For="@(() => subscription.SubscriptionName)"
+						<MudTextField @bind-Value="subscription.ArabicName"
+									  For="@(() => subscription.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["SubscriptionName"]"
+									  Label="@L["Arabic Name"]"
+									  Disabled />
+					</MudItem>
+
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.EnglishName"
+									  For="@(() => subscription.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["English Name"]"
 									  Disabled />
 					</MudItem>
 

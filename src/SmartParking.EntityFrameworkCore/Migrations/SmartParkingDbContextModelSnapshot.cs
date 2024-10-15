@@ -1775,6 +1775,9 @@ namespace SmartParking.Migrations
                     b.Property<DateOnly>("ActivationDate")
                         .HasColumnType("date");
 
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1790,6 +1793,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("text");
 
                     b.Property<DateOnly>("InActivationDate")
                         .HasColumnType("date");
@@ -1807,6 +1813,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
 
                     b.Property<int>("NumberOfCameras")
                         .HasColumnType("integer");
@@ -1829,9 +1838,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("SubscriptionDescription")
                         .HasColumnType("text");
 
-                    b.Property<string>("SubscriptionName")
-                        .HasColumnType("text");
-
                     b.Property<decimal>("SubscriptionPrice")
                         .HasColumnType("numeric");
 
@@ -1842,8 +1848,7 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("TenantId");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
