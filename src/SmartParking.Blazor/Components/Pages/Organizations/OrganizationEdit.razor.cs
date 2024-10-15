@@ -197,6 +197,26 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
     }
+    private async Task ViewCategories()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
+    }
+
+    private async Task ViewContact()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
+    }
+    private async Task ViewPackages()
  
     private async Task ViewCustomers()
     {

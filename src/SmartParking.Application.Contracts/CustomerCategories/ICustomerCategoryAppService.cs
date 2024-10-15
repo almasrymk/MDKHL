@@ -23,4 +23,6 @@ public interface ICustomerCategoryAppService : ICrudAppService<CustomerCategoryD
     /// <param name="input">specifies max number of organization and if it sorted or not and filter</param>
     /// <returns>Organization Dto</returns>
     public Task<PagedResultDto<CustomerCategoryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    public Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId);
 }
