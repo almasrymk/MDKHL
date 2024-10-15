@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Vehicles;
+using SmartParking.Entities.Organizations;
+using SmartParking.Garages;
 
 namespace SmartParking.Customers;
 
@@ -223,5 +225,24 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var result = await AsyncExecuter.ToListAsync(query);
         var output =ObjectMapper.Map<List<Vehicle>,List<VehicleDto>>(result);
         return output ;
+    }
+
+
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.Organizations.Any( org=> org.Id == organizationId));
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        query.OrderBy(x => x.Id);
+        var customers = await AsyncExecuter.ToListAsync(query);
+        var customerDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+        return new PagedResultDto<CustomerDto>(
+           totalCount,
+           customerDtos
+       );
+
+
     }
 }
