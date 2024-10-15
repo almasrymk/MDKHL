@@ -325,7 +325,7 @@
     "SAR": "ريـال سـعودي",
     "Time Placeholder": "اختـار الـوقـت",
     "Organization Garages": "كـراجـات المنشأة",
-    "Organization Packages": "باقات المنشأة",
+    "Organization Customers": "عمـلاء المنشأة",
     "Organization Subscription": "اشتراك المنشأة",
     "Checkout": "الدفع",
     "Favorite": "المفضلة",
@@ -342,8 +342,8 @@
     "ExceededTime": "تجاوزت الوقت",
     "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
     "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
-    "FullDay": "يوم كامل"
-
+    "FullDay": "يوم كامل",
+    "No Subscription for organization": "لا تـوجـد اشـتراكات لتلك المنشـأة"
 
   }
 }
