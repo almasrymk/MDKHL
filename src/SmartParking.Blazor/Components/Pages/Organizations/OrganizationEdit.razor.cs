@@ -216,7 +216,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
     }
-    private async Task ViewPackages()
  
     private async Task ViewCustomers()
     {
