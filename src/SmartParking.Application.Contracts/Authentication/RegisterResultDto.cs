@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Authentication;
 
-public class RegisterResultDto : BaseResultDto
-{
+public class RegisterResultDto 
+{ 
+
    
     public string AccessToken { get; set; }
     

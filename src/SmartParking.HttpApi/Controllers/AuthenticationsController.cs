@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Results;
 using System.Threading.Tasks;
 
 namespace SmartParking.Controllers;
@@ -18,31 +19,31 @@ public class AuthenticationsController : ControllerBase
     }
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
+    public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
     {
         return await _authenticationApp.LoginAsync(input);
     }
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
+    public async Task<Result<RegisterResultDto>> RegisterAsync(RegisterInputDto input)
     {
         return await _authenticationApp.RegisterAsync(input);
     }
     [HttpPost("forgetPassword")]
     [AllowAnonymous]
-    public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
+    public async Task<Result<forgetpasswordDto>> ForgetPasswordAsync(string phone)
     {
         return await _authenticationApp.ForgetPasswordAsync(phone);
     }
     [HttpGet("userData")]
     [Authorize]
-    public async Task<UserDataDto> GetUserDataAsync()
+    public async Task<Result<UserDataDto>> GetUserDataAsync()
     {
         return await _authenticationApp.GetUserDataAsync();
     }
     [HttpPost("changePassword")]
     [IgnoreAntiforgeryToken]
-    public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
+    public async Task<Result<BaseResultDto>> ChangePassword(ChangePasswordInputDto input)
     {
         return await _authenticationApp.ChangePassword(input);
     }

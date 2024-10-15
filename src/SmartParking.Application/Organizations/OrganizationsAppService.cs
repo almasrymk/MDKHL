@@ -6,6 +6,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
+using SmartParking.Results;
 using SmartParking.Subscriptions;
 using SmartParking.Validations.Organizations;
 using System;
@@ -253,12 +254,12 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     }
     ///<inheritdoc/>
     [RemoteService(IsEnabled = false)]
-    public async Task<List<OrganizationDto>> GetAllMobileAsync()
+    public async Task<Result<List<OrganizationDto>>> GetAllMobileAsync()
     {
         
             var organizations = await _repository.GetListAsync();
             var organizationsMap = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
-            return organizationsMap;
+            return Result<List<OrganizationDto>>.Success(organizationsMap);
         
     }
 

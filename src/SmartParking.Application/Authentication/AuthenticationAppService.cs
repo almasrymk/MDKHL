@@ -26,6 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Volo.Abp;
 using Volo.Abp.TenantManagement;
 using static Volo.Abp.TenantManagement.TenantManagementPermissions;
+using SmartParking.Results;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -72,24 +73,19 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
     /// <inheritdoc/>
-    public async Task<forgetpasswordDto> ForgetPasswordAsync(string phone)
+    public async Task<Result<forgetpasswordDto>> ForgetPasswordAsync(string phone)
     {
         try
         {
             var user = await CheckPhoneISFound(phone);
-            return new forgetpasswordDto
+            return Result<forgetpasswordDto>.Success(new forgetpasswordDto
             {
-                Success = true,
                 UserId = user.Id.ToString(),
-            };
+            });
         }
         catch (Exception ex)
         {
-            return new forgetpasswordDto
-            {
-                Success = false,
-                ErrorMessage = ex.Message
-            };
+            return  Result<forgetpasswordDto>.Error(errorMessages : ex.Message);
         }
 
     }
@@ -106,21 +102,24 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
 
     /// <inheritdoc/>
-    public async Task<UserDataDto?> GetUserDataAsync()
+    public async Task<Result<UserDataDto>> GetUserDataAsync()
     {
 
         var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
         var user = await _userManager.FindByIdAsync(Id);
-
-        return new UserDataDto
+        if(user is not null)
         {
-            Success = true,
-            FullName = user.UserName,
-            Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
-        };
+            return Result<UserDataDto>.Success(new UserDataDto
+            {
+                FullName = user.UserName,
+                Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
+            });
+        }
+        return Result<UserDataDto>.NotFound();
+
     }
     /// <inheritdoc/>
-    public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
+    public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
     {
 
 
@@ -128,11 +127,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var user = await _userManager.FindByNameAsync(input.Username);
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
-            return new LoginResultDto
+            return Result<LoginResultDto>.Invalid(new Results.ValidationError
             {
-                Success = false,
+                ErrorCode = "403",
                 ErrorMessage = "Invalid credentials."
-            };
+            });
+            
         }
         await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -145,14 +145,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
         var principal = new ClaimsPrincipal(identity);
         var roles = await _userManager.GetRolesAsync(user);
-        return new LoginResultDto
+        return Result<LoginResultDto>.Success(new LoginResultDto
         {
-            Success = true,
             AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
             Role = roles.FirstOrDefault(),
             Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
             TenantId = CurrentTenant.Id.ToString()
-        };
+        });
+       
     } 
     /// <inheritdoc/>
     [RemoteService(IsEnabled = false)]
@@ -173,7 +173,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return user;
     }
     /// <inheritdoc/>
-    public async Task<RegisterResultDto> RegisterAsync(RegisterInputDto input)
+    public async Task<Result<RegisterResultDto>> RegisterAsync(RegisterInputDto input)
     {
 
         try
@@ -198,19 +198,16 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         };
             var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
             var principal = new ClaimsPrincipal(identity);
-            return new RegisterResultDto
+            var AccessToken = await GenerateTokenAsync(user) ?? string.Empty;
+            return Result<RegisterResultDto>.Success(new RegisterResultDto
             {
-                Success = true,
-                AccessToken = await GenerateTokenAsync(user) ?? string.Empty
-            };
+                AccessToken = AccessToken,
+            });
         }
         catch (Exception ex)
         {
-            return new RegisterResultDto
-            {
-                Success = false,
-                ErrorMessage = ex.Message,
-            };
+            return Result<RegisterResultDto>.Error(ex.Message);
+            
         }
 
 
@@ -224,13 +221,13 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private async Task<string> GenerateTokenAsync(IdentityUser user)
     {
         var principal = await _signInManager.CreateUserPrincipalAsync(user);
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"));
+        //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(principal.Claims),
-            Expires = DateTime.Now.AddHours(1),
-            SigningCredentials = creds
+            
         };
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -255,7 +252,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
     /// <inheritdoc/>
 
-    public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
+    public async Task<Result> ChangePassword(ChangePasswordInputDto input)
     {
 
         var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
@@ -266,18 +263,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
         else
         {
-            return new BaseResultDto
-            {
-                Success = false,
-                ErrorMessage = "Incorrect password."
-            };
+            return Result.Error("Incorrect password.");
 
         }
 
-        return new BaseResultDto
-        {
-            Success = true
-        };
+        return Result.Success();
     }
     /// <inheritdoc/>
     public async Task LogOutAsync()
