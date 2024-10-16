@@ -23,6 +23,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using Nito.AsyncEx;
 
 namespace SmartParking.Customers;
 
@@ -263,5 +264,35 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
         else
             return await base.GetListAsync(input);
+    }
+
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<int> GetCountWithoutMultitenant()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+
+    public async Task<int> GetAllCustomersCount()
+    {
+        if (_currentUser.IsInRole("admin"))
+        {
+            
+                var countt = await GetCountWithoutMultitenant();
+            return countt;
+            
+        }
+        
+
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        
     }
 }

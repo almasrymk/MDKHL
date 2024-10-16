@@ -74,4 +74,11 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <param name="SubscriptionId">SubscriptionId</param>
     /// <returns>SubscriptionDto</returns>
     Task<SubscriptionDto> AddOrganizationForSubscription(int OrganizationId , int SubscriptionId);
+
+    /// <summary>
+    /// Method used to get Count of Organizations.
+    /// </summary>
+    /// <returns>Count of Organizations</returns>
+    Task<int> GetOrganizationsCount();
+
 }

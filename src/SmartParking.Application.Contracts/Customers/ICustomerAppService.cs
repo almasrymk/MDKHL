@@ -89,4 +89,11 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
 
 
+    /// <summary>
+    /// Method used to get Count of Customers.
+    /// </summary>
+    /// <returns>Count of Customers</returns>
+    Task<int> GetAllCustomersCount();
+
+
 }

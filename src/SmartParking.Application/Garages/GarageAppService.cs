@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Organizations;
+﻿using Nito.Disposables;
+using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using SmartParking.Organizations;
@@ -221,5 +222,41 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         else
             return await base.GetListAsync(input);
+    }
+
+    [RemoteService(IsEnabled = false)]
+
+    public async Task<int> GetCountWithountMultiTenant()
+    {
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+
+
+
+    }
+
+
+    public async Task<int> GetAllGaragesCount()
+    {
+
+        if (_currentUser.IsInRole("admin"))
+        {
+            
+                var countt= await GetCountWithountMultiTenant();
+            return countt;
+            
+        }
+        
+
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        
     }
 }
