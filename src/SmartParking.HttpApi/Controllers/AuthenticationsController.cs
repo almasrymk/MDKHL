@@ -43,7 +43,7 @@ public class AuthenticationsController : ControllerBase
     }
     [HttpPost("changePassword")]
     [IgnoreAntiforgeryToken]
-    public async Task<Result<BaseResultDto>> ChangePassword(ChangePasswordInputDto input)
+    public async Task<Result> ChangePassword(ChangePasswordInputDto input)
     {
         return await _authenticationApp.ChangePassword(input);
     }
