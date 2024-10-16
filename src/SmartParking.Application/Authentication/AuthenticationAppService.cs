@@ -241,7 +241,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             Expires = null,
             Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
             IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", // replace with yours,
+            Issuer = _config["App:SelfUrl"], // replace with yours,
             SigningCredentials = options.SigningCredentials.First(),
             TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
         };
