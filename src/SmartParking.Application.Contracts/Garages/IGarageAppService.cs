@@ -64,4 +64,11 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <param name="input">Input used for pagination</param>
     /// <returns>Paged Result of Garages</returns>
     Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+
+
+    /// <summary>
+    /// Method used to get Count of Garages.
+    /// </summary>
+    /// <returns>Count of Garages</returns>
+    Task<int> GetAllGaragesCount();
 }

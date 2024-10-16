@@ -286,5 +286,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         }
         return await _subscriptionAppService.GetAsync(SubscriptionId);
     }
+
+    public async Task<int> GetOrganizationsCount()
+    {
+        using (_softDeleteFilter.Disable<IMultiTenant>())
+        {
+
+            var queryable = await _repository.GetQueryableAsync();
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            return totalCount;
+        }
+    }
 }
  
