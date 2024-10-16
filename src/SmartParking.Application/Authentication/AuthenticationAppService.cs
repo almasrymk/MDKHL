@@ -27,6 +27,8 @@ using Volo.Abp;
 using Volo.Abp.TenantManagement;
 using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 using SmartParking.Results;
+using Microsoft.Extensions.Options;
+using OpenIddict.Server;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -34,6 +36,7 @@ namespace SmartParking.Authentication;
 /// <inheritdoc/>
 public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
 {
+    
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager;
@@ -42,6 +45,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     IIdentityRoleRepository _roleRepository;
     private readonly IConfiguration _config;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
+    private readonly IOptionsMonitor<OpenIddictServerOptions> _oidcOptions;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -51,7 +55,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IRepository<IdentityUser, Guid> userRepository,
         IIdentityRoleRepository roleRepository,
         IConfiguration config,
-        IRepository<Tenant,Guid> tenantRepository
+        IRepository<Tenant,Guid> tenantRepository,
+        IOptionsMonitor<OpenIddictServerOptions> oidcOptions
         )
     {
         _signInManager = signInManager;
@@ -62,7 +67,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _roleRepository = roleRepository;
         _config = config;
         _tenantRepository = tenantRepository;
-    }
+        _oidcOptions = oidcOptions;    }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
     {
@@ -104,6 +109,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> GetUserDataAsync()
     {
+        
 
         var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
         var user = await _userManager.FindByIdAsync(Id);
@@ -220,18 +226,36 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <returns>A string representing the generated JWT token.</returns>
     private async Task<string> GenerateTokenAsync(IdentityUser user)
     {
-        var principal = await _signInManager.CreateUserPrincipalAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
 
-        //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aP@$$w0rD1234SmartParking5678MDKHL"));
-        //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var tokenDescriptor = new SecurityTokenDescriptor
+        var claims = new List<Claim>()
         {
-            Subject = new ClaimsIdentity(principal.Claims),
-            
+            new Claim("sub", user.Id.ToString()),
+            new Claim("given_name", user.UserName),
+            new Claim("email", user.Email),
+            new Claim("role", string.Join(",", roles)),
+            new Claim("tenantid", user.TenantId?.ToString() ?? ""),
+            new Claim("scope", "address email phone roles profile offline_access SmartParking") //replace Qa with yours
+
         };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        var options = _oidcOptions.CurrentValue;
+        var descriptor = new SecurityTokenDescriptor
+        {
+            Audience = "SmartParking", // replace with yours,
+            EncryptingCredentials = options.DisableAccessTokenEncryption
+                ? null
+                : options.EncryptionCredentials.First(),
+            Expires = null,
+            Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
+            IssuedAt = DateTime.UtcNow,
+            Issuer = _config["AuthServer:Authority"], // replace with yours,
+            SigningCredentials = options.SigningCredentials.First(),
+            TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
+        };
+
+        var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
+
+        return accessToken;
     }
     /// <summary>
     /// Checks if the provided phone number is unique and associated with a user.
