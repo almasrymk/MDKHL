@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cameras
 @using SmartParking.GarageTransactions
 @using SmartParking.Garages
 @using SmartParking.Localization
@@ -8,6 +9,7 @@
 @inject ISnackbar Snackbar
 @inject IGarageAppService GaragesAppService
 @inject IOrganizationsAppService OrganizationsAppService
+@inject ICamerasAppService CamerasAppService
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -64,13 +66,22 @@
 									  Disabled=true
 									  Label="@L["Garage Name"]" />
 					</MudItem>
-					<MudItem sm="6" md="6">
+				@* 	<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.CameraId"
 									  For="@(() => GarageTransaction.CameraId)"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["CameraId"]" />
+					</MudItem> *@
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="cameraCode"
+									  For="@(() => cameraCode)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["cameraCode"]" />
 					</MudItem>
+
 					<MudItem sm="12" md="12" class="d-flex justify-center">
 						<MudImage Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
 					</MudItem>
@@ -108,6 +119,7 @@
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] public CreateUpdateGarageTransactionDto GarageTransaction { get; set; }
+	string cameraCode = "";
 	string OrgName="";
 	string GarageName = "";
 	bool _clearable;
@@ -120,6 +132,8 @@
 
 		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
 		GarageName = Garage.Name;
+		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
+		cameraCode = Camera.Code;
 		await base.OnInitializedAsync();
 	}
 
