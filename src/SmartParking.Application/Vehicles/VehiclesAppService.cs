@@ -40,7 +40,7 @@ public class VehiclesAppService:
 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
-		var existingPlatNumber = _repository.FirstOrDefaultAsync(x=>x.PlateNumber == input.PlateNumber);
+		var existingPlatNumber =await _repository.FirstOrDefaultAsync(x=>x.PlateNumber == input.PlateNumber);
 
 		if(existingPlatNumber !=null)
 		{
