@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-
+using SmartParking.Results;
 namespace SmartParking.Packages
 {
 	public interface IPackagesAppService:
@@ -21,7 +21,7 @@ namespace SmartParking.Packages
 		/// </summary>
 		/// <param name="organizationId">The ID of the organization whose packages are to be retrieved.</param>
 		/// <returns>A task representing the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the organization.</returns>
-		Task<List<PackageDto>> GetListPackageByOrganizationId(int organizationId);
+		Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId);
 		/// <summary>
 		/// abstract method to create Package
 		/// </summary>

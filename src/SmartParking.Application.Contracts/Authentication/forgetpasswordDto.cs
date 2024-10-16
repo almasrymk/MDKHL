@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Authentication;
 
-public class forgetpasswordDto :BaseResultDto
+public class forgetpasswordDto 
 {
     public string UserId { get; set; }
 

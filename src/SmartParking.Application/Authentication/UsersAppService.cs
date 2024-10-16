@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -20,11 +21,13 @@ public class UsersAppService : ApplicationService , IUsersAppService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
+    private readonly IDataFilter _dataFilter;
 
-    public UsersAppService(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager,IMyUserRepository userRepository)
+    public UsersAppService(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager,IMyUserRepository userRepository , IDataFilter dataFilter)
     {
         _userManager = userManager;
         _userRepository = userRepository;
+        _dataFilter = dataFilter;
     }
 
     public async Task<UserDto> CreateAsync(UserCreateDto input)
@@ -52,10 +55,15 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
     public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
     {
-       
-        var users = await _userRepository.FindByOrganizationAsync(organizationId);
-        var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
-        return userMap;
+
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var users = await _userRepository.FindByOrganizationAsync(organizationId);
+            var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
+             return userMap;
+        }
 
     }
 }

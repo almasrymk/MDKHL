@@ -1,20 +1,17 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
-@using SmartParking.Packages
-@inject IPackagesAppService PackagesAppService
+@using SmartParking.Organizations
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
-@inject ISnackbar Snackbar
+@inject IContactInfoAppService ContactInfoAppService
+<PageTitle>@L["Organization - Contact Data"]</PageTitle>
 <div class="modal-wrapper ">
-
-
-    <PageTitle>@L["Organization Packages"]</PageTitle>
     <MudDialog class="mud-modal ">
         <TitleContent>
-            <MudText Class="fw-bold">@L["Organization Packages"]</MudText>
+            <MudText Class="fw-bold">@L["Organization Contact Data"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["Organization Packages"] Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreatePackage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+            <SPDataGrid PageName=@L["Organization Contact Data"] Data="@itemData" TotalItemsInTable="TotalItem"  OnPageChanged="FetchTableData" ></SPDataGrid>
         </DialogContent>
         <DialogActions>
 

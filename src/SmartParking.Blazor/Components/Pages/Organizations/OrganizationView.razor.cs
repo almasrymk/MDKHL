@@ -93,6 +93,25 @@ public partial class OrganizationView
     {
         Navigation.NavigateTo("/organizations");
     }
+    private async Task ViewCategories()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
+    }
+
+    private async Task ViewContact()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
+    }
     private async Task ViewGarages()
     {
         var id = int.Parse(Id);
@@ -102,14 +121,14 @@ public partial class OrganizationView
         };
         var dialog = await Dialog.ShowAsync<GarageDialog>("view garage", parameters);
     }
-    private async Task ViewPackages()
+    private async Task ViewCustomers()
     {
         var id = int.Parse(Id);
         var parameters = new DialogParameters
         {
             ["organizationId"] = id
         };
-        var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
+        var dialog = await Dialog.ShowAsync<CustomerDialog>("view customer", parameters);
     }
     private async Task ViewUsers()
     {

@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Organizations;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using System;
@@ -70,8 +71,10 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
     public async Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId)
     {
 
-        var query =await _repository.GetListAsync(x => x.OrganizationId == OrganizationId);
-        var list= ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(query);
+        var query =await _repository.GetQueryableAsync();
+        query =query.Where(c => c.OrganizationId == OrganizationId);
+        var  category = await AsyncExecuter.ToListAsync(query);
+        var list= ObjectMapper.Map<List<CustomerCategory>, List<CustomerCategoryDto>>(category);
         return new PagedResultDto<CustomerCategoryDto>(list.Count,list);
 
     }

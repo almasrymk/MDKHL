@@ -13,9 +13,12 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
 
 namespace SmartParking.Garages;
 
@@ -23,11 +26,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 {
     private readonly IRepository<Garage> _repository;
     private readonly OrganizationsAppService _organizationsAppService;
+    private IDataFilter _dataFilter;
+    private ICurrentUser _currentUser;
 
-    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService) : base(repository)
+    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService , IDataFilter datafilter,ICurrentUser currentUser) : base(repository)
     {
         _repository = repository;
         _organizationsAppService = organizationsAppService;
+        _dataFilter = datafilter;
+        _currentUser = currentUser;
     }
 
 
@@ -187,16 +194,32 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> GetGarageByOrganization(PagedAndSortedResultRequestDto input ,int organizationId)
     {
-        var query = await _repository.GetQueryableAsync();
-        query.Where(x => x.OrganizationId == organizationId);
-        var totalCount = await AsyncExecuter.CountAsync(query);
-        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-        query.OrderBy(x => x.Code);
-        var garages = await AsyncExecuter.ToListAsync(query);
-        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
-        return new PagedResultDto<GarageDto>(
-           totalCount,
-           garagesDto
-       );
+
+            var query = await _repository.GetQueryableAsync();
+             query=  query.Where(x => x.OrganizationId == organizationId);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            query.OrderBy(x => x.Code);
+            var garages = await AsyncExecuter.ToListAsync(query);
+            var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+            return new PagedResultDto<GarageDto>(
+               totalCount,
+               garagesDto
+           );
+        
+    }
+
+    /// <inheritdoc/>
+    public async override Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        if (_currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetListAsync(input);
+            }
+        }
+        else
+            return await base.GetListAsync(input);
     }
 }
