@@ -111,8 +111,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         
 
-        var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
-        var user = await _userManager.FindByIdAsync(Id);
+        var userName = CurrentUser.FindClaim(OpenIddictConstants.Claims.GivenName)?.Value;
+        var user = await _userManager.FindByNameAsync(userName);
         if(user is not null)
         {
             return Result<UserDataDto>.Success(new UserDataDto
@@ -142,14 +142,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
         await _signInManager.SignInAsync(user, isPersistent: false);
 
-        var claims = new List<Claim>
-        {
-            new Claim(OpenIddictConstants.Claims.Subject, user.Id.ToString()),
-            new Claim(OpenIddictConstants.Claims.Username, user.UserName),
-            // Add additional claims as needed
-        };
-        var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
-        var principal = new ClaimsPrincipal(identity);
+
         var roles = await _userManager.GetRolesAsync(user);
         return Result<LoginResultDto>.Success(new LoginResultDto
         {
@@ -248,7 +241,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             Expires = null,
             Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
             IssuedAt = DateTime.UtcNow,
-            Issuer = _config["AuthServer:Authority"], // replace with yours,
+            Issuer = _config["App:SelfUrl"], // replace with yours,
             SigningCredentials = options.SigningCredentials.First(),
             TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
         };

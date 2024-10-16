@@ -1,6 +1,7 @@
 using Abp.Threading;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
+using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -133,7 +134,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        ConfigureAuthentication(context);
+        ConfigureAuthentication(context,configuration);
         ConfigureUrls(configuration);
         ConfigureBundles();
         ConfigureAutoMapper();
@@ -145,8 +146,12 @@ public class SmartParkingBlazorModule : AbpModule
         ConfigureMenu(context);
     }
 
-    private void ConfigureAuthentication(ServiceConfigurationContext context)
+    private void ConfigureAuthentication(ServiceConfigurationContext context , IConfiguration configuration)
     {
+        Configure<IdentityServerOptions>(options =>
+        {
+            options.IssuerUri = configuration["App:SelfUrl"];
+        });
         context.Services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = ".AspNetCore.Identity.Application"; 
@@ -162,6 +167,7 @@ public class SmartParkingBlazorModule : AbpModule
 
             options.IsDynamicClaimsEnabled = true;
         });
+
     }
 
     private void ConfigureUrls(IConfiguration configuration)
