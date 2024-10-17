@@ -24,6 +24,7 @@ using SmartParking.Garages;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using Nito.AsyncEx;
+using SmartParking.Enums;
 
 namespace SmartParking.Customers;
 
@@ -71,7 +72,11 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("Phone Number is used");
 
             }
+            customer.IdentityUser.SetProperty("OtpCode", null);
+            customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
+            customer.IdentityUser.SetProperty("UserTypeId", 3);
             var result = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
             if (!result.Succeeded) { 
                     throw new Exception( FormatErrorMessage(result) );
             }
