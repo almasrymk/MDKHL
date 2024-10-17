@@ -72,8 +72,11 @@ namespace SmartParking.GarageTransactionEndPoints
             if(GarageTransaction.CameraType==CameraType.Exit)
             {
                 int succes= await CheckCustomerPackage(GarageTransaction.OrganizationID,GarageTransaction.PlateNnumber);
-                if(succes==-1)
-                    return await Task.FromResult(false);
+                if (succes == -1)
+                {
+					var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+					return await Task.FromResult(false);
+                }
 
             }
 			//Check Garage Capicity
