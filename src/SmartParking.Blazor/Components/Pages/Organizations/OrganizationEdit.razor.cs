@@ -176,6 +176,15 @@ public partial class OrganizationEdit
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();
+        FirstHourPrice=organization.FirstHourPrice;
+        SecondHourPrice=organization.SecondHourPrice;
+        ThirdHourPrice=organization.ThirdHourPrice;
+        FullDay=organization.FullDay;
+        NumberOfHours=organization.NumberOfHours;
+        IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
+        IsFullDayExceeded=organization.IsFullDayExceeded;
+        ExceededTime = organization.ExceededTime.ToTimeSpan();
+        AdditionalHourPrice = organization.AdditionalHourPrice;
     }
     protected override async Task OnInitializedAsync()
     {
@@ -184,7 +193,7 @@ public partial class OrganizationEdit
         countries = await GovernorateAppService.GetCountryLookupAsync();
         cities = await CitiesAppService.GetCityLookupAsync();
         await FetchData();
-        await base.OnInitializedAsync();
+     //   await base.OnInitializedAsync();
 
 
     }

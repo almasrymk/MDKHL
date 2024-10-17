@@ -50,22 +50,22 @@
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="FullDay" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
+                            <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FullDay" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            <MudNumericField T="int" Immediate="true" Required="true" Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTimePicker Required="true" Label="@L["ExceededTime"]" AmPm="true" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ExceededTime" ShowToolbar="false" />

@@ -14,7 +14,7 @@ public interface ISubscriptionTypeAppService : ICrudAppService<SubscriptionTypeD
     /// </summary>
     /// <param name="input">subscription type create dto</param>
     /// <returns>SubscriptionTypeDto</returns>
-    public Task<SubscriptionTypeDto> CreateAsync(CreateUpdateSubscriptionTypeDto input);
+    Task<SubscriptionTypeDto> CreateAsync(CreateUpdateSubscriptionTypeDto input);
 
     /// <summary>
     /// abstract method to update specific subscription type 
@@ -22,14 +22,14 @@ public interface ISubscriptionTypeAppService : ICrudAppService<SubscriptionTypeD
     /// <param name="input">subscription type create dto</param>
     /// <param name="id">id of specific subscription type </param>
     /// <returns>SubscriptionDto</returns>
-    public Task<SubscriptionTypeDto> UpdateAsync(int id, CreateUpdateSubscriptionTypeDto input);
+    Task<SubscriptionTypeDto> UpdateAsync(int id, CreateUpdateSubscriptionTypeDto input);
 
     /// <summary>
     /// abstract method to delete specific subscription type 
     /// </summary>
     /// <param name="input">id of specific subscription type </param>
 
-    public Task DeleteAsync(int id);
+    Task DeleteAsync(int id);
     /// <summary>
     /// abstract method to get of subscriptionTypes
     /// </summary>
