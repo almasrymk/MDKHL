@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authentication;
 using Abp.Domain.Repositories;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.MultiTenancy;
+using System;
+using Volo.Abp.Users;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
@@ -14,16 +17,19 @@ public class AccountsController : ControllerBase
     private readonly IAuthenticationAppService _authenticationApp;
     private readonly ITenantAppService _tenantAppService;
     private readonly ICurrentTenant currentTenant;
+    private readonly ICurrentUser _currentuser;
 
     public AccountsController(
         IAuthenticationAppService authenticationApp,
         ITenantAppService tenantAppService,
-        ICurrentTenant currentTenant
+        ICurrentTenant currentTenant,
+        ICurrentUser currentuser
         )
     {
         _authenticationApp = authenticationApp;
         _tenantAppService = tenantAppService;
         this.currentTenant = currentTenant;
+        _currentuser = currentuser;
     }
 
     [HttpGet]
@@ -38,6 +44,12 @@ public class AccountsController : ControllerBase
             Password = password
         };
        var userLogin= await _authenticationApp.LoginForWebAsync(loginInputDto);
+
+        if (_currentuser.IsInRole(RolesType.Customer.ToString())) {
+
+           return await Logout();
+        
+        }
         if (userLogin is not null)
         {
             return LocalRedirect("/");
