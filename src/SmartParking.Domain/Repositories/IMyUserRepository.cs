@@ -11,4 +11,5 @@ namespace SmartParking.Repositories;
 public interface IMyUserRepository : IRepository<IdentityUser, Guid>
 {
     Task<List<IdentityUser>> FindByOrganizationAsync(int oraganizationId);
+    Task<IdentityUser> FindByOrganizationByTenantAsync(Guid? tenantId);
 }

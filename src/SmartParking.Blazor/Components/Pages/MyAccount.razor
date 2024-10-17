@@ -1,12 +1,30 @@
 ﻿@page "/my-account"
-@using Volo.Abp.Users
-@layout Shared.ProfileLayout
-@inject ICurrentUser CurrentUser
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Localization
-@using SmartParking.Localization
+@using SmartParking.Blazor.Components.LookUps
+@inject IOrganizationsAppService OrganizationsAppService
 @inject IStringLocalizer<SmartParkingResource> L
-
-
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using SmartParking.Lookups.State
+@using SmartParking.Organizations
+@using SmartParking.SubscriptionTypes
+@using SmartParking.Subscriptions
+@using Volo.Abp.Identity
+@using Volo.Abp.MultiTenancy
+@layout Shared.ProfileLayout
+@inject IOrganizationsAppService OrganizationAppService
+@inject ISnackbar Snackbar
+@inject IStateAppService StateAppService
+ @inject IGovernorateAppService GovernorateAppService
+ @inject ICitiesAppService CitiesAppService
+@inject IIdentityUserAppService IdentityUserAppService;
+@inject UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
+@inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
+@inject NavigationManager Navigation
+@inject IDialogService Dialog
+@inject ISubscriptionAppService SubscriptionAppService
+@inject ICurrentTenant currenttenant
 <PageTitle>@L["My Account"]</PageTitle>
 <div>
     <MudGrid>
@@ -15,163 +33,186 @@
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
+
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Arabic Name"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["English Name"] />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder=@L["Type Here"] Label=@L["Num Of Cameras"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["English Name"] />
+                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder=@L["Type Here"] Label=@L["Max Capacity"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField @bind-Value="IntValue" HideSpinButtons="true" Placeholder=@L["Type Here"] Label=@L["Commercial Reg. Num."] />
+                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"]
+                                           @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudDatePicker Label=@L["Calender Only"] @bind-Date="_date" ShowToolbar="false" />
+                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect @bind-Value="_selectValue"
-                                       Variant="Variant.Text"
-                                       Label=@L["Governorate"]
+                            <MudNumericField Required="true" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="FullDay" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTimePicker Required="true" Label="@L["ExceededTime"]" AmPm="true" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ExceededTime" ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSwitch Label="@L["FullDayExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsFullDayExceeded" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label=@L["State"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
+                                       Clearable="true"
+                                       @bind-Value="@StateSelectValue">
+
+                                @foreach (var state in states)
                                 {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
+                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect @bind-Value="_MultiValue"
-                                       Variant="Variant.Text"
+                            <MudSelect Variant="Variant.Text"
+                                       Label=@L["Region"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Clearable="true"
+                                       AnchorOrigin="Origin.TopCenter"
+                                       @bind-Value="@RegionSelectValue">
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                @foreach (var region in regions)
+                                {
+                                    <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label=@L["Country"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Clearable="true"
+                                       @bind-Value="@CountrySelectValue">
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                @foreach (var country in countries)
+                                {
+                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
                                        Label=@L["City"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="_clearable">
-                                @foreach (var state in _states)
+                                       Clearable="true"
+                                       @bind-Value="@CitySelectValue">
+                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                @foreach (var city in cities)
                                 {
-                                    <MudSelectItem Value="state">@state</MudSelectItem>
+                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Arabic Name"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" @bind-Value="Basic_Switch" Color="MudBlazor.Color.Primary" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder=@L["Type Here"] Label=@L["Whatsapp Num"] />
                         </MudItem>
-                        <MudItem sm="12">
-                            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
-                                <ActivatorContent>
-                                    <div class="border-bottom border-dark pb-3">
-                                        <div class="p-3 rounded bg-dark bg-opacity-10 d-inline-block cursor-pointer">
-                                            <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Title=@L["Add"] />
-                                        </div>
-                                        <MudLink Underline="Underline.Always" Color="MudBlazor.Color.Secondary" Class="ms-4 cursor-pointer">@L["Or Browse from Computer"]</MudLink>
-                                    </div>
-                                </ActivatorContent>
-                            </MudFileUpload>
-                            @if (_files != null)
-                            {
-                                <MudList T="string">
-                                    @foreach (var file in _files)
-                                    {
-                                        <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">
-                                            @file.Name <code>@file.Size bytes</code>
-                                        </MudListItem>
-                                    }
-                                </MudList>
-                            }
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
                         </MudItem>
+
                     </MudGrid>
+
                     <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" ButtonType="MudBlazor.ButtonType.Submit">@L["Submit"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Update">@L["Save"]</MudButton>
                     </div>
                 </MudForm>
+
             </MudPaper>
         </MudItem>
-
         <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                 <div class="d-flex justify-content-between align-items-center">
-                    <MudText>My Profile</MudText>
+                    <MudText>@L["My Profile"]</MudText>
                     <MudLink Underline="Underline.Always" Href="/edit-profile">@L["Edit Profile"]</MudLink>
                 </div>
-
                 <div class="d-flex flex-column align-content-center gap-4 p-5">
                     <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
                     <div class="d-flex flex-column align-items-center">
-                        <MudText Class="fw-bold">@UserName</MudText>
-                            <MudText>@UserEmail</MudText>
-                        </div>
+                        <MudText Class="fw-bold">Ahmed Mohamed</MudText>
+                        <MudText>A.Mohamed@mdkhl.com</MudText>
                     </div>
+                </div>
+                <MudGrid Class="mt-3">
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewGarages">@L["Garages"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewSubscription">@L["Subscriptions"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
 
-                    <MudGrid Class="mt-3">
-                        <MudItem sm="6">
-                            <MudPaper class="text-center p-2">
-                                <MudLink Color="MudBlazor.Color.Dark">@L["Garages"]</MudLink>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudPaper class="text-center p-2">
-                                <MudLink Color="MudBlazor.Color.Dark">@L["Subscriptions"]</MudLink>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudPaper class="text-center p-2">
-                                <MudLink Color="MudBlazor.Color.Dark">@L["Categories"]</MudLink>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudPaper class="text-center p-2">
-                                <MudLink Color="MudBlazor.Color.Dark">@L["Packages"]</MudLink>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudPaper class="text-center p-2">
-                                <MudLink Color="MudBlazor.Color.Dark">@L["Users"]</MudLink>
-                            </MudPaper>
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudPaper class="text-center p-2">
-                                <MudLink Color="MudBlazor.Color.Dark">@L["Contact Data"]</MudLink>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </div>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCategories">@L["Categories"]</MudLink>
 
-    @code {
-    public int IntValue { get; set; }
-    private DateTime? _date = DateTime.Today;
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCustomers">@L["Customers"]</MudLink>
 
-    string _selectValue;
-    string _MultiValue;
-    bool _clearable;
-    private string[] _states =
-    {
-        "Ryadh", "Mekka", "Gedda", "Madina", "Alkhobar"
-    };
+                        </MudPaper>
+                    </MudItem>
 
-    public bool Basic_Switch { get; set; } = true;
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewContact">@L["Contact Data"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
 
-    private string UserName { get; set; }
-    private string UserEmail { get; set; }
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
 
-    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    </MudGrid>
+</div>
 
-    protected override void OnInitialized()
-    {
-        // Bind the user's name and email from ICurrentUser
-        UserName = CurrentUser.Name ?? "Guest User";
-        UserEmail = CurrentUser.Email ?? "No email available";
-    }
-
-    private void UploadFiles(IBrowserFile file)
-    {
-        _files.Add(file);
-       
-    }
-}
