@@ -20,6 +20,10 @@
                 @if(currenttenant.Id == null)
                 {   
                 <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
+                }                
+                @if(currenttenant.Id != null)
+                {
+                    <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.LocationCity">@L["My Account"]</MudNavLink>
                 }
                 <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>

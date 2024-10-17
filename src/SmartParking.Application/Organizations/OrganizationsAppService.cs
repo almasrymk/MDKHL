@@ -297,5 +297,10 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             return totalCount;
         }
     }
+    ///<inheritdoc/>
+    public async Task<int> GetOrganizationIdByTenant(Guid? tenantId)
+    {
+        return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+    }
 }
  
