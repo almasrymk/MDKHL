@@ -5,6 +5,7 @@
 @using SmartParking.Localization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IGarageAppService GaragesAppService
@@ -175,6 +176,14 @@
             catch (UserFriendlyException ex)
             {
                 Snackbar.Add("DuplicateCameraIP", Severity.Error);
+                return;
+            }
+            catch (AbpValidationException ex)
+            {
+                foreach (var validationError in ex.ValidationErrors)
+                {
+                    Snackbar.Add($"{validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
+                }
                 return;
             }
             catch(Exception e)

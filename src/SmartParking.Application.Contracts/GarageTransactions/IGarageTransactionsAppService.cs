@@ -1,4 +1,5 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Garages;
 using SmartParking.Lookups.PlateColor;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,13 @@ namespace SmartParking.GarageTransactions
 
 
         public Task DeleteAsync(int id);
+
+        /// <summary>
+        /// Method used to get all garage transactions
+        /// </summary>
+        /// <param name="input">Input used for pagination</param>
+        /// <returns>Paged Result of garage transactions</returns>
+        Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
 
     }

@@ -13,11 +13,11 @@
             <MudText Class="fw-bold">@L["Organization Garages"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["Organization Garages"] Data="@itemData" TotalItemsInTable="TotalItem" OnAdd="CreateGarage" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+            <SPDataGrid PageName=@L["Organization Garages"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
         </DialogContent>
         <DialogActions>
            
-            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" FullWidth="true" class="mx-3 mt-5" Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

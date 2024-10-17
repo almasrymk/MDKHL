@@ -1,0 +1,31 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@using SmartParking.Packages
+@inject ICustomerAppService CustomersAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+<div class="modal-wrapper ">
+
+
+    <PageTitle>@L["Organization Customers"]</PageTitle>
+    <MudDialog class="mud-modal ">
+        <TitleContent>
+            <MudText Class="fw-bold">@L["Organization Customers"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <SPDataGrid PageName=@L["Organization Customers"] Data="@itemData" TotalItemsInTable="TotalItem"  OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+        </DialogContent>
+        <DialogActions>
+
+            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

@@ -7,6 +7,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
 using SmartParking.Packages;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,12 +90,12 @@ public class PackagesAppService : CrudAppService<
     //}
     ///<inheritdoc>/>
     //[RemoteService(IsEnabled = false)]
-    public async Task<List<PackageDto>> GetListPackageByOrganizationId(int organizationId)
+    public async Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId)
     {
 		var query = await _repository.GetQueryableAsync();
 		var pakages =await query.Where(_ => _.OrgnizationId == organizationId).ToListAsync();
 		var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
-		return pakagesMap;
+		return Result<List<PackageDto>>.Success(pakagesMap);
     }
 
 

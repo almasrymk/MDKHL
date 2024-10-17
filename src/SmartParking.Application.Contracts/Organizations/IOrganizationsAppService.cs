@@ -1,4 +1,5 @@
-﻿using SmartParking.Subscriptions;
+﻿using SmartParking.Results;
+using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +66,7 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// Retrieves a list of all organizations asynchronously.
     /// </summary>
     /// <returns>A task representing the asynchronous operation, containing a list of <see cref="OrganizationDto"/> objects.</returns>
-    public Task<List<OrganizationDto>> GetAllMobileAsync();
+    public Task<Result<List<OrganizationDto>>> GetAllMobileAsync();
     /// <summary>
     /// Method adds specific subscription for an organization.
     /// </summary>
@@ -73,4 +74,11 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <param name="SubscriptionId">SubscriptionId</param>
     /// <returns>SubscriptionDto</returns>
     Task<SubscriptionDto> AddOrganizationForSubscription(int OrganizationId , int SubscriptionId);
+
+    /// <summary>
+    /// Method used to get Count of Organizations.
+    /// </summary>
+    /// <returns>Count of Organizations</returns>
+    Task<int> GetOrganizationsCount();
+
 }

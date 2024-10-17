@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using Castle.Core.Internal;
+using FluentValidation;
+using Newtonsoft.Json.Linq;
 using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
@@ -36,5 +38,43 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x => x.SubscriptionId)
             .Must(id => id == null || id > 0)
             .WithMessage("SubscriptionId must be a positive number if provided.");
+
+        RuleFor(x=>x.FirstHourPrice)
+            .NotEmpty()
+            .GreaterThan(0);
+
+        RuleFor(x => x.SecondHourPrice)
+            .NotEmpty()
+            .GreaterThan(0);
+
+        RuleFor(x => x.ThirdHourPrice)
+            .NotEmpty()
+            .GreaterThan(0);
+
+        RuleFor(x => x.AdditionalHourPrice)
+           .NotEmpty()
+           .GreaterThan(0);
+
+        RuleFor(x => x.FullDay)
+          .NotEmpty()
+          .GreaterThan(0);
+
+        RuleFor(x => x.NumberOfHours)
+          .NotEmpty()
+          .GreaterThan(0);
+
+        RuleFor(x => x.IsNumberOfHoursExceeded)
+          .NotEmpty()
+        .Must(v=>v == true || v == false)
+        .WithMessage("The value must be either true or false.");
+
+        RuleFor(x => x.IsFullDayExceeded)
+         .NotEmpty()
+         .Must(v => v == true || v == false)
+         .WithMessage("The value must be either true or false."); ;
+
+        RuleFor(x => x.ExceededTime)
+            .NotEmpty()
+            .GreaterThanOrEqualTo(TimeOnly.FromTimeSpan(TimeSpan.Zero));
     }
 }

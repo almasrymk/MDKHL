@@ -10,15 +10,12 @@ using Abp.Runtime.Validation;
 using System.Linq;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Components;
-using SmartParking.LookupsAppServices;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static MudBlazor.CategoryTypes;
 using SmartParking.Blazor.Components.Pages.Subscriptionss;
-using SmartParking.Entities.Subscriptions;
+using JetBrains.Annotations;
 using SmartParking.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
@@ -200,15 +197,34 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
     }
- 
-    private async Task ViewPackages()
+    private async Task ViewCategories()
     {
         var id = int.Parse(Id);
         var parameters = new DialogParameters
         {
             ["organizationId"] = id
         };
-		var dialog = await Dialog.ShowAsync<PackageDialog>("view package", parameters);
+        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
+    }
+
+    private async Task ViewContact()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
+    }
+ 
+    private async Task ViewCustomers()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+		var dialog = await Dialog.ShowAsync<CustomerDialog>("view package", parameters);
 	}    
     private async Task ViewUsers()
     {
@@ -223,12 +239,22 @@ public partial class OrganizationEdit
     {
         var id = int.Parse(Id);
         //change it to garage.subscription
-        var subscription = SubscriptionAppService.GetAsync(1).Result;
+        var org = await OrganizationAppService.GetAsync(id);
+        var subscription = new SubscriptionDto();
+        if (org.SubscriptionId != 0)
+        {
+          subscription = await SubscriptionAppService.GetAsync(org.SubscriptionId);
+
+        }
+        else
+        {
+            subscription = null;
+        }
 
         var parameters = new DialogParameters
         {
             ["subscription"] = subscription
         };
-        await Dialog.ShowAsync<DetailsSubscriptionDialog>("view DetailsSubscription", parameters);
+        await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
     }
 }

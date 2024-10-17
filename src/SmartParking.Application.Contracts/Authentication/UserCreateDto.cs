@@ -14,4 +14,5 @@ public class UserCreateDto: IdentityUserCreateDto
 {
     public int UserType { get; set; }
     public int OrganizationId { get; set; }
+    public Guid? TenantId { get; set; }
 }

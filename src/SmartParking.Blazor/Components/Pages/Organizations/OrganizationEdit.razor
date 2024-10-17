@@ -71,7 +71,6 @@
                             <MudTimePicker Required="true" Label="@L["ExceededTime"]" AmPm="true" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ExceededTime" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" Placeholder="@L["Choose your date"]" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                             <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start"  @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudItem sm="4">
@@ -186,13 +185,13 @@
 
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Categories"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCategories">@L["Categories"]</MudLink>
 
                         </MudPaper>
                     </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackages">@L["Packages"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCustomers">@L["Customers"]</MudLink>
 
                         </MudPaper>
                     </MudItem>
@@ -204,7 +203,7 @@
                     </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Contact Data"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewContact">@L["Contact Data"]</MudLink>
                         </MudPaper>
                     </MudItem>
 

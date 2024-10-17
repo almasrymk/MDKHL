@@ -291,7 +291,7 @@
     "SAR": "SAR",
     "Time Placeholder": "Time Placeholder",
     "Organization Garages": "Organization Garages",
-    "Organization Packages": "Organization Packages",
+    "Organization Customers": "Organization Customers",
     "Organization Subscription": "Organization Subscription",
     "Checkout": "Checkout",
     "Favorite": "Favorite",
@@ -319,8 +319,9 @@
     "ExceededTime": "Exceeded Time",
     "NumberOfHoursExceeded": "Number Of Hours Exceeded",
     "FullDayExceeded": "FullDay Exceeded",
-    "FullDay": "FullDay"
-
+    "FullDay": "FullDay",
+    "Customer Categories": "Customer Categories",
+    "No Subscription for organization": "No Subscription for organization"
 
   } 
 }

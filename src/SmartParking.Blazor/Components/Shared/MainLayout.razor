@@ -6,11 +6,13 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using Volo.Abp.Localization
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.SettingManagement
 @using Volo.Abp.Users
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser CurrentUser
+@inject ICurrentTenant currenttenant
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -31,7 +33,6 @@
                 <SPBreadcrumb />
             </div>
             <div class="d-flex gap-3 align-center flex-wrap">
-                <SPSearch />
                 <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />
                 <MudMenu>   
                     <ActivatorContent>
@@ -51,7 +52,7 @@
                     </MudAvatar>
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
-                        <p class="mb-0 fw-bold">@UserName</p>
+                        <p class="mb-0 fw-bold">@UserName </p>
                         <Link Class="text-white border-bottom" href="/my-account">@L["Profile Details"]</Link>
                         </div>
                     </div>
@@ -75,9 +76,18 @@
     [Inject] private NavigationManager Navigation { get; set; }
 
     private string UserName { get; set; }
+
     protected override void OnInitialized()
     {
-        UserName = CurrentUser.Name ?? "Guest";
+        UserName = CurrentUser.Name;
+        if (currenttenant.Id == null)
+        {
+            UserName += " MDKHAL";
+        }
+        else
+        {
+            UserName += " Organization";
+        }
 
     }
     private void ChangeLanguage()

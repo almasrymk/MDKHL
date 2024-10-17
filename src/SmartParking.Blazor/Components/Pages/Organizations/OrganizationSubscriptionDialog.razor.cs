@@ -1,0 +1,21 @@
+﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
+using SmartParking.Subscriptions;
+
+namespace SmartParking.Blazor.Components.Pages.Organizations;
+
+public partial class OrganizationSubscriptionDialog
+{
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    [Parameter] public SubscriptionDto subscription { get; set; } = new SubscriptionDto();
+
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+
+}

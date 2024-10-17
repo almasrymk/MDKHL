@@ -19,6 +19,11 @@ using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Vehicles;
+using SmartParking.Entities.Organizations;
+using SmartParking.Garages;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
+using Nito.AsyncEx;
 
 namespace SmartParking.Customers;
 
@@ -28,14 +33,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private readonly IRepository<Vehicle, int> _repositoryVehicle;
     private IIdentityUserAppService _identityUserAppService;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
+    private  IDataFilter _dataFilter;
+    private readonly ICurrentUser _currentUser;
 
 
-    public CustomerAppService(IRepository<Customer, Guid> repository,IIdentityUserAppService identityUserAppService , UserManager<Volo.Abp.Identity.IdentityUser> userManager, IRepository<Vehicle, int> repositoryVehicle) : base(repository)
+    public CustomerAppService(IRepository<Customer, Guid> repository,IIdentityUserAppService identityUserAppService , UserManager<Volo.Abp.Identity.IdentityUser> userManager, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter , ICurrentUser currentUser) : base(repository)
     {
         _repository = repository;
         _identityUserAppService= identityUserAppService;
         _userManager=userManager;
         _repositoryVehicle=repositoryVehicle;
+        _dataFilter=dataFilter;
+        _currentUser=currentUser;
     }
   
 
@@ -223,5 +232,67 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var result = await AsyncExecuter.ToListAsync(query);
         var output =ObjectMapper.Map<List<Vehicle>,List<VehicleDto>>(result);
         return output ;
+    }
+
+
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.Organizations.Any( org=> org.Id == organizationId));
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        query.OrderBy(x => x.Id);
+        var customers = await AsyncExecuter.ToListAsync(query);
+        var customerDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+        return new PagedResultDto<CustomerDto>(
+           totalCount,
+           customerDtos
+       );
+
+
+    }
+
+    public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        if (_currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetListAsync(input);
+            }
+        }
+        else
+            return await base.GetListAsync(input);
+    }
+
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<int> GetCountWithoutMultitenant()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+
+    public async Task<int> GetAllCustomersCount()
+    {
+        if (_currentUser.IsInRole("admin"))
+        {
+            
+                var countt = await GetCountWithoutMultitenant();
+            return countt;
+            
+        }
+        
+
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        
     }
 }

@@ -37,7 +37,26 @@ public class VehiclesAppService:
 		_dataFilter = dataFilter;
 		_currentUser = currentUser;
 	}
-	public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+
+    public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
+    {
+		var existingPlatNumber =await _repository.FirstOrDefaultAsync(x=>x.PlateNumber == input.PlateNumber);
+
+		if(existingPlatNumber !=null)
+		{
+			throw new InvalidOperationException("PlatNumber already exists");
+		}
+        if (_currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+        else
+            return await base.CreateAsync(input);
+    }
+    public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
 		if (_currentUser.IsInRole("admin"))
 		{

@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using Microsoft.AspNetCore.Authentication;
+using Abp.Domain.Repositories;
+using Volo.Abp.TenantManagement;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
@@ -9,19 +12,26 @@ namespace SmartParking.Blazor;
 public class AccountsController : ControllerBase
 {
     private readonly IAuthenticationAppService _authenticationApp;
+    private readonly ITenantAppService _tenantAppService;
+    private readonly ICurrentTenant currentTenant;
 
     public AccountsController(
-        IAuthenticationAppService authenticationApp
+        IAuthenticationAppService authenticationApp,
+        ITenantAppService tenantAppService,
+        ICurrentTenant currentTenant
         )
     {
         _authenticationApp = authenticationApp;
+        _tenantAppService = tenantAppService;
+        this.currentTenant = currentTenant;
     }
 
     [HttpGet]
     public async Task<IActionResult> Login(string username , string password)
     {
-
-
+        
+        var tenant =await _authenticationApp.GetTenantByNameDtoAsync(username);
+        currentTenant.Change(tenant?.Id??null);
         LoginInputDto loginInputDto = new LoginInputDto()
         {
             Username = username,

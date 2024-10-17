@@ -1,47 +1,64 @@
 ﻿@inject MudBlazor.IDialogService DialogService
 @page "/"
 @page "/dashboard"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Cutomers
+@using SmartParking.Garages
+@using SmartParking.Localization
+@using SmartParking.Organizations
 @using Volo.Abp.MultiTenancy
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ICurrentTenant CurrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+@inject IGarageAppService GarageAppService
+@inject ICustomerAppService CustomerAppService
+@inject ICurrentTenant currenttenant
 
-<PageTitle>Dashboard</PageTitle>
+
+<PageTitle>@L["Dashboard"]</PageTitle>
 
 <MudGrid>
-    <MudItem sm="4">
+    @if (currenttenant.Id == null)
+    {
+        
+    <MudItem sm="@grid">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
             <div>
                 <MudText Class="fw-bold" Typo="Typo.h4">
-                    5
+                    @_organizationsCount
                 </MudText>
                 <MudText>
-                    Organization
+                    @L["Organization"]
                 </MudText>
             </div>
             <MudImage Src="images/dashboard/organizations.png" />
         </MudPaper>
     </MudItem>
-    <MudItem sm="4">
+    }        
+    <MudItem sm="@grid">
+    
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
             <div>
                 <MudText Class="fw-bold" Typo="Typo.h4">
-                    22
+                    @_garagesCount
                 </MudText>
                 <MudText>
-                    Garages
+                    @L["Garages"]
                 </MudText>
             </div>
             <MudImage Src="images/dashboard/garage.png" />
         </MudPaper>
     </MudItem>
-    <MudItem sm="4">
+    <MudItem sm="@grid">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
             <div>
                 <MudText Class="fw-bold" Typo="Typo.h4">
-                    154,520
+                    @_customersCount
                 </MudText>
                 <MudText>
-                    Customers
+                    @L["Customers"]
                 </MudText>
             </div>
             <MudImage Src="images/dashboard/customers.png" />
@@ -98,36 +115,36 @@
 </MudGrid>
 
 
-<MudButton class="mt-4" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" @onclick="OpenDialog">Open Dialog</MudButton>
-
 @code {
-    private void OpenDialog()
-    {
-        var parameters = new DialogParameters
-        {
 
-            { nameof(SPModal.ChildContent), (RenderFragment)(builder =>
-                {
-                    builder.OpenComponent(0, typeof(SPSampleForm));
-
-                    builder.CloseComponent();
-                })
-            }
-        };
-
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        DialogService.Show<SPModal>("Form Dialog", parameters, options);
-
-    }
 
     ChartOptions options = new ChartOptions();
+    private int _organizationsCount;
+    private int _garagesCount;
+    private int _customersCount;
+    private int grid;
+   
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
+        _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
+        _garagesCount = await GarageAppService.GetAllGaragesCount();
+       _customersCount = await CustomerAppService.GetAllCustomersCount();
+
+        if (currenttenant.Id == null)
+        {
+            grid = 4;
+        }
+        else
+        {
+            grid = 6;
+        }
+
         string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
         options.ChartPalette = colors;
         options.ShowLegend = true;
         options.LineStrokeWidth = 10;
+     //   return await base.OnInitializedAsync();
     }
     double[] data = { 77, 25, 20 };
     private int _index = -1;
