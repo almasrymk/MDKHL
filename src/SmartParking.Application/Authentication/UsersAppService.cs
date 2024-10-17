@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Repositories;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
@@ -33,7 +35,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
     public async Task<UserDto> CreateAsync(UserCreateDto input)
     {
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
-        
+         await CheckPhoneIsUnique(input.PhoneNumber);
         user.Name = input.UserName;
         user.Surname = input.Surname;
         user.SetProperty("OtpCode",null);
@@ -52,7 +54,23 @@ public class UsersAppService : ApplicationService , IUsersAppService
        var userDto =  ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
     }
+    /// <summary>
+    /// Checks if the provided phone number is unique and associated with a user.
+    /// </summary>
+    /// <param name="phone">The phone number to check for uniqueness.</param>
+    /// <returns>The <see cref="IdentityUser"/> associated with the phone number if it exists.</returns>
+    /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
+    private async Task<IdentityUser> CheckPhoneIsUnique(string phone )
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
 
+        if (user != null)
+        {
+            throw new Exception("User with this phone number does  exist.");
+        }
+        return user;
+
+    }
     public async Task<int> GetOrganizationIdByTenantAsync(Guid? tenantId)
     {
         var user = await _userRepository.FindByOrganizationByTenantAsync(tenantId);
