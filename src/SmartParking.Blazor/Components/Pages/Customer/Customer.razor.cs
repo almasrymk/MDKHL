@@ -12,6 +12,9 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Cameras;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -23,21 +26,34 @@ public partial class Customer
 
 	private TableData itemData = new TableData();
 
-	private string termSearch;
+    public bool ViewAdd { get; set; } = true;
+
+    private string termSearch;
 	private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 	private readonly IStringLocalizer<SmartParkingResource> _localizer;
+    private readonly ICurrentUser _currentUser;
 
-	public Customer(IStringLocalizer<SmartParkingResource> localizer)
+    public Customer(IStringLocalizer<SmartParkingResource> localizer , ICurrentUser currentUser)
 	{
 		_localizer = localizer;
-	}
+        _currentUser = currentUser;
+    }
 
-	/// <summary>
-	/// filter for hotels on the server side using the hotel columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among hotel.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    protected override Task OnInitializedAsync()
+    {
+		if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+		{
+			ViewAdd= false;
+
+		}
+		return base.OnInitializedAsync();
+    }
+    /// <summary>
+    /// filter for hotels on the server side using the hotel columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
 	{
 		// Log the search term to the console for debugging purposes
 

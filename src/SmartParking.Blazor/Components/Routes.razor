@@ -1,12 +1,15 @@
-﻿@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
+﻿@using SmartParking.Enums
+@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Routing
 @using Microsoft.Extensions.Options
 @using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject IOptions<AbpRouterOptions> RouterOptions
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICurrentTenant currenttenant
+@inject ICurrentUser _currentUser
 
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="RouterOptions.Value.AdditionalAssemblies">
     <Found Context="routeData">
@@ -37,6 +40,11 @@
             
           Navigation.NavigateTo("/", true);
                 
+        }
+        if ((_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin")) && currentUri == "customers/register")
+        {
+            Navigation.NavigateTo("/customers", true);
+
         }
     }
 
