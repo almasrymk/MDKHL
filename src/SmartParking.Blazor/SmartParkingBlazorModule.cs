@@ -1,5 +1,6 @@
 using Abp.Threading;
 using Blazorise.Bootstrap5;
+using Blazorise.DeepCloner;
 using Blazorise.Icons.FontAwesome;
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
@@ -53,6 +54,7 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using static IdentityModel.ClaimComparer;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Blazor;
@@ -148,10 +150,7 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context , IConfiguration configuration)
     {
-        Configure<IdentityServerOptions>(options =>
-        {
-            options.IssuerUri = configuration["App:SelfUrl"];
-        });
+        
         context.Services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = ".AspNetCore.Identity.Application"; 
@@ -159,7 +158,8 @@ public class SmartParkingBlazorModule : AbpModule
             options.ExpireTimeSpan = TimeSpan.FromMinutes(60); 
             options.SlidingExpiration = true; 
             
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+           
         });
         context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
@@ -296,6 +296,7 @@ public class SmartParkingBlazorModule : AbpModule
         }
         else
         {
+           
             app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
