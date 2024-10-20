@@ -21,13 +21,13 @@ public class VehicleController : AbpController
     }
 
     [HttpPost]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<Result<VehicleDto>> CreateVehicle(CreateUpdateVehicleDto input)
     {
         return await _vehicleAppService.CreateAsync(input);
     }
     [HttpGet]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<Result<PagedResultDto<VehicleDto>>> GetAllVehicles([FromQuery] PagedAndSortedResultRequestDto input)
     {
         return await _vehicleAppService.GetListAsync(input);
