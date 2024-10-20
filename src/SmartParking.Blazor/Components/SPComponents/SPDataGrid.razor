@@ -15,13 +15,13 @@
         <ToolBarContent>
             <div class="d-flex flex-column w-100">
                 <div class="w-100 d-flex align-center">
-                    @if (OnSearching.HasDelegate)
+                    @if (OnSearching.HasDelegate && ShowSearching)
                     {
                         <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search"]" Adornment="Adornment.End" Immediate="true"
                                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
                     }
                     
-                    @if (OnFiltering.HasDelegate)
+                    @if (OnFiltering.HasDelegate && ShowFiltering)
                     {
                         <div Class="ms-2" @onclick="OnClickFilter">
                             <MudIcon Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIcon>
@@ -29,7 +29,7 @@
                     }
                     
                     <MudItem>
-                        @if (ColumnsFilterApply.Count > 0)
+                        @if (ColumnsFilterApply.Count > 0 )
                         {
                             <MudGrid Justify="Justify.SpaceBetween" Class=" align-center ">
 
@@ -49,7 +49,7 @@
                         }
                     </MudItem>
                     <MudSpacer />
-                    @if (OnAdd.HasDelegate)
+                    @if (OnAdd.HasDelegate && ShowAdd)
                     {
                         <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(()=>OnAdd.InvokeAsync())">
                             @L["CREATE NEW"]
@@ -139,12 +139,12 @@
 
                 @if (Data.Columns.Last().DisplayName == header.DisplayName)
                 {
-                    @if (OnClickRowView.HasDelegate || OnClickCar.HasDelegate || OnClickRowEdit.HasDelegate || OnClickRowDelete.HasDelegate || OnClickAssign.HasDelegate)
+                    @if ( OnClickRowView.HasDelegate || OnClickCar.HasDelegate || OnClickRowEdit.HasDelegate || OnClickRowDelete.HasDelegate || OnClickAssign.HasDelegate )
                     {
                         <TemplateColumn Title="@L["Actions"]" CellClass="d-flex justify-content-start align-items-center">
                             <CellTemplate>
                                 <MudItem Class="d-flex justify-content-start align-items-center">
-                                    @if (OnClickRowView.HasDelegate)
+                                    @if (OnClickRowView.HasDelegate && ShowView)
                                     {
                                         <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Info"
@@ -154,7 +154,7 @@
                                                        Class="mx-1" />
                                     }
 
-                                    @if (OnClickCar.HasDelegate)
+                                    @if (OnClickCar.HasDelegate&&ShowAssignCar)
                                     {
                                         <MudIconButton OnClick="@(e => OnClickCar.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CarRental"
@@ -163,7 +163,7 @@
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
                                     }
-                                    @if (OnClickRowEdit.HasDelegate)
+                                    @if (OnClickRowEdit.HasDelegate && ShowEdit)
                                     {
                                         <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Edit"
@@ -172,7 +172,7 @@
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
                                     }
-                                    @if (OnClickRowDelete.HasDelegate)
+                                    @if (OnClickRowDelete.HasDelegate && ShowDelete)
                                     {
                                         <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))"
                                                        Icon="@Icons.Material.Filled.Delete"
@@ -182,7 +182,7 @@
                                                        Class="mx-1" />
                                     }
 
-                                    @if (OnClickAssign.HasDelegate)
+                                    @if (OnClickAssign.HasDelegate && ShowAssign)
                                     {
                                         <MudIconButton OnClick="@(e => OnClickAssign.InvokeAsync(context.Item.Cells[0].Value))"
                                                        Icon="@Icons.Material.Filled.AssignmentTurnedIn"

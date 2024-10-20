@@ -16,13 +16,23 @@ public partial class SPDataGrid
     [Parameter] public TableData Data { get; set; } = new TableData();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
+    [Parameter] public bool ShowAdd { get; set; } = true;
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
+    [Parameter] public bool ShowSearching { get; set; } = true;
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
-	[Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
-	[Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
-	[Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
-	[Parameter] public EventCallback<string> OnClickRowDelete { get; set; }
+    [Parameter] public bool ShowFiltering { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
+    [Parameter] public bool ShowEdit { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
+    [Parameter] public bool ShowAssignCar { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
+    [Parameter]  public  bool ShowView { get; set; } = true;
+    [Parameter] public EventCallback<string> OnClickRowDelete { get; set; }
+    public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
+
+    [Parameter] public bool ShowAssign { get; set; } = true;
+
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
@@ -160,6 +170,10 @@ public partial class SPDataGrid
             TotalItems = TotalItemsInTable,
             Items = Data.Rows
         };
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
     }
 
 }
