@@ -24,11 +24,15 @@ using SmartParking.Data.Lookups;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
@@ -154,12 +158,31 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = ".AspNetCore.Identity.Application"; 
-            options.LoginPath = "/login";
+            
             options.ExpireTimeSpan = TimeSpan.FromMinutes(60); 
             options.SlidingExpiration = true; 
             
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-           
+            options.Events.OnRedirectToLogin = async(context) =>
+            {
+                string path = context.Request.Path;
+                if (path.StartsWith("/api/mobile"))
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "application/json";
+                    var result = Result.Unauthorized(); // Assuming Result.Unauthorized() returns a proper message
+                    // Serialize the result object to JSON
+                    var resultJson = JsonSerializer.Serialize(result);
+                    // Write the result to the response body
+                    await context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(resultJson));
+                    await Task.CompletedTask;
+                }
+                //"\"error\": \"Unauthorized access - token is invalid or expired.\"}"
+                // If no Bearer token, allow redirect to login page
+                context.Response.Redirect(context.RedirectUri);
+                
+                await Task.CompletedTask;
+            };
         });
         context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>

@@ -95,6 +95,10 @@ public class PackagesAppService : CrudAppService<
 		var query = await _repository.GetQueryableAsync();
 		var pakages =await query.Where(_ => _.OrgnizationId == organizationId).ToListAsync();
 		var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
+            if(pakages.Count == 0)
+            {
+                return Result<List<PackageDto>>.NotFound();
+            }
 		return Result<List<PackageDto>>.Success(pakagesMap);
     }
 
