@@ -2,6 +2,7 @@
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
@@ -25,13 +26,15 @@ namespace SmartParking.GarageTransactionEndPoints
         private readonly IRepository<Customer, Guid> _customerRepoistory;
         private readonly IRepository<Vehicle, int> _vehicleRepository;
         private readonly ICustomerPackagesAppService _customerPackagesAppService;
+		private readonly IRepository<GarageTransaction, int> _garageTransactionRepoistory;
 
-        public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
+		public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
             IRepository<Camera, int> cameraRepository, IRepository<Garage, int> garageRepository
             , ILogger<GarageTransactionEndPointsAppService> logger
             ,IRepository<Customer,Guid>customerRepoistory,
             IRepository<Vehicle,int> vehicleRepository,
-            ICustomerPackagesAppService customerPackagesAppService)
+            ICustomerPackagesAppService customerPackagesAppService,
+            IRepository<GarageTransaction,int>garageTransactionRepoistory)
         {
             _garageTransactionsAppService = garageTransactionsAppService;
             _cameraRepository = cameraRepository;
@@ -40,7 +43,8 @@ namespace SmartParking.GarageTransactionEndPoints
             _customerRepoistory = customerRepoistory;
             _vehicleRepository = vehicleRepository;
             _customerPackagesAppService = customerPackagesAppService;
-        }
+			_garageTransactionRepoistory = garageTransactionRepoistory;
+		}
         public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
         {
            
@@ -136,5 +140,32 @@ namespace SmartParking.GarageTransactionEndPoints
             }
             return succes;
         }
-    }
+		private async Task<int> CalcTime(DateTime endTime, string plateNumber)
+		{
+			// Get the list of transactions for the provided plate number
+			var latestTransactions = await _garageTransactionRepoistory.GetListAsync();
+
+			// Fetch the latest transaction based on SnapTime or AccurateTime
+			var latestTransaction = latestTransactions
+				.Where(gt => gt.PlateNnumber == plateNumber)
+				.OrderByDescending(gt => gt.SnapTime) // or AccurateTime
+				.FirstOrDefault();
+
+			if (latestTransaction == null || latestTransaction.SnapTime == null)
+			{
+				_logger.LogError($"No transaction found or SnapTime is null");
+                return -1;
+			}
+
+			// Calculate the time difference
+			TimeSpan timeDifference = endTime - latestTransaction.SnapTime.Value;
+
+			// Calculate the hours difference and round up
+
+			int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours);
+
+			return hoursDiff;
+		}
+	}
+    
 }
