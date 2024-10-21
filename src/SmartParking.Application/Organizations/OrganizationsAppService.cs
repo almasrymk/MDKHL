@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Scriban.Syntax;
 using SmartParking.Authentication;
 using SmartParking.CustomerCategories;
@@ -118,6 +119,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 return await base.GetAsync(id);
             }
     }
+
+
+    [RemoteService(isEnabled:false)]
     ///<inheritdoc/>
     private string CodeGenerator(int id)
     {
@@ -287,6 +291,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         return await _subscriptionAppService.GetAsync(SubscriptionId);
     }
 
+    ///<inheritdoc/>
     public async Task<int> GetOrganizationsCount()
     {
         using (_softDeleteFilter.Disable<IMultiTenant>())
@@ -296,6 +301,15 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             return totalCount;
         }
+    }
+    [RemoteService(isEnabled: false)]
+    ///<inheritdoc/>
+    public async Task<Organization> GetOrganizationForCurrentTenat()
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(org => org.EnglishName == CurrentTenant.Name);
+        var org = await AsyncExecuter.FirstOrDefaultAsync(query);
+        return org;
     }
 }
  

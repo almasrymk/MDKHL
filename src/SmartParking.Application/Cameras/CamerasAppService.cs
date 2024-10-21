@@ -41,7 +41,7 @@ namespace SmartParking.Cameras
         
         public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
-            if (_currentUser.IsInRole("admin"))
+            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
             {
                 using (_dataFilter.Disable<IMultiTenant>())
                 {
@@ -53,7 +53,7 @@ namespace SmartParking.Cameras
         }
         public override async Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input)
         {
-            if (_currentUser.IsInRole("admin"))
+            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
             {
                 using (_dataFilter.Disable<IMultiTenant>())
                 {
@@ -65,7 +65,7 @@ namespace SmartParking.Cameras
 
         public override async Task<CameraDto> GetAsync(int id)
         {
-            if (_currentUser.IsInRole("admin"))
+            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
             {
                 using (_dataFilter.Disable<IMultiTenant>())
                 {
@@ -89,14 +89,7 @@ namespace SmartParking.Cameras
             var camera = await GetAsync(id);
             if (camera == null)
                 throw new EntityNotFoundException(typeof(Camera), id);
-            if (_currentUser.IsInRole("admin"))
-            {
-                using (_dataFilter.Disable<IMultiTenant>())
-                {
-                    await base.DeleteAsync(id);
-
-                }
-            }
+            
             await base.DeleteAsync(id);
         }
         /// <summary>
@@ -125,7 +118,7 @@ namespace SmartParking.Cameras
             //{
             //    throw new InvalidOperationException("Invalid status value");
             //}
-            if (_currentUser.IsInRole("Mdkhl"))
+            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()))
             {
                 using (_dataFilter.Disable<IMultiTenant>())
                 {
