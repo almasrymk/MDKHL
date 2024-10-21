@@ -1,6 +1,7 @@
 ﻿
 using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
+using SmartParking.Enums;
 using SmartParking.Lookups;
 using SmartParking.Lookups.State;
 using System;
@@ -10,7 +11,10 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.LookupsAppServices;
 
@@ -22,14 +26,55 @@ public class StateAppService : CrudAppService<State, StateDto,
 
     private readonly IRepository<Region, int> _regionRepository;
     private readonly IRepository<State, int> _stateRepository;
+    private readonly IDataFilter _dataFilter;
 
-    public StateAppService(IRepository<State, int> stateRepository, IRepository<Region, int> regionRepository)
+
+    public StateAppService(IRepository<State, int> stateRepository, IRepository<Region, int> regionRepository,IDataFilter dataFilter)
 	: base(stateRepository)
     {
+        _dataFilter = dataFilter;
         _stateRepository = stateRepository;
         _regionRepository = regionRepository;
     }
 
+    ///<inheritdoc/>
+
+    public override async Task<StateDto> CreateAsync(CreateUpdateStateDto input)
+    {
+        if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
+        {
+            throw new InvalidOperationException("Invalid status value.");
+
+        }
+        if (CurrentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+        else
+            return await base.CreateAsync(input);
+    }
+
+    ///<inheritdoc/>
+    public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
+    {
+        if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
+        {
+            throw new InvalidOperationException("Invalid status value.");
+
+        }
+        if (CurrentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.UpdateAsync(id,input);
+            }
+        }
+        else
+            return await base.UpdateAsync(id,input);
+    }
 
     /// <summary>
     /// method used to get list of states
@@ -139,5 +184,20 @@ public class StateAppService : CrudAppService<State, StateDto,
             totalCount,
             stateDto
         );
+    }
+    public override async Task DeleteAsync(int id)
+    {
+        var state = await base.GetAsync(id);
+
+        if (state is null)
+        {
+            throw new EntityNotFoundException(typeof(State), id);
+        }
+        else
+        {
+            await base.DeleteAsync(id);
+
+        }
+        await base.DeleteAsync(id);
     }
 }

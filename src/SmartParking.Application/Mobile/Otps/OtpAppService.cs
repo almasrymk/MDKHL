@@ -45,7 +45,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otp = "1234"; // call GenerateRandomOtp function   
         user?.SetProperty("OtpCode", otp);
-        user?.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);
@@ -73,7 +73,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
         {
             // OTP is valid, clear OTP fields
             user?.SetProperty("OtpCode", null);
-            user?.SetProperty("OtpExpirationDate", DateTime.UtcNow);
+            user?.SetProperty("OtpExpirationDate", DateTime.Now);
             await _userRepository.UpdateAsync(user);
 
             // Return success result with true
@@ -110,7 +110,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otp = "1234"; // call GenerateRandomOtp function   
         user?.SetProperty("OtpCode", otp);
-        user?.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);
@@ -131,7 +131,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otp = "1234"; // call GenerateRandomOtp function   
         user?.SetProperty("OtpCode", otp);
-        user?.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);

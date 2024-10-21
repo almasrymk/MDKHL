@@ -21,5 +21,12 @@ namespace SmartParking.Lookups
         /// <param name="input">specifies max number of countries and if it sorted or not and filter</param>
         /// <returns>Country Dto</returns>
         public Task<PagedResultDto<CountryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+
+        /// <summary>
+        /// Abstract method to delete country
+        /// </summary>
+        /// <param name="id">Id of country</param>
+        Task DeleteAsync(int id);
     }
 }

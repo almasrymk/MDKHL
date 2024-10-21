@@ -11,6 +11,20 @@ namespace SmartParking.Lookups.State;
 
 public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSortedResultRequestDto, CreateUpdateStateDto>
 {
+    /// <summary>
+    /// abstract method to create state
+    /// </summary>
+    /// <param name="input">state create dto</param>
+    /// <returns>StateDto</returns>
+    Task<StateDto> CreateAsync(CreateUpdateStateDto input);
+
+    /// <summary>
+    /// abstract method to update state
+    /// </summary>
+    /// <param name="input">state create dto</param>
+    /// <param name="id">id of state</param>
+    /// <returns>StateDto</returns>
+    Task<StateDto> UpdateAsync(int id , CreateUpdateStateDto input);
     Task<List<RegionLookupDto>> GetRegionLookupAsync();
     Task<List<StateLookupDto>> GetStateLookupAsync();
 
@@ -29,4 +43,9 @@ public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSorte
     /// <returns>StateDto</returns>
     public Task<PagedResultDto<StateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
+    /// <summary>
+    /// Abstract method to delete state
+    /// </summary>
+    /// <param name="id">Id of state</param>
+    Task DeleteAsync(int id);
 }

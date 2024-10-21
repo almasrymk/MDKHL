@@ -12,6 +12,9 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Lookups.Region;
 using Volo.Abp.Domain.Repositories;
+using SmartParking.Enums;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Data;
 
 namespace SmartParking.LookupsAppServices;
 
@@ -21,11 +24,69 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 		IRegionAppService
 {
 	public readonly IRepository<Region, int> _regionRepository;
-    public RegionAppService(IRepository<Region, int> regionRepository)
+    public readonly IRepository<Country, int> _countryRepository;
+
+    public readonly IDataFilter _dataFilter;
+
+    public RegionAppService(IRepository<Region, int> regionRepository,IDataFilter dataFilter, IRepository<Country, int> countryRepository)
 	: base(regionRepository)
 	{
 		_regionRepository = regionRepository;
+        _dataFilter = dataFilter;
+        _countryRepository = countryRepository;
 	}
+
+    ///<inheritdoc/>
+
+    public override async Task<RegionDto> CreateAsync(CreateUpdateRegionDto input)
+    {
+        var exisitingCountry = await _countryRepository.FindAsync(input.CountryId);
+        if(exisitingCountry is null)
+        {
+            throw new InvalidOperationException("country doesnot exist");
+        }
+
+        if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
+        {
+            throw new InvalidOperationException("Invalid status value.");
+
+        }
+        if (CurrentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+        else
+            return await base.CreateAsync(input);
+    }
+
+    ///<inheritdoc/>
+    public override async Task<RegionDto> UpdateAsync(int id, CreateUpdateRegionDto input)
+    {
+        var exisitingCountry = await _countryRepository.FindAsync(input.CountryId);
+
+        if (exisitingCountry is null)
+        {
+            throw new InvalidOperationException("country doesnot exist");
+        }
+
+        if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
+        {
+            throw new InvalidOperationException("Invalid status value.");
+
+        }
+        if (CurrentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.UpdateAsync(id,input);
+            }
+        }
+        else
+            return await base.UpdateAsync(id,input);
+    }
 
     /// <summary>
     /// method used to get list of regions

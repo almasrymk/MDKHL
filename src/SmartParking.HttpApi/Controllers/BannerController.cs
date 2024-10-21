@@ -19,13 +19,13 @@ public class BannerController : AbpController
     }
 
     [HttpPost]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<Result<BannerDto>> CreateBanner(CreateUpdateBannerDto input)
     {
         return await _bannerAppService.CreateAsync(input);
     }
     [HttpGet]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<Result<List<BannerDto>>> GetAllBanners()
     {
         return await _bannerAppService.GetListAsync();
