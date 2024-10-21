@@ -27,6 +27,7 @@ using SmartParking.CustomerPackages;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
+using SmartParking.Analysis;
 
 namespace SmartParking;
 
@@ -118,6 +119,14 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 		CreateMap<CreateUpdateSubscriptionTypeDto, SubscriptionType>();
 		CreateMap<SubscriptionType, SubscriptionTypeLookupDto>()
 			.ForMember(d => d.SubscriptionType, o => o.MapFrom(s => s.Type));
-	}
+
+
+        CreateMap<Organization, string>()
+        .ConvertUsing(org => org.EnglishName);
+
+        CreateMap<Organization, double>()
+    .ConvertUsing(org => org.Customers.Count);
+
+    }
 }
 
