@@ -2,6 +2,7 @@
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,9 @@ namespace SmartParking.CustomerPackages
             _repository = repository;
         }
       
-        public  CustomerPackageDto GetCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
+        public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
         {
-            var result= _repository.FirstOrDefaultAsync(x=>x.Package.OrgnizationId == orgID&&x.CustomerId==customerID).Result;
+            var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrgnizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active);
             if (result == null)
             {
                 return null; // Or throw an appropriate exception if necessary
