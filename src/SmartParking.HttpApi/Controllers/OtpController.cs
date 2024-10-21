@@ -38,9 +38,9 @@ public class OtpController : AbpController
     }
     [HttpPost("forgetPasswordOtp")]
     [Authorize]
-    public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtp([FromQuery] Guid userId)
+    public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtp([FromQuery] Guid userId,string otp)
     {
-        return await _otpAppService.ForgetPasswordOtpAsync(userId);
+        return await _otpAppService.ForgetPasswordOtpAsync(userId,otp);
     }
 
 }
