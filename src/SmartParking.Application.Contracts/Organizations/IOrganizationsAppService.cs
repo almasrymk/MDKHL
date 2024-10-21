@@ -34,6 +34,12 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <param name="input">id of organization</param>
     /// <returns>Organization Dto</returns>
     Task<OrganizationDto> GetAsync(int id);
+    /// <summary>
+    /// abstract method to get organization id
+    /// </summary>
+    /// <param name="tenantId">id of tenant</param>
+    /// <returns>Organization id</returns>
+    Task<int> GetOrganizationIdByTenant(Guid? tenantId);
 
     /// <summary>
     /// abstract method used to update organization

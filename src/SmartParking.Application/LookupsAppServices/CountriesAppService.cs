@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Domain.Entities;
 
 namespace SmartParking.LookupsAppServices
 {
@@ -27,6 +28,22 @@ namespace SmartParking.LookupsAppServices
           
         }
 
+        /// <inheritdoc/>
+        public override async Task DeleteAsync(int id)
+        {
+            var country = await base.GetAsync(id);
+
+            if (country is null)
+            {
+                throw new EntityNotFoundException(typeof(Country), id);
+            }
+            else
+            {
+                await base.DeleteAsync(id);
+
+            }
+            await base.DeleteAsync(id);
+        }
         /// <summary>
         /// method used to get list of countries
         /// </summary>

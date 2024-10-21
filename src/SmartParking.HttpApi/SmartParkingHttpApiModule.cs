@@ -24,6 +24,7 @@ public class SmartParkingHttpApiModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+
         ConfigureLocalization();
     }
 

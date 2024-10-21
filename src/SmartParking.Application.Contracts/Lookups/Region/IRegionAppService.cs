@@ -1,4 +1,4 @@
-﻿using SmartParking.Lookups.City;
+﻿using SmartParking.Lookups.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,21 @@ namespace SmartParking.Lookups.Region;
 
 public interface IRegionAppService : ICrudAppService<RegionDto, int, PagedAndSortedResultRequestDto, CreateUpdateRegionDto>
 {
+
+    /// <summary>
+    /// abstract method to create region
+    /// </summary>
+    /// <param name="input">region create dto</param>
+    /// <returns>RegionDto</returns>
+    Task<RegionDto> CreateAsync(CreateUpdateRegionDto input);
+
+    /// <summary>
+    /// abstract method to update region
+    /// </summary>
+    /// <param name="input">region create dto</param>
+    /// <param name="id">id of state</param>
+    /// <returns>RegionDto</returns>
+    Task<RegionDto> UpdateAsync(int id, CreateUpdateRegionDto input);
     /// <summary>
     /// abstract method to search of regions
     /// </summary>

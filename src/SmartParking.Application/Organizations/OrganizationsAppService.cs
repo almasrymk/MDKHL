@@ -263,6 +263,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         
             var organizations = await _repository.GetListAsync();
             var organizationsMap = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
+                if (organizationsMap.Count == 0) 
+                {
+                       return Result<List<OrganizationDto>>.NotFound();
+                }
+
             return Result<List<OrganizationDto>>.Success(organizationsMap);
         
     }
@@ -301,6 +306,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             return totalCount;
         }
+    }
+    ///<inheritdoc/>
+    public async Task<int> GetOrganizationIdByTenant(Guid? tenantId)
+    {
+        return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
     }
     [RemoteService(isEnabled: false)]
     ///<inheritdoc/>

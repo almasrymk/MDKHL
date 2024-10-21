@@ -20,13 +20,13 @@ public class InvoicesController : AbpController
         _invoicesAppService = invoicesAppService;
     }
     [HttpPost]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<Result<InvoiceDto>> CreateInvoice(CreateUpdateInvoiceDto input)
     {
         return await _invoicesAppService.CreateAsync(input);
     }
     [HttpGet]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoices([FromQuery] PagedAndSortedResultRequestDto input)
     {
         return await _invoicesAppService.GetListAsync(input);
