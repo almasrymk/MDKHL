@@ -13,7 +13,7 @@ public interface IOtpAppService : IApplicationService
     public Task<Result<string>> GenerateOtpAsync(string phoneNumber);
     public Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId);
     public Task<Result<bool>> VerifyOtpAsync(string phoneNumber, string otp);
-    public Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtpAsync(Guid userId);
+    public Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtpAsync(Guid userId,string otp);
 
 
 
