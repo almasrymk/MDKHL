@@ -112,6 +112,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         
 
         var userName = CurrentUser.UserName;
+        if(userName.IsNullOrEmpty())
+        {
+            return Result<UserDataDto>.NotFound();
+        }
         var user = await _userManager.FindByNameAsync(userName);
         if(user is not null)
         {
