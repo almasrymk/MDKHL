@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
@@ -41,6 +42,7 @@ public class Organization : BaseEntity
     public virtual ICollection<Garage> OrganizationGarages { get; set; }
     public virtual ICollection<Camera> Cameras { get; set; }
     public virtual ICollection<Package> organizationPackages { get; set; }
+    public virtual ICollection<Customer> Customers { get; set; }
     public virtual ICollection<ContactInfo> organizationContactInfos { get; set; }
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
     public int? SubscriptionId { get; set; }
