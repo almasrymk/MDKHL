@@ -59,26 +59,21 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
            .NotEmpty()
            .GreaterThan(0);
 
-        RuleFor(x => x.FullDay)
+        RuleFor(x => x.FullDayPrice)
           .NotEmpty()
           .GreaterThan(0);
 
         RuleFor(x => x.NumberOfHours)
-          .NotEmpty()
           .GreaterThan(0);
 
-        RuleFor(x => x.IsNumberOfHoursExceeded)
-          .NotEmpty()
-        .Must(v=>v == true || v == false)
-        .WithMessage("The value must be either true or false.");
+        //RuleFor(x => x.IsNumberOfHoursExceeded)
+        //.Must(v=>v == true || v == false)
+        //.WithMessage("The value must be either true or false.");
 
-        RuleFor(x => x.IsFullDayExceeded)
-         .NotEmpty()
-         .Must(v => v == true || v == false)
-         .WithMessage("The value must be either true or false."); ;
+        //RuleFor(x => x.IsFullDayExceeded)
+        // .Must(v => v == true || v == false)
+        // .WithMessage("The value must be either true or false."); ;
 
-        RuleFor(x => x.ExceededTime)
-            .NotEmpty()
-            .GreaterThanOrEqualTo(TimeOnly.FromTimeSpan(TimeSpan.Zero));
+  
     }
 }

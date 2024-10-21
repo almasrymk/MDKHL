@@ -31,7 +31,6 @@ public partial class MyAccount
     public int MaxCapacity { get; set; }
     private string CountrySelectValue { get; set; }
     private string CitySelectValue { get; set; }
-
     public string RegionSelectValue { get; set; }
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
@@ -40,11 +39,13 @@ public partial class MyAccount
     public decimal SecondHourPrice { get; set; }
     public decimal ThirdHourPrice { get; set; }
     public decimal AdditionalHourPrice { get; set; }
-    public decimal FullDay { get; set; }
+    public decimal FullDayPrice { get; set; }
     public bool IsNumberOfHoursExceeded { get; set; }
     public int NumberOfHours { get; set; }
-    public bool IsFullDayExceeded { get; set; }
-    public TimeSpan? ExceededTime { get; set; }
+    public bool IsClose { get; set; }
+    public TimeSpan? ClosingHoursStart { get; set; }
+    public TimeSpan? ClosingHoursEnd { get; set; }
+
     public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
@@ -89,11 +90,12 @@ public partial class MyAccount
             SecondHourPrice = SecondHourPrice,
             ThirdHourPrice = ThirdHourPrice,
             AdditionalHourPrice = AdditionalHourPrice,
-            FullDay = FullDay,
+            FullDayPrice = FullDayPrice,
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
             NumberOfHours = NumberOfHours,
-            IsFullDayExceeded = IsFullDayExceeded,
-            ExceededTime = TimeOnly.FromTimeSpan(ExceededTime ?? TimeSpan.MinValue),
+            IsClose = IsClose,
+            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
+            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue),
         };
 
 
@@ -176,11 +178,12 @@ public partial class MyAccount
         FirstHourPrice = organization.FirstHourPrice;
         SecondHourPrice = organization.SecondHourPrice;
         ThirdHourPrice = organization.ThirdHourPrice;
-        FullDay = organization.FullDay;
+        FullDayPrice = organization.FullDayPrice;
         NumberOfHours = organization.NumberOfHours;
         IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
-        IsFullDayExceeded = organization.IsFullDayExceeded;
-        ExceededTime = organization.ExceededTime.ToTimeSpan();
+        IsClose = organization.IsClose;
+        ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
+        ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         AdditionalHourPrice = organization.AdditionalHourPrice;
     }
     protected override async Task OnInitializedAsync()
