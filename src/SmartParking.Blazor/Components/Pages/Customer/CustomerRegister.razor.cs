@@ -21,6 +21,7 @@ public partial class CustomerRegister
             {
 
                 ShowSnackbar($"Customer {createUpdateCustomerDto.FullName} was created successfully",Severity.Success);
+                Navigation.NavigateTo("/customers");
 
             }
 

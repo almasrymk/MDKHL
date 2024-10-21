@@ -33,22 +33,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 {
     private readonly IRepository<Customer, Guid> _repository;
     private readonly IRepository<Vehicle, int> _repositoryVehicle;
-    private IIdentityUserAppService _identityUserAppService;
     private IOrganizationsAppService _organizationAppService;
-    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private  IDataFilter _dataFilter;
     private readonly ICurrentUser _currentUser;
+    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
 
 
-    public CustomerAppService(IRepository<Customer, Guid> repository, IIdentityUserAppService identityUserAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser, IOrganizationsAppService organizationAppService) : base(repository)
+    public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser, IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager) : base(repository)
     {
         _repository = repository;
-        _identityUserAppService = identityUserAppService;
-        _userManager = userManager;
         _repositoryVehicle = repositoryVehicle;
         _dataFilter = dataFilter;
         _currentUser = currentUser;
         _organizationAppService = organizationAppService;
+        _userManager = userManager;
     }
 
 
@@ -65,7 +63,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
-        var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
         try
         {
             var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
@@ -74,26 +71,28 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("Phone Number is used");
 
             }
-
+            var org = await _organizationAppService.GetOrganizationForCurrentTenat();
+            var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+            customer.Organizations = new List<Organization>();
+            customer.Organizations.Add(org);
+            customer.IdentityUser.Name = input.UserName;
+            customer.IdentityUser.Surname = input.FullName;
             customer.IdentityUser.SetProperty("OtpCode", null);
             customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
             customer.IdentityUser.SetProperty("UserTypeId", 3);
-            var result = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-           // await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
-            if (!result.Succeeded) { 
-                    throw new Exception( FormatErrorMessage(result) );
+            customer.IdentityUser.SetProperty("OrganizationId", org.Id);
+            var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
+            if (!createdUser.Succeeded)
+            {
+                throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
             }
-            await _userManager.UpdateSecurityStampAsync(customer.IdentityUser);
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Mdkhl.ToString()]);
+            }
             await _repository.InsertAsync(customer,true);
-            //organization which added customeer . 
-            var org = await _organizationAppService.GetOrganizationForCurrentTenat();
-            var query = await _repository.WithDetailsAsync(x => x.Organizations);
-            var newcustomer=query.FirstOrDefault(x=>x.Id==customer.Id);
-            newcustomer.Organizations.Add(org);
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
-
-
-
         }
         catch (Exception ex)
         {
