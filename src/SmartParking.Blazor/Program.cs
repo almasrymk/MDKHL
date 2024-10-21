@@ -25,10 +25,11 @@ public class Program
 #else
             .MinimumLevel.Information()
 #endif
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+           
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
             .Enrich.FromLogContext()
-            .WriteTo.Async(c => c.File("Logs/logs.txt"))
+            .WriteTo.Async(c => c.File($"Logs/logs_{DateTime.Now.ToString("dd-MM-yyyy")}.txt"))
             .WriteTo.Async(c => c.Console())
             .CreateLogger();
 

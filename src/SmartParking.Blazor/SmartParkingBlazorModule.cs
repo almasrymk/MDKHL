@@ -1,10 +1,6 @@
 using Abp.Threading;
 using Blazorise.Bootstrap5;
-using Blazorise.DeepCloner;
 using Blazorise.Icons.FontAwesome;
-using IdentityServer4.Configuration;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
@@ -14,11 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
+using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Data.Lookups;
 using SmartParking.EntityFrameworkCore;
@@ -26,10 +21,7 @@ using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.Results;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq.Dynamic.Core;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -58,8 +50,6 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
-using static IdentityModel.ClaimComparer;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Blazor;
 
@@ -252,8 +242,10 @@ public class SmartParkingBlazorModule : AbpModule
                 options.DocInclusionPredicate((docName, description) => 
                 true);
                 options.CustomSchemaIds(type => type.FullName);
-            }
-        );
+				options.DocumentFilter<CustomSwaggerFilter>();
+
+			}
+		);
     }
 
     private void ConfigureBlazorise(ServiceConfigurationContext context)
