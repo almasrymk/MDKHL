@@ -17,6 +17,7 @@ namespace SmartParking.Entities.Customers;
 
 public class Customer : FullAuditedEntity<Guid> , IMultiTenant
 {
+    public Guid IdentityUserId { get; set; }
     public virtual IdentityUser IdentityUser { get; set; }
 
     public string OTP { get; set; } = "123456";

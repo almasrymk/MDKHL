@@ -215,7 +215,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async override Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (_currentUser.IsInRole("admin"))
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -247,10 +247,10 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     public async Task<int> GetAllGaragesCount()
     {
 
-        if (_currentUser.IsInRole("admin"))
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
-            
-                var countt= await GetCountWithountMultiTenant();
+
+            var countt= await GetCountWithountMultiTenant();
             return countt;
             
         }

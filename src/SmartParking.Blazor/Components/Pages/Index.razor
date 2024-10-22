@@ -2,6 +2,7 @@
 @page "/"
 @page "/dashboard"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Analysis
 @using SmartParking.Cutomers
 @using SmartParking.Garages
 @using SmartParking.Localization
@@ -15,6 +16,7 @@
 @inject IGarageAppService GarageAppService
 @inject ICustomerAppService CustomerAppService
 @inject ICurrentTenant currenttenant
+@inject IAnalysisAppService AnalysisAppService
 
 
 <PageTitle>@L["Dashboard"]</PageTitle>
@@ -30,7 +32,7 @@
                     @_organizationsCount
                 </MudText>
                 <MudText>
-                    @L["Organization"]
+                    @L["Organizations"]
                 </MudText>
             </div>
             <MudImage Src="images/dashboard/organizations.png" />
@@ -123,16 +125,26 @@
     private int _garagesCount;
     private int _customersCount;
     private int grid;
-   
+
+    double[] data = { 77, 25, 20 };
+    private int _index = -1;
+    string[] labels = { "Paid", "Due ", "Confirmed" };
+
 
     protected async override Task OnInitializedAsync()
     {
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
-       _customersCount = await CustomerAppService.GetAllCustomersCount();
+        _customersCount = await CustomerAppService.GetAllCustomersCount();
+        
+
 
         if (currenttenant.Id == null)
         {
+
+            var value = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
+            data = value.CustomersCount.ToArray();
+            labels = value.Names.ToArray();
             grid = 4;
         }
         else
@@ -146,9 +158,6 @@
         options.LineStrokeWidth = 10;
      //   return await base.OnInitializedAsync();
     }
-    double[] data = { 77, 25, 20 };
-    private int _index = -1;
-    string[] labels = { "Paid", "Due ", "Confirmed" };
 
 
 
