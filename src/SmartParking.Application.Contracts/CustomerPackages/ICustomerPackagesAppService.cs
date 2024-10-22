@@ -17,7 +17,8 @@ namespace SmartParking.CustomerPackages
         CreateUpdateCustomerPackageDto
         >
     {
-        public CustomerPackageDto GetCustomerPackageByOrgIdAndCustomerId(int orgID, Guid customerID);
+        Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID, Guid customerID);
 
-    }
+
+	}
 }

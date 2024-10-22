@@ -39,10 +39,12 @@ public class OrganizationDto
     public decimal SecondHourPrice { get; set; }
     public decimal ThirdHourPrice { get; set; }
     public decimal AdditionalHourPrice { get; set; }
-    public decimal FullDay { get; set; }
+    public decimal FullDayPrice { get; set; }
     public bool IsNumberOfHoursExceeded { get; set; }
     public int NumberOfHours { get; set; }
-    public bool IsFullDayExceeded { get; set; }
-    public TimeOnly ExceededTime { get; set; }
+    public bool IsClose { get; set; }
+    public TimeOnly ClosingHoursStart { get; set; }
+    public TimeOnly ClosingHoursEnd { get; set; }
+
 
 }

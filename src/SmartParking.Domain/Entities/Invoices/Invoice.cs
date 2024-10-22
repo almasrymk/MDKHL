@@ -21,9 +21,11 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public virtual Organization Organization { get; set; }
     public int GarageId  { get; set; }
     public virtual Garage Garage { get; set; }
-    public int VehicleId { get; set; }
-    public virtual Vehicle Vehicle { get; set; }
-    // public int PackageId { get; set; }
-    // public virtual Package Package { get; set; }
-    public Guid? TenantId { get; set; }
+	public string PlateNumber { get; set; }
+
+	//public int VehicleId { get; set; }
+	//public virtual Vehicle Vehicle { get; set; }
+	// public int PackageId { get; set; }
+	// public virtual Package Package { get; set; }
+	public Guid? TenantId { get; set; }
 }

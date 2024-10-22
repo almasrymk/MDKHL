@@ -16,7 +16,7 @@ namespace SmartParking.Entities.GarageTransactions
 
         public virtual Camera Camera { get; set; }
         public int CameraId { get; set; }
-        public string PlateNnumber { get; set; }
+        public string PlateNumber { get; set; }
         public DateTime? SnapTime { get; set; }
 		public DateTime? AccurateTime { get; set; }
         public virtual Organization Organization { get; set; }

@@ -10,7 +10,6 @@ namespace SmartParking.GarageTransactionEndPoints
     {
         public string DeviceID { get; set; } 
         public string? PlateNumber { get; set; }
-        public string? PlateNnumber { get; set; }
         public DateTime? SnapTime { get; set; }
         public DateTime? AccurateTime { get; set; }
         public string VehiclePictureName { get; set; } 

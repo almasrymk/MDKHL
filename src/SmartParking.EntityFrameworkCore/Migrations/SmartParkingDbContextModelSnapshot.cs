@@ -1310,6 +1310,12 @@ namespace SmartParking.Migrations
                     b.Property<int>("CityId")
                         .HasColumnType("integer");
 
+                    b.Property<TimeOnly>("ClosingHoursEnd")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeOnly>("ClosingHoursStart")
+                        .HasColumnType("time without time zone");
+
                     b.Property<string>("Code")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)");
@@ -1342,23 +1348,20 @@ namespace SmartParking.Migrations
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
 
-                    b.Property<TimeOnly>("ExceededTime")
-                        .HasColumnType("time without time zone");
-
                     b.Property<decimal>("FirstHourPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("FullDay")
+                    b.Property<decimal>("FullDayPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<bool>("IsClose")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
-
-                    b.Property<bool>("IsFullDayExceeded")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsNumberOfHoursExceeded")
                         .HasColumnType("boolean");
