@@ -103,10 +103,21 @@
         </MudPaper>
     </MudItem>
     <MudItem sm="4">
-        <MudPaper Class="custom-rounded p-3">
-            <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="_index" InputLabels="@labels" Width="300px" Height="300px" ChartOptions="@options" />
+      <MudPaper Class="custom-rounded p-3">
+          <MudTooltip Text=("Number of Customer : @data[_index]") Color="Color.Tertiary"  Arrow="true">
 
+                <MudChart 
+                    ChartType="ChartType.Pie" 
+                    InputData="@data" 
+                    @bind-SelectedIndex="_index" 
+                    InputLabels="@labels" 
+                    Width="300px" 
+                    Height="300px" 
+                    ChartOptions="@options" 
+                />
+          </MudTooltip>
         </MudPaper>
+
 
     </MudItem>
     <MudItem sm="8">
@@ -156,6 +167,7 @@
         options.ChartPalette = colors;
         options.ShowLegend = true;
         options.LineStrokeWidth = 10;
+        
      //   return await base.OnInitializedAsync();
     }
 
