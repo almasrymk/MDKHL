@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartParking.Analysis;
@@ -32,8 +33,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _datafilter = datafilter;
     }
 
-    ///<inheritdoc/>
-    public async Task<OrganizationCustomersDto> GetNumberOfCustomerForOrganizations()
+
+    public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
     {
 
         using (_datafilter.Disable<IMultiTenant>())
@@ -42,31 +43,29 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             query=query.Include(x => x.Customers);
             var result= query.Select(x => new Organization { EnglishName = x.EnglishName }).ToList();
             var result2= query.Select(x => new Organization { Customers=x.Customers }).ToList();
-            OrganizationCustomersDto organizationCustomersDto = new OrganizationCustomersDto();
-            organizationCustomersDto.Names= ObjectMapper.Map<List<Organization>, List<string>>(result);
-            organizationCustomersDto.CustomersCount= ObjectMapper.Map<List<Organization>, List<double>>(result2);
-            return organizationCustomersDto;
+            AnalysisNamesCountDto namesCountDto = new AnalysisNamesCountDto();
+            namesCountDto.Names= ObjectMapper.Map<List<Organization>, List<string>>(result);
+            namesCountDto.Count= ObjectMapper.Map<List<Organization>, List<double>>(result2);
+            return namesCountDto;
         }
     
 
 
     }
-    ///<inheritdoc/>
-    public async Task<OrganizationCustomersDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber)
+
+    public async Task<AnalysisNamesCountDto> GetPackageAndNumberOfOrganizationsThatSubscribed()
     {
-       
+
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var query = await _orgRepo.GetQueryableAsync();
-            var targetDate = DateOnly.FromDateTime(DateTime.Now).AddYears(yearsNumber);
+            var query =await _orgRepo.GetQueryableAsync();
+            query = query.Include(x => x.Subscription);
+           var result= query.GroupBy(org => org.SubscriptionId)
+                .Select(x => x.Sum(o=>o.Id) ).ToList();
+            var result2= query.GroupBy(org => org.SubscriptionId)
+                .Select(org => new AnalysisNamesCountDto {Subscription=org.});
 
-             query =  query
-                .Where(o => o.LicenseExpiryDate <= targetDate);
-            var result = query.Select(x => new Organization { EnglishName = x.EnglishName }).ToList();
-            OrganizationCustomersDto organizationCustomersDto = new OrganizationCustomersDto();
-            organizationCustomersDto.Names = ObjectMapper.Map<List<Organization>, List<string>>(result);
-            organizationCustomersDto.CustomersCount = ObjectMapper.Map<List<Organization>, List<double>>(result);
-            return organizationCustomersDto;
+            return null;
         }
     }
 }

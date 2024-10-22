@@ -13,15 +13,15 @@ public interface IAnalysisAppService : IApplicationService
     /// Method that gets total number of customer for each organization.
     /// </summary>
     /// <returns>List of organizations and number of customers in each</returns>
-    Task<OrganizationCustomersDto> GetNumberOfCustomerForOrganizations();
+    Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations();
+
     /// <summary>
-    /// Retrieves the number of organizations  whose license expiry date falls within a specified number of years.
+    /// Method that gets Packages and number of organizations subscribed it.
     /// </summary>
-    /// <param name="yearsNumber">The number of years from the current date to check for license expiry.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains the 
-    /// <see cref="OrganizationCustomersDto"/> which includes the count of organizations with licenses expiring within the specified period.
-    /// </returns>
-    Task<OrganizationCustomersDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber);
+    /// <returns>List of Packages and Number of Organizations</returns>
+    Task<AnalysisNamesCountDto> GetPackageAndNumberOfOrganizationsThatSubscribed();
+
+
+    
 
 }
