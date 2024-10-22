@@ -9,7 +9,7 @@ namespace SmartParking.Analysis;
 
 public class AnalysisNamesCountDto : EntityDto
 {
-    public  List<string> Names { get; set; }
-    public List<double> Count { get; set; }
+    public  List<string> Names { get; set; } = new List<string>();
+    public List<double> Count { get; set; } = new List<double>();
 
 }

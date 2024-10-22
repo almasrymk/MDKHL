@@ -34,6 +34,10 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
     public async Task<UserDto> CreateAsync(UserCreateDto input)
     {
+        if(input.RoleNames.Count() == 0 || input.UserType == 0)
+        {
+            throw new Exception(message: "Must be enter Role and user type");
+        }
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
          await CheckPhoneIsUnique(input.PhoneNumber);
         user.Name = input.UserName;

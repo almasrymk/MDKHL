@@ -159,7 +159,7 @@
         {
 
             var value = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
-            data = value.CustomersCount.ToArray();
+            data = value.Count.ToArray();
             labels = value.Names.ToArray();
             foreach(var x in data)
                 Console.WriteLine(x);

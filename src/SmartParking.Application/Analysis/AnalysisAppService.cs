@@ -62,10 +62,29 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             query = query.Include(x => x.Subscription);
            var result= query.GroupBy(org => org.SubscriptionId)
                 .Select(x => x.Sum(o=>o.Id) ).ToList();
-            var result2= query.GroupBy(org => org.SubscriptionId)
-                .Select(org => new AnalysisNamesCountDto {Subscription=org.});
+            //var result2= query.GroupBy(org => org.SubscriptionId)
+            //    .Select(org => new AnalysisNamesCountDto {Subscription=org.});
 
             return null;
+        }
+    }
+
+    ///<inheritdoc/>
+    public async Task<AnalysisNamesCountDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber)
+    {
+
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _orgRepo.GetQueryableAsync();
+            var targetDate = DateOnly.FromDateTime(DateTime.Now).AddYears(yearsNumber);
+
+            query = query
+               .Where(o => o.LicenseExpiryDate <= targetDate);
+            var result = query.Select(x => new Organization { EnglishName = x.EnglishName , LicenseExpiryDate = x.LicenseExpiryDate }).ToList();
+            AnalysisNamesCountDto organizationCustomersDto = new AnalysisNamesCountDto();
+            organizationCustomersDto.Names = ObjectMapper.Map<List<Organization>, List<string>>(result);
+            organizationCustomersDto.Count.Add(result.Count);
+            return organizationCustomersDto;
         }
     }
 }

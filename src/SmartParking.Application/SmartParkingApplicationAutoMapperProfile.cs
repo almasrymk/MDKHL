@@ -28,9 +28,19 @@ using SmartParking.Entities.Subscriptions;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using SmartParking.Analysis;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartParking;
 
+
+public class ListToDoubleConverter<T> : ITypeConverter<IEnumerable<T>, double>
+{
+    public double Convert(IEnumerable<T> source, double destination, ResolutionContext context)
+    {
+        return source != null ? source.Count() : 0;
+    }
+}
 public class SmartParkingApplicationAutoMapperProfile : Profile
 {
     public SmartParkingApplicationAutoMapperProfile()
@@ -124,8 +134,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Organization, string>()
         .ConvertUsing(org => org.EnglishName);
 
-        CreateMap<Organization, double>()
-    .ConvertUsing(org => org.Customers.Count);
+       // CreateMap<Organization, double>()
+       //.ConvertUsing(org => org.Count);
+
+        CreateMap(typeof(IEnumerable<>), typeof(double))
+        .ConvertUsing(typeof(ListToDoubleConverter<>));
 
     }
 }
