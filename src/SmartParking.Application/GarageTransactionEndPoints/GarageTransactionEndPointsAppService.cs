@@ -12,6 +12,7 @@ using SmartParking.Invoices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace SmartParking.GarageTransactionEndPoints
         {
            
             _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize( new {input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName})}");
-            var camera= GetCamera(input.DeviceID);
+            var camera= await GetCamera(input.DeviceID);
             //input.PlateNumber ??= "123456";//input.PlateNnumber;
 
             _logger.LogError($"{DateTime.Now} ====>  Camera ID {camera.Id}");
@@ -151,9 +152,9 @@ namespace SmartParking.GarageTransactionEndPoints
 
            
         }
-        private Camera GetCamera(string CameraCode)
+        private async Task<Camera> GetCamera(string CameraCode)
         {
-            var camera = _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode)).Result;
+            var camera =await _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode));
            
             return camera;
         }
@@ -238,9 +239,17 @@ namespace SmartParking.GarageTransactionEndPoints
                 }
 				price += calcPriceHours(organization, totalHours);
 				return price;
-
-
 			}
+            else if(organization?.IsNumberOfHoursExceeded == false && organization.IsClose == true)
+            {
+                (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime,organization);
+                var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
+                double price = 0;
+                double totalDays=Math.Ceiling (specialHours/closingHour);
+                price+= totalDays*(double)organization.FullDayPrice;
+                price +=(double) calcPriceHours(organization,(int) normalHours);
+                return (decimal) price;
+            }
             return 0.0m;
         }
         private decimal calcPriceHours(Organization organization,int hours)
@@ -268,10 +277,52 @@ namespace SmartParking.GarageTransactionEndPoints
 				price += organization.ThirdHourPrice;
                 hours -= 3;
                 price += hours * organization.AdditionalHourPrice;
-			}
+            }
             return price;
         }
 
-	}
-    
+        public static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
+        {
+            // Calculate total time in the garage
+            TimeSpan totalDuration = garageTransaction.AccurateTime.Value - entrenceTime;
+            double totalHours = Math.Ceiling(totalDuration.TotalHours); // Round up total hours
+
+            // Calculate special hours
+            double specialHours = 0;
+
+            // Loop through each day from entry date to exit date
+            DateTime currentDate = entrenceTime.Date;
+
+            while (currentDate <= garageTransaction.AccurateTime.Value.Date)
+            {
+                // Use the organization's closing hours instead of hardcoded values
+                DateTime specialStartTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, organization.ClosingHoursStart.Hour, organization.ClosingHoursStart.Minute, 0);
+                DateTime specialEndTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, organization.ClosingHoursEnd.Hour, organization.ClosingHoursEnd.Minute, 0);
+
+                // Check if the car is in the garage during special hours
+                if (entrenceTime < specialEndTime && garageTransaction.AccurateTime > specialStartTime)
+                {
+                    DateTime effectiveStart = entrenceTime < specialStartTime ? specialStartTime : entrenceTime;
+                    DateTime effectiveEnd = garageTransaction.AccurateTime.Value > specialEndTime ? specialEndTime : garageTransaction.AccurateTime.Value;
+
+                    TimeSpan specialDuration = effectiveEnd - effectiveStart;
+                    if (specialDuration.TotalHours > 0)
+                    {
+                        specialHours += Math.Ceiling(specialDuration.TotalHours); // Round up
+                    }
+                }
+
+                // Move to the next day
+                currentDate = currentDate.AddDays(1);
+            }
+
+            // Normal hours are total hours minus special hours
+            double normalHours = totalHours - specialHours;
+
+            return (specialHours, normalHours);
+        }
+
+
+    }
+
 }
