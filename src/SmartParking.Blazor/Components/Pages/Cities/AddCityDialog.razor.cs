@@ -72,12 +72,12 @@ public partial class AddCityDialog
             }
             catch (BusinessException ex)
             {
-                Snackbar.Add($"Failed to add city: {ex.Code} + ", Severity.Error);
+                Snackbar.Add($"Failed to add city: {ex.Code}", Severity.Error);
 
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Failed to add city: {ex.Message} + ", Severity.Error);
+                Snackbar.Add($"Failed to add city: {ex.Message} ", Severity.Error);
             }
 
 
