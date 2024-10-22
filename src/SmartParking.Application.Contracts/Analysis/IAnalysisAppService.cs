@@ -13,6 +13,15 @@ public interface IAnalysisAppService : IApplicationService
     /// Method that gets total number of customer for each organization.
     /// </summary>
     /// <returns>List of organizations and number of customers in each</returns>
-    Task<OrganizationCustomersDto> GetNumberOfCustomerForOrganizations();
+    Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations();
+
+    /// <summary>
+    /// Method that gets Packages and number of organizations subscribed it.
+    /// </summary>
+    /// <returns>List of Packages and Number of Organizations</returns>
+    Task<AnalysisNamesCountDto> GetPackageAndNumberOfOrganizationsThatSubscribed();
+
+
+    
 
 }
