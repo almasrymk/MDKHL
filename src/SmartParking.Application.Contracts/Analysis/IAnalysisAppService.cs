@@ -14,5 +14,14 @@ public interface IAnalysisAppService : IApplicationService
     /// </summary>
     /// <returns>List of organizations and number of customers in each</returns>
     Task<OrganizationCustomersDto> GetNumberOfCustomerForOrganizations();
+    /// <summary>
+    /// Retrieves the number of organizations  whose license expiry date falls within a specified number of years.
+    /// </summary>
+    /// <param name="yearsNumber">The number of years from the current date to check for license expiry.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the 
+    /// <see cref="OrganizationCustomersDto"/> which includes the count of organizations with licenses expiring within the specified period.
+    /// </returns>
+    Task<OrganizationCustomersDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber);
 
 }
