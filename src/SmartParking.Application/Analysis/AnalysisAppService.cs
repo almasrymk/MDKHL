@@ -59,12 +59,16 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var query =await _orgRepo.GetQueryableAsync();
             query = query.Include(x => x.Subscription);
-           var result= query.GroupBy(org => org.SubscriptionId)
-                .Select(x => x.Sum(o=>o.Id) ).ToList();
-            var result2= query.GroupBy(org => org.SubscriptionId)
-                .Select(org => new AnalysisNamesCountDto {Subscription=org.});
+            query = query.OrderByDescending(org => org.SubscriptionId);
+            var result = query.GroupBy(org => org.SubscriptionId)
+                .Select(x =>(double) x.Sum(o=>o.Id) ).ToList();
+            var result2=  query
+                .Select(org=>org.Subscription.EnglishName).ToList();
 
-            return null;
+            AnalysisNamesCountDto namesCountDto = new AnalysisNamesCountDto();
+            namesCountDto.Names = result2;
+            namesCountDto.Count = result;
+            return namesCountDto;
         }
     }
 }

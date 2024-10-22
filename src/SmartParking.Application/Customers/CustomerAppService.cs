@@ -72,6 +72,11 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             }
             var org = await _organizationAppService.GetOrganizationForCurrentTenat();
+            if (org == null)
+            {
+                throw new Exception("Customer must belong to organization");
+
+            }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             customer.Organizations = new List<Organization>();
             customer.Organizations.Add(org);
