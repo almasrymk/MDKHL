@@ -104,17 +104,20 @@
     </MudItem>
     <MudItem sm="4">
       <MudPaper Class="custom-rounded p-3">
-          <MudTooltip Text=("Number of Customer : @data[_index]") Color="Color.Tertiary"  Arrow="true">
+            <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
                 <MudChart 
                     ChartType="ChartType.Pie" 
                     InputData="@data" 
-                    @bind-SelectedIndex="_index" 
                     InputLabels="@labels" 
                     Width="300px" 
                     Height="300px" 
-                    ChartOptions="@options" 
-                />
+                    ChartOptions="@options"
+                    SelectedIndexChanged="handleindexChartChange"
+                    
+                    
+                    
+                    />
           </MudTooltip>
         </MudPaper>
 
@@ -132,14 +135,16 @@
 
 
     ChartOptions options = new ChartOptions();
+    
     private int _organizationsCount;
     private int _garagesCount;
     private int _customersCount;
     private int grid;
 
-    double[] data = { 77, 25, 20 };
+    double[] data;
     private int _index = -1;
-    string[] labels = { "Paid", "Due ", "Confirmed" };
+    string[] labels ;
+    string msg;
 
 
     protected async override Task OnInitializedAsync()
@@ -147,7 +152,7 @@
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
         _customersCount = await CustomerAppService.GetAllCustomersCount();
-        
+
 
 
         if (currenttenant.Id == null)
@@ -156,6 +161,8 @@
             var value = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
             data = value.CustomersCount.ToArray();
             labels = value.Names.ToArray();
+            foreach(var x in data)
+                Console.WriteLine(x);
             grid = 4;
         }
         else
@@ -168,11 +175,21 @@
         options.ShowLegend = true;
         options.LineStrokeWidth = 10;
         
-     //   return await base.OnInitializedAsync();
+
+        //   return await base.OnInitializedAsync();
     }
 
 
+    public void handleindexChartChange (int index) {
+        if (index != -1)
+        {
+            msg = "Customers in organization " +labels[index]+ " are " + data[index].ToString();
 
+        }
+
+
+
+    }
     private int _barIndex = -1;
     public List<ChartSeries> Series = new List<ChartSeries>()
     {
