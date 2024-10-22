@@ -57,7 +57,7 @@ public partial class AddInvoice
                 InvoiceType = InvoiceType.UnPaid,
                 OrganizationId = input.OrganizationId,
                 GarageId = input.GarageId,
-                VehicleId = input.VehicleId
+                PlateNumber = input.PlateNumber
             };
 
             var invoice = await InvoiceAppService.CreateAsync(createUpdateInvoice);

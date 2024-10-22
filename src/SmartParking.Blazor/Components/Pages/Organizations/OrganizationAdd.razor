@@ -63,13 +63,16 @@
                             <MudNumericField Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="FullDay" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
+                            <MudNumericField Required="true" @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
                         </MudItem>
                         <MudItem sm="6">
                             <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudTimePicker Required="true" Label="@L["ExceededTime"]"  Placeholder="@L["Type Here"]"  @bind-Time="ExceededTime" ShowToolbar="false" />
+                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
@@ -78,7 +81,7 @@
                             <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" Style="white-space:nowrap;" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch Label="@L["FullDayExceeded"]" LabelPosition="LabelPosition.Start"  @bind-Value="IsFullDayExceeded" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">

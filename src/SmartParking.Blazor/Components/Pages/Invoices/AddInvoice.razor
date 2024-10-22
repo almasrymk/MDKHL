@@ -39,6 +39,9 @@
                             <MudTextField Required="true" T="decimal" InputType="InputType.Number" @bind-Value="input.InvoicePrice" Placeholder=@L["Type Here"] Label=@L["InvoicePrice"] />
                         </MudItem>
                         <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="input.PlateNumber" Placeholder=@L["Type Here"] Label=@L["PlateNumber"] />
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
                                        Label=@L["Organizations"]
                                        Placeholder=@L["Choose"]
@@ -70,21 +73,6 @@
                             </MudSelect>
                         </MudItem>
 
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["Vehicles"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Clearable="true"
-                                       Required="true"
-                                       @bind-Value="input.VehicleId">
-
-                                @foreach (var vehicle in vehicles)
-                                {
-                                    <MudSelectItem Value="@vehicle.Id">@vehicle.Platenumber</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
 
