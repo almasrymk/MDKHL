@@ -12,6 +12,7 @@ namespace SmartParking.Authentication;
 
 public class UserCreateDto: IdentityUserCreateDto
 {
+    [Required]
     public int UserType { get; set; }
     public int OrganizationId { get; set; }
     public Guid? TenantId { get; set; }
