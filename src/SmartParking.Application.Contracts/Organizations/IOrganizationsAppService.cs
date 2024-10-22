@@ -1,4 +1,5 @@
-﻿using SmartParking.Results;
+﻿using SmartParking.Entities.Organizations;
+using SmartParking.Results;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
@@ -86,5 +87,11 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// </summary>
     /// <returns>Count of Organizations</returns>
     Task<int> GetOrganizationsCount();
+
+    /// <summary>
+    /// Method that returns Organization for current tenant
+    /// </summary>
+    /// <returns>Organziation entity</returns>
+    Task<Organization> GetOrganizationForCurrentTenat();
 
 }

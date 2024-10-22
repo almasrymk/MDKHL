@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Identity;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
@@ -17,13 +18,14 @@ namespace SmartParking.Entities.Customers;
 
 public class Customer : FullAuditedEntity<Guid> , IMultiTenant
 {
+    public Guid IdentityUserId { get; set; }
     public virtual IdentityUser IdentityUser { get; set; }
-
     public string OTP { get; set; } = "123456";
     public IdentificationTypes IdentificationTypes { get; set; }
     public string NationalId { get; set; }
     public string ArabicName { get; set; }
     public virtual ICollection<Organization> Organizations { get; set; }
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
+    public virtual ICollection<Invoice> Invoices { get; set; }
     public Guid? TenantId { get; set; }
 }

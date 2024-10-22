@@ -25,6 +25,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using Nito.AsyncEx;
 using SmartParking.Enums;
+using SmartParking.Organizations;
 
 namespace SmartParking.Customers;
 
@@ -32,27 +33,26 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 {
     private readonly IRepository<Customer, Guid> _repository;
     private readonly IRepository<Vehicle, int> _repositoryVehicle;
-    private IIdentityUserAppService _identityUserAppService;
-    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
+    private IOrganizationsAppService _organizationAppService;
     private  IDataFilter _dataFilter;
     private readonly ICurrentUser _currentUser;
+    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
 
 
-    public CustomerAppService(IRepository<Customer, Guid> repository,IIdentityUserAppService identityUserAppService , UserManager<Volo.Abp.Identity.IdentityUser> userManager, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter , ICurrentUser currentUser) : base(repository)
+    public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser, IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager) : base(repository)
     {
         _repository = repository;
-        _identityUserAppService= identityUserAppService;
-        _userManager=userManager;
-        _repositoryVehicle=repositoryVehicle;
-        _dataFilter=dataFilter;
-        _currentUser=currentUser;
+        _repositoryVehicle = repositoryVehicle;
+        _dataFilter = dataFilter;
+        _currentUser = currentUser;
+        _organizationAppService = organizationAppService;
+        _userManager = userManager;
     }
-  
 
 
 
+    [RemoteService(isEnabled: false)]
     /// <inheritdoc/>
-
     public string GenerateOtp()
     {
         var random = new Random();
@@ -63,7 +63,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
-        var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
         try
         {
             var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
@@ -72,20 +71,28 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("Phone Number is used");
 
             }
+            var org = await _organizationAppService.GetOrganizationForCurrentTenat();
+            var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+            customer.Organizations = new List<Organization>();
+            customer.Organizations.Add(org);
+            customer.IdentityUser.Name = input.UserName;
+            customer.IdentityUser.Surname = input.FullName;
             customer.IdentityUser.SetProperty("OtpCode", null);
             customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
             customer.IdentityUser.SetProperty("UserTypeId", 3);
-            var result = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-            await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
-            if (!result.Succeeded) { 
-                    throw new Exception( FormatErrorMessage(result) );
+            customer.IdentityUser.SetProperty("OrganizationId", org.Id);
+            var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
+            if (!createdUser.Succeeded)
+            {
+                throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
             }
-            await _userManager.UpdateSecurityStampAsync(customer.IdentityUser);
-            await _repository.InsertAsync(customer);
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Mdkhl.ToString()]);
+            }
+            await _repository.InsertAsync(customer,true);
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
-
-
-
         }
         catch (Exception ex)
         {
@@ -93,12 +100,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             throw new UserFriendlyException("Registration failed: " + ex.Message);
         }
     }
+    [RemoteService(isEnabled: false)]
     /// <summary>
     /// Method used to fromat messages that has been thrown in exception
     /// </summary>
     /// <param name="result">IdentityResult type that has message</param>
     /// <returns>String of contains message</returns>
-    public  string FormatErrorMessage(IdentityResult result)
+    public string FormatErrorMessage(IdentityResult result)
     {
         string message = string.Empty;
         foreach (var error in result.Errors)
@@ -124,9 +132,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return false;
 
     }
-
+    [RemoteService(isEnabled: false)]
     /// <inheritdoc/>
-
     public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber) 
     {
         var query = await _repository.GetQueryableAsync();
@@ -180,7 +187,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	}
 
 	/// <inheritdoc/>
-
 	public async Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
 	{
 		// Get the IQueryable<customer> from the repository
@@ -258,9 +264,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
+    /// <inheritdoc/>
     public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (_currentUser.IsInRole("admin"))
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -272,7 +279,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-    [RemoteService(IsEnabled = false)]
+    [RemoteService(isEnabled: false)]
     public async Task<int> GetCountWithoutMultitenant()
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -284,12 +291,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
     }
 
+    [RemoteService(isEnabled: false)]
     public async Task<int> GetAllCustomersCount()
     {
-        if (_currentUser.IsInRole("admin"))
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
-            
-                var countt = await GetCountWithoutMultitenant();
+
+            var countt = await GetCountWithoutMultitenant();
             return countt;
             
         }
