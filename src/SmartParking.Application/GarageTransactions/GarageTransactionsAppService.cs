@@ -48,9 +48,9 @@ public class GarageTransactionsAppService:
     }
     public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-		if (_currentUser.IsInRole("admin"))
-		{
-			using (_dataFilter.Disable<IMultiTenant>())
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
 			{
 				return await base.GetListAsync(input);
 			}
@@ -67,7 +67,7 @@ public class GarageTransactionsAppService:
 
         // Add full URL to VehiclePicture field
 
-        if (_currentUser.IsInRole("admin"))
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -177,14 +177,7 @@ public class GarageTransactionsAppService:
     }
     public async override Task DeleteAsync(int id)
     {
-        if (_currentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                 await base.DeleteAsync(id);
-            }
-        }
-        else
+        
              await base.DeleteAsync(id);
     }
 

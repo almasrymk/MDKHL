@@ -111,7 +111,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         
 
-        var userName = CurrentUser.FindClaim(OpenIddictConstants.Claims.GivenName)?.Value;
+        var userName = CurrentUser.UserName;
+        if(userName.IsNullOrEmpty())
+        {
+            return Result<UserDataDto>.NotFound();
+        }
         var user = await _userManager.FindByNameAsync(userName);
         if(user is not null)
         {
@@ -179,6 +183,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             await CheckPhoneIsUnique(input.Phone);
             var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
+            user.SetProperty("OtpCode", null);
+            user.SetProperty("OtpExpirationDate", DateTime.Now);
             user.SetProperty("UserTypeId", 3);
             var createdUser = await _userManager.CreateAsync(user, input.Password);
             await _userManager.SetPhoneNumberAsync(user, input.Phone);
@@ -189,14 +195,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
             await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
 
-            var claims = new List<Claim>
-        {
-            new Claim(OpenIddictConstants.Claims.Subject, user.Id.ToString()),
-            new Claim(OpenIddictConstants.Claims.Username, user.UserName),
-            // Add additional claims as needed
-        };
-            var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
-            var principal = new ClaimsPrincipal(identity);
+        //    var claims = new List<Claim>
+        //{
+        //    new Claim(OpenIddictConstants.Claims.Subject, user.Id.ToString()),
+        //    new Claim(OpenIddictConstants.Claims.Username, user.UserName),
+        //    // Add additional claims as needed
+        //};
+        //    var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
+        //    var principal = new ClaimsPrincipal(identity);
             var AccessToken = await GenerateTokenAsync(user) ?? string.Empty;
             return Result<RegisterResultDto>.Success(new RegisterResultDto
             {
