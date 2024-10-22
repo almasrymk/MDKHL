@@ -103,7 +103,22 @@
         </MudPaper>
     </MudItem>
     <MudItem sm="4">
-      <MudPaper Class="custom-rounded p-3">
+        @if (currenttenant.Id == null)
+        {
+            
+        <MudPaper Class="custom-rounded p-3">
+            <MudSelect T="string"
+                       ValueChanged="ChangeSelect"
+                       Placeholder="@L[ "Choose"]"
+                       AdornmentColor="MudBlazor.Color.Primary"
+                       Class="mb-3" 
+                       Immediate="true"
+                       Value="_pieChartValue"
+            
+            >
+                <MudSelectItem Value="@("OrganizationsCustomers")">Organizations Customers</MudSelectItem>
+                <MudSelectItem Value="@("PackagesOrganizations")">Packages Organizations</MudSelectItem>
+            </MudSelect>
             <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
                 <MudChart 
@@ -119,9 +134,25 @@
                     
                     />
           </MudTooltip>
-        </MudPaper>
+            </MudPaper>
 
+        }
+        else
+        {
+            <MudPaper Class="custom-rounded p-3">
+                <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
+                    <MudChart ChartType="ChartType.Pie"
+                              InputData="@data"
+                              InputLabels="@labels"
+                              Width="300px"
+                              Height="300px"
+                              ChartOptions="@options"
+                              />
+                </MudTooltip>
+            </MudPaper>
+
+        }
     </MudItem>
     <MudItem sm="8">
         <MudPaper Class="custom-rounded p-3">
@@ -135,15 +166,20 @@
 
 
     ChartOptions options = new ChartOptions();
-    
+    AnalysisNamesCountDto value = new AnalysisNamesCountDto();
+    public EventCallback<string> SelectValueChanged { get; set; }
+
+
+
     private int _organizationsCount;
     private int _garagesCount;
     private int _customersCount;
     private int grid;
+    private string _pieChartValue = "OrganizationsCustomers";
 
-    double[] data;
+    double[] data= { 20,77,35};
     private int _index = -1;
-    string[] labels ;
+    string[] labels = { "Carlos","Robert","Chevorlet"} ;
     string msg;
 
 
@@ -157,12 +193,12 @@
 
         if (currenttenant.Id == null)
         {
-
-            var value = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
+            var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
+            value.Count = result.Count;
+            value.Names = result.Names;
             data = value.Count.ToArray();
             labels = value.Names.ToArray();
-            foreach(var x in data)
-                Console.WriteLine(x);
+
             grid = 4;
         }
         else
@@ -174,20 +210,53 @@
         options.ChartPalette = colors;
         options.ShowLegend = true;
         options.LineStrokeWidth = 10;
-        
+
 
         //   return await base.OnInitializedAsync();
     }
 
 
+
+    private async Task ChangeSelect(string PieChartValue)
+    {
+        _pieChartValue = PieChartValue;
+
+        if (PieChartValue == "OrganizationsCustomers")
+        {
+            var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
+            value.Count = result.Count;
+            value.Names = result.Names;
+
+        }
+        else if (PieChartValue == "PackagesOrganizations")
+        {
+
+            var result = await AnalysisAppService.GetPackageAndNumberOfOrganizationsThatSubscribed();
+            value.Count = result.Count;
+            value.Names = result.Names;
+
+        }
+        data = value.Count.ToArray();
+        labels = value.Names.ToArray();
+
+    }
+
     public void handleindexChartChange (int index) {
         if (index != -1)
         {
-            msg = "Customers in organization " +labels[index]+ " are " + data[index].ToString();
+            if (_pieChartValue == "OrganizationsCustomers")
+            {
+
+                msg = "Customers in organization " + labels[index]+ " are " + data[index].ToString();
+            }
+            else if (_pieChartValue == "PackagesOrganizations")
+            {
+                
+                msg = "Organizations in Package " + labels[index] + " are " + data[index].ToString();
+
+            }
 
         }
-
-
 
     }
     private int _barIndex = -1;

@@ -95,5 +95,13 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <returns>Count of Customers</returns>
     Task<int> GetAllCustomersCount();
 
+    /// <summary>
+    /// Methods that checks if national id is not duplicate.
+    /// </summary>
+    /// <param name="NationalId">NationalId of customer</param>
+    /// <returns>Boolean that indicates the existance of National Id</returns>
+    Task<bool> CheckIfNationalIDIsUnique(string NationalId);
+
+
 
 }
