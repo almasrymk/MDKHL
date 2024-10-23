@@ -12,6 +12,7 @@ using SmartParking.Invoices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -149,18 +150,18 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
 			//_logger.LogError($"{DateTime.Now} ====> transaction created {garageTransactionDto.Id}");
 
-       
-    }
-    private Camera GetCamera(string CameraCode)
-    {
-        var camera = _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode)).Result;
-       
-        return camera;
-    }
-    private int GetOrganizationId(int GarageId)
-    {
-        return  _garageRepository.FirstAsync(x=>x.Id== GarageId).Result.OrganizationId;
-    }
+           
+        }
+        private async Task<Camera> GetCamera(string CameraCode)
+        {
+            var camera =await _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode));
+           
+            return camera;
+        }
+        private int GetOrganizationId(int GarageId)
+        {
+            return  _garageRepository.FirstAsync(x=>x.Id== GarageId).Result.OrganizationId;
+        }
 
     private async Task<string> CheckCustomer(string plateNumber)
     {
@@ -224,53 +225,123 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             price += calcPriceHours(organization, totalHours);
             return price;
 
-        }
-        else if(organization?.IsNumberOfHoursExceeded==true &&organization.IsClose==false)
-        {
-            //case 2
-            decimal price = 0;
-            price += (totalHours / 24) * organization.FullDayPrice;
-            totalHours -= (totalHours / 24) * 24;
-            if(totalHours>=organization.NumberOfHours)
-            {
-                price += organization.FullDayPrice;
-                totalHours = 0;
             }
+            else if(organization?.IsNumberOfHoursExceeded==true &&organization.IsClose==false)
+            {
+                //case 2
+                decimal price = 0;
+                price += (totalHours / 24) * organization.FullDayPrice;
+                totalHours -= (totalHours / 24) * 24;
+                if(totalHours>organization.NumberOfHours)
+                {
+                    price += organization.FullDayPrice;
+                    totalHours = 0;
+                }
 				price += calcPriceHours(organization, totalHours);
 				return price;
-
-
 			}
-        return 0.0m;
-    }
-    private decimal calcPriceHours(Organization organization,int hours)
-    {
-        decimal price = 0;
-        if(hours==1)
-        {
-            price += organization.FirstHourPrice; 
+            else if(organization?.IsNumberOfHoursExceeded == false && organization.IsClose == true)
+            {
+                (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime,organization);
+                var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
+                double price = 0;
+                double totalDays=Math.Ceiling (specialHours/closingHour);
+                price+= totalDays*(double)organization.FullDayPrice;
+                price += ((int)(normalHours / 24)) *(double) organization.FullDayPrice;
+                normalHours -= ((int)(normalHours / 24)) * 24;
+                price +=(double) calcPriceHours(organization,(int) normalHours);
+                return (decimal) price;
+            }
+            else if( organization?.IsNumberOfHoursExceeded == true &&organization.IsClose == true)
+            {
+                (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime, organization);
+                var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
+                double price = 0;
+                double totalDays = Math.Ceiling(specialHours / closingHour);
+                price += totalDays * (double)organization.FullDayPrice;
+                price += ((int)(normalHours / 24)) * (double)organization.FullDayPrice;
+                normalHours -= ((int)(normalHours / 24)) * 24;
+                if(normalHours>organization.NumberOfHours)
+                {
+                    price+= (double)organization.FullDayPrice;
+                    normalHours = 0;
+                }
+                price += (double)calcPriceHours(organization, (int)normalHours);
+                return (decimal)price;
+            }
+            return 0.0m;
         }
-        else if(hours==2)
+        private decimal calcPriceHours(Organization organization,int hours)
         {
-            price += organization.FirstHourPrice;
-            price += organization.SecondHourPrice;
-        }
-        else if(hours==3)
-        {
-            price += organization.FirstHourPrice;
-            price += organization.SecondHourPrice;
-            price += organization.ThirdHourPrice;
-        }
-        else if(hours>3)
-        {
+            decimal price = 0;
+            if(hours==1)
+            {
+                price += organization.FirstHourPrice; 
+            }
+            else if(hours==2)
+            {
+                price += organization.FirstHourPrice;
+                price += organization.SecondHourPrice;
+            }
+            else if(hours==3)
+            {
+                price += organization.FirstHourPrice;
+                price += organization.SecondHourPrice;
+                price += organization.ThirdHourPrice;
+            }
+            else if(hours>3)
+            {
 				price += organization.FirstHourPrice;
 				price += organization.SecondHourPrice;
 				price += organization.ThirdHourPrice;
-            hours -= 3;
-            price += hours * organization.AdditionalHourPrice;
-			}
-        return price;
+                hours -= 3;
+                price += hours * organization.AdditionalHourPrice;
+            }
+            return price;
+        }
+
+        public static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
+        {
+            // Calculate total time in the garage
+            TimeSpan totalDuration = garageTransaction.AccurateTime.Value - entrenceTime;
+            double totalHours = Math.Ceiling(totalDuration.TotalHours); // Round up total hours
+
+            // Calculate special hours
+            double specialHours = 0;
+
+            // Loop through each day from entry date to exit date
+            DateTime currentDate = entrenceTime.Date;
+
+            while (currentDate <= garageTransaction.AccurateTime.Value.Date)
+            {
+                // Use the organization's closing hours instead of hardcoded values
+                DateTime specialStartTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, organization.ClosingHoursStart.Hour, organization.ClosingHoursStart.Minute, 0);
+                DateTime specialEndTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, organization.ClosingHoursEnd.Hour, organization.ClosingHoursEnd.Minute, 0);
+
+                // Check if the car is in the garage during special hours
+                if (entrenceTime < specialEndTime && garageTransaction.AccurateTime > specialStartTime)
+                {
+                    DateTime effectiveStart = entrenceTime < specialStartTime ? specialStartTime : entrenceTime;
+                    DateTime effectiveEnd = garageTransaction.AccurateTime.Value > specialEndTime ? specialEndTime : garageTransaction.AccurateTime.Value;
+
+                    TimeSpan specialDuration = effectiveEnd - effectiveStart;
+                    if (specialDuration.TotalHours > 0)
+                    {
+                        specialHours += Math.Ceiling(specialDuration.TotalHours); // Round up
+                    }
+                }
+
+                // Move to the next day
+                currentDate = currentDate.AddDays(1);
+            }
+
+            // Normal hours are total hours minus special hours
+            double normalHours = totalHours - specialHours;
+
+            return (specialHours, normalHours);
+        }
+
+
     }
 
-	}
-
+}
