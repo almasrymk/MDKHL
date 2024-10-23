@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
 using SmartParking.Enums;
@@ -17,6 +18,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.LookupsAppServices;
+[Authorize]
 
 public class StateAppService : CrudAppService<State, StateDto,
 									int, PagedAndSortedResultRequestDto,

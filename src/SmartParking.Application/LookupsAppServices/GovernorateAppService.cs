@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Lookups;
 using SmartParking.Lookups.Governorate;
@@ -13,6 +14,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.LookupsAppServices;
+[Authorize]
 
 public class GovernorateAppService : CrudAppService<Governorate,
                                                    GovernorateDto,

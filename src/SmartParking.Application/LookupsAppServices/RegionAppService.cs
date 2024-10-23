@@ -16,8 +16,10 @@ using SmartParking.Enums;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartParking.LookupsAppServices;
+[Authorize]
 
 public class RegionAppService : CrudAppService<Region, RegionDto,
 									int, PagedAndSortedResultRequestDto,

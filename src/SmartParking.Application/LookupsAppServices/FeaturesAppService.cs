@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities;
 using SmartParking.Lookups;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -7,6 +8,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.LookupsAppServices;
+[Authorize]
 
 public class FeaturesAppService : CrudAppService<Feature, 
                                                 FeatureDto,

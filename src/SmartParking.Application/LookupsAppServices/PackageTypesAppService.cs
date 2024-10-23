@@ -9,8 +9,10 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartParking.LookupsAppServices;
+[Authorize]
 
 public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto,
                                 int, PagedAndSortedResultRequestDto,
