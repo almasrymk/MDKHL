@@ -28,6 +28,63 @@ namespace SmartParking.LookupsAppServices
           
         }
 
+        ///<inheritdoc/>
+        public override async Task<CountryDto> CreateAsync(CreateUpdateCountryDto input)
+        {
+            var country = await _countryRepository.FirstOrDefaultAsync
+                (country =>
+                country.EnglishName == input.EnglishName ||
+                country.ArabicName == input.ArabicName);
+
+            if (country != null)
+            {
+                if (country.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("country english name already exists");
+
+                }
+                else if (country.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("country arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("country english name , country arabic name already exist");
+            }
+            else
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+        ///<inheritdoc/>
+        public override async Task<CountryDto> UpdateAsync(int id, CreateUpdateCountryDto input)
+        {
+            var country = await _countryRepository.FirstOrDefaultAsync
+                (country =>
+                country.EnglishName == input.EnglishName ||
+                country.ArabicName == input.ArabicName);
+
+            if (country != null)
+            {
+                if (country.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("country english name already exists");
+
+                }
+                else if (country.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("country arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("country english name , country arabic name already exist");
+            }
+            else
+            {
+                return await base.UpdateAsync(id, input);
+            }
+        }
+
         /// <inheritdoc/>
         public override async Task DeleteAsync(int id)
         {
@@ -37,12 +94,9 @@ namespace SmartParking.LookupsAppServices
             {
                 throw new EntityNotFoundException(typeof(Country), id);
             }
-            else
-            {
+           
                 await base.DeleteAsync(id);
 
-            }
-            await base.DeleteAsync(id);
         }
         /// <summary>
         /// method used to get list of countries

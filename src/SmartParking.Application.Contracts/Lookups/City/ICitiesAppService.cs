@@ -1,5 +1,4 @@
-﻿using SmartParking.Garages;
-using SmartParking.Lookups.City;
+﻿using SmartParking.Lookups.City;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -9,6 +8,21 @@ namespace SmartParking.Lookups
 {
     public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedResultRequestDto,CreateUpdateCityDto>
     {
+
+        /// <summary>
+        /// abstract method to create city
+        /// </summary>
+        /// <param name="input">city create dto</param>
+        /// <returns>CityDto</returns>
+        public Task<CityDto> CreateAsync(CreateUpdateCityDto input);
+
+        /// <summary>
+        /// abstract method to update specific city
+        /// </summary>
+        /// <param name="input">city create dto</param>
+        /// <param name="id">id of specific city</param>
+        /// <returns>CityDto</returns>
+        public Task<CityDto> UpdateAsync(int id,CreateUpdateCityDto input);
         /// <summary>
         /// abstract method to list all  Governorates
         /// </summary>
