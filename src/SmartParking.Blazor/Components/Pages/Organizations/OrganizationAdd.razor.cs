@@ -100,8 +100,8 @@ public partial class OrganizationAdd
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
             NumberOfHours = NumberOfHours,
             IsClose = IsClose,
-            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue)
+            ClosingHoursStart = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) : TimeOnly.MinValue,
+            ClosingHoursEnd = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) : TimeOnly.MaxValue
         };
        
         
