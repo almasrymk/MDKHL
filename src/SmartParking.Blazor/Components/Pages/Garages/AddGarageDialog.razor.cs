@@ -35,6 +35,8 @@ public partial class AddGarageDialog
         try
         {
             createUpdateGarage.Code = "";
+            createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
+
 
             var garage = await GarageAppService.CreateAsync(createUpdateGarage);
             if (garage != null)
