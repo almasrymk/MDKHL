@@ -22,6 +22,62 @@ namespace SmartParking.Vehicles.LookUps
 		{
            _repository = repository;
         }
+
+        ///<inheritdoc/>
+        public override async Task<VehicleBrandDto> CreateAsync(CreateUpdateVehicleBrandDto input)
+        {
+            var vehicleBrand = await _repository.FirstOrDefaultAsync
+                    (brand =>
+                    brand.EnglishName == input.EnglishName ||
+                    brand.ArabicName == input.ArabicName);
+
+            if (vehicleBrand != null)
+            {
+                if (vehicleBrand.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("vehicle brand english name already exists");
+
+                }
+                else if (vehicleBrand.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("vehicle brand arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("english name , arabic name already exist");
+            }
+
+            else
+                return await base.CreateAsync(input);
+
+        }
+
+        ///<inheritdoc/>
+        public override async Task<VehicleBrandDto> UpdateAsync(int id, CreateUpdateVehicleBrandDto input)
+        {
+            var vehicleBrand = await _repository.FirstOrDefaultAsync
+                   (brand =>
+                   brand.EnglishName == input.EnglishName ||
+                   brand.ArabicName == input.ArabicName);
+
+            if (vehicleBrand != null)
+            {
+                if (vehicleBrand.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("vehicle brand english name already exists");
+
+                }
+                else if (vehicleBrand.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("vehicle brand arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("english name , arabic name already exist");
+            }
+            else
+                return await base.UpdateAsync(id, input);
+        }
         public async Task<PagedResultDto<VehicleBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
             // Get the IQueryable<camera> from the repository

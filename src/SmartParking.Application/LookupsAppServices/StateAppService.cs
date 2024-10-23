@@ -41,18 +41,32 @@ public class StateAppService : CrudAppService<State, StateDto,
 
     public override async Task<StateDto> CreateAsync(CreateUpdateStateDto input)
     {
+        var state = await _regionRepository.FirstOrDefaultAsync
+                (region =>
+                region.EnglishName == input.EnglishName ||
+                region.ArabicName == input.ArabicName);
+
+        if (state != null)
+        {
+            if (state.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("state english name already exists");
+
+            }
+            else if (state.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("state arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.CreateAsync(input);
-            }
-        }
+        
         else
             return await base.CreateAsync(input);
     }
@@ -60,27 +74,39 @@ public class StateAppService : CrudAppService<State, StateDto,
     ///<inheritdoc/>
     public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
     {
+        var state = await _regionRepository.FirstOrDefaultAsync
+                (region =>
+                region.EnglishName == input.EnglishName ||
+                region.ArabicName == input.ArabicName);
+
+        if (state != null)
+        {
+            if (state.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("state english name already exists");
+
+            }
+            else if (state.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("state arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
+
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.UpdateAsync(id,input);
-            }
-        }
+       
         else
             return await base.UpdateAsync(id,input);
     }
 
-    /// <summary>
-    /// method used to get list of states
-    /// </summary>
-    /// <param name="input">specifies max number of state and if it filtered or not</param>
-    /// <returns>StateDto List</returns>
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<StateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
@@ -136,11 +162,8 @@ public class StateAppService : CrudAppService<State, StateDto,
         return statesList;
     }
 
-    /// <summary>
-    /// method used to get list of states
-    /// </summary>
-    /// <param name="input">specifies max number of state and if it filtered or not</param>
-    /// <returns>StateDto List</returns>
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<StateDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<state> from the repository
@@ -185,6 +208,8 @@ public class StateAppService : CrudAppService<State, StateDto,
             stateDto
         );
     }
+
+    ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
         var state = await base.GetAsync(id);
@@ -194,10 +219,8 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new EntityNotFoundException(typeof(State), id);
         }
         else
-        {
             await base.DeleteAsync(id);
 
-        }
-        await base.DeleteAsync(id);
+        
     }
 }

@@ -14,14 +14,70 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
-	public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
-	{
+public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
+{
     private readonly IRepository<LicenceType, int> _repository;
 
     public LicenceTypesAppService(IRepository<LicenceType, int> repository) : base(repository)
-		{
+    {
         _repository = repository;
+    }
+
+    ///<inheritdoc/>
+    public override async Task<LicenceTypeDto> CreateAsync(CreateUpdateLicenceTypeDto input)
+    {
+        var licenceType = await _repository.FirstOrDefaultAsync
+                (type =>
+                type.EnglishName == input.EnglishName ||
+                type.ArabicName == input.ArabicName);
+
+        if (licenceType != null)
+        {
+            if (licenceType.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("licence type english name already exists");
+
+            }
+            else if (licenceType.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("licence type arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
         }
+        else
+
+            return await base.CreateAsync(input);
+        
+    }
+
+    ///<inheritdoc/>
+    public override async Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input)
+    {
+        var licenceType = await _repository.FirstOrDefaultAsync
+               (type =>
+               type.EnglishName == input.EnglishName ||
+               type.ArabicName == input.ArabicName);
+
+        if (licenceType != null)
+        {
+            if (licenceType.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("licence type english name already exists");
+
+            }
+            else if (licenceType.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("licence type arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
+        else
+             return await base.UpdateAsync(id, input);
+    }
     public async Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository
@@ -85,4 +141,5 @@ namespace SmartParking.Vehicles.LookUps;
             licenceTypesDto
         );
     }
+
 }

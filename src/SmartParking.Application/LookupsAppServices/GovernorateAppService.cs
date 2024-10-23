@@ -29,6 +29,45 @@ namespace SmartParking.LookupsAppServices
             _countryRepository = countryRepository;
         }
 
+        ///<inheritdoc/>
+        public override async Task<GovernorateDto> CreateAsync(CreateUpdateGovernorateDto input)
+        {
+            var governorate = await _governorateRepository.FirstOrDefaultAsync
+                 (governorate =>
+                 governorate.EnglishName == input.EnglishName ||
+                 governorate.ArabicName == input.ArabicName   ||
+                 governorate.EnglishCapital == input.EnglishCapital ||
+                 governorate.ArabicCapital == input.ArabicCapital );
+
+            if (governorate != null)
+            {
+                if (governorate.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("governrate english name already exists");
+
+                }
+                else if (governorate.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("governrate arabic name already exists");
+
+                }
+                else if (governorate.EnglishCapital == input.EnglishCapital)
+                {
+                    throw new InvalidOperationException("governrate english capital already exists");
+
+                }
+                else if (governorate.ArabicCapital == input.ArabicCapital)
+                {
+                    throw new InvalidOperationException("governrate arabic capital already exists");
+
+                }
+                throw new InvalidOperationException("english name , arabic name , english capital & arabic capital already exist");
+            }
+            else
+            {
+                return await base.CreateAsync(input);
+            }
+        }
         /// <summary>
         /// method used to get list of governorates
         /// </summary>

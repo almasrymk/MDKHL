@@ -34,7 +34,10 @@ namespace SmartParking.LookupsAppServices
             var country = await _countryRepository.FirstOrDefaultAsync
                 (country =>
                 country.EnglishName == input.EnglishName ||
-                country.ArabicName == input.ArabicName);
+                country.ArabicName == input.ArabicName ||
+                country.EnglishCapital == input.EnglishCapital ||
+                country.ArabicCapital == input.ArabicCapital 
+                );
 
             if (country != null)
             {
@@ -48,8 +51,18 @@ namespace SmartParking.LookupsAppServices
                     throw new InvalidOperationException("country arabic name already exists");
 
                 }
+                else if(country.ArabicCapital == input.ArabicCapital)
+                {
+                    throw new InvalidOperationException("country  arabic capital  already exists");
 
-                throw new InvalidOperationException("country english name , country arabic name already exist");
+                }
+                else if(country.EnglishCapital == input.EnglishCapital)
+                {
+                    throw new InvalidOperationException("country  english capital  already exists");
+
+                }
+
+                throw new InvalidOperationException("english name , arabic name , english capital , arabic capital already exist");
             }
             else
             {
@@ -62,7 +75,10 @@ namespace SmartParking.LookupsAppServices
             var country = await _countryRepository.FirstOrDefaultAsync
                 (country =>
                 country.EnglishName == input.EnglishName ||
-                country.ArabicName == input.ArabicName);
+                country.ArabicName == input.ArabicName ||
+                country.EnglishCapital == input.EnglishCapital ||
+                country.ArabicCapital == input.ArabicCapital
+                );
 
             if (country != null)
             {
@@ -76,12 +92,22 @@ namespace SmartParking.LookupsAppServices
                     throw new InvalidOperationException("country arabic name already exists");
 
                 }
+                else if (country.ArabicCapital == input.ArabicCapital)
+                {
+                    throw new InvalidOperationException("country  arabic capital  already exists");
 
-                throw new InvalidOperationException("country english name , country arabic name already exist");
+                }
+                else if (country.EnglishCapital == input.EnglishCapital)
+                {
+                    throw new InvalidOperationException("country  english capital  already exists");
+
+                }
+
+                throw new InvalidOperationException("english name , arabic name , english capital , arabic capital already exist");
             }
             else
             {
-                return await base.UpdateAsync(id, input);
+                return await base.UpdateAsync(id,input);
             }
         }
 

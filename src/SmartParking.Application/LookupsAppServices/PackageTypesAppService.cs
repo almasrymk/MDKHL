@@ -24,6 +24,61 @@ namespace SmartParking.LookupsAppServices
             _packageTypeRepository = packageTypeRepository;
         }
 
+        /// <inheritdoc/>
+
+        public override async Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input)
+        {
+            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
+                (type =>
+                type.EnglishName == input.EnglishName ||
+                type.ArabicName == input.ArabicName);
+
+            if (packageType != null)
+            {
+                if (packageType.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("package type english name already exists");
+
+                }
+                else if (packageType.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("package type arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("english name , arabic name already exist");
+            }
+            else
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override async Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input)
+        {
+            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
+               (type =>
+               type.EnglishName == input.EnglishName ||
+               type.ArabicName == input.ArabicName);
+
+            if (packageType != null)
+            {
+                if (packageType.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("package type english name already exists");
+
+                }
+                else if (packageType.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("package type arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("english name , arabic name already exist");
+            }
+            return await base.UpdateAsync(id, input);
+        }
         /// <summary>
         /// method used to get list of package Types
         /// </summary>

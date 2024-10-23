@@ -40,7 +40,29 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 
     public override async Task<RegionDto> CreateAsync(CreateUpdateRegionDto input)
     {
+        var region = await _regionRepository.FirstOrDefaultAsync
+                (region =>
+                region.EnglishName == input.EnglishName ||
+                region.ArabicName == input.ArabicName);
+
         var exisitingCountry = await _countryRepository.FindAsync(input.CountryId);
+
+        if (region != null)
+        {
+            if (region.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("region english name already exists");
+
+            }
+            else if (region.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("region arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
+
         if(exisitingCountry is null)
         {
             throw new InvalidOperationException("country doesnot exist");
@@ -51,13 +73,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.CreateAsync(input);
-            }
-        }
+        
         else
             return await base.CreateAsync(input);
     }
@@ -65,7 +81,28 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
     ///<inheritdoc/>
     public override async Task<RegionDto> UpdateAsync(int id, CreateUpdateRegionDto input)
     {
+        var region = await _regionRepository.FirstOrDefaultAsync
+                (region =>
+                region.EnglishName == input.EnglishName ||
+                region.ArabicName == input.ArabicName);
+
         var exisitingCountry = await _countryRepository.FindAsync(input.CountryId);
+
+        if (region != null)
+        {
+            if (region.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("region english name already exists");
+
+            }
+            else if (region.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("region arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
 
         if (exisitingCountry is null)
         {
@@ -77,13 +114,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.UpdateAsync(id,input);
-            }
-        }
+       
         else
             return await base.UpdateAsync(id,input);
     }

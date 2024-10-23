@@ -1,6 +1,7 @@
 ﻿using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Lookups.LicenceType;
+using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,62 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         _repository = repository;
         _dataFilter = dataFilter;
     }
+
+    ///<inheritdoc/>
+    public override async Task<VehicleModelDto> CreateAsync(CreateUpdateVehicleModelDto input)
+    {
+        var vehicleModel = await _repository.FirstOrDefaultAsync
+                (model =>
+                model.EnglishName == input.EnglishName ||
+                model.ArabicName == input.ArabicName);
+
+        if (vehicleModel != null)
+        {
+            if (vehicleModel.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("vehicle model english name already exists");
+
+            }
+            else if (vehicleModel.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("vehicle model arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
+
+        else
+            return await base.CreateAsync(input);
+
+    }
+
+    ///<inheritdoc/>
+    public override async Task<VehicleModelDto> UpdateAsync(int id, CreateUpdateVehicleModelDto input)
+    {
+        var vehicleBrand = await _repository.FirstOrDefaultAsync
+               (brand =>
+               brand.EnglishName == input.EnglishName ||
+               brand.ArabicName == input.ArabicName);
+
+        if (vehicleBrand != null)
+        {
+            if (vehicleBrand.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("vehicle model english name already exists");
+
+            }
+            else if (vehicleBrand.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("vehicle model arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
+        else
+            return await base.UpdateAsync(id, input);
+    }
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
@@ -47,6 +104,8 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         else
             await base.DeleteAsync(id);
     }
+
+    /// <inheritdoc/>
     public async Task<PagedResultDto<VehicleModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository
@@ -77,11 +136,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         );
     }
 
-    /// <summary>
-    /// method used to get list of cameraes
-    /// </summary>
-    /// <param name="input">specifies max number of camera and if it filtered or not</param>
-    /// <returns>cameraeDto List</returns>
+    /// <inheritdoc/>
     public async Task<PagedResultDto<VehicleModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository

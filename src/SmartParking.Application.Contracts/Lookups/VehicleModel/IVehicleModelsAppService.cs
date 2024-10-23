@@ -13,7 +13,7 @@ namespace SmartParking.Lookups.VehicleModel
         /// </summary>
         /// <param name="input">vehicle model create dto</param>
         /// <returns>VehicleModelDto</returns>
-        //Task<VehicleModelDto> CreateAsync(CreateUpdateVehicleModelDto input);
+        Task<VehicleModelDto> CreateAsync(CreateUpdateVehicleModelDto input);
 
         /// <summary>
         /// abstract method to update specific vehicle model
@@ -22,7 +22,7 @@ namespace SmartParking.Lookups.VehicleModel
         /// <param name="id">id of specific vehicle model</param>
         /// <returns>VehicleModelDto</returns>
 
-        //Task<VehicleModelDto> UpdateAsync(int id, CreateUpdateVehicleModelDto input);
+        Task<VehicleModelDto> UpdateAsync(int id, CreateUpdateVehicleModelDto input);
 
         /// <summary>
         /// abstract method to delete specific vehicle model

@@ -49,7 +49,7 @@ namespace SmartParking.LookupsAppServices
 
                 }
 
-                throw new InvalidOperationException("city english name , city arabic name already exist");
+                throw new InvalidOperationException("english name , arabic name already exist");
             }
             else
             {

@@ -6,6 +6,23 @@ namespace SmartParking.Lookups
 {
     public interface IPackageTypesAppService : ICrudAppService<PackageTypeDto , int , PagedAndSortedResultRequestDto , CreateUpdatePackageTypeDto>
     {
+
+
+        /// <summary>
+        /// abstract method to create package type 
+        /// </summary>
+        /// <param name="input">package type  create dto</param>
+        /// <returns>package type Dto</returns>
+        public Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input);
+
+        /// <summary>
+        /// abstract method to update specific package type 
+        /// </summary>
+        /// <param name="input">package type  create dto</param>
+        /// <param name="id">id of specific package type </param>
+        /// <returns>package type Dto</returns>
+        public Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input);
+
         /// <summary>
         /// abstract method to search of package Types
         /// </summary>
