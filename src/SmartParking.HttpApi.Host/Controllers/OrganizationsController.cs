@@ -19,8 +19,8 @@ public class OrganizationsController : ControllerBase
     }
     [HttpGet]
     [Authorize(Roles = "Mdkhl")]
-    public Task<List<OrganizationDto>> GetAll()
+    public async Task<List<OrganizationDto>> GetAll()
     {
-        return _organizations.GetAllMobileAsync();
+        return await _organizations.GetAllMobileAsync();
     }
 }

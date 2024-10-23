@@ -19,8 +19,8 @@ public class PackagesController : ControllerBase
     }
     [HttpGet("{oragnizationId}")]
     [Authorize]
-    public Task<List<PackageDto>> GetAllPakageByOrganization(int oragnizationId)
+    public async Task<List<PackageDto>> GetAllPakageByOrganization(int oragnizationId)
     {
-        return _packages.GetListPackageByOrganizationId(oragnizationId);
+        return await _packages.GetListPackageByOrganizationId(oragnizationId);
     }
 }
