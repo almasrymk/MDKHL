@@ -20,7 +20,8 @@ public class Customer : FullAuditedEntity<Guid> , IMultiTenant
     public Guid IdentityUserId { get; set; }
     public virtual IdentityUser IdentityUser { get; set; }
 
-    public string OTP { get; set; } = "123456";
+    public string OTP { get; set; }
+    public DateTime OtpExpirationDate { get; set; }
     public IdentificationTypes IdentificationTypes { get; set; }
     public string NationalId { get; set; }
     public string ArabicName { get; set; }

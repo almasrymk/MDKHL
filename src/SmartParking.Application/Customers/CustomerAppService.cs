@@ -28,6 +28,8 @@ using SmartParking.Enums;
 using SmartParking.Organizations;
 using Microsoft.AspNetCore.Authorization;
 using Abp.Domain.Entities;
+using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
+using System.Text.RegularExpressions;
 
 namespace SmartParking.Customers;
 [Authorize]
@@ -52,13 +54,26 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-    
-    [RemoteService(isEnabled: false)]
+    [Authorize(Roles = "Customer")]
     /// <inheritdoc/>
-    public string GenerateOtp()
+    public async Task<string> GenerateOtp(Guid CustomerId)
     {
+        
+            var query = await _repository.GetQueryableAsync();
+            query= query.Where(x=>x.Id== CustomerId);
+            var customer= query.FirstOrDefault();
+        
+        if (customer == default(Customer)) { 
+            throw new EntityNotFoundException(typeof(Customer), CustomerId);
+
+        }
         var random = new Random();
-        return random.Next(1000, 9999).ToString();
+        string otp= random.Next(1000, 9999).ToString();
+        customer.OTP = otp;
+        customer.OtpExpirationDate= DateTime.UtcNow.AddMinutes(1);
+        await _repository.UpdateAsync(customer);
+        return otp;
+
     }
 
 
@@ -129,18 +144,29 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return message;
     }
 
+    [Authorize(Roles ="Customer")]
     /// <inheritdoc/>
     public async Task<bool> VerifyOtpAsync(OtpVerificationDto input)
     {
-        var cutsomer = await _repository.FindAsync(input.CustomerId);
-        if (cutsomer == null) {
+        
+        var customer = await _repository.FindAsync(input.CustomerId);
+        
+        if (customer == null) {
 
-            throw new UserFriendlyException("No User matched that criteria in Database" );
+            throw new BusinessException("No User matched that criteria in Database" );
 
         }
-        if (cutsomer.OTP == input.OtpCode)
+        if (customer.OTP == input.OtpCode )
         {
-            return true;
+            if (DateTime.UtcNow <= customer.OtpExpirationDate)
+            {
+                    return true;
+            }
+            else
+            {
+                  throw new BusinessException("your Otp is expired" );
+
+            }
         }
         return false;
 
@@ -150,7 +176,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber) 
     {
         var query = await _repository.GetQueryableAsync();
-        query = query.AsNoTracking();
         var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
 
         if (result.Count == 0) {
@@ -169,7 +194,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		{
 
 			queryable = queryable.Where(or =>
-				or.IdentityUser.Name.StartsWith(input.SearchingTerm)
+				or.IdentityUser.Name.Contains(input.SearchingTerm) 
+
+			);
+            queryable = queryable.Where(or =>
+				or.ArabicName.Contains(input.SearchingTerm) 
+
+			);
+            queryable = queryable.Where(or =>
+				or.NationalId.Contains(input.SearchingTerm) 
 
 			);
 		}
@@ -344,8 +377,47 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-    public override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
+    /// <inheritdoc/>
+
+    public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
     {
-        return base.UpdateAsync(id, input);
+
+        bool emailValid = IsEmailValid(input.Email);
+        if (!emailValid)
+        {
+            throw new Exception("Email is not valid");
+
+        }
+        if (input.Password != input.RepeatPassword)
+        {
+            throw new Exception("Passwords doesn't match");
+
+        }
+        var customer =await GetAsync(id);
+
+        if (customer == null)
+        {
+            throw new Exception("No Customer Found");
+
+        }
+        if (customer.NationalId != input.NationalId || customer.identificationTypes != input.IdentificationType) {
+            throw new Exception("Critical Data as National Id , Identification. can't be updated");
+        }
+
+        return await base.UpdateAsync(id, input);
+
+    }
+
+    [RemoteService(isEnabled: false)]
+    public bool IsEmailValid(string email)
+    {
+        string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        var emailvalidation = Regex.IsMatch(email, pattern);
+        if (!emailvalidation)
+        {
+            return false;
+
+        }
+        return true;
     }
 }
