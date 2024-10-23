@@ -195,15 +195,15 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
 
             queryable = queryable.Where(or =>
-                or.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.Code.StartsWith(input.SearchingTerm) ||
-                or.Country.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.Country.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.State.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.State.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.City.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.City.ArabicName.StartsWith(input.SearchingTerm)
+                or.ArabicName.Contains(input.SearchingTerm) ||
+                or.EnglishName.Contains(input.SearchingTerm) ||
+                or.Code.Contains(input.SearchingTerm) ||
+                or.Country.ArabicName.Contains(input.SearchingTerm) ||
+                or.Country.EnglishName.Contains(input.SearchingTerm) ||
+                or.State.EnglishName.Contains(input.SearchingTerm) ||
+                or.State.ArabicName.Contains(input.SearchingTerm) ||
+                or.City.EnglishName.Contains(input.SearchingTerm) ||
+                or.City.ArabicName.Contains(input.SearchingTerm)
             );
         }
         if (!input.Sorting.IsNullOrEmpty())
