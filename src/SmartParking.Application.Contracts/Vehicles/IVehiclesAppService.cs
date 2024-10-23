@@ -22,6 +22,6 @@ namespace SmartParking.Vehicles
 		Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input);
 
 		Task<VehicleDto> GetAsync(int id);
-		Task DeleteAsync(int id);
+		Task  DeleteAsync(int id);
 	}
 }

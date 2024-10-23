@@ -30,6 +30,7 @@ using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Organizations;
 
+[Authorize]
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
@@ -92,7 +93,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         UserCreateDto user = new UserCreateDto()
         {
             UserName = input.EnglishName,
-            PhoneNumber = input.WhatsAppNum,
+            PhoneNumber = input.PhoneNum,
             Email = input.ContactMail,
             Password = "P@ssw0rd",
             RoleNames = [RolesType.Organization.ToString()],

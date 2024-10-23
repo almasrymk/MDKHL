@@ -1,9 +1,11 @@
 ﻿
 using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Bases;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
 using SmartParking.Packages;
@@ -22,6 +24,7 @@ using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.DefaultPackages;
 
+[Authorize]
 public class PackagesAppService : CrudAppService<
             Package,
             PackageDto,
@@ -38,58 +41,7 @@ public class PackagesAppService : CrudAppService<
         }
 
 
-  //      public async Task<PackageDto> CreateAsync(CreateUpdatePackageDto input)
-		//{
-		//return await base.CreateAsync(input);
-		////var validationResult = new CreateUpdatePackageDtoValidator().Validate(input);
-		////if (!validationResult.IsValid)
-		////{
-		////	var exception = GetValidationException(validationResult);
-		////	throw exception;
-		////}
-		////var package = ObjectMapper.Map<CreateUpdatePackageDto, Package>(input);
-		////var inserted = await _repository.InsertAsync(package, autoSave: true);
-		////return ObjectMapper.Map<Package, PackageDto>(inserted);
-		//}
-
-
-      
-
-    //public Task<PagedResultDto<PackageDto>> GetbyOrganizationAsync(PackageListDto input, int OrgnizationId)
-    //{
-    //	throw new NotImplementedException();
-    //}
-    //public override Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-    //{
-    //    return base.GetListAsync(input);
-    //}
-
-    //public async Task<PagedResultDto<PackageDto>> GetListAsync(PackageListDto input)
-    //{	
-    //	return await base.GetListAsync(input);
-    //	//if (input.Sorting.IsNullOrWhiteSpace())
-    //	//	input.Sorting = nameof(Package.Id);
-    //	//var packages = await _repository.WithDetailsAsync(_ => _.Organization)
-    //	//													 .Result
-    //	//													 .AsQueryable()
-    //	//													 .WhereIf(!input.Filter.IsNullOrWhiteSpace()
-    //	//															  , _ => _.Organization.ArabicName.Contains(input.Filter)
-    //	//																  || _.Organization.EnglishName.Contains(input.Filter))
-    //	//													 .Skip(input.SkipCount)
-    //	//													 .Take(input.MaxResultCount)
-    //	//													 .OrderBy(input.Sorting)
-    //	//													 .ToListAsync();
-    //	//var totalCount = input.Filter == null
-    //	//	? await _repository.CountAsync()
-    //	//	: await _repository.CountAsync(_ => _.Organization.ArabicName.Contains(input.Filter)
-    //	//												   || _.Organization.EnglishName.Contains(input.Filter));
-
-    //	//return new PagedResultDto<PackageDto>(
-    //	//	totalCount,
-    //	//	ObjectMapper.Map<List<Package>, List<PackageDto>>(packages));
-    //}
-    ///<inheritdoc>/>
-    //[RemoteService(IsEnabled = false)]
+  
     public async Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId)
     {
 		var query = await _repository.GetQueryableAsync();
@@ -101,12 +53,6 @@ public class PackagesAppService : CrudAppService<
             }
 		return Result<List<PackageDto>>.Success(pakagesMap);
     }
-
-
-  //      public async Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
-	 //   {
-		//return await base.UpdateAsync(id, input);
-	 //   }
         public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
         // Get the IQueryable<camera> from the repository
@@ -180,4 +126,16 @@ public class PackagesAppService : CrudAppService<
 		   garagesDto
 	   );
 	}
+    public override async Task DeleteAsync(int id)
+    {
+        var package = await _repository.FindAsync(id);
+
+        if (package is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+
+        await base.DeleteAsync(id);
+    }
 }

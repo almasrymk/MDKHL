@@ -15,8 +15,11 @@ using Volo.Abp.Domain.Repositories;
 using SmartParking.Enums;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartParking.LookupsAppServices;
+[Authorize]
 
 public class RegionAppService : CrudAppService<Region, RegionDto,
 									int, PagedAndSortedResultRequestDto,
@@ -184,4 +187,15 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             regionDto
         );
     }
+
+    ///<inheritdoc/>
+    public override async Task DeleteAsync(int id)
+    {
+        var city = await GetAsync(id);
+        if (city == null)
+            throw new EntityNotFoundException(typeof(Region), id);
+
+        await base.DeleteAsync(id);
+    }
+
 }

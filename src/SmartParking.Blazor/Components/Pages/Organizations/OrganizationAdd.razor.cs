@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Identity;
 using Volo.Abp.Validation;
-using IdentityUser = Volo.Abp.Identity.IdentityUser;
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationAdd
@@ -112,6 +111,7 @@ public partial class OrganizationAdd
             await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             
             ShowSnackbar("Add Successfully You Can Login Your Password Is P@ssw0rd", Severity.Success);
+            Navigation.NavigateTo("/organizations");
         }
         catch (AbpValidationException validationException)
         {

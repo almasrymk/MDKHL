@@ -40,4 +40,12 @@ public interface IRegionAppService : ICrudAppService<RegionDto, int, PagedAndSor
     /// <param name="input">specifies max number of region and if it sorted or not and filter</param>
     /// <returns>RegionDto</returns>
     public Task<PagedResultDto<RegionDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+
+    /// <summary>
+    /// Method used to delete exists Region
+    /// </summary>
+    /// <param name="id">Id of Region that needed to be deleted</param>
+    /// <returns>No Content</returns>
+    public Task DeleteAsync(int id);
 }

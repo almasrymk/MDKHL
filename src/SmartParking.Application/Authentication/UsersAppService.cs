@@ -1,5 +1,4 @@
-﻿using Abp.Domain.Repositories;
-
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Repositories;
@@ -11,14 +10,12 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
-using Volo.Abp.Users;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
 
+[Authorize]
 public class UsersAppService : ApplicationService , IUsersAppService
 {
     private readonly UserManager<IdentityUser> _userManager;

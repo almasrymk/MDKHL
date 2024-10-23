@@ -38,5 +38,5 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <param name="input">specifies max number of invoices and if it sorted or not and filter</param>
     /// <returns>InvoiceDto</returns>
     public Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
-
+    public  Task DeleteAsync(int id);
 }
