@@ -63,8 +63,8 @@ public class CountriesAppService : CrudAppService<Country,
     {
         var country = await _countryRepository.FirstOrDefaultAsync
             (country =>
-            country.EnglishName == input.EnglishName ||
-            country.ArabicName == input.ArabicName);
+            country.EnglishName.ToLower().Contains( input.EnglishName.ToLower()) ||
+            country.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
         if (country != null)
         {

@@ -108,9 +108,10 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         {
 
             queryable = queryable.Where(or =>
-                or.Name.StartsWith(input.SearchingTerm) ||
-                or.Description.StartsWith(input.SearchingTerm) ||
-                or.Organization.EnglishName.StartsWith(input.SearchingTerm) 
+                or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().StartsWith(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().StartsWith(input.SearchingTerm.ToLower()) 
             );
         }
         // Get the total count of filtered records

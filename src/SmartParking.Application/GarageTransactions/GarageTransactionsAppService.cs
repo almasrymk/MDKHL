@@ -94,7 +94,7 @@ public class GarageTransactionsAppService:
 		{
 
 			queryable = queryable.Where(or =>
-				or.PlateNumber.StartsWith(input.SearchingTerm) 
+				or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
 				//or.Type.StartsWith(input.SearchingTerm) 
 				//or..StartsWith(input.SearchingTerm)
 

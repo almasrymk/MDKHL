@@ -105,9 +105,9 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         {
 
             queryable = queryable.Where(or =>
-                or.Code.Contains(input.SearchingTerm) ||
-                or.Name.Contains(input.SearchingTerm) ||
-                or.MaxCapacity.ToString()==input.SearchingTerm ||
+                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.MaxCapacity.ToString().Contains(input.SearchingTerm) ||
                 or.Status.ToString().Contains(input.SearchingTerm) 
                
             );
