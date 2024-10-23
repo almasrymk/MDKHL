@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SmartParking.Application.Contracts\SmartParking.Application.Contracts.csproj" />
     <ProjectReference Include="..\SmartParking.Application\SmartParking.Application.csproj" />
     <ProjectReference Include="..\SmartParking.EntityFrameworkCore\SmartParking.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\SmartParking.HttpApi\SmartParking.HttpApi.csproj" />
