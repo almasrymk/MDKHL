@@ -146,14 +146,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             throw new EntityNotFoundException(typeof(Subscription), id);
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                await base.DeleteAsync(id);
-            }
-        }
-        else
+        
             await base.DeleteAsync(id);
     }
 

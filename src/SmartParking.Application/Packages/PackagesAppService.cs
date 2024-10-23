@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartParking.Bases;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Garages;
 using SmartParking.Packages;
@@ -125,5 +126,16 @@ public class PackagesAppService : CrudAppService<
 		   garagesDto
 	   );
 	}
+    public override async Task DeleteAsync(int id)
+    {
+        var package = await _repository.FindAsync(id);
 
+        if (package is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+
+        await base.DeleteAsync(id);
+    }
 }

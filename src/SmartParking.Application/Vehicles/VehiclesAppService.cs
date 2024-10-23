@@ -69,27 +69,13 @@ public class VehiclesAppService:
 	}
 	public override async Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input)
 	{
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-			{
-				return await base.UpdateAsync(id, input);
-				//return await base.UpdateAsync(id, input);
-			}
-		}
+        
 		return await base.UpdateAsync(id, input);
 	}
 
 	public override async Task<VehicleDto> GetAsync(int id)
 	{
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-			{
-				return await base.GetAsync(id);
-			}
-		}
-		else
+        
 			return await base.GetAsync(id);
 	}
 
