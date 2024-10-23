@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Lookups.VehiclesLookups;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleModel;
@@ -16,7 +17,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
-
+[Authorize]
 public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleModelDto>, IVehicleModelsAppService
 {
     private readonly IRepository<VehicleModel, int> _repository;

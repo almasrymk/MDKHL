@@ -1,4 +1,5 @@
 ﻿using Abp.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using SmartParking.Cameras;
@@ -25,6 +26,7 @@ using Volo.Abp.Users;
 
 namespace SmartParking.GarageTransactions;
 
+[Authorize]
 public class GarageTransactionsAppService:
 	 CrudAppService<GarageTransaction, GarageTransactionDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageTransactionDto>, IGarageTransactionsAppService
 {

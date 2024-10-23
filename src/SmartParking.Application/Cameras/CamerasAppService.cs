@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Cameras;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -14,54 +15,56 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
-namespace SmartParking.Cameras
+
+namespace SmartParking.Cameras;
+
+[Authorize]
+public class CamerasAppService :
+    CrudAppService<
+        Camera,
+        CameraDto,
+        int,
+        PagedAndSortedResultRequestDto,
+        CreateUpdateCameraDto
+        >,
+    ICamerasAppService
 {
-    public class CamerasAppService :
-        CrudAppService<
-            Camera,
-            CameraDto,
-            int,
-            PagedAndSortedResultRequestDto,
-            CreateUpdateCameraDto
-            >,
-        ICamerasAppService
+    private readonly IRepository<Camera, int> _repository;
+    private IDataFilter _dataFilter;
+    private readonly ICurrentUser _currentUser; // Inject ICurrentUser
+
+    public CamerasAppService(IRepository<Camera, int> repository, IDataFilter dataFilter, ICurrentUser currentUser)
+        : base(repository)
     {
-        private readonly IRepository<Camera, int> _repository;
-        private IDataFilter _dataFilter;
-        private readonly ICurrentUser _currentUser; // Inject ICurrentUser
+        _repository = repository;
+        _dataFilter = dataFilter;
+        _currentUser = currentUser;
+    }
 
-        public CamerasAppService(IRepository<Camera, int> repository, IDataFilter dataFilter, ICurrentUser currentUser)
-            : base(repository)
+    
+    public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
-            _repository = repository;
-            _dataFilter = dataFilter;
-            _currentUser = currentUser;
-        }
-
-        
-        public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-        {
-            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+            using (_dataFilter.Disable<IMultiTenant>())
             {
-                using (_dataFilter.Disable<IMultiTenant>())
-                {
-                    return await base.GetListAsync(input);
-                }
-            }
-            else
                 return await base.GetListAsync(input);
-        }
-        public override async Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input)
-        {
-            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-            {
-                using (_dataFilter.Disable<IMultiTenant>())
-                {
-                    return await base.UpdateAsync(id, input);
-                }
             }
-            return await base.UpdateAsync(id, input);
         }
+        else
+            return await base.GetListAsync(input);
+    }
+    public override async Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input)
+    {
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.UpdateAsync(id, input);
+            }
+        }
+        return await base.UpdateAsync(id, input);
+    }
 
         public override async Task<CameraDto> GetAsync(int id)
         {
@@ -122,11 +125,11 @@ namespace SmartParking.Cameras
             // Use FirstOrDefaultAsync to find the camera by IP
             var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
 
-            // If a camera is found, return 1 (or any positive number to indicate it's not unique)
-            if (camera != null)
-            {
-                return 1; // CameraIP exists
-            }
+        // If a camera is found, return 1 (or any positive number to indicate it's not unique)
+        if (camera != null)
+        {
+            return 1; // CameraIP exists
+        }
 
             // Return 0 if the CameraIP is unique (not found)
             return -1;
@@ -161,51 +164,49 @@ namespace SmartParking.Cameras
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of camera entities
-            var cameraes = await AsyncExecuter.ToListAsync(queryable);
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of camera entities
+        var cameraes = await AsyncExecuter.ToListAsync(queryable);
 
-            // Map the hotel entities to cameraDto objects
-            var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
-            // Return the paginated result
-            return new PagedResultDto<CameraDto>(
-                totalCount,
-                cameraesDto
-            );
-        }
-
-        /// <summary>
-        /// method used to get list of cameraes
-        /// </summary>
-        /// <param name="input">specifies max number of camera and if it filtered or not</param>
-        /// <returns>cameraeDto List</returns>
-        public async Task<PagedResultDto<CameraDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-        {
-            // Get the IQueryable<camera> from the repository
-            var queryable = await _repository.GetQueryableAsync();
-            // Apply filtering
-            var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                queryable = queryable.Where(filterExpression);
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of organizations entities
-            var cameraes = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the organizations entities to organizationsDto objects
-            var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
-            // Return the paginated result
-            return new PagedResultDto<CameraDto>(
-                totalCount,
-                cameraesDto
-            );
-        }
+        // Map the hotel entities to cameraDto objects
+        var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
+        // Return the paginated result
+        return new PagedResultDto<CameraDto>(
+            totalCount,
+            cameraesDto
+        );
     }
 
+    /// <summary>
+    /// method used to get list of cameraes
+    /// </summary>
+    /// <param name="input">specifies max number of camera and if it filtered or not</param>
+    /// <returns>cameraeDto List</returns>
+    public async Task<PagedResultDto<CameraDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        // Get the IQueryable<camera> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply filtering
+        var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of organizations entities
+        var cameraes = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the organizations entities to organizationsDto objects
+        var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
+        // Return the paginated result
+        return new PagedResultDto<CameraDto>(
+            totalCount,
+            cameraesDto
+        );
+    }
 }

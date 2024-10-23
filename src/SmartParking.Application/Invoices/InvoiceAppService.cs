@@ -1,4 +1,6 @@
-﻿using SmartParking.Entities.Invoices;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,12 +10,13 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Invoices;
-
+[Authorize]
 public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAndSortedResultRequestDto,CreateUpdateInvoiceDto> , IInvoiceAppService
 {
     private readonly IDataFilter _dataFilter;
@@ -150,5 +153,16 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             invoicesDto
         );
     }
+    public override async Task DeleteAsync(int id)
+    {
+        var invoice = await _repository.FindAsync(id);
 
+        if (invoice is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+
+        await base.DeleteAsync(id);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
@@ -16,6 +17,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.CustomerCategories;
 
+[Authorize]
 public class CustomerCategoryAppService : CrudAppService<CustomerCategory, CustomerCategoryDto, int, PagedAndSortedResultRequestDto, CreateUpdateCutomerCategoryDto>, ICustomerCategoryAppService
 {
     private readonly IRepository<CustomerCategory, int> _repository;
