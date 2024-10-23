@@ -12,15 +12,10 @@
 
     <MudDialog Class="mud-modal" >
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Update Garage for"] @Garage.Name</MudText>
+            <MudText Typo="Typo.h6">@L["Update Garage for"]</MudText>
         </TitleContent>
         <DialogContent>
-            <MudGrid>
-                <MudItem Class="w-100">
-
-                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-
-                    *@
+         
                     <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                         <MudGrid>
                             <MudItem sm="6" md="6">
@@ -75,25 +70,11 @@
                             *@
                         </MudGrid>
                     </MudForm>
-                </MudItem>
-            </MudGrid>
+              
         </DialogContent>
         <DialogActions>
-            <div class="overflow-hidden px-5 w-100">
-
-
-            <MudGrid >
-                <MudItem sm="6" md="6">
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary"  OnClick="@(async () => await SubmitEdit())">@L["Update"]</MudButton>
-                </MudItem>
-                <MudItem sm="6" md="6">
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@(async () => await CancelEdit())">@L["Cancel"]</MudButton>
-                </MudItem>
-            </MudGrid>
-            </div>
-
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Edit"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

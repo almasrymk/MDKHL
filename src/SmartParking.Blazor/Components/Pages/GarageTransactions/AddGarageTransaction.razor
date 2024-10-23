@@ -85,17 +85,8 @@
             </MudGrid>
         </DialogContent>
         <DialogActions>
-            <MudGrid Class="ps-lg-5">
-
-                <MudItem sm="6" md="6">
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Submit">@L["Create"]</MudButton>
-                </MudItem>
-                <MudItem sm="6" md="6">
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="Cancel">@L["Cancel"]</MudButton>
-                </MudItem>
-            </MudGrid>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
     </MudDialog>

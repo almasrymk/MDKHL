@@ -46,21 +46,8 @@
 
 		</DialogContent>
 		<DialogActions>
-			<div class="overflow-hidden px-5 w-100">
-
-
-				<MudGrid>
-					<MudItem sm="6" md="6">
-
-						<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit">@L["Assign"]</MudButton>
-					</MudItem>
-					<MudItem sm="6" md="6">
-
-						<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="CancelEdit">@L["Cancel"]</MudButton>
-					</MudItem>
-				</MudGrid>
-			</div>
-
+			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Assign"]</MudButton>
 		</DialogActions>
 
 	</MudDialog>
