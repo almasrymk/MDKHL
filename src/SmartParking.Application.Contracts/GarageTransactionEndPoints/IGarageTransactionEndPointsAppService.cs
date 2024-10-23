@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.GarageTransactionEndPoints
+namespace SmartParking.GarageTransactionEndPoints;
+
+public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
-    public interface IGarageTransactionEndPointsAppService : IApplicationService
-    {
-        Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
-    }
+    Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
 }

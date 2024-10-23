@@ -19,9 +19,9 @@ namespace SmartParking.Vehicles.LookUps;
     private readonly IRepository<LicenceType, int> _repository;
 
     public LicenceTypesAppService(IRepository<LicenceType, int> repository) : base(repository)
-		{
-        _repository = repository;
-        }
+	{
+       _repository = repository;
+    }
     public async Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository

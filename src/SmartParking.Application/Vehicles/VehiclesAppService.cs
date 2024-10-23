@@ -1,12 +1,9 @@
-﻿using Abp.Domain.Repositories;
-using SmartParking.Cameras;
-using SmartParking.Entities.Cameras;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -17,6 +14,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 namespace SmartParking.Vehicles;
 
+[Authorize]
 public class VehiclesAppService:
 	CrudAppService<
 		Vehicle,
@@ -97,13 +95,14 @@ public class VehiclesAppService:
 
 	public override async Task DeleteAsync(int id)
 	{
-		var vehicle = await GetAsync(id);
-		if (vehicle == null)
+		var vehicle = await _repository.FindAsync(id);
+		if (vehicle == null )
 			throw new EntityNotFoundException(typeof(Vehicle), id);
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
 			{
+                
 				await base.DeleteAsync(id);
 
 			}

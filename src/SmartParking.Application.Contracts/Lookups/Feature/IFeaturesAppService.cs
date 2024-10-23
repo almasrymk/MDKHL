@@ -1,9 +1,10 @@
-﻿using Volo.Abp.Application.Dtos;
+﻿using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.Lookups
+namespace SmartParking.Lookups;
+
+public interface IFeaturesAppService : ICrudAppService<FeatureDto,int, PagedAndSortedResultRequestDto, CreateUpdateFeatureDto>
 {
-    public interface IFeaturesAppService : ICrudAppService<FeatureDto,int, PagedAndSortedResultRequestDto, CreateUpdateFeatureDto>
-    {
-    }
+    public Task DeleteAsync(int id);
 }

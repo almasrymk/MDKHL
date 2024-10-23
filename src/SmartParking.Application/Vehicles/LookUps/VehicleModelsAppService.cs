@@ -30,21 +30,14 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var vehicleModel = await _repository.GetAsync(id);
+        var vehicleModel = await _repository.FindAsync(id);
 
         if (vehicleModel is null)
         {
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                await base.DeleteAsync(id);
-            }
-        }
-        else
+        
             await base.DeleteAsync(id);
     }
     public async Task<PagedResultDto<VehicleModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)

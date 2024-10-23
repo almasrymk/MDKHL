@@ -12,4 +12,5 @@ namespace SmartParking.Organizations;
 public interface IContactInfoAppService : ICrudAppService<ContactInfoDto, int, PagedAndSortedResultRequestDto, ContactInfoCreateUpdateDto>
 {
     public Task<PagedResultDto<ContactInfoDto>> GetContactInfoByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
+    public Task DeleteAsync(int id);
 }

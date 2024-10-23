@@ -26,7 +26,6 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
     Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);
 
-   
     /// <summary>
     /// Method Used to create random otp
     /// </summary>
@@ -101,7 +100,5 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <param name="NationalId">NationalId of customer</param>
     /// <returns>Boolean that indicates the existance of National Id</returns>
     Task<bool> CheckIfNationalIDIsUnique(string NationalId);
-
-
 
 }
