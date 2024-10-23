@@ -103,21 +103,8 @@
 
         </DialogContent>
         <DialogActions>
-            <div class="overflow-hidden px-5 w-100">
-
-                <MudGrid>
-
-                    <MudItem sm="6" md="6">
-
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@( SubmitCreate)">@L["Save"]</MudButton>
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@(CancelCreate)">@L["Cancel"]</MudButton>
-                    </MudItem>
-                </MudGrid>
-            </div>
-
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

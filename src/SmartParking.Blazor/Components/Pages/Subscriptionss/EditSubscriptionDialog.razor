@@ -165,10 +165,10 @@
 
 		</DialogContent>
 
-		<DialogActions>
-			<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
-		</DialogActions>
+        <DialogActions>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
+        </DialogActions>
 	</MudDialog>
 
 </MudItem>
