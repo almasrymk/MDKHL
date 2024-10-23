@@ -208,10 +208,10 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         {
 
             queryable = queryable.Where(or =>
-                or.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.EnglishName.StartsWith(input.SearchingTerm) ||
-                 or.SubscriptionDescription.StartsWith(input.SearchingTerm) ||
-                 or.Status.ToString().StartsWith(input.SearchingTerm)
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                 or.SubscriptionDescription.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                 or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         if (!input.Sorting.IsNullOrEmpty())

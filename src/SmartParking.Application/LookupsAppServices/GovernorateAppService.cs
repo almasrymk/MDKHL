@@ -103,8 +103,8 @@ public class GovernorateAppService : CrudAppService<Governorate,
         {
 
             queryable = queryable.Where(c =>
-                c.ArabicName.StartsWith(input.SearchingTerm) ||
-                c.EnglishName.StartsWith(input.SearchingTerm)
+                c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
 
             );
         }

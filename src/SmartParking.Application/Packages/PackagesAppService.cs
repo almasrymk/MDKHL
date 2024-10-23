@@ -61,11 +61,11 @@ public class PackagesAppService : CrudAppService<
         {
 
             queryable = queryable.Where(or =>
-                or.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.CreatedBy.StartsWith(input.SearchingTerm) ||
-                or.DeactivatedBy.StartsWith(input.SearchingTerm) ||
-                or.Description.StartsWith(input.SearchingTerm) ||
-                or.EnglishName.StartsWith(input.SearchingTerm) 
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
                 
             );
         }

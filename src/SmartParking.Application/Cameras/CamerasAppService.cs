@@ -109,23 +109,7 @@ namespace SmartParking.Cameras
                     Code = "DuplicateCameraIP"
                 };
             }
-            //if(input.Status!=Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
-            //{
-            //    throw new InvalidOperationException("Invalid status value");
-            //}
-
-            //if (input.CameraType != CameraType.Entry && input.CameraType != CameraType.Exit )
-            //{
-            //    throw new InvalidOperationException("Invalid status value");
-            //}
-            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()))
-            {
-                using (_dataFilter.Disable<IMultiTenant>())
-                {
-                    return await base.CreateAsync(input);
-                }
-            }
-            else
+         
                 return await base.CreateAsync(input);
         }
         /// <summary>
@@ -157,19 +141,21 @@ namespace SmartParking.Cameras
             // Get the IQueryable<camera> from the repository
             var queryable = await _repository.GetQueryableAsync();
             // Apply search filtering
+
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
                 queryable = queryable.Where(or =>
-                    or.Name.StartsWith(input.SearchingTerm) ||
-                    or.Model.StartsWith(input.SearchingTerm) ||
-                    or.Code.StartsWith(input.SearchingTerm) ||
-                    or.MainType.StartsWith(input.SearchingTerm) ||
-                    or.BrandName.StartsWith(input.SearchingTerm) ||
-                    or.Code.StartsWith(input.SearchingTerm) ||
-                    or.CameraIP.StartsWith(input.SearchingTerm) ||
-                    or.MacAddress.StartsWith(input.SearchingTerm) 
-                    //or.Type.StartsWith(input.SearchingTerm)
+                    or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Model.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.MainType.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                    or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                    or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  
                 );
             }
             // Get the total count of filtered records
