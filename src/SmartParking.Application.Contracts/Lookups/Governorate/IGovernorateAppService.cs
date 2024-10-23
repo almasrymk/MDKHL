@@ -26,6 +26,12 @@ public interface IGovernorateAppService : ICrudAppService<GovernorateDto , int ,
     /// <returns>GovernorateDto</returns>
     public Task<PagedResultDto<GovernorateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
+
+    /// <summary>
+    /// Method used to delete exists Governorate
+    /// </summary>
+    /// <param name="id">Id of Governorate that needed to be deleted</param>
+    /// <returns>No Content</returns>
     public Task DeleteAsync(int id);
 
 

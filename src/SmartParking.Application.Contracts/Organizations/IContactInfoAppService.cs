@@ -19,4 +19,6 @@ public interface IContactInfoAppService : ICrudAppService<ContactInfoDto, int, P
     /// </summary>
     /// <param name="id">Id of contact info that needed to be deleted</param>
     /// <returns>No Content</returns>
+    public Task DeleteAsync(int id);
+
 }

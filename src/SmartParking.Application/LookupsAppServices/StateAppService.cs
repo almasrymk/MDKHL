@@ -185,6 +185,8 @@ public class StateAppService : CrudAppService<State, StateDto,
             stateDto
         );
     }
+
+    ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
         var state = await base.GetAsync(id);
@@ -198,6 +200,5 @@ public class StateAppService : CrudAppService<State, StateDto,
             await base.DeleteAsync(id);
 
         }
-        await base.DeleteAsync(id);
     }
 }
