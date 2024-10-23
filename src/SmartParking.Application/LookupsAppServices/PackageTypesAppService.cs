@@ -8,21 +8,24 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
-namespace SmartParking.LookupsAppServices
+namespace SmartParking.LookupsAppServices;
+[Authorize]
+
+public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto,
+                                int, PagedAndSortedResultRequestDto,
+                                CreateUpdatePackageTypeDto>,
+    IPackageTypesAppService
+
 {
-    public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto,
-                                    int, PagedAndSortedResultRequestDto,
-                                    CreateUpdatePackageTypeDto>,
-        IPackageTypesAppService
-
+    public readonly IRepository<PackageType, int> _packageTypeRepository;
+    public PackageTypesAppService(IRepository<PackageType, int> packageTypeRepository) 
+    : base(packageTypeRepository)
     {
-        public readonly IRepository<PackageType, int> _packageTypeRepository;
-        public PackageTypesAppService(IRepository<PackageType, int> packageTypeRepository) 
-        : base(packageTypeRepository)
-        {
-            _packageTypeRepository = packageTypeRepository;
-        }
+        _packageTypeRepository = packageTypeRepository;
+    }
 
         /// <inheritdoc/>
 
@@ -106,73 +109,84 @@ namespace SmartParking.LookupsAppServices
                     queryable = queryable.OrderBy(input.Sorting);
                 }
 
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of garages entities
-            var packageTypesDto = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the garages entities to garagesDto objects
-            var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypesDto);
-            Console.WriteLine(packageTypeDto.Count);
-            // Return the paginated result
-            return new PagedResultDto<PackageTypeDto>(
-                totalCount,
-                packageTypeDto
-            );
         }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        /// <summary>
-        /// method used to get list of package types
-        /// </summary>
-        /// <param name="input">specifies max number of package type and if it filtered or not</param>
-        /// <returns>PackageTypeDto List</returns>
-        public async Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-        {
-            // Get the IQueryable<garage> from the repository
-            var queryable = await _packageTypeRepository.GetQueryableAsync();
-            // Apply search filtering
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of garages entities
+        var packageTypesDto = await AsyncExecuter.ToListAsync(queryable);
 
-                queryable = queryable.Where(c =>
-                    c.ArabicName.StartsWith(input.SearchingTerm) ||
-                    c.EnglishName.StartsWith(input.SearchingTerm)
-
-                );
-            }
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of hotel entities
-            var packageTypes = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the hotel entities to hotelDto objects
-            var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypes);
-            Console.WriteLine(packageTypeDto.Count);
-            // Return the paginated result
-            return new PagedResultDto<PackageTypeDto>(
-                totalCount,
-                packageTypeDto
-            );
-        }
+        // Map the garages entities to garagesDto objects
+        var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypesDto);
+        Console.WriteLine(packageTypeDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<PackageTypeDto>(
+            totalCount,
+            packageTypeDto
+        );
     }
+
+    /// <summary>
+    /// method used to get list of package types
+    /// </summary>
+    /// <param name="input">specifies max number of package type and if it filtered or not</param>
+    /// <returns>PackageTypeDto List</returns>
+    public async Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        // Get the IQueryable<garage> from the repository
+        var queryable = await _packageTypeRepository.GetQueryableAsync();
+        // Apply search filtering
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(c =>
+                c.ArabicName.StartsWith(input.SearchingTerm) ||
+                c.EnglishName.StartsWith(input.SearchingTerm)
+
+            );
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of hotel entities
+        var packageTypes = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the hotel entities to hotelDto objects
+        var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypes);
+        Console.WriteLine(packageTypeDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<PackageTypeDto>(
+            totalCount,
+            packageTypeDto
+        );
+    }
+
+
+    ///<inheritdoc/>
+    public override async Task DeleteAsync(int id)
+    {
+        var city = await GetAsync(id);
+        if (city == null)
+            throw new EntityNotFoundException(typeof(PackageType), id);
+
+        await base.DeleteAsync(id);
+    }
+
 }

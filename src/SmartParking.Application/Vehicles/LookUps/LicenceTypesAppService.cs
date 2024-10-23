@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
@@ -10,12 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
-public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
-{
+    [Authorize]
+	public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
+	{
     private readonly IRepository<LicenceType, int> _repository;
 
     public LicenceTypesAppService(IRepository<LicenceType, int> repository) : base(repository)
@@ -142,4 +145,16 @@ public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto,
         );
     }
 
+    public override async Task DeleteAsync(int id)
+    {
+        var licenceType = await _repository.FindAsync(id);
+
+        if (licenceType is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+
+        await base.DeleteAsync(id);
+    }
 }

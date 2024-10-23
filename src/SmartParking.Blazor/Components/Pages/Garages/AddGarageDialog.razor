@@ -69,16 +69,14 @@
 
                             </MudItem>
 
-                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                            <MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
                               <div Class="d-flex flex-row justify-content-between">
 
 
-                                    <MudRadioGroup @bind-Value="@createUpdateGarage.Status" Class="d-inline-flex align-content-center">
-                                        <div Class="d-flex flex-row justify-content-between">
+                                <MudRadioGroup @bind-Value="@createUpdateGarage.Status" Class="d-inline-flex align-content-center">
                                             <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                                             <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
                                             <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">@L["Status Deleted"]</MudRadio>
-                                        </div>
                                 </MudRadioGroup>
                               </div>
                             </MudItem>
@@ -90,22 +88,9 @@
                     </MudForm>
               
         </DialogContent>
-        <DialogActions >
-                        <div class="overflow-hidden px-5 w-100">
-
-            <MudGrid >
-
-                <MudItem sm="6" md="6">
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@(() =>  SubmitCreate())">@L["Save"]</MudButton>
-                </MudItem>
-                <MudItem sm="6" md="6">
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="@( () => CancelCreate())">@L["Cancel"]</MudButton>
-                </MudItem>
-            </MudGrid>
-            </div>
-
+        <DialogActions>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

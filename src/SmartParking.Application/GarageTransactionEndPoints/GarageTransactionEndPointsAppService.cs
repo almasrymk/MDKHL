@@ -1,4 +1,5 @@
 ﻿using Castle.Core.Resource;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
@@ -20,6 +21,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
+[Authorize]
 public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;

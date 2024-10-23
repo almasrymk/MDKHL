@@ -1,6 +1,7 @@
 ﻿
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Organizations;
@@ -37,5 +39,18 @@ public class ContactInfoAppService : CrudAppService<ContactInfo, ContactInfoDto,
            contactDto
        );
 
+    }
+
+    public override async Task DeleteAsync(int id)
+    {
+        var contactInfo = await _repository.FindAsync(id);
+
+        if (contactInfo is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+
+        await base.DeleteAsync(id);
     }
 }

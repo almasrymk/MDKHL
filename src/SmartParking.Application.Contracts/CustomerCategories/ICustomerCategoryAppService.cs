@@ -25,4 +25,11 @@ public interface ICustomerCategoryAppService : ICrudAppService<CustomerCategoryD
     public Task<PagedResultDto<CustomerCategoryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
     public Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId);
+
+    /// <summary>
+    /// Method used to delete exists customer category
+    /// </summary>
+    /// <param name="id">Id of customer category that needed to be deleted</param>
+    /// <returns>No Content</returns>
+    Task DeleteAsync(int id);
 }

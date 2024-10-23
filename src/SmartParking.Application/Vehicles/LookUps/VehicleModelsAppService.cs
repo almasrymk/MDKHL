@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Lookups.VehiclesLookups;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleBrand;
@@ -17,7 +18,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
-
+[Authorize]
 public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleModelDto>, IVehicleModelsAppService
 {
     private readonly IRepository<VehicleModel, int> _repository;
@@ -87,21 +88,14 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var vehicleModel = await _repository.GetAsync(id);
+        var vehicleModel = await _repository.FindAsync(id);
 
         if (vehicleModel is null)
         {
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                await base.DeleteAsync(id);
-            }
-        }
-        else
+        
             await base.DeleteAsync(id);
     }
 

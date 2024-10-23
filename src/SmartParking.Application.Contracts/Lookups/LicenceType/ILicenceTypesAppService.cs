@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.Lookups.LicenceType
-{
+namespace SmartParking.Lookups.LicenceType;
+
 	public interface ILicenceTypesAppService : ICrudAppService<LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>
 	{
 
@@ -29,11 +29,12 @@ namespace SmartParking.Lookups.LicenceType
         public Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input);
         public Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
-        /// <summary>
-        /// abstract method to filter of cameras
-        /// </summary>
-        /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
-        /// <returns>Camera Dto</returns>
-        public Task<PagedResultDto<LicenceTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
-    }
+    /// <summary>
+    /// abstract method to filter of cameras
+    /// </summary>
+    /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
+    /// <returns>Camera Dto</returns>
+    public Task<PagedResultDto<LicenceTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    public Task DeleteAsync(int id);
 }

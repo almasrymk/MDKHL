@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
@@ -10,10 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps
 {
+    [Authorize]
 	public class VehicleBrandsAppService : CrudAppService<VehicleBrand, VehicleBrandDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleBrandDto>, IVehicleBrandsAppService
 	{
         private readonly IRepository<VehicleBrand, int> _repository;
@@ -21,6 +24,19 @@ namespace SmartParking.Vehicles.LookUps
         public VehicleBrandsAppService(IRepository<VehicleBrand, int> repository) : base(repository)
 		{
            _repository = repository;
+        }
+        ///<inheritdoc/>
+        public override async Task DeleteAsync(int id)
+        {
+            var vehicleBrand = await _repository.FindAsync(id);
+
+            if (vehicleBrand is null)
+            {
+                throw new EntityNotFoundException(typeof(VehicleModel), id);
+            }
+
+
+            await base.DeleteAsync(id);
         }
 
         ///<inheritdoc/>

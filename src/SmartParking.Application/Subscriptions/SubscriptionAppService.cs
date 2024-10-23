@@ -15,9 +15,10 @@ using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartParking.Subscriptions;
-
+[Authorize]
 public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDto,int,PagedAndSortedResultRequestDto,CreateUpdateSubscriptionDto>, ISubscriptionAppService
 {
     private readonly IRepository<Subscription, int> _subscriptionRepository;
@@ -102,14 +103,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
 
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.UpdateAsync(id, input);
-            }
-        }
-        else
+        
             return await base.UpdateAsync(id, input);
         
     
@@ -152,14 +146,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             throw new EntityNotFoundException(typeof(Subscription), id);
         }
 
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                await base.DeleteAsync(id);
-            }
-        }
-        else
+        
             await base.DeleteAsync(id);
     }
 

@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using SmartParking.Cameras;
 using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
@@ -13,11 +14,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Vehicles.LookUps;
 
+[Authorize]
 public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, int, PagedAndSortedResultRequestDto, CreateUpdatePlateColorDto>, IPlateColorsAppService
 {
 	private readonly Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> _repository;
@@ -146,4 +149,17 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 			plateColorsDto
 		);
 	}
+
+    public override async Task DeleteAsync(int id)
+    {
+        var plateColor = await _repository.FindAsync(id);
+
+        if (plateColor is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
+
+
+        await base.DeleteAsync(id);
+    }
 }

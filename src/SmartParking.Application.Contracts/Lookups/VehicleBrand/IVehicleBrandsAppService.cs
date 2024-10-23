@@ -31,5 +31,7 @@ namespace SmartParking.Lookups.VehicleBrand
         /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
         /// <returns>Camera Dto</returns>
         public Task<PagedResultDto<VehicleBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+        public  Task DeleteAsync(int id);
     }
 }
