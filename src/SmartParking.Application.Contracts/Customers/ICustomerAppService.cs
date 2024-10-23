@@ -30,7 +30,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// Method Used to create random otp
     /// </summary>
     /// <returns>string of generated otp</returns>
-    string GenerateOtp();
+    Task<string> GenerateOtp(Guid CustomerId);
     /// <summary>
     /// Method used to get all customers
     /// </summary>

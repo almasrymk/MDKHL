@@ -82,21 +82,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         Code += (input + 1);
         return Code;
     }
-    /// <inheritdoc/>
-    public new async Task<string> DeleteByIdAsync(int id)
-    {
-        var garage = await base.GetAsync(id);
-
-        if (garage is null)
-            throw new EntityNotFoundException(typeof(Garage), id);
-        else
-        {
-            await base.DeleteByIdAsync(id);
-            garage.Status = Enums.Status.Deleted;
-
-            return EnumValues.GetEnumDescription(GarageValidations.GarageDeleteion);
-        }
-    }
+    
 
     /// <inheritdoc/>
     public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
@@ -119,8 +105,10 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         {
 
             queryable = queryable.Where(or =>
-                or.Code.StartsWith(input.SearchingTerm) ||
-                or.Name.StartsWith(input.SearchingTerm) 
+                or.Code.Contains(input.SearchingTerm) ||
+                or.Name.Contains(input.SearchingTerm) ||
+                or.MaxCapacity.ToString()==input.SearchingTerm ||
+                or.Status.ToString().Contains(input.SearchingTerm) 
                
             );
         }
@@ -245,8 +233,19 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 
     }
+    /// <inheritdoc/>
 
+    public override async Task DeleteAsync(int id)
+    {
+        var garage = await _repository.FindAsync(x=>x.Id==id);
+        if(garage == null)
+        {
+            throw new Exception("There is no garage related to that id");
+        }
+        garage.Status=Status.Deleted;
+        await base.DeleteAsync(id);
 
+    }
     public async Task<int> GetAllGaragesCount()
     {
 
