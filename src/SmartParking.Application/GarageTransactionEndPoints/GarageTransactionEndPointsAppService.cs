@@ -247,6 +247,8 @@ namespace SmartParking.GarageTransactionEndPoints
                 double price = 0;
                 double totalDays=Math.Ceiling (specialHours/closingHour);
                 price+= totalDays*(double)organization.FullDayPrice;
+                price += ((int)(normalHours / 24)) *(double) organization.FullDayPrice;
+                normalHours -= ((int)(normalHours / 24)) * 24;
                 price +=(double) calcPriceHours(organization,(int) normalHours);
                 return (decimal) price;
             }
