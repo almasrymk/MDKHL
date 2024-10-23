@@ -110,4 +110,12 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <param name="input">Customer New Data</param>
     /// <returns></returns>
     Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input);
+
+
+    /// <summary>
+    /// Method used to delete exists customer
+    /// </summary>
+    /// <param name="Guid">Id of customer that needed to be deleted</param>
+    /// <returns>No Content</returns>
+    Task DeleteAsync(Guid id);
 }

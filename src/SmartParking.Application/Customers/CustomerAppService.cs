@@ -420,4 +420,17 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
         return true;
     }
+
+    /// <inheritdoc/>
+
+    public override async Task DeleteAsync(Guid id)
+    {
+        var customer = await _repository.FindAsync(x => x.Id == id);
+        if (customer == null)
+        {
+            throw new Exception("There is no customer related to that id");
+        }
+        await base.DeleteAsync(id);
+
+    }
 }

@@ -78,6 +78,8 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         return new PagedResultDto<CustomerCategoryDto>(list.Count,list);
 
     }
+
+    /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
         var customerCategory=await _repository.FirstOrDefaultAsync(x => x.Id == id);

@@ -20,12 +20,6 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <returns>Garage Dto</returns>
     Task<GarageDto> CreateAsync(CreateUpdateGarageDto input);
 
-    /// <summary>
-    /// Abstract method to delete organization
-    /// </summary>
-    /// <param name="id">Id of organization</param>
-    /// <returns>Successfull message of deletion</returns>
-    Task<string> DeleteByIdAsync(int id);
 
     /// <summary>
     /// Abstract method used to update garage
@@ -71,4 +65,10 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// </summary>
     /// <returns>Count of Garages</returns>
     Task<int> GetAllGaragesCount();
+    /// <summary>
+    /// Method used to delete exists garage
+    /// </summary>
+    /// <param name="id">Id of garage that needed to be deleted</param>
+    /// <returns>No Content</returns>
+    Task DeleteAsync(int id);
 }
