@@ -22,6 +22,6 @@ public class OrganizationsController : ControllerBase
     [Authorize(Roles = "Mdkhl")]
     public Task<Result<List<OrganizationDto>>> GetAll()
     {
-        return await _organizations.GetAllMobileAsync();
+        return  _organizations.GetAllMobileAsync();
     }
 }

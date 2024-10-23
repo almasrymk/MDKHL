@@ -22,6 +22,6 @@ public class PackagesController : ControllerBase
     [Authorize]
     public Task<Result<List<PackageDto>>> GetAllPakageByOrganization(int oragnizationId)
     {
-        return await _packages.GetListPackageByOrganizationId(oragnizationId);
+        return  _packages.GetListPackageByOrganizationId(oragnizationId);
     }
 }

@@ -350,6 +350,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("OTP")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("OtpExpirationDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -589,6 +592,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
@@ -598,6 +604,9 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeletionTime");
 
                     b.Property<int>("GarageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GarageTransactionExitId")
                         .HasColumnType("integer");
 
                     b.Property<string>("InvoiceNumber")
@@ -637,6 +646,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("GarageId");
 
@@ -3957,6 +3968,10 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Invoices.Invoice", b =>
                 {
+                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
+                        .WithMany("Invoices")
+                        .HasForeignKey("CustomerId");
+
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
                         .HasForeignKey("GarageId")
@@ -3968,6 +3983,8 @@ namespace SmartParking.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Customer");
 
                     b.Navigation("Garage");
 
@@ -4354,6 +4371,8 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
                 {
                     b.Navigation("CustomerPackages");
+
+                    b.Navigation("Invoices");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
