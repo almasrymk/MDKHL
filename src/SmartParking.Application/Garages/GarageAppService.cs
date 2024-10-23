@@ -1,4 +1,5 @@
-﻿using Nito.Disposables;
+﻿using Microsoft.AspNetCore.Authorization;
+using Nito.Disposables;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
@@ -23,6 +24,7 @@ using Volo.Abp.Users;
 
 namespace SmartParking.Garages;
 
+[Authorize]
 public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>, IGarageAppService
 {
     private readonly IRepository<Garage> _repository;
@@ -57,6 +59,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         return await base.CreateAsync(input);
     }
 
+    [RemoteService(isEnabled: false)]
 
     /// <summary>
     /// Method is used to create a code for garage

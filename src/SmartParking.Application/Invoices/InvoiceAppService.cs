@@ -28,7 +28,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
-        if (CurrentUser.IsInRole("admin"))
+        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {

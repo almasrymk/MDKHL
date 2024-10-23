@@ -2,6 +2,7 @@
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ public class VehiclesAppService:
 		{
 			throw new InvalidOperationException("PlatNumber already exists");
 		}
-        if (_currentUser.IsInRole("admin"))
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -58,9 +59,9 @@ public class VehiclesAppService:
     }
     public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-		if (_currentUser.IsInRole("admin"))
-		{
-			using (_dataFilter.Disable<IMultiTenant>())
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
 			{
 				return await base.GetListAsync(input);
 			}
@@ -70,9 +71,9 @@ public class VehiclesAppService:
 	}
 	public override async Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input)
 	{
-		if (_currentUser.IsInRole("admin"))
-		{
-			using (_dataFilter.Disable<IMultiTenant>())
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
 			{
 				return await base.UpdateAsync(id, input);
 				//return await base.UpdateAsync(id, input);
@@ -83,9 +84,9 @@ public class VehiclesAppService:
 
 	public override async Task<VehicleDto> GetAsync(int id)
 	{
-		if (_currentUser.IsInRole("admin"))
-		{
-			using (_dataFilter.Disable<IMultiTenant>())
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
 			{
 				return await base.GetAsync(id);
 			}
@@ -99,9 +100,9 @@ public class VehiclesAppService:
 		var vehicle = await GetAsync(id);
 		if (vehicle == null)
 			throw new EntityNotFoundException(typeof(Vehicle), id);
-		if (_currentUser.IsInRole("admin"))
-		{
-			using (_dataFilter.Disable<IMultiTenant>())
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
 			{
 				await base.DeleteAsync(id);
 

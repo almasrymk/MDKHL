@@ -35,11 +35,11 @@
         {
             Navigation.NavigateTo("/login", true);
         }
-        if (currenttenant.Id != null && (currentUri.Contains("organizations") || currentUri == "subscriptions"))
+        if ((currenttenant.Id != null && (currentUri.Contains("organizations") || currentUri == "subscriptions")) || (_currentUser.IsAuthenticated && currentUri == "login"))
         {
-            
-          Navigation.NavigateTo("/", true);
-                
+
+            Navigation.NavigateTo("/", true);
+
         }
         if ((_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin")) && currentUri == "customers/register")
         {

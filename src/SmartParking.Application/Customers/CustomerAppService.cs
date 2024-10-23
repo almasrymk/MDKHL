@@ -26,9 +26,11 @@ using Volo.Abp.Users;
 using Nito.AsyncEx;
 using SmartParking.Enums;
 using SmartParking.Organizations;
+using Microsoft.AspNetCore.Authorization;
+using Abp.Domain.Entities;
 
 namespace SmartParking.Customers;
-
+[Authorize]
 public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService
 {
     private readonly IRepository<Customer, Guid> _repository;
@@ -50,7 +52,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-
+    
     [RemoteService(isEnabled: false)]
     /// <inheritdoc/>
     public string GenerateOtp()
@@ -71,7 +73,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("Phone Number is used");
 
             }
+            var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
+            if(result2 == false)
+            {
+                throw new Exception("National Id is already exist !");
+
+            }
             var org = await _organizationAppService.GetOrganizationForCurrentTenat();
+            if (org == null)
+            {
+                throw new Exception("Customer must belong to organization");
+
+            }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             customer.Organizations = new List<Organization>();
             customer.Organizations.Add(org);
@@ -249,6 +262,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
     {
+        var org = await _organizationAppService.GetAsync(organizationId);
+        if (org == null)
+        {
+            throw new EntityNotFoundException(typeof(Organization), organizationId);
+
+        }
+
         var query = await _repository.GetQueryableAsync();
         query = query.Where(x => x.Organizations.Any( org=> org.Id == organizationId));
         var totalCount = await AsyncExecuter.CountAsync(query);
@@ -290,6 +310,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             return count;
         }
     }
+    /// <inheritdoc/>
 
     [RemoteService(isEnabled: false)]
     public async Task<int> GetAllCustomersCount()
@@ -307,5 +328,24 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var count = await AsyncExecuter.CountAsync(query);
             return count;
         
+    }
+    /// <inheritdoc/>
+
+    public async Task<bool> CheckIfNationalIDIsUnique(string NationalId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        var result = query.Where(x => x.NationalId == NationalId).ToList();
+        if (result.Count == 0)
+        {
+            return true;
+
+        }
+        return false;
+
+    }
+
+    public override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
+    {
+        return base.UpdateAsync(id, input);
     }
 }
