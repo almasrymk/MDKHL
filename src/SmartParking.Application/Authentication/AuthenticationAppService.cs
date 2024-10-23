@@ -131,7 +131,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <inheritdoc/>
     public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
     {
-
+        
 
         // Step 1: Validate the user's credentials
         var user = await _userManager.FindByNameAsync(input.Username);
@@ -143,6 +143,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 ErrorMessage = "Invalid credentials."
             });
             
+        }
+        if (user.IsActive == false)
+        {
+            return Result<LoginResultDto>.Invalid(new Results.ValidationError
+            {
+                ErrorCode = "400",
+                ErrorMessage = "Account is In Active"
+            });
         }
         await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -169,6 +177,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
             return user;
+        }
+        if (user.IsActive == false)
+        {
+            return null;
         }
         await _signInManager.SignInAsync(user, isPersistent: false);
 
