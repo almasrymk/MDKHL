@@ -77,6 +77,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         }
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
+        if (input.IsClose == true )
+        {
+            input.ClosingHoursStart = input.ClosingHoursStart;
+            input.ClosingHoursEnd = input.ClosingHoursEnd;
+        }
+        else
+        {
+            input.ClosingHoursStart = TimeOnly.MinValue;
+            input.ClosingHoursEnd = TimeOnly.MaxValue;
+        }
+
         await _repository.InsertAsync(organization,autoSave:true);
         UserCreateDto user = new UserCreateDto()
         {
@@ -159,6 +170,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
                 throw new EntityNotFoundException(typeof(Organization), id);
 
+        }
+        if (!input.IsClose)
+        {
+            input.ClosingHoursStart = organization.ClosingHoursStart;
+            input.ClosingHoursEnd = organization.ClosingHoursStart;
+        }
+        else
+        {
+            input.ClosingHoursStart = TimeOnly.MinValue;
+            input.ClosingHoursEnd = TimeOnly.MinValue;
         }
         return await base.UpdateAsync(id, input);
     }
