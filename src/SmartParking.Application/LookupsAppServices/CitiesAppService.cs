@@ -28,6 +28,62 @@ namespace SmartParking.LookupsAppServices
             _governorateRepository = governorateRepository;
         }
 
+        ///<inheritdoc/>
+        public override async Task<CityDto> CreateAsync(CreateUpdateCityDto input)
+        {
+            var city = await _repository.FirstOrDefaultAsync
+                (city =>
+                city.EnglishName == input.EnglishName ||
+                city.ArabicName == input.ArabicName);
+
+            if (city != null)
+            {
+                if (city.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("city english name already exists");
+
+                }
+                else if (city.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("city arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("city english name , city arabic name already exist");
+            }
+            else
+            {
+                return await base.CreateAsync(input);
+            }
+        }
+        ///<inheritdoc/>
+        public override async Task<CityDto> UpdateAsync(int id, CreateUpdateCityDto input)
+        {
+            var city = await _repository.FirstOrDefaultAsync
+                (city =>
+                city.EnglishName == input.EnglishName ||
+                city.ArabicName == input.ArabicName);
+
+            if (city != null)
+            {
+                if(city.EnglishName == input.EnglishName)
+                {
+                    throw new InvalidOperationException("city english name already exists");
+
+                }
+                else if(city.ArabicName == input.ArabicName)
+                {
+                    throw new InvalidOperationException("city arabic name already exists");
+
+                }
+
+                throw new InvalidOperationException("city english name , city arabic name already exist");
+            }
+            else
+            {
+                return await base.UpdateAsync(id, input);
+            }
+        }
         public async Task<List<GovernorateLookupDto>> GetGovernorateLookupAsync()
         {
             var governorates = await _governorateRepository.GetListAsync();

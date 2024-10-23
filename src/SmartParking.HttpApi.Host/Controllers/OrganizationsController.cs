@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Organizations;
+using SmartParking.Results;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ public class OrganizationsController : ControllerBase
     }
     [HttpGet]
     [Authorize(Roles = "Mdkhl")]
-    public async Task<List<OrganizationDto>> GetAll()
+    public Task<Result<List<OrganizationDto>>> GetAll()
     {
         return await _organizations.GetAllMobileAsync();
     }

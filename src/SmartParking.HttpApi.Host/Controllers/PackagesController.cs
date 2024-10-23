@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Packages;
+using SmartParking.Results;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ public class PackagesController : ControllerBase
     }
     [HttpGet("{oragnizationId}")]
     [Authorize]
-    public async Task<List<PackageDto>> GetAllPakageByOrganization(int oragnizationId)
+    public Task<Result<List<PackageDto>>> GetAllPakageByOrganization(int oragnizationId)
     {
         return await _packages.GetListPackageByOrganizationId(oragnizationId);
     }

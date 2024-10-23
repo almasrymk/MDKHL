@@ -46,7 +46,7 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole("admin"))
+        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -65,7 +65,7 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole("admin"))
+        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {

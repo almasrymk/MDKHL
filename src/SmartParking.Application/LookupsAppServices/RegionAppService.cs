@@ -51,7 +51,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole("admin"))
+        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -77,7 +77,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole("admin"))
+        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {

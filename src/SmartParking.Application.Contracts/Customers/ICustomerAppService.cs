@@ -26,12 +26,12 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
     Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);
 
-   
+
     /// <summary>
     /// Method Used to create random otp
     /// </summary>
     /// <returns>string of generated otp</returns>
-    string GenerateOtp();
+    Task<string> GenerateOtp(Guid CustomerId);
     /// <summary>
     /// Method used to get all customers
     /// </summary>
@@ -95,5 +95,19 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <returns>Count of Customers</returns>
     Task<int> GetAllCustomersCount();
 
+    /// <summary>
+    /// Methods that checks if national id is not duplicate.
+    /// </summary>
+    /// <param name="NationalId">NationalId of customer</param>
+    /// <returns>Boolean that indicates the existance of National Id</returns>
+    Task<bool> CheckIfNationalIDIsUnique(string NationalId);
 
+    /// <summary>
+    /// Method used to update Customer data.
+    /// There are some data that can't be change : National , IdentificationTypes.
+    /// </summary>
+    /// <param name="id">Customer Id</param>
+    /// <param name="input">Customer New Data</param>
+    /// <returns></returns>
+    Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input);
 }

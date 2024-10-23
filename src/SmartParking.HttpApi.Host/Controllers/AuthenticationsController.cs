@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Results;
 using System.Threading.Tasks;
 
 namespace SmartParking.Controllers;
@@ -40,10 +41,10 @@ public class AuthenticationsController : ControllerBase
     {
         return await _authenticationApp.GetUserDataAsync();
     }
-    //[HttpPost("changePassword")]
-    //[IgnoreAntiforgeryToken]
-    //public async Task<BaseResultDto> ChangePassword(ChangePasswordInputDto input)
-    //{
-    //    return await _authenticationApp.ChangePassword(input);
-    //}
+    [HttpPost("changePassword")]
+    [IgnoreAntiforgeryToken]
+    public async Task<Result> ChangePassword(ChangePasswordInputDto input)
+    {
+        return await _authenticationApp.ChangePassword(input);
+    }
 }
