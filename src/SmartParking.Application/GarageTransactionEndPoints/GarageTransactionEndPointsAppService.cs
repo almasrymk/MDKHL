@@ -232,7 +232,7 @@ namespace SmartParking.GarageTransactionEndPoints
                 decimal price = 0;
                 price += (totalHours / 24) * organization.FullDayPrice;
                 totalHours -= (totalHours / 24) * 24;
-                if(totalHours>=organization.NumberOfHours)
+                if(totalHours>organization.NumberOfHours)
                 {
                     price += organization.FullDayPrice;
                     totalHours = 0;
@@ -251,6 +251,23 @@ namespace SmartParking.GarageTransactionEndPoints
                 normalHours -= ((int)(normalHours / 24)) * 24;
                 price +=(double) calcPriceHours(organization,(int) normalHours);
                 return (decimal) price;
+            }
+            else if( organization?.IsNumberOfHoursExceeded == true &&organization.IsClose == true)
+            {
+                (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime, organization);
+                var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
+                double price = 0;
+                double totalDays = Math.Ceiling(specialHours / closingHour);
+                price += totalDays * (double)organization.FullDayPrice;
+                price += ((int)(normalHours / 24)) * (double)organization.FullDayPrice;
+                normalHours -= ((int)(normalHours / 24)) * 24;
+                if(normalHours>organization.NumberOfHours)
+                {
+                    price+= (double)organization.FullDayPrice;
+                    normalHours = 0;
+                }
+                price += (double)calcPriceHours(organization, (int)normalHours);
+                return (decimal)price;
             }
             return 0.0m;
         }
