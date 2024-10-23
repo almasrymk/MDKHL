@@ -2,6 +2,7 @@
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
+using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -13,6 +14,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartParking.Analysis;
 
@@ -21,7 +23,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IRepository<Invoice,int> _invoiceRepo;
     private readonly IRepository<Organization,int> _orgRepo;
     private readonly IRepository<Customer,Guid> _custeRepo;
-    private readonly IRepository<CustomerOrganization,int> _custmrOrgRepo;
     private readonly IDataFilter _datafilter;
 
     public AnalysisAppService(IRepository<Customer, Guid> custeRepo, IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo, IDataFilter datafilter)
@@ -69,6 +70,25 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             namesCountDto.Names = result2;
             namesCountDto.Count = result;
             return namesCountDto;
+        }
+    }
+
+    ///<inheritdoc/>
+    public async Task<AnalysisNamesCountDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber)
+    {
+
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _orgRepo.GetQueryableAsync();
+            var targetDate = DateOnly.FromDateTime(DateTime.Now).AddYears(yearsNumber);
+
+            query = query
+               .Where(o => o.LicenseExpiryDate <= targetDate);
+            var result = query.Select(x => new Organization { EnglishName = x.EnglishName , LicenseExpiryDate = x.LicenseExpiryDate }).ToList();
+            AnalysisNamesCountDto organizationCustomersDto = new AnalysisNamesCountDto();
+            organizationCustomersDto.Names = ObjectMapper.Map<List<Organization>, List<string>>(result);
+            organizationCustomersDto.Count.Add(result.Count);
+            return organizationCustomersDto;
         }
     }
 }
