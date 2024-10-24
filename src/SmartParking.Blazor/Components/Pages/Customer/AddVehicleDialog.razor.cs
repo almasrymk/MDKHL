@@ -83,7 +83,9 @@ public partial class AddVehicleDialog
 
                 ShowSnackbar($"Vehichle was created successfully and added to customer", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
-
+                
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/customers", forceLoad: true);
 
             }
 

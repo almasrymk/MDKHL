@@ -3,7 +3,7 @@
 @using SmartParking.Lookups.VehicleBrand
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject NavigationManager Navigation
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -78,15 +78,16 @@
             try
             {
                 await VehicleBrandsAppService.CreateAsync(vehicleBrandDro);
+                Snackbar.Add("VehicleBrand created successfully!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                Navigation.NavigateTo("/vehicleBrands", true);
             }
             catch (Exception e)
             {
                 Snackbar.Add("Fill Requried Items", Severity.Error);
                 return;
             }
-            Snackbar.Add("VehicleBrand created successfully!", Severity.Success);
 
-            MudDialog.Close(DialogResult.Ok(true));
 
         }
         else

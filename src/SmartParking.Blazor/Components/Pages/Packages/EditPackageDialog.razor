@@ -5,7 +5,7 @@
 @inject IPackagesAppService PackagesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-
+@inject NavigationManager Navigation
 
 <PageTitle>@L["Edit Package"]</PageTitle>
 <div class="modal-wrapper">
@@ -166,7 +166,8 @@
             await PackagesAppService.UpdateAsync(UpdatedId, Package);
             Snackbar.Add("Package Updated Successfully", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
-
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/packages", true);
         }
         catch (AbpValidationException ex)
         {

@@ -171,6 +171,12 @@
             try
             {
                 await CamerasAppService.CreateAsync(cameraDto);
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add("Camera created successfully!", Severity.Success);
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/cameras", forceLoad: true);
+
+               
             }
             catch (UserFriendlyException ex)
             {
@@ -190,10 +196,7 @@
                 Snackbar.Add("Fill Requried Items", Severity.Error);
                 return;
             }
-            Snackbar.Add("Camera created successfully!", Severity.Success);
-            Navigation.NavigateTo("/cameras", forceLoad: true);
-
-           // MudDialog.Close(DialogResult.Ok(true));
+            
             
         }
         else

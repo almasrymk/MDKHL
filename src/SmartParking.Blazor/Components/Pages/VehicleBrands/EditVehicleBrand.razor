@@ -4,7 +4,7 @@
 @inject IVehicleBrandsAppService VehicleBrandsAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-
+@inject NavigationManager Navigation
 <PageTitle>@L["Edit VehicleBrand"]</PageTitle>
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
@@ -78,6 +78,8 @@
 			await VehicleBrandsAppService.UpdateAsync(UpdatedId, VehicleBrand);
 			Snackbar.Add("VehicleBrand Updated Successfully", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
+			await Task.Delay(1000);
+			Navigation.NavigateTo("/vehicleBrands", true);
 
 		}
 		catch (Exception e)

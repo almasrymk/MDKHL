@@ -52,6 +52,8 @@ public partial class AddRegionDialog
 			{
 				Snackbar.Add(successedMessage, Severity.Success);
 				MudDialog.Close(DialogResult.Ok(true));
+				await Task.Delay(1000);
+				Navigation.NavigateTo("/regions", true);
 			}
 
 			else

@@ -6,6 +6,7 @@
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
 <PageTitle>@L["New VehicleBrand"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -100,14 +101,17 @@
             try
             {
                 await VehicleModelsAppService.CreateAsync(vehicleModelDto);
+                Snackbar.Add("VehiclesBrand created successfully!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/vehicleModels", true);
             }
             catch (Exception e)
             {
                 Snackbar.Add("Fill Requried Items", Severity.Error);
                 return;
             }
-            Snackbar.Add("VehiclesBrand created successfully!", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+
 
         }
         else

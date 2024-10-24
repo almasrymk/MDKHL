@@ -9,7 +9,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 <PageTitle>@L["Edit PlateColor"]</PageTitle>
-
+@inject NavigationManager Navigation
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -82,6 +82,8 @@
 			await PlateColorsAppService.UpdateAsync(UpdatedId, PlateColor);
 			Snackbar.Add("Camera Updated Successfully", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
+			await Task.Delay(1000);
+			Navigation.NavigateTo("/plateColors", true);
 
 		}
 		catch (Exception e)

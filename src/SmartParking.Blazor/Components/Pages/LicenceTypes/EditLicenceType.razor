@@ -8,7 +8,7 @@
 @inject ILicenceTypesAppService LicenceTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-
+@inject NavigationManager Navigation
 
 <PageTitle>@L["Edit LicenceType"]</PageTitle>
 <div class="modal-wrapper">
@@ -106,7 +106,8 @@
 			await LicenceTypesAppService.UpdateAsync(UpdatedId, LicenceType);
 			Snackbar.Add("LicenceType Updated Successfully", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
-
+			await Task.Delay(1000);
+			Navigation.NavigateTo("/licenceTypes", forceLoad: true);
 		}
 		catch (Exception e)
 		{

@@ -108,11 +108,12 @@ public partial class SPDataGrid
             ColumnsFilterApply.Add(SelectedColumn);
 
             ClickFilter = false;
-            await dataGrid.ReloadServerData();
-            SelectedColumn = "";
-            FilterValue = "";
-            SelectOperator = default;
-            IsNot = false;
+			SelectedColumn = "";
+			FilterValue = "";
+			SelectOperator = default;
+			IsNot = false;
+			await dataGrid.ReloadServerData();
+            
         }
            
       

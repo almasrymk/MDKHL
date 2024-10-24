@@ -5,7 +5,7 @@
 @using Volo.Abp.Application.Dtos
 @inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject IPackagesAppService PackagesAppService
-
+@inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
@@ -110,7 +110,8 @@
 			await CustomerPackagesAppService.CreateAsync(CustomerPackage);
 			Snackbar.Add("CustomerPackage Assigned Successfully", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
-
+			await Task.Delay(1000);
+			Navigation.NavigateTo("/customers", forceLoad: true);
 		}
 		catch (Exception e)
 		{
