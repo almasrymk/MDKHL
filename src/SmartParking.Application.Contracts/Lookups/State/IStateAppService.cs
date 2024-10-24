@@ -48,4 +48,6 @@ public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSorte
     /// </summary>
     /// <param name="id">Id of state</param>
     Task DeleteAsync(int id);
+
+    public Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId);
 }

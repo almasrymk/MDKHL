@@ -127,7 +127,7 @@ public class GarageTransactionsAppService:
 		// Get the IQueryable<camera> from the repository
 		var queryable = await _repository.GetQueryableAsync();
 		// Apply filtering
-		var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
+		var filterExpression = BuildExpression<GarageTransaction>.BuildFilterExpression(input.filters);
 		if (filterExpression is not null)
 		{
 			queryable = queryable.Where(filterExpression);

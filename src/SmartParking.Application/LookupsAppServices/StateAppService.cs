@@ -16,6 +16,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -138,6 +139,14 @@ public class StateAppService : CrudAppService<State, StateDto,
         return statesList;
     }
 
+    public async Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId)
+    {
+        var query = await _stateRepository.GetQueryableAsync();
+        query = query.Where(x => x.RegionId == regionId);
+        var states = await AsyncExecuter.ToListAsync(query);
+        var statesList = ObjectMapper.Map<List<State>, List<StateLookupDto>>(states);
+        return statesList;
+    }
     /// <summary>
     /// method used to get list of states
     /// </summary>
