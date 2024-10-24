@@ -19,11 +19,14 @@ namespace SmartParking.Vehicles.LookUps;
     [Authorize]
 	public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
 	{
-    private readonly IRepository<LicenceType, int> _repository;
+        private readonly IRepository<LicenceType, int> _repository;
+        private readonly IRepository<PlateColor, int> _plateColorRepository;
 
-    public LicenceTypesAppService(IRepository<LicenceType, int> repository) : base(repository)
+
+    public LicenceTypesAppService(IRepository<LicenceType, int> repository, IRepository<PlateColor, int> plateColorRepository) : base(repository)
     {
         _repository = repository;
+        _plateColorRepository = plateColorRepository;
     }
 
     ///<inheritdoc/>
@@ -31,55 +34,75 @@ namespace SmartParking.Vehicles.LookUps;
     {
         var licenceType = await _repository.FirstOrDefaultAsync
                 (type =>
-                type.EnglishName == input.EnglishName ||
-                type.ArabicName == input.ArabicName);
+                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        var exisitingPlateColor = await _plateColorRepository.FindAsync(input.PlateColorId);
+
+        if (exisitingPlateColor is null)
+        {
+            throw new InvalidOperationException("Plate color doesnot exist");
+        }
 
         if (licenceType != null)
         {
-            if (licenceType.EnglishName == input.EnglishName)
+            if (licenceType.EnglishName == input.EnglishName.Trim(' ') )
             {
-                throw new InvalidOperationException("licence type english name already exists");
+                throw new InvalidOperationException("Licence type english name already exists");
 
             }
-            else if (licenceType.ArabicName == input.ArabicName)
+            else if (licenceType.ArabicName == input.ArabicName.Trim(' ') )
             {
-                throw new InvalidOperationException("licence type arabic name already exists");
+                throw new InvalidOperationException("Licence type arabic name already exists");
 
             }
 
-            throw new InvalidOperationException("english name , arabic name already exist");
+
         }
-        else
+        return await base.CreateAsync(input);
 
-            return await base.CreateAsync(input);
-        
     }
 
     ///<inheritdoc/>
     public override async Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input)
     {
-        var licenceType = await _repository.FirstOrDefaultAsync
-               (type =>
-               type.EnglishName == input.EnglishName ||
-               type.ArabicName == input.ArabicName);
 
-        if (licenceType != null)
+        var existingLicence = await _repository.GetAsync(id);
+
+        if (existingLicence is null)
         {
-            if (licenceType.EnglishName == input.EnglishName)
-            {
-                throw new InvalidOperationException("licence type english name already exists");
-
-            }
-            else if (licenceType.ArabicName == input.ArabicName)
-            {
-                throw new InvalidOperationException("licence type arabic name already exists");
-
-            }
-
-            throw new InvalidOperationException("english name , arabic name already exist");
+            throw new InvalidOperationException("Licence type not found");
         }
-        else
-             return await base.UpdateAsync(id, input);
+
+        var exisitingPlateColor = await _plateColorRepository.FindAsync(input.PlateColorId);
+
+        if (exisitingPlateColor is null)
+        {
+            throw new InvalidOperationException("Plate color doesnot exist");
+        }
+
+        var LicenceType = await _repository.FirstOrDefaultAsync
+                (type =>
+                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+
+        if (LicenceType != null)
+        {
+            if (LicenceType.EnglishName == input.EnglishName.Trim(' ') && LicenceType.Id != id)
+            {
+                throw new InvalidOperationException("Licence type english name already exists");
+
+            }
+            else if (LicenceType.ArabicName == input.ArabicName.Trim(' ') && LicenceType.Id != id)
+            {
+                throw new InvalidOperationException("Licence type arabic name already exists");
+
+            }
+
+
+        }
+        return await base.UpdateAsync(id, input);
     }
     public async Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {

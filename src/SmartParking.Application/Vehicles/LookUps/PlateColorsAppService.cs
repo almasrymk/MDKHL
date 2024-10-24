@@ -35,56 +35,61 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
     public override async Task<PlateColorDto> CreateAsync(CreateUpdatePlateColorDto input)
     {
         var plateColor = await _repository.FirstOrDefaultAsync
-                (color =>
-                color.EnglishName == input.EnglishName ||
-                color.ArabicName == input.ArabicName);
+               (plate =>
+               plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+               plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
         if (plateColor != null)
         {
-            if (plateColor.EnglishName == input.EnglishName)
+            if (plateColor.EnglishName == input.EnglishName.Trim(' ') )
             {
-                throw new InvalidOperationException("plate color english name already exists");
+                throw new InvalidOperationException("Plate color english name already exists");
 
             }
-            else if (plateColor.ArabicName == input.ArabicName)
+            else if (plateColor.ArabicName == input.ArabicName.Trim(' ') )
             {
-                throw new InvalidOperationException("plate color arabic name already exists");
+                throw new InvalidOperationException("Plate color  arabic name already exists");
 
             }
 
-            throw new InvalidOperationException("english name , arabic name already exist");
+
         }
-
-        else
-            return await base.CreateAsync(input);
+        return await base.CreateAsync(input);
 
     }
 
     ///<inheritdoc/>
     public override async Task<PlateColorDto> UpdateAsync(int id, CreateUpdatePlateColorDto input)
     {
+        var existingPlate = await _repository.GetAsync(id);
+
+        if (existingPlate is null)
+        {
+            throw new InvalidOperationException("Plate Color not found");
+        }
+
         var plateColor = await _repository.FirstOrDefaultAsync
-               (color =>
-               color.EnglishName == input.EnglishName ||
-               color.ArabicName == input.ArabicName);
+                (plate =>
+                plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
 
         if (plateColor != null)
         {
-            if (plateColor.EnglishName == input.EnglishName)
+            if (plateColor.EnglishName == input.EnglishName.Trim(' ') && plateColor.Id != id)
             {
-                throw new InvalidOperationException("plate color english name already exists");
+                throw new InvalidOperationException("Plate Color english name already exists");
 
             }
-            else if (plateColor.ArabicName == input.ArabicName)
+            else if (plateColor.ArabicName == input.ArabicName.Trim(' ') && plateColor.Id != id)
             {
-                throw new InvalidOperationException("plate color arabic name already exists");
+                throw new InvalidOperationException("Plate Color arabic name already exists");
 
             }
 
-            throw new InvalidOperationException("english name , arabic name already exist");
+
         }
-        else
-            return await base.UpdateAsync(id, input);
+        return await base.UpdateAsync(id, input);
     }
     public async Task<PagedResultDto<PlateColorDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
 	{

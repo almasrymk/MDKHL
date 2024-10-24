@@ -22,11 +22,14 @@ namespace SmartParking.Vehicles.LookUps;
 public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleModelDto>, IVehicleModelsAppService
 {
     private readonly IRepository<VehicleModel, int> _repository;
+    private readonly IRepository<VehicleBrand, int> _vehicleBrandRepository;
+
     private IDataFilter _dataFilter;
 
-    public VehicleModelsAppService(IRepository<VehicleModel, int> repository, IDataFilter dataFilter) : base(repository)
+    public VehicleModelsAppService(IRepository<VehicleModel, int> repository,IRepository<VehicleBrand, int> vehicleBrandRepository, IDataFilter dataFilter) : base(repository)
 	{
         _repository = repository;
+        _vehicleBrandRepository = vehicleBrandRepository;
         _dataFilter = dataFilter;
     }
 
@@ -34,56 +37,72 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
     public override async Task<VehicleModelDto> CreateAsync(CreateUpdateVehicleModelDto input)
     {
         var vehicleModel = await _repository.FirstOrDefaultAsync
-                (model =>
-                model.EnglishName == input.EnglishName ||
-                model.ArabicName == input.ArabicName);
+                (vehicle =>
+                vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
+        var exisitingVehicleBrand = await _vehicleBrandRepository.FindAsync(input.VehiclesBrandId);
+
+        if (exisitingVehicleBrand is null)
+        {
+            throw new InvalidOperationException("Plate color doesnot exist");
+        }
         if (vehicleModel != null)
         {
-            if (vehicleModel.EnglishName == input.EnglishName)
+            if (vehicleModel.EnglishName == input.EnglishName.Trim(' '))
             {
-                throw new InvalidOperationException("vehicle model english name already exists");
+                throw new InvalidOperationException("Vehicle model english name already exists");
 
             }
-            else if (vehicleModel.ArabicName == input.ArabicName)
+            else if (vehicleModel.ArabicName == input.ArabicName.Trim(' '))
             {
-                throw new InvalidOperationException("vehicle model arabic name already exists");
+                throw new InvalidOperationException("Vehicle model  arabic name already exists");
 
             }
 
-            throw new InvalidOperationException("english name , arabic name already exist");
+
         }
-
-        else
-            return await base.CreateAsync(input);
+        return await base.CreateAsync(input);
 
     }
 
     ///<inheritdoc/>
     public override async Task<VehicleModelDto> UpdateAsync(int id, CreateUpdateVehicleModelDto input)
     {
-        var vehicleBrand = await _repository.FirstOrDefaultAsync
-               (brand =>
-               brand.EnglishName == input.EnglishName ||
-               brand.ArabicName == input.ArabicName);
+        var existingVehicleModel = await _repository.GetAsync(id);
 
-        if (vehicleBrand != null)
+        if (existingVehicleModel is null)
         {
-            if (vehicleBrand.EnglishName == input.EnglishName)
-            {
-                throw new InvalidOperationException("vehicle model english name already exists");
-
-            }
-            else if (vehicleBrand.ArabicName == input.ArabicName)
-            {
-                throw new InvalidOperationException("vehicle model arabic name already exists");
-
-            }
-
-            throw new InvalidOperationException("english name , arabic name already exist");
+            throw new InvalidOperationException("Vehicle model not found");
         }
-        else
-            return await base.UpdateAsync(id, input);
+
+        var vehicleModel = await _repository.FirstOrDefaultAsync
+                (vehicle =>
+                vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        var exisitingVehicleBrand = await _vehicleBrandRepository.FindAsync(input.VehiclesBrandId);
+
+        if (exisitingVehicleBrand is null)
+        {
+            throw new InvalidOperationException("Plate color doesnot exist");
+        }
+        if (vehicleModel != null)
+        {
+            if (vehicleModel.EnglishName == input.EnglishName.Trim(' ') && vehicleModel.Id != id)
+            {
+                throw new InvalidOperationException("Vehicle model english name already exists");
+
+            }
+            else if (vehicleModel.ArabicName == input.ArabicName.Trim(' ') && vehicleModel.Id != id)
+            {
+                throw new InvalidOperationException("Vehicle model arabic name already exists");
+
+            }
+
+
+        }
+        return await base.UpdateAsync(id, input);
     }
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)

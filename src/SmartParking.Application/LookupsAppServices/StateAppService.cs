@@ -43,10 +43,17 @@ public class StateAppService : CrudAppService<State, StateDto,
 
     public override async Task<StateDto> CreateAsync(CreateUpdateStateDto input)
     {
-        var state = await _regionRepository.FirstOrDefaultAsync
-                (region =>
-                region.EnglishName == input.EnglishName ||
-                region.ArabicName == input.ArabicName);
+        var state = await _stateRepository.FirstOrDefaultAsync
+                (state =>
+                state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        var exisitingRegion = await _stateRepository.FindAsync(input.RegionId);
+
+        if (exisitingRegion is null)
+        {
+            throw new InvalidOperationException("region doesnot exist");
+        }
 
         if (state != null)
         {
@@ -63,38 +70,52 @@ public class StateAppService : CrudAppService<State, StateDto,
 
             throw new InvalidOperationException("english name , arabic name already exist");
         }
+
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
         
-        else
+        
             return await base.CreateAsync(input);
     }
 
     ///<inheritdoc/>
     public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
     {
-        var state = await _regionRepository.FirstOrDefaultAsync
-                (region =>
-                region.EnglishName == input.EnglishName ||
-                region.ArabicName == input.ArabicName);
+        var exisitingState = await _stateRepository.GetAsync(id);
+        if (exisitingState is null)
+        {
+            throw new InvalidOperationException("State not found");
+        }
+        var exisitingRegion = await _stateRepository.FindAsync(input.RegionId);
+
+        if (exisitingRegion is null)
+        {
+            throw new InvalidOperationException("region doesnot exist");
+        }
+
+
+        var state = await _stateRepository.FirstOrDefaultAsync
+                (state =>
+                state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
         if (state != null)
         {
-            if (state.EnglishName == input.EnglishName)
+            if (state.EnglishName == input.EnglishName.Trim(' ') )
             {
                 throw new InvalidOperationException("state english name already exists");
 
             }
-            else if (state.ArabicName == input.ArabicName)
+            else if (state.ArabicName == input.ArabicName.Trim(' '))
             {
                 throw new InvalidOperationException("state arabic name already exists");
 
             }
 
-            throw new InvalidOperationException("english name , arabic name already exist");
+          
         }
 
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
@@ -102,9 +123,10 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new InvalidOperationException("Invalid status value.");
 
         }
+
        
-        else
-            return await base.UpdateAsync(id,input);
+
+        return await base.UpdateAsync(id,input);
     }
 
     ///<inheritdoc/>

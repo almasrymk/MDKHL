@@ -1,4 +1,5 @@
-﻿using SmartParking.Enums;
+﻿using Abp.Application.Services.Dto;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

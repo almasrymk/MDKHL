@@ -321,7 +321,9 @@
     "FullDayExceeded": "FullDay Exceeded",
     "FullDay": "FullDay",
     "Customer Categories": "Customer Categories",
-    "No Subscription for organization": "No Subscription for organization"
+    "No Subscription for organization": "No Subscription for organization",
+    "CountryArabicName": "Country Arabic Name",
+    "CountryEnglishName": "Country English Name"
 
   } 
 }

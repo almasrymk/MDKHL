@@ -5,6 +5,7 @@ using SmartParking.Lookups;
 using SmartParking.Lookups.Governorate;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -37,46 +38,85 @@ public class GovernorateAppService : CrudAppService<Governorate,
         public override async Task<GovernorateDto> CreateAsync(CreateUpdateGovernorateDto input)
         {
             var governorate = await _governorateRepository.FirstOrDefaultAsync
-                 (governorate =>
-                 governorate.EnglishName == input.EnglishName ||
-                 governorate.ArabicName == input.ArabicName   ||
-                 governorate.EnglishCapital == input.EnglishCapital ||
-                 governorate.ArabicCapital == input.ArabicCapital );
+            (governorate =>
+            governorate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+            governorate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()) ||
+            governorate.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
+            governorate.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
 
             if (governorate != null)
             {
-                if (governorate.EnglishName == input.EnglishName)
+                if (governorate.EnglishName == input.EnglishName.ToLower().Trim(' ') && governorate.Id != input.Id)
                 {
                     throw new InvalidOperationException("governrate english name already exists");
 
                 }
-                else if (governorate.ArabicName == input.ArabicName)
+                else if (governorate.ArabicName == input.ArabicName.ToLower().Trim(' ') && governorate.Id != input.Id)
                 {
                     throw new InvalidOperationException("governrate arabic name already exists");
 
                 }
-                else if (governorate.EnglishCapital == input.EnglishCapital)
+                else if (governorate.EnglishCapital == input.EnglishCapital.ToLower().Trim(' ') && governorate.Id != input.Id)
                 {
                     throw new InvalidOperationException("governrate english capital already exists");
 
                 }
-                else if (governorate.ArabicCapital == input.ArabicCapital)
+                else if (governorate.ArabicCapital == input.ArabicCapital.ToLower().Trim(' ') && governorate.Id != input.Id)
                 {
                     throw new InvalidOperationException("governrate arabic capital already exists");
 
                 }
-                throw new InvalidOperationException("english name , arabic name , english capital & arabic capital already exist");
+
             }
-            else
-            {
-                return await base.CreateAsync(input);
-            }
+
+            return await base.CreateAsync(input);
+            
         }
-        /// <summary>
-        /// method used to get list of governorates
-        /// </summary>
-        /// <param name="input">specifies max number of governorate and if it filtered or not</param>
-        /// <returns>GovernorateDto List</returns>
+
+    /// <inheritdoc/>
+
+    public override async Task<GovernorateDto> UpdateAsync(int id, CreateUpdateGovernorateDto input)
+    {
+        var governorate = await _governorateRepository.FirstOrDefaultAsync
+        (governorate =>
+        governorate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+        governorate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()) ||
+        governorate.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
+        governorate.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
+
+        if (governorate != null)
+        {
+            if (governorate.EnglishName == input.EnglishName.Trim(' ') && governorate.Id != input.Id)
+            {
+                throw new InvalidOperationException("governrate english name already exists");
+
+            }
+            else if (governorate.ArabicName == input.ArabicName.Trim(' ') && governorate.Id != input.Id)
+            {
+                throw new InvalidOperationException("governrate arabic name already exists");
+
+            }
+            else if (governorate.EnglishCapital == input.EnglishCapital.Trim(' ') && governorate.Id != input.Id)
+            {
+                throw new InvalidOperationException("governrate english capital already exists");
+
+            }
+            else if (governorate.ArabicCapital == input.ArabicCapital.Trim(' ') && governorate.Id != input.Id)
+            {
+                throw new InvalidOperationException("governrate arabic capital already exists");
+
+            }
+           
+        }
+            return await base.UpdateAsync(id,input);
+        
+    }
+
+    /// <summary>
+    /// method used to get list of governorates
+    /// </summary>
+    /// <param name="input">specifies max number of governorate and if it filtered or not</param>
+    /// <returns>GovernorateDto List</returns>
 
     public async Task<PagedResultDto<GovernorateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {

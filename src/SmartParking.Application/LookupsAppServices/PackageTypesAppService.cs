@@ -33,54 +33,60 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
         {
             var packageType = await _packageTypeRepository.FirstOrDefaultAsync
                 (type =>
-                type.EnglishName == input.EnglishName ||
-                type.ArabicName == input.ArabicName);
+                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+         
 
             if (packageType != null)
             {
-                if (packageType.EnglishName == input.EnglishName)
+                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != input.Id)
                 {
-                    throw new InvalidOperationException("package type english name already exists");
+                    throw new InvalidOperationException("package english name already exists");
 
                 }
-                else if (packageType.ArabicName == input.ArabicName)
+                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != input.Id)
                 {
-                    throw new InvalidOperationException("package type arabic name already exists");
+                    throw new InvalidOperationException("Package arabic name already exists");
 
                 }
+           
 
-                throw new InvalidOperationException("english name , arabic name already exist");
             }
-            else
-            {
-                return await base.CreateAsync(input);
-            }
+               return await base.CreateAsync(input);
         }
 
         /// <inheritdoc/>
         public override async Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input)
         {
+            var existingPackage= await _packageTypeRepository.GetAsync(id);
+
+            if (existingPackage is null)
+            {
+                throw new InvalidOperationException("Package Type not found");
+            }
+
             var packageType = await _packageTypeRepository.FirstOrDefaultAsync
-               (type =>
-               type.EnglishName == input.EnglishName ||
-               type.ArabicName == input.ArabicName);
+                    (type =>
+                    type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                    type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
 
             if (packageType != null)
             {
-                if (packageType.EnglishName == input.EnglishName)
+                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != input.Id)
                 {
-                    throw new InvalidOperationException("package type english name already exists");
+                    throw new InvalidOperationException("package english name already exists");
 
                 }
-                else if (packageType.ArabicName == input.ArabicName)
+                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != input.Id)
                 {
-                    throw new InvalidOperationException("package type arabic name already exists");
+                    throw new InvalidOperationException("Package arabic name already exists");
 
                 }
 
-                throw new InvalidOperationException("english name , arabic name already exist");
+
             }
-            return await base.UpdateAsync(id, input);
+                return await base.UpdateAsync(id,input);
         }
         /// <summary>
         /// method used to get list of package Types
