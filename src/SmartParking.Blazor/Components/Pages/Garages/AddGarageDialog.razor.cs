@@ -43,6 +43,7 @@ public partial class AddGarageDialog
             {
                 ShowSnackbar("Garage Has been created Successfully", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
+                NavigationManager.NavigateTo("/garages",true);
             }
             else
             {

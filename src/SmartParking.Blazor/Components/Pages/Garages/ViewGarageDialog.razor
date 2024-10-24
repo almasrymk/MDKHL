@@ -8,15 +8,10 @@
     <MudDialog Class="mud-modal">
 
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Details for Garage"] @Garage.Name</MudText>
+            <MudText Typo="Typo.h6">@L["Details for Garage"]</MudText>
         </TitleContent>
         <DialogContent>
-            <MudGrid>
-                <MudItem Class="w-100">
-
-                    @*         <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-
-                    *@
+            
                     <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                         <MudGrid>
                             <MudItem sm="6" md="6">
@@ -27,7 +22,7 @@
                                               ReadOnly="true"
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["Garage Name"]"
-                                              Disabled />
+                                               />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="Garage.MaxCapacity"
@@ -37,7 +32,7 @@
                                               Immediate="true"
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["Garage Max Capacity"]"
-                                              Disabled />
+                                               />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="Garage.Code"
@@ -47,7 +42,7 @@
                                               Class="w-100"
                                               Immediate="true"
                                               Label="@L["Garage Code"]"
-                                              Disabled />
+                                               />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="Garage.ClosingHours"
@@ -57,7 +52,7 @@
                                               Immediate="true"
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["Closing Hours"]"
-                                              Disabled />
+                                               />
                             </MudItem>
                             <MudItem sm="6" md="6" >
                                 <MudTextField @bind-Value="Garage.Status"
@@ -67,7 +62,7 @@
                                               Class="w-100"
                                               Immediate="true"
                                               Label="@L["Status"]"
-                                              Disabled />
+                                               />
 
                             </MudItem>
 
@@ -76,25 +71,11 @@
                         </MudGrid>
                     </MudForm>
 
-                    @*         </MudPaper>
-
-                    *@
-                </MudItem>
-            </MudGrid>
         </DialogContent>
 
 
         <DialogActions>
-                        <div class="overflow-hidden px-5 w-100">
-
-            <MudGrid >
-                  <MudItem sm="6" md="6" >
-
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Tertiary" OnClick="OnCloseViewOnly">@L["Cancel"]</MudButton>
-                  </MudItem>
-              </MudGrid>
-            </div>
-
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
         </DialogActions>
     </MudDialog>
 
