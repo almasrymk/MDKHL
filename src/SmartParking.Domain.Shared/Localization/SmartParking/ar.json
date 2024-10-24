@@ -368,6 +368,10 @@
     "Camera assigned to garage Successfully": "تم تعيين كاميرا لكراج بنجاح",
     "Can't assign camera to garage": "فشل في تعيين كاميرا لجراج",
     "Camera Updated Successfully": "تم تحديث كاميرا بنجاح",
-    "Can't Update Camera": "لا يمكن تحديث كاميرا"
+    "Can't Update Camera": "لا يمكن تحديث كاميرا",
+    "Camera Deleted Successfully": "تم حذف كاميرا بنجاح",
+    "Garage Deleted Successfully": "تم حذف كراج بنجاح"
+
+
   }
 }

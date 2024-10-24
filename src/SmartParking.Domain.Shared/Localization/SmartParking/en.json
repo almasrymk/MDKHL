@@ -344,7 +344,9 @@
     "Camera assigned to garage Successfully": "Camera assigned to garage Successfully",
     "Can't assign camera to garage": "Can't assign camera to garage",
     "Camera Updated Successfully": "Camera Updated Successfully",
-    "Can't Update Camera": "Can't Update Camera"
+    "Can't Update Camera": "Can't Update Camera",
+    "Camera Deleted Successfully": "Camera Deleted Successfully",
+    "Garage Deleted Successfully": "Garage Deleted Successfully"
 
   } 
 }
