@@ -137,8 +137,8 @@ public partial class VehicleModel
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandArabicName"], Name = "VehicleBrandArabicName", IsFilterable = true, PropertyNmae = "VehicleBrandArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandEnglishName"], Name = "VehicleBrandEnglishName", IsFilterable = true, PropertyNmae = "VehicleBrandEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandArabicName"], Name = "VehicleBrandArabicName", IsFilterable = true, PropertyNmae = "VehiclesBrand.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandEnglishName"], Name = "VehicleBrandEnglishName", IsFilterable = true, PropertyNmae = "VehiclesBrand.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
@@ -148,8 +148,8 @@ public partial class VehicleModel
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandArabicName"], item.VehicleBrandArabicName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandEnglishName"], item.VehicleBrandEnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandArabicName"], item.VehiclesBrand.ArabicName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandEnglishName"],item.VehiclesBrand.EnglishName));
 
 			//rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 

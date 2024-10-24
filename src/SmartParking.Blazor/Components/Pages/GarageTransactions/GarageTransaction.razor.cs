@@ -133,7 +133,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyNmae = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyNmae = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyNmae = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyNmae = "Type", IsSortable = true, TypeFilter = TypeFilter.Enum });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyNmae = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 			foreach (var item in garageTransactions.Items)
 			{
@@ -142,7 +142,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.CameraType.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"], item.CameraType.ToString()));
 
                 //rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
