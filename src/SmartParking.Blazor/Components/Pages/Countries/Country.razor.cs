@@ -1,12 +1,19 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
 using SmartParking.Lookups;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Countries;
 
@@ -195,23 +202,57 @@ public partial class Country
         return await DialogService.ShowAsync<DetailsCountryDialog>("View Country", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
         var successMessage = _localizer["CountryDeletedSuccessfully"];
 
-        var id = int.Parse(row);
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteCountry", parameters);
+        var result = await dialog.Result;
         try
         {
+            if (!result.Canceled)
+            {
+                await AppService.DeleteAsync(id);
+                ShowSnackbar(successMessage, Severity.Error);
+                await Task.Delay(1000);
 
-            await AppService.DeleteAsync(id);
-            ShowSnackbar(successMessage, Severity.Success);
+                Navigation.NavigateTo("/countries", forceLoad: true);
 
+            }
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to delete Country : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Country : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(ex.Message, Severity.Error);
+            ShowSnackbar($"Failed to delete Country : {ex.Message} + ", Severity.Error);
         }
+
 
     }
 
@@ -231,7 +272,7 @@ public partial class Country
 
         Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

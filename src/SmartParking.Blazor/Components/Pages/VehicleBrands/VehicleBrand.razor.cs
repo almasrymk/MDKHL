@@ -10,6 +10,12 @@ using SmartParking.Lookups.VehicleBrand;
 using Volo.Abp.Application.Dtos;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Blazor.Components.SPComponents;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.VehicleBrands;
 
@@ -201,40 +207,74 @@ public partial class VehicleBrand
 		return await Dialog.ShowAsync<ViewVehicleBrandDialog>("View VehicleBrandDialog", parameters);
 	}
 
-	private async Task OnClickRowDelete(string row)
+	private async Task OnClickRowDelete(RowDef row)
 	{
-		var id = int.Parse(row);
-		try
-		{
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
 
-			await VehicleBrandsAppService.DeleteAsync(id);
-			ShowSnackbar("VehicleBrand Deleted Successfully ", Severity.Success);
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
 
-		}
-		catch (Exception ex)
-		{
+        };
 
-			ShowSnackbar(ex.Message, Severity.Error);
-		}
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("VehicleBrand Delete Dialog", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await VehicleBrandsAppService.DeleteAsync(id);
+                ShowSnackbar("Vehicle Brand Deleted Successfully", Severity.Error);
+                await Task.Delay(1000);
 
-	}
-	/// <summary>
+                Navigation.NavigateTo("/vehiclebrands", forceLoad: true);
 
-	/// Displays a snackbar notification with the specified message and severity.
+            }
 
-	/// </summary>
 
-	/// <param name="message">The message to display in the snackbar.</param>
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+            ShowSnackbar($"Failed to delete Vehicle Brand  : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Vehicle Brand  : {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-	void ShowSnackbar(string message, Severity severity)
+            ShowSnackbar($"Failed to delete Vehicle Brand  : {ex.Message} + ", Severity.Error);
+        }
+
+
+    }
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
 
 	{
 
 		Snackbar.Clear();
 
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

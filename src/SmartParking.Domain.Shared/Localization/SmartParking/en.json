@@ -321,7 +321,11 @@
     "FullDayExceeded": "FullDay Exceeded",
     "FullDay": "FullDay",
     "Customer Categories": "Customer Categories",
-    "No Subscription for organization": "No Subscription for organization"
-
+    "No Subscription for organization": "No Subscription for organization",
+    "Deletion Process": "Deletion Process",
+    "Do you wish to Delete This": "Do you wish to Delete This",
+    "...?": "...?",
+    "Camera with Mac Address :": "Camera with Mac Address : ",
+    "Confirm Deletion": "Confirm Deletion"
   } 
 }

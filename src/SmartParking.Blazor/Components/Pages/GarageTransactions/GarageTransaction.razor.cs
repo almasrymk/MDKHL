@@ -220,22 +220,12 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			return await Dialog.ShowAsync<ViewGarageTransaction>("View GarageTransaction", parameters);
 		}
 
-		private async Task<Task> OnClickRowDelete(string row)
+		private async Task<Task> OnClickRowDelete(RowDef row)
 		{
 			ShowSnackbar("Service Not Allowed", Severity.Warning);
+			Navigation.NavigateTo("/garagetransactions");
 			return Task.CompletedTask;
-			var id = int.Parse(row);
-			try
-			{
-
-				await GarageTransactionsAppService.DeleteAsync(id);
-				ShowSnackbar("GarageTransaction Deleted Successfully ", Severity.Success);
-
-			}
-			catch (Exception ex)
-			{
-				ShowSnackbar(ex.Message, Severity.Error);
-			}
+			
 
 		}
 		/// <summary>

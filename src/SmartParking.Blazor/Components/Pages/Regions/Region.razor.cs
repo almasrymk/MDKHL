@@ -1,13 +1,18 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
 using SmartParking.Lookups.Region;
+using SmartParking.Vehicles.LookUps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Regions;
@@ -187,23 +192,57 @@ public partial class Region
         return await Dialog.ShowAsync<DetailsRegionDialog>("View Region", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
         var successMessage = _localizer["RegionDeletedSuccessfully"];
 
-        var id = int.Parse(row);
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Regions Delete Dialog", parameters);
+        var result = await dialog.Result;
         try
         {
+            if (!result.Canceled)
+            {
+                await AppService.DeleteAsync(id);
+                ShowSnackbar(successMessage, Severity.Error);
+                await Task.Delay(1000);
 
-            await AppService.DeleteAsync(id);
-            ShowSnackbar(successMessage, Severity.Success);
+                Navigation.NavigateTo("/regions", forceLoad: true);
 
+            }
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to delete Region : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Region : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(ex.Message, Severity.Error);
+            ShowSnackbar($"Failed to delete Region : {ex.Message} + ", Severity.Error);
         }
+
 
     }
 
@@ -223,7 +262,7 @@ public partial class Region
 
         Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

@@ -174,7 +174,7 @@
                                     }
                                     @if (OnClickRowDelete.HasDelegate && ShowDelete)
                                     {
-                                        <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item.Cells[0].Value))"
+                                        <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Delete"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Error"

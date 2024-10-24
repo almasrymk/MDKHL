@@ -15,6 +15,7 @@ using static MudBlazor.CategoryTypes;
 using SmartParking.Blazor.Components.SPComponents;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
+using SmartParking.Vehicles.LookUps;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -34,21 +35,32 @@ public partial class Organization
         _localizer = localizer;
     }
 
-    private async Task HandleDelete(string id)
+    private async Task HandleDelete(RowDef row)
     {
-      var dialog =   await Dialog.ShowAsync<SPDialogDelete>(); 
-      var result = await dialog.Result;
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("OrganizationDeleteDialog", parameters);
+        var result = await dialog.Result;
         try
         {
             if (!result.Canceled)
             {
-                 await OrganizationsAppService.DeleteAsync(int.Parse(id));
-                
+                await OrganizationsAppService.DeleteAsync(id);
+                ShowSnackbar("Organization Deleted Successfully", Severity.Error);
+                await Task.Delay(1000);
+
                 Navigation.NavigateTo("/organizations", forceLoad: true);
-               
+
             }
-            
-            
+
+
         }
         catch (AbpValidationException validationException)
         {
@@ -60,17 +72,19 @@ public partial class Organization
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Organization : {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Organization : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Organization : {ex.Message} + ", Severity.Error);
         }
+
+
     }
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.
@@ -80,7 +94,7 @@ public partial class Organization
     void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
     private void HandleView(RowDef row)
