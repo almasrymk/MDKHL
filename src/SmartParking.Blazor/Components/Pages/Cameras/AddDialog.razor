@@ -26,6 +26,7 @@
                                            Variant="Variant.Text"
                                            Label="@L["Garage Name"]"
                                            Placeholder="Choose"
+                                           Required
                                            Clearable="_clearable">
                                     @foreach (var garage in Garages)
                                     {
@@ -40,6 +41,7 @@
                                               For="@(() => cameraDto.GarageId)"
                                               Immediate="true"
                                               Disabled=true
+                                      
                                               Label="@L["GarageId"]" />
                             </MudItem>
 
@@ -55,6 +57,7 @@
                                 <MudTextField @bind-Value="cameraDto.Model"
                                               For="@(() => cameraDto.Model)"
                                               Immediate="true"
+                                      Required
                                       Placeholder="@L["Model"]"
                                       Label="@L["Model"]" />
                             </MudItem>
@@ -62,6 +65,7 @@
                                 <MudTextField @bind-Value="cameraDto.MainType"
                                               For="@(() => cameraDto.MainType)"
                                               Immediate="true"
+                                      Required
                                       Placeholder="@L["MainType"]"
                                       Label="@L["MainType"]" />
                             </MudItem>
@@ -69,6 +73,7 @@
                                 <MudTextField @bind-Value="cameraDto.BrandName"
                                               For="@(() => cameraDto.BrandName)"
                                               Immediate="true"
+                                      Required
                                       Placeholder="@L["BrandName"]"
                                       Label="@L["BrandName"]" />
                             </MudItem>
@@ -76,6 +81,7 @@
                                 <MudTextField @bind-Value="cameraDto.Code"
                                               For="@(() => cameraDto.Code)"
                                               Immediate="true"
+                                      Required
                                       Placeholder="@L["Code"]"
                                       Label="@L["Code"]" />
 
@@ -85,6 +91,7 @@
                     <MudTextField @bind-Value="cameraDto.CameraIP"
                                   For="@(() => cameraDto.CameraIP)"
                                   Immediate="true"
+                                      Required
                                       Placeholder="@L["CameraIP"]"
                                               Label="@L["CameraIP"]" />
 
@@ -94,6 +101,7 @@
                                   <MudTextField @bind-Value="cameraDto.MacAddress"
                                   For="@(() => cameraDto.MacAddress)"
                                   Immediate="true"
+                                      Required
                                       Placeholder="@L["MacAddress"]"
                                   Label="@L["MacAddress"]" />
 
@@ -103,7 +111,7 @@
                         <div Class="d-flex flex-row justify-content-between">
 
                           
-                            <MudRadioGroup  @bind-Value="@cameraDto.CameraType" Class="d-inline-flex align-content-center">
+                            <MudRadioGroup @bind-Value="@cameraDto.CameraType" Class="d-inline-flex align-content-center">
                                 <MudRadio Value="@(Enums.CameraType.Entry)" Color="MudBlazor.Color.Primary">@L["Entry"]</MudRadio>
                                 <MudRadio Value="@(Enums.CameraType.Exit)" Color="MudBlazor.Color.Error">@L["Exit"]</MudRadio>
                             </MudRadioGroup>
@@ -115,7 +123,7 @@
 
 
 
-                            <MudRadioGroup @bind-Value="@cameraDto.Status"  Class="d-inline-flex align-content-center">
+                            <MudRadioGroup @bind-Value="@cameraDto.Status" Class="d-inline-flex align-content-center" >
                                
                                         <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
                                         <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
@@ -129,7 +137,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(form == null || !form.IsValid)">@L["Create"]</MudButton>
         </DialogActions>
         
     </MudDialog>
@@ -152,6 +160,7 @@
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
     public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -199,10 +208,7 @@
             
             
         }
-        else
-        {
-            Snackbar.Add($"{validationErrorMessage}", Severity.Error);
-        }
+        
     }
     private void Cancel()
     {

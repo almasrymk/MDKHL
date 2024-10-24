@@ -16,7 +16,7 @@
         <MudItem sm="8">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <h3 Color="fw-bold">Register</h3>
-                <MudForm Class="flex-grow-1 mt-4">
+                <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
                         <MudItem sm="4">
                             <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.FullName" Label="@L["Name"]" Required />
@@ -25,7 +25,7 @@
                             <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.ArabicName" Label="@L["ArabicName"]" Required />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" Required/>
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField T="string" InputType="InputType.Password" Placeholder="@L["Type Here"]" Label="@L["Password"]" @bind-Value="createUpdateCustomerDto.Password" Required />
@@ -52,13 +52,13 @@
                     </MudGrid>
                     <div class="d-flex justify-content-between mt-auto">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="HandleCancel">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit">@L["Submit"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit" Disabled="@(form == null || !form.IsValid)">@L["Submit"]</MudButton>
                     </div>
                 </MudForm>
 
             </MudPaper>
         </MudItem>
-        <MudItem sm="4">
+        <MudItem sm="4">    
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                 <div class="d-flex justify-content-between align-items-center">
                     <MudText>My Profile</MudText>

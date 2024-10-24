@@ -28,28 +28,32 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Placeholder=@L["Type Here"]
-
+                                      Required
                                       Label=@L["Arabic Name"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="createUpdatePackage.EnglishName"
                                       For="@(() => createUpdatePackage.EnglishName)"
                                       Variant="Variant.Text"
+                                      Required
                                       Class="w-100"
                                       Placeholder=@L["Type Here"]
                                       Label=@L["English Name"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
-                        <MudTextField @bind-Value="createUpdatePackage.Price"
+                        <MudNumericField @bind-Value="createUpdatePackage.Price"
                                       For="@(() => createUpdatePackage.Price)"
                                       Variant="Variant.Text"
+                                         Min="1"
+                                         HideSpinButtons="true"
+                                      Required
                                       Class="w-100"
                                       Label=@L["Price"] />
                     </MudItem>
 
 
                     <MudItem sm="4" md="4">
-                        <MudSelect @bind-Value="@createUpdatePackage.OrgnizationId" Label=@L["Organizations"] HelperText=@L["Helper Text"] Placeholder=@L["Choose"]>
+                        <MudSelect @bind-Value="@createUpdatePackage.OrgnizationId" Label=@L["Organizations"] HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
 
                             @foreach (var organization in organizations)
                             {
@@ -60,7 +64,7 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="4" md="4">
-                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["Package Type"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"]>
+                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["Package Type"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
 
                             @foreach (var type in packageTypes)
                             {
@@ -74,6 +78,7 @@
                     <MudItem sm="4" md="4">
                         <MudTimePicker Variant="Variant.Text"
                                        Class="w-100"
+                                       Required
                                        TimeChanged="OnTimeFromChanged"
                                        Placeholder=@L["Time Placeholder"]
                                        Label="@L["Publish From"]" />
@@ -82,6 +87,7 @@
                     <MudItem sm="4" md="4">
                         <MudTimePicker Variant="Variant.Text"
                                        Class="w-100"
+                                       Required
                                        TimeChanged="OnTimeToChanged"
                                        Placeholder=@L["Time Placeholder"]
                                        Label="@L["Publish To"]" />
@@ -97,6 +103,7 @@
                                       For="@(() => createUpdatePackage.Description)"
                                       Variant="Variant.Outlined"
                                       Class="w-100"
+                                      Required
                                       Lines="5"
                                       Placeholder=@L["Type Here"]
                                       Label="@L["Description"]" />
@@ -120,7 +127,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
     </MudDialog>
