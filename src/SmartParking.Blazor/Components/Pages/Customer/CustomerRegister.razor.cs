@@ -9,6 +9,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class CustomerRegister
 {
+    private MudForm form;
     public CreateUpdateCustomerDto createUpdateCustomerDto = new CreateUpdateCustomerDto();
     public async  Task HandleSubmit()
     {

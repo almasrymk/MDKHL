@@ -22,6 +22,9 @@ public partial class AddGarageDialog
     private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
 
+    private MudForm form;
+
+
     TimeEditMode editMode = new TimeEditMode();
 
     protected override async Task OnInitializedAsync()
@@ -32,7 +35,10 @@ public partial class AddGarageDialog
     }
     private async void SubmitCreate()
     {
-        try
+		var successedMessage = L["GarageCreatedSuccessfully"];
+		var errorMessage = L["Can'tCreateGarage"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		try
         {
             createUpdateGarage.Code = "";
             createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
@@ -41,14 +47,14 @@ public partial class AddGarageDialog
             var garage = await GarageAppService.CreateAsync(createUpdateGarage);
             if (garage != null)
             {
-                ShowSnackbar("Garage Has been created Successfully", Severity.Success);
+                ShowSnackbar($"{successedMessage}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 NavigationManager.NavigateTo("/garages",true);
             }
             else
             {
-                ShowSnackbar("Can't create garage", Severity.Error);
+                ShowSnackbar($"{errorMessage}", Severity.Error);
 
 
             }
@@ -57,22 +63,22 @@ public partial class AddGarageDialog
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add organizagaragetion: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add garage: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add garage: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
         }
     }
 

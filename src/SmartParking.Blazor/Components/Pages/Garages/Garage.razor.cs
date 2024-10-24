@@ -249,7 +249,7 @@ public partial class Garage
             if (!result.Canceled)
             {
                 await GarageAppService.DeleteAsync(id);
-                ShowSnackbar("Garage Deleted Successfully", Severity.Error);
+                ShowSnackbar($"{L["Garage Deleted Successfully"]}", Severity.Error);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/garages", forceLoad: true);

@@ -350,7 +350,28 @@
     "...?": "...؟",
     "Camera with Mac Address : ": ": عنوان مـاك الكـاميرا ",
     "Confirm Deletion": "تـأكيـد الحـذف",
-    "Add NEW": "اضـافة جـديـد"
+    "Add NEW": "اضـافة جـديـد",
+    "OrganiztionCreatedSuccessfully": "تم اضافة منظمة بنجاح",
+    "Can'tCreateOrganiztion": "لا يمكن اضافة منظمة",
+    "FullDayPrice": "سعر اليوم الكامل",
+    "IsClose": "هل يتم الغلق",
+    "ClosingHoursStart": "موعد بداية ساعات الغلق",
+    "ClosingHoursEnd": "موعد نهاية ساعات الغلق",
+    "GarageCreatedSuccessfully": "تم اضافة كراج بنجاح",
+    "Can'tCreateGarage": "لا يمكن اضافة كراج",
+    "Garage assigned to organization Successfully": "تم تعيين كراج لمنظمة بنجاح",
+    "Garage Updated Successfully": "تم تحديث الكراج بنجاح",
+    "Failed to update garage": "فشل في تحديث كراج",
+    "Camera created successfully": "تم اضافة كاميرا بنجاح",
+    "Can'tCreate Camera": "لا يمكن اضافة كاميرا",
+    "DuplicateCameraIP": "يوجد تكرار في CamerIP",
+    "Camera assigned to garage Successfully": "تم تعيين كاميرا لكراج بنجاح",
+    "Can't assign camera to garage": "فشل في تعيين كاميرا لجراج",
+    "Camera Updated Successfully": "تم تحديث كاميرا بنجاح",
+    "Can't Update Camera": "لا يمكن تحديث كاميرا",
+    "Camera Deleted Successfully": "تم حذف كاميرا بنجاح",
+    "Garage Deleted Successfully": "تم حذف كراج بنجاح"
+
 
   }
 }

@@ -10,6 +10,7 @@
                Label="@L["Region"]"
                Placeholder="@L["Choose"]"
                Clearable="true"
+               Required
                ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
         @foreach (var region in regions)
         {

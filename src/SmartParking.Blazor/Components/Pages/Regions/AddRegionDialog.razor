@@ -23,6 +23,7 @@
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Text"
@@ -33,6 +34,7 @@
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Text"
@@ -57,7 +59,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 

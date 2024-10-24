@@ -25,6 +25,7 @@
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder="@L["ُEnterYourArabicName"]"
                                       Label="@L["Arabic Name"]"
@@ -35,6 +36,7 @@
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder="@L["EnterYourEnglishName"]"
                                       Label="@L["English Name"]"
@@ -44,6 +46,7 @@
                         <MudTextField @bind-Value="input.ArabicCapital"
                                       For="@(() => input.ArabicCapital)"
                                       Immediate="true"
+                                      Required
                                       Placeholder="@L["EnterYourArabicCapital"]"
                                       Label="@L["Arabic Capital"]"
                                       InputType="InputType.Text" />
@@ -52,6 +55,7 @@
                         <MudTextField @bind-Value="input.EnglishCapital"
                                       For="@(() => input.EnglishCapital)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder="@L["EnterYourEnglishCapital"]"
                                       Label="@L["English Capital"]"
@@ -66,7 +70,7 @@
                                       InputType="InputType.Text"
                                       Label="@L["Notes"]" />
                     </MudItem>
-                    <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
+                    <Countrylookups SelectValueChanged="SelectCountry" ></Countrylookups>
                         </MudGrid>
                     </MudForm>
                    
@@ -74,7 +78,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 

@@ -22,6 +22,8 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationAdd
 {
+    private MudForm form;
+
     public string ArabicName { get; set; } 
     public string EnglishName { get; set; }
     public string UnifiedLicenseNum { get; set; }
@@ -83,8 +85,11 @@ public partial class OrganizationAdd
 
     private async Task Save()
     {
+		var successedMessage = L["OrganiztionCreatedSuccessfully"];
+		var errorMessage = L["Can'tCreateOrganiztion"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        Status StatusValue;
+		Status StatusValue;
         if (Status)
         {
             StatusValue = Enums.Status.Active;
@@ -129,29 +134,29 @@ public partial class OrganizationAdd
              
             await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             
-            ShowSnackbar("Add Successfully You Can Login Your Password Is P@ssw0rd", Severity.Success);
+            ShowSnackbar($"{successedMessage} You Can Login Your Password Is P@ssw0rd", Severity.Success);
             Navigation.NavigateTo("/organizations");
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
        
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} : : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
         }
     }
     /// <summary>

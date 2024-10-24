@@ -23,6 +23,8 @@ public partial class AddInvoice
     public List<GarageDto> garages = new List<GarageDto>();
 
     public List<VehicleDto> vehicles = new List<VehicleDto>();
+    private MudForm form;
+
 
     public string code;
     protected override async Task OnInitializedAsync()
