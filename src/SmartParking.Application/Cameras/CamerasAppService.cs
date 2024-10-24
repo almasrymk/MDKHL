@@ -156,7 +156,8 @@ public class CamerasAppService :
                     or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Garage.Name.ToLower().Contains(input.SearchingTerm.ToLower())
                     
                 );
             }
