@@ -156,9 +156,8 @@ public class CamerasAppService :
                     or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) || 
-                    or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  ||
-                    or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  
+                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                    
                 );
             }
             // Get the total count of filtered records

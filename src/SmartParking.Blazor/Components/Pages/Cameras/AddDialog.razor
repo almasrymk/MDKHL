@@ -10,6 +10,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IGarageAppService GaragesAppService
 <PageTitle>@L["New Cameras"]</PageTitle>
+@inject NavigationManager Navigation
 
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -98,7 +99,7 @@
 
                             </MudItem>
                           
-                    <MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
+                    <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
 
                           
@@ -109,11 +110,13 @@
                         </div>
                     </MudItem>
                       
-                            <MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
+                            <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
                                 <div Class="d-flex flex-row justify-content-between">
 
 
-                                    <MudRadioGroup @bind-Value="@cameraDto.Status" Class="d-inline-flex align-content-center">
+
+                            <MudRadioGroup @bind-Value="@cameraDto.Status"  Class="d-inline-flex align-content-center">
+                               
                                         <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
                                         <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
                                     </MudRadioGroup>
@@ -188,7 +191,9 @@
                 return;
             }
             Snackbar.Add("Camera created successfully!", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+            Navigation.NavigateTo("/cameras", forceLoad: true);
+
+           // MudDialog.Close(DialogResult.Ok(true));
             
         }
         else

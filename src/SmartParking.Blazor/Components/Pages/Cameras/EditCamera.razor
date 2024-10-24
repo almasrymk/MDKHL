@@ -6,7 +6,7 @@
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
-
+@inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 <PageTitle>@L["Edit Camera"]</PageTitle>
@@ -93,12 +93,15 @@
 									  Disabled=true
 									  Label="@L["Id"]" />
 					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.CameraType"
-									  For="@(() => Camera.CameraType)"
-									  Immediate="true"
-									  Disabled="true"
-									  Label="@L["Type"]" />
+					<MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+						<div Class="d-flex flex-row justify-content-between">
+
+
+							<MudRadioGroup @bind-Value="@Camera.CameraType" Class="d-inline-flex align-content-center">
+								<MudRadio Value="@(Enums.CameraType.Entry)" Color="MudBlazor.Color.Primary">@L["Entry"]</MudRadio>
+								<MudRadio Value="@(Enums.CameraType.Exit)" Color="MudBlazor.Color.Error">@L["Exit"]</MudRadio>
+							</MudRadioGroup>
+						</div>
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Status"
@@ -165,8 +168,9 @@
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
 			Snackbar.Add("Camera Updated Successfully", Severity.Success);
-			MudDialogAdd.Close(DialogResult.Ok(true));
+			Navigation.NavigateTo("/cameras", forceLoad: true);
 
+			//MudDialogAdd.Close(DialogResult.Ok(true));
 		}
 		catch (Exception e)
 		{
