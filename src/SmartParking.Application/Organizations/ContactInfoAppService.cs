@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
@@ -14,6 +15,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Organizations;
+[Authorize]
 
 public class ContactInfoAppService : CrudAppService<ContactInfo, ContactInfoDto, int, PagedAndSortedResultRequestDto, ContactInfoCreateUpdateDto>, IContactInfoAppService
 {

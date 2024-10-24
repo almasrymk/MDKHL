@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Lookups;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
+using SmartParking.Lookups.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,8 +124,8 @@ public class CitiesAppService : CrudAppService<City, CityDto,
         {
 
             queryable = queryable.Where(c =>
-                c.ArabicName.StartsWith(input.SearchingTerm) ||
-                c.EnglishName.StartsWith(input.SearchingTerm)
+                c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
 
             );
         }
@@ -215,5 +217,12 @@ public class CitiesAppService : CrudAppService<City, CityDto,
 
         await base.DeleteAsync(id);
     }
-
+    public async Task<List<CityLookupDto>> GetCityByRegion(int regionId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(r => r.RegionId == regionId);
+        var cities = await AsyncExecuter.ToListAsync(query);
+        var citiesList = ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities);
+        return citiesList;
+    }
 }
