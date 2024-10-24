@@ -37,6 +37,10 @@ public partial class Organization
 
     private async Task HandleDelete(RowDef row)
     {
+        var successMessage = L["OrganizationDeletedSuccessfully"];
+        var errorMessage = L["Can'tDeleteOrganiztion"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
@@ -53,7 +57,7 @@ public partial class Organization
             if (!result.Canceled)
             {
                 await OrganizationsAppService.DeleteAsync(id);
-                ShowSnackbar("Organization Deleted Successfully", Severity.Error);
+                ShowSnackbar(successMessage, Severity.Error);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/organizations", forceLoad: true);
@@ -66,22 +70,22 @@ public partial class Organization
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage}  {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Organization : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{ errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Organization : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Organization : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
 
 

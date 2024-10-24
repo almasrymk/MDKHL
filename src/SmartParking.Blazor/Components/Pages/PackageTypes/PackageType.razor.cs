@@ -204,7 +204,10 @@ public partial class PackageType
     private async Task OnClickRowDelete(RowDef row)
     {
         var successMessage = _localizer["PackageTypeDeletedSuccessfully"];
-        var id = int.Parse(row.Cells[0].Value);
+		var errorMessage = L["Can'tDeletePackageType"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
+		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
         var parameters = new DialogParameters
@@ -220,7 +223,7 @@ public partial class PackageType
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar("Package Type Deleted Successfully", Severity.Error);
+                ShowSnackbar(successMessage, Severity.Error);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/packagetypes", forceLoad: true);
@@ -233,22 +236,22 @@ public partial class PackageType
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Package Type : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Package Type : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Package Type : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
 
 
@@ -266,13 +269,8 @@ public partial class PackageType
     /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
 
     void ShowSnackbar(string message, Severity severity)
-
     {
-
         Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }

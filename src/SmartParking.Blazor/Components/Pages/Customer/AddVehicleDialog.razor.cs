@@ -74,6 +74,8 @@ public partial class AddVehicleDialog
 
     private async void SubmitCreate()
     {
+        var successedMessage = L["VehichleWasCreatedSuccessfullyAndAddedToCustomer"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
@@ -81,7 +83,7 @@ public partial class AddVehicleDialog
             if (vehichle != null)
             {
 
-                ShowSnackbar($"Vehichle was created successfully and added to customer", Severity.Success);
+                ShowSnackbar(successedMessage, Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
                 
                 await Task.Delay(1000);
@@ -95,7 +97,7 @@ public partial class AddVehicleDialog
 		{
 			foreach (var validationError in validationException.ValidationErrors)
 			{
-				ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+				ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
 			}
 		}
 		catch (BusinessException ex)

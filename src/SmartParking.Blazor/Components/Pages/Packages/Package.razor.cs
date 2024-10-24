@@ -240,6 +240,9 @@ public partial class Package
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
+        var successedMessage = L["PackageDeletedSuccessfully"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
 
@@ -256,7 +259,7 @@ public partial class Package
             if (!result.Canceled)
             {
                 await PackagesAppService.DeleteAsync(id);
-                ShowSnackbar("Package Deleted Successfully", Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Error);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/packages", forceLoad: true);
@@ -269,22 +272,22 @@ public partial class Package
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Package : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
 
 
@@ -305,9 +308,6 @@ public partial class Package
 	{
 
 		Snackbar.Clear();
-
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}

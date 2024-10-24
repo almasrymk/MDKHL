@@ -160,11 +160,13 @@
     }
     private async Task SubmitEdit()
     {
+        var successedMessage = L["PackageUpdatedSuccessfully"];
+      
         try
         {
 
             await PackagesAppService.UpdateAsync(UpdatedId, Package);
-            Snackbar.Add("Package Updated Successfully", Severity.Success);
+            Snackbar.Add(successedMessage, Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
             Navigation.NavigateTo("/packages", true);

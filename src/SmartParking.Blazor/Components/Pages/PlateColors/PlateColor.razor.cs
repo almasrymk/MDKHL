@@ -216,7 +216,11 @@ public partial class PlateColor
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
-        var id = int.Parse(row.Cells[0].Value);
+		var successedMessage = L["PlateColorDeletedSuccessfully"];
+		var errorMessage = L["Can'tDeletePlateColor"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
+		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
         var parameters = new DialogParameters
@@ -229,10 +233,12 @@ public partial class PlateColor
         var result = await dialog.Result;
         try
         {
-            if (!result.Canceled)
+			
+
+			if (!result.Canceled)
             {
                 await PlateColorsAppService.DeleteAsync(id);
-                ShowSnackbar("Plate Color Deleted Successfully", Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Error);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/platecolors", forceLoad: true);
@@ -245,22 +251,22 @@ public partial class PlateColor
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Plate Color : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Plate Color : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Plate Color : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
 
 
@@ -277,13 +283,9 @@ public partial class PlateColor
     /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
 
     void ShowSnackbar(string message, Severity severity)
-
 	{
 
 		Snackbar.Clear();
-
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}

@@ -185,13 +185,16 @@
     }
     private async Task Submit()
     {
+        var successedMessage = L["PackageCreatedSuccessfully"];
+        var errorMessage = L["FillRequriedItems"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
             // Call your service to create the camera
             try
             {
                 await PackagesAppService.CreateAsync(createUpdatePackage);
-                Snackbar.Add("Package created successfully!", Severity.Success);
+                Snackbar.Add(successedMessage, Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/packages", true);
@@ -205,7 +208,7 @@
             }
             catch (Exception e)
             {
-                Snackbar.Add("Fill Requried Items", Severity.Error);
+                Snackbar.Add(errorMessage, Severity.Error);
                 return;
             }
 
@@ -213,7 +216,7 @@
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add(validationErrorMessage, Severity.Error);
         }
     }
     private void Cancel()

@@ -96,11 +96,14 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["VehicleModelUpdatedSuccessfully"];
+		
+
 		try
 		{
 
 			await VehicleModelsAppService.UpdateAsync(UpdatedId, VehicleModel);
-			Snackbar.Add("VehicleModel Updated Successfully", Severity.Success);
+			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/vehicleModels", true);

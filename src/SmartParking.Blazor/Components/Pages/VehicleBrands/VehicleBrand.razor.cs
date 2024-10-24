@@ -209,7 +209,11 @@ public partial class VehicleBrand
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
-        var id = int.Parse(row.Cells[0].Value);
+		var successedMessage = L["VehicleBrandDeletedSuccessfully"];
+		var errorMessage = L["Can'tDeleteVehicleBrand"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
+		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
         var parameters = new DialogParameters
@@ -225,7 +229,7 @@ public partial class VehicleBrand
             if (!result.Canceled)
             {
                 await VehicleBrandsAppService.DeleteAsync(id);
-                ShowSnackbar("Vehicle Brand Deleted Successfully", Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Error);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/vehiclebrands", forceLoad: true);
@@ -238,22 +242,22 @@ public partial class VehicleBrand
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Vehicle Brand  : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Vehicle Brand  : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Vehicle Brand  : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
 
 
@@ -269,13 +273,9 @@ public partial class VehicleBrand
     /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
 
     void ShowSnackbar(string message, Severity severity)
-
 	{
 
 		Snackbar.Clear();
-
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}

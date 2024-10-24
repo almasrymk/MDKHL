@@ -167,7 +167,6 @@ public partial class OrganizationAdd
     void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
     private void Cancel()

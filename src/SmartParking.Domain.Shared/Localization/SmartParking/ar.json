@@ -370,8 +370,33 @@
     "Camera Updated Successfully": "تم تحديث كاميرا بنجاح",
     "Can't Update Camera": "لا يمكن تحديث كاميرا",
     "Camera Deleted Successfully": "تم حذف كاميرا بنجاح",
-    "Garage Deleted Successfully": "تم حذف كراج بنجاح"
-
-
+    "Garage Deleted Successfully": "تم حذف كراج بنجاح",
+    "VehichleWasCreatedSuccessfullyAndAddedToCustomer": "تم إنشاء المركبة بنجاح وإضافتها إلى العميل",
+    "CustomerPackageAssignedSuccessfully": "تم تعيين حزمة العميل بنجاح,",
+    "CustomerCreatedSuccessfullyWith": "تم إنشاء العميل بنجاح باستخدام",
+    "LicenceTypeDeletedSuccessfully": "تم حذف نوع الترخيص بنجاح",
+    "LicenceTypeUpdatedSuccessfully": "تم تحرير نوع الترخيص بنجاح",
+    "LicenceTypeCreatedSuccessfully": "تم إنشاء نوع الترخيص بنجاح",
+    "PackageCreatedSuccessfully": "تم إنشاء الحزمة بنجاح",
+    "FillRequriedItems": "ملء العناصر المطلوبة",
+    "OrganiztionUpdatedSuccessfully": "تم تحرير المنشاه بنجاح",
+    "OrganizationDeletedSuccessfully": "تم حذف المنشاه بنجاح",
+    "Can'tDeleteOrganiztion": "تم حذف المنشاه بنجاح",
+    "PackageUpdatedSuccessfully": "تم تحرير الحزمة بنجاح",
+    "PackageDeletedSuccessfully": "تم حذف الحزمة بنجاح",
+    "PlateColorCreatedSuccessfully": "تم إنشاء لون اللوحة بنجاح",
+    "PlateColorUpdatedSuccessfully": "تم تحرير لون اللوحة بنجاح",
+    "PlateColorDeletedSuccessfully": "تم حذف لون اللوحة بنجاح",
+    "Can'tDeletePlateColor": "لا يمكن حذف لون اللوحة",
+    "Can'tDeletePackageType": "لا يمكن حذف نوع الحزمة",
+    "Can'tDeleteSubscription": "لا يمكن حذف الاشتراك",
+    "VehicleBrandCreatedSuccessfully": "تم إنشاء العلامة التجارية للمركبة بنجاح",
+    "VehicleBrandUpdatedSuccessfully": "تم تحرير العلامة التجارية للمركبة بنجاح",
+    "VehicleBrandDeletedSuccessfully": "تم حذف العلامة التجارية للمركبة بنجاح",
+    "Can'tDeleteVehicleBrand": "لا يمكن حذف العلامة التجارية للمركبة",
+    "VehicleModelCreatedSuccessfully": "تم إنشاء موديل السيارة بنجاح",
+    "VehicleModelUpdatedSuccessfully": "تم تحرير موديل السيارة بنجاح",
+    "VehicleModelDeletedSuccessfully": "تم حذف موديل السيارة بنجاح",
+    "Can'tDeleteVehicleModel": "لا يمكن حذف موديل السيارة"
   }
 }

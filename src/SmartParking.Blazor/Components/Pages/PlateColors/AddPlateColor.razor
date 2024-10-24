@@ -77,20 +77,23 @@
     }
     private async Task Submit()
     {
+        var successedMessage = L["PlateColorCreatedSuccessfully"];
+        var errorMessage = L["FillRequriedItems"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
             // Call your service to create the camera
             try
             {
                 await PlateColorsAppService.CreateAsync(plateColorDro);
-                Snackbar.Add("PlateColor created successfully!", Severity.Success);
+                Snackbar.Add(successedMessage, Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/plateColors", true);
             }
             catch (Exception e)
             {
-                Snackbar.Add("Fill Requried Items", Severity.Error);
+                Snackbar.Add(errorMessage, Severity.Error);
                 return;
             }
            
@@ -98,7 +101,7 @@
         }
         else
         {
-            Snackbar.Add("Fill Requried Items", Severity.Error);
+            Snackbar.Add(errorMessage, Severity.Error);
         }
     }
     private void Cancel()

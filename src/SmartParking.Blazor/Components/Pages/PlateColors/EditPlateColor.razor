@@ -76,11 +76,13 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["PlateColorUpdatedSuccessfully"];
+		
 		try
 		{
 
 			await PlateColorsAppService.UpdateAsync(UpdatedId, PlateColor);
-			Snackbar.Add("Camera Updated Successfully", Severity.Success);
+			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/plateColors", true);

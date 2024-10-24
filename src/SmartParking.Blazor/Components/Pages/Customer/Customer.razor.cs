@@ -228,9 +228,6 @@ public partial class Customer
 	{
 
 		Snackbar.Clear();
-
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}

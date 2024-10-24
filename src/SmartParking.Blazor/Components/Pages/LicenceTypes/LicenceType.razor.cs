@@ -219,7 +219,9 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 
 		private async Task OnClickRowDelete(RowDef row)
 		{
-            var id = int.Parse(row.Cells[0].Value);
+			var successMessage = L["LicenceTypeDeletedSuccessfully"];
+			var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+			var id = int.Parse(row.Cells[0].Value);
             var Name = row.Cells[2].Value;
 
             var parameters = new DialogParameters
@@ -232,10 +234,12 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
             var result = await dialog.Result;
             try
             {
-                if (!result.Canceled)
+				
+
+				if (!result.Canceled)
                 {
                     await LicenceTypesAppService.DeleteAsync(id);
-                    ShowSnackbar("LicenceType Deleted Successfully", Severity.Error);
+                    ShowSnackbar(successMessage, Severity.Error);
                     await Task.Delay(1000);
 
                     Navigation.NavigateTo("/licencetypes", forceLoad: true);
@@ -248,7 +252,7 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
             {
                 foreach (var validationError in validationException.ValidationErrors)
                 {
-                    ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                    ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
                 }
             }
             catch (BusinessException ex)
@@ -284,8 +288,6 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 		{
 
 			Snackbar.Clear();
-
-			Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
 			Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

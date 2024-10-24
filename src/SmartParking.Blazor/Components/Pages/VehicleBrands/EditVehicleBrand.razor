@@ -72,11 +72,13 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["VehicleBrandUpdatedSuccessfully"];
+
 		try
 		{
 
 			await VehicleBrandsAppService.UpdateAsync(UpdatedId, VehicleBrand);
-			Snackbar.Add("VehicleBrand Updated Successfully", Severity.Success);
+			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/vehicleBrands", true);

@@ -29,19 +29,22 @@ public partial class AddGarageDialogInOrganization
     }
     private async void SubmitCreate()
     {
-        try
+		var successedMessage = L["GarageCreatedSuccessfully"];
+		var errorMessage = L["Can'tCreateGarage"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		try
         {
             createUpdateGarage.Code = "";
             createUpdateGarage.OrganizationId = OrganizationId;
             var garage = await GarageAppService.CreateAsync(createUpdateGarage);
             if (garage != null)
             {
-                ShowSnackbar("Garage Has been created Successfully", Severity.Success);
+                ShowSnackbar(successedMessage, Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
             }
             else
             {
-                ShowSnackbar("Can't create garage", Severity.Error);
+                ShowSnackbar(errorMessage, Severity.Error);
 
 
             }
@@ -50,7 +53,7 @@ public partial class AddGarageDialogInOrganization
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
@@ -85,7 +88,6 @@ public partial class AddGarageDialogInOrganization
     void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 

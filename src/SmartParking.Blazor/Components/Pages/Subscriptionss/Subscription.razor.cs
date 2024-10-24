@@ -217,8 +217,10 @@ public partial class Subscription
     private async Task OnClickRowDelete(RowDef row)
     {
         var successMessage = _localizer["SubscriptionDeletedSuccessfully"];
+		var errorMessage = L["Can'tDeleteSubscription"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        var id = int.Parse(row.Cells[0].Value);
+		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
         var parameters = new DialogParameters
@@ -247,22 +249,22 @@ public partial class Subscription
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Subscription : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Subscription : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Subscription : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
 
 
@@ -283,9 +285,6 @@ public partial class Subscription
     {
 
         Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }

@@ -104,11 +104,12 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
 		try
 		{
 			CustomerPackage.CustomerId = CustomerId;
 			await CustomerPackagesAppService.CreateAsync(CustomerPackage);
-			Snackbar.Add("CustomerPackage Assigned Successfully", Severity.Success);
+			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/customers", forceLoad: true);
