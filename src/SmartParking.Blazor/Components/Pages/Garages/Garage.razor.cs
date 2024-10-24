@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cameras;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Blazor.Customs;
 using SmartParking.Cameras;
 using SmartParking.Garages;
@@ -13,8 +14,11 @@ using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 using static MudBlazor.CategoryTypes;
 
 
@@ -157,6 +161,7 @@ public partial class Garage
         return DialogService.ShowAsync<AddGarageDialog>("Simple Dialog", options);
 
 
+
     }
 	public async Task<IDialogReference> AssignOrganization(string id)
 	{
@@ -229,17 +234,42 @@ public partial class Garage
     private async Task OnClickRowDelete(string row)
     {
 		var id = int.Parse(row);
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>();
+        var result = await dialog.Result;
         try
         {
+            if (!result.Canceled)
+            {
+                await GarageAppService.DeleteAsync(id);
+                ShowSnackbar("Garage Deleted Successfully", Severity.Success);
+                Navigation.NavigateTo("/garages", forceLoad: true);
 
-            await GarageAppService.DeleteAsync(id);
-            ShowSnackbar("Garage Deleted Successfully ", Severity.Success);
+            }
+
 
         }
-        catch (Exception ex) { 
-        
-           ShowSnackbar(ex.Message,Severity.Error);
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
         }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to delete Garage: {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Garage: {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar($"Failed to delete Garage: {ex.Message} + ", Severity.Error);
+        }
+     
 
     }
 
