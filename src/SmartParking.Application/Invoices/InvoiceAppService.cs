@@ -80,7 +80,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
             queryable = queryable.Where(or =>
             or.InvoiceNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.PlateNumber.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
+            or.PlateNumber.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             
                 
             );

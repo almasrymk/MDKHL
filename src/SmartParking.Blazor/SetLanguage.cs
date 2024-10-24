@@ -13,7 +13,7 @@ namespace SmartParking.Blazor;
 public class SetLanguage : ControllerBase
 {
     [HttpGet]
-    public IActionResult SetLanguages()
+    public IActionResult SetLanguages(string returnUrl)
     {
         IRequestCultureFeature culture = HttpContext.Features.Get<IRequestCultureFeature>();
         Response.Cookies.Append(
@@ -24,7 +24,7 @@ public class SetLanguage : ControllerBase
                 .FirstOrDefault(), new string[] { "en", "ar" }
                 .Where(option => option != culture.RequestCulture.Culture.Name)
         .FirstOrDefault())));
-
-        return LocalRedirect("/");
+       
+        return Redirect(returnUrl);
     }
 }

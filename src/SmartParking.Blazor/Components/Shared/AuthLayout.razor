@@ -59,7 +59,7 @@
 
     private void ChangeLanguage()
     {
-        Navigation.NavigateTo("api/SetLanguage", true);
+        Navigation.NavigateTo($"api/SetLanguage?returnUrl={Navigation.Uri}", true);
     }
     private string LocaleImgSrc()
     {
