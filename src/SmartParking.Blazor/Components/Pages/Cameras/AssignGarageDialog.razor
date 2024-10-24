@@ -83,17 +83,20 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["Camera assigned to garage Successfully"];
+		var errorMessage = L["Can't assign camera to garage"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
-			Snackbar.Add("Camera assigned to garage Successfully", Severity.Success);
+			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 
 		}
 		catch (Exception e)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			Snackbar.Add(errorMessage, Severity.Error);
 		}
 	}
 

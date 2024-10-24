@@ -165,6 +165,10 @@
     }
     private async Task Submit()
     {
+        var successedMessage = L["Camera created successfully"];
+        var errorMessage = L["Can'tCreate Camera"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        var DuplicateCameraIP = L["DuplicateCameraIP"];
         if (form.IsValid)
         {
             // Call your service to create the camera
@@ -172,7 +176,7 @@
             {
                 await CamerasAppService.CreateAsync(cameraDto);
                 MudDialog.Close(DialogResult.Ok(true));
-                Snackbar.Add("Camera created successfully!", Severity.Success);
+                Snackbar.Add($"{successedMessage}", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/cameras", forceLoad: true);
 
@@ -180,28 +184,24 @@
             }
             catch (UserFriendlyException ex)
             {
-                Snackbar.Add("DuplicateCameraIP", Severity.Error);
+                Snackbar.Add($"{DuplicateCameraIP}", Severity.Error);
                 return;
             }
             catch (AbpValidationException ex)
             {
                 foreach (var validationError in ex.ValidationErrors)
                 {
-                    Snackbar.Add($"{validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
+                    Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
                 }
                 return;
             }
-            catch(Exception e)
-            {
-                Snackbar.Add("Fill Requried Items", Severity.Error);
-                return;
-            }
+         
             
             
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add($"{validationErrorMessage}", Severity.Error);
         }
     }
     private void Cancel()
