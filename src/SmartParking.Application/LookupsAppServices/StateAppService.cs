@@ -16,6 +16,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -186,8 +187,19 @@ public class StateAppService : CrudAppService<State, StateDto,
         return statesList;
     }
 
-    ///<inheritdoc/>
-
+    public async Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId)
+    {
+        var query = await _stateRepository.GetQueryableAsync();
+        query = query.Where(x => x.RegionId == regionId);
+        var states = await AsyncExecuter.ToListAsync(query);
+        var statesList = ObjectMapper.Map<List<State>, List<StateLookupDto>>(states);
+        return statesList;
+    }
+    /// <summary>
+    /// method used to get list of states
+    /// </summary>
+    /// <param name="input">specifies max number of state and if it filtered or not</param>
+    /// <returns>StateDto List</returns>
     public async Task<PagedResultDto<StateDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<state> from the repository
@@ -197,8 +209,8 @@ public class StateAppService : CrudAppService<State, StateDto,
         {
 
             queryable = queryable.Where(c =>
-                c.ArabicName.StartsWith(input.SearchingTerm) ||
-                c.EnglishName.StartsWith(input.SearchingTerm)
+                c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
 
             );
         }

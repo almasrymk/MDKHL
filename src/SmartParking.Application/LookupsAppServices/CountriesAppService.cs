@@ -42,22 +42,22 @@ public class CountriesAppService : CrudAppService<Country,
 
             if (country != null)
             {
-                        if (country.EnglishName == input.EnglishName.Trim(' ') && country.Id != input.Id)
+                        if (country.EnglishName == input.EnglishName.Trim(' ') )
                         {
                             throw new InvalidOperationException("country english name already exists");
 
                         }
-                        else if (country.ArabicName == input.ArabicName.Trim(' ') && country.Id != input.Id)
+                        else if (country.ArabicName == input.ArabicName.Trim(' ') )
                         {
                             throw new InvalidOperationException("country arabic name already exists");
 
                         }
-                        else if(country.ArabicCapital == input.ArabicCapital.Trim(' ') && country.Id != input.Id)
+                        else if(country.ArabicCapital == input.ArabicCapital.Trim(' ') )
                         {
                             throw new InvalidOperationException("country  arabic capital  already exists");
 
                         }
-                        else if(country.EnglishCapital == input.EnglishCapital.Trim(' ') && country.Id != input.Id)
+                        else if(country.EnglishCapital == input.EnglishCapital.Trim(' ') )
                         {
                             throw new InvalidOperationException("country  english capital  already exists");
 
@@ -88,22 +88,22 @@ public class CountriesAppService : CrudAppService<Country,
 
             if (country != null)
             {
-                    if (country.EnglishName == input.EnglishName.Trim(' ') && country.Id != input.Id )
+                    if (country.EnglishName == input.EnglishName.Trim(' ') && country.Id != id)
                     {
                         throw new InvalidOperationException("country english name already exists");
 
                     }
-                    else if (country.ArabicName == input.ArabicName.Trim(' ') && country.Id != input.Id)
+                    else if (country.ArabicName == input.ArabicName.Trim(' ') && country.Id != id)
                     {
                         throw new InvalidOperationException("country arabic name already exists");
 
                     }
-                    else if (country.ArabicCapital == input.ArabicCapital.Trim(' ') && country.Id != input.Id)
+                    else if (country.ArabicCapital == input.ArabicCapital.Trim(' ') && country.Id != id)
                     {
                         throw new InvalidOperationException("country  arabic capital  already exists");
 
                     }
-                    else if (country.EnglishCapital== input.EnglishCapital.Trim(' ') && country.Id != input.Id)
+                    else if (country.EnglishCapital== input.EnglishCapital.Trim(' ') && country.Id != id)
                     {
                         throw new InvalidOperationException("country  english capital  already exists");
 

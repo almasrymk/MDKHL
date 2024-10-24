@@ -55,13 +55,32 @@ public partial class OrganizationAdd
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        states = await StateAppService.GetStateLookupAsync();
-        regions = await StateAppService.GetRegionLookupAsync();
+        //
+       
         countries = await GovernorateAppService.GetCountryLookupAsync();
-        cities = await CitiesAppService.GetCityLookupAsync();
+        //
     }
-   
     
+    private async Task GetRegions(string value)
+    {
+         CountrySelectValue = value;
+        if (CountrySelectValue != null)
+        {
+            regions = await RegionAppService.GetRegionByCountry(int.Parse(CountrySelectValue));
+        }
+         
+    }    
+    private async Task GetStates(string value)
+    {
+         RegionSelectValue = value;
+        if (RegionSelectValue != null)
+        {
+            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
+            cities = await CitiesAppService.GetCityByRegion(int.Parse(RegionSelectValue));
+        }
+         
+    }
+
     private async Task Save()
     {
 

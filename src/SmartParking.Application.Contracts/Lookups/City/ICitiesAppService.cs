@@ -51,4 +51,6 @@ public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedRe
     public Task<PagedResultDto<CityDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
     Task DeleteAsync(int id);
+
+    public Task<List<CityLookupDto>> GetCityByRegion(int regionId);
 }

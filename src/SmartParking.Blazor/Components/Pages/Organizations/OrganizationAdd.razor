@@ -4,6 +4,7 @@
 @using SmartParking.Blazor.Components.LookUps
 @using SmartParking.Localization
 @using SmartParking.Lookups
+@using SmartParking.Lookups.Region
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
 @using Volo.Abp.Identity
@@ -13,7 +14,8 @@
 @inject IIdentityUserAppService IdentityUserAppService;
 @inject IStateAppService StateAppService
  @inject IGovernorateAppService GovernorateAppService
- @inject ICitiesAppService CitiesAppService
+ @inject ICitiesAppService CitiesAppService 
+ @inject IRegionAppService RegionAppService
 @inject  UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject IStringLocalizer<SmartParkingResource> L
@@ -85,67 +87,75 @@
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["State"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Clearable="true"
-                                       @bind-Value="@StateSelectValue"
-                                      >
-                                
-                                @foreach (var state in states)
-                                {
-                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["Region"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Clearable="true"
-                                       AnchorOrigin="Origin.TopCenter"
-                                       
-                                       @bind-Value="@RegionSelectValue"
-                                       >
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
-                                @foreach (var region in regions)
-                                {
-                                    <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect T="string"
+                                Variant="Variant.Text"
                                        Label=@L["Country"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Clearable="true"
-                                       @bind-Value="@CountrySelectValue"
-                                       >
+                                       ValueChanged="GetRegions">
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
-                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                    <MudSelectItem  Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["City"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Clearable="true"
-                                       @bind-Value="@CitySelectValue"
-                                      >
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
-                                @foreach (var city in cities)
-                                {
-                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
+                        @if (!CountrySelectValue.IsNullOrEmpty())
+                        {
+                            <MudItem sm="4">
+                                <MudSelect  T="string"
+                                    Variant="Variant.Text"
+                                           Label=@L["Region"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Clearable="true"
+                                           AnchorOrigin="Origin.TopCenter"
+                                           ValueChanged="GetStates">
+                                    <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                    @foreach (var region in regions)
+                                    {
+                                        <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        }
+                        @if (!RegionSelectValue.IsNullOrEmpty())
+                        {
+                            <MudItem sm="4">
+                                <MudSelect Variant="Variant.Text"
+                                           Label=@L["State"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Clearable="true"
+                                           @bind-Value="@StateSelectValue">
+
+                                    @foreach (var state in states)
+                                    {
+                                        <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        }
+                        
+                        @if (!RegionSelectValue.IsNullOrEmpty())
+                        {
+                            <MudItem sm="4">
+                                <MudSelect Variant="Variant.Text"
+                                           Label=@L["City"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Clearable="true"
+                                           @bind-Value="@CitySelectValue">
+                                    <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                    @foreach (var city in cities)
+                                    {
+                                        <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        }
+                        
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
                         </MudItem>

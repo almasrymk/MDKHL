@@ -95,18 +95,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 await _governorateRepository.InsertAsync(governorate, autoSave: true);
             }
             var alx = await _governorateRepository.FirstOrDefaultAsync(g => g.EnglishName == "Alexandria");
-            var cities = new List<City>
-            {
-                new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id },
-                new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id },
-                new City {  ArabicName="test", EnglishName = "test", GovernorateId = alx.Id },
-            };
-
-            foreach (var city in cities)
-            {
-                await _cityRepository.InsertAsync(city, autoSave: true);
-            }
-            var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
             var regions = new List<Region>
             {
             new Region { ArabicName="test", EnglishName = "test",  Status = Status.Active,CountryId = egypt.Id },
@@ -119,6 +107,19 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 await _regionRepository.InsertAsync(region, autoSave: true);
             }
             var test = await _regionRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
+            var cities = new List<City>
+            {
+                new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id ,RegionId = test.Id },
+                new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id ,RegionId = test.Id},
+                new City {  ArabicName="test", EnglishName = "test", GovernorateId = alx.Id ,RegionId = test.Id},
+            };
+
+            foreach (var city in cities)
+            {
+                await _cityRepository.InsertAsync(city, autoSave: true);
+            }
+            var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
+            
             var States = new List<State>
             {
                 new State { ArabicName="test", EnglishName = "test",   RegionId = test.Id,  Status = Status.Active },

@@ -17,6 +17,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using SmartParking.Lookups.State;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -24,7 +25,7 @@ namespace SmartParking.LookupsAppServices;
 public class RegionAppService : CrudAppService<Region, RegionDto,
 									int, PagedAndSortedResultRequestDto,
 									CreateUpdateRegionDto>,
-		IRegionAppService
+        IRegionAppService
 {
 	public readonly IRepository<Region, int> _regionRepository;
     public readonly IRepository<Country, int> _countryRepository;
@@ -190,8 +191,8 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         {
 
             queryable = queryable.Where(c =>
-                c.ArabicName.StartsWith(input.SearchingTerm) ||
-                c.EnglishName.StartsWith(input.SearchingTerm)
+                c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
 
             );
         }
@@ -236,4 +237,12 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         await base.DeleteAsync(id);
     }
 
+    public async Task<List<RegionLookupDto>> GetRegionByCountry(int countryId)
+    {
+        var query = await _regionRepository.GetQueryableAsync();
+        query = query.Where(r => r.CountryId == countryId);
+        var regions = await AsyncExecuter.ToListAsync(query);
+        var regionsList = ObjectMapper.Map<List<Region>, List<RegionLookupDto>>(regions);
+        return regionsList;
+    }
 }

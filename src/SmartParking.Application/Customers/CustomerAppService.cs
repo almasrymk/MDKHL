@@ -194,15 +194,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		{
 
 			queryable = queryable.Where(or =>
-				or.IdentityUser.Name.Contains(input.SearchingTerm) 
+				or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
 			);
             queryable = queryable.Where(or =>
-				or.ArabicName.Contains(input.SearchingTerm) 
+				or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
 			);
             queryable = queryable.Where(or =>
-				or.NationalId.Contains(input.SearchingTerm) 
+				or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
 			);
 		}

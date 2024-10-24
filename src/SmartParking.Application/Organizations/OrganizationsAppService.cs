@@ -195,15 +195,15 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
 
             queryable = queryable.Where(or =>
-                or.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.Code.StartsWith(input.SearchingTerm) ||
-                or.Country.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.Country.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.State.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.State.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.City.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.City.ArabicName.StartsWith(input.SearchingTerm)
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Country.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         if (!input.Sorting.IsNullOrEmpty())
