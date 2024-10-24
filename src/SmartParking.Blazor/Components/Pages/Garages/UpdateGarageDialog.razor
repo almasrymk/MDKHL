@@ -5,7 +5,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject NavigationManager Navigation
 
 <PageTitle>@L["Update Garage"]</PageTitle>
 <div class="modal-wrapper">
@@ -21,16 +21,21 @@
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="Garage.Name"
                                               For="@(() => Garage.Name)"
+                                              Required
                                               Variant="Variant.Text"
                                               Placeholder="@L["Type Here"]"
                                               Class="w-100"
                                               Label="@L["Garage Name"]" />
                             </MudItem>
                             <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.MaxCapacity"
+                                <MudNumericField @bind-Value="Garage.MaxCapacity"
                                               For="@(() => Garage.MaxCapacity)"
                                               Variant="Variant.Text"
                                               Class="w-100"
+                                              Required
+                                              Min="1"
+                                              Max="9999"
+                                              HideSpinButtons="true"
                                               Immediate="true"
                                               Placeholder="@L["Type Here"]" 
                                               Label="@L["Garage Max Capacity"]" />
@@ -39,14 +44,18 @@
                                 <MudTextField @bind-Value="Garage.Code"
                                               For="@(() => Garage.Code)"
                                               Variant="Variant.Text"
+                                              ReadOnly="true"
                                               Class="w-100"
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["Garage Code"]"
-                                              Disabled />
+                                               />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTimePicker @bind-Time="_time"
                                                Editable="true"
+                                               Required
+                                               AmPm="true"
+                                               TimeFormat="h:mm tt"
                                                Variant="Variant.Text"
                                                Class="w-100"
                                                Placeholder="@L["Type Here"]"
@@ -61,7 +70,6 @@
 
                                         <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                                         <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">@L["Status Deleted"]</MudRadio>
                                     </div>
                                 </MudRadioGroup>
                             </MudItem>
