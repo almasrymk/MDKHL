@@ -27,7 +27,7 @@
         <MudItem sm="8">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
-                <MudForm Class="flex-grow-1 mt-4">
+                <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["Arabic Name"] />
@@ -93,6 +93,7 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Clearable="true"
+                                       Required
                                        ValueChanged="GetRegions">
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var country in countries)
@@ -110,6 +111,7 @@
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
                                            Clearable="true"
+                                           Required
                                            AnchorOrigin="Origin.TopCenter"
                                            ValueChanged="GetStates">
                                     <MudSelectItem Value="CitySelectValue"></MudSelectItem>
@@ -128,6 +130,7 @@
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
                                            Clearable="true"
+                                           Required
                                            @bind-Value="@StateSelectValue">
 
                                     @foreach (var state in states)
@@ -146,6 +149,7 @@
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
                                            Clearable="true"
+                                           Required
                                            @bind-Value="@CitySelectValue">
                                     <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                     @foreach (var city in cities)
@@ -170,7 +174,7 @@
                    
                     <div class="d-flex justify-content-between mt-auto">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Save">@L["Create"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="Save">@L["Create"]</MudButton>
                     </div>
                 </MudForm>
 

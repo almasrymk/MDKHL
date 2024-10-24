@@ -22,6 +22,8 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationAdd
 {
+    private MudForm form;
+
     public string ArabicName { get; set; } 
     public string EnglishName { get; set; }
     public string UnifiedLicenseNum { get; set; }
