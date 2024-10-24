@@ -43,7 +43,9 @@ public partial class AddCountryDialog
 			{
 				Snackbar.Add(successedMessage, Severity.Success);
 				MudDialog.Close(DialogResult.Ok(true));
-			}
+                Navigation.Refresh(forceReload: true);
+
+            }
 
 			else
 			{

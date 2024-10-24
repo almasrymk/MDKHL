@@ -133,11 +133,11 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             }
             var stateTest = await _stateRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
             var subscriptionTypes = new List<SubscriptionType>
-        {
-            new SubscriptionType {Type = "Monthly"},
-            new SubscriptionType {Type = "Quarterly"},
-            new SubscriptionType {Type = "Yearly"},
-        };
+            {
+                new SubscriptionType {Type = "Monthly"},
+                new SubscriptionType {Type = "Quarterly"},
+                new SubscriptionType {Type = "Yearly"},
+            };
 
             foreach (var subscriptionType in subscriptionTypes)
             {
