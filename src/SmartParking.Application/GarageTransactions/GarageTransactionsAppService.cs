@@ -93,12 +93,12 @@ public class GarageTransactionsAppService:
 		if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
 		{
 
-			queryable = queryable.Where(or =>
-				or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
-				//or.Type.StartsWith(input.SearchingTerm) 
-				//or..StartsWith(input.SearchingTerm)
+            queryable = queryable.Where(or =>
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())||
+                or.SnapTime.Value.ToString().ToLower()== (input.SearchingTerm.ToLower())
 
-			);
+            ); ;
 		}
 		// Get the total count of filtered records
 		var totalCount = await AsyncExecuter.CountAsync(queryable);
