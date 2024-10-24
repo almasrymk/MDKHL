@@ -27,32 +27,93 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
         _packageTypeRepository = packageTypeRepository;
     }
 
-    /// <summary>
-    /// method used to get list of package Types
-    /// </summary>
-    /// <param name="input">specifies max number of package Type and if it filtered or not</param>
-    /// <returns>PackageTypeDto List</returns>
-    public async Task<PagedResultDto<PackageTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-        // Get the IQueryable<garage> from the repository
-        var queryable = await _packageTypeRepository.GetQueryableAsync();
-        // Apply filtering
-        var filterExpression = BuildExpression<PackageType>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
+        /// <inheritdoc/>
+
+        public override async Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input)
         {
-            queryable = queryable.Where(filterExpression);
+            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
+                (type =>
+                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+         
+
+            if (packageType != null)
+            {
+                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != input.Id)
+                {
+                    throw new InvalidOperationException("package english name already exists");
+
+                }
+                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != input.Id)
+                {
+                    throw new InvalidOperationException("Package arabic name already exists");
+
+                }
+           
+
+            }
+               return await base.CreateAsync(input);
         }
-        if (!input.Sorting.IsNullOrEmpty())
+
+        /// <inheritdoc/>
+        public override async Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input)
         {
-            if (input.Sorting.Contains("DESC"))
+            var existingPackage= await _packageTypeRepository.GetAsync(id);
+
+            if (existingPackage is null)
             {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
+                throw new InvalidOperationException("Package Type not found");
             }
-            else
+
+            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
+                    (type =>
+                    type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                    type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+
+            if (packageType != null)
             {
-                queryable = queryable.OrderBy(input.Sorting);
+                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != input.Id)
+                {
+                    throw new InvalidOperationException("package english name already exists");
+
+                }
+                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != input.Id)
+                {
+                    throw new InvalidOperationException("Package arabic name already exists");
+
+                }
+
+
             }
+                return await base.UpdateAsync(id,input);
+        }
+        /// <summary>
+        /// method used to get list of package Types
+        /// </summary>
+        /// <param name="input">specifies max number of package Type and if it filtered or not</param>
+        /// <returns>PackageTypeDto List</returns>
+        public async Task<PagedResultDto<PackageTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+        {
+            // Get the IQueryable<garage> from the repository
+            var queryable = await _packageTypeRepository.GetQueryableAsync();
+            // Apply filtering
+            var filterExpression = BuildExpression<PackageType>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
 
         }
         // Get the total count of filtered records

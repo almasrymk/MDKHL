@@ -346,7 +346,9 @@
     "Camera Updated Successfully": "Camera Updated Successfully",
     "Can't Update Camera": "Can't Update Camera",
     "Camera Deleted Successfully": "Camera Deleted Successfully",
-    "Garage Deleted Successfully": "Garage Deleted Successfully"
+    "Garage Deleted Successfully": "Garage Deleted Successfully",
+    "ArabicCapital": "Arabic Capital",
+    "EnglishCapital": "English Capital"
 
   } 
 }

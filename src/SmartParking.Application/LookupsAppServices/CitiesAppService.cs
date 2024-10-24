@@ -36,61 +36,62 @@ public class CitiesAppService : CrudAppService<City, CityDto,
     }
 
     ///<inheritdoc/>
-    public override async Task<CityDto> CreateAsync(CreateUpdateCityDto input)
-    {
+   public override async Task<CityDto> CreateAsync(CreateUpdateCityDto input)
+   {
         var city = await _repository.FirstOrDefaultAsync
-            (city =>
-            city.EnglishName == input.EnglishName ||
-            city.ArabicName == input.ArabicName);
+                 (city =>
+                 city.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                 city.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
         if (city != null)
         {
-            if (city.EnglishName == input.EnglishName)
+            if (city.EnglishName.ToLower().Trim(' ') == input.EnglishName.ToLower().Trim(' ') && city.Id != input.Id)
             {
                 throw new InvalidOperationException("city english name already exists");
 
             }
-            else if (city.ArabicName == input.ArabicName)
+            else if (city.ArabicName.ToLower().Trim(' ') == input.ArabicName.ToLower().Trim(' ') && city.Id != input.Id)
             {
                 throw new InvalidOperationException("city arabic name already exists");
 
             }
 
-            throw new InvalidOperationException("city english name , city arabic name already exist");
         }
-        else
-        {
-            return await base.CreateAsync(input);
-        }
+
+        return await base.CreateAsync(input);
+
     }
-    ///<inheritdoc/>
-    public override async Task<CityDto> UpdateAsync(int id, CreateUpdateCityDto input)
-    {
-        var city = await _repository.FirstOrDefaultAsync
-            (city =>
-            city.EnglishName == input.EnglishName ||
-            city.ArabicName == input.ArabicName);
-
-        if (city != null)
+        ///<inheritdoc/>
+        public override async Task<CityDto> UpdateAsync(int id, CreateUpdateCityDto input)
         {
-            if(city.EnglishName == input.EnglishName)
-            {
-                throw new InvalidOperationException("city english name already exists");
+            var existingCity = await _repository.GetAsync(id);
 
-            }
-            else if(city.ArabicName == input.ArabicName)
+            if (existingCity is null)
             {
-                throw new InvalidOperationException("city arabic name already exists");
-
+                throw new InvalidOperationException("City not found");
             }
 
-            throw new InvalidOperationException("city english name , city arabic name already exist");
+            var city = await _repository.FirstOrDefaultAsync
+                     (city =>
+                     city.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                     city.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+            if (city != null)
+            {
+                if (city.EnglishName == input.EnglishName.Trim(' ') && city.Id != input.Id)
+                {
+                    throw new InvalidOperationException("city english name already exists");
+
+                }
+                else if (city.ArabicName == input.ArabicName.Trim(' ') && city.Id != input.Id)
+                {
+                    throw new InvalidOperationException("city arabic name already exists");
+
+                }
+
+            }
+            return await base.UpdateAsync(id, input);    
         }
-        else
-        {
-            return await base.UpdateAsync(id, input);
-        }
-    }
     public async Task<List<GovernorateLookupDto>> GetGovernorateLookupAsync()
     {
         var governorates = await _governorateRepository.GetListAsync();

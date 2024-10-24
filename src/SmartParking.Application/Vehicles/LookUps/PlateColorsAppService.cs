@@ -4,6 +4,7 @@ using SmartParking.Cameras;
 using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,68 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 		_repository = repository;
 
 	}
-	public async Task<PagedResultDto<PlateColorDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+
+    ///<inheritdoc/>
+    public override async Task<PlateColorDto> CreateAsync(CreateUpdatePlateColorDto input)
+    {
+        var plateColor = await _repository.FirstOrDefaultAsync
+               (plate =>
+               plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+               plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        if (plateColor != null)
+        {
+            if (plateColor.EnglishName == input.EnglishName.Trim(' ') )
+            {
+                throw new InvalidOperationException("Plate color english name already exists");
+
+            }
+            else if (plateColor.ArabicName == input.ArabicName.Trim(' ') )
+            {
+                throw new InvalidOperationException("Plate color  arabic name already exists");
+
+            }
+
+
+        }
+        return await base.CreateAsync(input);
+
+    }
+
+    ///<inheritdoc/>
+    public override async Task<PlateColorDto> UpdateAsync(int id, CreateUpdatePlateColorDto input)
+    {
+        var existingPlate = await _repository.GetAsync(id);
+
+        if (existingPlate is null)
+        {
+            throw new InvalidOperationException("Plate Color not found");
+        }
+
+        var plateColor = await _repository.FirstOrDefaultAsync
+                (plate =>
+                plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+
+        if (plateColor != null)
+        {
+            if (plateColor.EnglishName == input.EnglishName.Trim(' ') && plateColor.Id != id)
+            {
+                throw new InvalidOperationException("Plate Color english name already exists");
+
+            }
+            else if (plateColor.ArabicName == input.ArabicName.Trim(' ') && plateColor.Id != id)
+            {
+                throw new InvalidOperationException("Plate Color arabic name already exists");
+
+            }
+
+
+        }
+        return await base.UpdateAsync(id, input);
+    }
+    public async Task<PagedResultDto<PlateColorDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
 	{
 		// Get the IQueryable<camera> from the repository
 		var queryable = await _repository.GetQueryableAsync();

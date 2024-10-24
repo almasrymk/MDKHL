@@ -2,6 +2,7 @@
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Lookups.LicenceType;
+using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,87 @@ namespace SmartParking.Vehicles.LookUps;
 public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleModelDto>, IVehicleModelsAppService
 {
     private readonly IRepository<VehicleModel, int> _repository;
+    private readonly IRepository<VehicleBrand, int> _vehicleBrandRepository;
+
     private IDataFilter _dataFilter;
 
-    public VehicleModelsAppService(IRepository<VehicleModel, int> repository, IDataFilter dataFilter) : base(repository)
+    public VehicleModelsAppService(IRepository<VehicleModel, int> repository,IRepository<VehicleBrand, int> vehicleBrandRepository, IDataFilter dataFilter) : base(repository)
 	{
         _repository = repository;
+        _vehicleBrandRepository = vehicleBrandRepository;
         _dataFilter = dataFilter;
+    }
+
+    ///<inheritdoc/>
+    public override async Task<VehicleModelDto> CreateAsync(CreateUpdateVehicleModelDto input)
+    {
+        var vehicleModel = await _repository.FirstOrDefaultAsync
+                (vehicle =>
+                vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        var exisitingVehicleBrand = await _vehicleBrandRepository.FindAsync(input.VehiclesBrandId);
+
+        if (exisitingVehicleBrand is null)
+        {
+            throw new InvalidOperationException("Plate color doesnot exist");
+        }
+        if (vehicleModel != null)
+        {
+            if (vehicleModel.EnglishName == input.EnglishName.Trim(' '))
+            {
+                throw new InvalidOperationException("Vehicle model english name already exists");
+
+            }
+            else if (vehicleModel.ArabicName == input.ArabicName.Trim(' '))
+            {
+                throw new InvalidOperationException("Vehicle model  arabic name already exists");
+
+            }
+
+
+        }
+        return await base.CreateAsync(input);
+
+    }
+
+    ///<inheritdoc/>
+    public override async Task<VehicleModelDto> UpdateAsync(int id, CreateUpdateVehicleModelDto input)
+    {
+        var existingVehicleModel = await _repository.GetAsync(id);
+
+        if (existingVehicleModel is null)
+        {
+            throw new InvalidOperationException("Vehicle model not found");
+        }
+
+        var vehicleModel = await _repository.FirstOrDefaultAsync
+                (vehicle =>
+                vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        var exisitingVehicleBrand = await _vehicleBrandRepository.FindAsync(input.VehiclesBrandId);
+
+        if (exisitingVehicleBrand is null)
+        {
+            throw new InvalidOperationException("Plate color doesnot exist");
+        }
+        if (vehicleModel != null)
+        {
+            if (vehicleModel.EnglishName == input.EnglishName.Trim(' ') && vehicleModel.Id != id)
+            {
+                throw new InvalidOperationException("Vehicle model english name already exists");
+
+            }
+            else if (vehicleModel.ArabicName == input.ArabicName.Trim(' ') && vehicleModel.Id != id)
+            {
+                throw new InvalidOperationException("Vehicle model arabic name already exists");
+
+            }
+
+
+        }
+        return await base.UpdateAsync(id, input);
     }
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
@@ -41,6 +117,8 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         
             await base.DeleteAsync(id);
     }
+
+    /// <inheritdoc/>
     public async Task<PagedResultDto<VehicleModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository
@@ -73,11 +151,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         );
     }
 
-    /// <summary>
-    /// method used to get list of cameraes
-    /// </summary>
-    /// <param name="input">specifies max number of camera and if it filtered or not</param>
-    /// <returns>cameraeDto List</returns>
+    /// <inheritdoc/>
     public async Task<PagedResultDto<VehicleModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository
