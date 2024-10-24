@@ -2,14 +2,19 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cameras;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
 using SmartParking.Localization;
 using SmartParking.Packages;
+using SmartParking.Vehicles.LookUps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Packages;
 
@@ -233,40 +238,75 @@ public partial class Package
 		return await Dialog.ShowAsync<DetailsPackageDialog>("View Package", parameters);
 	}
 
-	private async Task OnClickRowDelete(string row)
+	private async Task OnClickRowDelete(RowDef row)
 	{
-		var id = int.Parse(row);
-		try
-		{
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[1].Value;
 
-			await PackagesAppService.DeleteAsync(id);
-			ShowSnackbar("Package Deleted Successfully ", Severity.Success);
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
 
-		}
-		catch (Exception ex)
-		{
+        };
 
-			ShowSnackbar(ex.Message, Severity.Error);
-		}
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("PackagesDeleteDialog", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await PackagesAppService.DeleteAsync(id);
+                ShowSnackbar("Package Deleted Successfully", Severity.Error);
+                await Task.Delay(1000);
 
-	}
-	/// <summary>
+                Navigation.NavigateTo("/packages", forceLoad: true);
 
-	/// Displays a snackbar notification with the specified message and severity.
+            }
 
-	/// </summary>
 
-	/// <param name="message">The message to display in the snackbar.</param>
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+            ShowSnackbar($"Failed to delete Package : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-	void ShowSnackbar(string message, Severity severity)
+            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
+        }
+
+
+
+    }
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
 
 	{
 
 		Snackbar.Clear();
 
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

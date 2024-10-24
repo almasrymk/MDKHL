@@ -231,17 +231,27 @@ public partial class Garage
         return await DialogService.ShowAsync<ViewGarageDialog>("View Garage", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
-		var id = int.Parse(row);
-        var dialog = await DialogService.ShowAsync<SPDialogDelete>();
+		var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteGarage", parameters);
         var result = await dialog.Result;
         try
         {
             if (!result.Canceled)
             {
                 await GarageAppService.DeleteAsync(id);
-                ShowSnackbar("Garage Deleted Successfully", Severity.Success);
+                ShowSnackbar("Garage Deleted Successfully", Severity.Error);
+                await Task.Delay(1000);
+
                 Navigation.NavigateTo("/garages", forceLoad: true);
 
             }
@@ -258,18 +268,18 @@ public partial class Garage
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Garage: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Garage : {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Garage: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Garage : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Garage: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Garage : {ex.Message} + ", Severity.Error);
         }
-     
+
 
     }
 
@@ -289,7 +299,7 @@ public partial class Garage
 
         Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

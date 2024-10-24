@@ -12,6 +12,13 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Cameras;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Vehicles.LookUps;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.PlateColors;
 
@@ -207,40 +214,75 @@ public partial class PlateColor
 		return await Dialog.ShowAsync<ViewPlateColorDialog>("View PlateColorDialog", parameters);
 	}
 
-	private async Task OnClickRowDelete(string row)
+	private async Task OnClickRowDelete(RowDef row)
 	{
-		var id = int.Parse(row);
-		try
-		{
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
 
-			await PlateColorsAppService.DeleteAsync(id);
-			ShowSnackbar("Camera Deleted Successfully ", Severity.Success);
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
 
-		}
-		catch (Exception ex)
-		{
+        };
 
-			ShowSnackbar(ex.Message, Severity.Error);
-		}
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("PlateColorDelete", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await PlateColorsAppService.DeleteAsync(id);
+                ShowSnackbar("Plate Color Deleted Successfully", Severity.Error);
+                await Task.Delay(1000);
 
-	}
-	/// <summary>
+                Navigation.NavigateTo("/platecolors", forceLoad: true);
 
-	/// Displays a snackbar notification with the specified message and severity.
+            }
 
-	/// </summary>
 
-	/// <param name="message">The message to display in the snackbar.</param>
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+            ShowSnackbar($"Failed to delete Plate Color : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Plate Color : {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-	void ShowSnackbar(string message, Severity severity)
+            ShowSnackbar($"Failed to delete Plate Color : {ex.Message} + ", Severity.Error);
+        }
+
+
+
+    }
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
 
 	{
 
 		Snackbar.Clear();
 
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

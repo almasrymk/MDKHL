@@ -344,7 +344,13 @@
     "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
     "FullDay": "يوم كامل",
     "Customer Categories": "فئـات العمـلاء",
-    "No Subscription for organization": "لا تـوجـد اشـتراكات لتلك المنشـأة"
+    "No Subscription for organization": "لا تـوجـد اشـتراكات لتلك المنشـأة",
+    "Deletion Process": "استـكمأل عملـية الحـذف",
+    "Do you wish to Delete This": "هل ترغـب فـي حـذف ",
+    "...?": "...؟",
+    "Camera with Mac Address : ": ": عنوان مـاك الكـاميرا ",
+    "Confirm Deletion": "تـأكيـد الحـذف",
+    "Add NEW": "اضـافة جـديـد"
 
   }
 }

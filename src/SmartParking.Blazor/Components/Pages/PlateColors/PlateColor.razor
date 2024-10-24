@@ -6,7 +6,9 @@
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-@page "/plateColors"
+@inject NavigationManager Navigation
+
+@page "/platecolors"
 
 <PageTitle>@L["PlateColors"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["PlateColors"]</MudText>

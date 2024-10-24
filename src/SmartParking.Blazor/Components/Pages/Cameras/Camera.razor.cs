@@ -266,21 +266,29 @@ public partial class Camera
         return await Dialog.ShowAsync<ViewCameraDialog>("View Camera", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
-        var id = int.Parse(row);
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = _localizer["Camera with Mac Address : "] + row.Cells[2].Value;
 
-        var dialog = await Dialog.ShowAsync<SPDialogDelete>();
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteCamera", parameters);
         var result = await dialog.Result;
         try
         {
             if (!result.Canceled)
             {
                 await CamerasAppService.DeleteAsync(id);
-                ShowSnackbar("Camera Deleted Successfully ", Severity.Success);
+                ShowSnackbar("Camera Deleted Successfully ", Severity.Error);
 
-                Navigation.Refresh(forceReload:true);
-               // Navigation.NavigateTo("/cameras", forceLoad: true);
+                await Task.Delay(1000);
+
+                Navigation.NavigateTo("/cameras", forceLoad: true);
 
             }
 
@@ -325,9 +333,9 @@ public partial class Camera
 
         Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled );
 
     }
 

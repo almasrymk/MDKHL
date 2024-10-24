@@ -11,6 +11,11 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Blazor.Components.Pages.VehicleBrands;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
+using SmartParking.Blazor.Components.SPComponents;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.VehicleModels;
 
@@ -132,8 +137,8 @@ public partial class VehicleModel
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandArabicName"], Name = "VehicleBrandArabicName", IsFilterable = true, PropertyNmae = "VehicleBrandArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandEnglishName"], Name = "VehicleBrandEnglishName", IsFilterable = true, PropertyNmae = "VehicleBrandEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandArabicName"], Name = "VehicleBrandArabicName", IsFilterable = true, PropertyNmae = "VehiclesBrand.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandEnglishName"], Name = "VehicleBrandEnglishName", IsFilterable = true, PropertyNmae = "VehiclesBrand.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
@@ -143,8 +148,8 @@ public partial class VehicleModel
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandArabicName"], item.VehicleBrandArabicName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandEnglishName"], item.VehicleBrandEnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandArabicName"], item.VehiclesBrand.ArabicName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandEnglishName"],item.VehiclesBrand.EnglishName));
 
 			//rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
@@ -210,40 +215,75 @@ public partial class VehicleModel
 		return await Dialog.ShowAsync<ViewVehicleModelDialog>("View VehicleModelDialog", parameters);
 	}
 
-	private async Task OnClickRowDelete(string row)
+	private async Task OnClickRowDelete(RowDef row)
 	{
-		var id = int.Parse(row);
-		try
-		{
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
 
-			await VehicleModelsAppService.DeleteAsync(id);
-			ShowSnackbar("VehicleModel Deleted Successfully ", Severity.Success);
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
 
-		}
-		catch (Exception ex)
-		{
+        };
 
-			ShowSnackbar(ex.Message, Severity.Error);
-		}
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Vehicle Model Delete Dialog", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await VehicleModelsAppService.DeleteAsync(id);
+                ShowSnackbar("Vehicle Model Deleted Successfully", Severity.Error);
+                await Task.Delay(1000);
 
-	}
-	/// <summary>
+                Navigation.NavigateTo("/vehiclemodels", forceLoad: true);
 
-	/// Displays a snackbar notification with the specified message and severity.
+            }
 
-	/// </summary>
 
-	/// <param name="message">The message to display in the snackbar.</param>
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+            ShowSnackbar($"Failed to delete Vehicle Model  : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Vehicle Model  : {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-	void ShowSnackbar(string message, Severity severity)
+            ShowSnackbar($"Failed to delete Vehicle Model  : {ex.Message} + ", Severity.Error);
+        }
+
+
+
+    }
+    /// <summary>
+
+    /// Displays a snackbar notification with the specified message and severity.
+
+    /// </summary>
+
+    /// <param name="message">The message to display in the snackbar.</param>
+
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
 
 	{
 
 		Snackbar.Clear();
 
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

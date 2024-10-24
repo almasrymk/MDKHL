@@ -5,7 +5,9 @@
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-@page "/garageTransactions"
+@inject NavigationManager Navigation
+
+@page "/garagetransactions"
 
 <PageTitle>@L["GarageTransactions"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["GarageTransactions"]</MudText>

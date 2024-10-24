@@ -27,7 +27,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
     [Parameter]  public  bool ShowView { get; set; } = true;
-    [Parameter] public EventCallback<string> OnClickRowDelete { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
     public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
 

@@ -7,7 +7,7 @@
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["New Camera"]</MudText>
+            <MudText Typo="Typo.h6">@L["New VehicleBrand"]</MudText>
         </TitleContent>
         <DialogContent>
            
@@ -21,6 +21,7 @@
                                               For="@(() => vehicleBrandDro.ArabicName)"
                                               Immediate="true"
                                               Required="true"
+                                      Placeholder="@L["ArabicName"]"
                                               Label="@L["ArabicName"]" />
                             </MudItem>
 
@@ -29,7 +30,8 @@
                                               For="@(() => vehicleBrandDro.EnglishName)"
                                               Immediate="true"
                                               Required="true"
-                                              Label="@L["EnglishName"]" />
+                                      Placeholder="@L["EnglishName"]"
+                                      Label="@L["EnglishName"]" />
                             </MudItem>
 
 
