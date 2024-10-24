@@ -149,6 +149,8 @@ public partial class Country
 
         return DialogService.ShowAsync<AddCountryDialog>("Simple Dialog", options);
 
+       
+
 
     }
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)

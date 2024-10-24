@@ -23,8 +23,8 @@
                     
                     @if (OnFiltering.HasDelegate && ShowFiltering)
                     {
-                        <div Class="ms-2" @onclick="OnClickFilter">
-                            <MudIcon Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIcon>
+                        <div Class="ms-2">
+                            <MudIconButton OnClick="OnClickFilter" Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIconButton>
                         </div>
                     }
                     

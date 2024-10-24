@@ -167,10 +167,12 @@
 		{
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
+			MudDialogAdd.Close(DialogResult.Ok(true));
 			Snackbar.Add("Camera Updated Successfully", Severity.Success);
+			await Task.Delay(1000);
 			Navigation.NavigateTo("/cameras", forceLoad: true);
 
-			//MudDialogAdd.Close(DialogResult.Ok(true));
+
 		}
 		catch (Exception e)
 		{

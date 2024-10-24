@@ -3,7 +3,7 @@
 @using SmartParking.Localization
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject NavigationManager Navigation
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -129,8 +129,10 @@
                 return;
             }
             Snackbar.Add("GarageTransaction created successfully!", Severity.Success);
+           
             MudDialog.Close(DialogResult.Ok(true));
-
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/garageTransactions", forceLoad: true);
         }
         else
         {

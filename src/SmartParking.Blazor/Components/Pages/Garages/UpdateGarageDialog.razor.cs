@@ -39,6 +39,7 @@ public partial class UpdateGarageDialog
             await GarageAppService.UpdateAsync(UpdatedId, Garage);
             ShowSnackbar("Garage Updated Successfully", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
+            await Task.Delay(1000);
             Navigation.NavigateTo("/garages", true);
 
 

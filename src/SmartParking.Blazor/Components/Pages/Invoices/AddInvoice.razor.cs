@@ -65,6 +65,7 @@ public partial class AddInvoice
             if (invoice != null)
             {
                 Snackbar.Add(successedMessage, Severity.Success);
+                await Task.Delay(1000);
                 Navigation.NavigateTo("/invoices",true);
                
             }

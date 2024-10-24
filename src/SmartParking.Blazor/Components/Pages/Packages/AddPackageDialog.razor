@@ -11,7 +11,7 @@
 @inject IOrganizationsAppService organizationAppService
 @inject IPackageTypesAppService packageTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject NavigationManager Navigation
 <PageTitle>@L["New Package"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -184,6 +184,10 @@
             try
             {
                 await PackagesAppService.CreateAsync(createUpdatePackage);
+                Snackbar.Add("Package created successfully!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/packages", true);
             }
             catch (AbpValidationException ex)
             {
@@ -197,8 +201,7 @@
                 Snackbar.Add("Fill Requried Items", Severity.Error);
                 return;
             }
-            Snackbar.Add("Package created successfully!", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+
 
         }
         else

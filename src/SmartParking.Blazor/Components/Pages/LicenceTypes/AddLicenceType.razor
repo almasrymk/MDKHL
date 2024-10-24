@@ -5,7 +5,7 @@
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject NavigationManager Navigation
 <PageTitle>@L["New LicenceType"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -109,7 +109,8 @@
             }
             Snackbar.Add("LicenceType created successfully!", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
-
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/licenceTypes", true);
         }
         else
         {

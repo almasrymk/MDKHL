@@ -10,6 +10,7 @@ using Volo.Abp.Validation;
 using System.Linq;
 using Blazorise;
 using System;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
@@ -55,7 +56,9 @@ public partial class AddCityDialog
                 {
                     Snackbar.Add(successedMessage, Severity.Success);
                     MudDialog.Close(DialogResult.Ok(true));
-                }
+				    await Task.Delay(1000);
+				    Navigation.NavigateTo("/cities", forceLoad: true);
+			    }
 
                 else
                 {

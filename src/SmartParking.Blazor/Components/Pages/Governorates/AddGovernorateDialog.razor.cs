@@ -62,6 +62,8 @@ public partial class AddGovernorateDialog
 				Snackbar.Add(successedMessage, Severity.Success);
 
 				MudDialog.Close(DialogResult.Ok(true));
+				await Task.Delay(1000);
+				Navigation.NavigateTo("/governorates",forceLoad:true);
 			}
 
 			else
