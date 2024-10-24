@@ -2,6 +2,8 @@
 using MudBlazor;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
+using SmartParking.Lookups.State;
+using SmartParking.LookupsAppServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,8 @@ public partial class EditCityDialog
     [Parameter] public CityDto city { get; set; } = new CityDto();
     [Parameter] public CreateUpdateCityDto input { get; set; } = new CreateUpdateCityDto();
     public IReadOnlyList<GovernorateLookupDto> governorates { get; set; } = new List<GovernorateLookupDto>();
-    private MudForm editForm;
+	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
+	private MudForm editForm;
     bool _clearable;
     [Parameter] public int UpdatedId { get; set; }
 
@@ -26,7 +29,9 @@ public partial class EditCityDialog
     {
         var result = await CitiesAppService.GetGovernorateLookupAsync();
         governorates = result;
-    }
+		var result2 = await StateAppService.GetRegionLookupAsync();
+		regions = result2;
+	}
 
     private async Task Save()
     {

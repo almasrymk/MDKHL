@@ -3,10 +3,12 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
+@using SmartParking.Lookups.State
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IStateAppService StateAppService
 @inject NavigationManager Navigation
 <PageTitle>@L["UpdateCities"]</PageTitle>
 
@@ -47,6 +49,21 @@
 							@foreach (var governorate in governorates)
 							{
 								<MudSelectItem Value="governorate.Id">@governorate.EnglishName</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@city.RegionId"
+								   Variant="Variant.Text"
+								   Label=@L["Region"]
+								   Placeholder=@L["Choose"]
+								   HelperText=@L["Helper Text"]
+								   AnchorOrigin="Origin.TopCenter"
+								   TransformOrigin="Origin.TopCenter">
+
+							@foreach (var region in regions)
+							{
+								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
 							}
 						</MudSelect>
 					</MudItem>

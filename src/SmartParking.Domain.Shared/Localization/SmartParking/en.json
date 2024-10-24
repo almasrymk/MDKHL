@@ -326,6 +326,25 @@
     "Do you wish to Delete This": "Do you wish to Delete This",
     "...?": "...?",
     "Camera with Mac Address :": "Camera with Mac Address : ",
-    "Confirm Deletion": "Confirm Deletion"
+    "Confirm Deletion": "Confirm Deletion",
+    "OrganiztionCreatedSuccessfully": "OrganiztionCreatedSuccessfully",
+    "Can'tCreateOrganiztion": "Can'tCreateOrganiztion",
+    "FullDayPrice": "FullDayPrice",
+    "IsClose": "IsClose",
+    "ClosingHoursStart": "ClosingHoursStart",
+    "ClosingHoursEnd": "ClosingHoursEnd",
+    "GarageCreatedSuccessfully": "GarageCreatedSuccessfully",
+    "Can'tCreateGarage": "Can'tCreateGarage",
+    "Garage assigned to organization Successfully": "Garage assigned to organization Successfully",
+    "Garage Updated Successfully": "Garage Updated Successfully",
+    "Failed to update garage": "Failed to update garage",
+    "Camera created successfully": "Camera created successfully",
+    "Can'tCreate Camera": "Can'tCreate Camera",
+    "DuplicateCameraIP": "DuplicateCameraIP",
+    "Camera assigned to garage Successfully": "Camera assigned to garage Successfully",
+    "Can't assign camera to garage": "Can't assign camera to garage",
+    "Camera Updated Successfully": "Camera Updated Successfully",
+    "Can't Update Camera": "Can't Update Camera"
+
   } 
 }

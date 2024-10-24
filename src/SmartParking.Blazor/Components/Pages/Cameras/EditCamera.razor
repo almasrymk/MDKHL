@@ -163,12 +163,15 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["Camera Updated Successfully"];
+		var errorMessage = L["Can't Update Camera"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
 			MudDialogAdd.Close(DialogResult.Ok(true));
-			Snackbar.Add("Camera Updated Successfully", Severity.Success);
+			Snackbar.Add($"{successedMessage}", Severity.Success);
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/cameras", forceLoad: true);
 
@@ -176,7 +179,7 @@
 		}
 		catch (Exception e)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			Snackbar.Add(errorMessage, Severity.Error);
 		}
 	}
 
