@@ -9,7 +9,7 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["AddRegions"]</PageTitle>
-
+@inject NavigationManager Navigation
 
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -23,6 +23,7 @@
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Text"
@@ -33,6 +34,7 @@
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Text"
@@ -44,9 +46,8 @@
                     <MudItem sm="6" Class="d-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@input.Status" Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
                                 <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                                <MudRadio Value="@(Enums.Status.Deleted)" Color="MudBlazor.Color.Warning">@L["Status Deleted"]</MudRadio>
                             </MudRadioGroup>
                         </MudItem>
                     </MudItem>

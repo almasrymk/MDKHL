@@ -9,6 +9,7 @@ using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SmartParking.Blazor.Components.Pages.Governorates;
 
@@ -58,7 +59,9 @@ public partial class EditGovernorateDialog
 			{
 				Snackbar.Add(successedMessage, Severity.Success);
 				MudDialog.Close(DialogResult.Ok(true));
-			}
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/governorates", forceLoad: true);
+            }
 
 			else
 			{

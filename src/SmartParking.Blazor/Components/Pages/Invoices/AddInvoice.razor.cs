@@ -23,6 +23,8 @@ public partial class AddInvoice
     public List<GarageDto> garages = new List<GarageDto>();
 
     public List<VehicleDto> vehicles = new List<VehicleDto>();
+    private MudForm form;
+
 
     public string code;
     protected override async Task OnInitializedAsync()
@@ -65,6 +67,7 @@ public partial class AddInvoice
             if (invoice != null)
             {
                 Snackbar.Add(successedMessage, Severity.Success);
+                await Task.Delay(1000);
                 Navigation.NavigateTo("/invoices",true);
                
             }

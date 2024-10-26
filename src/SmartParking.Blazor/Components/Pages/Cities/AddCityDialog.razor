@@ -9,6 +9,7 @@
 @inject ICitiesAppService CitiesAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
 <PageTitle>@L["Add Cities"]</PageTitle>
 
 <MudItem class="modal-wrapper">
@@ -48,6 +49,7 @@
                                       Placeholder="@L["EnterYourNotes"]" />
                     </MudItem>
                     <GovernorateLookUps SelectValueChanged="SelectGovernment"></GovernorateLookUps>
+                    <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
                 </MudGrid>
             </MudForm>
 
@@ -55,7 +57,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(form == null || !form.IsValid)" >@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 

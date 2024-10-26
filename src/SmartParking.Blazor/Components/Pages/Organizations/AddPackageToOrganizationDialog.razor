@@ -184,6 +184,10 @@
     }
     private async Task Submit()
     {
+        var successedMessage = L["PackageCreatedSuccessfully"];
+        var errorMessage = L["FillRequriedItems"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        
         if (form.IsValid)
         {
             // Call your service to create the camera
@@ -201,16 +205,16 @@
             }
             catch (Exception e)
             {
-                Snackbar.Add("Fill Requried Items", Severity.Error);
+                Snackbar.Add(errorMessage, Severity.Error);
                 return;
             }
-            Snackbar.Add("Package created successfully!", Severity.Success);
+            Snackbar.Add(successedMessage, Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
 
         }
         else
         {
-            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            Snackbar.Add(validationErrorMessage, Severity.Error);
         }
     }
     private void Cancel()

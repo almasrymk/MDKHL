@@ -3,15 +3,20 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Customer;
 using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
 using SmartParking.Garages;
 using SmartParking.Localization;
+using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras;
@@ -132,8 +137,9 @@ public partial class Camera
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = true, PropertyNmae = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyNmae = "Type", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "GarageName", IsFilterable = false, PropertyNmae = "Garage.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = false, PropertyNmae = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyNmae = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in cameras.Items)
@@ -141,7 +147,10 @@ public partial class Camera
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.CameraType.ToString()));
+            if(item.Garage is not null)
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.Garage.Name));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"], item.CameraType.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
 
 
@@ -257,20 +266,54 @@ public partial class Camera
         return await Dialog.ShowAsync<ViewCameraDialog>("View Camera", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
-        var id = int.Parse(row);
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = _localizer["Camera with Mac Address : "] + row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteCamera", parameters);
+        var result = await dialog.Result;
         try
         {
+            if (!result.Canceled)
+            {
+                await CamerasAppService.DeleteAsync(id);
+                ShowSnackbar($"{L["Camera Deleted Successfully"]} ", Severity.Error);
 
-            await CamerasAppService.DeleteAsync(id);
-            ShowSnackbar("Camera Deleted Successfully ", Severity.Success);
+                await Task.Delay(1000);
 
+                Navigation.NavigateTo("/cameras", forceLoad: true);
+
+            }
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(ex.Message, Severity.Error);
+            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
         }
 
     }
@@ -290,9 +333,9 @@ public partial class Camera
 
         Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled );
 
     }
 

@@ -1,28 +1,31 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
 <div class="modal-wrapper text-center">
-    <MudDialog class="mud-modal text-center">
+    <MudDialog class="text-center">
         <TitleContent >
-            <MudText Class="fw-bold">Proceed with Process</MudText>
+            <MudText Class="fw-bold">@L["Deletion Process"]</MudText>
         </TitleContent>
         <DialogContent>
-            <MudText>Do you wish to proceed with this process ...?</MudText>
+            <MudText>@L["Do you wish to Delete This"] @Name @L["...?"]</MudText>
         </DialogContent>
-        <DialogActions >
-            <MudButton Class=" bg-primary text-light"  Color="MudBlazor.Color.Inherit" OnClick="Submit">CONFIRM</MudButton>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
+        <DialogActions>
+            <MudButton Class="text-light" FullWidth="true" Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Error" OnClick="Submit">@L["Confirm Deletion"]</MudButton>
+            <MudButton FullWidth="true" DropShadow="true" OnClick="Cancel">@L["CANCEL"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>
 
-<style>
-    .mud-modal {
-        border-radius: 0 20px 0 20px;
-    }
-</style>
+
 
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+    
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 

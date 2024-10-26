@@ -6,7 +6,7 @@
 @using Volo.Abp.Application.Dtos
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IGarageAppService GaragesAppService
-
+@inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 
@@ -85,18 +85,21 @@
 
 	private async Task SubmitEdit()
 	{
+		var successedMessage = L["Garage assigned to organization Successfully"];
+		//var errorMessage = L["Can't Assign Garage"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
 
 			//await GarageAppService.UpdateAsync(UpdatedId, Garage);
 			await GaragesAppService.UpdateAsync(UpdatedId, Garage);
-			Snackbar.Add("Garage assigned to organization Successfully", Severity.Success);
+			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 
 		}
 		catch (Exception e)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			Snackbar.Add($"{validationErrorMessage}: {e.Message}", Severity.Error);
 		}
 	}
 

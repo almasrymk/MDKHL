@@ -9,10 +9,12 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class CustomerRegister
 {
+    private MudForm form;
     public CreateUpdateCustomerDto createUpdateCustomerDto = new CreateUpdateCustomerDto();
     public async  Task HandleSubmit()
     {
-        try
+		var successedMessage = L["CustomerCreatedSuccessfullyWith"];
+		try
         {
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
             var customer =  await CustomerAppService.CreateAsync(createUpdateCustomerDto);
@@ -20,7 +22,8 @@ public partial class CustomerRegister
             if (customer != null)
             {
 
-                ShowSnackbar($"Customer {createUpdateCustomerDto.FullName} was created successfully",Severity.Success);
+                ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}" ,Severity.Success);
+                await Task.Delay(1000);
                 Navigation.NavigateTo("/customers");
 
 
@@ -66,7 +69,6 @@ public partial class CustomerRegister
     void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 

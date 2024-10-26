@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Lookups;
 using System;
@@ -43,7 +44,9 @@ public partial class EditCountryDialog
 			{
 				Snackbar.Add(successedMessage, Severity.Success);
 				MudDialog.Close(DialogResult.Ok(true));
-			}
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/countries");
+            }
 
 			else
 			{

@@ -109,9 +109,8 @@ namespace SmartParking.Vehicles.LookUps
             {
 
                 queryable = queryable.Where(or =>
-                    or.ArabicName.StartsWith(input.SearchingTerm) ||
-                    or.EnglishName.StartsWith(input.SearchingTerm) ||
-                    or.Notes.StartsWith(input.SearchingTerm)
+                    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
                     
 
                 );

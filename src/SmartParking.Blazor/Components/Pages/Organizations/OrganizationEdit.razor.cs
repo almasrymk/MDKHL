@@ -62,6 +62,10 @@ public partial class OrganizationEdit
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     private async Task Update()
     {
+        var successedMessage = L["OrganiztionUpdatedSuccessfully"];
+        var errorMessage = L["Can'tUpdateOrganiztion"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
         var id = int.Parse(Id);
 
         Status StatusValue;
@@ -110,7 +114,7 @@ public partial class OrganizationEdit
            
             await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
 
-            ShowSnackbar("Update Orgainzation Successfully", Severity.Success);
+            ShowSnackbar(successedMessage, Severity.Success);
         }
         catch (AbpValidationException validationException)
         {
@@ -122,16 +126,16 @@ public partial class OrganizationEdit
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
     }
     /// <summary>

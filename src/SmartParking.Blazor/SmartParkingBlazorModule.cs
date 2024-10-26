@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MudBlazor;
+using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Filters;
@@ -127,6 +130,12 @@ public class SmartParkingBlazorModule : AbpModule
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
         // Add services to the container.
+        context.Services.AddMudServices(config =>
+        {
+            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomEnd;
+
+       
+        });
         context.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 

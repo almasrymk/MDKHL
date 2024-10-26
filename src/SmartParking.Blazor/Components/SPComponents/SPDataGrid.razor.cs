@@ -27,7 +27,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
     [Parameter]  public  bool ShowView { get; set; } = true;
-    [Parameter] public EventCallback<string> OnClickRowDelete { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
     public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
 
@@ -87,8 +87,11 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if (SelectedColumn.Contains("Status"))
-            SelectOperator = new KeyValuePair<string, string>("Status",FilterValue);
+        if (SelectedColumn.Contains("Status")  )
+            SelectOperator = new KeyValuePair<string, string>("Status", FilterValue);
+        if(SelectedColumn.Contains("CameraType"))
+            SelectOperator = new KeyValuePair<string, string>("CameraType", FilterValue);
+
         if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
         {
             if (SelectOperator.Key.Contains("not"))
@@ -105,11 +108,12 @@ public partial class SPDataGrid
             ColumnsFilterApply.Add(SelectedColumn);
 
             ClickFilter = false;
-            await dataGrid.ReloadServerData();
-            SelectedColumn = "";
-            FilterValue = "";
-            SelectOperator = default;
-            IsNot = false;
+			SelectedColumn = "";
+			FilterValue = "";
+			SelectOperator = default;
+			IsNot = false;
+			await dataGrid.ReloadServerData();
+            
         }
            
       

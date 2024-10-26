@@ -100,9 +100,8 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 		{
 
 			queryable = queryable.Where(or =>
-				or.ArabicName.StartsWith(input.SearchingTerm) ||
-				or.EnglishName.StartsWith(input.SearchingTerm) ||
-				or.Notes.StartsWith(input.SearchingTerm) 
+				or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
 				
 			);
 		}
@@ -133,7 +132,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 		// Get the IQueryable<camera> from the repository
 		var queryable = await _repository.GetQueryableAsync();
 		// Apply filtering
-		var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
+		var filterExpression = BuildExpression<PlateColor>.BuildFilterExpression(input.filters);
 		if (filterExpression is not null)
 		{
 			queryable = queryable.Where(filterExpression);

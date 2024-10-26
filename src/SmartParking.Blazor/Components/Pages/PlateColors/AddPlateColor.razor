@@ -6,7 +6,7 @@
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject NavigationManager Navigation
 <PageTitle>@L["New Plate"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -47,7 +47,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
     </MudDialog>
@@ -77,25 +77,31 @@
     }
     private async Task Submit()
     {
+        var successedMessage = L["PlateColorCreatedSuccessfully"];
+        var errorMessage = L["FillRequriedItems"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
             // Call your service to create the camera
             try
             {
                 await PlateColorsAppService.CreateAsync(plateColorDro);
+                Snackbar.Add(successedMessage, Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/plateColors", true);
             }
             catch (Exception e)
             {
-                Snackbar.Add("Fill Requried Items", Severity.Error);
+                Snackbar.Add(errorMessage, Severity.Error);
                 return;
             }
-            Snackbar.Add("PlateColor created successfully!", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+           
 
         }
         else
         {
-            Snackbar.Add("Fill Requried Items", Severity.Error);
+            Snackbar.Add(errorMessage, Severity.Error);
         }
     }
     private void Cancel()

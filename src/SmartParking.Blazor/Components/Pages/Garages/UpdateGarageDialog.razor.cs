@@ -32,35 +32,41 @@ public partial class UpdateGarageDialog
 
     private async Task SubmitEdit()
     {
-        try
+		var successedMessage = L["Garage Updated Successfully"];
+		var errorMessage = L["Failed to update garage"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		try
         {
             Garage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
 
             await GarageAppService.UpdateAsync(UpdatedId, Garage);
-            ShowSnackbar("Garage Updated Successfully", Severity.Success);
+            ShowSnackbar($"{successedMessage}", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/garages", true);
+
 
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
         }
     }
 

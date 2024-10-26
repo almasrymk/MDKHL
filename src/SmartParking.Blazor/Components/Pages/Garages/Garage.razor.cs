@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cameras;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Blazor.Customs;
 using SmartParking.Cameras;
 using SmartParking.Garages;
@@ -13,8 +14,11 @@ using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 using static MudBlazor.CategoryTypes;
 
 
@@ -157,6 +161,7 @@ public partial class Garage
         return DialogService.ShowAsync<AddGarageDialog>("Simple Dialog", options);
 
 
+
     }
 	public async Task<IDialogReference> AssignOrganization(string id)
 	{
@@ -226,20 +231,55 @@ public partial class Garage
         return await DialogService.ShowAsync<ViewGarageDialog>("View Garage", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
-		var id = int.Parse(row);
+		var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteGarage", parameters);
+        var result = await dialog.Result;
         try
         {
+            if (!result.Canceled)
+            {
+                await GarageAppService.DeleteAsync(id);
+                ShowSnackbar($"{L["Garage Deleted Successfully"]}", Severity.Error);
+                await Task.Delay(1000);
 
-            await GarageAppService.DeleteAsync(id);
-            ShowSnackbar("Garage Deleted Successfully ", Severity.Success);
+                Navigation.NavigateTo("/garages", forceLoad: true);
+
+            }
+
 
         }
-        catch (Exception ex) { 
-        
-           ShowSnackbar(ex.Message,Severity.Error);
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
         }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to delete Garage : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete Garage : {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar($"Failed to delete Garage : {ex.Message} + ", Severity.Error);
+        }
+
 
     }
 
@@ -259,7 +299,7 @@ public partial class Garage
 
         Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
 
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 

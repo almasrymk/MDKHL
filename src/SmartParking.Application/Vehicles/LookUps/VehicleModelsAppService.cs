@@ -128,8 +128,10 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         {
 
             queryable = queryable.Where(or =>
-                or.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.EnglishName.StartsWith(input.SearchingTerm) 
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.VehiclesBrand.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())||
+                or.VehiclesBrand.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         // Get the total count of filtered records
@@ -155,7 +157,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
         // Apply filtering
-        var filterExpression = BuildExpression<LicenceType>.BuildFilterExpression(input.filters);
+        var filterExpression = BuildExpression<VehicleModel>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);

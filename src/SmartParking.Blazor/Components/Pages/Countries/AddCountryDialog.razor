@@ -7,6 +7,7 @@
 @inject ICountriesAppService CountriesAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
 <PageTitle>@L["AddCountries"]</PageTitle>
 
 <MudItem class="modal-wrapper">
@@ -21,6 +22,7 @@
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Label="@L["Arabic Name"]"
                                       InputType="InputType.Text"
@@ -31,6 +33,7 @@
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Label="@L["English Name"]"
                                       InputType="InputType.Text"
@@ -40,6 +43,7 @@
                         <MudTextField @bind-Value="input.ArabicCapital"
                                       For="@(() => input.ArabicCapital)"
                                       Immediate="true"
+                                      Required
                                       Label="@L["Arabic Capital"]" 
                                       InputType="InputType.Text" 
                                       Placeholder="@L["EnterYourArabicCapital"]" />
@@ -48,6 +52,7 @@
                         <MudTextField @bind-Value="input.EnglishCapital"
                                       For="@(() => input.EnglishCapital)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Label="@L["English Capital"]"
                                       InputType="InputType.Text" 
@@ -57,6 +62,7 @@
                         <MudTextField @bind-Value="input.Notes"
                                       For="@(() => input.Notes)"
                                       Immediate="true"
+                                      Required
                                       Variant="Variant.Text"
                                       Label="@L["Notes"]"
                                       InputType="InputType.Text" 
@@ -70,7 +76,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 

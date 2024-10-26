@@ -9,6 +9,12 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Subscriptions;
 using SmartParking.Blazor.Components.Pages.Governorates;
 using SmartParking.Lookups;
+using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Vehicles.LookUps;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
 
@@ -208,22 +214,59 @@ public partial class Subscription
         return await Dialog.ShowAsync<DetailsSubscriptionDialog>("View Subscription", parameters);
     }
 
-    private async Task OnClickRowDelete(string row)
+    private async Task OnClickRowDelete(RowDef row)
     {
         var successMessage = _localizer["SubscriptionDeletedSuccessfully"];
+		var errorMessage = L["Can'tDeleteSubscription"];
+		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        var id = int.Parse(row);
+		var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Subscription Delete Dialog", parameters);
+        var result = await dialog.Result;
         try
         {
+            if (!result.Canceled)
+            {
+                await AppService.DeleteAsync(id);
+                ShowSnackbar(successMessage, Severity.Error);
+                await Task.Delay(1000);
 
-            await AppService.DeleteAsync(id);
-            ShowSnackbar(successMessage, Severity.Success);
+                Navigation.NavigateTo("/subscriptions", forceLoad: true);
+
+            }
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(ex.Message, Severity.Error);
+            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
+
 
     }
 
@@ -242,9 +285,6 @@ public partial class Subscription
     {
 
         Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
