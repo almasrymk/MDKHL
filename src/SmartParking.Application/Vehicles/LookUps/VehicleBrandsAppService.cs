@@ -38,6 +38,68 @@ namespace SmartParking.Vehicles.LookUps
 
             await base.DeleteAsync(id);
         }
+
+        ///<inheritdoc/>
+        public override async Task<VehicleBrandDto> CreateAsync(CreateUpdateVehicleBrandDto input)
+        {
+            var vehicleBrand = await _repository.FirstOrDefaultAsync
+               (vehicle =>
+               vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+               vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+
+            if (vehicleBrand != null)
+            {
+                if (vehicleBrand.EnglishName == input.EnglishName.Trim(' '))
+                {
+                    throw new InvalidOperationException("Vehicle brand english name already exists");
+
+                }
+                else if (vehicleBrand.ArabicName == input.ArabicName.Trim(' '))
+                {
+                    throw new InvalidOperationException("Vehicle brand  arabic name already exists");
+
+                }
+
+
+            }
+            return await base.CreateAsync(input);
+
+        }
+
+        ///<inheritdoc/>
+        public override async Task<VehicleBrandDto> UpdateAsync(int id, CreateUpdateVehicleBrandDto input)
+        {
+            var existingVehicleBrand = await _repository.GetAsync(id);
+
+            if (existingVehicleBrand is null)
+            {
+                throw new InvalidOperationException("Vehicle brand not found");
+            }
+
+            var vehicleBrand = await _repository.FirstOrDefaultAsync
+                    (vehicle =>
+                    vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                    vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+
+            if (vehicleBrand != null)
+            {
+                if (vehicleBrand.EnglishName == input.EnglishName.Trim(' ') && vehicleBrand.Id != id)
+                {
+                    throw new InvalidOperationException("Vehicle brand english name already exists");
+
+                }
+                else if (vehicleBrand.ArabicName == input.ArabicName.Trim(' ') && vehicleBrand.Id != id)
+                {
+                    throw new InvalidOperationException("Vehicle brand arabic name already exists");
+
+                }
+
+
+            }
+            return await base.UpdateAsync(id, input);
+        }
         public async Task<PagedResultDto<VehicleBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
             // Get the IQueryable<camera> from the repository

@@ -11,7 +11,23 @@ namespace SmartParking.Lookups.LicenceType;
 
 	public interface ILicenceTypesAppService : ICrudAppService<LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>
 	{
-    public Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+
+
+        /// <summary>
+        /// abstract method to create licence type 
+        /// </summary>
+        /// <param name="input">licence type  create dto</param>
+        /// <returns>licence type Dto</returns>
+        public Task<LicenceTypeDto> CreateAsync(CreateUpdateLicenceTypeDto input);
+
+        /// <summary>
+        /// abstract method to update specific licence type 
+        /// </summary>
+        /// <param name="input">licence type  create dto</param>
+        /// <param name="id">id of specific licence type </param>
+        /// <returns>licence type Dto</returns>
+        public Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input);
+        public Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
     /// <summary>
     /// abstract method to filter of cameras

@@ -44,46 +44,94 @@ public class StateAppService : CrudAppService<State, StateDto,
 
     public override async Task<StateDto> CreateAsync(CreateUpdateStateDto input)
     {
+        var state = await _stateRepository.FirstOrDefaultAsync
+                (state =>
+                state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        var exisitingRegion = await _stateRepository.FindAsync(input.RegionId);
+
+        if (exisitingRegion is null)
+        {
+            throw new InvalidOperationException("region doesnot exist");
+        }
+
+        if (state != null)
+        {
+            if (state.EnglishName == input.EnglishName)
+            {
+                throw new InvalidOperationException("state english name already exists");
+
+            }
+            else if (state.ArabicName == input.ArabicName)
+            {
+                throw new InvalidOperationException("state arabic name already exists");
+
+            }
+
+            throw new InvalidOperationException("english name , arabic name already exist");
+        }
+
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.CreateAsync(input);
-            }
-        }
-        else
+        
+        
             return await base.CreateAsync(input);
     }
 
     ///<inheritdoc/>
     public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
     {
+        var exisitingState = await _stateRepository.GetAsync(id);
+        if (exisitingState is null)
+        {
+            throw new InvalidOperationException("State not found");
+        }
+        var exisitingRegion = await _stateRepository.FindAsync(input.RegionId);
+
+        if (exisitingRegion is null)
+        {
+            throw new InvalidOperationException("region doesnot exist");
+        }
+
+
+        var state = await _stateRepository.FirstOrDefaultAsync
+                (state =>
+                state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        if (state != null)
+        {
+            if (state.EnglishName == input.EnglishName.Trim(' ') )
+            {
+                throw new InvalidOperationException("state english name already exists");
+
+            }
+            else if (state.ArabicName == input.ArabicName.Trim(' '))
+            {
+                throw new InvalidOperationException("state arabic name already exists");
+
+            }
+
+          
+        }
+
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
         {
             throw new InvalidOperationException("Invalid status value.");
 
         }
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.UpdateAsync(id,input);
-            }
-        }
-        else
-            return await base.UpdateAsync(id,input);
+
+       
+
+        return await base.UpdateAsync(id,input);
     }
 
-    /// <summary>
-    /// method used to get list of states
-    /// </summary>
-    /// <param name="input">specifies max number of state and if it filtered or not</param>
-    /// <returns>StateDto List</returns>
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<StateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
@@ -207,9 +255,8 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new EntityNotFoundException(typeof(State), id);
         }
         else
-        {
             await base.DeleteAsync(id);
 
-        }
+        
     }
 }

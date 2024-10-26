@@ -8,6 +8,22 @@ namespace SmartParking.Lookups;
 
 public interface IGovernorateAppService : ICrudAppService<GovernorateDto , int , PagedAndSortedResultRequestDto , CreateUpdateGovernorateDto>
 {
+
+
+    /// <summary>
+    /// abstract method to create governorate
+    /// </summary>
+    /// <param name="input">governorate create dto</param>
+    /// <returns>governorateDto</returns>
+    public Task<GovernorateDto> CreateAsync(CreateUpdateGovernorateDto input);
+
+    /// <summary>
+    /// abstract method to update specific governorate
+    /// </summary>
+    /// <param name="input">governorate create dto</param>
+    /// <param name="id">id of specific governorate</param>
+    /// <returns>governorateDto</returns>
+    public Task<GovernorateDto> UpdateAsync(int id,CreateUpdateGovernorateDto input);
     Task<List<CountryLookupDto>> GetCountryLookupAsync();
 
 
