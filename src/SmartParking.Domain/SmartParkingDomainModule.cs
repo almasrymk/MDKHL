@@ -34,7 +34,7 @@ public class SmartParkingDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddTransient(typeof(ICascadeSoftDeleteHandler<>), typeof(CascadeSoftDeleteHandler<>));
+        
         Configure<AbpLocalizationOptions>(options =>
         {
             options.Languages.Add(new LanguageInfo("ar", "ar", "ar"));

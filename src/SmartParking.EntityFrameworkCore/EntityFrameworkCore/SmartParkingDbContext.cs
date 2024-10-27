@@ -25,6 +25,10 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using SmartParking.Entities.Subscriptions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -119,7 +123,65 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     }
 
 
+    private void HandleDependent(EntityEntry entry)
+    {
+        // Mark as deleted and update state to prevent hard delete
+        if (entry.Entity is BaseEntity baseEntity)
+        {
+            baseEntity.IsDeleted = true;
+            entry.State = EntityState.Modified;
+        }
+    }
 
+    private void ProcessEntities()
+    {
+        // Iterate over entries marked as Deleted
+        foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted && e.Entity is BaseEntity))
+        {
+            // Soft delete the entity itself
+            HandleDependent(entry);
+
+            // Cascade soft delete to related entities by navigating properties
+            foreach (var navigationEntry in entry.Navigations)
+            {
+                // Explicitly load if it's not already loaded
+                if (!navigationEntry.IsLoaded)
+                {
+                    navigationEntry.Load();
+                }
+                // Skip if there’s no current value
+                if (navigationEntry.CurrentValue == null) continue;
+
+                // Check if the navigation is a collection or single reference
+                if (navigationEntry.Metadata.IsCollection)
+                {
+                    // Handle collection navigation (e.g., one-to-many)
+                    var collectionEntry = (CollectionEntry)navigationEntry;
+                    foreach (var dependentEntity in collectionEntry.CurrentValue)
+                    {
+                        HandleDependent(Entry(dependentEntity));
+                    }
+                }
+                else
+                {
+                    // Handle single reference navigation (e.g., one-to-one or many-to-one)
+                    HandleDependent(Entry(navigationEntry.CurrentValue));
+                }
+            }
+        }
+    }
+
+    public override int SaveChanges()
+    {
+        ProcessEntities(); // Apply soft delete cascade
+        return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        ProcessEntities();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

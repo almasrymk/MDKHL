@@ -31,16 +31,14 @@ public class StateAppService : CrudAppService<State, StateDto,
 
     private readonly IRepository<Region, int> _regionRepository;
     private readonly IRepository<State, int> _stateRepository;
-    private readonly ICascadeSoftDeleteHandler<State> _deleteHandler;
     private readonly IDataFilter _dataFilter;
 
 
-    public StateAppService(IRepository<State, int> stateRepository,ICascadeSoftDeleteHandler<State> deleteHandler, IRepository<Region, int> regionRepository,IDataFilter dataFilter)
+    public StateAppService(IRepository<State, int> stateRepository, IRepository<Region, int> regionRepository,IDataFilter dataFilter)
 	: base(stateRepository)
     {
         _dataFilter = dataFilter;
         _stateRepository = stateRepository;
-        this._deleteHandler = deleteHandler;
         _regionRepository = regionRepository;
     }
 
@@ -262,9 +260,6 @@ public class StateAppService : CrudAppService<State, StateDto,
         
            // await base.DeleteAsync(id);
 
-        await _stateRepository.DeleteAsync(state);
-        // Manually publish the EntityDeletedEto event
-        var deleteEvent = new EntityDeletedEto<State>(state);
-        await _deleteHandler.HandleEventAsync(deleteEvent);
+        await _stateRepository.HardDeleteAsync(state);
     }
 }
