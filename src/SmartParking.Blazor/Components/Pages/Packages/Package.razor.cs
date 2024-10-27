@@ -178,7 +178,7 @@ public partial class Package
 			PackageTypeId=packageDto.PackageTypeId,
 			Description=packageDto.Description,
 			EnglishName = packageDto.EnglishName,
-			OrgnizationId=packageDto.OrgnizationId,
+            OrganizationId = packageDto.OrganizationId,
 			Price = packageDto.Price,
 			published = packageDto.published,
 			PublishFrom = packageDto.PublishFrom,
@@ -216,7 +216,7 @@ public partial class Package
             PackageTypeId = packageDto.PackageTypeId,
             Description = packageDto.Description,
             EnglishName = packageDto.EnglishName,
-            OrgnizationId = packageDto.OrgnizationId,
+			OrganizationId = packageDto.OrganizationId,
             Price = packageDto.Price,
             published = packageDto.published,
             PublishFrom = packageDto.PublishFrom,
@@ -268,26 +268,19 @@ public partial class Package
 
 
         }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-            }
-        }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Package : {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
         }
 
 

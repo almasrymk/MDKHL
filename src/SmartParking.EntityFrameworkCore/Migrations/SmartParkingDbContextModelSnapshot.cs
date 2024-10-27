@@ -1582,10 +1582,7 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<int?>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrgnizationId")
+                    b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PackageTypeId")
@@ -4143,7 +4140,9 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("organizationPackages")
-                        .HasForeignKey("OrganizationId");
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SmartParking.Entities.PackageType", "PackageType")
                         .WithMany()

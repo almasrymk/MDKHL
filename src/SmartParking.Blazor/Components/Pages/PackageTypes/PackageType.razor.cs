@@ -232,13 +232,6 @@ public partial class PackageType
 
 
         }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-            }
-        }
         catch (BusinessException ex)
         {
 

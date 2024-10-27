@@ -19,7 +19,7 @@ namespace SmartParking.Packages
         public TimeOnly PublishTo { get; set; }
        // public  Organization Organization { get; set; }
 
-        public int OrgnizationId { get; set; }
+        public int OrganizationId { get; set; }
         public Status Status { get; set; }
     }
 }
