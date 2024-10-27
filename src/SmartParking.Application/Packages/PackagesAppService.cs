@@ -45,7 +45,7 @@ public class PackagesAppService : CrudAppService<
     public async Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId)
     {
 		var query = await _repository.GetQueryableAsync();
-		var pakages =await query.Where(_ => _.OrgnizationId == organizationId).ToListAsync();
+		var pakages =await query.Where(_ => _.OrganizationId == organizationId).ToListAsync();
 		var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if(pakages.Count == 0)
             {
@@ -115,7 +115,7 @@ public class PackagesAppService : CrudAppService<
 	public async Task<PagedResultDto<PackageDto>> GetPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
 	{
 		var query = await _repository.GetQueryableAsync();
-		query.Where(x => x.OrgnizationId == organizationId);
+		query.Where(x => x.OrganizationId == organizationId);
 		var totalCount = await AsyncExecuter.CountAsync(query);
 		query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
 		query.OrderBy(x => x.EnglishName);

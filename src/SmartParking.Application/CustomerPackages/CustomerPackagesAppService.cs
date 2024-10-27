@@ -37,7 +37,7 @@ public class CustomerPackagesAppService:
   
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
     {
-        var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrgnizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active);
+        var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrganizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active);
         if (result == null)
         {
             return null; // Or throw an appropriate exception if necessary

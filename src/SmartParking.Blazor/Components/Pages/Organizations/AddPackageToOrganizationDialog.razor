@@ -193,7 +193,7 @@
             // Call your service to create the camera
             try
             {
-                createUpdatePackage.OrgnizationId = organizationId;
+                createUpdatePackage.OrganizationId = organizationId;
                 await PackagesAppService.CreateAsync(createUpdatePackage);
             }
             catch (AbpValidationException ex)
