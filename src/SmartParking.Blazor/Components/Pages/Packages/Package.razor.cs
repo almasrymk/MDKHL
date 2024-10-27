@@ -178,7 +178,7 @@ public partial class Package
 			PackageTypeId=packageDto.PackageTypeId,
 			Description=packageDto.Description,
 			EnglishName = packageDto.EnglishName,
-			OrgnizationId=packageDto.OrgnizationId,
+            OrganizationId = packageDto.OrganizationId,
 			Price = packageDto.Price,
 			published = packageDto.published,
 			PublishFrom = packageDto.PublishFrom,
@@ -216,7 +216,7 @@ public partial class Package
             PackageTypeId = packageDto.PackageTypeId,
             Description = packageDto.Description,
             EnglishName = packageDto.EnglishName,
-            OrgnizationId = packageDto.OrgnizationId,
+			OrganizationId = packageDto.OrganizationId,
             Price = packageDto.Price,
             published = packageDto.published,
             PublishFrom = packageDto.PublishFrom,
@@ -242,7 +242,7 @@ public partial class Package
 	{
         var successedMessage = L["PackageDeletedSuccessfully"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
+		var errorMessage = L["FillRequriedItems"];
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
 

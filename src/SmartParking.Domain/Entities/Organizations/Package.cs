@@ -22,7 +22,7 @@ public class Package : BaseEntity
     public string ActivedBy { get; set; }
     public DateTime DectivationDate { get; set; }
     public string DeactivatedBy { get; set; }
-    public int OrgnizationId { get; set; }
+    public int OrganizationId { get; set; }
     public Status Status { get; set; }
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
 
