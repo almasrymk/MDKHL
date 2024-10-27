@@ -18,6 +18,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Lookups.State;
+using Volo.Abp.Domain.Entities.Events.Distributed;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -28,14 +29,16 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         IRegionAppService
 {
 	public readonly IRepository<Region, int> _regionRepository;
+    private readonly ICascadeSoftDeleteHandler<Region> _deleteHandler;
     public readonly IRepository<Country, int> _countryRepository;
 
     public readonly IDataFilter _dataFilter;
 
-    public RegionAppService(IRepository<Region, int> regionRepository,IDataFilter dataFilter, IRepository<Country, int> countryRepository)
+    public RegionAppService(IRepository<Region, int> regionRepository,ICascadeSoftDeleteHandler<Region> deleteHandler,IDataFilter dataFilter, IRepository<Country, int> countryRepository)
 	: base(regionRepository)
 	{
 		_regionRepository = regionRepository;
+        _deleteHandler = deleteHandler;
         _dataFilter = dataFilter;
         _countryRepository = countryRepository;
 	}
@@ -230,11 +233,15 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var city = await GetAsync(id);
-        if (city == null)
+        var region = await _regionRepository.FindAsync(id);
+        if (region == null)
             throw new EntityNotFoundException(typeof(Region), id);
 
-        await base.DeleteAsync(id);
+        await _regionRepository.DeleteAsync(id);
+
+        // Manually publish the EntityDeletedEto event
+        var deleteEvent = new EntityDeletedEto<Region>(region);
+        await _deleteHandler.HandleEventAsync(deleteEvent);
     }
 
     public async Task<List<RegionLookupDto>> GetRegionByCountry(int countryId)
