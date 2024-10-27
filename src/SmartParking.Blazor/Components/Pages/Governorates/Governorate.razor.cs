@@ -230,13 +230,6 @@ public partial class Governorate
 
 
         }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-            }
-        }
         catch (BusinessException ex)
         {
 
