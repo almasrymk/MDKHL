@@ -77,6 +77,11 @@ public class GovernorateAppService : CrudAppService<Governorate,
 
     public override async Task<GovernorateDto> UpdateAsync(int id, CreateUpdateGovernorateDto input)
     {
+        var exisitingGovernorate = await _governorateRepository.FindAsync(input.Id);
+        if(exisitingGovernorate is null)
+        {
+			throw new InvalidOperationException("Governorate doesnot exist");
+		}
         var governorate = await _governorateRepository.FirstOrDefaultAsync
         (governorate =>
         governorate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
@@ -84,6 +89,12 @@ public class GovernorateAppService : CrudAppService<Governorate,
         governorate.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
         governorate.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
 
+        var exisitingCountry = await _countryRepository.FindAsync(input.CountryId);
+
+        if(exisitingCountry is null)
+        {
+            throw new InvalidOperationException("Country doesnot exist");
+        }
         if (governorate != null)
         {
             if (governorate.EnglishName == input.EnglishName.Trim(' ') && governorate.Id != input.Id)

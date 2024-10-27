@@ -49,7 +49,7 @@ public class StateAppService : CrudAppService<State, StateDto,
                 state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
                 state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
-        var exisitingRegion = await _stateRepository.FindAsync(input.RegionId);
+        var exisitingRegion = await _regionRepository.FindAsync(input.RegionId);
 
         if (exisitingRegion is null)
         {
@@ -90,7 +90,7 @@ public class StateAppService : CrudAppService<State, StateDto,
         {
             throw new InvalidOperationException("State not found");
         }
-        var exisitingRegion = await _stateRepository.FindAsync(input.RegionId);
+        var exisitingRegion = await _regionRepository.FindAsync(input.RegionId);
 
         if (exisitingRegion is null)
         {
@@ -100,10 +100,11 @@ public class StateAppService : CrudAppService<State, StateDto,
 
         var state = await _stateRepository.FirstOrDefaultAsync
                 (state =>
+                state.RegionId == input.RegionId &&
                 state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
                 state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
-        if (state != null)
+        if (state != null && state.Id != id )
         {
             if (state.EnglishName == input.EnglishName.Trim(' ') )
             {

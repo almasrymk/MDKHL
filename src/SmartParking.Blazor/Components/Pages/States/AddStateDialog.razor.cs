@@ -70,12 +70,12 @@ public partial class AddStateDialog
 		}
 		catch (BusinessException ex)
 		{
-			Snackbar.Add($"Failed to add state: {ex.Code} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Code}", Severity.Error);
 
 		}
 		catch (Exception ex)
 		{
-			Snackbar.Add($"Failed to state: {ex.Message} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Message}", Severity.Error);
 		}
 
     }
