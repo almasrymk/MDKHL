@@ -10,6 +10,7 @@ using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Lookups;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -21,10 +22,12 @@ public class CountriesAppService : CrudAppService<Country,
     ICountriesAppService
 {
     private readonly IRepository<Country, int> _countryRepository;
-    public CountriesAppService(IRepository<Country, int> countryRepository) 
+    private readonly IRepository<Region, int> _regionRepository;
+
+    public CountriesAppService(IRepository<Country, int> countryRepository, IRepository<Region, int> regionRepository) 
     : base(countryRepository)
     {
-
+        _regionRepository = regionRepository;
 
         _countryRepository = countryRepository;
       
