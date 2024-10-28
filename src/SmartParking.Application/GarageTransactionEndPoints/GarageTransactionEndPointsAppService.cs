@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
@@ -22,6 +23,7 @@ using Volo.Abp.Domain.Repositories;
 namespace SmartParking.GarageTransactionEndPoints;
 
 [Authorize]
+//[IgnoreAntiforgeryToken]
 public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
@@ -63,12 +65,18 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var camera = await GetCamera(input.DeviceID);
         //input.PlateNumber ??= "123456";//input.PlateNnumber;
 
-        _logger.LogError($"{DateTime.Now} ====>  Camera ID {camera.Id}");
+        _logger.LogError($"{DateTime.Now} ====>  Camera ID is not found");
         if (camera == null)
             return await Task.FromResult(false);
         var cameraId = camera.Id;
         var garageId = camera.GarageId;
-        var organizationId = GetOrganizationId(garageId);
+        var organizationId =await GetOrganizationId(garageId);
+        if(organizationId==-1)
+        {
+            return await Task.FromResult(false);
+            _logger.LogError($"{DateTime.Now} ====>  org ID is not found");
+
+        }
         var GarageTransaction = new CreateUpdateGarageTransactionDto
         {
             AccurateTime = input.AccurateTime,
@@ -161,9 +169,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
            
             return camera;
         }
-    private int GetOrganizationId(int GarageId)
+    private async Task<int> GetOrganizationId(int GarageId)
         {
-            return  _garageRepository.FirstAsync(x=>x.Id== GarageId).Result.OrganizationId;
+           var garage=await  _garageRepository.FirstAsync(x=>x.Id== GarageId);
+            if(garage is not null)
+                return garage.OrganizationId;
+            else return -1;
         }
     private async Task<string> CheckCustomer(string plateNumber)
     {

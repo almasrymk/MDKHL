@@ -11,4 +11,6 @@ public class RegionDto : BaseDto
 {
     public int CountryId { get; set; }
     public Status Status { get; set; }
+	public string CountryArabicName { get; set; }
+	public string CountryEnglishName { get; set; }
 }

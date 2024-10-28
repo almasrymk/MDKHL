@@ -45,7 +45,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
 
         if (exisitingVehicleBrand is null)
         {
-            throw new InvalidOperationException("Plate color doesnot exist");
+            throw new InvalidOperationException("Vehicle brand doesnot exist");
         }
         if (vehicleModel != null)
         {
@@ -85,7 +85,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
 
         if (exisitingVehicleBrand is null)
         {
-            throw new InvalidOperationException("Plate color doesnot exist");
+            throw new InvalidOperationException("Vehicle brand doesnot exist");
         }
         if (vehicleModel != null)
         {
