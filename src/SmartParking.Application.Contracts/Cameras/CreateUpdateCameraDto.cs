@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SmartParking.Cameras
@@ -19,6 +20,8 @@ namespace SmartParking.Cameras
         public CameraType CameraType { get; set; }
         public int GarageId { get; set; }
         public Status Status { get; set; }
-        public Guid? TenantId { get; set; }
+
+		[JsonIgnore]
+		public Guid? TenantId { get; set; }
     }
 }
