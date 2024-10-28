@@ -61,6 +61,12 @@ public partial class EditSubscriptionDialog
                 SubscriptionTypeId = subscription.SubscriptionTypeId,
                 ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.MinValue),
                 InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue),
+                NumberOfCameras = subscription.NumberOfCameras,
+                NumberOfMobileCustomers = subscription.NumberOfMobileCustomers,
+                NumberOfCustomers = subscription.NumberOfCustomers ,
+                NumberOfOrganizations = subscription.NumberOfOrganizations,
+                NumbersOfGarages = subscription.NumbersOfGarages,
+                SubscriptionSlotNumber = subscription.SubscriptionSlotNumber
                
             };
 

@@ -1,26 +1,23 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject IStringLocalizer<SmartParkingResource> L
+@layout MainLayout
 <PageTitle>@L["SubscriptionDetails"]</PageTitle>
 
 <MudItem class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+	<MudDialog class="mud-modal" MaxHeigth="85vh" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["SubscriptionDetails"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
-				<MudGrid>
-
-
-
+				<MudGrid>    
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.ArabicName"
 									  For="@(() => subscription.ArabicName)"
@@ -29,8 +26,6 @@
 									  Label="@L["Arabic Name"]"
 									  Disabled />
 					</MudItem>
-
-
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.EnglishName"
 									  For="@(() => subscription.EnglishName)"
@@ -39,11 +34,12 @@
 									  Label="@L["English Name"]"
 									  Disabled />
 					</MudItem>
-
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.SubscriptionDescription"
 									  For="@(() => subscription.SubscriptionDescription)"
 									  Immediate="true"
+									  Class="w-100"
+									  Lines="2"
 									  Variant="Variant.Text"
 									  Label="@L["SubscriptionDescription"]"
 									  Disabled />
@@ -63,7 +59,22 @@
 									  Label="@L["ActivationDate"]"
 									  Disabled />
 					</MudItem>
-
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.CreationTime"
+									  For="@(() => subscription.CreationTime)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["CreationTime"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.CreatorId"
+									  For="@(() => subscription.CreatorId)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["Creator"]"
+									  Disabled />
+					</MudItem>
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.InActivationDate"
 									  For="@(() => subscription.InActivationDate)"
@@ -72,7 +83,54 @@
 									  Label="@L["InActivationDate"]"
 									  Disabled />
 					</MudItem>
-
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionSlotNumber"
+									  For="@(() => subscription.SubscriptionSlotNumber)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["SubscriptionSlotNumber"]"
+									  Disabled />
+					</MudItem>					
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.NumberOfCustomers"
+									  For="@(() => subscription.NumberOfCustomers)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["NumberOfCustomers"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.NumberOfOrganizations"
+									  For="@(() => subscription.NumberOfOrganizations)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["NumberOfOrganizations"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.NumbersOfGarages"
+									  For="@(() => subscription.NumbersOfGarages)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["NumbersOfGarages"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.NumberOfCameras"
+									  For="@(() => subscription.NumberOfCameras)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["NumberOfCameras"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.NumberOfMobileCustomers"
+									  For="@(() => subscription.NumberOfMobileCustomers)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["NumberOfMobileCustomers"]"
+									  Disabled />
+					</MudItem>
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.Status"
 									  For="@(() => subscription.Status)"
@@ -109,5 +167,7 @@
 	.mud-modal
 	{
 		border-radius: 0 20px 0 20px;
+		overflow: auto;
+		height:100vh;
 	}
 </style>
