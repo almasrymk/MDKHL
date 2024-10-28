@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Nito.Disposables;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
@@ -28,24 +30,29 @@ namespace SmartParking.Garages;
 public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>, IGarageAppService
 {
     private readonly IRepository<Garage> _repository;
+    private readonly IRepository<Camera,int> _repositoryCamera;
     private readonly OrganizationsAppService _organizationsAppService;
     private IDataFilter _dataFilter;
     private ICurrentUser _currentUser;
 
-    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService , IDataFilter datafilter,ICurrentUser currentUser) : base(repository)
-    {
-        _repository = repository;
-        _organizationsAppService = organizationsAppService;
-        _dataFilter = datafilter;
-        _currentUser = currentUser;
-    }
+    public ICurrentTenant _currentTenant;
+
+	public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera) : base(repository)
+	{
+		_repository = repository;
+		_organizationsAppService = organizationsAppService;
+		_dataFilter = datafilter;
+		_currentUser = currentUser;
+		_currentTenant = currentTenant;
+		_repositoryCamera = repositoryCamera;
+	}
 
 
-    
 
-   /// <inheritdoc/>
 
-    public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
+	/// <inheritdoc/>
+
+	public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
     {
         var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
         if (organization == null)
@@ -56,6 +63,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
         // Checking criteria for package that organization subscribe.
         input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
+        input.TenantId=organization.TenantId;
         return await base.CreateAsync(input);
     }
 
@@ -91,6 +99,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         if (organization == null)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
+        }
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                return await base.UpdateAsync(id,input);
+            }
+
         }
         return await base.UpdateAsync(id, input);
     }
@@ -236,16 +253,40 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task DeleteAsync(int id)
     {
-        var garage = await _repository.FindAsync(x=>x.Id==id);
+        Garage garage ;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+             garage = await _repository.FirstOrDefaultAsync(x=>x.Id==id);
+
+        } 
+        
         if(garage == null)
         {
             throw new Exception("There is no garage related to that id");
         }
-        garage.Status=Status.Deleted;
-        await base.DeleteAsync(id);
+        if (garage.Status == Status.Deleted)
+        {
+			throw new Exception("Can't Delete an deleted Garage");
+
+		}
+		garage.Status=Status.Deleted;
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                 await base.DeleteAsync(id);
+            }
+
+        }
+         await base.DeleteAsync(id);
+
+
 
     }
-    public async Task<int> GetAllGaragesCount()
+	/// <inheritdoc/>
+
+	public async Task<int> GetAllGaragesCount()
     {
 
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
@@ -261,5 +302,35 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             var count = await AsyncExecuter.CountAsync(query);
             return count;
         
+    }
+	/// <inheritdoc/>
+
+	public async Task<bool> ChangeTenantForCamerasRelatedToGarage(int GarageID, Guid TenantId)
+	{
+		var cameras = await _repositoryCamera.GetListAsync(x => x.GarageId == GarageID);
+
+		foreach (var camera in cameras)
+		{
+			camera.TenantId = TenantId; // Update the TenantId
+		}
+
+		await _repositoryCamera.UpdateManyAsync(cameras);
+        return true;
+
+	}
+
+    public override async Task<GarageDto> GetAsync(int id)
+    {
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetAsync(id);
+            }
+
+        }
+        return await base.GetAsync(id);
+
     }
 }

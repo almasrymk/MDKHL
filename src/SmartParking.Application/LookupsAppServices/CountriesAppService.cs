@@ -117,14 +117,14 @@ public class CountriesAppService : CrudAppService<Country,
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var country = await base.GetAsync(id);
+        var country = await _countryRepository.FindAsync(id);
 
         if (country is null)
         {
             throw new EntityNotFoundException(typeof(Country), id);
         }
        
-            await base.DeleteAsync(id);
+            await _countryRepository.HardDeleteAsync(country);
 
     }
     /// <summary>

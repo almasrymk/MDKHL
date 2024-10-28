@@ -18,6 +18,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Lookups.State;
+using Volo.Abp.Domain.Entities.Events.Distributed;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -230,11 +231,13 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var city = await GetAsync(id);
-        if (city == null)
+        var region = await _regionRepository.FindAsync(id);
+        if (region == null)
             throw new EntityNotFoundException(typeof(Region), id);
 
-        await base.DeleteAsync(id);
+        await _regionRepository.HardDeleteAsync(region);
+
+        
     }
 
     public async Task<List<RegionLookupDto>> GetRegionByCountry(int countryId)
