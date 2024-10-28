@@ -46,5 +46,8 @@ public class OrganizationDto
     public TimeOnly ClosingHoursStart { get; set; }
     public TimeOnly ClosingHoursEnd { get; set; }
 
+	public Guid TenantId { get; set; }
+
+
 
 }
