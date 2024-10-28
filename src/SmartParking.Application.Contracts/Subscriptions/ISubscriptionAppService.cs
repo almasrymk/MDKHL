@@ -37,10 +37,15 @@ public interface ISubscriptionAppService : ICrudAppService<SubscriptionDto,int, 
     public Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
     /// <summary>
+    /// abstract method to get subscriptions
+    /// </summary>
+    /// <returns>list of SubscriptionDto</returns>
+    public Task<List<SubscriptionDto>> GetAllAsync();
+    /// <summary>
     /// abstract method to delete specific subscription
     /// </summary>
     /// <param name="input">id of specific subscription</param>
-   
+
     public Task DeleteAsync(int id);
 
     /// <summary>
