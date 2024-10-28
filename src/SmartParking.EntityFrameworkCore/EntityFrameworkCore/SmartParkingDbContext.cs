@@ -29,6 +29,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
+using System.Linq.Dynamic.Core;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -136,39 +138,46 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     private void ProcessEntities()
     {
         // Iterate over entries marked as Deleted
-        foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted && e.Entity is BaseEntity))
+       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity).ToList();
+        for (var k=0;k< entryList.Count;k++ )
         {
-            // Soft delete the entity itself
-            HandleDependent(entry);
-
-            // Cascade soft delete to related entities by navigating properties
-            foreach (var navigationEntry in entry.Navigations)
-            {
-                // Explicitly load if it's not already loaded
-                if (!navigationEntry.IsLoaded)
+            var entry = entryList[k];
+            if (entry.Entity is BaseEntity baseEntity)
+                if(baseEntity.IsDeleted == true)
                 {
-                    navigationEntry.Load();
-                }
-                // Skip if there’s no current value
-                if (navigationEntry.CurrentValue == null) continue;
+                    // Soft delete the entity itself
+                    HandleDependent(entry);
 
-                // Check if the navigation is a collection or single reference
-                if (navigationEntry.Metadata.IsCollection)
-                {
-                    // Handle collection navigation (e.g., one-to-many)
-                    var collectionEntry = (CollectionEntry)navigationEntry;
-                    foreach (var dependentEntity in collectionEntry.CurrentValue)
+                    // Cascade soft delete to related entities by navigating properties
+                    var navigationEntry = entry.Navigations.ToList();
+                    for (int j=0;j< navigationEntry.Count;j++)
                     {
-                        HandleDependent(Entry(dependentEntity));
+
+                        // Explicitly load if it's not already loaded
+                        if (!navigationEntry[j].IsLoaded)
+                        {
+                            navigationEntry[j].Load();
+                        }
+                        // Skip if there’s no current value
+                        if (navigationEntry[j].CurrentValue == null) continue;
+                        if (navigationEntry[j].CurrentValue  is Organization) continue;
+
+                        // Check if the navigation is a collection or single reference
+                        if (navigationEntry[j].Metadata.IsCollection)
+                        {
+                            // Handle collection navigation (e.g., one-to-many)
+                            var collectionEntry = (CollectionEntry)navigationEntry[j];
+                            // Copy the collection to avoid modification issues
+                            var dependentEntities = collectionEntry.CurrentValue.Cast<object>().ToList();
+                            for (int i = 0; i < dependentEntities.Count; i++) 
+                            {
+                                HandleDependent(Entry(dependentEntities[i]));
+                            }
+                        }
                     }
                 }
-                else
-                {
-                    // Handle single reference navigation (e.g., one-to-one or many-to-one)
-                    HandleDependent(Entry(navigationEntry.CurrentValue));
-                }
-            }
         }
+           
     }
 
     public override int SaveChanges()
