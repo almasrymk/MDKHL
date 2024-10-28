@@ -9,17 +9,15 @@
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
 @using Volo.Abp.Identity
+@using Volo.Abp.Users
 @layout Shared.ProfileLayout
-@inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
-@inject IStateAppService StateAppService
- @inject IGovernorateAppService GovernorateAppService
- @inject ICitiesAppService CitiesAppService
 @inject IIdentityUserAppService IdentityUserAppService;
 @inject UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
+@inject ICurrentUser currentuser
 <PageTitle>@L["Edit Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -45,59 +43,47 @@
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]"  @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudSwitch Label=@L["Status Active"] ReadOnly="true" LabelPosition="LabelPosition.Start"  @bind-Value="Status" Color="MudBlazor.Color.Primary" />
+                        <MudItem sm="4" >
+                            <MudTextField ReadOnly="true" T="string" Value=@($"{(Status?@L["Active"]:@L["InActive"])}") InputType="InputType.Text" Variant="Variant.Outlined" Style=@($"background-color: {(Status ? "#E7FCE3" : "#F0F0F0")};")
+                                           Label=@L["Status"] />
+
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">
-                            <MudSelect ReadOnly="true" Variant="Variant.Text"
-                                       Label=@L["State"]
-                                       Clearable="true"
-                                       @bind-Value="@StateSelectValue">
+                            <MudTextField ReadOnly="true" 
+                                Variant="Variant.Text"
+                                Label=@L["State"]
+                                       @bind-Value="@StateName">
 
-                                @foreach (var state in states)
-                                {
-                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
+                              
+                            </MudTextField>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect ReadOnly="true" Variant="Variant.Text"
-                                       Label=@L["Region"]
-                                       Clearable="true"
-                                       AnchorOrigin="Origin.TopCenter"
-                                       @bind-Value="@RegionSelectValue">
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
-                                @foreach (var region in regions)
-                                {
-                                    <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudTextField 
+                                ReadOnly="true"
+                                Variant="Variant.Text"
+                                Label=@L["Region"]
+                                @bind-Value="@RegionName">
+                            </MudTextField>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect ReadOnly="true" Variant="Variant.Text"
-                                       Label=@L["Country"]
-                                       Clearable="true"
-                                       @bind-Value="@CountrySelectValue">
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
-                                @foreach (var country in countries)
-                                {
-                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudTextField 
+                                ReadOnly="true"
+                                Variant="Variant.Text"
+                                Label=@L["Country"]
+                                @bind-Value="@CountryName">
+                                
+                            </MudTextField>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect ReadOnly="true" Variant="Variant.Text"
-                                       Label=@L["City"]
-                                       Clearable="true"
-                                       @bind-Value="@CitySelectValue">
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
-                                @foreach (var city in cities)
-                                {
-                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudTextField
+                                ReadOnly="true"
+                                Variant="Variant.Text"
+                                Label=@L["City"]
+                                @bind-Value="@CityName">
+                                
+                            </MudTextField>
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string"  @bind-Value="PhoneNum"  Label=@L["Contact Phone"] />
@@ -127,8 +113,8 @@
                 <div class="d-flex flex-column align-content-center gap-4 p-5">
                     <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
                     <div class="d-flex flex-column align-items-center">
-                        <MudText Class="fw-bold">Ahmed Mohamed</MudText>
-                        <MudText>A.Mohamed@mdkhl.com</MudText>
+                        <MudText Class="fw-bold">@currentuser.Name</MudText>
+                        <MudText>@currentuser.Email</MudText>
                     </div>
                 </div>
                 <MudGrid Class="mt-3">

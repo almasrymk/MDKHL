@@ -18,11 +18,11 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 public partial class OrganizationView
 {
 
-    private bool CountryClicked = false;
-    private string CityNameEdit { get; set; }
-    private string CountryNameEdit { get; set; }
-    private string RegionNameEdit { get; set; }
-    private string StateNameEdit { get; set; }
+
+    private string CityName { get; set; }
+    private string CountryName{ get; set; }
+    private string RegionName { get; set; }
+    private string StateName { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; }
@@ -42,16 +42,10 @@ public partial class OrganizationView
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
-
-    IList<StateLookupDto> states = new List<StateLookupDto>();
-    IList<RegionLookupDto> regions = new List<RegionLookupDto>();
-    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
-    IList<CityLookupDto> cities = new List<CityLookupDto>();
-
     private async Task FetchData()
     {
         var id = int.Parse(Id);
-        var organization = await OrganizationAppService.GetAsync(id);
+        var organization = await OrganizationsAppService.GetAsync(id);
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
         NumOfCameras = organization.NumOfCameras;
@@ -65,26 +59,23 @@ public partial class OrganizationView
             Status = false;
         }
         MaxCapacity = organization.MaxCapacity;
-        CountryNameEdit = organization.CountryName;
-        CityNameEdit = organization.CityName;
-        RegionNameEdit = organization.RegionName;
-        StateSelectValue = organization.StateId.ToString();
+        CountryName = organization.CountryName;
+        CityName = organization.CityName;
+        RegionName = organization.RegionName;
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
-        CitySelectValue = organization.CityId.ToString();
-        CountrySelectValue = organization.CountryId.ToString();
-        RegionSelectValue = organization.RegionId.ToString();
+        StateName=organization.StateName;
     }
     protected override async Task OnInitializedAsync()
     {
-        states = await StateAppService.GetStateLookupAsync();
-        regions = await StateAppService.GetRegionLookupAsync();
-        countries = await GovernorateAppService.GetCountryLookupAsync();
-        cities = await CitiesAppService.GetCityLookupAsync();
         await FetchData();
+
+
+
+
         await base.OnInitializedAsync();
 
 
