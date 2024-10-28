@@ -80,7 +80,8 @@
 				SkipCount = (1 - 1) * 100
 			});
 		Organizations = result.Items.ToList();
-		await base.OnInitializedAsync();
+
+		//await base.OnInitializedAsync();
 	}
 
 	private async Task SubmitEdit()
@@ -91,8 +92,10 @@
 		try
 		{
 
-			//await GarageAppService.UpdateAsync(UpdatedId, Garage);
-			await GaragesAppService.UpdateAsync(UpdatedId, Garage);
+			var tenantId = Organizations.Find(x=>x.Id==Garage.OrganizationId).TenantId;
+			Garage.TenantId = tenantId;
+			var garage=await GaragesAppService.UpdateAsync(UpdatedId, Garage);
+			await GaragesAppService.ChangeTenantForCamerasRelatedToGarage(garage.Id,tenantId);
 			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 
