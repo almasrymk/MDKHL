@@ -88,7 +88,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             input.ClosingHoursStart = TimeOnly.MinValue;
             input.ClosingHoursEnd = TimeOnly.MaxValue;
         }
-
+        organization.TenantId = tenant.Id;
         await _repository.InsertAsync(organization,autoSave:true);
         UserCreateDto user = new UserCreateDto()
         {
