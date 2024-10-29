@@ -8,5 +8,8 @@ public class City: BaseEntity
 
     public Status Status { get; set; }
     public int GovernorateId { get; set; }
+    public virtual Governorate Governorate { get; set; }
+
+    public virtual Governorate Governorate { get; set; }
 
 }
