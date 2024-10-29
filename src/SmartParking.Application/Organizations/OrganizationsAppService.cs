@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Scriban.Syntax;
 using SmartParking.Authentication;
 using SmartParking.CustomerCategories;
+using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
@@ -27,6 +28,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.TenantManagement;
+using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 
 namespace SmartParking.Organizations;
 
@@ -54,13 +56,13 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         _tenantRepository = tenantRepository;
     }
     ///<inheritdoc/>
-    public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
+    public new async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input,UserCreateDto inputUser)
     {
         var tenant = await _tenantManager.CreateAsync(input.EnglishName);
         var input1 = new TenantCreateDto
         {
-            Name = input.EnglishName,
-            AdminEmailAddress = input.ContactMail,
+            Name = inputUser.UserName,
+            AdminEmailAddress = inputUser.Email,
             AdminPassword = "P@ssw0rd",
         }; 
         input1.MapExtraPropertiesTo(tenant);
@@ -90,22 +92,12 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         }
         organization.TenantId = tenant.Id;
         await _repository.InsertAsync(organization,autoSave:true);
-        UserCreateDto user = new UserCreateDto()
-        {
-            UserName = input.EnglishName,
-            PhoneNumber = input.PhoneNum,
-            Email = input.ContactMail,
-            Password = "P@ssw0rd",
-            RoleNames = [RolesType.Organization.ToString()],
-            Name = input.EnglishName,
-            IsActive = true,
-            UserType = 1,
-            OrganizationId = organization.Id,   
-            TenantId = tenant.Id,
-            
-        };
-        
-        var userCreated = await _usersAppService.CreateAsync(user);
+        inputUser.RoleNames = [RolesType.Organization.ToString()];
+        inputUser.IsActive = true;
+        inputUser.OrganizationId = organization.Id;
+        inputUser.TenantId = tenant.Id;
+
+        var userCreated = await _usersAppService.CreateAsync(inputUser);
         organization.Code = CodeGenerator(organization.Id);
         await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name =EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description=EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);

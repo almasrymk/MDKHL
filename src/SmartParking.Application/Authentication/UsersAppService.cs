@@ -43,6 +43,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
         user.SetProperty("OtpExpirationDate", DateTime.Now);
         user.SetProperty("UserTypeId", input.UserType);
         user.SetProperty("OrganizationId", input.OrganizationId);
+        user.SetProperty("WhatsAppNum", input.WhatsAppNum);
         var createdUser = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         if (!createdUser.Succeeded)
