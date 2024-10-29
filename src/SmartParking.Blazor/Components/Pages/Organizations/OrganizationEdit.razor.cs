@@ -217,11 +217,12 @@ public partial class OrganizationEdit
     }
     protected override async Task OnInitializedAsync()
     {
-        
+        await FetchData();
+
         countries = await GovernorateAppService.GetCountryLookupAsync();
+
         await GetStates();
         await GetRegions();
-        await FetchData();
      //   await base.OnInitializedAsync();
 
 
