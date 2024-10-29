@@ -1,13 +1,6 @@
 ﻿using AutoMapper;
-using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
-using SmartParking.Lookups;
 using SmartParking.Lookups.Region;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartParking.Mapping;
 
@@ -15,7 +8,10 @@ public class RegionMappingProfile : Profile
 {
 	public RegionMappingProfile()
 	{
-		CreateMap<Region, RegionDto>();
+		CreateMap<Region, RegionDto>()
+			.ForMember(d=>d.CountryEnglishName,o=>o.MapFrom(s=>s.Country.EnglishName))
+			.ForMember(d=>d.CountryArabicName,o=>o.MapFrom(s=>s.Country.ArabicName));
+
 		CreateMap<CreateUpdateRegionDto, Region>();
 	}
 }

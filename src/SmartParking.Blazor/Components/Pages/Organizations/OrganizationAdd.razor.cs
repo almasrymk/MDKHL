@@ -10,6 +10,7 @@ using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
+using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,7 @@ public partial class OrganizationAdd
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     private string CountrySelectValue {  get; set; }
+    private string PackageSelectValue {  get; set; }
     private string CitySelectValue {  get; set; }
     private string StateSelectValue {  get; set; }
     public string RegionSelectValue { get; set; }
@@ -54,13 +56,13 @@ public partial class OrganizationAdd
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
+    IList<SubscriptionDto> packages = new List<SubscriptionDto>();
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        //
-       
         countries = await GovernorateAppService.GetCountryLookupAsync();
-        //
+        packages = await SubscriptionAppService.GetAllAsync();
+
     }
     
     private async Task GetRegions(string value)
@@ -132,8 +134,8 @@ public partial class OrganizationAdd
         {
            
              
-            await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
-            
+            var oragnization =  await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
+            await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id,int.Parse(PackageSelectValue));
             ShowSnackbar($"{successedMessage} You Can Login Your Password Is P@ssw0rd", Severity.Success);
             Navigation.NavigateTo("/organizations");
         }

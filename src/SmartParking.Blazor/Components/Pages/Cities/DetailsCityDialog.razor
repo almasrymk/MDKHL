@@ -33,22 +33,15 @@
 									  Disabled/>
 					</MudItem>
 
-
 					<MudItem sm="6">
-						<MudSelect @bind-Value="@city.GovernorateId"
-								   Variant="Variant.Text"
-								   Label="@L["Governorate"]"
-								   Placeholder="Please Select"
-								   AnchorOrigin="Origin.TopCenter"
-								   TransformOrigin="Origin.TopCenter"
-								   Disabled>
-
-							@foreach (var governorate in governorates)
-							{
-								<MudSelectItem Value="governorate.Id">@governorate.EnglishName</MudSelectItem>
-							}
-						</MudSelect>
+						<MudTextField @bind-Value="city.GovernorateEnglishName"
+									  For="@(() => city.GovernorateEnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["Governorate English Name"]"
+									  Disabled />
 					</MudItem>
+				
 				</MudGrid>
 			</MudForm>
 		</DialogContent>

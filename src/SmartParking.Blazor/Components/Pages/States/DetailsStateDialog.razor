@@ -41,20 +41,12 @@
 					</MudItem>
 
 					<MudItem sm="6">
-						<MudSelect @bind-Value="@state.RegionId"
-								   Variant="Variant.Text"
-								   Label=@L["Region"]
-								   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"] 
-								   AnchorOrigin="Origin.TopCenter"
-								   TransformOrigin="Origin.TopCenter"
-								   Disabled>
-
-							@foreach (var region in regions)
-							{
-								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
-							}
-						</MudSelect>
+						<MudTextField @bind-Value="state.RegionEnglishName"
+									  For="@(() => state.RegionEnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["Region English Name"]"
+									  Disabled />
 					</MudItem>
 
 					<MudItem sm="6" >

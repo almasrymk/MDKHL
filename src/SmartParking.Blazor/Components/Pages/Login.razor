@@ -15,7 +15,7 @@
 
 <h2>@L["Sign In"]</h2>
 <MudContainer Class="d-flex justify-content-center my-5">
-    <MudForm @ref="form" Model="@loginModel" Class="d-flex flex-column gap-3 w-75">
+    <EditForm Model="@loginModel" Class="d-flex flex-column gap-3 w-75" OnValidSubmit="HandleLogin">
         <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder=@L["Type Here"] Label=@L["Email Address / User Name"] Required="true" />
         <MudTextField @bind-Value="loginModel.Password" T="string" Placeholder=@L["Type Here"] Label=@L["Password"] InputType="InputType.Password" Required="true" />
         <div class="d-flex align-items-center justify-content-center gap-1">
@@ -23,13 +23,14 @@
             <MudLink Href="/verify-account" Class="fw-bold" Color="MudBlazor.Color.Dark">@L["Click here to reset"]</MudLink>
         </div>
 
-        <MudButton Class="mt-4" Variant="Variant.Filled" OnClick="@( () => HandleLogin())" Color="MudBlazor.Color.Primary">@L["Sign In"]</MudButton>
-    </MudForm>
+        <MudButton ButtonType="MudBlazor.ButtonType.Submit" Class="mt-4" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Sign In"]</MudButton>
+    </EditForm>
 
 </MudContainer>
 @code {
     private MudForm form;
     private LoginModel loginModel = new LoginModel();
+    
 
     private async void HandleLogin()
     {

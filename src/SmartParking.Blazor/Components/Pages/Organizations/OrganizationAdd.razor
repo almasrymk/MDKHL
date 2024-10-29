@@ -7,15 +7,17 @@
 @using SmartParking.Lookups.Region
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
+@using SmartParking.Subscriptions
 @using Volo.Abp.Identity
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
 @inject IIdentityUserAppService IdentityUserAppService;
 @inject IStateAppService StateAppService
- @inject IGovernorateAppService GovernorateAppService
- @inject ICitiesAppService CitiesAppService 
- @inject IRegionAppService RegionAppService
+@inject ISubscriptionAppService SubscriptionAppService
+@inject IGovernorateAppService GovernorateAppService
+@inject ICitiesAppService CitiesAppService 
+@inject IRegionAppService RegionAppService
 @inject  UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject IStringLocalizer<SmartParkingResource> L
@@ -76,6 +78,23 @@
                         <MudItem sm="4">
                             <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                         </MudItem>
+
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label=@L["Package"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Clearable="true"
+                                       Required
+                                       @bind-Value="@PackageSelectValue">
+                                <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
+                                @foreach (var package in packages)
+                                {
+                                    <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+
                         <MudItem sm="4">
                             <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>

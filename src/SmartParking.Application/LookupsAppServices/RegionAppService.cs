@@ -31,7 +31,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 	public readonly IRepository<Region, int> _regionRepository;
     public readonly IRepository<Country, int> _countryRepository;
 
-    public readonly IDataFilter _dataFilter;
+	public readonly IDataFilter _dataFilter;
 
     public RegionAppService(IRepository<Region, int> regionRepository,IDataFilter dataFilter, IRepository<Country, int> countryRepository)
 	: base(regionRepository)

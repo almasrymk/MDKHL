@@ -15,13 +15,12 @@ public class StateMappingProfile : Profile
 {
 	public StateMappingProfile()
 	{
-		CreateMap<State, StateDto>();
+		CreateMap<State, StateDto>()
+			.ForMember(d=>d.RegionArabicName,o=>o.MapFrom(s=>s.Region.ArabicName))
+			.ForMember(d => d.RegionEnglishName, o => o.MapFrom(s => s.Region.EnglishName));
+
 		CreateMap<CreateUpdateStateDto, State>();
-        CreateMap<Region, RegionLookupDto>()
-                .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicName))
-                .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName));
-        CreateMap<State, StateLookupDto>()
-				.ForMember(d => d.ArabicName, o => o.MapFrom(s => s.ArabicName))
-				.ForMember(d => d.EnglishName, o => o.MapFrom(s => s.EnglishName));      
+        CreateMap<Region, RegionLookupDto>();
+        CreateMap<State, StateLookupDto>();      
     }
 }
