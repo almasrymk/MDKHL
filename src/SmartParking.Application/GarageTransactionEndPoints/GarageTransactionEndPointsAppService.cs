@@ -126,7 +126,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     InvoiceType = InvoiceType.UnPaid,
                     OrganizationId = GarageTransaction.OrganizationID,
                     TotalHours = totalHours,
-                    PlateNumber = GarageTransaction.PlateNumber
+                    PlateNumber = GarageTransaction.PlateNumber,
+                    InvoiceTime=GarageTransaction.AccurateTime
 
                 };
                 await _invoiceAppService.CreateAsync(invoice);

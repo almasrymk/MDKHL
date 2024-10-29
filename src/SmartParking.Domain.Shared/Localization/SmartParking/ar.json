@@ -397,6 +397,8 @@
     "VehicleModelCreatedSuccessfully": "تم إنشاء موديل السيارة بنجاح",
     "VehicleModelUpdatedSuccessfully": "تم تحرير موديل السيارة بنجاح",
     "VehicleModelDeletedSuccessfully": "تم حذف موديل السيارة بنجاح",
-    "Can'tDeleteVehicleModel": "لا يمكن حذف موديل السيارة"
+    "Can'tDeleteVehicleModel": "لا يمكن حذف موديل السيارة",
+    "InvoiceTime": "توقيت الفاتورة"
+
   }
 }

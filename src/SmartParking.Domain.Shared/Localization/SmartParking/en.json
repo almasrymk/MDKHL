@@ -375,6 +375,7 @@
     "VehicleModelCreatedSuccessfully": "Vehicle Model Created Successfully",
     "VehicleModelUpdatedSuccessfully": "Vehicle Model Updated Successfully",
     "VehicleModelDeletedSuccessfully": "Vehicle Model Deleted Successfully",
-    "Can'tDeleteVehicleModel": "Can't Delete Vehicle Model"
+    "Can'tDeleteVehicleModel": "Can't Delete Vehicle Model",
+    "InvoiceTime": "InvoiceTime"
   } 
 }
