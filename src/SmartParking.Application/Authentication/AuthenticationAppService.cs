@@ -206,7 +206,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         try
         {
             await CheckPhoneIsUnique(input.Phone);
-            var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
+            var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, null);
             user.SetProperty("OtpCode", null);
             user.SetProperty("OtpExpirationDate", DateTime.Now);
             user.SetProperty("UserTypeId", 3);
