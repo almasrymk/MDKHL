@@ -74,19 +74,19 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _repository.GetQueryableAsync();
+      
         // Apply search filtering
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
+           
 
             queryable = queryable.Where(or =>
-            or.InvoiceNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.PlateNumber.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
-            or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
-            
-            
-                
+                or.InvoiceNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+                  // full date-time or includes hour
             );
-                
+
         }
         if (!input.Sorting.IsNullOrEmpty())
         {
