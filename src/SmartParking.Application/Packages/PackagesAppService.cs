@@ -18,8 +18,10 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.DefaultPackages;
@@ -34,24 +36,30 @@ public class PackagesAppService : CrudAppService<
             >, IPackagesAppService
 {
 		private readonly IRepository<Package, int> _repository;
+    private readonly IDataFilter _softDeleteFilter;
 
-        public PackagesAppService(IRepository<Package, int> repository):base(repository)
-        {
+    public PackagesAppService(IRepository<Package, int> repository, IDataFilter softDeleteFilter) :base(repository)
+    {
             _repository = repository;
-        }
+            _softDeleteFilter = softDeleteFilter;
+    }
 
 
   
     public async Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId)
     {
-		var query = await _repository.GetQueryableAsync();
-		var pakages =await query.Where(_ => _.OrganizationId == organizationId).ToListAsync();
-		var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
-            if(pakages.Count == 0)
+        using (_softDeleteFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var pakages = await query.Where(_ => _.OrganizationId == organizationId).ToListAsync();
+            var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
+            if (pakages.Count == 0)
             {
                 return Result<List<PackageDto>>.NotFound();
             }
-		return Result<List<PackageDto>>.Success(pakagesMap);
+            return Result<List<PackageDto>>.Success(pakagesMap);
+        }
+         
     }
         public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
