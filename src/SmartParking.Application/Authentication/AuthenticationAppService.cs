@@ -29,6 +29,7 @@ using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 using SmartParking.Results;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -169,10 +170,21 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     [RemoteService(IsEnabled = false)]
     public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
     {
+        IdentityUser user;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
 
+            if (input.Username.Contains("@"))
+            {
+                user = await _userManager.FindByEmailAsync(input.Username);
 
-        // Step 1: Validate the user's credentials
-        var user = await _userManager.FindByNameAsync(input.Username);
+            }
+            else
+            {
+                 user = await _userManager.FindByNameAsync(input.Username);
+
+            }
+        }
         
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
