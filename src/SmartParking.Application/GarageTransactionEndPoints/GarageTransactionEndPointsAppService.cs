@@ -1,6 +1,5 @@
 ﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
