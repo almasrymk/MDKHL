@@ -6,6 +6,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @using SmartParking.Localization
 @using SmartParking.Lookups
+@using SmartParking.Lookups.Region
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
 @using SmartParking.SubscriptionTypes
@@ -23,6 +24,7 @@
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
 @inject ISubscriptionAppService SubscriptionAppService
+@inject IRegionAppService RegionAppService
 <PageTitle>@L["Edit Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -86,25 +88,28 @@
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
-                                       Label=@L["State"]
+                                       Label=@L["Country"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       @bind-Value="@StateSelectValue">
-
-                                @foreach (var state in states)
+                                       @bind-Value="@CountrySelectValue"
+                                       @onchange="GetRegions">
+                                <MudSelectItem Value="CountryNameEdit"></MudSelectItem>
+                                @foreach (var country in countries)
                                 {
-                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
+                       
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
                                        Label=@L["Region"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        AnchorOrigin="Origin.TopCenter"
-                                       @bind-Value="@RegionSelectValue">
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                       @bind-Value="@RegionSelectValue"
+                                       @onchange="GetStates">
+                                <MudSelectItem Value="RegionNameEdit"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
                                     <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
@@ -113,14 +118,14 @@
                         </MudItem>
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
-                                       Label=@L["Country"]
+                                       Label=@L["State"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       @bind-Value="@CountrySelectValue">
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
-                                @foreach (var country in countries)
+                                       @bind-Value="@StateSelectValue">
+                                <MudSelectItem Value="StateNameEdit"></MudSelectItem>
+                                @foreach (var state in states)
                                 {
-                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -130,7 +135,7 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@CitySelectValue">
-                                <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                <MudSelectItem Value="CityNameEdit"></MudSelectItem>
                                 @foreach (var city in cities)
                                 {
                                     <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
