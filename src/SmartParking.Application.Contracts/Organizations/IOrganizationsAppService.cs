@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Organizations;
+﻿using SmartParking.Authentication;
+using SmartParking.Entities.Organizations;
 using SmartParking.Results;
 using SmartParking.Subscriptions;
 using System;
@@ -18,7 +19,7 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// </summary>
     /// <param name="input">Organization create dto</param>
     /// <returns>Organization Dto</returns>
-    Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input);
+    public new Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input, UserCreateDto inputUser);
 
 
     /// <summary>
