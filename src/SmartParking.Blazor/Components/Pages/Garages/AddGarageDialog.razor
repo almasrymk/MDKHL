@@ -7,8 +7,10 @@
 @inject IGarageAppService GarageAppService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager NavigationManager
+@inject ICurrentUser currrentUser
 
 <PageTitle>@L["Add New Garage"]</PageTitle>
 <div class="modal-wrapper">
@@ -36,7 +38,7 @@
                                               Variant="Variant.Text"
                                               Class="w-100"
                                               Required
-                                              Min="1"
+                                              Min="0"
                                               Max="9999"
                                               HideSpinButtons="true"
                                               Immediate="true"
@@ -63,7 +65,10 @@
                                                Placeholder="@L["Type Here"]"
                                                Label="@L["Closing Hours"]" />
                             </MudItem>
-                            <MudItem sm="12" md="12">
+                    @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+                    {
+                        
+                    <MudItem sm="12" md="12">
                                 <MudSelect @bind-Value="@createUpdateGarage.OrganizationId" 
                                 Label="@L["OrganizationName"]" 
                                 Placeholder="@L[ "Choose"]"  
@@ -81,6 +86,7 @@
                                 </MudSelect>
 
                             </MudItem>
+                    }
 
                             <MudItem sm="9" md="9">
 

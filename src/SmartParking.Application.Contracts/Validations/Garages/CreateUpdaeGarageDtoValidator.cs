@@ -20,7 +20,7 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
         RuleFor(x => x.ClosingHours.ToString("HH:mm"))
            .Matches(@"^([01]?[0-9]|2[0-3]):[0-5][0-9]$")
            .WithMessage("Time must be in the format HH:MM.").NotEmpty();
-        RuleFor(x=>x.MaxCapacity).NotEmpty().GreaterThan(0).LessThan(999);
+        RuleFor(x=>x.MaxCapacity).NotEmpty().GreaterThan(0).LessThan(9999);
         RuleFor(x => x.OrganizationId).NotEmpty().GreaterThan(0);
         RuleFor(x => x.Status)         
             .Must(value => Enum.IsDefined(typeof(Enums.Status), value))

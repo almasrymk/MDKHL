@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Pages.Customer;
 using SmartParking.Garages;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
@@ -30,8 +31,12 @@ public partial class AddGarageDialog
     protected override async Task OnInitializedAsync()
     {
         createUpdateGarage = new CreateUpdateGarageDto();
-        var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        Organizations = result.Items.ToList();
+        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())||currrentUser.IsInRole("admin"))
+        {
+
+            var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+            Organizations = result.Items.ToList();
+        }
     }
     private async void SubmitCreate()
     {
@@ -40,7 +45,12 @@ public partial class AddGarageDialog
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
         {
-            createUpdateGarage.Code = "";
+            if (!currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()))
+            {
+
+                createUpdateGarage.OrganizationId= await OrganizationAppService.GetOrganizationIdByTenant(currrentUser.TenantId);
+            }
+                createUpdateGarage.Code = "";
             createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
 
 

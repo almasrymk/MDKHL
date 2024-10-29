@@ -9,12 +9,12 @@
 
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-<PageTitle>@L["View Camera"]</PageTitle>
-
+@* <PageTitle>@L["View Camera"]</PageTitle>
+ *@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@L["View Camera"]</MudText>
+			<MudText Typo="Typo.h6">@Camera.Name</MudText>
 		</TitleContent>
 		<DialogContent>
 

@@ -142,7 +142,16 @@ public partial class MyAccount
     }
     private void Cancel()
     {
-        Navigation.NavigateTo("/organizations");
+        if(currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+        {
+
+            Navigation.NavigateTo("/organizations");
+        }
+        else
+        {
+            Navigation.NavigateTo("/");
+
+        }
     }
     private async Task FetchData()
     {

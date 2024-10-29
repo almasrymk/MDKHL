@@ -11,6 +11,7 @@
 @using SmartParking.Subscriptions
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
@@ -24,6 +25,7 @@
 @inject IDialogService Dialog
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ICurrentTenant currenttenant
+@inject ICurrentUser currentUser
 <PageTitle>@L["My Account"]</PageTitle>
 <div>
     <MudGrid>

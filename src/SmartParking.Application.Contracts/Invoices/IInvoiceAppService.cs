@@ -39,4 +39,5 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <returns>InvoiceDto</returns>
     public Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
     public  Task DeleteAsync(int id);
+    Task<string> GenerateInvoiceNumberAsync(int organizationId);
 }
