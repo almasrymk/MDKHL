@@ -12,7 +12,7 @@
 
     <MudDialog Class="mud-modal" >
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Update Garage for"]</MudText>
+            <MudText Typo="Typo.h6">@L["Edit"] @Garage.Name</MudText>
         </TitleContent>
         <DialogContent>
          
@@ -33,7 +33,7 @@
                                               Variant="Variant.Text"
                                               Class="w-100"
                                               Required
-                                              Min="1"
+                                              Min="0"
                                               Max="9999"
                                               HideSpinButtons="true"
                                               Immediate="true"
@@ -55,6 +55,7 @@
                                                Editable="true"
                                                Required
                                                AmPm="true"
+                                               PickerVariant="PickerVariant.Dialog"
                                                TimeFormat="h:mm tt"
                                                Variant="Variant.Text"
                                                Class="w-100"
