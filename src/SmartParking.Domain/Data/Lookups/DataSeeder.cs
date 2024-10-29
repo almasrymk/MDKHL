@@ -239,7 +239,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     Code = "CAM001",             // Add a unique code
                     CameraIP = "192.168.1.10",   // Add camera IP address
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
-                    CameraType = CameraType.Exit,            // Set camera type
+                    CameraType = CameraType.Entry,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
                     TenantId = null              // Set TenantId if multi-tenant, or null
                 },
@@ -254,7 +254,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     Model = "Model X",           // Add the model of the camera
                     MainType = "Type A",         // Add the main type
                     BrandName = "Brand Z",       // Add the brand name
-                    Code = "CAM001",             // Add a unique code
+                    Code = "CAM002",             // Add a unique code
                     CameraIP = "192.168.1.11",   // Add camera IP address
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
                     CameraType = CameraType.Exit,            // Set camera type

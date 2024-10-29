@@ -71,4 +71,19 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <param name="id">Id of garage that needed to be deleted</param>
     /// <returns>No Content</returns>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Method used to change tenant for list of cameras that related to specific garage.
+    /// </summary>
+    /// <param name="GarageID">GarageId</param>
+    /// <param name="TenantId">TenantId</param>
+    /// <returns></returns>
+    Task<bool> ChangeTenantForCamerasRelatedToGarage(int GarageID, Guid TenantId);
+    /// <summary>
+    /// Method used to get garage by Id
+    /// </summary>
+    /// <param name="id">Id of garage</param>
+    /// <returns>Garage Dto</returns>
+
+    Task<GarageDto> GetAsync(int id);
 }

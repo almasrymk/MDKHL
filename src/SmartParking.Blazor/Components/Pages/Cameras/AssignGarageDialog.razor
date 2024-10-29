@@ -2,9 +2,11 @@
 @using SmartParking.Cameras
 @using SmartParking.Garages
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
+@inject IOrganizationsAppService OrganizationAppService
 
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
@@ -26,7 +28,7 @@
 						<MudSelect @bind-Value="@Camera.GarageId"
 								   Variant="Variant.Text"
 								   Label="@L["Garage Name"]"
-								   Placeholder="Choose"
+								   Placeholder="@L["Choose"]"
 								   Clearable="_clearable"
 								   FullWidth="true">
 							@foreach (var garage in Garages)
@@ -88,8 +90,9 @@
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
-
+			Camera.TenantId = Garages.Find(x=>x.Id==Camera.GarageId).TenantId;
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
+
 			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 

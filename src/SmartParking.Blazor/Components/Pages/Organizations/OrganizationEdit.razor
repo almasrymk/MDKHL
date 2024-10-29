@@ -68,10 +68,10 @@
                             <MudNumericField T="int" Immediate="true" Required="true" Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]" AmPm="true" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" AmPm="true" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start"  @bind-Value="Status" Color="MudBlazor.Color.Primary" />
@@ -89,7 +89,6 @@
                                        Label=@L["State"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        @bind-Value="@StateSelectValue">
 
                                 @foreach (var state in states)
@@ -103,7 +102,6 @@
                                        Label=@L["Region"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        AnchorOrigin="Origin.TopCenter"
                                        @bind-Value="@RegionSelectValue">
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
@@ -118,7 +116,6 @@
                                        Label=@L["Country"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        @bind-Value="@CountrySelectValue">
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var country in countries)
@@ -132,7 +129,6 @@
                                        Label=@L["City"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        @bind-Value="@CitySelectValue">
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var city in cities)

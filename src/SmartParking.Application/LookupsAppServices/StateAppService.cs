@@ -1,7 +1,10 @@
 ﻿
+//using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Polly;
 using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Enums;
 using SmartParking.Lookups;
 using SmartParking.Lookups.State;
@@ -14,9 +17,8 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Entities.Events.Distributed;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -249,15 +251,15 @@ public class StateAppService : CrudAppService<State, StateDto,
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var state = await base.GetAsync(id);
+        var state = await _stateRepository.FindAsync(id);
 
         if (state is null)
         {
             throw new EntityNotFoundException(typeof(State), id);
         }
-        else
-            await base.DeleteAsync(id);
-
         
+           // await base.DeleteAsync(id);
+
+        await _stateRepository.HardDeleteAsync(state);
     }
 }

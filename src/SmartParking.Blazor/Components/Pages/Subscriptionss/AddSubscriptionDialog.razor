@@ -64,11 +64,12 @@
                         <MudDatePicker 
                                       @bind-Date="_activateDate"
                                        @bind-value="_activateDate"
-                                      Variant="Variant.Text"
+                                       Variant="Variant.Text"
                                        Placeholder=@L["Type Here"]
                                        Label="@L["ActivationDate"]"
-                                      Required="true"
-                                      ShowToolbar="false" />
+                                       Required="true"
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
+                                       ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudDatePicker 
@@ -78,9 +79,10 @@
                                        Placeholder=@L["Type Here"]
                                        Label="@L["InActivationDate"]"
                                       Required="true"
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
                                       ShowToolbar="false"/>
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField @bind-Value="input.NumberOfCustomers"
                                       For="@(() => input.NumberOfCustomers)"
                                       Immediate="true"
@@ -96,7 +98,7 @@
                                       For="@(() => input.NumberOfCustomers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourNumberOfOrganizations"]"
+                                      Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfOrganizations"]"
                                       Required="true" />
@@ -126,7 +128,7 @@
                                       For="@(() => input.NumberOfMobileCustomers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourNumberOfMobileCustomers"]"
+                                      Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfMobileCustomers"]"
                                       Required="true" />
@@ -136,7 +138,7 @@
                                       For="@(() => input.SubscriptionSlotNumber)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["EnterYourSubscriptionSlotNumber"]"
+                                      Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["SubscriptionSlotNumber"]"
                                       Required="true" />

@@ -10,6 +10,6 @@ namespace SmartParking.Entities.Lookups;
 public class State : BaseEntity
 {
     public int RegionId { get; set; }
-    public virtual Status Status { get; set; }
+    public  Status Status { get; set; }
 
 }

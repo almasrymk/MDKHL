@@ -25,6 +25,12 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using SmartParking.Entities.Subscriptions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using System;
+using System.Linq.Dynamic.Core;
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -119,7 +125,72 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     }
 
 
+    private void HandleDependent(EntityEntry entry)
+    {
+        // Mark as deleted and update state to prevent hard delete
+        if (entry.Entity is BaseEntity baseEntity)
+        {
+            baseEntity.IsDeleted = true;
+            entry.State = EntityState.Modified;
+        }
+    }
 
+    private void ProcessEntities()
+    {
+        // Iterate over entries marked as Deleted
+       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity).ToList();
+        for (var k=0;k< entryList.Count;k++ )
+        {
+            var entry = entryList[k];
+            if (entry.Entity is BaseEntity baseEntity)
+                if(baseEntity.IsDeleted == true)
+                {
+                    // Soft delete the entity itself
+                    HandleDependent(entry);
+
+                    // Cascade soft delete to related entities by navigating properties
+                    var navigationEntry = entry.Navigations.ToList();
+                    for (int j=0;j< navigationEntry.Count;j++)
+                    {
+
+                        // Explicitly load if it's not already loaded
+                        if (!navigationEntry[j].IsLoaded)
+                        {
+                            navigationEntry[j].Load();
+                        }
+                        // Skip if there’s no current value
+                        if (navigationEntry[j].CurrentValue == null) continue;
+                        if (navigationEntry[j].CurrentValue  is Organization) continue;
+
+                        // Check if the navigation is a collection or single reference
+                        if (navigationEntry[j].Metadata.IsCollection)
+                        {
+                            // Handle collection navigation (e.g., one-to-many)
+                            var collectionEntry = (CollectionEntry)navigationEntry[j];
+                            // Copy the collection to avoid modification issues
+                            var dependentEntities = collectionEntry.CurrentValue.Cast<object>().ToList();
+                            for (int i = 0; i < dependentEntities.Count; i++) 
+                            {
+                                HandleDependent(Entry(dependentEntities[i]));
+                            }
+                        }
+                    }
+                }
+        }
+           
+    }
+
+    public override int SaveChanges()
+    {
+        ProcessEntities(); // Apply soft delete cascade
+        return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        ProcessEntities();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

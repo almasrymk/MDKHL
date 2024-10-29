@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using SmartParking.Blazor.Components.Pages.Subscriptionss;
 using JetBrains.Annotations;
 using SmartParking.Subscriptions;
+using SmartParking.Entities.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -112,8 +113,7 @@ public partial class OrganizationEdit
         {
            
            
-            await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
-
+           var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
             ShowSnackbar(successedMessage, Severity.Success);
         }
         catch (AbpValidationException validationException)

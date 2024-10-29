@@ -183,6 +183,10 @@
             // Call your service to create the camera
             try
             {
+                var garage = Garages.Find(x => x.Id == cameraDto.GarageId);
+                cameraDto.TenantId = garage.TenantId;
+                
+
                 await CamerasAppService.CreateAsync(cameraDto);
                 MudDialog.Close(DialogResult.Ok(true));
                 Snackbar.Add($"{successedMessage}", Severity.Success);

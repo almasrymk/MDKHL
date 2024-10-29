@@ -16,6 +16,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp;
 
 namespace SmartParking.Subscriptions;
 [Authorize]
@@ -236,5 +237,10 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             subscriptionsDto
         );
     }
-
+    [RemoteService(IsEnabled =false)]
+    public async Task<List<SubscriptionDto>> GetAllAsync()
+    {
+        var subscriptions = await _subscriptionRepository.GetListAsync();
+        return  ObjectMapper.Map<List<Subscription>,List<SubscriptionDto>>(subscriptions);
+    }
 }
