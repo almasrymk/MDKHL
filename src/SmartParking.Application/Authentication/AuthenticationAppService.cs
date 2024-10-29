@@ -132,7 +132,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <inheritdoc/>
     public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
     {
-        
+
 
         // Step 1: Validate the user's credentials
         var user = await _userManager.FindByNameAsync(input.Username);
@@ -206,7 +206,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         try
         {
             await CheckPhoneIsUnique(input.Phone);
-            var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id);
+            var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, null);
             user.SetProperty("OtpCode", null);
             user.SetProperty("OtpExpirationDate", DateTime.Now);
             user.SetProperty("UserTypeId", 3);

@@ -2,18 +2,19 @@
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Enums;
+using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Invoices;
 [Authorize]
@@ -21,16 +22,22 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 {
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Invoice, int> _repository;
-
-    public InvoiceAppService(IRepository<Invoice,int> repository, IDataFilter dataFilter) 
+    private readonly IOrganizationsAppService _organizationsAppService;
+    public InvoiceAppService(IRepository<Invoice,int> repository, IDataFilter dataFilter,IOrganizationsAppService organizationsAppService) 
     :base(repository)
     {
         _dataFilter = dataFilter;
         _repository = repository;
+        _organizationsAppService = organizationsAppService;
     }
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
+        if (input.InvoiceNumber is null)
+        {
+            input.InvoiceNumber = await GenerateInvoiceNumberAsync(input.OrganizationId);
+        }
+
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -41,6 +48,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         else
             return await base.CreateAsync(input);
     }
+    
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
@@ -171,4 +179,40 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
         await base.DeleteAsync(id);
     }
+
+    [RemoteService(IsEnabled =false)]
+
+	public async Task<string> GenerateInvoiceNumberAsync(int organizationId)
+	{
+		var organization = await _organizationsAppService.GetAsync(organizationId);
+		var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
+		var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
+
+        // Fetch the last invoice for the current year and organization
+        var invoices = await _repository.GetListAsync(i => i.OrganizationId == organizationId);
+			
+        var lastInvoice = invoices
+        .Where(i => i.CreationTime.Year == DateTime.Now.Year)
+		.OrderByDescending(i => i.InvoiceNumber)
+		.FirstOrDefault();
+
+        
+		int nextInvoiceSequence = 1;
+
+		if (lastInvoice != null)
+		{
+            // Extract the last 3 digits of the previous invoice number (e.g., "ABC23-001")
+            var lastSequenceString = lastInvoice.InvoiceNumber[^3..];
+			if (int.TryParse(lastSequenceString, out int lastSequence))
+			{
+				nextInvoiceSequence = lastSequence + 1;
+			}
+		}
+
+		// Format the sequence as a three-digit number with leading zeros
+		var formattedSequence = nextInvoiceSequence.ToString().PadLeft(3,'0') ;
+
+		// Combine all parts to form the final invoice number
+		return $"{prefix}{currentYearSuffix}{formattedSequence}";
+	}
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.Results;
 using System.Threading.Tasks;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
 namespace SmartParking.Controllers;
@@ -14,17 +15,21 @@ public class AuthenticationsController : ControllerBase
 {
     private readonly IAuthenticationAppService _authenticationApp;
     private readonly ICurrentUser _user;
+    private readonly ICurrentTenant _currentTenant;
 
-    public AuthenticationsController(IAuthenticationAppService authentication,ICurrentUser user)
+    public AuthenticationsController(IAuthenticationAppService authentication,ICurrentUser user, ICurrentTenant currentTenant)
     {
         _authenticationApp = authentication;
         _user = user;
+        _currentTenant = currentTenant;
     }
     [HttpPost("login")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
     public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
     {
+        var tenant = await _authenticationApp.GetTenantByNameDtoAsync(input.Username);
+        _currentTenant.Change(tenant?.Id ?? null);
         if (_user.IsAuthenticated)
         {
             return Result<LoginResultDto>.Invalid(new ValidationError

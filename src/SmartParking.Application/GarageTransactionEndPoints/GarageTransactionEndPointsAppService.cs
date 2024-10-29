@@ -112,16 +112,24 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     //Customer witouth Active Package
 
                 }
+                else
+                {
+                    // customer with package
+                    var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    return await Task.FromResult(true);
+                }
             }
             else
             {
                 //Not Customer
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                var invoice = new CreateUpdateInvoiceDto
+				string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+
+				var invoice = new CreateUpdateInvoiceDto
                 {
                     GarageId = garageId,
-                    InvoiceNumber = "Not Customer",
+                    InvoiceNumber = generatedInvoiceNumber,
                     InvoicePrice = price,
                     InvoiceType = InvoiceType.UnPaid,
                     OrganizationId = GarageTransaction.OrganizationID,
@@ -353,7 +361,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             return (specialHours, normalHours);
     }
-
 
 }
 
