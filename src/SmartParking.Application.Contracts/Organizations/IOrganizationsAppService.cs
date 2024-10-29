@@ -19,7 +19,7 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// </summary>
     /// <param name="input">Organization create dto</param>
     /// <returns>Organization Dto</returns>
-    public new Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input, UserCreateDto inputUser);
+    public  Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input);
 
 
     /// <summary>

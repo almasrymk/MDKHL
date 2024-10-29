@@ -123,20 +123,7 @@ public static class SmartParkingModuleExtensionConfigurator
 
                           
                        }); 
-                       identity.ConfigureUser(user =>
-                       {
-                           user.AddOrUpdateProperty<string>( //property type: string
-                               "WhatsAppNum", //property name
-                               property =>
-                               {
-                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
-
-                                   //...other configurations for this property
-                               }
-                           );
-
-                          
-                       });
+                      
                    });
         ObjectExtensionManager.Instance.Modules()
                    .ConfigureIdentity(identity =>

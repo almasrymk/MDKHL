@@ -52,11 +52,7 @@ public partial class OrganizationAdd
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }    
-    public string PhoneNumUser { get; set; }
-    public string WhatsAppNumUser { get; set; }
-    public string ContactMailUser { get; set; }
-    public string UserName { get; set; }
-    public string Name { get; set; }
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -133,22 +129,13 @@ public partial class OrganizationAdd
             ClosingHoursStart = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) : TimeOnly.MinValue,
             ClosingHoursEnd = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) : TimeOnly.MaxValue
         };
-        UserCreateDto user = new UserCreateDto
-        {
-            UserName = UserName,
-            Email = ContactMailUser,
-            WhatsAppNum = WhatsAppNumUser,
-            PhoneNumber = PhoneNumUser,
-            Name = Name,
-            Password = "P@ssw0rd",
-            UserType = 1
-        };
+       
         
         try
         {
            
              
-            var oragnization =  await OrganizationAppService.CreateAsync(createUpdateOrganiztion, user);
+            var oragnization =  await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id,int.Parse(PackageSelectValue));
             ShowSnackbar($"{successedMessage} You Can Login Your Password Is P@ssw0rd", Severity.Success);
             Navigation.NavigateTo("/organizations");

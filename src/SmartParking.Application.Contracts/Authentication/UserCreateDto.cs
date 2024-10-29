@@ -20,7 +20,4 @@ public class UserCreateDto: IdentityUserCreateDto
     [RegularExpression(@"^(([^<>()\[\]\\.,;:\s@\""]+(\.[^<>()\[\]\\.,;:\s@\""]+)*)|(\"".+\""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$",
        ErrorMessage = "Invalid email format")]
     public string Email { get; set; }
-    [Required]
-    [RegularExpression(@"^(?:05[3-8]\d{7}|\+966[3-8]\d{8})$", ErrorMessage = "Invalid whats app num format")]
-    public string WhatsAppNum { get; set; }
 }

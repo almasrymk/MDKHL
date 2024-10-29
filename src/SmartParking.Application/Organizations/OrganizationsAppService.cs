@@ -56,15 +56,15 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         _tenantRepository = tenantRepository;
     }
     ///<inheritdoc/>
-    public new async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input,UserCreateDto inputUser)
+    public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
         var tenant = await _tenantManager.CreateAsync(input.EnglishName);
         var input1 = new TenantCreateDto
         {
-            Name = inputUser.UserName,
-            AdminEmailAddress = inputUser.Email,
+            Name = input.EnglishName,
+            AdminEmailAddress = input.ContactMail,
             AdminPassword = "P@ssw0rd",
-        }; 
+        };
         input1.MapExtraPropertiesTo(tenant);
 
         await _tenantRepository.InsertAsync(tenant);
@@ -74,13 +74,13 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await CurrentUnitOfWork.SaveChangesAsync();
         var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
         Console.WriteLine($"count of unified license number {query.Count}");
-        if (query.Count>0)
+        if (query.Count > 0)
         {
             throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.UnifiedLicenseNumUnifiedLicenseNum) + query.First().ArabicName);
 
         }
-        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto,Organization>(input);
-        if (input.IsClose == true )
+        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
+        if (input.IsClose == true)
         {
             input.ClosingHoursStart = input.ClosingHoursStart;
             input.ClosingHoursEnd = input.ClosingHoursEnd;
@@ -90,16 +90,26 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             input.ClosingHoursStart = TimeOnly.MinValue;
             input.ClosingHoursEnd = TimeOnly.MaxValue;
         }
-        organization.TenantId = tenant.Id;
-        await _repository.InsertAsync(organization,autoSave:true);
-        inputUser.RoleNames = [RolesType.Organization.ToString()];
-        inputUser.IsActive = true;
-        inputUser.OrganizationId = organization.Id;
-        inputUser.TenantId = tenant.Id;
 
-        var userCreated = await _usersAppService.CreateAsync(inputUser);
+        await _repository.InsertAsync(organization, autoSave: true);
+        UserCreateDto user = new UserCreateDto()
+        {
+            UserName = input.EnglishName,
+            PhoneNumber = input.PhoneNum,
+            Email = input.ContactMail,
+            Password = "P@ssw0rd",
+            RoleNames = [RolesType.Organization.ToString()],
+            Name = input.EnglishName,
+            IsActive = true,
+            UserType = 1,
+            OrganizationId = organization.Id,
+            TenantId = tenant.Id,
+
+        };
+
+        var userCreated = await _usersAppService.CreateAsync(user);
         organization.Code = CodeGenerator(organization.Id);
-        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name =EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description=EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id , CreatedByOrganization=true});
+        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id, CreatedByOrganization = true });
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);
 
 
