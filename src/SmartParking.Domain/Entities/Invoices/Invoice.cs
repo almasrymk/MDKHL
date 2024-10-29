@@ -26,6 +26,7 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public int GarageTransactionExitId { get; set; }
     public Guid? CustomerId { get; set; }
     public virtual Customer? Customer { get; set; }
+    public DateTime? InvoiceTime { get; set; }
 
     //public int VehicleId { get; set; }
     //public virtual Vehicle Vehicle { get; set; }
