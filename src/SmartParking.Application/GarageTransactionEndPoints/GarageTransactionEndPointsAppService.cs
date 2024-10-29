@@ -112,6 +112,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     //Customer witouth Active Package
 
                 }
+                else
+                {
+                    // customer with package
+                    var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    return await Task.FromResult(true);
+                }
             }
             else
             {

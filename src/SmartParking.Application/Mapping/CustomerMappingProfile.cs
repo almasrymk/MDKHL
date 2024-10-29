@@ -32,6 +32,7 @@ public class CustomerMappingProfile : Profile
         CreateMap<CreateUpdateCustomerDto, Customer>()
             .ForPath(dest => dest.IdentityUser.Name, opt => opt.MapFrom(src => src.FullName))
             .ForPath(dest => dest.IdentityUser.PhoneNumber, opt => opt.MapFrom(src => src.UserName))
+            .ForPath(dest => dest.IdentityUser.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForPath(dest => dest.IdentityUser.NormalizedEmail, opt => opt.MapFrom(src => src.Email))
             .ForPath(dest => dest.IdentityUser.Email, opt => opt.MapFrom(src => src.Email))
             .ForPath(dest => dest.IdentityUser.PhoneNumber, opt => opt.MapFrom(src => src.MobileNumber))
