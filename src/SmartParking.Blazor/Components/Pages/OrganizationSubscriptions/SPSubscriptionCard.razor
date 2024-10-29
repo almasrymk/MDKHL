@@ -9,13 +9,13 @@
     @foreach (var subscription in subscriptions.Items)
     {
 
-        <MudItem sm="3">
+        <MudItem sm="12" md="6" lg="3">
                 <MudText Color="MudBlazor.Color.Primary" Class="fw-bold" Align="Align.Center" Typo="Typo.h6">@subscription.EnglishName</MudText>
                 <div class="subscription-card">
                     <div class="d-flex flex-column gap-1 text-white align-items-center subscription-circle">
                         <div class="price">
                             <MudText>@L["SAR"]</MudText>
-                            <MudText Class="fw-bold" Typo="Typo.h2">@subscription.SubscriptionPrice</MudText>
+                            <MudText Class="fw-bold" Typo="Typo.h5">@subscription.SubscriptionPrice</MudText>
                             <MudText>@subscription.SubscriptionType</MudText>
                         </div>
 

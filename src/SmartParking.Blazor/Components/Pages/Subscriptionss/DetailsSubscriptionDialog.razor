@@ -16,9 +16,9 @@
 		</TitleContent>
 		<DialogContent>
 
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+			<MudForm Class="flex-grow-1  p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>    
-					<MudItem sm="6">
+					<MudItem sm="6" Class="pt-0">
 						<MudTextField @bind-Value="subscription.ArabicName"
 									  For="@(() => subscription.ArabicName)"
 									  Immediate="true"
@@ -26,7 +26,7 @@
 									  Label="@L["Arabic Name"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					<MudItem sm="6" Class="pt-0">
 						<MudTextField @bind-Value="subscription.EnglishName"
 									  For="@(() => subscription.EnglishName)"
 									  Immediate="true"
@@ -83,7 +83,7 @@
 									  Label="@L["InActivationDate"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.SubscriptionSlotNumber"
 									  For="@(() => subscription.SubscriptionSlotNumber)"
 									  Immediate="true"
@@ -91,7 +91,7 @@
 									  Label="@L["SubscriptionSlotNumber"]"
 									  Disabled />
 					</MudItem>					
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumberOfCustomers"
 									  For="@(() => subscription.NumberOfCustomers)"
 									  Immediate="true"
@@ -99,7 +99,7 @@
 									  Label="@L["NumberOfCustomers"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumberOfOrganizations"
 									  For="@(() => subscription.NumberOfOrganizations)"
 									  Immediate="true"
@@ -107,7 +107,7 @@
 									  Label="@L["NumberOfOrganizations"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumbersOfGarages"
 									  For="@(() => subscription.NumbersOfGarages)"
 									  Immediate="true"
@@ -115,7 +115,7 @@
 									  Label="@L["NumbersOfGarages"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumberOfCameras"
 									  For="@(() => subscription.NumberOfCameras)"
 									  Immediate="true"
@@ -123,7 +123,7 @@
 									  Label="@L["NumberOfCameras"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumberOfMobileCustomers"
 									  For="@(() => subscription.NumberOfMobileCustomers)"
 									  Immediate="true"
