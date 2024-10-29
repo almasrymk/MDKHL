@@ -109,6 +109,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
             customer.IdentityUser.SetProperty("UserTypeId", 3);
             customer.IdentityUser.SetProperty("OrganizationId", org.Id);
+            customer.IdentityUser.SetProperty("TenantId", null);
+            customer.TenantId = null;
             var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
             await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
             if (!createdUser.Succeeded)

@@ -18,7 +18,6 @@ public partial class CustomerRegister
         {
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
             var customer =  await CustomerAppService.CreateAsync(createUpdateCustomerDto);
-            Console.WriteLine(customer);
             if (customer != null)
             {
 
