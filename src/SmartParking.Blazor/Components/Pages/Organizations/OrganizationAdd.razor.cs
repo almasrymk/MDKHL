@@ -61,7 +61,6 @@ public partial class OrganizationAdd
     {
         await base.OnInitializedAsync();
         countries = await GovernorateAppService.GetCountryLookupAsync();
-        packages = await SubscriptionAppService.GetAllAsync();
 
     }
     

@@ -5,6 +5,7 @@
 @using SmartParking.Localization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
 
 @inject IPackagesAppService packagesAppService
@@ -12,6 +13,7 @@
 @inject IPackageTypesAppService packageTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
 <PageTitle>@L["New Package"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
@@ -52,17 +54,7 @@
                     </MudItem>
 
 
-                    <MudItem sm="4" md="4">
-                        <MudSelect @bind-Value="@createUpdatePackage.OrganizationId" Label=@L["Organizations"] HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
-
-                            @foreach (var organization in organizations)
-                            {
-                                <MudSelectItem T="int" Value="@organization.Id">
-                                    @organization.EnglishName
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
+                
                     <MudItem sm="4" md="4">
                         <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["Package Type"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
 
@@ -149,7 +141,7 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
-    private List<OrganizationDto> organizations = new List<OrganizationDto>();
+    //private List<OrganizationDto> organizations = new List<OrganizationDto>();
     private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
@@ -158,7 +150,7 @@
     protected override async Task OnInitializedAsync()
     {
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        organizations = organizationsList.Items.ToList();
+        //organizations = organizationsList.Items.ToList();
         var packageTypesList = await packageTypesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         packageTypes = packageTypesList.Items.ToList();
         timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
@@ -185,6 +177,8 @@
     }
     private async Task Submit()
     {
+        var currentTenant = CurrentTenant.Id;
+        createUpdatePackage.OrganizationId =await organizationAppService.GetOrganizationIdByTenant(currentTenant);
         var successedMessage = L["PackageCreatedSuccessfully"];
         var errorMessage = L["FillRequriedItems"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];

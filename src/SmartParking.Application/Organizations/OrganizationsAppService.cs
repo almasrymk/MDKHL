@@ -282,16 +282,19 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     [RemoteService(IsEnabled = false)]
     public async Task<Result<List<OrganizationDto>>> GetAllMobileAsync()
     {
-        
+        using (_softDeleteFilter.Disable<IMultiTenant>())
+        {
             var organizations = await _repository.GetListAsync();
             var organizationsMap = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
-                if (organizationsMap.Count == 0) 
-                {
-                       return Result<List<OrganizationDto>>.NotFound();
-                }
+            if (organizationsMap.Count == 0)
+            {
+                return Result<List<OrganizationDto>>.NotFound();
+            }
 
             return Result<List<OrganizationDto>>.Success(organizationsMap);
-        
+
+        }
+
     }
 
     ///<inheritdoc/>
