@@ -44,7 +44,8 @@
                             <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]"  @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4"  >
-                            <Div Style=@($"background-color: {(Status ? "#E7FCE3" : "#f20707")};border:none;color:{(Status ? "#528069" : "#820707")};border-radius:1rem;height:1.5rem;text-align:center;margin-top:1.3rem;")>
+                            <Label>@L["Status"]</Label>
+                            <Div Style=@($"background-color: {(Status ? "#b8efb0" : "#f20707")};border:none;color:{(Status ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
                                 @if (Status)
                                 {
                                     <MudText>@L["Active"]</MudText>
