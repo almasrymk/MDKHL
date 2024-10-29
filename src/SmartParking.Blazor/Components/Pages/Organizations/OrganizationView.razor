@@ -43,9 +43,20 @@
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]"  @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4" >
-                            <MudTextField ReadOnly="true" T="string" Value=@($"{(Status?@L["Active"]:@L["InActive"])}") InputType="InputType.Text" Variant="Variant.Outlined" Style=@($"background-color: {(Status ? "#E7FCE3" : "#F0F0F0")};")
-                                           Label=@L["Status"] />
+                        <MudItem sm="4"  >
+                            <Div  Style=@($"background-color: {(Status ? "#E7FCE3" : "#F0F0F0")};border:none;color:#528069;border-radius:1rem;height:1.5rem;text-align:center;margin-top:1.3rem;")
+                                            >
+                                @if (Status)
+                                {
+                                    <MudText>@L["Active"]</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>@L["InActive"]</MudText>
+                                    
+                                }
+
+                                        </Div>
 
                         </MudItem>
 
