@@ -24,6 +24,7 @@ public class OrganizationDto
     public int CountryId { get; set; }
     public int RegionId { get; set; }
     public string RegionName { get; set; }
+    public string RegionNameAr { get; set; }
     public int StateId { get; set; }
     public  int SubscriptionId { get; set; }
     public int CityId { get; set; }
@@ -33,8 +34,11 @@ public class OrganizationDto
     public Status? Status { get; set; }
     public string Code { get; set; }
     public string CountryName { get; set; }
+    public string CountryNameAr { get; set; }
     public string StateName { get; set; }
+    public string StateNameAr { get; set; }
     public string CityName { get; set; }
+    public string CityNameAr { get; set; }
     public decimal FirstHourPrice { get; set; }
     public decimal SecondHourPrice { get; set; }
     public decimal ThirdHourPrice { get; set; }
