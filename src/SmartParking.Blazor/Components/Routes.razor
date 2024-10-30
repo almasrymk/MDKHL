@@ -41,9 +41,18 @@
             Navigation.NavigateTo("/", true);
 
         }
-        if ((_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin")) && currentUri == "customers/register")
+        if ((_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin")) )
         {
-            Navigation.NavigateTo("/customers", true);
+            if (currentUri == "customers/register")
+            {
+
+                Navigation.NavigateTo("/customers", true);
+            }
+            if (currentUri == "/my-account")
+            {
+                Navigation.NavigateTo("/edit-profile", true);
+                
+            }
 
         }
     }
