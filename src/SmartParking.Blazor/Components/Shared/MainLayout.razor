@@ -53,8 +53,12 @@
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
                         <p class="mb-0 fw-bold">@UserName </p>
-                        <Link Class="text-white border-bottom" href="/my-account">@L["Profile Details"]</Link>
-                        </div>
+
+                        <Link Class="text-white border-bottom text-decoration-none"
+                              href=@(currenttenant.Id != null ? "/my-account" : "/edit-profile")>
+                            @L["Profile Details"]
+                        </Link>
+                    </div>
                     </div>
                 </div>
             </MudItem>
