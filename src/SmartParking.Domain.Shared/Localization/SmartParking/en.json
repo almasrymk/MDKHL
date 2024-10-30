@@ -385,6 +385,7 @@
     "AddContactData": "AddContactData",
     "NewContactData": "NewContactData",
     "ContactDataCreatedSuccessfully": "ContactDataCreatedSuccessfully",
-    "Can'tCreateContactData": "Can'tCreateContactData"
+    "Can'tCreateContactData": "Can'tCreateContactData",
+    "Draft": "Draft"
   } 
 }

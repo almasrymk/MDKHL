@@ -409,6 +409,7 @@
     "AddContactData": "انشاء بيانات الاتصال",
     "NewContactData": " بيانات الاتصال جديد",
     "ContactDataCreatedSuccessfully": "تم إنشاء  بيانات الاتصال بنجاح",
-    "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال"
+    "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال",
+    "Draft": "مسودة"
   }
 }
