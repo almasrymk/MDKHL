@@ -334,7 +334,7 @@
     "AdditionalHourPrice": "سعر الساعة الإضافية",
     "NumberOfHours": "عدد الساعات",
     "ExceededTime": "تجاوزت الوقت",
-    "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
+    "NumberOfHoursExceeded": "تم تجاوز عدد الساعات",
     "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
     "FullDay": "يوم كامل",
     "Customer Categories": "فئـات العمـلاء",
@@ -348,7 +348,7 @@
     "OrganiztionCreatedSuccessfully": "تم اضافة منظمة بنجاح",
     "Can'tCreateOrganiztion": "لا يمكن اضافة منظمة",
     "FullDayPrice": "سعر اليوم الكامل",
-    "IsClose": "هل يتم الغلق",
+    "IsClose": "مغلق؟",
     "ClosingHoursStart": "موعد بداية ساعات الغلق",
     "ClosingHoursEnd": "موعد نهاية ساعات الغلق",
     "GarageCreatedSuccessfully": "تم اضافة مـوقـف بنجاح",
@@ -398,11 +398,13 @@
     "Entry": "دخـول",
     "Exit": "خـروج",
     "Package": "باقة",
+    "Will Be Generated Automatically": "",
     "Assign": "خصص",
     "CreationTime": "تاريخ الانشاء",
-    "Creator": "الانشاء بواسطة"
-
-
-
+    "Creator": "الانشاء بواسطة",
+    "AddContactData": "انشاء بيانات الاتصال",
+    "NewContactData": " بيانات الاتصال جديد",
+    "ContactDataCreatedSuccessfully": "تم إنشاء  بيانات الاتصال بنجاح",
+    "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال"
   }
 }

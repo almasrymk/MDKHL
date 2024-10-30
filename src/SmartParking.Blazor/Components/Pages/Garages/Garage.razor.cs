@@ -32,12 +32,20 @@ public partial class Garage
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
 
+
     private TableData itemData = new TableData();
     public bool ViewAssign { get; set; } = true;
 
     private string termSearch;
 	private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
+
+    public  int MaxiumumNumberOfGarageAllowedToBeAdded { get; set; }
+
+    public int ActiveGarages { get; set; }
+
+
+
 
     public Garage(IStringLocalizer<SmartParkingResource> localizer)
     {
@@ -48,24 +56,27 @@ public partial class Garage
 
 
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         if (currentUser.IsInRole(RolesType.Organization.ToString()) || currentTenant.Id!=null)
         {
             ViewAssign = false;
+            MaxiumumNumberOfGarageAllowedToBeAdded =await OrganizationAppService.GetNumberOfGaragesAllowedToBeAdded();
+            ActiveGarages= await OrganizationAppService.GetNumberOfActiveGaragesOfOrganization();
 
         }
-        return base.OnInitializedAsync();
-    }
+		await base.OnInitializedAsync();
+
+	}
 
 
 
-    /// <summary>
-    /// filter for hotels on the server side using the hotel columns.
-    /// </summary>
-    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    private async Task HandleFilter(PageChangeEventArgs pageInfo)
+	/// <summary>
+	/// filter for hotels on the server side using the hotel columns.
+	/// </summary>
+	/// <param name="columnFilter">The name of column to filter for among hotel.</param>
+	/// <returns>Returns a task that represents the asynchronous operation.</returns>
+	private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
 
@@ -134,7 +145,7 @@ public partial class Garage
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-
+        Console.WriteLine(pageInfo.SortColumn);
         // Retrieve the list of organizations from the server
         var garagessDto = await GarageAppService.GetListAsync(input);
         TotalItem = (int)garagessDto.TotalCount;
@@ -156,15 +167,15 @@ public partial class Garage
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "Name", IsFilterable = true, PropertyNmae = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity",PropertyNmae= "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.Name));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[item.Status.ToString()]));
 
 
             tableData.Rows.Add(rowDef);

@@ -13,55 +13,6 @@
 <PageTitle>@L["Cameras"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Cameras"]</MudText>
 
-<SPDataGrid PageName=@L["Cameras"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignGarage"></SPDataGrid>
+<SPDataGrid PageName=@L["Cameras"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" ShowAssign="false" OnClickAssign="AssignGarage"></SPDataGrid>
 
-
-
-
-@* 
-@page "/cameras"
-@using Customs
-
-<div>
-    <MudDataGrid Elevation="0" Class="bg-transparent custom-data-grid" T="CameraDto" MultiSelection="true" Items="@cameras" SortMode="SortMode.Multiple" Filterable="true"
-                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
-        <ToolBarContent>
-            <MudTextField Elevation="2" @bind-Value="_searchString" Placeholder="Search For Cameras" Adornment="Adornment.End" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
-            <MudSpacer />
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() => OpenDialogAsync(_backdropClick))">
-                CREATE NEW
-                <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-s1" />
-            </MudButton>
-        </ToolBarContent>
-        <Columns>
-            <SelectColumn T="CameraDto" />
-            <PropertyColumn Property="x => x.Id" Title="ID" />
-            <PropertyColumn Property="x => x.MacAddress" Title="MacAddress" />
-            <PropertyColumn Property="x => x.Type" Title="Type" />
-            <PropertyColumn Property="x => x.Status" Title="Status" />
-            <TemplateColumn Title="Actions">
-                <CellTemplate>
-                    @if (context.Item is CameraDto camera)
-                    {
-                        <MudButton Variant="Variant.Text" Color="MudBlazor.Color.Primary" OnClick="@(() => OpenEditDialog(camera))">
-                            <MudIcon Icon="@Icons.Material.Filled.Edit" />
-                            Edit
-                        </MudButton>
-                    }
-                </CellTemplate>
-            </TemplateColumn>
-
-
-
-
-
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="CameraDto" />
-        </PagerContent>
-    </MudDataGrid>
-</div>
-
- *@
 

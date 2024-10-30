@@ -56,6 +56,11 @@
                 </MudNavGroup>
                 <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
                     <MudNavLink Href="/edit-profile">@L["Profile"]</MudNavLink>
+                    @if (currenttenant.Id != null)
+                    {
+                        <MudNavLink Href="/contact-data">@L["Contact Data"]</MudNavLink>
+                    }
+                    
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">subscription</MudNavLink>
                 </MudNavGroup>
 
