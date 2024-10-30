@@ -8,7 +8,9 @@
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
 @using SmartParking.Subscriptions
+@using System.Globalization
 @using Volo.Abp.Identity
+@using Volo.Abp.Users
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
@@ -24,6 +26,7 @@
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
 @inject IPackageTypesAppService PackageTypesAppService
+@inject ICurrentUser currentuser
 <PageTitle>@L["Add Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -33,19 +36,18 @@
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["Arabic Name"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["OrganizationArabicName"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["English Name"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["OrganizationEnglishName"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UnifiedLicenseNum" Placeholder=@L["Type Here"] Label=@L["Unified License Num"] />
                         </MudItem>
+
                         <MudItem sm="4">
-                            <MudNumericField Required="true"  @bind-Value="NumOfCameras" HideSpinButtons="true" Placeholder=@L["Type Here"] Label=@L["Num Of Cameras"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Placeholder=@L["Type Here"] Label=@L["Max Capacity"] />
+                        <MudTextField Required="true" T="string" Disabled ReadOnly="true" InputType="InputType.Text" Placeholder="@L["Will Be Automatically Created"]"
+                                      Label=@L["Code"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="CRExpiryDate" ShowToolbar="false" />
@@ -55,60 +57,21 @@
                                            Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"]
                                            @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
-                        </MudItem>
+
                          <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
-                        </MudItem>
+                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
+                         </MudItem>
+                         <MudItem sm="4">
+                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="@L["Type Here"]" Label="@L["Whatsapp Num"]" />
+                         </MudItem>
+                         <MudItem sm="4">
+                             <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
+                         </MudItem>
 
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["Package"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Clearable="true"
-                                       Required
-                                       @bind-Value="@PackageSelectValue">
-                                <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
-                                @foreach (var package in packages)
-                                {
-                                    <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
 
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start"  @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">
                             <MudSelect T="string"
-                                Variant="Variant.Text"
+                                       Variant="Variant.Text"
                                        Label=@L["Country"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
@@ -118,15 +81,22 @@
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
-                                    <MudSelectItem  Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="country.Id.ToString()">@country.ArabicName</MudSelectItem>
+                                    }
                                 }
                             </MudSelect>
                         </MudItem>
                         @if (!CountrySelectValue.IsNullOrEmpty())
                         {
                             <MudItem sm="4">
-                                <MudSelect  T="string"
-                                    Variant="Variant.Text"
+                                <MudSelect T="string"
+                                           Variant="Variant.Text"
                                            Label=@L["Region"]
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
@@ -137,7 +107,14 @@
                                     <MudSelectItem Value="CitySelectValue"></MudSelectItem>
                                     @foreach (var region in regions)
                                     {
-                                        <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@region.Id.ToString()">@region.ArabicName</MudSelectItem>
+                                        }
                                     }
                                 </MudSelect>
                             </MudItem>
@@ -155,12 +132,19 @@
 
                                     @foreach (var state in states)
                                     {
-                                        <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@state.Id.ToString()">@state.ArabicName</MudSelectItem>
+                                        }
                                     }
                                 </MudSelect>
                             </MudItem>
                         }
-                        
+
                         @if (!RegionSelectValue.IsNullOrEmpty())
                         {
                             <MudItem sm="4">
@@ -170,30 +154,97 @@
                                            HelperText=@L["Helper Text"]
                                            Clearable="true"
                                            Required
-                                           @bind-Value="@CitySelectValue">
-                                    <MudSelectItem Value="CitySelectValue"></MudSelectItem>
+                                           @bind-Value="CitySelectValue">
+                                    <MudSelectItem Value="@CitySelectValue"></MudSelectItem>
                                     @foreach (var city in cities)
                                     {
-                                        <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@city.Id.ToString()"> @city.EnglishName </MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@city.Id.ToString()"> @city.ArabicName </MudSelectItem>
+                                        }
                                     }
                                 </MudSelect>
                             </MudItem>
                         }
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label=@L["Package"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Clearable="true"
+                                       Required
+                                       @bind-Value="@PackageSelectValue">
+                                <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
+                                @foreach (var package in packages)
+                                {
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                    <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                    <MudSelectItem Value="package.Id.ToString()">@package.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+                        @if (IsNumberOfHoursExceeded){
+
+                            <MudItem sm="4">
+                                <MudNumericField Required="true" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField Required="true" @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                            </MudItem>
+                             <MudItem sm="4">
+                                <MudNumericField Required="true" @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField Required="true" @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            </MudItem>
+                        }
+                        @if(IsClose){
+
+                        <MudItem sm="4">
+                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                        </MudItem>
+                        }
+
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="@L["Type Here"]" Label="@L["Whatsapp Num"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
-                        </MudItem>
+                  
                     </MudGrid>
-                    <div class="d-flex justify-content-between mt-5">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="Save">@L["Create"]</MudButton>
-                    </div>
+                    <MudItem sm="4" Class="mt-5">
+
+                        <div class="d-flex justify-content-between ">
+                            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="Save">@L["Create"]</MudButton>
+                        </div>
+                    </MudItem>
                 </MudForm>
 
             </MudPaper>
@@ -207,8 +258,8 @@
                 <div class="d-flex flex-column align-content-center gap-4 p-5">
                     <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
                     <div class="d-flex flex-column align-items-center">
-                        <MudText Class="fw-bold">Ahmed Mohamed</MudText>
-                        <MudText>A.Mohamed@mdkhl.com</MudText>
+                        <MudText Class="fw-bold">@currentuser.Name</MudText>
+                        <MudText>@currentuser.Email</MudText>
                     </div>
                 </div>
                 <MudGrid Class="mt-3">

@@ -12,6 +12,8 @@ using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using Abp.Runtime.Validation;
 using static MudBlazor.CategoryTypes;
+using System.Globalization;
+using YamlDotNet.Core.Tokens;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -23,6 +25,7 @@ public partial class OrganizationView
     private string CountryName{ get; set; }
     private string RegionName { get; set; }
     private string StateName { get; set; }
+    private string Code { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; }
@@ -58,16 +61,29 @@ public partial class OrganizationView
         {
             Status = false;
         }
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+             CountryName = organization.CountryName;
+             RegionName = organization.RegionName;
+             StateName=organization.StateName;
+             CityName = organization.CityName;
+}
+        else
+        {
+
+            CountryName = organization.CountryNameAr;
+            RegionName = organization.RegionNameAr;
+            StateName = organization.StateNameAr;
+            CityName = organization.CityNameAr;
+        }
         MaxCapacity = organization.MaxCapacity;
-        CountryName = organization.CountryName;
-        CityName = organization.CityName;
-        RegionName = organization.RegionName;
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
         StateName=organization.StateName;
+        Code = organization.Code;
     }
     protected override async Task OnInitializedAsync()
     {

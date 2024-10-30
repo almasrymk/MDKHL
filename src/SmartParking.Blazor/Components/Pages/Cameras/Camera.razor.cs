@@ -11,6 +11,7 @@ using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -150,8 +151,8 @@ public partial class Camera
             if(item.Garage is not null)
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.Garage.Name));
 
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"], item.CameraType.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"], _localizer[$"{item.CameraType.ToString()}"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
             tableData.Rows.Add(rowDef);
