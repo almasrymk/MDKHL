@@ -377,6 +377,8 @@
     "VehicleModelDeletedSuccessfully": "Vehicle Model Deleted Successfully",
     "Can'tDeleteVehicleModel": "Can't Delete Vehicle Model",
     "InvoiceTime": "InvoiceTime",
+    "Entry": "Entry",
+    "Exit": "Exit",
     "OrganizationEnglishName": "En Name",
     "CameraType": "Type"
   } 

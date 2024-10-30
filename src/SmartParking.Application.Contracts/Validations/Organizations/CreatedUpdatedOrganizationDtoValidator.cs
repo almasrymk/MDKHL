@@ -17,7 +17,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x=>x.UnifiedLicenseNum).Length(9).NotEmpty().Matches(@"^920[^\s,]*$");
         RuleFor(x => x.ArabicName)
         .NotEmpty()
-        .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
+        .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$")
         .WithMessage("The Arabic name should only contain Arabic letters, digits, punctuation marks, and spaces.");
 
         RuleFor(x => x.CRExpiryDate)
@@ -32,7 +32,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x => x.EnglishName)
             .NotEmpty()
-            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\]*(\s[a-zA-Z0-9/.,\\]+)*$");
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$");
 
         RuleFor(x => x.WhatsAppNum).NotEmpty().Matches(@"^(?:05[3-8]\d{7}|\+966[3-8]\d{8})$");
 
