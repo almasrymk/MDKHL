@@ -7,10 +7,12 @@
 @inject IGarageAppService GarageAppService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager NavigationManager
 @inject ICurrentUser currrentUser
+@inject ICurrentTenant currrentTenant
 
 <PageTitle>@L["Add New Garage"]</PageTitle>
 <div class="modal-wrapper">
@@ -80,6 +82,7 @@
                                     @foreach (var organization in Organizations)
                                     {
                                         <MudSelectItem T="int" Value="@organization.Id">
+                                            
                                             @organization.EnglishName
                                         </MudSelectItem>
                                     }
