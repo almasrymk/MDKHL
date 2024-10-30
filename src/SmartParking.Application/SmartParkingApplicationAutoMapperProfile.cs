@@ -50,10 +50,14 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
          * into multiple profile classes for a better organization. */
 
         CreateMap<Organization, OrganizationDto>()
-            .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.ArabicName))
-            .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.ArabicName))
-            .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.State.ArabicName))
-            .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
+            .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.EnglishName))
+            .ForMember(dest => dest.CityNameAr, opt => opt.MapFrom(src => src.City.ArabicName))
+            .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Country.EnglishName))
+            .ForMember(dest => dest.CountryNameAr, opt => opt.MapFrom(src => src.Country.ArabicName))
+            .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.State.EnglishName))
+            .ForMember(dest => dest.StateNameAr, opt => opt.MapFrom(src => src.State.ArabicName))
+            .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
+            .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
 
 
