@@ -26,23 +26,29 @@
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
-
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName"  Label=@L["English Name"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Code" Label=@L["Code"] />
                         </MudItem>
-
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Label=@L["OrganizationArabicName"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Label=@L["OrganizationEnglishName"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
+                        </MudItem>
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="NumOfCameras" HideSpinButtons="true"  Label=@L["Num Of Cameras"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="MaxCapacity" HideSpinButtons="true"  Label=@L["Max Capacity"] />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]"  @bind-Date="CRExpiryDate" ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]"  @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
-                        </MudItem>
+                       
+                       
                         <MudItem sm="4"  >
                             <Label>@L["Status"]</Label>
                             <Div Style=@($"background-color: {(Status ? "#b8efb0" : "#f20707")};border:none;color:{(Status ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>

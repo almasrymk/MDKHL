@@ -36,13 +36,18 @@
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["Arabic Name"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["OrganizationArabicName"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["English Name"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["OrganizationEnglishName"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UnifiedLicenseNum" Placeholder=@L["Type Here"] Label=@L["Unified License Num"] />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                        <MudTextField Required="true" T="string" Disabled ReadOnly="true" InputType="InputType.Text" Placeholder="@L["Will Be Automatically Created"]"
+                                      Label=@L["Code"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="CRExpiryDate" ShowToolbar="false" />
@@ -52,19 +57,18 @@
                                            Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"]
                                            @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="@L["Type Here"]" Label="@L["Whatsapp Num"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
-                        </MudItem>
 
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["Status Active"]" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
+                         <MudItem sm="4">
+                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="PhoneNum" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />
+                         </MudItem>
+                         <MudItem sm="4">
+                             <MudTextField Required="true" T="string" InputType="InputType.Telephone" @bind-Value="WhatsAppNum" Placeholder="@L["Type Here"]" Label="@L["Whatsapp Num"]" />
+                         </MudItem>
+                         <MudItem sm="4">
+                             <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
+                         </MudItem>
+
+
                         <MudItem sm="4">
                             <MudSelect T="string"
                                        Variant="Variant.Text"
@@ -168,7 +172,13 @@
                         }
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-                        
+
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
                                        Label=@L["Package"]
@@ -191,6 +201,7 @@
                                 }
                             </MudSelect>
                         </MudItem>
+
                         @if (IsNumberOfHoursExceeded){
 
                             <MudItem sm="4">
@@ -223,12 +234,6 @@
                         }
 
 
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start"  @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         
                   
