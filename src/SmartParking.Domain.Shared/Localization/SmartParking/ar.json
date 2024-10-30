@@ -340,7 +340,7 @@
     "AdditionalHourPrice": "سعر الساعة الإضافية",
     "NumberOfHours": "عدد الساعات",
     "ExceededTime": "تجاوزت الوقت",
-    "NumberOfHoursExceeded": "هل تم تجاوز عدد الساعات",
+    "NumberOfHoursExceeded": "تم تجاوز عدد الساعات",
     "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
     "FullDay": "يوم كامل",
     "Customer Categories": "فئـات العمـلاء",
@@ -354,7 +354,7 @@
     "OrganiztionCreatedSuccessfully": "تم اضافة منظمة بنجاح",
     "Can'tCreateOrganiztion": "لا يمكن اضافة منظمة",
     "FullDayPrice": "سعر اليوم الكامل",
-    "IsClose": "هل يتم الغلق",
+    "IsClose": "مغلق؟",
     "ClosingHoursStart": "موعد بداية ساعات الغلق",
     "ClosingHoursEnd": "موعد نهاية ساعات الغلق",
     "GarageCreatedSuccessfully": "تم اضافة مـوقـف بنجاح",
@@ -401,11 +401,9 @@
     "InvoiceTime": "توقيت الفاتورة",
     "OrganizationEnglishName": "اسم المنشأة بالانجليزية",
     "CameraType": "النوع",
-
-
-
     "Entry": "دخـول",
     "Exit": "خـروج",
-    "Package": "باقة"
+    "Package": "باقة",
+    "Will Be Generated Automatically": ""
   }
 }
