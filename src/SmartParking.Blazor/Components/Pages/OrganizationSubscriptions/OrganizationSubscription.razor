@@ -4,17 +4,13 @@
 @inject IStringLocalizer<SmartParkingResource> L
 
 
+
 <PageTitle>@L["Organization Subscription"]</PageTitle>
 <div class="d-flex justify-content-between align-items-center my-5">
     <MudText Class="fw-bold" Typo="Typo.h6">Subscription packages</MudText>
     <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.AddCircleOutline" IconClass="text-white">@L["CREATE NEW"]</MudButton>
 </div>
-<MudGrid Class="my-19 d-flex justify-content-center flex-row nowrap" >
-    <MudItem sm="6" md="3">
-        <SPSubscriptionCard />
-    </MudItem>
- 
-</MudGrid>
-@code {
 
-}
+<MudGrid Class="my-19 d-flex justify-content-center ">
+    <SPSubscriptionCard/>
+</MudGrid>

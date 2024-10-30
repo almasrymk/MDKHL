@@ -1,0 +1,7 @@
+﻿::deep .mud-dialog-content {
+    padding: 0 !important;
+}
+
+::deep .mud-input-label {
+    white-space: nowrap;
+}

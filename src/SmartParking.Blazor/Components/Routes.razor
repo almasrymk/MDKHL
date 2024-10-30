@@ -35,7 +35,7 @@
         {
             Navigation.NavigateTo("/login", true);
         }
-        if ((currenttenant.Id != null && (currentUri.Contains("organizations") || currentUri == "subscriptions") || currentUri=="packages") || (_currentUser.IsAuthenticated && currentUri == "login"))
+        if (((currenttenant.Id != null || _currentUser.IsInRole(Enums.RolesType.Organization.ToString())) && (currentUri.Contains("organizations") || currentUri == "subscriptions") || currentUri == "packages") || (_currentUser.IsAuthenticated && currentUri == "login"))
         {
 
             Navigation.NavigateTo("/", true);

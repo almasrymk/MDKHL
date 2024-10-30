@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Identity;
 using Volo.Abp;
-using Abp.Runtime.Validation;
 using System.Linq;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Components;
@@ -18,6 +17,7 @@ using SmartParking.Blazor.Components.Pages.Subscriptionss;
 using JetBrains.Annotations;
 using SmartParking.Subscriptions;
 using SmartParking.Entities.Organizations;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -61,6 +61,7 @@ public partial class OrganizationEdit
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
+    IList<SubscriptionDto> packages = new List<SubscriptionDto>();
     private async Task Update()
     {
         var successedMessage = L["OrganiztionUpdatedSuccessfully"];
@@ -114,13 +115,14 @@ public partial class OrganizationEdit
            
            
            var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
+            Navigation.NavigateTo("/organizations");
             ShowSnackbar(successedMessage, Severity.Success);
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
@@ -194,13 +196,33 @@ public partial class OrganizationEdit
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         AdditionalHourPrice = organization.AdditionalHourPrice;
     }
+    private async Task GetRegions()
+    {
+        
+        if (CountrySelectValue != null)
+        {
+            regions = await RegionAppService.GetRegionByCountry(int.Parse(CountrySelectValue));
+        }
+
+    }
+    private async Task GetStates()
+    {
+       
+        if (RegionSelectValue != null)
+        {
+            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
+            cities = await CitiesAppService.GetCityByRegion(int.Parse(RegionSelectValue));
+        }
+
+    }
     protected override async Task OnInitializedAsync()
     {
-        states = await StateAppService.GetStateLookupAsync();
-        regions = await StateAppService.GetRegionLookupAsync();
-        countries = await GovernorateAppService.GetCountryLookupAsync();
-        cities = await CitiesAppService.GetCityLookupAsync();
         await FetchData();
+
+        countries = await GovernorateAppService.GetCountryLookupAsync();
+
+        await GetStates();
+        await GetRegions();
      //   await base.OnInitializedAsync();
 
 

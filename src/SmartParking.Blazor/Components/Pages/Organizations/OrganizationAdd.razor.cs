@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
+using SmartParking.Authentication;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Enums;
@@ -50,7 +51,8 @@ public partial class OrganizationAdd
     public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
-    public string ContactMail { get; set; }
+    public string ContactMail { get; set; }    
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -62,7 +64,6 @@ public partial class OrganizationAdd
         await base.OnInitializedAsync();
         countries = await GovernorateAppService.GetCountryLookupAsync();
         packages = await SubscriptionAppService.GetAllAsync();
-
     }
     
     private async Task GetRegions(string value)

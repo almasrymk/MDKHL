@@ -7,6 +7,7 @@ using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Blazor.Customs;
 using SmartParking.Cameras;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Organizations;
@@ -32,6 +33,7 @@ public partial class Garage
     public int RowPerPage { get; set; } = 10; // Default value is 10
 
     private TableData itemData = new TableData();
+    public bool ViewAssign { get; set; } = true;
 
     private string termSearch;
 	private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
@@ -41,6 +43,22 @@ public partial class Garage
     {
         _localizer = localizer;
     }
+
+
+
+
+
+    protected override Task OnInitializedAsync()
+    {
+        if (currentUser.IsInRole(RolesType.Organization.ToString()) || currentTenant.Id!=null)
+        {
+            ViewAssign = false;
+
+        }
+        return base.OnInitializedAsync();
+    }
+
+
 
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.

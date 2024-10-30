@@ -122,7 +122,8 @@ public static class SmartParkingModuleExtensionConfigurator
                            );
 
                           
-                       });
+                       }); 
+                      
                    });
         ObjectExtensionManager.Instance.Modules()
                    .ConfigureIdentity(identity =>

@@ -16,6 +16,7 @@ public class UserCreateDto: IdentityUserCreateDto
     public int UserType { get; set; }
     public int OrganizationId { get; set; }
     public Guid? TenantId { get; set; }
+    [Required]
     [RegularExpression(@"^(([^<>()\[\]\\.,;:\s@\""]+(\.[^<>()\[\]\\.,;:\s@\""]+)*)|(\"".+\""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$",
        ErrorMessage = "Invalid email format")]
     public string Email { get; set; }

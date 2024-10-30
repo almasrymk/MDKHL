@@ -82,6 +82,23 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         try
         {
+            var org = await _organizationAppService.GetOrganizationForCurrentTenat();
+
+                using (_dataFilter.Disable<IMultiTenant>()) {
+                    var user = await _userManager.FindByNameAsync(input.UserName);
+                    if (user != null)
+                    {
+                            var query= await _repository.GetQueryableAsync();
+                            query = query.Include(x => x.Organizations);
+                            query = query.Where(x => x.IdentityUserId == user.Id);
+                            var existCustomer = query.FirstOrDefault();
+                            existCustomer.Organizations.Add(org);
+                            await _repository.UpdateAsync(existCustomer);
+                            return ObjectMapper.Map<Customer, CustomerDto>(existCustomer);
+                    }
+
+                }
+
             var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
             if (result1 == false)
             {
@@ -94,7 +111,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("National Id is already exist !");
 
             }
-            var org = await _organizationAppService.GetOrganizationForCurrentTenat();
             if (org == null)
             {
                 throw new Exception("Customer must belong to organization");
@@ -109,6 +125,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
             customer.IdentityUser.SetProperty("UserTypeId", 3);
             customer.IdentityUser.SetProperty("OrganizationId", org.Id);
+            customer.IdentityUser.SetProperty("TenantId", null);
+            customer.TenantId = null;
             var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
             await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
             if (!createdUser.Succeeded)
@@ -328,7 +346,25 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             }
         }
         else
-            return await base.GetListAsync(input);
+        {
+            var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+
+                var query = await _repository.GetQueryableAsync();
+                query = query.Include(x => x.Organizations);
+                query = query.Where(x=>x.Organizations.Any(y => y.Id == orgId));
+                var customers = await AsyncExecuter.ToListAsync(query);
+                var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+                return new PagedResultDto<CustomerDto>
+                {
+                    TotalCount = cutomersDtos.Count,
+                    Items = cutomersDtos
+                };
+
+            }
+
+        }
     }
 
 

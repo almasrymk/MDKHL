@@ -9,28 +9,30 @@
 @inject NavigationManager Navigation
 <PageTitle>@L["AddSubscription"]</PageTitle>
 
+<div >
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
             <MudText Typo="Typo.h6">@L["NewSubscription"]</MudText>
         </TitleContent>
         <DialogContent>
-           
-                
-                    <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
-                        <MudGrid>
-                    <MudItem sm="6">
+
+
+            <MudForm Class=" flex-grow-1 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    <MudItem sm="6"
+                             Class="pt-0">
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder="@L["ُType Here"]"
                                       Label="@L["Arabic Name"]"
-                                      InputType="InputType.Text" 
-                                      Required="true"/>
+                                      InputType="InputType.Text"
+                                      Required="true" />
                     </MudItem>
 
-                    <MudItem sm="6">
+                    <MudItem sm="6" Class="pt-0">
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
@@ -48,21 +50,20 @@
                                       Variant="Variant.Text"
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["SubscriptionDescription"]"
-                                      InputType="InputType.Text" 
-                                      Required="true"/>
+                                      InputType="InputType.Text"
+                                      Required="true" />
                     </MudItem>
-                    <MudItem sm="6" >
+                    <MudItem sm="6">
                         <MudTextField @bind-Value="input.SubscriptionPrice"
                                       For="@(() => input.SubscriptionPrice)"
                                       Immediate="true"
                                       Placeholder=@L["Type Here"]
                                       Label="@L["SubscriptionPrice"]"
-                                      InputType="InputType.Number" 
+                                      InputType="InputType.Number"
                                       Required="true" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudDatePicker 
-                                      @bind-Date="_activateDate"
+                        <MudDatePicker @bind-Date="_activateDate"
                                        @bind-value="_activateDate"
                                        Variant="Variant.Text"
                                        Placeholder=@L["Type Here"]
@@ -72,15 +73,14 @@
                                        ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudDatePicker 
-                                      @bind-Date = "_inActivateDate"
-                                      @bind-value="_inActivateDate"
-                                      Variant="Variant.Text"
+                        <MudDatePicker @bind-Date="_inActivateDate"
+                                       @bind-value="_inActivateDate"
+                                       Variant="Variant.Text"
                                        Placeholder=@L["Type Here"]
                                        Label="@L["InActivationDate"]"
-                                      Required="true"
+                                       Required="true"
                                        IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
-                                      ShowToolbar="false"/>
+                                       ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="4">
                         <MudTextField @bind-Value="input.NumberOfCustomers"
@@ -93,17 +93,18 @@
                                       Required="true" />
                     </MudItem>
 
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField @bind-Value="input.NumberOfOrganizations"
                                       For="@(() => input.NumberOfCustomers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
+
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfOrganizations"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField @bind-Value="input.NumberOfCameras"
                                       For="@(() => input.NumberOfCameras)"
                                       Immediate="true"
@@ -113,7 +114,7 @@
                                       Label="@L["NumberOfCameras"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField @bind-Value="input.NumbersOfGarages"
                                       For="@(() => input.NumbersOfGarages)"
                                       Immediate="true"
@@ -123,7 +124,7 @@
                                       Label="@L["NumbersOfGarages"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField @bind-Value="input.NumberOfMobileCustomers"
                                       For="@(() => input.NumberOfMobileCustomers)"
                                       Immediate="true"
@@ -133,7 +134,7 @@
                                       Label="@L["NumberOfMobileCustomers"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField @bind-Value="input.SubscriptionSlotNumber"
                                       For="@(() => input.SubscriptionSlotNumber)"
                                       Immediate="true"
@@ -147,7 +148,7 @@
                         <MudSelect Variant="Variant.Text"
                                    Label="@L["SubscriptionTypes"]"
                                    Placeholder="@L["Choose"]"
-                                   HelperText=@L["Helper Text"] 
+                                   HelperText=@L["Helper Text"]
                                    Clearable="true"
                                    Required="true"
                                    AnchorOrigin="Origin.TopCenter"
@@ -161,10 +162,10 @@
                         </MudSelect>
                     </MudItem>
 
-                   
-                        </MudGrid>
-                    </MudForm>
-                   
+
+                </MudGrid>
+            </MudForm>
+
         </DialogContent>
 
         <DialogActions>
@@ -175,11 +176,10 @@
     </MudDialog>
 
 </MudItem>
-
+</div>
 
 <style>
-    .mud-modal 
-    {
+    .mud-modal {
         border-radius: 0 20px 0 20px;
     }
 </style>

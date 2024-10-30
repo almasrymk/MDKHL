@@ -15,6 +15,7 @@ namespace SmartParking.CustomerPackages
         public Guid CustomerId { get; set; }
         public int PackageId { get; set; }
         public CustomerPackageStatus CustomerPackageStatus { get; set; }
+        public virtual Package Package { get; set; }
         public Guid? TenantId { get; set; }
 
     }
