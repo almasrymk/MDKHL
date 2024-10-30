@@ -95,4 +95,16 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// <returns>Organziation entity</returns>
     Task<Organization> GetOrganizationForCurrentTenat();
 
+    /// <summary>
+    /// Method used to get maximum number of Garages organization can add depends on organization subscription. 
+    /// </summary>
+    /// <returns>Maximum number of garages organization can add</returns>
+    Task<int> GetNumberOfGaragesAllowedToBeAdded();
+
+    /// <summary>
+    /// Method used to get number of active garages belongs to organization.
+    /// </summary>
+    /// <returns>Number of active garages</returns>
+    Task<int> GetNumberOfActiveGaragesOfOrganization();
+
 }

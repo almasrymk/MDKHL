@@ -36,6 +36,7 @@ namespace SmartParking.Organizations;
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
+    private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IUsersAppService _usersAppService;
     private readonly ICustomerCategoryAppService _customerCategoryAppService;
@@ -44,19 +45,20 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository , ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter,  IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService,ITenantManager tenantManager,IRepository<Tenant,Guid> tenantRepository ) : base(repository)
-    {
-        _repository = repository;
-        _usersAppService = usersAppService;
-        _customerCategoryAppService = customerCategoryAppService;
-         _softDeleteFilter = softDeleteFilter;
-        
-        _subscriptionAppService = subscriptionAppService;
-        _tenantManager = tenantManager;
-        _tenantRepository = tenantRepository;
-    }
-    ///<inheritdoc/>
-    public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
+	public OrganizationsAppService(IRepository<Organization, int> repository, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService, ITenantManager tenantManager, IRepository<Tenant, Guid> tenantRepository, IRepository<Garage, int> garageRepository) : base(repository)
+	{
+		_repository = repository;
+		_usersAppService = usersAppService;
+		_customerCategoryAppService = customerCategoryAppService;
+		_softDeleteFilter = softDeleteFilter;
+
+		_subscriptionAppService = subscriptionAppService;
+		_tenantManager = tenantManager;
+		_tenantRepository = tenantRepository;
+		_garageRepository = garageRepository;
+	}
+	///<inheritdoc/>
+	public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
         var tenant = await _tenantManager.CreateAsync(input.EnglishName);
         var input1 = new TenantCreateDto
@@ -347,6 +349,28 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         query = query.Where(org => org.EnglishName == CurrentTenant.Name);
         var org = await AsyncExecuter.FirstOrDefaultAsync(query);
         return org;
+    }
+    ///<inheritdoc/>
+    public async Task<int> GetNumberOfGaragesAllowedToBeAdded()
+    {
+        var orgId=await _usersAppService.GetOrganizationIdByTenantAsync(CurrentTenant.Id);
+        var query =await _repository.GetQueryableAsync();
+        query=query.AsNoTracking();
+        query = query.Include(x => x.Subscription);
+        var organization =await query.FirstOrDefaultAsync(x=>x.Id==orgId);
+
+        var maxNumberOfGarages=organization?.Subscription?.NumbersOfGarages ?? 0;
+        
+        return maxNumberOfGarages ;
+    }
+
+    public async Task<int> GetNumberOfActiveGaragesOfOrganization()
+    {
+        var query =await _garageRepository.GetQueryableAsync();
+        query = query.Where(x => x.Status == Enums.Status.Active);
+        var count = query.Count();
+        return count;
+        
     }
 }
  
