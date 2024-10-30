@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,8 @@ using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.Results;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -129,6 +132,20 @@ public class SmartParkingBlazorModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
+
+        // Define the supported cultures
+        var supportedCultures = new[]
+        {
+        new CultureInfo("ar"),
+        new CultureInfo("en")
+    };
+
+        Configure<RequestLocalizationOptions>(options =>
+        {
+            options.DefaultRequestCulture = new RequestCulture("ar"); // Set Arabic as default
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
         // Add services to the container.
         context.Services.AddMudServices(config =>
         {
@@ -300,6 +317,9 @@ public class SmartParkingBlazorModule : AbpModule
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
+        
+
+
         AsyncHelper.RunSync(async () =>
         {
             using (var scope = context.ServiceProvider.CreateScope())
@@ -312,7 +332,7 @@ public class SmartParkingBlazorModule : AbpModule
                 await dataSeeder.SeedAsync(dataSeedContext);
             }
         });
-        app.UseAbpRequestLocalization();
+       
 
         if (env.IsDevelopment())
         {
@@ -328,6 +348,22 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseHttpsRedirection();
         app.UseCorrelationId();
         app.UseStaticFiles();
+        var supportedCultures = new[]
+            {
+                new CultureInfo("ar"),
+                new CultureInfo("en")
+            };
+        app.UseAbpRequestLocalization(options =>
+        {
+            options.DefaultRequestCulture = new RequestCulture("ar");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+            options.RequestCultureProviders = new List<IRequestCultureProvider>
+            {
+                new QueryStringRequestCultureProvider(),
+                new CookieRequestCultureProvider()
+            };
+        });
         app.UseRouting();
         app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints
         app.UseAuthorization();
