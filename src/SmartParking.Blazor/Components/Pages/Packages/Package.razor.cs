@@ -147,11 +147,10 @@ public partial class Package
 			var rowDef = new RowDef();
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-            //rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeEnglishName"], item.PackageType.EnglishName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Description"], item.Description));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["published"], item.published.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.published.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
 
 

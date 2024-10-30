@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups.Governorate;
-using SmartParking.Lookups;
-using SmartParking.LookupsAppServices;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -11,9 +8,8 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
-using SmartParking.Entities.Subscriptions;
 
-namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
+namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
 public partial class AddSubscriptionDialog
 {
