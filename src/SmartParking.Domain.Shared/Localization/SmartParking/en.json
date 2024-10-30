@@ -374,13 +374,13 @@
     "Exit": "Exit",
     "OrganizationEnglishName": "En Name",
     "CameraType": "Type",
-    "Exit": "Exit",
     "AddContactData": "AddContactData",
     "NewContactData": "NewContactData",
     "ContactDataCreatedSuccessfully": "ContactDataCreatedSuccessfully",
     "Can'tCreateContactData": "Can'tCreateContactData",
     "Can'tCreateCity": "Can't Create City",
     "CreationTime": "Creation Time",
-    "Creator": "Created By"
+    "Creator": "Created By",
+    "Draft": "Draft"
   } 
 }
