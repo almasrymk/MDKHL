@@ -23,6 +23,7 @@ public partial class OrganizationView
     private string CountryName{ get; set; }
     private string RegionName { get; set; }
     private string StateName { get; set; }
+    private string Code { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; }
@@ -68,6 +69,7 @@ public partial class OrganizationView
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
         StateName=organization.StateName;
+        Code = organization.Code;
     }
     protected override async Task OnInitializedAsync()
     {
