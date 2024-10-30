@@ -378,6 +378,10 @@
     "Can'tDeleteVehicleModel": "Can't Delete Vehicle Model",
     "InvoiceTime": "InvoiceTime",
     "Entry": "Entry",
-    "Exit": "Exit"
+    "Exit": "Exit",
+    "AddContactData": "AddContactData",
+    "NewContactData": "NewContactData",
+    "ContactDataCreatedSuccessfully": "ContactDataCreatedSuccessfully",
+    "Can'tCreateContactData": "Can'tCreateContactData"
   } 
 }

@@ -401,6 +401,10 @@
     "InvoiceTime": "توقيت الفاتورة",
     "Entry": "دخـول",
     "Exit": "خـروج",
-    "Package": ""
+    "Package": "باقة",
+    "AddContactData": "انشاء بيانات الاتصال",
+    "NewContactData": " بيانات الاتصال جديد",
+    "ContactDataCreatedSuccessfully": "تم إنشاء  بيانات الاتصال بنجاح",
+    "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال"
   }
 }
