@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Results;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -40,4 +41,5 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     public Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
     public  Task DeleteAsync(int id);
     Task<string> GenerateInvoiceNumberAsync(int organizationId);
+    Task<Result<QRCodeDto>> GetInvoiceQRCode(int invoiceId);
 }
