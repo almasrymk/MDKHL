@@ -9,7 +9,6 @@ namespace SmartParking.Lookups.PlateColor
 {
     public class PlateColorDto : BaseDto
     {
-        public string ArabicName { get; set; }
-        public string EnglishName { get; set; }
+        
     }
 }

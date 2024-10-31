@@ -170,7 +170,7 @@ public partial class Package
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Description"], item.Description));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["published"], item.published.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.published.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
