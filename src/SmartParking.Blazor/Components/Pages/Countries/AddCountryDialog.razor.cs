@@ -33,7 +33,6 @@ public partial class AddCountryDialog
 			{
 				ArabicName = input.ArabicName,
 				EnglishName = input.EnglishName,
-				Notes = input.Notes,
 				ArabicCapital = input.ArabicCapital,
 				EnglishCapital = input.EnglishCapital,	
 			};
@@ -63,12 +62,12 @@ public partial class AddCountryDialog
 		}
 		catch (BusinessException ex)
 		{
-			Snackbar.Add($"Failed to add country: {ex.Code} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Code} + ", Severity.Error);
 
 		}
 		catch (Exception ex)
 		{
-			Snackbar.Add($"Failed to add country: {ex.Message} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Message} + ", Severity.Error);
 		}
 	}
     private void Cancel()

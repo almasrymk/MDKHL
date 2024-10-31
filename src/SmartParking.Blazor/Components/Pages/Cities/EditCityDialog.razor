@@ -37,36 +37,9 @@
 									  Label="@L["EnglishName"]" />
 					</MudItem>
 
-
-						<MudItem sm="6">
-							<MudSelect @bind-Value="@city.GovernorateId"
-									   Variant="Variant.Text"
-									   Label="@L["Governorate"]"
-									   Placeholder="@L["Choose"]"
-									   AnchorOrigin="Origin.TopCenter"
-									   TransformOrigin="Origin.TopCenter" >
-
-							@foreach (var governorate in governorates)
-							{
-								<MudSelectItem Value="governorate.Id">@governorate.EnglishName</MudSelectItem>
-							}
-						</MudSelect>
-					</MudItem>
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@city.RegionId"
-								   Variant="Variant.Text"
-								   Label=@L["Region"]
-								   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"]
-								   AnchorOrigin="Origin.TopCenter"
-								   TransformOrigin="Origin.TopCenter">
-
-							@foreach (var region in regions)
-							{
-								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
-							}
-						</MudSelect>
-					</MudItem>
+					<StateLookups SelectValueChanged="SelectRegion"></StateLookups>
+				
+					
 				</MudGrid>
 			</MudForm>
 		</DialogContent>

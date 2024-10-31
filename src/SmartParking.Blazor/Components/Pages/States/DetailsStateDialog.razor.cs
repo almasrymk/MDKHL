@@ -10,18 +10,11 @@ public partial class DetailsStateDialog
 {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public StateDto state { get; set; } = new StateDto();
-    public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
-
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await StateAppService.GetRegionLookupAsync();
-        regions = result;
+       await base.OnInitializedAsync();
     }
-
-
-
-
     private void Cancel()
     {
         MudDialog.Cancel();

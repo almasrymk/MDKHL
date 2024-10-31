@@ -193,8 +193,9 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 
             queryable = queryable.Where(c =>
                 c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
+                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.Country.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         if (!input.Sorting.IsNullOrEmpty())

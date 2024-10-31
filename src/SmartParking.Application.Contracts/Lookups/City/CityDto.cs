@@ -1,10 +1,12 @@
-﻿namespace SmartParking.Lookups
+﻿using Volo.Abp.Application.Dtos;
+
+namespace SmartParking.Lookups;
+public class CityDto : FullAuditedEntityDto<int>
 {
-    public class CityDto : BaseDto
-    {
-        public int GovernorateId { get; set; }
-        public int RegionId { get; set; }
-		public string GovernorateArabicName { get; set; }
-        public string GovernorateEnglishName { get; set; }
-    }
+    public string ArabicName { get; set; }
+    public string EnglishName { get; set; }
+    public string StateArabicName { get; set; }
+	public string StateEnglishName { get; set; }
+    public int StateId { get; set; }
 }
+

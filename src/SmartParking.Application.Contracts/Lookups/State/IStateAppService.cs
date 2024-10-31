@@ -25,8 +25,18 @@ public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSorte
     /// <param name="id">id of state</param>
     /// <returns>StateDto</returns>
     Task<StateDto> UpdateAsync(int id , CreateUpdateStateDto input);
-    Task<List<RegionLookupDto>> GetRegionLookupAsync();
-    Task<List<StateLookupDto>> GetStateLookupAsync();
+
+	/// <summary>
+	/// abstract method to get all regions 
+	/// </summary>
+	/// <returns>RegionLookupDto</returns>
+	Task<List<RegionLookupDto>> GetRegionLookupAsync();
+
+	/// <summary>
+	/// abstract method to get all states 
+	/// </summary>
+	/// <returns>StateLookupDto</returns>
+	Task<List<StateLookupDto>> GetStateLookupAsync();
 
     /// <summary>
     /// abstract method to search of states
@@ -49,5 +59,10 @@ public interface IStateAppService : ICrudAppService<StateDto, int, PagedAndSorte
     /// <param name="id">Id of state</param>
     Task DeleteAsync(int id);
 
-    public Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId);
+	/// <summary>
+	/// abstract method to create state
+	/// </summary>
+	/// <param name="regionId">id of specific region</param>
+	/// <returns>StateLookupDto</returns>
+	public Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId);
 }

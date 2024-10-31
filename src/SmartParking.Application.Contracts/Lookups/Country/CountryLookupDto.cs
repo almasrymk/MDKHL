@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using Volo.Abp.Application.Dtos;
 
-namespace SmartParking.Lookups.Governorate;
+namespace SmartParking.Lookups.Country;
 
 public class CountryLookupDto : FullAuditedEntityDto<int>
 {
@@ -13,5 +9,4 @@ public class CountryLookupDto : FullAuditedEntityDto<int>
     public string EnglishName { get; set; }
     public string ArabicCapital { get; set; }
     public string EnglishCapital { get; set; }
-
 }

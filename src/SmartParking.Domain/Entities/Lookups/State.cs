@@ -11,6 +11,7 @@ public class State : BaseEntity
 {
     public int RegionId { get; set; }
     public virtual Region Region { get; set; }
-    public  Status Status { get; set; }
+	public virtual ICollection<City> Cities { get; set; } = new List<City>();
+	public Status Status { get; set; }
 
 }

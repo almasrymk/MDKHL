@@ -244,10 +244,6 @@
     "EnterYourSubscriptionDescription": "Enter Your Subscription Description",
     "EnterYourSubscriptionPrice": "Enter Your Subscription Price",
     "ChooseDate": "Choose Date",
-    "EnterYourNumberOfCustomers": "Enter Your Number Of Customers",
-    "EnterYourNumberOfCameras": "Enter Your Number Of Cameras",
-    "EnterYourNumbersOfGarages": "Enter Your Numbers Of Garages",
-    "EnterYourNumberOfMobileCustomers": "Enter Your Number Of Mobile Customers",
     "AddSubscription": "Add Subscription",
     "NewSubscription": "New Subscription",
     "SubscriptionDetails": "Subscription Details",
@@ -381,6 +377,17 @@
     "Can'tCreateCity": "Can't Create City",
     "CreationTime": "Creation Time",
     "Creator": "Created By",
-    "Draft": "Draft"
-  } 
+    "Draft": "Draft",
+    "Can'tUpdateCity": "Can't Update City",
+    "Can'tCreateCountry": "Can't Create Country",
+    "Can'tUpdateCountry": "Can't Update Country",
+    "StateArabicName": "State Ar Name",
+    "StateEnglishName": "State En Name",
+    "CountryArabicName": "Country Ar Name",
+    "CountryEnglishName": "Country En Name",
+    "RegionArabicName": "Region Ar Name",
+    "RegionEnglishName": "Region En Name"
+
+
+  }
 }

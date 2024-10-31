@@ -2,11 +2,10 @@
 @using SmartParking.Blazor.Components.LookUps
 @using SmartParking.Localization
 @using SmartParking.Lookups
-@using SmartParking.Lookups.Governorate
 @using SmartParking.Lookups.Region
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
-@inject IGovernorateAppService GovernorateAppService
+@inject ICountriesAppService CountriesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["RegionsDetails"]</PageTitle>
 

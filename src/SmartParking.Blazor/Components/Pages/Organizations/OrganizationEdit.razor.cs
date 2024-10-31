@@ -9,11 +9,11 @@ using System.Linq;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Components;
 using SmartParking.Lookups.City;
-using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using SmartParking.Subscriptions;
 using Volo.Abp.Validation;
+using SmartParking.Lookups.Country;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -203,11 +203,14 @@ public partial class OrganizationEdit
     }
     private async Task GetStates()
     {
-       
-        if (RegionSelectValue != null)
+        if(RegionSelectValue !=null)
         {
             states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
-            cities = await CitiesAppService.GetCityByRegion(int.Parse(RegionSelectValue));
+
+        }
+        if (StateSelectValue != null)
+        {
+            cities = await CitiesAppService.GetCityByState(int.Parse(StateSelectValue));
         }
 
     }
@@ -215,7 +218,7 @@ public partial class OrganizationEdit
     {
         await FetchData();
 
-        countries = await GovernorateAppService.GetCountryLookupAsync();
+        countries = await CountriesAppService.GetCountryLookupAsync();
 
         await GetStates();
         await GetRegions();

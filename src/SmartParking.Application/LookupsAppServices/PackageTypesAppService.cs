@@ -39,12 +39,12 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
 
             if (packageType != null)
             {
-                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != input.Id)
+                if (packageType.EnglishName == input.EnglishName.Trim(' ') )
                 {
                     throw new InvalidOperationException("package english name already exists");
 
                 }
-                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != input.Id)
+                else if (packageType.ArabicName == input.ArabicName.Trim(' ') )
                 {
                     throw new InvalidOperationException("Package arabic name already exists");
 
@@ -73,12 +73,12 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
 
             if (packageType != null)
             {
-                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != input.Id)
+                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != id)
                 {
                     throw new InvalidOperationException("package english name already exists");
 
                 }
-                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != input.Id)
+                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != id)
                 {
                     throw new InvalidOperationException("Package arabic name already exists");
 

@@ -3,7 +3,6 @@ using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Organizations;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
-using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
@@ -14,6 +13,7 @@ using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Lookups.Country;
 
 namespace SmartParking.Blazor.Components.Pages;
 
@@ -199,7 +199,7 @@ public partial class MyAccount
     {
         states = await StateAppService.GetStateLookupAsync();
         regions = await StateAppService.GetRegionLookupAsync();
-        countries = await GovernorateAppService.GetCountryLookupAsync();
+        countries = await CountriesAppService.GetCountryLookupAsync();
         cities = await CitiesAppService.GetCityLookupAsync();
         await FetchData();
         await base.OnInitializedAsync();

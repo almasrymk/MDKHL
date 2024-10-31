@@ -18,7 +18,6 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
@@ -99,7 +98,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     #region Lookups
     public DbSet<Country> Countries { get; set; }
-    public DbSet<Governorate> Governorates { get; set; }
     public DbSet<City> Cities { get; set; }
     public DbSet<Feature> Features { get; set; }
     public DbSet<Screen> Screens { get; set; }

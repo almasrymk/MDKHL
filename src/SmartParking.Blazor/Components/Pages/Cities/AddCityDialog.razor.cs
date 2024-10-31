@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups.City;
 using SmartParking.Lookups;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
-using SmartParking.Garages;
 using Volo.Abp.Validation;
 using System.Linq;
-using Blazorise;
 using System;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Lookups.State;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
@@ -18,25 +15,19 @@ public partial class AddCityDialog
 {
     private MudForm form;
     public CreateUpdateCityDto input = new CreateUpdateCityDto();
-    public IReadOnlyList<GovernorateLookupDto> cities = new List<GovernorateLookupDto>();
-    private int GovernmentSelectValue { get; set; }
-    private int RegionSelectValue { get; set; }
+    private string StatetSelectValue { get; set; }
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 
-    private void SelectGovernment(int Government)
+    private void SelectState(string state)
     {
-        GovernmentSelectValue = Government;
+		StatetSelectValue = state;
     }
-    private void SelectRegion(int region)
-    {
-        RegionSelectValue = region;
-    }
+   
     protected override async Task OnInitializedAsync()
     {
-        var result = await CitiesAppService.GetGovernorateLookupAsync();
-        cities = result;
+        await base.OnInitializedAsync();
     }
     private async Task Submit()
     {
@@ -52,10 +43,7 @@ public partial class AddCityDialog
                 {
                     ArabicName = input.ArabicName,
                     EnglishName = input.EnglishName,
-                    Notes = input.Notes,
-                    GovernorateId = GovernmentSelectValue,
-                    RegionId = RegionSelectValue
-
+                    StateId = int.Parse(StatetSelectValue),
                 };
 
                 var city = await CitiesAppService.CreateAsync(createUpdateCityDto);

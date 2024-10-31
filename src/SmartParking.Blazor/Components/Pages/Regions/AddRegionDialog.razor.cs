@@ -11,20 +11,19 @@ namespace SmartParking.Blazor.Components.Pages.Regions;
 
 public partial class AddRegionDialog
 {
-    private MudForm form;
     public CreateUpdateRegionDto input = new CreateUpdateRegionDto();
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
-    private int CountrySelectValue { get; set; }
+    private string CountrySelectValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
     }
 
-    private void SelectCountry(int country)
+    private void SelectCountry(string country)
     {
         CountrySelectValue = country;
     }
@@ -44,7 +43,7 @@ public partial class AddRegionDialog
 				ArabicName = input.ArabicName,
 				EnglishName = input.EnglishName,
 				Status = input.Status,
-				CountryId = CountrySelectValue
+				CountryId = int.Parse(CountrySelectValue)
 			};
 
 			var regions = await RegionAppService.CreateAsync(createUpdateRegionDto);
@@ -71,12 +70,12 @@ public partial class AddRegionDialog
 		}
 		catch (BusinessException ex)
 		{
-			Snackbar.Add($"Failed to add region: {ex.Code} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Code}", Severity.Error);
 
 		}
 		catch (Exception ex)
 		{
-			Snackbar.Add($"Failed to region: {ex.Message} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Message}", Severity.Error);
 		}
 
     }
