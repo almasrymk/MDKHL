@@ -378,6 +378,10 @@
     "CreationTime": "Creation Time",
     "Creator": "Created By",
     "Draft": "Draft",
+    "Camera Name": "Camera Name",
+    "Paid": "Paid",
+    "UnPaid": "UnPaid",
+    "Inactive": "In Active",
     "Can'tUpdateCity": "Can't Update City",
     "Can'tCreateCountry": "Can't Create Country",
     "Can'tUpdateCountry": "Can't Update Country",
@@ -388,6 +392,5 @@
     "RegionArabicName": "Region Ar Name",
     "RegionEnglishName": "Region En Name"
 
-
-  }
+  } 
 }

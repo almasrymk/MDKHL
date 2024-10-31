@@ -1,12 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Enums;
 using SmartParking.Organizations;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -15,20 +23,24 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Invoices;
-[Authorize]
+//[Authorize]
 public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAndSortedResultRequestDto,CreateUpdateInvoiceDto> , IInvoiceAppService
 {
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Invoice, int> _repository;
     private readonly IOrganizationsAppService _organizationsAppService;
-    public InvoiceAppService(IRepository<Invoice,int> repository, IDataFilter dataFilter,IOrganizationsAppService organizationsAppService) 
+    private readonly HttpClient _httpClient;
+
+    public InvoiceAppService(IRepository<Invoice,int> repository, IDataFilter dataFilter,IOrganizationsAppService organizationsAppService, HttpClient httpClient) 
     :base(repository)
     {
         _dataFilter = dataFilter;
         _repository = repository;
         _organizationsAppService = organizationsAppService;
+        _httpClient = httpClient;
     }
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
@@ -48,7 +60,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         else
             return await base.CreateAsync(input);
     }
-    
+    [Authorize]
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
@@ -62,8 +74,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
         return await base.GetListAsync(input);
     }
-
-    public override async Task<InvoiceDto> GetAsync(int id)
+	[Authorize]
+	public override async Task<InvoiceDto> GetAsync(int id)
     {
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
@@ -76,9 +88,9 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             return await base.GetAsync(id);
     }
 
-     ///<inheritdoc/>
-
-    public async Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+	///<inheritdoc/>
+	[Authorize]
+	public async Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _repository.GetQueryableAsync();
@@ -126,8 +138,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         );
     }
 
-
-    public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+	[Authorize]
+	public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _repository.GetQueryableAsync();
@@ -167,7 +179,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             invoicesDto
         );
     }
-    public override async Task DeleteAsync(int id)
+	[Authorize]
+	public override async Task DeleteAsync(int id)
     {
         var invoice = await _repository.FindAsync(id);
 
@@ -215,4 +228,52 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 		// Combine all parts to form the final invoice number
 		return $"{prefix}{currentYearSuffix}{formattedSequence}";
 	}
+
+    public async Task<Result<QRCodeDto>> GetInvoiceQRCode(int invoiceId)
+    {
+        var user = new
+        {
+            userName = "ibrahimia-1",
+            password = "ibrahimiaP@ssw0rd"
+        };
+        var contentUser = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await _httpClient.PostAsync("https://zatca.mazeedit.com/api/Auth/Login", contentUser);
+
+        response.EnsureSuccessStatusCode();
+
+        var resultResponse = await response.Content.ReadAsStringAsync();
+
+        var json = JObject.Parse(resultResponse);
+        var token = json["data"]?["token"]?.ToString();
+        var invoice = await _repository.GetAsync(invoiceId);
+        //var organization = await _organizationsAppService.GetAsync(invoice.OrganizationId);
+        if (invoice is null)
+        {
+            return Result.NotFound();
+        }
+        decimal percentage = invoice.InvoicePrice * 0.14m;
+        var qR = new
+        {
+            sellerName = invoice.Organization.EnglishName,
+            vatRegistration = invoice.Organization.UnifiedLicenseNum,
+            timeStamp = DateTime.Now.ToString(),
+            invoiceAmount = invoice.InvoicePrice.ToString(),
+            vatAmount = percentage.ToString()
+    };
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
+        HttpResponseMessage responseQR = await _httpClient.PostAsync("https://zatca.mazeedit.com/api/Invoices/V1/QRCode", contentQR);
+
+        responseQR.EnsureSuccessStatusCode();
+
+        var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
+
+        var jsonQR = JObject.Parse(resultResponseQR);
+        var qrCodedto = new QRCodeDto
+        {
+            QRCode = jsonQR["qrCode"]?.ToString()
+        };
+        return Result<QRCodeDto>.Success(qrCodedto);
+    }
 }

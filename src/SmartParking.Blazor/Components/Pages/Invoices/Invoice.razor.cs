@@ -141,10 +141,10 @@ public partial class Invoice
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceNumber"], item.InvoiceNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], item.InvoiceType.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], _localizer[$"{item.InvoiceType.ToString()}"]));
 
-
-            tableData.Rows.Add(rowDef);
+			// _localizer[$"{item.Status.ToString()}"]
+			tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }

@@ -398,7 +398,7 @@
     "Entry": "دخـول",
     "Exit": "خـروج",
     "Package": "باقة",
-    "Will Be Generated Automatically": "",
+    "Will Be Generated Automatically": "سيتم انشاءه تلقائيا",
     "Assign": "خصص",
     "CreationTime": "تاريخ الانشاء",
     "Creator": "الانشاء بواسطة",
@@ -407,9 +407,14 @@
     "ContactDataCreatedSuccessfully": "تم إنشاء  بيانات الاتصال بنجاح",
     "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال",
     "Draft": "مسودة",
+    "Camera Name": "اسم الكاميرا",
+    "Paid": "مدفوع",
+    "UnPaid": "غير مدفوع",
+    "Inactive": "غير نشط",
     "StateArabicName": "اسم المحافظة بالعربية",
     "StateEnglishName": "اسم المحافظة بالانجليزية",
     "RegionArabicName": "اسم المنطقة بالعربية",
     "RegionEnglishName": "اسم المنطقة بالانجليزية"
+
   }
 }
