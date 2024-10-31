@@ -12,7 +12,10 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -30,6 +33,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 	private readonly IRepository<GarageTransaction, int> _garageTransactionRepoistory;
     private readonly IRepository<Organization, int> _organizationRepoistory;
 	private readonly IInvoiceAppService _invoiceAppService;
+	private IDataFilter _dataFilter;
+	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
 
 	public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
         IRepository<Camera, int> cameraRepository, IRepository<Garage, int> garageRepository,
@@ -39,7 +44,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         ICustomerPackagesAppService customerPackagesAppService,
         IRepository<GarageTransaction,int>garageTransactionRepoistory,
         IRepository<Organization,int> organizationRepoistory,
-        IInvoiceAppService invoiceAppService)
+        IInvoiceAppService invoiceAppService,
+		IDataFilter dataFilter, ICurrentUser currentUser)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _cameraRepository = cameraRepository;
@@ -51,6 +57,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 			_garageTransactionRepoistory = garageTransactionRepoistory;
         _organizationRepoistory = organizationRepoistory;
 			_invoiceAppService = invoiceAppService;
+		_dataFilter = dataFilter;
+		_currentUser = currentUser;
 	}
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
@@ -168,9 +176,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<Camera> GetCamera(string CameraCode)
         {
-            var camera =await _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode));
-           
-            return camera;
+		
+			using (_dataFilter.Disable<IMultiTenant>())
+			{
+				var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode));
+
+				return camera;
+			}
+		
         }
     private async Task<int> GetOrganizationId(int GarageId)
         {

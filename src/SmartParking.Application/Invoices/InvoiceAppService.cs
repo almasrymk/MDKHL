@@ -17,7 +17,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Invoices;
-[Authorize]
+//[Authorize]
 public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAndSortedResultRequestDto,CreateUpdateInvoiceDto> , IInvoiceAppService
 {
     private readonly IDataFilter _dataFilter;

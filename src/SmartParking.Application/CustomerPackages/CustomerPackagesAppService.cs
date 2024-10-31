@@ -17,7 +17,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.CustomerPackages;
-[Authorize]
+//[Authorize]
 public class CustomerPackagesAppService:
      CrudAppService<
         CustomerPackage,
