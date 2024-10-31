@@ -17,7 +17,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Invoices;
-[Authorize]
+//[Authorize]
 public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAndSortedResultRequestDto,CreateUpdateInvoiceDto> , IInvoiceAppService
 {
     private readonly IDataFilter _dataFilter;
@@ -48,7 +48,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         else
             return await base.CreateAsync(input);
     }
-    
+    [Authorize]
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
@@ -62,8 +62,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
         return await base.GetListAsync(input);
     }
-
-    public override async Task<InvoiceDto> GetAsync(int id)
+	[Authorize]
+	public override async Task<InvoiceDto> GetAsync(int id)
     {
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
@@ -76,9 +76,9 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             return await base.GetAsync(id);
     }
 
-     ///<inheritdoc/>
-
-    public async Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+	///<inheritdoc/>
+	[Authorize]
+	public async Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _repository.GetQueryableAsync();
@@ -126,8 +126,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         );
     }
 
-
-    public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+	[Authorize]
+	public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _repository.GetQueryableAsync();
@@ -167,7 +167,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             invoicesDto
         );
     }
-    public override async Task DeleteAsync(int id)
+	[Authorize]
+	public override async Task DeleteAsync(int id)
     {
         var invoice = await _repository.FindAsync(id);
 

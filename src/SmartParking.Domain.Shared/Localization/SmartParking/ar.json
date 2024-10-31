@@ -407,6 +407,11 @@
     "ContactDataCreatedSuccessfully": "تم إنشاء  بيانات الاتصال بنجاح",
     "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال",
     "Draft": "مسودة",
+    "Camera Name": "اسم الكاميرا",
+    "Paid": "مدفوع",
+    "UnPaid": "غير مدفوع"
+
+    "Draft": "مسودة",
     "Inactive": "غير نشط"
 
   }

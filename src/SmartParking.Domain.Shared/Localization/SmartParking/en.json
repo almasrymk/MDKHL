@@ -382,6 +382,10 @@
     "CreationTime": "Creation Time",
     "Creator": "Created By",
     "Draft": "Draft",
+    "Camera Name": "Camera Name",
+    "Paid": "Paid",
+    "UnPaid": "UnPaid"
+    "Draft": "Draft",
     "Inactive": "In Active"
 
   } 
