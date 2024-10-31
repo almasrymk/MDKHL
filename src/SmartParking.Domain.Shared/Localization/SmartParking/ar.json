@@ -398,7 +398,7 @@
     "Entry": "دخـول",
     "Exit": "خـروج",
     "Package": "باقة",
-    "Will Be Generated Automatically": "",
+    "Will Be Generated Automatically": "سيتم انشاءه تلقائيا",
     "Assign": "خصص",
     "CreationTime": "تاريخ الانشاء",
     "Creator": "الانشاء بواسطة",
@@ -406,6 +406,8 @@
     "NewContactData": " بيانات الاتصال جديد",
     "ContactDataCreatedSuccessfully": "تم إنشاء  بيانات الاتصال بنجاح",
     "Can'tCreateContactData": "لا يمكن إنشاء  بيانات الاتصال",
-    "Draft": "مسودة"
+    "Draft": "مسودة",
+    "Inactive": "غير نشط"
+
   }
 }

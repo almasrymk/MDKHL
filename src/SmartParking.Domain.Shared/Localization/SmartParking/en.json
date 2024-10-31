@@ -381,6 +381,8 @@
     "Can'tCreateCity": "Can't Create City",
     "CreationTime": "Creation Time",
     "Creator": "Created By",
-    "Draft": "Draft"
+    "Draft": "Draft",
+    "Inactive": "In Active"
+
   } 
 }
