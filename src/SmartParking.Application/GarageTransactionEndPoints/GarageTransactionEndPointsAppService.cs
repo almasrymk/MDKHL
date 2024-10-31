@@ -1,6 +1,4 @@
-﻿using Castle.Core.Resource;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
@@ -11,17 +9,14 @@ using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
-[Authorize]
+//[Authorize]
 //[IgnoreAntiforgeryToken]
 public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService
 {
