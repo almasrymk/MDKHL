@@ -24,6 +24,11 @@
 ::deep .mud-input-label-inputcontrol {
     font-weight: 700 !important;
 }
+::deep :dir(rtl) .mud-input-label-inputcontrol {
+    transform-origin:top right !important;
+    left:unset;
+    right:0;
+}
 
 ::deep .mud-input-underline:before {
     border-bottom: 2px solid #434341 !important;
