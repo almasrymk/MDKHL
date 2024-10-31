@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20241027081041_fix organization id in packages")]
-    partial class fixorganizationidinpackages
+    [Migration("20241030071035_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -618,6 +618,9 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("InvoicePrice")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTime?>("InvoiceTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("InvoiceType")
                         .HasColumnType("integer");
 
@@ -719,6 +722,8 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
 
                     b.ToTable("Regions", (string)null);
                 });
@@ -3910,11 +3915,13 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Governorate", null)
+                    b.HasOne("SmartParking.Entities.Governorate", "Governorate")
                         .WithMany("Cities")
                         .HasForeignKey("GovernorateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Governorate");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
@@ -3991,13 +3998,26 @@ namespace SmartParking.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Country", "Country")
+                        .WithMany("Regions")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Lookups.Region", null)
+                    b.HasOne("SmartParking.Entities.Lookups.Region", "Region")
                         .WithMany("State")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Region");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", b =>
@@ -4368,6 +4388,8 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Country", b =>
                 {
                     b.Navigation("Governorates");
+
+                    b.Navigation("Regions");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
