@@ -29,4 +29,6 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.4" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties localization_4smartparking_4en_1json__JsonSchema="https://alec016.github.io/Custom-Machinery/Json%20Schema/src/main/resources/schemas/custom_machinery_machine.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

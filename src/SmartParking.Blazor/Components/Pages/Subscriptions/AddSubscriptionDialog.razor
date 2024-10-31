@@ -27,7 +27,7 @@
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder="@L["ُType Here"]"
-                                      Label="@L["Arabic Name"]"
+                                          Label="@L["ArabicName"]"
                                       InputType="InputType.Text"
                                       Required="true" />
                     </MudItem>
@@ -38,11 +38,36 @@
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder="@L["ُType Here"]"
-                                      Label="@L["English Name"]"
+                                          Label="@L["EnglishName"]"
                                       InputType="InputType.Text"
                                       Required="true" />
                     </MudItem>
+                        <MudItem sm="6">
+                            <MudSelect Variant="Variant.Text"
+                                       Label="@L["SubscriptionType"]"
+                                       Placeholder="@L["Choose"]"
+                                       HelperText=@L["Helper Text"]
+                                       Clearable="true"
+                                       Required="true"
+                                       AnchorOrigin="Origin.TopCenter"
+                                       TransformOrigin="Origin.TopCenter"
+                                       @bind-Value="input.SubscriptionTypeId">
 
+                                @foreach (var subscription in subscriptions)
+                                {
+                                    <MudSelectItem Value="@subscription.Id">@subscription.SubscriptionType</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudTextField @bind-Value="input.SubscriptionPrice"
+                                          For="@(() => input.SubscriptionPrice)"
+                                          Immediate="true"
+                                          Placeholder=@L["Type Here"]
+                                          Label="@L["SubscriptionPrice"]"
+                                          InputType="InputType.Number"
+                                          Required="true" />
+                        </MudItem>
                     <MudItem sm="6">
                         <MudTextField @bind-Value="input.SubscriptionDescription"
                                       For="@(() => input.SubscriptionDescription)"
@@ -53,20 +78,12 @@
                                       InputType="InputType.Text"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudTextField @bind-Value="input.SubscriptionPrice"
-                                      For="@(() => input.SubscriptionPrice)"
-                                      Immediate="true"
-                                      Placeholder=@L["Type Here"]
-                                      Label="@L["SubscriptionPrice"]"
-                                      InputType="InputType.Number"
-                                      Required="true" />
-                    </MudItem>
+                   
                     <MudItem sm="6">
                         <MudDatePicker @bind-Date="_activateDate"
                                        @bind-value="_activateDate"
                                        Variant="Variant.Text"
-                                       Placeholder=@L["Type Here"]
+                                           Placeholder=@L["ChooseDate"]
                                        Label="@L["ActivationDate"]"
                                        Required="true"
                                        IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
@@ -76,7 +93,7 @@
                         <MudDatePicker @bind-Date="_inActivateDate"
                                        @bind-value="_inActivateDate"
                                        Variant="Variant.Text"
-                                       Placeholder=@L["Type Here"]
+                                       Placeholder=@L["ChooseDate"]
                                        Label="@L["InActivationDate"]"
                                        Required="true"
                                        IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
@@ -144,23 +161,7 @@
                                       Label="@L["SubscriptionSlotNumber"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudSelect Variant="Variant.Text"
-                                   Label="@L["SubscriptionTypes"]"
-                                   Placeholder="@L["Choose"]"
-                                   HelperText=@L["Helper Text"]
-                                   Clearable="true"
-                                   Required="true"
-                                   AnchorOrigin="Origin.TopCenter"
-                                   TransformOrigin="Origin.TopCenter"
-                                   @bind-Value="input.SubscriptionTypeId">
-
-                            @foreach (var subscription in subscriptions)
-                            {
-                                <MudSelectItem Value="@subscription.Id">@subscription.SubscriptionType</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
+                    
 
 
                 </MudGrid>

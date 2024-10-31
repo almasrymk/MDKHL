@@ -15,8 +15,9 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using System.Globalization;
 
-namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
+namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
 public partial class Subscription
 {
@@ -130,11 +131,20 @@ public partial class Subscription
         };
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Name"], Name = "Arabic Name", IsFilterable = false, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Name"], Name = "English Name", IsFilterable = false, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "en")
+        { 
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Name"], Name = "English Name", IsFilterable = false, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Name"], Name = "Arabic Name", IsFilterable = false, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyNmae = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionType", IsFilterable = true, PropertyNmae = "SubscriptionType.Type", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyNmae = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyNmae = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionStatus"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 
@@ -143,12 +153,20 @@ public partial class Subscription
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Arabic Name"], item.ArabicName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Name"], item.EnglishName));
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
+            
+            }
+            else
+            {
+
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionDescription"], item.SubscriptionDescription));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionType"], item.SubscriptionType));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"], item.SubscriptionPrice.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionStatus"], item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionStatus"], _localizer[$"{item.Status.ToString()}"]));
 
 
             tableData.Rows.Add(rowDef);

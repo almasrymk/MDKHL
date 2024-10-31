@@ -1,0 +1,83 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
+@using static MudBlazor.CategoryTypes
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject IContactInfoAppService ContactInfoAppService
+@inject ICurrentTenant CurrentTenant
+<PageTitle>@L["ViewContactData"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["View"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="ContactDataDto.Name"
+                                      For="@(() => ContactDataDto.Name)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["Name"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["EnterYourName"]"
+                                      ReadOnly="true"/>
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="ContactDataDto.ContactMail"
+                                      For="@(() => ContactDataDto.ContactMail)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["Contact Email"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["EnterYourContactEmail"]" 
+                                      ReadOnly="true" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="ContactDataDto.WhatsAppNum"
+                                      For="@(() => ContactDataDto.WhatsAppNum)"
+                                      Immediate="true"
+                                      Required
+                                      Label="@L["Whats App Num"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["EnterYourWhatsAppNum"]" 
+                                      ReadOnly="true" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="ContactDataDto.PhoneNum"
+                                      For="@(() => ContactDataDto.PhoneNum)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["Phone Num"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["EnterYourPhoneNum"]" 
+                                      ReadOnly="true" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+
+</MudItem>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

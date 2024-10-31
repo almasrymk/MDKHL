@@ -9,6 +9,7 @@ using SmartParking.Packages;
 using SmartParking.Vehicles.LookUps;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -134,8 +135,17 @@ public partial class Package
 
 
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeEnglishName"], Name = "PackageTypeEnglishName", IsFilterable = true, PropertyNmae = "PackageTypeEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		if (CultureInfo.CurrentCulture.Name == "en")
+		{
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeEnglishName"], Name = "PackageTypeEnglishName", IsFilterable = true, PropertyNmae = "PackageType.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		}
+		else
+		{
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeArabicName"], Name = "PackageTypeArabicName", IsFilterable = true, PropertyNmae = "PackageType.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+		}
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = true, PropertyNmae = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Description"], Name = "Description", IsFilterable = true, PropertyNmae = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["published"], Name = "published", IsFilterable = true, PropertyNmae = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -146,13 +156,22 @@ public partial class Package
 		{
 			var rowDef = new RowDef();
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-            //rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.ArabicName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeEnglishName"], item.PackageType.EnglishName));
+			if (CultureInfo.CurrentCulture.Name == "en")
+			{
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeEnglishName"], item.PackageType.EnglishName));
+				
+			}
+			else
+			{
+
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeArabicName"], item.PackageType.ArabicName));
+			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Description"], item.Description));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["published"], item.published.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.published.ToString()));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
 			tableData.Rows.Add(rowDef);

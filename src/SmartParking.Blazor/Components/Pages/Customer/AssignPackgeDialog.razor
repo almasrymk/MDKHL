@@ -25,13 +25,13 @@
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@CustomerPackage.PackageId"
 								   Variant="Variant.Text"
-								   Label="@L["Package Name"]"
+								   Label="@L["EnglishName"]"
 								   Placeholder=@L["Choose"]
 								   HelperText=@L["Helper Text"]
 								   Clearable="_clearable">
-							@foreach (var garage in Packages)
+							@foreach (var package in Packages)
 							{
-								<MudSelectItem Value="garage.Id">@garage.EnglishName</MudSelectItem>
+								<MudSelectItem Value="package.Id">@package.EnglishName</MudSelectItem>
 							}
 						</MudSelect>
 					</MudItem>

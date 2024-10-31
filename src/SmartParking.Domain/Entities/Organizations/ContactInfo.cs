@@ -11,13 +11,10 @@ namespace SmartParking.Entities.Organizations;
 
 public class ContactInfo : FullAuditedEntity<int>, IMultiTenant
 {
-    public int OrganizationId { get; set; }
     public string Name { get; set; }
-    public int NationalityId { get; set; }
+    public int OrganizationId { get; set; }
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
-    public Status Status { get; set; }
-
     public Guid? TenantId { get; set; }
 }

@@ -129,8 +129,8 @@ public partial class Country
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Name"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Name"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Capital"], Name = "ArabicCapital", IsFilterable = true, PropertyNmae = "ArabicCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["English Capital"], Name = "EnglishCapital", IsFilterable = true, PropertyNmae = "EnglishCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
 
@@ -138,8 +138,8 @@ public partial class Country
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Arabic Name"], item.ArabicName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Name"], item.EnglishName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Arabic Capital"], item.ArabicCapital));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["English Capital"], item.EnglishCapital));
 
@@ -155,10 +155,6 @@ public partial class Country
 
 
         return DialogService.ShowAsync<AddCountryDialog>("Simple Dialog", options);
-
-       
-
-
     }
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
