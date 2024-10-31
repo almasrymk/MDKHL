@@ -31,13 +31,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 {
     private readonly IRepository<Garage> _repository;
     private readonly IRepository<Camera,int> _repositoryCamera;
+    private readonly IRepository<Organization,int> _organizationRepository;
     private readonly OrganizationsAppService _organizationsAppService;
     private IDataFilter _dataFilter;
     private ICurrentUser _currentUser;
 
     public ICurrentTenant _currentTenant;
 
-	public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera) : base(repository)
+	public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera, IRepository<Organization, int> organizationRepository) : base(repository)
 	{
 		_repository = repository;
 		_organizationsAppService = organizationsAppService;
@@ -45,6 +46,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 		_currentUser = currentUser;
 		_currentTenant = currentTenant;
 		_repositoryCamera = repositoryCamera;
+		_organizationRepository = organizationRepository;
 	}
 
 
@@ -54,16 +56,26 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 	public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
     {
-        var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
+        var organization = await _organizationRepository.GetAsync(input.OrganizationId);
         if (organization == null)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
+        }
+        if (organization.Status == Enums.Status.Inactive)
+        {
+            throw new Exception("Can't add garage to In active organization.");
+            
         }
         string code = organization.Code;
         var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
         // Checking criteria for package that organization subscribe.
         input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
-        input.TenantId=organization.TenantId;
+        if (input.Status == Enums.Status.Active)
+        {
+            organization.ActiveGarages++;
+        }
+		input.TenantId=organization.TenantId;
+		await CurrentUnitOfWork.SaveChangesAsync();
         return await base.CreateAsync(input);
     }
 
@@ -95,12 +107,17 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
     {
-        var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
+        var organization = await _organizationRepository.GetAsync(input.OrganizationId);
         if (organization == null)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
         }
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if(input.Status == Enums.Status.Inactive)
+        {
+            organization.ActiveGarages--;
+        }
+		await CurrentUnitOfWork.SaveChangesAsync();
+		if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
 
             using (DataFilter.Disable<IMultiTenant>())
@@ -253,34 +270,66 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task DeleteAsync(int id)
     {
-        Garage garage ;
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-             garage = await _repository.FirstOrDefaultAsync(x=>x.Id==id);
-
-        } 
         
-        if(garage == null)
-        {
-            throw new Exception("There is no garage related to that id");
-        }
-        if (garage.Status == Status.Deleted)
-        {
-			throw new Exception("Can't Delete an deleted Garage");
-
-		}
-		garage.Status=Status.Deleted;
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
 
             using (DataFilter.Disable<IMultiTenant>())
             {
-                 await base.DeleteAsync(id);
+				Garage garage;
+				using (DataFilter.Disable<IMultiTenant>())
+				{
+					garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+
+				}
+
+				if (garage == null)
+				{
+					throw new Exception("There is no garage related to that id");
+				}
+				var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+				if (org != null)
+				{
+					org.ActiveGarages--;
+				}
+
+				if (garage.Status == Status.Deleted)
+				{
+					throw new Exception("Can't Delete an deleted Garage");
+
+				}
+				garage.Status = Status.Deleted;
+				await base.DeleteAsync(id);
             }
 
         }
-         await base.DeleteAsync(id);
+        else
+        {
 
+         Garage garage;
+	     garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+
+		
+
+		if (garage == null)
+		{
+			throw new Exception("There is no garage related to that id");
+		}
+		var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+		if (org != null)
+		{
+			org.ActiveGarages--;
+		}
+
+		if (garage.Status == Status.Deleted)
+		{
+			throw new Exception("Can't Delete an deleted Garage");
+
+		}
+		garage.Status = Status.Deleted;
+		await base.DeleteAsync(id);
+
+        }
 
 
     }
@@ -307,12 +356,55 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 	public async Task<bool> ChangeTenantForCamerasRelatedToGarage(int GarageID, Guid TenantId)
 	{
+        
 		var cameras = await _repositoryCamera.GetListAsync(x => x.GarageId == GarageID);
+
+        int totalActive = 0;
+        var oldTenantId = cameras[0].TenantId;
 
 		foreach (var camera in cameras)
 		{
-			camera.TenantId = TenantId; // Update the TenantId
+            // Update the TenantId
+			camera.TenantId = TenantId;
+
+            if(camera.Status == Enums.Status.Active)
+            {
+              totalActive++ ;
+
+            }
 		}
+
+
+        if (CurrentTenant.Id == null)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var flag =await AddActiveCameraRelatedToOrganizationGarage(GarageID, totalActive);
+                if (!flag) {
+                    throw new Exception("Failed to change assign");
+                }
+                else
+                {
+					var orgId = await _organizationsAppService.GetOrganizationIdByTenant(oldTenantId);
+					var oldorg = await _organizationRepository.FindAsync(orgId);
+                    if (oldorg != null) { 
+                        oldorg.ActiveCameras-=totalActive;
+                        oldorg.ActiveGarages--;
+						await CurrentUnitOfWork.SaveChangesAsync();
+					}
+
+					return true;
+                }
+            }  
+            
+        }
+        
+
+         var org=await _organizationsAppService.GetOrganizationForCurrentTenat();
+        org.ActiveCameras += totalActive;
+        org.ActiveGarages++;
+		await CurrentUnitOfWork.SaveChangesAsync();
+
 
 		await _repositoryCamera.UpdateManyAsync(cameras);
         return true;
@@ -333,4 +425,27 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         return await base.GetAsync(id);
 
     }
+	/// <inheritdoc/>
+
+	public async Task<bool> AddActiveCameraRelatedToOrganizationGarage(int GarageId, int NumOfActiveCamera)
+	{
+        var garage= await GetAsync(GarageId);
+        try
+        {
+            var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+            org.ActiveCameras += NumOfActiveCamera;
+			await CurrentUnitOfWork.SaveChangesAsync();
+            return true;
+
+		}
+		catch (Exception ex) {
+
+            Console.WriteLine(ex.Message);
+            return false;
+        
+        }
+
+        
+            
+	}
 }
