@@ -381,6 +381,9 @@
     "Can'tCreateCity": "Can't Create City",
     "CreationTime": "Creation Time",
     "Creator": "Created By",
-    "Draft": "Draft"
+    "Draft": "Draft",
+    "Camera Name": "Camera Name",
+    "Paid": "Paid",
+    "UnPaid": "UnPaid"
   } 
 }
