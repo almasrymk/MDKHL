@@ -108,14 +108,20 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
     {
         var organization = await _organizationRepository.GetAsync(input.OrganizationId);
+        var garage =await GetAsync(id);
         if (organization == null)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
         }
-        if(input.Status == Enums.Status.Inactive)
+        if(input.Status == Enums.Status.Inactive && garage.Status==Enums.Status.Active)
         {
             organization.ActiveGarages--;
         }
+        if(input.Status == Enums.Status.Active && garage.Status==Enums.Status.Inactive)
+        {
+            organization.ActiveGarages++;
+        }
+
 		await CurrentUnitOfWork.SaveChangesAsync();
 		if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
