@@ -13,3 +13,8 @@
 ::deep .mud-input-label-inputcontrol {
     font-weight: 700 !important;
 }
+::deep :dir(rtl) .mud-input-label {
+    transform-origin: top right !important;
+    left: unset;
+    right: 0;
+}

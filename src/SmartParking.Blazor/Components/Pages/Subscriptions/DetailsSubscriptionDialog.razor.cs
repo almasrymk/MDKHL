@@ -5,7 +5,7 @@ using SmartParking.SubscriptionTypes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
+namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
 public partial class DetailsSubscriptionDialog
 {

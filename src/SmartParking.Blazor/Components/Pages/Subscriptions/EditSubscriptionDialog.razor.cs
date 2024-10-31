@@ -11,7 +11,7 @@ using Volo.Abp.Validation;
 using System.Linq;
 using SmartParking.Entities.Subscriptions;
 
-namespace SmartParking.Blazor.Components.Pages.Subscriptionss;
+namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
 public partial class EditSubscriptionDialog
 {

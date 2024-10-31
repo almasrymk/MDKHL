@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Garages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,19 +32,24 @@ public class CamerasAppService :
     ICamerasAppService
 {
     private readonly IRepository<Camera, int> _repository;
+    private readonly IRepository<Organization, int> _organizationRepository;
+    private readonly IGarageAppService _garageAppService;
     private IDataFilter _dataFilter;
     private readonly ICurrentUser _currentUser; // Inject ICurrentUser
 
-    public CamerasAppService(IRepository<Camera, int> repository, IDataFilter dataFilter, ICurrentUser currentUser)
-        : base(repository)
-    {
-        _repository = repository;
-        _dataFilter = dataFilter;
-        _currentUser = currentUser;
-    }
 
-    
-    public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+	public CamerasAppService(IRepository<Camera, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Organization, int> organizationRepository = null, IGarageAppService garageAppService = null)
+		: base(repository)
+	{
+		_repository = repository;
+		_dataFilter = dataFilter;
+		_currentUser = currentUser;
+		_organizationRepository = organizationRepository;
+		_garageAppService = garageAppService;
+	}
+
+
+	public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
@@ -60,10 +67,20 @@ public class CamerasAppService :
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
+                if (input.Status == Enums.Status.Active)
+                {
+                    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId,1);
+
+				}
                 return await base.UpdateAsync(id, input);
             }
         }
-        return await base.UpdateAsync(id, input);
+		if (input.Status == Enums.Status.Active)
+        {
+			await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
+
+        }
+		return await base.UpdateAsync(id, input);
     }
 
         public override async Task<CameraDto> GetAsync(int id)
@@ -92,8 +109,13 @@ public class CamerasAppService :
             var camera = await GetAsync(id);
             if (camera == null)
                 throw new EntityNotFoundException(typeof(Camera), id);
-            
-            await base.DeleteAsync(id);
+
+        if (camera.Status == Enums.Status.Active) { 
+        
+		    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+        }
+
+		await base.DeleteAsync(id);
         }
         /// <summary>
         /// Method that used to create new camera to specific organization
@@ -112,8 +134,12 @@ public class CamerasAppService :
                     Code = "DuplicateCameraIP"
                 };
             }
-         
-                return await base.CreateAsync(input);
+		    if (input.Status == Enums.Status.Active)
+		    {
+
+			    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
+		    }
+		    return await base.CreateAsync(input);
         }
         /// <summary>
         /// method used to Check if IP is unqiue or not

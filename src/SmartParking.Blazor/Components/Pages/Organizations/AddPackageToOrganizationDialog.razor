@@ -28,7 +28,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["Arabic Name"] />
+                                      Label=@L["ArabicName"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="createUpdatePackage.EnglishName"
@@ -36,7 +36,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["English Name"]/>
+                                      Label=@L["EnglishName"]/>
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="createUpdatePackage.Price"
@@ -79,7 +79,7 @@
                                        Label="@L["Publish To"]" />
                     </MudItem>
                     <MudItem sm="4">
-                        <MudSwitch Label="@L["published"]"
+                        <MudSwitch Label="@L["Published"]"
                                    LabelPosition="LabelPosition.Start"
                                    @bind-Value="createUpdatePackage.published"
                                    Color="MudBlazor.Color.Primary" />

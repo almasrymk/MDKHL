@@ -27,7 +27,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label=@L["Arabic Name"] />
+                                      Label=@L["ArabicName"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.EnglishName"
@@ -35,7 +35,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label=@L["English Name"] />
+                                      Label=@L["EnglishName"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.Price"
@@ -47,14 +47,7 @@
                     </MudItem>
 
 
-                    <MudItem sm="4" md="4">
-                        <MudTextField @bind-Value="Package.OrganizationId"
-                                      For="@(() => Package.OrganizationId)"
-                                      Variant="Variant.Text"
-                                      Class="w-100"
-                                      Disabled='true'
-                                      Label=@L["OrgnizationId"] />
-                    </MudItem>
+                   
 
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.PackageType.EnglishName"
@@ -88,9 +81,9 @@
                     </MudItem>
               
                     <MudItem sm="4">
-                        <MudSwitch Label=@L["published"]
+                        <MudSwitch Label=@L["Published"]
                                    LabelPosition="LabelPosition.Start"
-                                   Placeholder=@L["published"]
+                                   Placeholder=@L["Published"]
                                    @bind-Value="Package.published"
                                    Disabled='true'
                                    Color="MudBlazor.Color.Primary" />

@@ -6,9 +6,9 @@
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject IStringLocalizer<SmartParkingResource> L
-@layout MainLayout
 <PageTitle>@L["SubscriptionDetails"]</PageTitle>
 
+<div>
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxHeigth="85vh" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
@@ -23,7 +23,7 @@
 									  For="@(() => subscription.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["Arabic Name"]"
+									  Label="@L["SubscriptionArabicName"]"
 									  Disabled />
 					</MudItem>
 					<MudItem sm="6" Class="pt-0">
@@ -31,9 +31,26 @@
 									  For="@(() => subscription.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["English Name"]"
+									  Label="@L["SubscriptionEnglishName"]"
 									  Disabled />
 					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionType"
+									  For="@(() => subscription.SubscriptionType)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["SubscriptionType"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionPrice"
+									  For="@(() => subscription.SubscriptionPrice)"
+									  Immediate="true"
+									  Disabled
+									  Label="@L["SubscriptionPrice"]" />
+					</MudItem>
+
+
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.SubscriptionDescription"
 									  For="@(() => subscription.SubscriptionDescription)"
@@ -45,18 +62,11 @@
 									  Disabled />
 					</MudItem>
 					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.SubscriptionPrice"
-									  For="@(() => subscription.SubscriptionPrice)"
-									  Immediate="true"
-									  Disabled
-									  Label="@L["SubscriptionPrice"]" />
-					</MudItem>
-					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.ActivationDate"
-									  For="@(() => subscription.ActivationDate)"
+						<MudTextField @bind-Value="subscription.Status"
+									  For="@(() => subscription.Status)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["ActivationDate"]"
+									  Label="@L["SubscriptionStatus"]"
 									  Disabled />
 					</MudItem>
 					<MudItem sm="6">
@@ -67,14 +77,23 @@
 									  Label="@L["CreationTime"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
+					@* <MudItem sm="6">
 						<MudTextField @bind-Value="subscription.CreatorId"
 									  For="@(() => subscription.CreatorId)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label="@L["Creator"]"
 									  Disabled />
+					</MudItem> *@
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.ActivationDate"
+									  For="@(() => subscription.ActivationDate)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["ActivationDate"]"
+									  Disabled />
 					</MudItem>
+					
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.InActivationDate"
 									  For="@(() => subscription.InActivationDate)"
@@ -131,23 +150,9 @@
 									  Label="@L["NumberOfMobileCustomers"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.Status"
-									  For="@(() => subscription.Status)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["SubscriptionStatus"]"
-									  Disabled />
-					</MudItem>
+				
 
-					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.SubscriptionType"
-									  For="@(() => subscription.SubscriptionType)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["SubscriptionType"]"
-									  Disabled />
-					</MudItem>
+					
 				</MudGrid>
 			</MudForm>
 
@@ -161,7 +166,7 @@
 	</MudDialog>
 
 </MudItem>
-
+</div>
 
 <style>
 	.mud-modal

@@ -49,5 +49,7 @@ public class Organization : BaseEntity
     public int? SubscriptionId { get; set; }
     public virtual Subscription  Subscription { get; set; }
 
+    public  int ActiveGarages { get; set; }
+    public  int ActiveCameras { get; set; }
 
 }

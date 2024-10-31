@@ -26,3 +26,8 @@ input:-webkit-autofill {
     transform: rotate(180deg);
 }
 
+:root :dir(rtl) .mud-dialog-container .mud-input-label {
+    transform-origin: top right !important;
+    left: unset;
+    right: 0;
+}

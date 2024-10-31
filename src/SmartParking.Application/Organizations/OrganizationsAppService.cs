@@ -32,7 +32,7 @@ using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 
 namespace SmartParking.Organizations;
 
-[Authorize]
+//[Authorize]
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;

@@ -24,7 +24,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["Arabic Name"]" />
+                                      Label="@L["ArabicName"]" />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.EnglishName"
@@ -32,7 +32,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["English Name"]" />
+                                      Label="@L["EnglishName"]" />
                     </MudItem>
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.Price"
@@ -59,7 +59,7 @@
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Disabled='true'
-                                      Label="@L["PackageType EnglishName"]" />
+                                      Label="@L["PackageTypeEnglishName"]" />
                     </MudItem>
 
                     <MudItem sm="4" md="4">
@@ -76,9 +76,8 @@
                                        Label="@L["Publish To"]" />
                     </MudItem>
                     <MudItem sm="4">
-                        <MudSwitch Label="@L["published"]"
+                        <MudSwitch Label="@L["Published"]"
                                    LabelPosition="LabelPosition.Start"
-                                   Placeholder="@L["published"]"
                                    @bind-Value="Package.published"
                                    Disabled='true'
                                    Color="MudBlazor.Color.Primary" />

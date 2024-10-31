@@ -26,7 +26,7 @@ using Volo.Abp.Users;
 
 namespace SmartParking.GarageTransactions;
 
-[Authorize]
+//[Authorize]
 public class GarageTransactionsAppService:
 	 CrudAppService<GarageTransaction, GarageTransactionDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageTransactionDto>, IGarageTransactionsAppService
 {
