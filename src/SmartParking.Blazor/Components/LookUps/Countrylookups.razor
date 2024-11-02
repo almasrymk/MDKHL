@@ -1,36 +1,60 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Lookups
-@using SmartParking.Lookups.Governorate
- @inject IGovernorateAppService GovernorateAppService
- @inject IStringLocalizer<SmartParkingResource> L
+@using SmartParking.Lookups.Country
+@inject ICountriesAppService CountriesAppService
+@inject IStringLocalizer<SmartParkingResource> L
 <MudItem sm="4">
-    <MudSelect 
-               Variant="Variant.Text"
+    <MudSelect Variant="Variant.Text"
                Label="@L["Country"]"
                Placeholder="@L["Choose"]"
                Clearable="true"
-               Required
-               ValueChanged="@((int value)=> SelectValueChanged.InvokeAsync(value))">
-                @foreach (var country in countries)
-                {
-                     <MudSelectItem T="int" Value="country.Id">@country.EnglishName</MudSelectItem>
-                }
+               @bind-Value="name"
+               OnClose="ChangeSelect"
+               ReadOnly="Read">
+        @foreach (var country in countries)
+        {
+            <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+        }
     </MudSelect>
 </MudItem>
 
 @code {
-    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
-    [Parameter]
-    public EventCallback<int> SelectValueChanged { get; set; }
-    [Parameter] public string Country { get; set; }
-    
+    IList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    [Parameter] public EventCallback<string> SelectValueChanged { get; set; }
+    [Parameter] public string country { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    private bool Read;
+    private string name;
+    private async Task ChangeSelect()
+    {
+        int parsedValue;
+        if (int.TryParse(name, out parsedValue))
+        {
+            // The value is a number (integer)
+            await SelectValueChanged.InvokeAsync(name);
+        }
+        else
+        {
+            // The value is a string
+            await SelectValueChanged.InvokeAsync("0");
+
+        }
+
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        if (country.IsNullOrEmpty() == false)
+        {
+            name = country;
+        }
+        Read = ReadOnly;
+        return base.OnParametersSetAsync();
+    }
     protected override async Task OnInitializedAsync()
     {
-        
-        countries = await GovernorateAppService.GetCountryLookupAsync();
+        countries = await CountriesAppService.GetCountryLookupAsync();
         await base.OnInitializedAsync();
-        
 
     }
 }

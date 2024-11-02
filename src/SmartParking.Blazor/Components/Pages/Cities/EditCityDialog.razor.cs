@@ -19,13 +19,13 @@ public partial class EditCityDialog
 	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
 	private MudForm editForm;
     bool _clearable;
-	private string StatetSelectValue { get; set; }
+	private string StateSelectValue { get; set; }
 
 	[Parameter] public int Id { get; set; }
 
     private void SelectState(string state)
     {
-        StatetSelectValue = state;
+		StateSelectValue = state;
     }
 
     protected override async Task OnInitializedAsync()
@@ -45,7 +45,7 @@ public partial class EditCityDialog
             {
                 ArabicName = city.ArabicName,
                 EnglishName = city.EnglishName,
-                StateId = int.Parse(StatetSelectValue),
+                StateId = int.Parse(StateSelectValue),
                 
             };
 
