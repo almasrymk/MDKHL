@@ -18,7 +18,7 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 public partial class OrganizationAdd
 {
     private MudForm form;
-
+    public string UserName { get; set; }
     public string ArabicName { get; set; } 
     public string EnglishName { get; set; }
     public string UnifiedLicenseNum { get; set; }
@@ -120,7 +120,8 @@ public partial class OrganizationAdd
             FullDayPrice = IsNumberOfHoursExceeded ? FullDayPrice :0 ,
             NumberOfHours = IsNumberOfHoursExceeded ? NumberOfHours:0,
             ClosingHoursStart = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) : TimeOnly.MinValue,
-            ClosingHoursEnd = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) : TimeOnly.MaxValue
+            ClosingHoursEnd = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) : TimeOnly.MaxValue,
+            UserName = UserName
         };
        
         
