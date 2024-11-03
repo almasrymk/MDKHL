@@ -16,7 +16,7 @@ public partial class EditCityDialog
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public CityDto city { get; set; } = new CityDto();
     [Parameter] public CreateUpdateCityDto input { get; set; } = new CreateUpdateCityDto();
-	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
+	public IReadOnlyList<StateLookupDto> states { get; set; } = new List<StateLookupDto>();
 	private MudForm editForm;
     bool _clearable;
 	private string StateSelectValue { get; set; }
@@ -30,6 +30,7 @@ public partial class EditCityDialog
 
     protected override async Task OnInitializedAsync()
     {
+        states = await StateAppService.GetStateLookupAsync();
 		await base.OnInitializedAsync();
 	}
 
@@ -45,7 +46,7 @@ public partial class EditCityDialog
             {
                 ArabicName = city.ArabicName,
                 EnglishName = city.EnglishName,
-                StateId = int.Parse(StateSelectValue),
+                StateId = city.StateId,
                 
             };
 
