@@ -137,7 +137,8 @@ public partial class State
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "RegionArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionEnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "RegionEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         foreach (var item in states.Items)
@@ -146,7 +147,8 @@ public partial class State
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionArabicName"], item.RegionArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionEnglishName"], item.RegionEnglishName));
 
             tableData.Rows.Add(rowDef);
         }
@@ -227,16 +229,16 @@ public partial class State
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete LicenceType : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete State : {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete LicenceType : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete State : {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete LicenceType : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete State : {ex.Message} + ", Severity.Error);
         }
 
 

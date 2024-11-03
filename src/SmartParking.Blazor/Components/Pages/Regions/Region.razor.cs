@@ -132,18 +132,20 @@ public partial class Region
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CountryArabicName"], Name = "CountryArabicName", IsFilterable = true, PropertyNmae = "CountryArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CountryEnglishName"], Name = "CountryEnglishName", IsFilterable = true, PropertyNmae = "CountryEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
-
-        foreach (var item in regions.Items)
+		foreach (var item in regions.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CountryArabicName"], item.CountryArabicName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CountryEnglishName"], item.CountryEnglishName));
 
-
-            tableData.Rows.Add(rowDef);
+			tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }

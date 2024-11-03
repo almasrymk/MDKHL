@@ -86,4 +86,12 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <returns>Garage Dto</returns>
 
     Task<GarageDto> GetAsync(int id);
+    /// <summary>
+    /// Method used to add number of active camera to organization related to its garage.
+    /// </summary>
+    /// <param name="GarageId">GarageId</param>
+    /// <param name="NumOfActiveCamera">NumberOfActiveCameras</param>
+    /// <returns>Flag detects the status</returns>
+    Task<bool> AddActiveCameraRelatedToOrganizationGarage(int GarageId,int NumOfActiveCamera);
+
 }

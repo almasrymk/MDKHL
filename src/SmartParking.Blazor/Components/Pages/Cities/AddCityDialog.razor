@@ -3,7 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
-@using SmartParking.Lookups.Governorate
+@using SmartParking.Lookups.State
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
@@ -40,16 +40,8 @@
                                       Placeholder="@L["Type Here"]" />
                     </MudItem>
                     
-                    <MudItem sm="6" >
-                        <MudTextField @bind-Value="input.Notes"
-                                      For="@(() => input.Notes)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Label="@L["Notes"]"
-                                      Placeholder="@L["EnterYourNotes"]" />
-                    </MudItem>
-                    <GovernorateLookUps SelectValueChanged="SelectGovernment"></GovernorateLookUps>
-                    <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
+                   
+                    <StateLookups SelectValueChanged="SelectState"></StateLookups>
                 </MudGrid>
             </MudForm>
 

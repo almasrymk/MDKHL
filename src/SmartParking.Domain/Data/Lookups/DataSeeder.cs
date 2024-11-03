@@ -7,8 +7,6 @@ using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
@@ -21,7 +19,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
 
     private readonly IRepository<Country, int> _countryRepository;
-    private readonly IRepository<Governorate, int> _governorateRepository;
     private readonly IRepository<City, int> _cityRepository;
     private readonly IRepository<Region, int> _regionRepository;
     private readonly IRepository<State, int> _stateRepository;
@@ -35,7 +32,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
     public DataSeeder(
         IRepository<Country, int> countryRepository,
-        IRepository<Governorate, int> governorateRepository,
         IRepository<City, int> cityRepository,
         IRepository<Region, int> regionRepository,
         IRepository<State, int> stateRepository,
@@ -49,7 +45,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
     {
         _countryRepository = countryRepository;
-        _governorateRepository = governorateRepository;
         _cityRepository = cityRepository;
         _regionRepository = regionRepository;
         _stateRepository = stateRepository;
@@ -80,21 +75,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 await _countryRepository.InsertAsync(country, autoSave: true);
             }
             var egypt = await _countryRepository.FirstOrDefaultAsync(c => c.EnglishName == "Egypt");
-            var governorates = new List<Governorate>
-            {
-               new Governorate {  EnglishName = "Alexandria", ArabicName = "الإسكندرية", EnglishCapital = "Alexandria", ArabicCapital = "الإسكندرية", CountryId = egypt.Id },
-                 new Governorate {  EnglishName = "Ismailia", ArabicName = "الإسماعيلية", EnglishCapital = "Ismailia", ArabicCapital = "الإسماعيلية", CountryId = egypt.Id },
-                 new Governorate {  EnglishName = "Aswan", ArabicName = "أسوان", EnglishCapital = "Aswan", ArabicCapital = "أسوان", CountryId = egypt.Id },
-                 new Governorate {  EnglishName = "Asyut", ArabicName = "أسيوط", EnglishCapital = "Asyut", ArabicCapital = "أسيوط", CountryId = egypt.Id },
-                 new Governorate {  EnglishName = "Luxor", ArabicName = "الأقصر", EnglishCapital = "Luxor", ArabicCapital = "الأقصر", CountryId = egypt.Id },
-                 new Governorate { EnglishName = "Red Sea", ArabicName = "البحر الأحمر", EnglishCapital = "Hurghada", ArabicCapital = "الغردقة", CountryId = egypt.Id },
-            };
+           
 
-            foreach (var governorate in governorates)
-            {
-                await _governorateRepository.InsertAsync(governorate, autoSave: true);
-            }
-            var alx = await _governorateRepository.FirstOrDefaultAsync(g => g.EnglishName == "Alexandria");
+    
             var regions = new List<Region>
             {
             new Region { ArabicName="test", EnglishName = "test",  Status = Status.Active,CountryId = egypt.Id },
@@ -107,19 +90,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 await _regionRepository.InsertAsync(region, autoSave: true);
             }
             var test = await _regionRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
-            var cities = new List<City>
-            {
-                new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id ,RegionId = test.Id },
-                new City { ArabicName="test", EnglishName = "test", GovernorateId = alx.Id ,RegionId = test.Id},
-                new City {  ArabicName="test", EnglishName = "test", GovernorateId = alx.Id ,RegionId = test.Id},
-            };
 
-            foreach (var city in cities)
-            {
-                await _cityRepository.InsertAsync(city, autoSave: true);
-            }
-            var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
-            
             var States = new List<State>
             {
                 new State { ArabicName="test", EnglishName = "test",   RegionId = test.Id,  Status = Status.Active },
@@ -132,6 +103,20 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 await _stateRepository.InsertAsync(State, autoSave: true);
             }
             var stateTest = await _stateRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
+            var cities = new List<City>
+            {
+                new City { ArabicName="تست", EnglishName = "test", StateId = stateTest.Id  },
+                new City { ArabicName="تست", EnglishName = "test", StateId = stateTest.Id },
+                new City {  ArabicName="تست", EnglishName = "test", StateId = stateTest.Id},
+            };
+
+            foreach (var city in cities)
+            {
+                await _cityRepository.InsertAsync(city, autoSave: true);
+            }
+            var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
+            
+           
             var subscriptionTypes = new List<SubscriptionType>
             {
                 new SubscriptionType {Type = "Monthly"},

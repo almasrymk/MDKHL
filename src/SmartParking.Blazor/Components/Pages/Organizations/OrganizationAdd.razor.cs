@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿
 using MudBlazor;
-using SmartParking.Authentication;
-using SmartParking.Cutomers;
-using SmartParking.Entities.Customers;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
-using SmartParking.Lookups.Governorate;
+using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
-using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
 using System;
@@ -18,7 +12,6 @@ using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Identity;
 using Volo.Abp.Validation;
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -62,7 +55,7 @@ public partial class OrganizationAdd
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        countries = await GovernorateAppService.GetCountryLookupAsync();
+        countries = await CountriesAppService.GetCountryLookupAsync();
         packages = await SubscriptionAppService.GetAllAsync();
     }
     
@@ -81,7 +74,7 @@ public partial class OrganizationAdd
         if (RegionSelectValue != null)
         {
             states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
-            cities = await CitiesAppService.GetCityByRegion(int.Parse(RegionSelectValue));
+            cities = await CitiesAppService.GetCityByState(int.Parse(RegionSelectValue));
         }
          
     }

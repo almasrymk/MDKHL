@@ -11,20 +11,20 @@ namespace SmartParking.Blazor.Components.Pages.States;
 
 public partial class AddStateDialog
 {
-    private MudForm form;
     public CreateUpdateStateDto input = new CreateUpdateStateDto();
+    private MudForm form;
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
-    private int RegionSelectValue { get; set; }
+    private string RegionSelectValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
     }
 
-    private void SelectRegion(int region)
+    private void SelectRegion(string region)
     {
         RegionSelectValue = region;
     }
@@ -43,7 +43,7 @@ public partial class AddStateDialog
 				ArabicName = input.ArabicName,
 				EnglishName = input.EnglishName,
 				Status = input.Status,
-				RegionId = RegionSelectValue
+				RegionId = int.Parse(RegionSelectValue)
 			};
 
 			var regions = await StateAppService.CreateAsync(createUpdateStateDto);

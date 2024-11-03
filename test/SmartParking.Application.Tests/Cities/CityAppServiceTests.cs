@@ -2,6 +2,8 @@
 using Shouldly;
 using SmartParking.Entities;
 using SmartParking.Lookups;
+using SmartParking.Lookups.State;
+using SmartParking.LookupsAppServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +19,12 @@ public abstract class CityAppServiceTests<TStartupModule> : SmartParkingApplicat
    where TStartupModule : IAbpModule
 {
     private readonly ICitiesAppService _citiesAppService;
-    private readonly IGovernorateAppService _governorateAppService;
+    private readonly IStateAppService _stateAppService;
 
     protected CityAppServiceTests()
     {
         _citiesAppService = GetRequiredService<ICitiesAppService>();
-        _governorateAppService = GetRequiredService<IGovernorateAppService>();
+        _stateAppService = GetRequiredService<StateAppService>();
     }
 
     [Fact]
@@ -38,15 +40,15 @@ public abstract class CityAppServiceTests<TStartupModule> : SmartParkingApplicat
     [Fact]
     public async Task Should_Create_A_Valid_City()
     {
-        var governorates = await _governorateAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        var governorate = governorates.Items.First();
+        var states = await _stateAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        var state = states.Items.First();
         //Act
         var result = await _citiesAppService.CreateAsync(
             new CreateUpdateCityDto
             {
                 EnglishName = "Alexandria",
                 ArabicName = "الإسكندرية",
-                GovernorateId = governorate.Id,
+                StateId = state.Id,
             }
         );
 
@@ -58,8 +60,8 @@ public abstract class CityAppServiceTests<TStartupModule> : SmartParkingApplicat
     [Fact]
     public async Task Should_Not_Create_A_City_Without_ArabicName()
     {
-        var governorates = await _governorateAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        var governorate = governorates.Items.First();
+        var states = await _stateAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        var state = states.Items.First();
 
         var exception = await Assert.ThrowsAsync<DbUpdateException>(async () =>
         {
@@ -67,7 +69,7 @@ public abstract class CityAppServiceTests<TStartupModule> : SmartParkingApplicat
                 new CreateUpdateCityDto
                 {
                     EnglishName = "Alexandria",
-                    GovernorateId = governorate.Id,
+                    StateId = state.Id,
                 }
             );
         });

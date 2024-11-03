@@ -35,8 +35,6 @@ public partial class EditPackageTypeDialog
 			{
 				ArabicName = packageType.ArabicName,
 				EnglishName = packageType.EnglishName,
-				Notes = packageType.Notes,
-				Id = UpdatedId
 			};
 
 			// Call the update method
