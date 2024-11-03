@@ -141,9 +141,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
        var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity).ToList();
         for (var k=0;k< entryList.Count;k++ )
         {
+            
             var entry = entryList[k];
             if (entry.Entity is BaseEntity baseEntity)
-                if(baseEntity.IsDeleted == true)
+                if(baseEntity.IsDeleted != true && entry.State != EntityState.Detached)
                 {
                     // Soft delete the entity itself
                     HandleDependent(entry);
@@ -182,12 +183,14 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     public override int SaveChanges()
     {
+       
         ProcessEntities(); // Apply soft delete cascade
         return base.SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+       
         ProcessEntities();
         return await base.SaveChangesAsync(cancellationToken);
     }
