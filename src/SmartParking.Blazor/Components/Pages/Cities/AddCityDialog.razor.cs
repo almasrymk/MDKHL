@@ -15,18 +15,21 @@ public partial class AddCityDialog
 {
     private MudForm form;
     public CreateUpdateCityDto input = new CreateUpdateCityDto();
-    private string StatetSelectValue { get; set; }
+    public List<StateLookupDto> states = new List<StateLookupDto>();
+
+    private string StateSelectValue { get; set; }
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 
     private void SelectState(string state)
     {
-		StatetSelectValue = state;
+		StateSelectValue = state;
     }
    
     protected override async Task OnInitializedAsync()
     {
+        states = await StateAppService.GetStateLookupAsync();
         await base.OnInitializedAsync();
     }
     private async Task Submit()
@@ -43,7 +46,7 @@ public partial class AddCityDialog
                 {
                     ArabicName = input.ArabicName,
                     EnglishName = input.EnglishName,
-                    StateId = int.Parse(StatetSelectValue),
+                    StateId = input.StateId,
                 };
 
                 var city = await CitiesAppService.CreateAsync(createUpdateCityDto);

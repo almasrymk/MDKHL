@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Lookups
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IPackageTypesAppService PackageTypesAppService
 @inject ISnackbar Snackbar
@@ -11,7 +12,16 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@L["Edit"] @packageType.EnglishName</MudText>
+			@if (CultureInfo.CurrentCulture.Name == "en")
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @packageType.EnglishName</MudText>
+
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @packageType.ArabicName</MudText>
+
+			}
 		</TitleContent>
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
