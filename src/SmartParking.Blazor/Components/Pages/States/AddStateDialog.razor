@@ -20,13 +20,13 @@
         <DialogContent>
 
 
-            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
                     <MudItem sm="6">
                         <MudTextField @bind-Value="input.ArabicName"
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
-                                      Required
+                                      Required ="true"
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Text"
@@ -37,13 +37,25 @@
                         <MudTextField @bind-Value="input.EnglishName"
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
-                                      Required
+                                      Required="true"
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Text"
                                           Label="@L["EnglishName"]" />
                     </MudItem>
-                     <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
+                     @* <RegionLookups  SelectValueChanged="SelectRegion"></RegionLookups> *@
+                    <MudItem sm="4">
+                        <MudSelect Variant="Variant.Text"
+                                   Label="@L["Region"]"
+                                   Placeholder="@L["Choose"]"
+                                   Clearable="true"
+                                   @bind-Value="input.RegionId">
+                            @foreach (var region in regions)
+                            {
+                                <MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
 
                     <MudItem sm="6" Class="d-inline-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">

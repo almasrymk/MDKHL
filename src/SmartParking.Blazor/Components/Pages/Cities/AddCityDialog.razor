@@ -7,6 +7,7 @@
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
+@inject IStateAppService StateAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -41,7 +42,19 @@
                     </MudItem>
                     
                    
-                    <StateLookups SelectValueChanged="SelectState"></StateLookups>
+                    @* <StateLookups SelectValueChanged="SelectState"></StateLookups> *@
+                    <MudItem sm="6">
+                        <MudSelect Variant="Variant.Text"
+                                   Label="@L["State"]"
+                                   Placeholder="@L["Choose"]"
+                                   Clearable="true"
+                                   @bind-Value="input.StateId">
+                            @foreach (var state in states)
+                            {
+                                <MudSelectItem Value="state.Id">@state.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
                 </MudGrid>
             </MudForm>
 
