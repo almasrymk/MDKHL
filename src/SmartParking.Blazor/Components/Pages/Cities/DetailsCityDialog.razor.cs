@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups;
-using SmartParking.Lookups.City;
+using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,12 +12,12 @@ public partial class DetailsCityDialog
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public CityDto city { get; set; } = new CityDto();
-    public IReadOnlyList<GovernorateLookupDto> governorates { get; set; } = new List<GovernorateLookupDto>();
+    public IReadOnlyList<StateLookupDto> states { get; set; } = new List<StateLookupDto>();
 
     protected async override Task OnInitializedAsync()
     {
-        var result = await CitiesAppService.GetGovernorateLookupAsync();
-        governorates = result;
+        var result = await StateAppService.GetStateLookupAsync();
+        states = result;
     }
 
     private void Cancel()

@@ -2,8 +2,10 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
+@using SmartParking.Lookups.State
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
+@inject IStateAppService StateAppService
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["CitiesDetails"]</PageTitle>
 
@@ -34,11 +36,11 @@
 					</MudItem>
 
 					<MudItem sm="6">
-						<MudTextField @bind-Value="city.GovernorateEnglishName"
-									  For="@(() => city.GovernorateEnglishName)"
+						<MudTextField @bind-Value="city.StateEnglishName"
+									  For="@(() => city.StateEnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["Governorate English Name"]"
+									  Label="@L["State English Name"]"
 									  Disabled />
 					</MudItem>
 				

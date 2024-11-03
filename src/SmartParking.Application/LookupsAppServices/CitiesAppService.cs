@@ -26,13 +26,11 @@ public class CitiesAppService : CrudAppService<City, CityDto,
 
 {
     private readonly IRepository<City, int> _repository;
-    private readonly IRepository<Governorate, int> _governorateRepository;
 
-    public CitiesAppService(IRepository<City, int> repository, IRepository<Governorate, int> governorateRepository)
+    public CitiesAppService(IRepository<City, int> repository)
     : base(repository)
     {
         _repository = repository;
-        _governorateRepository = governorateRepository;
     }
 
     ///<inheritdoc/>
@@ -45,12 +43,12 @@ public class CitiesAppService : CrudAppService<City, CityDto,
 
         if (city != null)
         {
-            if (city.EnglishName.ToLower().Trim(' ') == input.EnglishName.ToLower().Trim(' ') && city.Id != input.Id)
+            if (city.EnglishName.ToLower().Trim(' ') == input.EnglishName.ToLower().Trim(' ') )
             {
                 throw new InvalidOperationException("city english name already exists");
 
             }
-            else if (city.ArabicName.ToLower().Trim(' ') == input.ArabicName.ToLower().Trim(' ') && city.Id != input.Id)
+            else if (city.ArabicName.ToLower().Trim(' ') == input.ArabicName.ToLower().Trim(' '))
             {
                 throw new InvalidOperationException("city arabic name already exists");
 
@@ -78,12 +76,12 @@ public class CitiesAppService : CrudAppService<City, CityDto,
 
             if (city != null)
             {
-                if (city.EnglishName == input.EnglishName.Trim(' ') && city.Id != input.Id)
+                if (city.EnglishName == input.EnglishName.Trim(' ') && city.Id != id)
                 {
                     throw new InvalidOperationException("city english name already exists");
 
                 }
-                else if (city.ArabicName == input.ArabicName.Trim(' ') && city.Id != input.Id)
+                else if (city.ArabicName == input.ArabicName.Trim(' ') && city.Id != id)
                 {
                     throw new InvalidOperationException("city arabic name already exists");
 
@@ -92,14 +90,7 @@ public class CitiesAppService : CrudAppService<City, CityDto,
             }
             return await base.UpdateAsync(id, input);    
         }
-    public async Task<List<GovernorateLookupDto>> GetGovernorateLookupAsync()
-    {
-        var governorates = await _governorateRepository.GetListAsync();
-        var governoratesList = ObjectMapper.Map<List<Governorate>, List<GovernorateLookupDto>>(governorates)
-;
-        return governoratesList;
 
-    }
 
     public async Task<List<CityLookupDto>> GetCityLookupAsync()
     {
@@ -125,10 +116,11 @@ public class CitiesAppService : CrudAppService<City, CityDto,
         {
 
             queryable = queryable.Where(c =>
-                c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
-            );
+              c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+              c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+              c.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower() )||
+              c.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+              );
         }
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -218,10 +210,10 @@ public class CitiesAppService : CrudAppService<City, CityDto,
 
         await base.DeleteAsync(id);
     }
-    public async Task<List<CityLookupDto>> GetCityByRegion(int regionId)
+    public async Task<List<CityLookupDto>> GetCityByState(int stateId)
     {
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(r => r.RegionId == regionId);
+        query = query.Where(r => r.StateId == stateId);
         var cities = await AsyncExecuter.ToListAsync(query);
         var citiesList = ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities);
         return citiesList;

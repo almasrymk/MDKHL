@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups;
-using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.Region;
-using SmartParking.LookupsAppServices;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -17,19 +13,19 @@ public partial class EditRegionDialog
 {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public RegionDto region { get; set; } = new RegionDto();
-    public IReadOnlyList<CountryLookupDto> countries { get; set; } = new List<CountryLookupDto>();
-    private MudForm editForm;
     [Parameter] public int UpdatedId { get; set; }
+	private string CountrySelectValue { get; set; }
 
-
-    protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync()
     {
-        var result = await GovernorateAppService.GetCountryLookupAsync();
-        countries = result;
+       await base.OnInitializedAsync();
     }
 
-
-    private async Task Save()
+	private void SelectCountry(string country)
+	{
+		CountrySelectValue = country;
+	}
+	private async Task Save()
     {
 
 		var successedMessage = L["RegionUpdatedSuccessfully"];
@@ -43,7 +39,7 @@ public partial class EditRegionDialog
 				ArabicName = region.ArabicName,
 				EnglishName = region.EnglishName,
 				Status = region.Status,
-				CountryId = region.CountryId,
+				CountryId = int.Parse(CountrySelectValue),
 
 
 			};

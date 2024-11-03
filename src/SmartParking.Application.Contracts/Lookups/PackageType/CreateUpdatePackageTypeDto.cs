@@ -1,6 +1,8 @@
 ﻿namespace SmartParking.Lookups
 {
-    public class CreateUpdatePackageTypeDto : CreateUpdateBaseDto
+    public class CreateUpdatePackageTypeDto
     {
-    }
+		public string ArabicName { get; set; }
+		public string EnglishName { get; set; }
+	}
 }
