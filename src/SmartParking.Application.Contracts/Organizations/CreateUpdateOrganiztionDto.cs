@@ -39,5 +39,6 @@ public class CreateUpdateOrganiztionDto
     public bool IsClose { get; set; }
     public TimeOnly ClosingHoursStart { get; set; }
     public TimeOnly ClosingHoursEnd { get; set; }
+    public string UserName { get; set; }
 
 }

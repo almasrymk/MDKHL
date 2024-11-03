@@ -1,30 +1,28 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using SmartParking.Lookups
 @using SmartParking.Lookups.State
 @inject IStateAppService StateAppService
 @inject IStringLocalizer<SmartParkingResource> L
-
-
 <MudItem sm="4">
     <MudSelect Variant="Variant.Text"
                Label="@L["State"]"
                Placeholder="@L["Choose"]"
                Clearable="true"
-               @bind-Value="@name"
+               @bind-Value="name"
                OnClose="ChangeSelect"
                ReadOnly="Read">
-                @foreach (var state in states)
-                {
-                    <MudSelectItem  Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
-                }
+        @foreach (var state in states)
+        {
+            <MudSelectItem Value="state.Id.ToString()">@state.EnglishName</MudSelectItem>
+        }
     </MudSelect>
 </MudItem>
 
 @code {
     IList<StateLookupDto> states = new List<StateLookupDto>();
-
     [Parameter] public EventCallback<string> SelectValueChanged { get; set; }
-    [Parameter] public string State { get; set; }
+    [Parameter] public string state { get; set; }
     [Parameter] public bool ReadOnly { get; set; } = false;
     private bool Read;
     private string name;
@@ -46,18 +44,17 @@
     }
     protected override Task OnParametersSetAsync()
     {
-        if (State.IsNullOrEmpty() == false)
+        if (state.IsNullOrEmpty() == false)
         {
-            name = State;
+            name = state;
         }
-        
         Read = ReadOnly;
         return base.OnParametersSetAsync();
     }
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         states = await StateAppService.GetStateLookupAsync();
+        await base.OnInitializedAsync();
 
     }
 }

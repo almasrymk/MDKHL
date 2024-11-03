@@ -63,7 +63,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var tenant = await _tenantManager.CreateAsync(input.EnglishName);
         var input1 = new TenantCreateDto
         {
-            Name = input.EnglishName,
+            Name = input.UserName,
             AdminEmailAddress = input.ContactMail,
             AdminPassword = "P@ssw0rd",
         };
@@ -96,7 +96,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await _repository.InsertAsync(organization, autoSave: true);
         UserCreateDto user = new UserCreateDto()
         {
-            UserName = input.EnglishName,
+            UserName = input.UserName,
             PhoneNumber = input.PhoneNum,
             Email = input.ContactMail,
             Password = "P@ssw0rd",

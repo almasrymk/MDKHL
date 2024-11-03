@@ -2,6 +2,7 @@
 using MudBlazor;
 using SmartParking.Lookups.State;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -12,6 +13,9 @@ namespace SmartParking.Blazor.Components.Pages.States;
 public partial class AddStateDialog
 {
     public CreateUpdateStateDto input = new CreateUpdateStateDto();
+
+    public List<RegionLookupDto> regions = new List<RegionLookupDto>();
+
     private MudForm form;
 
     [CascadingParameter]
@@ -21,6 +25,7 @@ public partial class AddStateDialog
 
     protected override async Task OnInitializedAsync()
     {
+		regions = await StateAppService.GetRegionLookupAsync();
         await base.OnInitializedAsync();
     }
 
@@ -43,11 +48,11 @@ public partial class AddStateDialog
 				ArabicName = input.ArabicName,
 				EnglishName = input.EnglishName,
 				Status = input.Status,
-				RegionId = int.Parse(RegionSelectValue)
+				RegionId = input.RegionId,
 			};
 
-			var regions = await StateAppService.CreateAsync(createUpdateStateDto);
-			if (regions != null)
+			var states = await StateAppService.CreateAsync(createUpdateStateDto);
+			if (states != null)
 			{
 				Snackbar.Add(successedMessage, Severity.Success);
 				MudDialog.Close(DialogResult.Ok(true));
