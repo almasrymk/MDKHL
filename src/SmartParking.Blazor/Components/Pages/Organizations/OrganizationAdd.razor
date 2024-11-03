@@ -36,6 +36,9 @@
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
                         <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UserName" Placeholder=@L["Type Here"] Label=@L["UserName"] />
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
                         </MudItem>
                         <MudItem sm="4">
