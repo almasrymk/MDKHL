@@ -6,6 +6,7 @@
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
+@inject ICountriesAppService CountriesAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 <PageTitle>@L["AddRegions"]</PageTitle>
@@ -40,9 +41,20 @@
                                       InputType="InputType.Text"
                                           Label="@L["EnglishName"]" />
                     </MudItem>
-                    <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
-
-
+@*                     <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
+ *@ 
+                    <MudItem sm="6">
+                        <MudSelect Variant="Variant.Text"
+                                   Label="@L["Region"]"
+                                   Placeholder="@L["Choose"]"
+                                   Clearable="true"
+                                   @bind-Value="input.CountryId">
+                            @foreach (var country in countries)
+                            {
+                                <MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
                     <MudItem sm="6" Class="d-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@input.Status" Class="d-inline-flex align-content-center">

@@ -4,6 +4,7 @@ using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
+using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
 using System;
@@ -68,18 +69,27 @@ public partial class OrganizationAdd
         }
          
     }    
-    private async Task GetStates(string value)
+    private async Task GetCities(string value)
     {
-         RegionSelectValue = value;
-        if (RegionSelectValue != null)
+         StateSelectValue = value;
+        if (StateSelectValue != null)
         {
-            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
-            cities = await CitiesAppService.GetCityByState(int.Parse(RegionSelectValue));
+            cities = await CitiesAppService.GetCityByState(int.Parse(StateSelectValue));
         }
-         
+        
     }
+	private async Task GetStates(string value)
+	{
+		RegionSelectValue = value;
+		if (RegionSelectValue != null)
+		{
+			states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
 
-    private async Task Save()
+		}
+
+	}
+
+	private async Task Save()
     {
 		var successedMessage = L["OrganiztionCreatedSuccessfully"];
 		var errorMessage = L["Can'tCreateOrganiztion"];

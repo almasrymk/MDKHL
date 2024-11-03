@@ -14,13 +14,15 @@ public partial class EditStateDialog
 {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public StateDto state { get; set; } = new StateDto();
-    [Parameter] public int UpdatedId { get; set; }
+	public List<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
+	[Parameter] public int UpdatedId { get; set; }
 
     private string RegionSelectValue { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
+		regions = await StateAppService.GetRegionLookupAsync();
        await base.OnInitializedAsync();
     }
 
@@ -41,7 +43,7 @@ public partial class EditStateDialog
 				ArabicName = state.ArabicName,
 				EnglishName = state.EnglishName,
 				Status = state.Status,
-				RegionId = int.Parse(RegionSelectValue),
+				RegionId = state.RegionId,
 
 
 			};
