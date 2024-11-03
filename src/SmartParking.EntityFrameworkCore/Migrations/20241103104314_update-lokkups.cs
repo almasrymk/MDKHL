@@ -23,9 +23,6 @@ namespace SmartParking.Migrations
                 name: "IX_Cities_GovernorateId",
                 table: "Cities");
 
-            migrationBuilder.DropColumn(
-                name: "NationalityId",
-                table: "ContactInfos");
 
             migrationBuilder.DropColumn(
                 name: "Status",
