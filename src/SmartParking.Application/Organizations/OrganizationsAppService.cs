@@ -60,7 +60,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 	///<inheritdoc/>
 	public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
-        var tenant = await _tenantManager.CreateAsync(input.EnglishName);
+        var tenant = await _tenantManager.CreateAsync(input.UserName);
         var input1 = new TenantCreateDto
         {
             Name = input.UserName,
