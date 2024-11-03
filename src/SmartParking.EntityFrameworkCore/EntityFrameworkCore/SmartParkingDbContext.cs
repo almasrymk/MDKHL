@@ -136,13 +136,13 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     private void ProcessEntities()
     {
         // Iterate over entries marked as Deleted
-       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity).ToList();
+       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity ).ToList();
         for (var k=0;k< entryList.Count;k++ )
         {
             
             var entry = entryList[k];
             if (entry.Entity is BaseEntity baseEntity)
-                if(baseEntity.IsDeleted != true && entry.State != EntityState.Detached)
+                if(baseEntity.IsDeleted == true )
                 {
                     // Soft delete the entity itself
                     HandleDependent(entry);
