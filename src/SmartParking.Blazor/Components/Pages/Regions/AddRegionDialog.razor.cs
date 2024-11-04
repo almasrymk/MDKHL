@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Lookups.Country;
 using SmartParking.Lookups.Region;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -12,6 +14,7 @@ namespace SmartParking.Blazor.Components.Pages.Regions;
 public partial class AddRegionDialog
 {
     public CreateUpdateRegionDto input = new CreateUpdateRegionDto();
+    public List<CountryLookupDto> countries = new List<CountryLookupDto>();
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
@@ -20,6 +23,7 @@ public partial class AddRegionDialog
 
     protected override async Task OnInitializedAsync()
     {
+		countries = await CountriesAppService.GetCountryLookupAsync();
         await base.OnInitializedAsync();
     }
 
@@ -43,7 +47,7 @@ public partial class AddRegionDialog
 				ArabicName = input.ArabicName,
 				EnglishName = input.EnglishName,
 				Status = input.Status,
-				CountryId = int.Parse(CountrySelectValue)
+				CountryId = input.CountryId
 			};
 
 			var regions = await RegionAppService.CreateAsync(createUpdateRegionDto);

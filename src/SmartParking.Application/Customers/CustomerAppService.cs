@@ -204,8 +204,19 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-	/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    /// <inheritdoc/>
+
+    public override async Task<CustomerDto> GetAsync(Guid id)
+    {
+        var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+
+        }
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
 	{
 		var queryable = await _repository.GetQueryableAsync();
 		if (!string.IsNullOrWhiteSpace(input.SearchingTerm))

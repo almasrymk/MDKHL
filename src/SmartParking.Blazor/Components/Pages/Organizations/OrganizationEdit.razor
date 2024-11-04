@@ -105,12 +105,11 @@
                         </MudItem>
                        
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect T="string" Variant="Variant.Text"
                                        Label=@L["Region"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       
-                                       @bind-Value="@RegionSelectValue"
+                                       @bind-Value="RegionSelectValue"
                                        @onchange="GetStates">
                                 <MudSelectItem Value="RegionNameEdit"></MudSelectItem>
                                 @foreach (var region in regions)
@@ -120,11 +119,12 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                            <MudSelect T="string" Variant="Variant.Text"
                                        Label=@L["State"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       @bind-Value="@StateSelectValue">
+                                       @bind-Value="StateSelectValue"
+                                       @onchange="GetCities">
                                 <MudSelectItem Value="StateNameEdit"></MudSelectItem>
                                 @foreach (var state in states)
                                 {

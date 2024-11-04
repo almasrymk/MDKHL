@@ -194,34 +194,44 @@ public partial class OrganizationEdit
     }
     private async Task GetRegions()
     {
-        
+      
         if (CountrySelectValue != null)
         {
             regions = await RegionAppService.GetRegionByCountry(int.Parse(CountrySelectValue));
         }
 
     }
-    private async Task GetStates()
+    private async Task GetCities()
     {
-        if(RegionSelectValue !=null)
-        {
-            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
-
-        }
+       
         if (StateSelectValue != null)
         {
             cities = await CitiesAppService.GetCityByState(int.Parse(StateSelectValue));
         }
 
     }
+    private async Task GetStates()
+    {
+        
+        if (RegionSelectValue != null)
+        {
+            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
+
+        }
+
+    }
+
+
     protected override async Task OnInitializedAsync()
     {
         await FetchData();
 
         countries = await CountriesAppService.GetCountryLookupAsync();
-
-        await GetStates();
         await GetRegions();
+        await GetStates();
+        
+        await GetCities();
+
      //   await base.OnInitializedAsync();
 
 

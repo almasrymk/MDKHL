@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Lookups.Country;
 using SmartParking.Lookups.Region;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -13,11 +15,13 @@ public partial class EditRegionDialog
 {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public RegionDto region { get; set; } = new RegionDto();
+	public List<CountryLookupDto> countries { get; set; } = new List<CountryLookupDto>();
     [Parameter] public int UpdatedId { get; set; }
 	private string CountrySelectValue { get; set; }
 
 	protected override async Task OnInitializedAsync()
     {
+		countries = await CountriesAppService.GetCountryLookupAsync();
        await base.OnInitializedAsync();
     }
 
@@ -39,7 +43,7 @@ public partial class EditRegionDialog
 				ArabicName = region.ArabicName,
 				EnglishName = region.EnglishName,
 				Status = region.Status,
-				CountryId = int.Parse(CountrySelectValue),
+				CountryId = region.CountryId,
 
 
 			};
