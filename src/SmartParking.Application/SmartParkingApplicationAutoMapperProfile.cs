@@ -127,7 +127,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d=>d.SubscriptionType,o=>o.MapFrom(s=>s.SubscriptionType.Type))
             .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
 
-        CreateMap<CreateUpdateSubscriptionDto, Subscription>();
+        CreateMap<CreateUpdateSubscriptionDto, Subscription>()
+            .ForMember(d => d.CreationTime, o => o.MapFrom(s => s.CreationTime))
+            .ForMember(d => d.CreatorId, o => o.MapFrom(s => s.CreatorId));
 
 
         CreateMap<SubscriptionType, SubscriptionTypeDto>()
