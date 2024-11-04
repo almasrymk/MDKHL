@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Lookups.Country;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -21,6 +23,13 @@ public interface ICountriesAppService : ICrudAppService<CountryDto,int,PagedAndS
     /// <param name="id">id of specific country</param>
     /// <returns>CountryDto</returns>
     public Task<CountryDto> UpdateAsync(int id, CreateUpdateCountryDto input);
+
+    /// <summary>
+    /// Abstract method to delete country
+    /// </summary>
+    /// <param name="id">Id of country</param>
+    Task DeleteAsync(int id);
+
     /// <summary>
     /// abstract method to search of cities
     /// </summary>
@@ -36,10 +45,9 @@ public interface ICountriesAppService : ICrudAppService<CountryDto,int,PagedAndS
     /// <returns>Country Dto</returns>
     public Task<PagedResultDto<CountryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
-
     /// <summary>
-    /// Abstract method to delete country
+    /// abstract method to list all countries
     /// </summary>
-    /// <param name="id">Id of country</param>
-    Task DeleteAsync(int id);
+    /// <returns>CountryLookupDto</returns>
+    Task<List<CountryLookupDto>> GetCountryLookupAsync();
 }

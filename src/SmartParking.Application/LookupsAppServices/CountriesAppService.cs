@@ -11,6 +11,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Lookups;
+using SmartParking.Lookups.Country;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -127,7 +128,7 @@ public class CountriesAppService : CrudAppService<Country,
             throw new EntityNotFoundException(typeof(Country), id);
         }
        
-            await _countryRepository.HardDeleteAsync(country);
+            await _countryRepository.DeleteAsync(country);
 
     }
     /// <summary>
@@ -176,11 +177,7 @@ public class CountriesAppService : CrudAppService<Country,
         );
     }
 
-    /// <summary>
-    /// method used to get list of countries
-    /// </summary>
-    /// <param name="input">specifies max number of country and if it filtered or not</param>
-    /// <returns>Country Dto List</returns>
+    /// <inheritdoc/>
     public async Task<PagedResultDto<CountryDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<country> from the repository
@@ -226,4 +223,11 @@ public class CountriesAppService : CrudAppService<Country,
         );
     }
 
+    ///<inheritdoc/>
+    public async Task<List<CountryLookupDto>> GetCountryLookupAsync()
+    {
+        var countries = await _countryRepository.GetListAsync();
+        var countryList = ObjectMapper.Map<List<Country>, List<CountryLookupDto>>(countries);
+        return countryList;
+    }
 }

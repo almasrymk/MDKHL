@@ -22,7 +22,7 @@ public class CreatedUpdatedCityDtoValidator : AbstractValidator<CreateUpdateCity
             .Matches(@"^[a-zA-Z][a-zA-Z0-9\s]*$")
             .WithMessage("Name must start with a letter, accept only English letters and numbers, and cannot contain special characters such as ، / . \\ ,.");
 
-        RuleFor(x => x.GovernorateId)
+        RuleFor(x => x.StateId)
             .NotEmpty()
             .GreaterThan(0);
     

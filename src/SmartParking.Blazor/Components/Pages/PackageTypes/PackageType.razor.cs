@@ -3,7 +3,6 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cities;
-using SmartParking.Blazor.Components.Pages.Governorates;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
 using SmartParking.Lookups;
@@ -164,11 +163,10 @@ public partial class PackageType
 
         var packageTypeDto = await AppService.GetAsync(id);
 
-        var createUpdatePackageTypeDto = new CreateUpdateGovernorateDto()
+        var createUpdatePackageTypeDto = new CreateUpdatePackageTypeDto()
         {
             ArabicName = packageTypeDto.ArabicName,
             EnglishName = packageTypeDto.EnglishName,
-            Notes = packageTypeDto.Notes,
         };
 
 

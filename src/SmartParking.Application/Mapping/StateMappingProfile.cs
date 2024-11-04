@@ -1,13 +1,6 @@
 ﻿using AutoMapper;
-using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
-using SmartParking.Lookups.Governorate;
 using SmartParking.Lookups.State;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartParking.Mapping;
 

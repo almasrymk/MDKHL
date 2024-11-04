@@ -17,9 +17,9 @@
 @inject IIdentityUserAppService IdentityUserAppService;
 @inject IStateAppService StateAppService
 @inject ISubscriptionAppService SubscriptionAppService
-@inject IGovernorateAppService GovernorateAppService
 @inject ICitiesAppService CitiesAppService 
 @inject IRegionAppService RegionAppService
+@inject ICountriesAppService CountriesAppService
 @inject  UserManager<Volo.Abp.Identity.IdentityUser> UserManager;
 @inject SignInManager<Volo.Abp.Identity.IdentityUser> signInManager
 @inject IStringLocalizer<SmartParkingResource> L
@@ -35,6 +35,9 @@
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UserName" Placeholder=@L["Type Here"] Label=@L["UserName"] />
+                        </MudItem>
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
                         </MudItem>
@@ -122,13 +125,13 @@
                         @if (!RegionSelectValue.IsNullOrEmpty())
                         {
                             <MudItem sm="4">
-                                <MudSelect Variant="Variant.Text"
+                                <MudSelect T="string" Variant="Variant.Text"
                                            Label=@L["State"]
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
                                            Clearable="true"
                                            Required
-                                           @bind-Value="@StateSelectValue">
+                                           ValueChanged="GetCities">
 
                                     @foreach (var state in states)
                                     {
@@ -205,31 +208,31 @@
                         @if (IsNumberOfHoursExceeded){
 
                             <MudItem sm="4">
-                                <MudNumericField Required="true" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                                <MudNumericField  @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField Required="true" @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                                <MudNumericField @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
                             </MudItem>
                              <MudItem sm="4">
-                                <MudNumericField Required="true" @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
+                                <MudNumericField  @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField Required="true" @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
+                                <MudNumericField @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField Required="true" @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
+                                <MudNumericField  @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField Required="true" @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                                <MudNumericField  @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                             </MudItem>
                         }
                         @if(IsClose){
 
                         <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                            <MudTimePicker  Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                            <MudTimePicker Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                         </MudItem>
                         }
 

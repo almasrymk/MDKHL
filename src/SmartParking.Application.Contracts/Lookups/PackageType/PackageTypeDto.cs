@@ -1,6 +1,9 @@
-﻿namespace SmartParking.Lookups
+﻿using Volo.Abp.Application.Dtos;
+
+namespace SmartParking.Lookups;
+
+public class PackageTypeDto : FullAuditedEntityDto<int>
 {
-    public class PackageTypeDto : BaseDto
-    {
-    }
+	public string ArabicName { get; set; }
+	public string EnglishName { get; set; }
 }

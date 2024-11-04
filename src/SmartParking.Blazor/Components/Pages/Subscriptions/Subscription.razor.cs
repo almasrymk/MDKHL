@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Subscriptions;
-using SmartParking.Blazor.Components.Pages.Governorates;
 using SmartParking.Lookups;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Vehicles.LookUps;

@@ -88,6 +88,7 @@ public class StateAppService : CrudAppService<State, StateDto,
     public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
     {
         var exisitingState = await _stateRepository.GetAsync(id);
+
         if (exisitingState is null)
         {
             throw new InvalidOperationException("State not found");
@@ -104,11 +105,13 @@ public class StateAppService : CrudAppService<State, StateDto,
                 (state =>
                 state.RegionId == input.RegionId &&
                 state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower())
+                );
 
-        if (state != null && state.Id != id )
-        {
-            if (state.EnglishName == input.EnglishName.Trim(' ') )
+       if (state != null && state.Id != id )
+       {
+
+            if (state.EnglishName == input.EnglishName.Trim(' '))
             {
                 throw new InvalidOperationException("state english name already exists");
 
@@ -119,7 +122,7 @@ public class StateAppService : CrudAppService<State, StateDto,
 
             }
 
-          
+
         }
 
         if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
@@ -213,7 +216,9 @@ public class StateAppService : CrudAppService<State, StateDto,
 
             queryable = queryable.Where(c =>
                 c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.Region.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                c.Region.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
 
             );
         }

@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Lookups;
-using SmartParking.Lookups.City;
 using SmartParking.Lookups.State;
-using SmartParking.LookupsAppServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,19 +16,22 @@ public partial class EditCityDialog
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public CityDto city { get; set; } = new CityDto();
     [Parameter] public CreateUpdateCityDto input { get; set; } = new CreateUpdateCityDto();
-    public IReadOnlyList<GovernorateLookupDto> governorates { get; set; } = new List<GovernorateLookupDto>();
-	public IReadOnlyList<RegionLookupDto> regions { get; set; } = new List<RegionLookupDto>();
+	public IReadOnlyList<StateLookupDto> states { get; set; } = new List<StateLookupDto>();
 	private MudForm editForm;
     bool _clearable;
-    [Parameter] public int UpdatedId { get; set; }
+	private string StateSelectValue { get; set; }
 
+	[Parameter] public int Id { get; set; }
+
+    private void SelectState(string state)
+    {
+		StateSelectValue = state;
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await CitiesAppService.GetGovernorateLookupAsync();
-        governorates = result;
-		var result2 = await StateAppService.GetRegionLookupAsync();
-		regions = result2;
+        states = await StateAppService.GetStateLookupAsync();
+		await base.OnInitializedAsync();
 	}
 
     private async Task Save()
@@ -45,14 +46,13 @@ public partial class EditCityDialog
             {
                 ArabicName = city.ArabicName,
                 EnglishName = city.EnglishName,
-                Notes = city.Notes,
-                GovernorateId = city.GovernorateId,
-                Id = UpdatedId
+                StateId = city.StateId,
+                
             };
 
             // Call the update method
 
-            var cities = await CitiesAppService.UpdateAsync(UpdatedId, input);
+            var cities = await CitiesAppService.UpdateAsync(city.Id, input);
             if (cities != null)
             {
                 Snackbar.Add(successedMessage, Severity.Success);
@@ -76,19 +76,20 @@ public partial class EditCityDialog
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"Failed to update city: {ex.Code} + ", Severity.Error);
+            Snackbar.Add($"{errorMessage} {ex.Code} + ", Severity.Error);
 
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to update city: {ex.Message} + ", Severity.Error);
+            Snackbar.Add($"{errorMessage} {ex.Message} + ", Severity.Error);
         }
         
     }
 
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
 
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+
 }

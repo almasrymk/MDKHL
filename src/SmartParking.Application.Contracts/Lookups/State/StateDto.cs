@@ -9,7 +9,7 @@ namespace SmartParking.Lookups.State;
 
 public class StateDto : BaseDto
 {
-	public int RegionId { get; set; }
+    public int RegionId { get; set; }
     public string RegionEnglishName { get; set; }
     public string RegionArabicName { get; set; }
     public Status Status { get; set; }

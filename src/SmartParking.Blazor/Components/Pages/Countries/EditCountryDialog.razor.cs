@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Lookups;
 using System;
@@ -16,7 +15,7 @@ public partial class EditCountryDialog
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public CountryDto country { get; set; } = new CountryDto();
     private MudForm editForm;
-    [Parameter] public int UpdatedId { get; set; }
+    [Parameter] public int Id { get; set; }
 
     private async Task Save()
     {
@@ -32,13 +31,12 @@ public partial class EditCountryDialog
 				EnglishName = country.EnglishName,
 				ArabicCapital = country.ArabicCapital,
 				EnglishCapital = country.EnglishCapital,
-				Notes = country.Notes,
-				Id = UpdatedId
+			
 			};
 
 			// Call the update method
 
-			var countries = await CountriesAppService.UpdateAsync(UpdatedId, input);
+			var countries = await CountriesAppService.UpdateAsync(country.Id, input);
 
 			if (countries != null)
 			{
@@ -58,17 +56,17 @@ public partial class EditCountryDialog
 		{
 			foreach (var validationError in validationException.ValidationErrors)
 			{
-				Snackbar.Add($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+				Snackbar.Add($"{errorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
 			}
 		}
 		catch (BusinessException ex)
 		{
-			Snackbar.Add($"Failed to update country: {ex.Code} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Code}", Severity.Error);
 
 		}
 		catch (Exception ex)
 		{
-			Snackbar.Add($"Failed to update country: {ex.Message} + ", Severity.Error);
+			Snackbar.Add($"{errorMessage} {ex.Message}", Severity.Error);
 		}
 		
     }

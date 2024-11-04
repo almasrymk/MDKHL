@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups.Governorate;
+using SmartParking.Lookups.Country;
 using SmartParking.Lookups.Region;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ public partial class DetailsRegionDialog
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await GovernorateAppService.GetCountryLookupAsync();
+        var result = await CountriesAppService.GetCountryLookupAsync();
         countries = result;
     }
 

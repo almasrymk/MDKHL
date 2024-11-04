@@ -168,7 +168,6 @@ public partial class Country
             EnglishName = countryDto.EnglishName,
             ArabicCapital = countryDto.ArabicCapital,
             EnglishCapital = countryDto.EnglishCapital,
-            Notes = countryDto.Notes,
            
         };
 
@@ -177,7 +176,7 @@ public partial class Country
         var parameters = new DialogParameters
         {
             ["country"] = countryDto,
-            ["UpdatedId"] = id
+            ["Id"] = id
         };
 
 

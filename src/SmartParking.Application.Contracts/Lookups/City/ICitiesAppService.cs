@@ -23,17 +23,18 @@ public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedRe
     /// <param name="id">id of specific city</param>
     /// <returns>CityDto</returns>
     public Task<CityDto> UpdateAsync(int id,CreateUpdateCityDto input);
-    /// <summary>
-    /// abstract method to list all  Governorates
-    /// </summary>
-    /// <returns>GovernorateLookupDto</returns>
-    Task<List<GovernorateLookupDto>> GetGovernorateLookupAsync();
 
-    /// <summary>
-    /// abstract method to list all cities
-    /// </summary>
-    /// <returns>Garage Dto</returns>
-    Task<List<CityLookupDto>> GetCityLookupAsync();
+	/// <summary>
+	/// abstract method to delete specific city
+	/// </summary>
+	/// <param name="id">id of specific city</param>
+	Task DeleteAsync(int id);
+
+	/// <summary>
+	/// abstract method to list all cities
+	/// </summary>
+	/// <returns>Garage Dto</returns>
+	Task<List<CityLookupDto>> GetCityLookupAsync();
 
     /// <summary>
     /// abstract method to search of cities
@@ -50,7 +51,6 @@ public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedRe
     /// <returns>City Dto</returns>
     public Task<PagedResultDto<CityDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
-    Task DeleteAsync(int id);
 
-    public Task<List<CityLookupDto>> GetCityByRegion(int regionId);
+    public Task<List<CityLookupDto>> GetCityByState(int stateId);
 }

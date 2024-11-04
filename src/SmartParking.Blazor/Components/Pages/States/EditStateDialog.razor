@@ -17,7 +17,7 @@
 		</TitleContent>
 		<DialogContent>
 
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
 				<MudGrid>
 
 
@@ -40,23 +40,20 @@
 									  Label="@L["EnglishName"]" />
 					</MudItem>
 					
-						<MudItem sm="6">
-							<MudSelect @bind-Value="@state.RegionId"
-									   Variant="Variant.Text"
-									   Label=@L["Region"]
-									   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"] 
-									   AnchorOrigin="Origin.TopCenter"
-									   TransformOrigin="Origin.TopCenter">
+					@* <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups> *@
 
+					<MudItem sm="6">
+						<MudSelect Variant="Variant.Text"
+								   Label="@L["Region"]"
+								   Placeholder="@L["Choose"]"
+								   Clearable="true"
+								   @bind-Value="state.RegionId">
 							@foreach (var region in regions)
 							{
 								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
 							}
 						</MudSelect>
 					</MudItem>
-
-
 
 					<MudItem sm="6" Class="d-inline-flex justify-content-center">
 						<MudItem Class="d-flex flex-row justify-content-between">

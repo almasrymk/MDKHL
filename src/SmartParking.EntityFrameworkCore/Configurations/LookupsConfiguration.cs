@@ -19,19 +19,7 @@ namespace SmartParking.Configurations
             builder.ToTable("Countries");
         }
     }
-    public class GovernorateConfiguration : IEntityTypeConfiguration<Governorate>
-    {
-        void IEntityTypeConfiguration<Governorate>.Configure(EntityTypeBuilder<Governorate> builder)
-        {
-            builder.ConfigureByConvention();
-            builder.Property(x => x.Id).UseIdentityColumn();
-            builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.Property(x => x.ArabicName).IsRequired();
-            builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
-            builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
-            builder.ToTable("Governorates");
-        }
-    }
+    
     public class CityConfiguration : IEntityTypeConfiguration<City>
     {
         void IEntityTypeConfiguration<City>.Configure(EntityTypeBuilder<City> builder)

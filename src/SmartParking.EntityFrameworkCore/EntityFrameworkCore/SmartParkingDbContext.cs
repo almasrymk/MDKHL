@@ -18,7 +18,6 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
@@ -99,7 +98,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     #region Lookups
     public DbSet<Country> Countries { get; set; }
-    public DbSet<Governorate> Governorates { get; set; }
     public DbSet<City> Cities { get; set; }
     public DbSet<Feature> Features { get; set; }
     public DbSet<Screen> Screens { get; set; }
@@ -138,12 +136,13 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     private void ProcessEntities()
     {
         // Iterate over entries marked as Deleted
-       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity).ToList();
+       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is BaseEntity ).ToList();
         for (var k=0;k< entryList.Count;k++ )
         {
+            
             var entry = entryList[k];
             if (entry.Entity is BaseEntity baseEntity)
-                if(baseEntity.IsDeleted == true)
+                if(baseEntity.IsDeleted == true )
                 {
                     // Soft delete the entity itself
                     HandleDependent(entry);
@@ -182,12 +181,14 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     public override int SaveChanges()
     {
+       
         ProcessEntities(); // Apply soft delete cascade
         return base.SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+       
         ProcessEntities();
         return await base.SaveChangesAsync(cancellationToken);
     }

@@ -2,11 +2,10 @@
 @using SmartParking.Blazor.Components.LookUps
 @using SmartParking.Localization
 @using SmartParking.Lookups
-@using SmartParking.Lookups.Governorate
 @using SmartParking.Lookups.Region
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
-@inject IGovernorateAppService GovernorateAppService
+@inject ICountriesAppService CountriesAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -19,7 +18,7 @@
 		</TitleContent>
 		<DialogContent>
 
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
 
 					<MudItem sm="6">
@@ -40,22 +39,19 @@
 									  Label=@L["EnglishName"] />
 					</MudItem>
 
-						<MudItem sm="6">
-							<MudSelect @bind-Value="@region.CountryId"
-									   Variant="Variant.Text"
-									   Label=@L["Country"]
-									   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"] 
-									   AnchorOrigin="Origin.TopCenter"
-									   TransformOrigin="Origin.TopCenter" >
-
+					@* <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups> *@
+					<MudItem sm="6">
+						<MudSelect Variant="Variant.Text"
+								   Label="@L["Country"]"
+								   Placeholder="@L["Choose"]"
+								   Clearable="true"
+								   @bind-Value="region.CountryId">
 							@foreach (var country in countries)
 							{
 								<MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
 							}
 						</MudSelect>
 					</MudItem>
-
 
 					<MudItem sm="6" Class="d-inline-flex justify-content-center">
 						<MudItem Class="d-flex flex-row justify-content-between">

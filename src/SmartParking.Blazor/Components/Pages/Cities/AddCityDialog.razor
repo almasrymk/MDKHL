@@ -3,10 +3,11 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
-@using SmartParking.Lookups.Governorate
+@using SmartParking.Lookups.State
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
+@inject IStateAppService StateAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -40,16 +41,20 @@
                                       Placeholder="@L["Type Here"]" />
                     </MudItem>
                     
-                    <MudItem sm="6" >
-                        <MudTextField @bind-Value="input.Notes"
-                                      For="@(() => input.Notes)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Label="@L["Notes"]"
-                                      Placeholder="@L["EnterYourNotes"]" />
+                   
+                    @* <StateLookups SelectValueChanged="SelectState"></StateLookups> *@
+                    <MudItem sm="6">
+                        <MudSelect Variant="Variant.Text"
+                                   Label="@L["State"]"
+                                   Placeholder="@L["Choose"]"
+                                   Clearable="true"
+                                   @bind-Value="input.StateId">
+                            @foreach (var state in states)
+                            {
+                                <MudSelectItem Value="state.Id">@state.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudItem>
-                    <GovernorateLookUps SelectValueChanged="SelectGovernment"></GovernorateLookUps>
-                    <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups>
                 </MudGrid>
             </MudForm>
 
