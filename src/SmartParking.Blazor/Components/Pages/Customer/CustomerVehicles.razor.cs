@@ -20,8 +20,8 @@ public partial class CustomerVehicles
     public CustomerDto Customer = new CustomerDto();
     protected override async Task OnInitializedAsync()
     {
-       vehicles = await CustomerAppService.GetVehiclesRelatedToSpecificCustomer(CustomerId);
         Customer = await CustomerAppService.GetAsync(CustomerId);
+        vehicles = await CustomerAppService.GetVehiclesRelatedToSpecificCustomer(CustomerId);
     }
     private void OnCloseViewOnly()
     {
