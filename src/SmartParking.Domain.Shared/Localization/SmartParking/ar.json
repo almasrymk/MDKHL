@@ -255,7 +255,7 @@
     "EnterYourSubscriptionName": "أدخل اسم الاشتراك الخاص بك",
     "EnterYourSubscriptionDescription": "أدخل وصف الاشتراك الخاص بك",
     "EnterYourSubscriptionPrice": "أدخل سعر الاشتراك الخاص بك",
-    "ChooseDate": "اختيار الا",
+    "ChooseDate": "اختيار التاريخ",
     "EnterYourInActivationDate": "أدخل تاريخ انهاء التفعيل الخاص بك",
     "EnterYourNumberOfCustomers": "أدخل عدد المستخدمين الخاص بك",
     "EnterYourNumberOfCameras": "أدخل عدد الكاميرات الخاصة بك",
@@ -402,7 +402,15 @@
     "StateEnglishName": "اسم المحافظة بالانجليزية",
     "RegionArabicName": "اسم المنطقة بالعربية",
     "RegionEnglishName": "اسم المنطقة بالانجليزية",
-    "State": "محافظة"
+    "State": "محافظة",
+    "CreationDate": "تاريخ الانشاء",
+    "UnlimitedCustomers": "عدد لا محدود من العملاء",
+    "UnlimitedOrganizations": "عدد لا محدود من المنشاءات",
+    "UnlimitedCameras": "عدد لا محدود من الكاميرات",
+    "UnlimitedGarages": "عدد لا محدود من المواقف",
+    "UnlimitedUsers": "عدد لا محدود من الموظفين",
+    "SaveAsDraft": "حفظ كمسودة",
+    "NumberOfUsers": "عدد موظفي المنشأة"
 
   }
 }
