@@ -28,12 +28,11 @@ public partial class OrganizationEdit
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; } 
     public string EnglishName { get; set; } 
-    public string UnifiedLicenseNum { get; set; } 
+    public string CommercialRegistrationNumber { get; set; } 
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     private string CountrySelectValue { get; set; }
     private string CitySelectValue { get; set; }
-
     public string RegionSelectValue { get; set; }
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
@@ -52,6 +51,7 @@ public partial class OrganizationEdit
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
+    public string Address { get; set; }
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -79,7 +79,7 @@ public partial class OrganizationEdit
         {
             ArabicName = ArabicName,
             EnglishName = EnglishName,
-            UnifiedLicenseNum = UnifiedLicenseNum,
+            CommercialRegistrationNumber = CommercialRegistrationNumber,
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = int.Parse(CitySelectValue),
@@ -102,7 +102,7 @@ public partial class OrganizationEdit
             IsClose = IsClose,
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
             ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
-
+            Address = Address,
         };
 
 
@@ -159,7 +159,7 @@ public partial class OrganizationEdit
          EnglishName = organization.EnglishName;
          ArabicName = organization.ArabicName;
          NumOfCameras = organization.NumOfCameras;
-        UnifiedLicenseNum = organization.UnifiedLicenseNum;
+        CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         if (organization.Status == Enums.Status.Active)
         {
             Status = true;
@@ -191,6 +191,7 @@ public partial class OrganizationEdit
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         AdditionalHourPrice = organization.AdditionalHourPrice;
+        Address = organization.Address;
     }
     private async Task GetRegions()
     {

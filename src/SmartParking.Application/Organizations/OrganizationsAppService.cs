@@ -1,19 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Scriban.Syntax;
 using SmartParking.Authentication;
 using SmartParking.CustomerCategories;
-using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using SmartParking.Results;
 using SmartParking.Subscriptions;
-using SmartParking.Validations.Organizations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -28,7 +25,6 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.TenantManagement;
-using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 
 namespace SmartParking.Organizations;
 
@@ -74,25 +70,15 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await CurrentUnitOfWork.SaveChangesAsync();
         tenant.CreatorId = CurrentUser.Id;
         await CurrentUnitOfWork.SaveChangesAsync();
-        var query = await _repository.GetListAsync(x => x.UnifiedLicenseNum == input.UnifiedLicenseNum);
-        Console.WriteLine($"count of unified license number {query.Count}");
+        var query = await _repository.GetListAsync(x => x.CommercialRegistrationNumber == input.CommercialRegistrationNumber);
+        Console.WriteLine($"count of Commercial Registration Number {query.Count}");
         if (query.Count > 0)
         {
-            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.UnifiedLicenseNumUnifiedLicenseNum) + query.First().ArabicName);
+            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
 
         }
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
-        if (input.IsClose == true)
-        {
-            input.ClosingHoursStart = input.ClosingHoursStart;
-            input.ClosingHoursEnd = input.ClosingHoursEnd;
-        }
-        else
-        {
-            input.ClosingHoursStart = TimeOnly.MinValue;
-            input.ClosingHoursEnd = TimeOnly.MaxValue;
-        }
-
+        
         await _repository.InsertAsync(organization, autoSave: true);
         UserCreateDto user = new UserCreateDto()
         {
@@ -116,6 +102,36 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
 
     }
+    //private string SaveImageAndReturnPath(IFormFile imageFile)
+    //{
+    //    // Ensure directory structure
+    //    var imageDirectoryPath = CreateImageDirectory(imageFile);
+
+    //    // Generate a unique file name with the original file extension
+    //    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+    //    string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+    //    // Save the image to the specified path
+    //    using (var fileStream = new FileStream(fullPath, FileMode.Create))
+    //    {
+    //        imageFile.CopyTo(fileStream);
+    //    }
+
+    //    // Return the relative path for storing in the database
+    //    return $"/OrganizationImages/{fileName}";
+    //}
+    //private string CreateImageDirectory(string image)
+    //{
+    //    // Define the path where the image will be saved
+    //    string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
+
+    //    // Ensure the directory exists
+    //    if (!Directory.Exists(ImageDirectoryPath))
+    //    {
+    //        Directory.CreateDirectory(ImageDirectoryPath);
+    //    }
+    //    return ImageDirectoryPath;
+    //}
     ///<inheritdoc/>
     //[Authorize(Roles = "Mdkhl")]
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
@@ -176,16 +192,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 throw new EntityNotFoundException(typeof(Organization), id);
 
         }
-        if (!input.IsClose)
-        {
-            input.ClosingHoursStart = organization.ClosingHoursStart;
-            input.ClosingHoursEnd = organization.ClosingHoursStart;
-        }
-        else
-        {
-            input.ClosingHoursStart = TimeOnly.MinValue;
-            input.ClosingHoursEnd = TimeOnly.MinValue;
-        }
+      
+       
         return await base.UpdateAsync(id, input);
     }
 
