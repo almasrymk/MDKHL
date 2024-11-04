@@ -108,7 +108,7 @@
                     <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="6">
                             <MudNumericField T="int"
-                                             Value="@((numberOfCustomers) ? 9999 : input.NumberOfUsers)"
+                                             Value="@(input.NumberOfMobileCustomers= (numberOfCustomers) ? 9999 : input.NumberOfUsers)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder="@L["Type Here"]"
@@ -127,7 +127,7 @@
                         <MudItem sm="6">
 
                             <MudNumericField T="int"
-                                             Value="@((numberOfOrganizations) ? 9999 : input.NumberOfOrganizations)"
+                                             Value="@(input.NumberOfOrganizations=(numberOfOrganizations) ? 9999 : input.NumberOfOrganizations)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
@@ -150,7 +150,7 @@
                         <MudItem sm="6">
 
                             <MudNumericField T="int"
-                                             Value="@((numberOfCameras) ? 9999 : input.NumberOfCameras)"
+                                             Value="@(input.NumberOfCameras=(numberOfCameras) ? 9999 : input.NumberOfCameras)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
@@ -175,7 +175,7 @@
                         <MudItem sm="6">
 
                             <MudNumericField T="int"
-                                             Value="@((numberOfGarages) ? 9999 : input.NumbersOfGarages)"
+                                             Value="@(input.NumbersOfGarages=(numberOfGarages) ? 9999 : input.NumbersOfGarages)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
@@ -196,7 +196,7 @@
 
                         <MudItem sm="6">
                             <MudNumericField T="int"
-                                             Value="@((numberOfUsers) ? 9999 : input.NumberOfUsers)"
+                                             Value="@(input.NumberOfUsers=(numberOfUsers) ? 9999 : input.NumberOfUsers)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
