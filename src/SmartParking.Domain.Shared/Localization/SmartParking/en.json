@@ -385,7 +385,9 @@
     "Camera Name": "Camera Name",
     "Paid": "Paid",
     "UnPaid": "UnPaid",
-    "Inactive": "In Active"
+    "Inactive": "In Active",
+    "State": "State"
+
 
   } 
 }
