@@ -63,6 +63,8 @@ public class CamerasAppService :
     }
     public override async Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input)
     {
+        var garage = await _garageAppService.GetAsync(input.GarageId);
+        var organization = await _organizationRepository.GetAsync(garage.OrganizationId);
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -80,12 +82,16 @@ public class CamerasAppService :
 			await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
 
         }
-		return await base.UpdateAsync(id, input);
+        Random rnd = new Random();
+        input.Code = organization.EnglishName.Substring(0, 2) + garage.Name.Substring(0, 1) + input.Name.Substring(0, 1) + rnd.Next(00, 99).ToString("00");
+        input.OrganizationId = organization.Id;
+        return await base.UpdateAsync(id, input);
     }
 
         public override async Task<CameraDto> GetAsync(int id)
         {
-            if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
             {
                 using (_dataFilter.Disable<IMultiTenant>())
                 {
@@ -127,6 +133,9 @@ public class CamerasAppService :
         /// <exception cref="UserFriendlyException"> exception is returned when Camera IP is duplicate </exception>
         public override async Task<CameraDto> CreateAsync(CreateUpdateCameraDto input)
         {
+            var garage = await _garageAppService.GetAsync(input.GarageId);
+            var organization = await _organizationRepository.GetAsync(garage.OrganizationId);
+
             if (await CheckIPUnique(input.CameraIP) == 1)
             {
                 throw new UserFriendlyException("The Camera IP is already in use.")
@@ -136,10 +145,13 @@ public class CamerasAppService :
             }
 		    if (input.Status == Enums.Status.Active)
 		    {
-
+                
 			    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
 		    }
-		    return await base.CreateAsync(input);
+            Random rnd = new Random();
+            input.Code = organization.EnglishName.Substring(0, 2)+garage.Name.Substring(0,1)+input.Name.Substring(0,1)+ rnd.Next(00, 99).ToString("00");
+            input.OrganizationId = organization.Id;    
+            return await base.CreateAsync(input);
         }
         /// <summary>
         /// method used to Check if IP is unqiue or not
