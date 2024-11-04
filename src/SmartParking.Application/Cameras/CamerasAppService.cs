@@ -83,7 +83,7 @@ public class CamerasAppService :
 
         }
         Random rnd = new Random();
-        input.Code = organization.EnglishName.Substring(0, 2) + garage.Name.Substring(0, 1) + input.Name.Substring(0, 1) + rnd.Next(00, 99).ToString("00");
+        input.Code = organization.EnglishName.Substring(0, 2) + garage.NameEn.Substring(0, 1) + input.Name.Substring(0, 1) + rnd.Next(00, 99).ToString("00");
         input.OrganizationId = organization.Id;
         return await base.UpdateAsync(id, input);
     }
@@ -143,13 +143,20 @@ public class CamerasAppService :
                     Code = "DuplicateCameraIP"
                 };
             }
-		    if (input.Status == Enums.Status.Active)
+        var numberOfCamerasForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+
+        if (organization.Subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
+        {
+            throw new Exception("UPGRADE subscription to add camera to organization.");
+
+        }
+        if (input.Status == Enums.Status.Active)
 		    {
                 
 			    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
 		    }
             Random rnd = new Random();
-            input.Code = organization.EnglishName.Substring(0, 2)+garage.Name.Substring(0,1)+input.Name.Substring(0,1)+ rnd.Next(00, 99).ToString("00");
+            input.Code = organization.EnglishName.Substring(0, 2)+garage.NameEn.Substring(0,1)+input.Name.Substring(0,1)+ rnd.Next(00, 99).ToString("00");
             input.OrganizationId = organization.Id;    
             return await base.CreateAsync(input);
         }
@@ -195,7 +202,8 @@ public class CamerasAppService :
                     or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Garage.Name.ToLower().Contains(input.SearchingTerm.ToLower())
+                    or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower())||
+                    or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
                     
                 );
             }
