@@ -40,7 +40,7 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
         RuleFor(x => x.InActivationDate)
          .NotEmpty();
 
-        RuleFor(x => x.NumberOfCustomers)
+        RuleFor(x => x.NumberOfUsers)
          .NotEmpty()
          .GreaterThan(0);
 

@@ -197,9 +197,6 @@ namespace SmartParking.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int>("GovernorateId")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -217,7 +214,7 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<int>("RegionId")
+                    b.Property<int>("StateId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -228,7 +225,7 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GovernorateId");
+                    b.HasIndex("StateId");
 
                     b.ToTable("Cities", (string)null);
                 });
@@ -505,75 +502,6 @@ namespace SmartParking.Migrations
                     b.HasIndex("OrganizationID");
 
                     b.ToTable("GarageTransactions");
-                });
-
-            modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ArabicCapital")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ArabicName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("EnglishCapital")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EnglishName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("Governorates", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Invoices.Invoice", b =>
@@ -1065,17 +993,11 @@ namespace SmartParking.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("NationalityId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
@@ -1369,6 +1291,12 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActiveCameras")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ActiveGarages")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("AdditionalHourPrice")
                         .HasColumnType("numeric");
@@ -3912,13 +3840,13 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Governorate", "Governorate")
+                    b.HasOne("SmartParking.Entities.Lookups.State", "State")
                         .WithMany("Cities")
-                        .HasForeignKey("GovernorateId")
+                        .HasForeignKey("StateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Governorate");
+                    b.Navigation("State");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
@@ -3957,17 +3885,6 @@ namespace SmartParking.Migrations
                     b.Navigation("Garage");
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
-                {
-                    b.HasOne("SmartParking.Entities.Country", "Country")
-                        .WithMany("Governorates")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Invoices.Invoice", b =>
@@ -4384,8 +4301,6 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Country", b =>
                 {
-                    b.Navigation("Governorates");
-
                     b.Navigation("Regions");
                 });
 
@@ -4396,16 +4311,16 @@ namespace SmartParking.Migrations
                     b.Navigation("Invoices");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Governorate", b =>
-                {
-                    b.Navigation("Cities");
-                });
-
             modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>
                 {
                     b.Navigation("Organizations");
 
                     b.Navigation("State");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Lookups.State", b =>
+                {
+                    b.Navigation("Cities");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", b =>

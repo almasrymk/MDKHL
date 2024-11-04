@@ -142,7 +142,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 InActivationDate = new DateOnly(2025, 10, 1),
                 NumbersOfGarages = 5,
                 NumberOfCameras = 10,
-                NumberOfCustomers = 100,
+                NumberOfUsers = 100,
                 NumberOfMobileCustomers = 50,
                 NumberOfOrganizations = 50,
                 SubscriptionSlotNumber = 10,

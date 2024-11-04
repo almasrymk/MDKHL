@@ -22,7 +22,9 @@ public class Camera : FullAuditedEntity<int>, IMultiTenant
     public string MacAddress { get; set; }
     public CameraType CameraType { get; set; }
     public virtual Garage Garage { get; set; }
+    public virtual Organization Organization { get; set; }
     public int GarageId { get; set; }
+    public int OrganizationId { get; set; }
     public Status Status { get; set; }
     public Guid? TenantId { get; set; }
 }

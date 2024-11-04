@@ -380,7 +380,14 @@
     "CountryEnglishName": "Country En Name",
     "RegionArabicName": "Region Ar Name",
     "RegionEnglishName": "Region En Name",
-    "State": "State"
+    "State": "State",
+    "CreationDate": "Creation Date",
+    "UnlimitedCustomers": "Unlimited Customers",
+    "UnlimitedOrganizations": "Unlimited Organizations",
+    "UnlimitedCameras": "Unlimited Cameras",
+    "UnlimitedGarages": "Unlimited Garages",
+    "UnlimitedUsers": "Unlimited Users",
+    "SaveAsDraft": "Save As Draft"
 
 
   } 

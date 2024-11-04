@@ -26,7 +26,7 @@
                                       For="@(() => input.ArabicName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["ُType Here"]"
+                                          Placeholder=@L["Type Here"]
                                           Label="@L["ArabicName"]"
                                       InputType="InputType.Text"
                                       Required="true" />
@@ -37,7 +37,7 @@
                                       For="@(() => input.EnglishName)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      Placeholder="@L["ُType Here"]"
+                                          Placeholder=@L["Type Here"]
                                           Label="@L["EnglishName"]"
                                       InputType="InputType.Text"
                                       Required="true" />
@@ -47,7 +47,6 @@
                                        Label="@L["SubscriptionType"]"
                                        Placeholder="@L["Choose"]"
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        Required="true"
                                        AnchorOrigin="Origin.TopCenter"
                                        TransformOrigin="Origin.TopCenter"
@@ -68,7 +67,7 @@
                                           InputType="InputType.Number"
                                           Required="true" />
                         </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="12">
                         <MudTextField @bind-Value="input.SubscriptionDescription"
                                       For="@(() => input.SubscriptionDescription)"
                                       Immediate="true"
@@ -79,78 +78,152 @@
                                       Required="true" />
                     </MudItem>
                    
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudDatePicker @bind-Date="_activateDate"
                                        @bind-value="_activateDate"
                                        Variant="Variant.Text"
-                                           Placeholder=@L["ChooseDate"]
+                                       Placeholder=@L["Will Be Generated Automatically"]
                                        Label="@L["ActivationDate"]"
-                                       Required="true"
-                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
+                                       Disabled
                                        ShowToolbar="false" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudDatePicker @bind-Date="_inActivateDate"
                                        @bind-value="_inActivateDate"
                                        Variant="Variant.Text"
-                                       Placeholder=@L["ChooseDate"]
+                                       Placeholder=@L["Will Be Generated Automatically"]
                                        Label="@L["InActivationDate"]"
-                                       Required="true"
-                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
+                                       Disabled
                                        ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="4">
-                        <MudTextField @bind-Value="input.NumberOfCustomers"
-                                      For="@(() => input.NumberOfCustomers)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Number"
-                                      Label="@L["NumberOfCustomers"]"
-                                      Required="true" />
+                       <MudDatePicker @bind-Date="_creationDate"
+                                      @bind-value="_creationDate"
+                                       Variant="Variant.Text"
+                                       Placeholder=@L["Will Be Generated Automatically"]
+                                       Label="@L["CreationDate"]"
+                                       Disabled
+                                       ShowToolbar="false" />
                     </MudItem>
+                    <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <MudItem sm="6">
+                            <MudNumericField T="int"
+                                             Value="@((numberOfCustomers) ? 9999 : input.NumberOfUsers)"
+                                             Immediate="true"
+                                             Variant="Variant.Text"
+                                             Placeholder="@L["Type Here"]"
+                                             Label="@L["NumberOfCustomers"]"
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="numberOfCustomers"
+                                             Required="numberOfCustomers" />
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["UnlimitedCustomers"]"
+                                       LabelPosition="LabelPosition.Start"
+                                       @bind-Value="numberOfCustomers"
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="6">
 
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="input.NumberOfOrganizations"
-                                      For="@(() => input.NumberOfCustomers)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
+                            <MudNumericField T="int"
+                                             Value="@((numberOfOrganizations) ? 9999 : input.NumberOfOrganizations)"
+                                             Immediate="true"
+                                             Variant="Variant.Text"
+                                             Placeholder=@L["Type Here"]
+                                             Label="@L["NumberOfOrganizations"]"
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="numberOfOrganizations"
+                                             Required="numberOfOrganizations" />
 
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Number"
-                                      Label="@L["NumberOfOrganizations"]"
-                                      Required="true" />
-                    </MudItem>
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="input.NumberOfCameras"
-                                      For="@(() => input.NumberOfCameras)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Number"
-                                      Label="@L["NumberOfCameras"]"
-                                      Required="true" />
-                    </MudItem>
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="input.NumbersOfGarages"
-                                      For="@(() => input.NumbersOfGarages)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Number"
-                                      Label="@L["NumbersOfGarages"]"
-                                      Required="true" />
-                    </MudItem>
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="input.NumberOfMobileCustomers"
-                                      For="@(() => input.NumberOfMobileCustomers)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Number"
-                                      Label="@L["NumberOfMobileCustomers"]"
-                                      Required="true" />
-                    </MudItem>
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudSwitch 
+                                Label="@L["UnlimitedOrganizations"]" 
+                                LabelPosition="LabelPosition.Start"
+                                @bind-Value="numberOfOrganizations" 
+                                Color="MudBlazor.Color.Primary" />
+
+                        </MudItem>
+                        <MudItem sm="6">
+
+                            <MudNumericField T="int"
+                                             Value="@((numberOfCameras) ? 9999 : input.NumberOfCameras)"
+                                             Immediate="true"
+                                             Variant="Variant.Text"
+                                             Placeholder=@L["Type Here"]
+                                             Label="@L["NumberOfCameras"]"
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="numberOfCameras"
+                                             Required="numberOfCameras" />
+
+                        </MudItem>
+
+
+                        <MudItem sm="6">
+                            <MudSwitch 
+                                Label="@L["UnlimitedCameras"]"
+                                LabelPosition="LabelPosition.Start"
+                                @bind-Value="numberOfCameras" 
+                                Color="MudBlazor.Color.Primary" />
+
+                        </MudItem>
+
+                        <MudItem sm="6">
+
+                            <MudNumericField T="int"
+                                             Value="@((numberOfGarages) ? 9999 : input.NumbersOfGarages)"
+                                             Immediate="true"
+                                             Variant="Variant.Text"
+                                             Placeholder=@L["Type Here"]
+                                             Label="@L["NumbersOfGarages"]"
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="numberOfGarages"
+                                             Required="numberOfGarages" />
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudSwitch 
+                                Label="@L["UnlimitedGarages"]"
+                                LabelPosition="LabelPosition.Start"
+                                @bind-Value="numberOfGarages" 
+                                Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudNumericField T="int"
+                                             Value="@((numberOfUsers) ? 9999 : input.NumberOfUsers)"
+                                             Immediate="true"
+                                             Variant="Variant.Text"
+                                             Placeholder=@L["Type Here"]
+                                             Label="@L["NumberOfUsers"]"
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="numberOfUsers"
+                                             Required="numberOfUsers" />
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["UnlimitedUsers"]"
+                                LabelPosition="LabelPosition.Start"
+                                @bind-Value="numberOfUsers"
+                                Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+
+                        
+
+
+           
+                   
+                    
+                  
+                    <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+
                     <MudItem sm="4">
                         <MudTextField @bind-Value="input.SubscriptionSlotNumber"
                                       For="@(() => input.SubscriptionSlotNumber)"
@@ -171,7 +244,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["SaveAsDraft"]</MudButton>
         </DialogActions>
 
     </MudDialog>
@@ -182,5 +255,6 @@
 <style>
     .mud-modal {
         border-radius: 0 20px 0 20px;
+        width:auto;
     }
 </style>
