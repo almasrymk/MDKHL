@@ -18,7 +18,7 @@
     <MudGrid>
         <MudItem sm="8">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                <h3 Color="fw-bold">Register</h3>
+                <h3 Color="fw-bold">@L["Register"]</h3>
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
                         <MudItem sm="4">
@@ -55,7 +55,7 @@
                     </MudGrid>
                     <div class="d-flex justify-content-between mt-auto">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="HandleCancel">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit" Disabled="@(form == null || !form.IsValid)">@L["Submit"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit" Disabled="@(form == null || !form.IsValid)">@L["Create"]</MudButton>
                     </div>
                 </MudForm>
 
