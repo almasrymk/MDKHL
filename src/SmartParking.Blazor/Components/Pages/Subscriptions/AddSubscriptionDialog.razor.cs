@@ -16,6 +16,13 @@ public partial class AddSubscriptionDialog
     private MudForm form;
     private DateTime? _activateDate = new DateTime();
     private DateTime? _inActivateDate = new DateTime();
+    private DateTime? _creationDate = new DateTime();
+    public bool numberOfGarages { get; set; }
+    public bool numberOfOrganizations { get; set; }
+    public bool numberOfCameras { get; set; }
+    public bool numberOfUsers { get; set; }
+    public bool numberOfCustomers { get; set; }
+
 
     public CreateUpdateSubscriptionDto input = new CreateUpdateSubscriptionDto();
     public List<SubscriptionTypeLookupDto> subscriptions = new List<SubscriptionTypeLookupDto>();
@@ -44,6 +51,7 @@ public partial class AddSubscriptionDialog
             input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
+            input.Status = Enums.SubscriptionStatus.Draft;
 
             var subscription = await SubscriptionAppService.CreateAsync(input);
 

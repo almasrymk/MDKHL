@@ -94,19 +94,19 @@
                                        IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                     </MudItem>
                     <MudItem sm="4">
-                        <MudTextField @bind-Value="subscription.NumberOfCustomers"
-                                      For="@(() => subscription.NumberOfCustomers)"
+                        <MudTextField @bind-Value="subscription.NumberOfUsers"
+                                          For="@(() => subscription.NumberOfUsers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
-                                      Label="@L["NumberOfCustomers"]"
+                                      Label="@L["NumberOfUsers"]"
                                       Required="true" />
                     </MudItem>
 
                     <MudItem sm="4">
                         <MudTextField @bind-Value="subscription.NumberOfOrganizations"
-                                      For="@(() => subscription.NumberOfCustomers)"
+                                      For="@(() => subscription.NumberOfOrganizations)"
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder="@L["Type Here"]"
