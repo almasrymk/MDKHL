@@ -163,7 +163,7 @@
     "Subscriptions": "إشتراكاتي",
     "Type": "النوع",
     "Type Here": "اكتب هنا",
-    "Unified License Num": "الرقم الموحد",
+    "CommercialRegistrationNumber": "السجل التجارى",
     "Update": "تـعديـل",
     "Update Garage for": "تعديل بيـانـات مـوقـف",
     "UpdateCities": "تحرير المدن",
@@ -410,7 +410,8 @@
     "UnlimitedGarages": "عدد لا محدود من المواقف",
     "UnlimitedUsers": "عدد لا محدود من الموظفين",
     "SaveAsDraft": "حفظ كمسودة",
-    "NumberOfUsers": "عدد موظفي المنشأة"
+    "NumberOfUsers": "عدد موظفي المنشأة",
+    "Address": "العنوان"
 
   }
 }

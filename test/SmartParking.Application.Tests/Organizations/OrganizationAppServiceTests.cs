@@ -70,8 +70,9 @@ public abstract class OrganizationAppServiceTests<TStartupModule> : SmartParking
             NumOfCameras = 5,
             PhoneNum = "012345664",
             Status = Enums.Status.Active,
-            UnifiedLicenseNum = "920126451",
-            WhatsAppNum = "+966531294567"
+            CommercialRegistrationNumber = "9201264511",
+            WhatsAppNum = "+966531294567",
+            Address = "123 Tahrir St Cairo 12345"
 
         };
         //Act
@@ -111,8 +112,9 @@ public abstract class OrganizationAppServiceTests<TStartupModule> : SmartParking
                     NumOfCameras = 5,
                     PhoneNum = "012345674",
                     Status = Enums.Status.Active,
-                    UnifiedLicenseNum = "920123454",
-                    WhatsAppNum = "+966531234565"
+                    CommercialRegistrationNumber = "9201264511",
+                    WhatsAppNum = "+966531234565",
+                    Address = "123 Tahrir St Cairo 12345"
                 }
             );
         });
