@@ -188,7 +188,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Garage
                 {
                   Code = "O000001-G-01",
-                  Name = "Main Garage",
+                  NameEn = "Main Garage",
+                  NameAr = "الموقف الرئيسي",
                   MaxCapacity = 150,
                   ClosingHours = new TimeOnly(22, 0), 
                   OrganizationId = organizationTest.Id,
@@ -201,7 +202,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Garage
                 {
                     Code = "O000001-G-02",
-                    Name = "Secondary Garage",
+                    NameEn = "Secondary Garage",
+                    NameAr = "الموقف الثاني",
                     MaxCapacity = 100,
                     ClosingHours = new TimeOnly(20, 0), 
                     OrganizationId = organizationTest.Id,
@@ -210,7 +212,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 autoSave: true
             );
 
-            var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.Name == "Main Garage");
+            var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
 
 
             await _cameraRepostory.InsertAsync(
@@ -226,7 +228,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
                     CameraType = CameraType.Entry,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
-                    TenantId = null              // Set TenantId if multi-tenant, or null
+                    TenantId = null,              // Set TenantId if multi-tenant, or null
+                    OrganizationId=organizationTest.Id,
                 },
                 autoSave: true
             );
@@ -244,7 +247,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
                     CameraType = CameraType.Exit,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
-                    TenantId = null              // Set TenantId if multi-tenant, or null
+                    TenantId = null,            // Set TenantId if multi-tenant, or null
+                    OrganizationId = organizationTest.Id,
                 },
                 autoSave: true
             );
