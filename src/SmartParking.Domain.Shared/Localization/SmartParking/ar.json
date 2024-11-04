@@ -224,8 +224,8 @@
     "TotalHours": "عدد الساعات",
     "InvoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "Can'tCreateInvoice": "لا يمكن إنشاء فاتورة",
-    "OrganizationArabicName": " اسم المنشأة بالعربية",
-    "GarageName": "المـوقـف",
+    "OrganizationArabicName": " اسم المنشأة",
+    "GarageNameAr": " اسم المـوقـف",
     "InvoiceDetails": "تفاصيل الفاتورة",
     "Print": "طباعة",
     "ChoosePaymentMethod": "اختر طريقة الدفع",
@@ -410,7 +410,8 @@
     "UnlimitedGarages": "عدد لا محدود من المواقف",
     "UnlimitedUsers": "عدد لا محدود من الموظفين",
     "SaveAsDraft": "حفظ كمسودة",
-    "NumberOfUsers": "عدد موظفي المنشأة"
+    "NumberOfUsers": "عدد موظفي المنشأة",
+    "GarageNameEn": "اسم الموقف بالانجليزيه"
 
   }
 }
