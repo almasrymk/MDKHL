@@ -326,9 +326,6 @@ public partial class Camera
     {
 
         Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled );
 
     }
