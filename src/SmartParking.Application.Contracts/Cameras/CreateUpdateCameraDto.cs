@@ -19,6 +19,7 @@ namespace SmartParking.Cameras
         public string MacAddress { get; set; }
         public CameraType CameraType { get; set; }
         public int GarageId { get; set; }
+        public int OrganizationId { get; set; }
         public Status Status { get; set; }
 
 		[JsonIgnore]
