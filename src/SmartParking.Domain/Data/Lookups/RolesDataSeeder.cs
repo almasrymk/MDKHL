@@ -44,6 +44,9 @@ public class RolesDataSeeder : IDataSeedContributor, ITransientDependency
         if (await _roleRepository.FindByNormalizedNameAsync(RolesType.OrganizationEmployee.ToString().ToUpper()) == null)
         {
             await _roleManager.CreateAsync(new IdentityRole(Guid.NewGuid(), RolesType.OrganizationEmployee.ToString()));
+        }if (await _roleRepository.FindByNormalizedNameAsync(RolesType.Keeper.ToString().ToUpper()) == null)
+        {
+            await _roleManager.CreateAsync(new IdentityRole(Guid.NewGuid(), RolesType.Keeper.ToString()));
         }
         
 
