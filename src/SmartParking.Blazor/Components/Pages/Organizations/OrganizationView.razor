@@ -18,7 +18,7 @@
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
 @inject ICurrentUser currentuser
-<PageTitle>@L["Edit Organization"]</PageTitle>
+<PageTitle>@L["View Organization"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="8">
@@ -36,10 +36,10 @@
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Label=@L["EnglishName"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
+                        <MudItem sm="8">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
                         </MudItem>
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
@@ -53,7 +53,24 @@
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="MaxCapacity" HideSpinButtons="true"  Label=@L["Max Capacity"] />
                         </MudItem>
-                       
+
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                        </MudItem>
                        
                         <MudItem sm="4"  >
                             <Label>@L["Status"]</Label>
