@@ -13,16 +13,14 @@ namespace SmartParking.Validations.CustomerValidations;
 
 public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustomerDto>
 {
-    private readonly IStringLocalizer<SmartParkingResource> _localizer;
     
-    public RegisterCustomerDtoValidator(IStringLocalizer<SmartParkingResource> localizer)
+    public RegisterCustomerDtoValidator()
     {
-        _localizer = localizer;
 
         RuleFor(x => x.ArabicName)
     .NotEmpty()
     .Matches(@"^([\u0600-\u06FF]+\s+){2}[\u0600-\u06FF]+$")
-    .WithMessage(_localizer["ArabicName must contain at least three Arabic words."])
+    .WithMessage("ArabicName must contain at least three Arabic words.")
     .MinimumLength(10)
     .WithMessage("ArabicName must be at least 10 characters long.");
 

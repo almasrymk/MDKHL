@@ -145,7 +145,7 @@ namespace SmartParking.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int?>("OrganizationId")
+                    b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -1240,7 +1240,10 @@ namespace SmartParking.Migrations
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NameAr")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameEn")
                         .HasColumnType("text");
 
                     b.Property<int>("OrganizationId")
@@ -1301,8 +1304,14 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("AdditionalHourPrice")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
                     b.Property<string>("ArabicName")
                         .HasColumnType("text");
+
+                    b.Property<int>("BuildingNumber")
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("CRExpiryDate")
                         .HasColumnType("date");
@@ -1319,6 +1328,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("Code")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)");
+
+                    b.Property<string>("CommercialRegistrationNumber")
+                        .HasColumnType("text");
 
                     b.Property<string>("ContactMail")
                         .HasColumnType("text");
@@ -1341,6 +1353,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
+
+                    b.Property<string>("District")
+                        .HasColumnType("text");
 
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
@@ -1380,8 +1395,14 @@ namespace SmartParking.Migrations
                     b.Property<int>("NumberOfHours")
                         .HasColumnType("integer");
 
+                    b.Property<string>("OrganizationPicture")
+                        .HasColumnType("text");
+
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
+
+                    b.Property<int>("PostalCode")
+                        .HasColumnType("integer");
 
                     b.Property<int>("RegionId")
                         .HasColumnType("integer");
@@ -1389,11 +1410,17 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("SecondHourPrice")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("SecondaryNumber")
+                        .HasColumnType("integer");
+
                     b.Property<int>("StateId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<string>("StreetName")
+                        .HasColumnType("text");
 
                     b.Property<int?>("SubscriptionId")
                         .HasColumnType("integer");
@@ -1403,9 +1430,6 @@ namespace SmartParking.Migrations
 
                     b.Property<decimal>("ThirdHourPrice")
                         .HasColumnType("numeric");
-
-                    b.Property<string>("UnifiedLicenseNum")
-                        .HasColumnType("text");
 
                     b.Property<string>("WhatsAppNum")
                         .HasColumnType("text");
@@ -1793,13 +1817,13 @@ namespace SmartParking.Migrations
                     b.Property<int>("NumberOfCameras")
                         .HasColumnType("integer");
 
-                    b.Property<int>("NumberOfCustomers")
-                        .HasColumnType("integer");
-
                     b.Property<int>("NumberOfMobileCustomers")
                         .HasColumnType("integer");
 
                     b.Property<int>("NumberOfOrganizations")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfUsers")
                         .HasColumnType("integer");
 
                     b.Property<int>("NumbersOfGarages")
@@ -3831,11 +3855,15 @@ namespace SmartParking.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartParking.Entities.Organizations.Organization", null)
+                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("Cameras")
-                        .HasForeignKey("OrganizationId");
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Garage");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
@@ -4016,11 +4044,13 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.Garage", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Organizations.Organization", null)
+                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("OrganizationGarages")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Organizations.GarageCategories", b =>

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SmartParking.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class enhanceorganization : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -971,38 +971,6 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Governorates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CountryId = table.Column<int>(type: "integer", nullable: false),
-                    EnglishCapital = table.Column<string>(type: "text", nullable: true),
-                    ArabicCapital = table.Column<string>(type: "text", nullable: true),
-                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Notes = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Governorates", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Governorates_Countries_CountryId",
-                        column: x => x.CountryId,
-                        principalTable: "Countries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Regions",
                 columns: table => new
                 {
@@ -1108,7 +1076,7 @@ namespace SmartParking.Migrations
                     InActivationDate = table.Column<DateOnly>(type: "date", nullable: false),
                     NumbersOfGarages = table.Column<int>(type: "integer", nullable: false),
                     NumberOfCameras = table.Column<int>(type: "integer", nullable: false),
-                    NumberOfCustomers = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfUsers = table.Column<int>(type: "integer", nullable: false),
                     NumberOfMobileCustomers = table.Column<int>(type: "integer", nullable: false),
                     NumberOfOrganizations = table.Column<int>(type: "integer", nullable: false),
                     SubscriptionSlotNumber = table.Column<int>(type: "integer", nullable: false),
@@ -1185,38 +1153,6 @@ namespace SmartParking.Migrations
                         name: "FK_AbpEntityPropertyChanges_AbpEntityChanges_EntityChangeId",
                         column: x => x.EntityChangeId,
                         principalTable: "AbpEntityChanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cities",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RegionId = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    GovernorateId = table.Column<int>(type: "integer", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Notes = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Cities_Governorates_GovernorateId",
-                        column: x => x.GovernorateId,
-                        principalTable: "Governorates",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1347,13 +1283,44 @@ namespace SmartParking.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StateId = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ArabicName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    EnglishName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Notes = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cities_State_StateId",
+                        column: x => x.StateId,
+                        principalTable: "State",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Organizations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Code = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: true),
-                    UnifiedLicenseNum = table.Column<string>(type: "text", nullable: true),
+                    CommercialRegistrationNumber = table.Column<string>(type: "text", nullable: true),
                     CRExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
                     LicenseExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
                     CountryId = table.Column<int>(type: "integer", nullable: false),
@@ -1375,6 +1342,10 @@ namespace SmartParking.Migrations
                     ClosingHoursEnd = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     SubscriptionId = table.Column<int>(type: "integer", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    ActiveGarages = table.Column<int>(type: "integer", nullable: false),
+                    ActiveCameras = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationPicture = table.Column<string>(type: "text", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -1427,13 +1398,11 @@ namespace SmartParking.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    NationalityId = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     PhoneNum = table.Column<string>(type: "text", nullable: true),
                     WhatsAppNum = table.Column<string>(type: "text", nullable: true),
                     ContactMail = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -1525,7 +1494,8 @@ namespace SmartParking.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Code = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    NameAr = table.Column<string>(type: "text", nullable: true),
+                    NameEn = table.Column<string>(type: "text", nullable: true),
                     MaxCapacity = table.Column<int>(type: "integer", nullable: false),
                     ClosingHours = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
@@ -1615,9 +1585,9 @@ namespace SmartParking.Migrations
                     MacAddress = table.Column<string>(type: "text", nullable: true),
                     CameraType = table.Column<int>(type: "integer", nullable: false),
                     GarageId = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    OrganizationId = table.Column<int>(type: "integer", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -1639,7 +1609,8 @@ namespace SmartParking.Migrations
                         name: "FK_Cameras_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2050,9 +2021,9 @@ namespace SmartParking.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cities_GovernorateId",
+                name: "IX_Cities_StateId",
                 table: "Cities",
-                column: "GovernorateId");
+                column: "StateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContactInfos_OrganizationId",
@@ -2113,11 +2084,6 @@ namespace SmartParking.Migrations
                 name: "IX_GarageTransactions_OrganizationID",
                 table: "GarageTransactions",
                 column: "OrganizationID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Governorates_CountryId",
-                table: "Governorates",
-                column: "CountryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_CustomerId",
@@ -2436,19 +2402,16 @@ namespace SmartParking.Migrations
                 name: "Cities");
 
             migrationBuilder.DropTable(
-                name: "State");
-
-            migrationBuilder.DropTable(
                 name: "Subscriptions");
 
             migrationBuilder.DropTable(
-                name: "Governorates");
-
-            migrationBuilder.DropTable(
-                name: "Regions");
+                name: "State");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionTypes");
+
+            migrationBuilder.DropTable(
+                name: "Regions");
 
             migrationBuilder.DropTable(
                 name: "Countries");

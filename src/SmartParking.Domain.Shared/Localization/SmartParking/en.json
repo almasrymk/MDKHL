@@ -391,12 +391,13 @@
     "Address": "Address",
     "GarageNameEn": "Garage Name",
     "BuidlingNumber": "Buidling Number",
-    "Street": "Street",
+    "StreetName": "Street",
     "SecondaryNumber": "Secondary Number",
     "District": "District",
     "PostalCode": "Postal Code",
     "PhoneNumber": "PhoneNumber",
-    "UserRole": "UserRole"
+    "UserRole": "UserRole",
+    "Details for Customer": "Details for Customer"
 
 
 
