@@ -40,22 +40,14 @@
                                       Placeholder="@L["Type Here"]"
                               Label="@L["Email"]" />
                     </MudItem>
-                    
-                    <MudItem sm="6" md="6">
-                <MudTextField @bind-Value="userCreate.UserName"
-                              For="@(() => userCreate.UserName)"
-                                      Variant="Variant.Text"
-                                      Class="w-100"
-                                      Placeholder="@L["Type Here"]"
-                                      Label="@L["user name"]"/>
-                    </MudItem>                   
+                          
                     <MudItem sm="6" md="6">
                     <MudTextField @bind-Value="userCreate.PhoneNumber"
                               For="@(() => userCreate.PhoneNumber)"
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["phone number"]"/>
+                                      Label="@L["PhoneNumber"]"/>
                     </MudItem>
                    
                     @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
@@ -79,23 +71,50 @@
 
                         </MudItem>
                     }
-                <MudItem sm="12" md="12">
-                <MudSelect @bind-Value="@userRole"
-                               Label="@L["user role"]"
-                               Placeholder="@L[ "Choose"]"
-                               HelperText=@L["Helper Text"]
-                               Required>
+                    @if (currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()))
+                    {
+                        <MudItem sm="12" md="12">
+                            <MudSelect @bind-Value="@userRole"
+                                           Label="@L["user role"]"
+                                           Placeholder="@L[ "Choose"]"
+                                           HelperText=@L["Helper Text"]
+                                           Required>
 
-                    @foreach (var role in Enum.GetValues(typeof(RolesType)))
-                        {
-                        <MudSelectItem Value="@role.ToString()">
+                                @foreach (var role in Enum.GetValues(typeof(RolesType)))
+                                    {
+                                        if (role.ToString() == Enums.RolesType.MdkhlEmployee.ToString() || role.ToString() == Enums.RolesType.Mdkhl.ToString())
+                                            continue;
+                                         <MudSelectItem Value="@role.ToString()">
+                                            @role.ToString()
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
 
-                                @role.ToString()
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
+                        </MudItem>                
+                     }
 
-                </MudItem>
+            @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString()) || currrentUser.IsInRole("admin"))
+                    {
+                        <MudItem sm="12" md="12">
+                            <MudSelect @bind-Value="@userRole"
+                                           Label="@L["user role"]"
+                                           Placeholder="@L[ "Choose"]"
+                                           HelperText=@L["Helper Text"]
+                                           Required>
+
+                                @foreach (var role in Enum.GetValues(typeof(RolesType)))
+                                    {
+                                    <MudSelectItem Value="@role.ToString()">
+
+                                            @role.ToString()
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                        </MudItem>                
+                     }
+
+            
                     <MudItem sm="9" md="9">
 
 
