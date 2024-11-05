@@ -10,5 +10,7 @@ public enum RolesType
 {
     Mdkhl,
     Organization,
-    Customer
+    Customer,
+    MdkhlEmployee,
+    OrganizationEmployee
 }
