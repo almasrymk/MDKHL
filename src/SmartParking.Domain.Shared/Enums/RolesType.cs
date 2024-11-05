@@ -12,5 +12,6 @@ public enum RolesType
     Organization,
     Customer,
     MdkhlEmployee,
-    OrganizationEmployee
+    OrganizationEmployee,
+    Keeper
 }
