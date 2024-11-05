@@ -26,9 +26,9 @@ public class AuthenticationsController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
-    public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
+    public async Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input)
     {
-        var tenant = await _authenticationApp.GetTenantByNameDtoAsync(input.Username);
+        var tenant = await _authenticationApp.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
         _currentTenant.Change(tenant?.Id ?? null);
         if (_user.IsAuthenticated)
         {

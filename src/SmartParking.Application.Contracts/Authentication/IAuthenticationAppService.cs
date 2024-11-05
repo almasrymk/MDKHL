@@ -24,13 +24,22 @@ public interface IAuthenticationAppService : IApplicationService
     /// A task that represents the asynchronous operation. The task result contains 
     /// the <see cref="Tenant"/> entity corresponding to the specified name.
     /// </returns>
-    public Task<Tenant> GetTenantByNameDtoAsync(string name);
+    public Task<Tenant> GetTenantByNameDtoAsync(string name);   
+    /// <summary>
+    /// Retrieves a <see cref="Tenant"/> entity by its name asynchronously.
+    /// </summary>
+    /// <param name="phoneNumber">The phone number of the tenant to retrieve.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains 
+    /// the <see cref="Tenant"/> entity corresponding to the specified name.
+    /// </returns>
+    public Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
     /// <summary>
     /// Logs in a user with the provided input.
     /// </summary>
     /// <param name="input">The login input containing username and password.</param>
     /// <returns>A <see cref="LoginResultDto"/> containing the result of the login attempt.</returns>
-    Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input);
+    Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input);
     /// <summary>
     /// Logs in a user with the provided input.
     /// </summary>
