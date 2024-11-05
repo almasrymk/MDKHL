@@ -55,6 +55,12 @@
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">

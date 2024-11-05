@@ -138,7 +138,16 @@ public partial class Camera
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "GarageName", IsFilterable = false, PropertyNmae = "Garage.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "GarageNameEn", IsFilterable = false, PropertyNmae = "Garage.NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+        else
+        {
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameAr"], Name = "GarageNameAr", IsFilterable = false, PropertyNmae = "Garage.NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = false, PropertyNmae = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyNmae = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -149,7 +158,19 @@ public partial class Camera
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
             if(item.Garage is not null)
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.Garage.Name));
+            {
+                if (CultureInfo.CurrentCulture.Name == "en")
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameEn"], item.Garage.NameEn));
+                }
+                else
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameAr"], item.Garage.NameAr));
+
+
+                }
+
+            }
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"], _localizer[$"{item.CameraType.ToString()}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
@@ -326,9 +347,6 @@ public partial class Camera
     {
 
         Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled );
 
     }

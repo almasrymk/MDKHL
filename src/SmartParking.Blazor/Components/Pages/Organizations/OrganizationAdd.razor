@@ -45,7 +45,7 @@
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["EnglishName"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UnifiedLicenseNum" Placeholder=@L["Type Here"] Label=@L["Unified License Num"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
 
                         <MudItem sm="4">
@@ -71,6 +71,9 @@
                              <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
                          </MudItem>
 
+                         <MudItem sm="4">
+                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                         </MudItem>
 
                         <MudItem sm="4">
                             <MudSelect T="string"
@@ -205,7 +208,7 @@
                             </MudSelect>
                         </MudItem>
 
-                        @if (IsNumberOfHoursExceeded){
+                        
 
                             <MudItem sm="4">
                                 <MudNumericField  @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
@@ -225,8 +228,8 @@
                             <MudItem sm="4">
                                 <MudNumericField  @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                             </MudItem>
-                        }
-                        @if(IsClose){
+                        
+                       
 
                         <MudItem sm="4">
                             <MudTimePicker  Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
@@ -234,7 +237,7 @@
                         <MudItem sm="4">
                             <MudTimePicker Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                         </MudItem>
-                        }
+                        
 
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />

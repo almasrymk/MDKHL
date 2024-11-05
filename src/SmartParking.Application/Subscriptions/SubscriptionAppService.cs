@@ -44,11 +44,6 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             input.Status = SubscriptionStatus.Draft;
         }
 
-        if (input.InActivationDate <= input.ActivationDate)
-        {
-            throw new InvalidOperationException("InActivationDate must be greater than ActivationDate");
-
-        }
 
         
 

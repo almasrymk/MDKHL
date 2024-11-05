@@ -7,11 +7,6 @@ using Volo.Abp.Application.Dtos;
 using MudBlazor;
 using System.Security.Authentication;
 using Volo.Abp;
-using Abp.Runtime.Validation;
-using System.Linq;
-using Volo.Abp.Users;
-using SmartParking.Blazor.Components.Pages.Cameras;
-using static MudBlazor.CategoryTypes;
 using SmartParking.Blazor.Components.SPComponents;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
@@ -207,7 +202,7 @@ public partial class Organization
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyNmae = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyNmae = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyNmae = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyNmae = "City.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 }
         else
         {
@@ -229,7 +224,7 @@ public partial class Organization
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.StateName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityName));
 
             }
             else
@@ -237,7 +232,7 @@ public partial class Organization
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateNameAr));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.StateNameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryNameAr));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));

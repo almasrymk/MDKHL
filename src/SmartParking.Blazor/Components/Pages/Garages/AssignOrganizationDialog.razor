@@ -91,7 +91,7 @@
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
-
+			
 			var tenantId = Organizations.Find(x=>x.Id==Garage.OrganizationId).TenantId;
 			Garage.TenantId = tenantId;
 			var garage=await GaragesAppService.UpdateAsync(UpdatedId, Garage);

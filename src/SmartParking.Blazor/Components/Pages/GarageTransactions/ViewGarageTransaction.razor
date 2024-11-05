@@ -123,7 +123,7 @@
 		OrgName = organization.EnglishName;
 
 		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
-		GarageName = Garage.Name;
+		GarageName = Garage.NameEn;
 		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
 		cameraCode = Camera.Code;
 		await base.OnInitializedAsync();

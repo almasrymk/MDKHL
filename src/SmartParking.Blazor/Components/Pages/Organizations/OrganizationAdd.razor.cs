@@ -22,7 +22,7 @@ public partial class OrganizationAdd
     public string UserName { get; set; }
     public string ArabicName { get; set; } 
     public string EnglishName { get; set; }
-    public string UnifiedLicenseNum { get; set; }
+    public string CommercialRegistrationNumber { get; set; }
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     private string CountrySelectValue {  get; set; }
@@ -45,7 +45,9 @@ public partial class OrganizationAdd
     public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
-    public string ContactMail { get; set; }    
+    public string ContactMail { get; set; }
+    public string Address { get; set; }
+
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -108,7 +110,7 @@ public partial class OrganizationAdd
         {
             ArabicName = ArabicName,
             EnglishName = EnglishName,
-            UnifiedLicenseNum = UnifiedLicenseNum,
+            CommercialRegistrationNumber = CommercialRegistrationNumber,
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = int.Parse(CitySelectValue),
@@ -123,15 +125,16 @@ public partial class OrganizationAdd
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
             IsClose = IsClose,
             WhatsAppNum = WhatsAppNum,
-            FirstHourPrice = IsNumberOfHoursExceeded ? FirstHourPrice: 0,
-            SecondHourPrice = IsNumberOfHoursExceeded ? SecondHourPrice:0,
-            ThirdHourPrice = IsNumberOfHoursExceeded ? ThirdHourPrice:0,
-            AdditionalHourPrice = IsNumberOfHoursExceeded ? AdditionalHourPrice:0,
-            FullDayPrice = IsNumberOfHoursExceeded ? FullDayPrice :0 ,
-            NumberOfHours = IsNumberOfHoursExceeded ? NumberOfHours:0,
-            ClosingHoursStart = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) : TimeOnly.MinValue,
-            ClosingHoursEnd = IsClose ? TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) : TimeOnly.MaxValue,
-            UserName = UserName
+            FirstHourPrice =  FirstHourPrice ,
+            SecondHourPrice =  SecondHourPrice,
+            ThirdHourPrice = ThirdHourPrice,
+            AdditionalHourPrice = AdditionalHourPrice,
+            FullDayPrice = FullDayPrice ,
+            NumberOfHours = NumberOfHours,
+            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) ,
+            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) ,
+            UserName = UserName,
+            Address = Address,
         };
        
         

@@ -21,7 +21,7 @@
     "ArabicName": "Ar Name",
     "EnglishName": "En Name",
     "English Name": "Name",
-    "Unified License Num": "Unified License Num",
+    "CommercialRegistrationNumber": "Commercial Registration Number",
     "Num Of Cameras": "Num Of Cameras",
     "Max Capacity": "Maximum Capacity",
     "Choose your date": "Choose your date",
@@ -205,7 +205,7 @@
     "Password": "Password",
     "Passport": "Passport",
     "FullName": "Full Name",
-    "Register": "Register",
+    "Register": "Add Customer",
     "PackageTypeEnglishName": "Package Type En Name",
     "Price": "Price",
     "Description": "Description",
@@ -380,7 +380,17 @@
     "CountryEnglishName": "Country En Name",
     "RegionArabicName": "Region Ar Name",
     "RegionEnglishName": "Region En Name",
-    "State": "State"
+    "State": "State",
+    "CreationDate": "Creation Date",
+    "UnlimitedCustomers": "Unlimited Customers",
+    "UnlimitedOrganizations": "Unlimited Organizations",
+    "UnlimitedCameras": "Unlimited Cameras",
+    "UnlimitedGarages": "Unlimited Garages",
+    "UnlimitedUsers": "Unlimited Users",
+    "SaveAsDraft": "Save As Draft",
+    "Address": "Address"
+    "SaveAsDraft": "Save As Draft",
+    "GarageNameEn": "Garage Name"
 
 
   } 

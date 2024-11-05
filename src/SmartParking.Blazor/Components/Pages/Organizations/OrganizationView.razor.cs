@@ -8,8 +8,6 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class OrganizationView
 {
-
-
     private string CityName { get; set; }
     private string CountryName{ get; set; }
     private string RegionName { get; set; }
@@ -19,7 +17,7 @@ public partial class OrganizationView
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
-    public string UnifiedLicenseNum { get; set; }
+    public string CommercialRegistrationNumber { get; set; }
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     private string CountrySelectValue { get; set; }
@@ -29,11 +27,11 @@ public partial class OrganizationView
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
-
     public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
+    public string Address { get; set; }
     private async Task FetchData()
     {
         var id = int.Parse(Id);
@@ -41,7 +39,8 @@ public partial class OrganizationView
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
         NumOfCameras = organization.NumOfCameras;
-        UnifiedLicenseNum = organization.UnifiedLicenseNum;
+        CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
+        Address = organization.Address;
         if (organization.Status == Enums.Status.Active)
         {
             Status = true;

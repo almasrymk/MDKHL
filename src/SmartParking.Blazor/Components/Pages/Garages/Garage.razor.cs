@@ -14,6 +14,7 @@ using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -58,11 +59,11 @@ public partial class Garage
 
     protected async override Task OnInitializedAsync()
     {
-        if (currentUser.IsInRole(RolesType.Organization.ToString()) || currentTenant.Id!=null)
+        if (currentUser.IsInRole(RolesType.Organization.ToString()) || currentTenant.Id != null)
         {
             ViewAssign = false;
-            MaxiumumNumberOfGarageAllowedToBeAdded =await OrganizationAppService.GetNumberOfGaragesAllowedToBeAdded();
-            ActiveGarages= await OrganizationAppService.GetNumberOfActiveGaragesOfOrganization();
+            MaxiumumNumberOfGarageAllowedToBeAdded = await OrganizationAppService.GetNumberOfGaragesAllowedToBeAdded();
+            ActiveGarages = await OrganizationAppService.GetNumberOfActiveGaragesOfOrganization();
 
         }
 		await base.OnInitializedAsync();
@@ -165,7 +166,18 @@ public partial class Garage
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "Name", IsFilterable = true, PropertyNmae = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "NameEn", IsFilterable = true, PropertyNmae = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationEnglishName"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyNmae = "OrganizationEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameAr"], Name = "NameAr", IsFilterable = true, PropertyNmae = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationArabicName"], Name = "OrganizationArabicName", IsFilterable = false, PropertyNmae = "OrganizationArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+
+
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity",PropertyNmae= "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         foreach (var item in garages.Items)
@@ -173,7 +185,18 @@ public partial class Garage
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.Name));
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameEn"], item.NameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationEnglishName"], item.OrganizationNameEn));
+
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameAr"], item.NameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationArabicName"], item.OrganizationNameAr));
+
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[item.Status.ToString()]));
 
@@ -202,7 +225,8 @@ public partial class Garage
 	        ClosingHours = garageDto.ClosingHours,
             Code = garageDto.Code,
             MaxCapacity = garageDto.MaxCapacity,
-            Name = garageDto.Name,
+            NameEn = garageDto.NameEn,
+            NameAr = garageDto.NameAr,
             OrganizationId = garageDto.OrganizationId,
             Status = garageDto.Status
 		};
@@ -225,7 +249,7 @@ public partial class Garage
 		var garageDto= await GarageAppService.GetAsync(id);
 
         var createUpdateGarage=new CreateUpdateGarageDto { 
-            Name=garageDto.Name,
+            NameEn = garageDto.NameEn   ,
             Code=garageDto.Code,
             Status=garageDto.Status,
             MaxCapacity=garageDto.MaxCapacity,
