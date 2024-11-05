@@ -142,6 +142,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             customer.IdentityUser.SetProperty("OrganizationId", org.Id);
             customer.IdentityUser.SetProperty("TenantId", null);
             customer.TenantId = null;
+            customer.IdentityUser.Name = input.FullName;
             var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
             await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
             if (!createdUser.Succeeded)
@@ -233,89 +234,103 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
 	{
-		var queryable = await _repository.GetQueryableAsync();
-		if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-		{
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
-			queryable = queryable.Where(or =>
-				or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) 
+		    var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(x => x.Organizations);
+            queryable = queryable.Include(x => x.IdentityUser);
+            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
-			);
-            queryable = queryable.Where(or =>
-				or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+            queryable=queryable.Where(x => x.Organizations.Any(org => org.Id == orgid));
+		    if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+		    {
 
-			);
-            queryable = queryable.Where(or =>
-				or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) 
+			    queryable = queryable.Where(or =>
+				    or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
-			);
-		}
-		if (!input.Sorting.IsNullOrEmpty())
-		{
-			if (input.Sorting.Contains("DESC"))
-			{
-				var sorting = input.Sorting.Split(' ').ToList();
-				queryable = queryable.OrderBy(sorting[0] + " descending");
-			}
-			else
-			{
-				queryable = queryable.OrderBy(input.Sorting);
-			}
+			    );
+                queryable = queryable.Where(or =>
+				    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
-		}
-		var totalCount = await AsyncExecuter.CountAsync(queryable);
+			    );
+                queryable = queryable.Where(or =>
+				    or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
-		queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-		var customers = await AsyncExecuter.ToListAsync(queryable);
+			    );
+		    }
+		    if (!input.Sorting.IsNullOrEmpty())
+		    {
+			    if (input.Sorting.Contains("DESC"))
+			    {
+				    var sorting = input.Sorting.Split(' ').ToList();
+				    queryable = queryable.OrderBy(sorting[0] + " descending");
+			    }
+			    else
+			    {
+				    queryable = queryable.OrderBy(input.Sorting);
+			    }
 
-		var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-		Console.WriteLine(customersDto.Count);
-		return new PagedResultDto<CustomerDto>(
-			totalCount,
-			customersDto
-		);
+		    }
+		    var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+		    queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+		    var customers = await AsyncExecuter.ToListAsync(queryable);
+
+		    var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+		    Console.WriteLine(customersDto.Count);
+		    return new PagedResultDto<CustomerDto>(
+			    totalCount,
+			    customersDto
+		    );
+        }
 	}
 
 	/// <inheritdoc/>
 	public async Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
 	{
-		// Get the IQueryable<customer> from the repository
-		var queryable = await _repository.GetQueryableAsync();
-		// Apply filtering
-		var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
-		if (filterExpression is not null)
-		{
-			queryable = queryable.Where(filterExpression);
-		}
-		if (!input.Sorting.IsNullOrEmpty())
-		{
-			if (input.Sorting.Contains("DESC"))
-			{
-				var sorting = input.Sorting.Split(' ').ToList();
-				queryable = queryable.OrderBy(sorting[0] + " descending");
-			}
-			else
-			{
-				queryable = queryable.OrderBy(input.Sorting);
-			}
 
-		}
-		// Get the total count of filtered records
-		var totalCount = await AsyncExecuter.CountAsync(queryable);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
-		// Apply pagination
-		queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-		// Execute the query and get the list of garages entities
-		var customers = await AsyncExecuter.ToListAsync(queryable);
+            var queryable = await _repository.GetQueryableAsync();
+            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+           
+            var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
 
-		// Map the garages entities to garagesDto objects
-		var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-		Console.WriteLine(customersDto.Count);
-		// Return the paginated result
-		return new PagedResultDto<CustomerDto>(
-			totalCount,
-			customersDto
-		);
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var customers = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the garages entities to garagesDto objects
+            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            Console.WriteLine(customersDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<CustomerDto>(
+                totalCount,
+                customersDto
+            );
+        }
 	}
 
     /// <inheritdoc/>

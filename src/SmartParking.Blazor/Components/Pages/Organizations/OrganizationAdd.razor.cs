@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
@@ -47,12 +48,18 @@ public partial class OrganizationAdd
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
     public string Address { get; set; }
+    public int BuildingNumber { get; set; }
+    public string StreetName { get; set; }
+    public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+
 
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
-    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    IList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     IList<SubscriptionDto> packages = new List<SubscriptionDto>();
     protected override async Task OnInitializedAsync()
@@ -90,8 +97,9 @@ public partial class OrganizationAdd
 		}
 
 	}
+    
 
-	private async Task Save()
+    private async Task Save()
     {
 		var successedMessage = L["OrganiztionCreatedSuccessfully"];
 		var errorMessage = L["Can'tCreateOrganiztion"];
@@ -106,6 +114,11 @@ public partial class OrganizationAdd
         {
             StatusValue = Enums.Status.Inactive;
         }
+        string newAddress = Address;
+
+        
+
+
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
             ArabicName = ArabicName,
@@ -134,7 +147,11 @@ public partial class OrganizationAdd
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) ,
             ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) ,
             UserName = UserName,
-            Address = Address,
+            StreetName=StreetName,
+            District=District,
+            BuildingNumber=BuildingNumber,
+            PostalCode=PostalCode,
+            SecondaryNumber=SecondaryNumber,
         };
        
         

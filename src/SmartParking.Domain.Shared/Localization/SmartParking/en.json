@@ -389,7 +389,19 @@
     "UnlimitedUsers": "Unlimited Users",
     "SaveAsDraft": "Save As Draft",
     "Address": "Address",
-    "GarageNameEn": "Garage Name"
+    "GarageNameEn": "Garage Name",
+    "BuidlingNumber": "Buidling Number",
+    "StreetName": "Street",
+    "SecondaryNumber": "Secondary Number",
+    "District": "District",
+    "PostalCode": "Postal Code",
+    "PhoneNumber": "PhoneNumber",
+    "UserRole": "UserRole",
+    "Details for Customer": "Details for Customer"
+
+
+
+
 
 
   } 

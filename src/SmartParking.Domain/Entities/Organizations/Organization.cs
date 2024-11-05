@@ -52,5 +52,15 @@ public class Organization : BaseEntity
     public  int ActiveGarages { get; set; }
     public  int ActiveCameras { get; set; }
     public string OrganizationPicture { get; set; }
+    public  int BuildingNumber { get; set; }
+    public string StreetName { get; set; }
+    public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+
+
+
+
+
 
 }

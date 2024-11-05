@@ -72,8 +72,22 @@
                          </MudItem>
 
                          <MudItem sm="4">
-                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                             <MudNumericField Required="true" Min="1" Max="9999"  @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                          </MudItem>
+
+                         <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
+                         </MudItem>
+                         <MudItem sm="4">
+                            <MudNumericField Required="true" Min="1" Max="9999" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
+                         </MudItem>
+
+                         <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
+                         </MudItem>
+                         <MudItem sm="4">
+                            <MudNumericField Required="true" Min="11111" Max="99999" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                        </MudItem>
 
                         <MudItem sm="4">
                             <MudSelect T="string"
@@ -81,7 +95,6 @@
                                        Label=@L["Country"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        Required
                                        ValueChanged="GetRegions">
                                 <MudSelectItem Value="CitySelectValue"></MudSelectItem>
@@ -106,7 +119,6 @@
                                            Label=@L["Region"]
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
-                                           Clearable="true"
                                            Required
                                            AnchorOrigin="Origin.TopCenter"
                                            ValueChanged="GetStates">
@@ -132,7 +144,6 @@
                                            Label=@L["State"]
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
-                                           Clearable="true"
                                            Required
                                            ValueChanged="GetCities">
 
@@ -158,7 +169,6 @@
                                            Label=@L["City"]
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
-                                           Clearable="true"
                                            Required
                                            @bind-Value="CitySelectValue">
                                     <MudSelectItem Value="@CitySelectValue"></MudSelectItem>
@@ -190,7 +200,6 @@
                                        Label=@L["Package"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       Clearable="true"
                                        Required
                                        @bind-Value="@PackageSelectValue">
                                 <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
@@ -211,22 +220,22 @@
                         
 
                             <MudItem sm="4">
-                                <MudNumericField  @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            <MudNumericField Required @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                            <MudNumericField Required @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
                             </MudItem>
                              <MudItem sm="4">
-                                <MudNumericField  @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
+                            <MudNumericField Required @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
+                            <MudNumericField Required @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField  @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
+                            <MudNumericField Required @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField  @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            <MudNumericField Required @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                             </MudItem>
                         
                        

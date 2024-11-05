@@ -32,6 +32,12 @@ public partial class OrganizationView
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
     public string Address { get; set; }
+    public int BuildingNumber { get; set; }
+    public string StreetName { get; set; }
+    public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+
     private async Task FetchData()
     {
         var id = int.Parse(Id);
@@ -72,6 +78,11 @@ public partial class OrganizationView
         WhatsAppNum = organization.WhatsAppNum;
         StateName=organization.StateName;
         Code = organization.Code;
+        BuildingNumber = organization.BuildingNumber;
+        StreetName = organization.StreetName;
+        SecondaryNumber = organization.SecondaryNumber;
+        PostalCode = organization.PostalCode;
+        District = organization.District;
     }
     protected override async Task OnInitializedAsync()
     {

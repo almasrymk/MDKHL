@@ -11,6 +11,7 @@ using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Volo.Abp.Validation;
 using SmartParking.Enums;
+using SmartParking.Entities.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -38,35 +39,65 @@ public partial class AddUser
     }
     private async void SubmitCreate()
     {
-        var organization = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
+        int orgId = 0;
+        Guid? TenantId= null;
+        if(currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()))
+        {
+
+           orgId= await OrganizationAppService.GetOrganizationIdByTenant(currrentTenant.Id);
+           var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            TenantId = org.TenantId;
+            
+
+        }
+        else
+        {
+           var result = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
+            orgId= result.Id;
+            TenantId = result.TenantId;
+
+        }
+
         var successedMessage = L["UserCreatedSuccessfully"];
         var errorMessage = L["Can'tCreateUser"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
-            if (userRole == RolesType.Mdkhl.ToString() || userRole == RolesType.MdkhlEmployee.ToString())
+            if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString())|| currrentUser.IsInRole("admin"))
             {
+                if (userRole == RolesType.Mdkhl.ToString() || userRole == RolesType.MdkhlEmployee.ToString())
+                {
+                    userCreate.TenantId = null;
+                    userCreate.UserType = 1;
+                }
+                else if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
+                {
+                    userCreate.OrganizationId = orgId;
+                    userCreate.TenantId = TenantId;
+                    userCreate.UserType = 2;
+                }
 
-                userCreate.UserType = 1;
             }
-            else
-            {
-                
-                userCreate.TenantId = organization.TenantId;
-                userCreate.UserType = 2;
+            else if (currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString())){
+
+                if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
+                {
+                    userCreate.OrganizationId = orgId;
+                    userCreate.TenantId = TenantId;
+                    userCreate.UserType = 2;
+                }
             }
+
             userCreate.Password = "P@ssw0rd";
             Roles[0] = userRole;
             userCreate.RoleNames=Roles;
+            userCreate.UserName = userCreate.PhoneNumber;
 
 
             var user = await UsersAppService.CreateAsync(userCreate);
             if (user != null)
             {
                 ShowSnackbar($"{successedMessage}", Severity.Success);
-                //MudDialogAdd.Close(DialogResult.Ok(true));
-                //await Task.Delay(1000);
-                //NavigationManager.NavigateTo("/garages", true);
             }
             else
             {
