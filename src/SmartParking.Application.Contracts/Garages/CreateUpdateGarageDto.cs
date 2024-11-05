@@ -11,7 +11,10 @@ namespace SmartParking.OrganizationsGarages;
 public class CreateUpdateGarageDto
 {
     public string Code { get; set; }
-    public string Name { get; set; }
+    public string NameEn { get; set; }
+    public string NameAr { get; set; }
+
+
     public int MaxCapacity { get; set; }
 	public int CurrnetCapicity { get; set; }
 

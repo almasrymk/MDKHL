@@ -5,6 +5,7 @@
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.Vehicles
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IInvoiceAppService InvoiceAppService
@@ -56,7 +57,8 @@
                                 }
                             </MudSelect>
                         </MudItem>
-
+                        @if (CultureInfo.CurrentCulture.Name == "en")
+                        {
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
                                        Label=@L["Garages"]
@@ -68,10 +70,31 @@
 
                                 @foreach (var garage in garages)
                                 {
-                                    <MudSelectItem Value="@garage.Id">@garage.Name</MudSelectItem>
+                                    <MudSelectItem Value="@garage.Id">@garage.NameEn</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
+                        }
+                        else
+                        {
+
+                            <MudItem sm="4">
+                                <MudSelect Variant="Variant.Text"
+                                           Label=@L["Garages"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Clearable="true"
+                                           Required="true"
+                                           @bind-Value="input.GarageId">
+
+                                    @foreach (var garage in garages)
+                                    {
+                                        <MudSelectItem Value="@garage.Id">@garage.NameAr</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            
+                        }
 
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />

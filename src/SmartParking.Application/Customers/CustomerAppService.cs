@@ -98,7 +98,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     }
 
                 }
-
+            if (input.IdentificationType == IdentificationTypes.NationalID)
+            {
+                var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
+                if (!nationalIdPattern.IsMatch(input.NationalId))
+                {
+                    throw new UserFriendlyException("Nation Id must be 10 digits");
+                }
+            }
+            else if (input.IdentificationType == IdentificationTypes.Passport)
+            {
+                var passportPattern = new Regex(@"^[a-zA-Z0-8]{6,9}$");
+                if (!passportPattern.IsMatch(input.NationalId))
+                {
+                    throw new UserFriendlyException("Passport must be 9 digits");
+                }
+            }
             var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
             if (result1 == false)
             {
@@ -204,8 +219,19 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-	/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    /// <inheritdoc/>
+
+    public override async Task<CustomerDto> GetAsync(Guid id)
+    {
+        var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+
+        }
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
 	{
 		var queryable = await _repository.GetQueryableAsync();
 		if (!string.IsNullOrWhiteSpace(input.SearchingTerm))

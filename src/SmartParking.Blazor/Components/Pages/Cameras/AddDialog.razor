@@ -3,6 +3,7 @@
 @using SmartParking.Enums
 @using SmartParking.Garages
 @using SmartParking.Localization
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.Validation
@@ -21,20 +22,37 @@
             
                     <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                         <MudGrid>
+                        @if (CultureInfo.CurrentCulture.Name == "en")
+                        {
                             <MudItem sm="6">
                                 <MudSelect @bind-Value="@cameraDto.GarageId"
                                            Variant="Variant.Text"
-                                           Label="@L["Garage Name"]"
+                                           Label="@L["GarageNameEn"]"
                                            Placeholder="Choose"
-                                           Required
-                                           Clearable="_clearable">
+                                           Required>
                                     @foreach (var garage in Garages)
                                     {
-                                        <MudSelectItem Value="garage.Id">@garage.Name</MudSelectItem>
+                                        <MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
                                     }
                                 </MudSelect>
-                            </MudItem>
-
+                             </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem sm="6">
+                            <MudSelect @bind-Value="@cameraDto.GarageId"
+                                       Variant="Variant.Text"
+                                       Label="@L["GarageNameAr"]"
+                                       Placeholder=@L["Choose"]
+                                       Required>
+                                @foreach (var garage in Garages)
+                                {
+                                    <MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        
+                    }
 
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="cameraDto.GarageId"
@@ -77,15 +95,7 @@
                                       Placeholder="@L["BrandName"]"
                                       Label="@L["BrandName"]" />
                             </MudItem>
-                            <MudItem sm="4">
-                                <MudTextField @bind-Value="cameraDto.Code"
-                                              For="@(() => cameraDto.Code)"
-                                              Immediate="true"
-                                      Required
-                                      Placeholder="@L["Code"]"
-                                      Label="@L["Code"]" />
-
-                            </MudItem>
+                          
                             <MudItem sm="4">
                        
                     <MudTextField @bind-Value="cameraDto.CameraIP"

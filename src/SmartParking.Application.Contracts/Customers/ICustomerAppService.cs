@@ -39,7 +39,12 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
 
-
+    /// <summary>
+    /// Method used to get customer by id 
+    /// </summary>
+    /// <param name="customerId">id f specific customer</param>
+    /// <returns>CustomerDto</returns>
+    Task<CustomerDto> GetAsync(Guid customerId);
     //Task<bool> SendOtpAsync(string mobileNumber);
 
 

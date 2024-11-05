@@ -72,7 +72,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ReverseMap();
         CreateMap<ContactInfoCreateUpdateDto, ContactInfo>().ReverseMap();
 
-        CreateMap<Garage, GarageDto>();
+        CreateMap<Garage, GarageDto>()
+       .ForMember(dest => dest.OrganizationNameAr, opt => opt.MapFrom(src => src.Organization.ArabicName))
+       .ForMember(dest => dest.OrganizationNameEn, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
         CreateMap<CreateUpdateGarageDto, Garage>().ReverseMap();
 
         CreateMap<Camera, CameraDto>();
@@ -105,7 +107,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<Invoice, InvoiceDto>()
-            .ForMember(d => d.GarageName, o => o.MapFrom(s => s.Garage.Name))
+            .ForMember(d => d.GarageName, o => o.MapFrom(s => s.Garage.NameEn))
             .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName));
             //.ForMember(d => d.PlateNumber, o => o.MapFrom(s => s.Vehicle.PlateNumber));
 
@@ -127,7 +129,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d=>d.SubscriptionType,o=>o.MapFrom(s=>s.SubscriptionType.Type))
             .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
 
-        CreateMap<CreateUpdateSubscriptionDto, Subscription>();
+        CreateMap<CreateUpdateSubscriptionDto, Subscription>()
+            .ForMember(d => d.CreationTime, o => o.MapFrom(s => s.CreationTime))
+            .ForMember(d => d.CreatorId, o => o.MapFrom(s => s.CreatorId));
 
 
         CreateMap<SubscriptionType, SubscriptionTypeDto>()

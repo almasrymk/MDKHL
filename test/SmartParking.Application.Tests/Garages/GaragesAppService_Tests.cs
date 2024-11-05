@@ -41,7 +41,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
         var oraganizationId=await GetOrganizationId();
         var garage = await _garageAppService.CreateAsync(new CreateUpdateGarageDto
         {
-            Name = "Test Garage",
+            NameEn = "Test Garage",
+            NameAr = "تيست موقف",
             MaxCapacity = 100,
             ClosingHours = new TimeOnly(18, 0),
             OrganizationId = oraganizationId,
@@ -51,7 +52,7 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
         var result = await _garageAppService.GetAsync(garage.Id);
 
         result.ShouldNotBeNull();
-        result.Name.ShouldBe("Test Garage");
+        result.NameEn.ShouldBe("Test Garage");
     }
 
     
@@ -62,7 +63,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
 
         await _garageAppService.CreateAsync(new CreateUpdateGarageDto
         {
-            Name = "Garage 1",
+            NameEn = "Garage 1",
+            NameAr = "موقف 1",
             MaxCapacity = 50,
             ClosingHours = new TimeOnly(17, 0),
             OrganizationId = oraganizationId,
@@ -71,7 +73,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
 
         await _garageAppService.CreateAsync(new CreateUpdateGarageDto
         {
-            Name = "Garage 2",
+            NameEn = "Garage 2",
+            NameAr = "موقف 2",
             MaxCapacity = 150,
             ClosingHours = new TimeOnly(20, 0),
             OrganizationId = oraganizationId,
@@ -90,7 +93,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
 
         var input = new CreateUpdateGarageDto
         {
-            Name = "New Garage",
+            NameEn = "New Garage",
+            NameAr = "موقف جديد",
             MaxCapacity = 200,
             ClosingHours = new TimeOnly(21, 0),
             OrganizationId = oraganizationId,
@@ -100,7 +104,7 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
         var result = await _garageAppService.CreateAsync(input);
 
         result.Id.ShouldBeGreaterThan(0); 
-        result.Name.ShouldBe("New Garage");
+        result.NameEn.ShouldBe("New Garage");
         result.MaxCapacity.ShouldBe(200);
     }
 
@@ -111,7 +115,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
 
         var input = new CreateUpdateGarageDto
         {
-            Name = "123Invalid",  // Invalid: doesn't start with a letter
+            NameEn = "123Invalid",  // Invalid: doesn't start with a letter
+            NameAr = "غير صحيح",  // Invalid: doesn't start with a letter
             MaxCapacity = 200,
             ClosingHours = new TimeOnly(21, 0),
             OrganizationId = oraganizationId,
@@ -121,7 +126,7 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
          var exception = await Assert.ThrowsAsync<AbpValidationException>(async () =>
             await _garageAppService.CreateAsync(input));
 
-        exception.ValidationErrors.ShouldContain(err => err.MemberNames.Contains(nameof(CreateUpdateGarageDto.Name)));
+        exception.ValidationErrors.ShouldContain(err => err.MemberNames.Contains(nameof(CreateUpdateGarageDto.NameEn)));
     }
 
     
@@ -133,7 +138,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
 
         var input = new CreateUpdateGarageDto
         {
-            Name = "Valid Garage",
+            NameEn = "Valid Garage",
+            NameAr = "موقف صحيح",
             MaxCapacity = 1000,  // Invalid: exceeds the upper limit
             ClosingHours = new TimeOnly(21, 0),
             OrganizationId = oraganizationId,
@@ -151,7 +157,8 @@ public abstract class GaragesAppService_Tests<TStartupModule> : SmartParkingAppl
 
         var input = new CreateUpdateGarageDto
         {
-            Name = "Valid Garage",
+            NameEn = "Valid Garage",
+            NameAr = "موقف صحيح",
             MaxCapacity = 200,
             ClosingHours = new TimeOnly(21, 0),
             OrganizationId = 0,  // Invalid: should be greater than 0

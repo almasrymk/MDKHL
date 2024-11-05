@@ -256,7 +256,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         var qR = new
         {
             sellerName = invoice.Organization.EnglishName,
-            vatRegistration = invoice.Organization.UnifiedLicenseNum,
+            vatRegistration = invoice.Organization.CommercialRegistrationNumber,
             timeStamp = DateTime.Now.ToString(),
             invoiceAmount = invoice.InvoicePrice.ToString(),
             vatAmount = percentage.ToString()

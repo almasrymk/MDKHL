@@ -21,10 +21,14 @@
 
 @code {
     [Parameter] public Array Links { get; set; }
+
+    
+
+
     private List<MudBlazor.BreadcrumbItem> _items = new List<MudBlazor.BreadcrumbItem>
     {
-        new MudBlazor.BreadcrumbItem("Home", href: "#"),
-        new MudBlazor.BreadcrumbItem("Dashboard", href: "#"),
+        new MudBlazor.BreadcrumbItem("Home", href: "/"),
+        new MudBlazor.BreadcrumbItem("Dashboard", href: "/"),
 
     };
 }

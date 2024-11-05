@@ -11,8 +11,8 @@ namespace SmartParking.Enums;
 public enum OrganizationCreationValidations
 {
 
-    [Description("Unified License Number is used of another Organization")]
-    UnifiedLicenseNumUnifiedLicenseNum,
+    [Description("Commercial Registration Number is used of another Organization")]
+    CommercialRegistrationNumber,
 
     [Description("Orgaization has been deleted")]
     OrganizationDeleteion,

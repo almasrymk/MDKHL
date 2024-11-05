@@ -11,12 +11,8 @@ public class CreateUpdateOrganiztionDto
 {
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
-
-    public string UnifiedLicenseNum { get; set; }
-   // public Guid TenantId { get; set; }
-
+    public string CommercialRegistrationNumber { get; set; }
     public int NumOfCameras { get; set; }
-
     public int MaxCapacity { get; set; }
     public DateOnly CRExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public DateOnly LicenseExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
@@ -40,5 +36,8 @@ public class CreateUpdateOrganiztionDto
     public TimeOnly ClosingHoursStart { get; set; }
     public TimeOnly ClosingHoursEnd { get; set; }
     public string UserName { get; set; }
+    public string Address { get; set; }
+    public string OrganizationPicture { get; set; }
+
 
 }
