@@ -19,7 +19,7 @@ public class AuthenticationsController : ControllerBase
     }
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<LoginResultDto> LoginAsync(LoginInputDto input)
+    public async Task<LoginResultDto> LoginAsync(LoginMobileInputDto input)
     {
         return await _authenticationApp.LoginAsync(input);
     }
