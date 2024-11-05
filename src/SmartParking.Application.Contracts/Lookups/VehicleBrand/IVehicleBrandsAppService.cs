@@ -1,4 +1,6 @@
 ﻿
+using SmartParking.Results;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -33,5 +35,14 @@ namespace SmartParking.Lookups.VehicleBrand
         public Task<PagedResultDto<VehicleBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
         public  Task DeleteAsync(int id);
+
+        /// <summary>
+        /// Asynchronously retrieves a list of vehicle brand data transfer objects.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task{TResult}"/> representing the asynchronous operation. 
+        /// The task result contains a list of <see cref="VehicleBrandDto"/> objects representing the vehicle brands.
+        /// </returns>
+        Task<Result<List<VehicleBrandDto>>> GetbrandsAsync();
     }
 }

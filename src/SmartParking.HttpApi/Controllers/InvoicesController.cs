@@ -30,6 +30,13 @@ public class InvoicesController : AbpController
     public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoices([FromQuery] PagedAndSortedResultRequestDto input)
     {
         return await _invoicesAppService.GetListAsync(input);
+    }  
+    
+    [HttpGet("getInvoiceDetails")]
+    [Authorize]
+    public async Task<Result<InvoiceDto>> GetInvoiceDetails(int invoiceId)
+    {
+        return await _invoicesAppService.GetAsync(invoiceId);
     }
 
 }

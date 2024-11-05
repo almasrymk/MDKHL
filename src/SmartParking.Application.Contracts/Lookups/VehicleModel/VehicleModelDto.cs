@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Lookups.VehicleBrand;
 namespace SmartParking.Lookups.VehicleModel
 {
 	public class VehicleModelDto: FullAuditedEntityDto<int>
@@ -14,7 +15,7 @@ namespace SmartParking.Lookups.VehicleModel
 		public int VehiclesBrandId { get; set; }
         public string VehicleBrandArabicName { get; set; }
         public string VehicleBrandEnglishName { get; set; }
-		public virtual SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand VehiclesBrand { get; set; }
+		public VehicleBrandDto VehiclesBrand { get; set; }
 
 
 	}

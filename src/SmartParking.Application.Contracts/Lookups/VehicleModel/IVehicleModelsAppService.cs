@@ -1,4 +1,6 @@
 ﻿
+using SmartParking.Results;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -38,5 +40,7 @@ namespace SmartParking.Lookups.VehicleModel
         /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
         /// <returns>Camera Dto</returns>
         public Task<PagedResultDto<VehicleModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+        public Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId);
     }
 }
