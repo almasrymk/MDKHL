@@ -418,6 +418,8 @@
     "SecondaryNumber": "الرقم الفرعي",
     "District": "الحي",
     "PostalCode": "الرمز البريدي",
+    "PhoneNumber": "رقم الهاتف",
+    "UserRole": "دور الموظف"
 
 
 

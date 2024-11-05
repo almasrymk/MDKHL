@@ -394,7 +394,10 @@
     "Street": "Street",
     "SecondaryNumber": "Secondary Number",
     "District": "District",
-    "PostalCode": "Postal Code"
+    "PostalCode": "Postal Code",
+    "PhoneNumber": "PhoneNumber",
+    "UserRole": "UserRole"
+
 
 
 
