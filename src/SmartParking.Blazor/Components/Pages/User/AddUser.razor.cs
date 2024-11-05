@@ -40,12 +40,13 @@ public partial class AddUser
     private async void SubmitCreate()
     {
         int orgId = 0;
-        Organization org = new Organization();
+        Guid? TenantId= null;
         if(currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()))
         {
 
            orgId= await OrganizationAppService.GetOrganizationIdByTenant(currrentTenant.Id);
-           org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+           var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            TenantId = org.TenantId;
             
 
         }
@@ -53,6 +54,7 @@ public partial class AddUser
         {
            var result = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
             orgId= result.Id;
+            TenantId = result.TenantId;
 
         }
 
@@ -61,7 +63,7 @@ public partial class AddUser
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
-            if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString()))
+            if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString()) || currrentUser.IsInRole("admin"))
             {
                 if (userRole == RolesType.Mdkhl.ToString() || userRole == RolesType.MdkhlEmployee.ToString())
                 {
@@ -70,18 +72,19 @@ public partial class AddUser
                 }
                 else if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
                 {
-                    userCreate.OrganizationId=orgId;
-                    userCreate.TenantId = org.TenantId;
+                    userCreate.OrganizationId = orgId;
+                    userCreate.TenantId = TenantId;
                     userCreate.UserType = 2;
                 }
 
             }
-            else if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString())){
+            else if (currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()))
+            {
 
                 if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
                 {
                     userCreate.OrganizationId = orgId;
-                    userCreate.TenantId = org.TenantId;
+                    userCreate.TenantId = TenantId;
                     userCreate.UserType = 2;
                 }
             }

@@ -78,7 +78,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         }
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
-        
+        organization.TenantId = tenant.Id;
         await _repository.InsertAsync(organization, autoSave: true);
         UserCreateDto user = new UserCreateDto()
         {
