@@ -16,7 +16,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <summary>
     /// abstract method to get specific invoice
     /// </summary>
-    /// <param name="input">ivoice create dto</param>
+    /// <param name="id">ivoice id</param>
     /// <returns>Invoice Dto</returns>
     public Task<InvoiceDto> GetAsync(int id);
 

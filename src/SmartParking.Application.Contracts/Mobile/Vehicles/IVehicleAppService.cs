@@ -1,4 +1,5 @@
-﻿using SmartParking.Results;
+﻿using SmartParking.Lookups.VehicleBrand;
+using SmartParking.Results;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -14,4 +15,6 @@ public interface IVehicleAppService : IApplicationService
 {
     Task<Result<VehicleDto>> CreateAsync(CreateUpdateVehicleDto input);
     Task<Result<PagedResultDto<VehicleDto>>> GetListAsync(PagedAndSortedResultRequestDto input);
+
+
 }

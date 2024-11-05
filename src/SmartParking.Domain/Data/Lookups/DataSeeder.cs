@@ -249,7 +249,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
                     CameraType = CameraType.Exit,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
-                    TenantId = null              // Set TenantId if multi-tenant, or null
+                    TenantId = null ,             // Set TenantId if multi-tenant, or null
+                    OrganizationId = organizationTest.Id
                 },
                 autoSave: true
             );

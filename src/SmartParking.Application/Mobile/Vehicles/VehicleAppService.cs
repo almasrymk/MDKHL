@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Vehicles;
+using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Results;
 using SmartParking.Vehicles;
 using System;

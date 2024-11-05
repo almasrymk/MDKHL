@@ -22,6 +22,6 @@ public class CameraDto
     public CameraType CameraType { get; set; }
     public int GarageId { get; set; }
     public Status Status { get; set; }
-    public virtual  Garage Garage { get; set; }
+    public   GarageDto Garage { get; set; }
     public Guid? TenantId { get; set; }
 }

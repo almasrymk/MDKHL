@@ -1,4 +1,6 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Packages;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,8 @@ namespace SmartParking.CustomerPackages
         >
     {
         Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID, Guid customerID);
+        Task<Result<List<PackageDto>>> GetPackageByCustomer();
 
 
-	}
+    }
 }

@@ -14,7 +14,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 {
     public CreatedUpdatedOrganizationDtoValidator()
     {
-        RuleFor(x=>x.UnifiedLicenseNum).Length(9).NotEmpty().Matches(@"^920[^\s,]*$");
+        RuleFor(x=>x.CommercialRegistrationNumber).Length(10).NotEmpty().Matches(@"^920[^\s,]*$");
         RuleFor(x => x.ArabicName)
         .NotEmpty()
         .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$")
