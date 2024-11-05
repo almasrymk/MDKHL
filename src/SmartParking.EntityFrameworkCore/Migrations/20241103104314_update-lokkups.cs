@@ -24,9 +24,9 @@ namespace SmartParking.Migrations
                 table: "Cities");
 
 
-            migrationBuilder.DropColumn(
-                name: "Status",
-                table: "ContactInfos");
+            //migrationBuilder.DropColumn(
+            //    name: "Status",
+            //    table: "ContactInfos");
 
             migrationBuilder.DropColumn(
                 name: "GovernorateId",

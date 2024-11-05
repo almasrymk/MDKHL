@@ -458,3 +458,1177 @@
 2024-11-03 15:02:58.450 +02:00 [DBG] Adding entry for "252069e4-3f5b-4807-9020-ff0cfcce9d32"/MudBlazor.MudPopoverProvider. 1 total observers after add.
 2024-11-03 15:02:58.451 +02:00 [DBG] Updating entry for "252069e4-3f5b-4807-9020-ff0cfcce9d32"/MudBlazor.MudPopoverProvider. 1 total observers.
 2024-11-03 15:12:08.651 +02:00 [INF] Starting web host.
+2024-11-03 16:43:34.315 +02:00 [INF] Starting web host.
+2024-11-03 16:43:38.905 +02:00 [INF] Loaded ABP modules:
+2024-11-03 16:43:38.906 +02:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-11-03 16:43:38.906 +02:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-11-03 16:43:38.906 +02:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-11-03 16:43:38.906 +02:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-11-03 16:43:38.906 +02:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-11-03 16:43:38.906 +02:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-11-03 16:43:38.906 +02:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-11-03 16:43:38.906 +02:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-11-03 16:43:38.906 +02:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-11-03 16:43:38.906 +02:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-11-03 16:43:38.906 +02:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-11-03 16:43:38.906 +02:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-11-03 16:43:38.906 +02:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-11-03 16:43:38.906 +02:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-11-03 16:43:38.906 +02:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-11-03 16:43:38.906 +02:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-11-03 16:43:38.907 +02:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-11-03 16:43:38.907 +02:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-11-03 16:43:38.907 +02:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-11-03 16:43:38.907 +02:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-11-03 16:43:38.907 +02:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-11-03 16:43:38.907 +02:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-11-03 16:43:38.907 +02:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-11-03 16:43:38.907 +02:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-11-03 16:43:38.907 +02:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-11-03 16:43:38.907 +02:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-11-03 16:43:38.907 +02:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-11-03 16:43:38.952 +02:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-11-03 16:43:38.963 +02:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-11-03 16:43:43.298 +02:00 [INF] Initialized all ABP modules.
+2024-11-03 16:44:13.208 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:13.224 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:13.226 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:13.227 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:13.228 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:13.242 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:13.243 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-11-03 16:44:13.244 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-11-03 16:44:13.245 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-11-03 16:44:13.246 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-11-03 16:44:13.248 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:13.248 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:13.250 +02:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-11-03 16:44:13.527 +02:00 [DBG] Adding entry for "7845e8c0-af03-4757-b060-717f2ddde5c3"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:44:13.528 +02:00 [DBG] Updating entry for "7845e8c0-af03-4757-b060-717f2ddde5c3"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:44:14.224 +02:00 [DBG] Removed entry for "7845e8c0-af03-4757-b060-717f2ddde5c3". 0 total observers after remove.
+2024-11-03 16:44:14.581 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:14.582 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:14.582 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:14.583 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:14.583 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:14.584 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:14.585 +02:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-11-03 16:44:14.619 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:14.619 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:14.619 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:14.619 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:14.619 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:14.620 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:14.620 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-11-03 16:44:14.620 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-11-03 16:44:14.620 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-11-03 16:44:14.620 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-11-03 16:44:14.621 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:14.621 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:14.621 +02:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-11-03 16:44:14.837 +02:00 [DBG] Adding entry for "97f00d7c-37c4-436e-839a-4f0898c987b7"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:44:14.837 +02:00 [DBG] Updating entry for "97f00d7c-37c4-436e-839a-4f0898c987b7"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:44:16.166 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:16.167 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:16.167 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:16.167 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:16.167 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+EvaluateValidatedTokens.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromAuthorizationHeader.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromBodyForm.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ExtractAccessTokenFromQueryString.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was successfully processed by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:16.168 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessAuthenticationContext was marked as rejected by OpenIddict.Validation.OpenIddictValidationHandlers+ValidateRequiredTokens.
+2024-11-03 16:44:16.168 +02:00 [DBG] AuthenticationScheme: OpenIddict.Validation.AspNetCore was not authenticated.
+2024-11-03 16:44:17.418 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:44:17.826 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:44:17.836 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:44:17.858 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:17.858 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:17.858 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:17.858 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:17.858 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:17.879 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:17.884 +02:00 [DBG] Filling dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:18.854 +02:00 [DBG] Adding entry for "023d140a-9703-4810-8db0-3d30bb1576cd"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:44:18.854 +02:00 [DBG] Updating entry for "023d140a-9703-4810-8db0-3d30bb1576cd"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:44:20.869 +02:00 [DBG] Removed entry for "023d140a-9703-4810-8db0-3d30bb1576cd". 0 total observers after remove.
+2024-11-03 16:44:20.979 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:20.979 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:20.980 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:20.980 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:20.980 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:20.995 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:21.054 +02:00 [DBG] Removed entry for "97f00d7c-37c4-436e-839a-4f0898c987b7". 0 total observers after remove.
+2024-11-03 16:44:21.365 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:21.365 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:21.366 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:21.366 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:21.366 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:21.385 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:21.422 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:21.423 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:21.423 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:21.423 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:21.424 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:21.435 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:21.463 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:21.464 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:21.464 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:21.464 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:21.464 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:21.478 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:21.497 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:21.516 +02:00 [DBG] Adding entry for "4a77a05b-dc36-44b4-a0a0-f4e1278ff5a3"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:44:21.516 +02:00 [DBG] Updating entry for "4a77a05b-dc36-44b4-a0a0-f4e1278ff5a3"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:44:21.741 +02:00 [DBG] Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+2024-11-03 16:44:26.781 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:26.798 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:26.798 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:26.798 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:26.798 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:26.798 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:26.805 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:26.811 +02:00 [DBG] Adding entry for "f4f76a02-1a65-44ba-b362-e028d1b4916e"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:44:26.811 +02:00 [DBG] Updating entry for "f4f76a02-1a65-44ba-b362-e028d1b4916e"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:44:28.000 +02:00 [ERR] Failed executing DbCommand (73ms) [Parameters=[@__ef_filter__p_0='?' (DbType = Boolean), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT o."Id", o."ActiveCameras", o."ActiveGarages", o."AdditionalHourPrice", o."ArabicName", o."CRExpiryDate", o."CityId", o."ClosingHoursEnd", o."ClosingHoursStart", o."Code", o."ContactMail", o."CountryId", o."CreationTime", o."CreatorId", o."DeleterId", o."DeletionTime", o."EnglishName", o."FirstHourPrice", o."FullDayPrice", o."IsClose", o."IsDeleted", o."IsNumberOfHoursExceeded", o."LastModificationTime", o."LastModifierId", o."LicenseExpiryDate", o."Notes", o."NumberOfHours", o."PhoneNum", o."RegionId", o."SecondHourPrice", o."StateId", o."Status", o."SubscriptionId", o."TenantId", o."ThirdHourPrice", o."UnifiedLicenseNum", o."WhatsAppNum"
+FROM "Organizations" AS o
+WHERE (@__ef_filter__p_0 OR NOT (o."IsDeleted")) AND o."SubscriptionId" = @__p_0
+2024-11-03 16:44:28.009 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'SmartParking.EntityFrameworkCore.SmartParkingDbContext'.
+Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.Load[TSource](IQueryable`1 source)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinder`1.Load(INavigation navigation, InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinderCollectionLoaderAdapter.Load(InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry.Load(LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.LazyLoader.Load(Object entity, String navigationName)
+   at Microsoft.EntityFrameworkCore.Proxies.Internal.LazyLoadingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.SubscriptionProxy.get_Organizations()
+   at lambda_method4897(Closure, Object, List`1, ResolutionContext)
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+2024-11-03 16:44:28.012 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:44:28.225 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:44:28.226 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:44:28.233 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+List`1 -> List`1
+System.Collections.Generic.List`1[[SmartParking.Entities.Subscriptions.Subscription, SmartParking.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.List`1[[SmartParking.Subscriptions.SubscriptionDto, SmartParking.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+Subscription -> SubscriptionDto
+SmartParking.Entities.Subscriptions.Subscription -> SmartParking.Subscriptions.SubscriptionDto
+
+Type Map configuration:
+Subscription -> SubscriptionDto
+SmartParking.Entities.Subscriptions.Subscription -> SmartParking.Subscriptions.SubscriptionDto
+
+Destination Member:
+Organizations
+
+ ---> Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.Load[TSource](IQueryable`1 source)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinder`1.Load(INavigation navigation, InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinderCollectionLoaderAdapter.Load(InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry.Load(LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.LazyLoader.Load(Object entity, String navigationName)
+   at Microsoft.EntityFrameworkCore.Proxies.Internal.LazyLoadingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.SubscriptionProxy.get_Organizations()
+   at lambda_method4897(Closure, Object, List`1, ResolutionContext)
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+   --- End of inner exception stack trace ---
+   at lambda_method4897(Closure, Object, List`1, ResolutionContext)
+   --- End of inner exception stack trace ---
+   at lambda_method4897(Closure, Object, List`1, ResolutionContext)
+   at Volo.Abp.AutoMapper.AutoMapperAutoObjectMappingProvider.Map[TSource,TDestination](Object source)
+   at Volo.Abp.ObjectMapping.DefaultObjectMapper.AutoMap[TSource,TDestination](Object source)
+   at Volo.Abp.ObjectMapping.DefaultObjectMapper.Map[TSource,TDestination](TSource source)
+   at SmartParking.Subscriptions.SubscriptionAppService.GetAllAsync() in E:\Work\MDKHL\SmartParking\src\SmartParking.Application\Subscriptions\SubscriptionAppService.cs:line 244
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.GlobalFeatures.GlobalFeatureInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Authorization.AuthorizationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Auditing.AuditingInterceptor.ProceedByLoggingAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, IAuditingHelper auditingHelper, IAuditLogScope auditLogScope)
+   at Volo.Abp.Auditing.AuditingInterceptor.ProcessWithNewAuditingScopeAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, ICurrentUser currentUser, IAuditingManager auditingManager, IAuditingHelper auditingHelper, IUnitOfWorkManager unitOfWorkManager)
+   at Volo.Abp.Auditing.AuditingInterceptor.ProcessWithNewAuditingScopeAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, ICurrentUser currentUser, IAuditingManager auditingManager, IAuditingHelper auditingHelper, IUnitOfWorkManager unitOfWorkManager)
+   at Volo.Abp.Auditing.AuditingInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Validation.ValidationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at SmartParking.Blazor.Components.Pages.Organizations.OrganizationAdd.OnInitializedAsync() in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\Components\Pages\Organizations\OrganizationAdd.razor.cs:line 60
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.<WaitForNonStreamingPendingTasks>g__Execute|38_0()
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.WaitForResultReady(Boolean waitForQuiescence, PrerenderedComponentHtmlContent result)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.<>c.<<InvokeAsync>b__10_0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Volo.Abp.AspNetCore.Security.Claims.AbpDynamicClaimsMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Uow.AbpUnitOfWorkMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.ExceptionHandling.AbpExceptionHandlingMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Volo.Abp.AspNetCore.ExceptionHandling.AbpExceptionHandlingMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.MultiTenancy.MultiTenancyMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Builder.ApplicationBuilderAbpOpenIddictMiddlewareExtension.<>c__DisplayClass0_0.<<UseAbpOpenIddictValidation>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Localization.RequestLocalizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.RequestLocalization.AbpRequestLocalizationMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Tracing.AbpCorrelationIdMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2024-11-03 16:44:28.361 +02:00 [DBG] Removed entry for "f4f76a02-1a65-44ba-b362-e028d1b4916e". 0 total observers after remove.
+2024-11-03 16:44:28.367 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:28.367 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:44:28.368 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:44:28.368 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:44:28.368 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:44:28.372 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:28.376 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:44:28.378 +02:00 [DBG] Removed entry for "4a77a05b-dc36-44b4-a0a0-f4e1278ff5a3". 0 total observers after remove.
+2024-11-03 16:44:28.383 +02:00 [DBG] Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+2024-11-03 16:46:03.697 +02:00 [INF] Starting web host.
+2024-11-03 16:46:09.962 +02:00 [INF] Loaded ABP modules:
+2024-11-03 16:46:09.963 +02:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-11-03 16:46:09.963 +02:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-11-03 16:46:09.963 +02:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-11-03 16:46:09.963 +02:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-11-03 16:46:09.963 +02:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-11-03 16:46:09.963 +02:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-11-03 16:46:09.963 +02:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-11-03 16:46:09.963 +02:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-11-03 16:46:09.963 +02:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-11-03 16:46:09.963 +02:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-11-03 16:46:09.963 +02:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-11-03 16:46:09.963 +02:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-11-03 16:46:09.963 +02:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-11-03 16:46:09.963 +02:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-11-03 16:46:09.963 +02:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-11-03 16:46:09.963 +02:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-11-03 16:46:09.963 +02:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-11-03 16:46:09.963 +02:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-11-03 16:46:09.963 +02:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-11-03 16:46:09.963 +02:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-11-03 16:46:09.963 +02:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-11-03 16:46:09.963 +02:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-11-03 16:46:09.963 +02:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-11-03 16:46:09.963 +02:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-11-03 16:46:09.963 +02:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-11-03 16:46:09.963 +02:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-11-03 16:46:09.963 +02:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-11-03 16:46:09.963 +02:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-11-03 16:46:09.964 +02:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-11-03 16:46:09.964 +02:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-11-03 16:46:09.964 +02:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-11-03 16:46:09.965 +02:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-11-03 16:46:09.965 +02:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-11-03 16:46:09.965 +02:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-11-03 16:46:09.965 +02:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-11-03 16:46:09.965 +02:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-11-03 16:46:09.965 +02:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-11-03 16:46:09.965 +02:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-11-03 16:46:09.965 +02:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-11-03 16:46:10.022 +02:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-11-03 16:46:10.036 +02:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-11-03 16:46:16.148 +02:00 [INF] Initialized all ABP modules.
+2024-11-03 16:46:17.297 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:46:17.328 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:46:17.331 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:46:17.333 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:46:17.334 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:46:17.838 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:46:17.844 +02:00 [DBG] Filling dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:46:20.065 +02:00 [DBG] Adding entry for "38c39fcc-721c-4950-aaaa-3f445dd9bd53"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:46:20.066 +02:00 [DBG] Updating entry for "38c39fcc-721c-4950-aaaa-3f445dd9bd53"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:46:22.575 +02:00 [ERR] Failed executing DbCommand (78ms) [Parameters=[@__ef_filter__p_0='?' (DbType = Boolean), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT o."Id", o."ActiveCameras", o."ActiveGarages", o."AdditionalHourPrice", o."ArabicName", o."CRExpiryDate", o."CityId", o."ClosingHoursEnd", o."ClosingHoursStart", o."Code", o."ContactMail", o."CountryId", o."CreationTime", o."CreatorId", o."DeleterId", o."DeletionTime", o."EnglishName", o."FirstHourPrice", o."FullDayPrice", o."IsClose", o."IsDeleted", o."IsNumberOfHoursExceeded", o."LastModificationTime", o."LastModifierId", o."LicenseExpiryDate", o."Notes", o."NumberOfHours", o."PhoneNum", o."RegionId", o."SecondHourPrice", o."StateId", o."Status", o."SubscriptionId", o."TenantId", o."ThirdHourPrice", o."UnifiedLicenseNum", o."WhatsAppNum"
+FROM "Organizations" AS o
+WHERE (@__ef_filter__p_0 OR NOT (o."IsDeleted")) AND o."SubscriptionId" = @__p_0
+2024-11-03 16:46:22.599 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'SmartParking.EntityFrameworkCore.SmartParkingDbContext'.
+Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.Load[TSource](IQueryable`1 source)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinder`1.Load(INavigation navigation, InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinderCollectionLoaderAdapter.Load(InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry.Load(LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.LazyLoader.Load(Object entity, String navigationName)
+   at Microsoft.EntityFrameworkCore.Proxies.Internal.LazyLoadingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.SubscriptionProxy.get_Organizations()
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+2024-11-03 16:46:22.609 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:46:23.049 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:46:23.058 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:46:23.073 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+List`1 -> List`1
+System.Collections.Generic.List`1[[SmartParking.Entities.Subscriptions.Subscription, SmartParking.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.List`1[[SmartParking.Subscriptions.SubscriptionDto, SmartParking.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+Subscription -> SubscriptionDto
+SmartParking.Entities.Subscriptions.Subscription -> SmartParking.Subscriptions.SubscriptionDto
+
+Type Map configuration:
+Subscription -> SubscriptionDto
+SmartParking.Entities.Subscriptions.Subscription -> SmartParking.Subscriptions.SubscriptionDto
+
+Destination Member:
+Organizations
+
+ ---> Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.Load[TSource](IQueryable`1 source)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinder`1.Load(INavigation navigation, InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinderCollectionLoaderAdapter.Load(InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry.Load(LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.LazyLoader.Load(Object entity, String navigationName)
+   at Microsoft.EntityFrameworkCore.Proxies.Internal.LazyLoadingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.SubscriptionProxy.get_Organizations()
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+   --- End of inner exception stack trace ---
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+   --- End of inner exception stack trace ---
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+   at Volo.Abp.AutoMapper.AutoMapperAutoObjectMappingProvider.Map[TSource,TDestination](Object source)
+   at Volo.Abp.ObjectMapping.DefaultObjectMapper.AutoMap[TSource,TDestination](Object source)
+   at Volo.Abp.ObjectMapping.DefaultObjectMapper.Map[TSource,TDestination](TSource source)
+   at SmartParking.Subscriptions.SubscriptionAppService.GetAllAsync() in E:\Work\MDKHL\SmartParking\src\SmartParking.Application\Subscriptions\SubscriptionAppService.cs:line 244
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.GlobalFeatures.GlobalFeatureInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Authorization.AuthorizationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Auditing.AuditingInterceptor.ProceedByLoggingAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, IAuditingHelper auditingHelper, IAuditLogScope auditLogScope)
+   at Volo.Abp.Auditing.AuditingInterceptor.ProcessWithNewAuditingScopeAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, ICurrentUser currentUser, IAuditingManager auditingManager, IAuditingHelper auditingHelper, IUnitOfWorkManager unitOfWorkManager)
+   at Volo.Abp.Auditing.AuditingInterceptor.ProcessWithNewAuditingScopeAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, ICurrentUser currentUser, IAuditingManager auditingManager, IAuditingHelper auditingHelper, IUnitOfWorkManager unitOfWorkManager)
+   at Volo.Abp.Auditing.AuditingInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Validation.ValidationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at SmartParking.Blazor.Components.Pages.Organizations.OrganizationAdd.OnInitializedAsync() in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\Components\Pages\Organizations\OrganizationAdd.razor.cs:line 60
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.<WaitForNonStreamingPendingTasks>g__Execute|38_0()
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.WaitForResultReady(Boolean waitForQuiescence, PrerenderedComponentHtmlContent result)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.<>c.<<InvokeAsync>b__10_0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Volo.Abp.AspNetCore.Security.Claims.AbpDynamicClaimsMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Uow.AbpUnitOfWorkMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.ExceptionHandling.AbpExceptionHandlingMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Volo.Abp.AspNetCore.ExceptionHandling.AbpExceptionHandlingMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.MultiTenancy.MultiTenancyMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Builder.ApplicationBuilderAbpOpenIddictMiddlewareExtension.<>c__DisplayClass0_0.<<UseAbpOpenIddictValidation>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Localization.RequestLocalizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.RequestLocalization.AbpRequestLocalizationMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Tracing.AbpCorrelationIdMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2024-11-03 16:46:23.175 +02:00 [DBG] Removed entry for "38c39fcc-721c-4950-aaaa-3f445dd9bd53". 0 total observers after remove.
+2024-11-03 16:46:43.973 +02:00 [INF] Starting web host.
+2024-11-03 16:46:49.613 +02:00 [INF] Loaded ABP modules:
+2024-11-03 16:46:49.614 +02:00 [INF] - SmartParking.Blazor.SmartParkingBlazorModule
+2024-11-03 16:46:49.614 +02:00 [INF]   - SmartParking.SmartParkingApplicationModule
+2024-11-03 16:46:49.614 +02:00 [INF]     - SmartParking.SmartParkingDomainModule
+2024-11-03 16:46:49.614 +02:00 [INF]       - SmartParking.SmartParkingDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]           - Volo.Abp.Validation.AbpValidationModule
+2024-11-03 16:46:49.614 +02:00 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2024-11-03 16:46:49.614 +02:00 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2024-11-03 16:46:49.614 +02:00 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2024-11-03 16:46:49.614 +02:00 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2024-11-03 16:46:49.614 +02:00 [INF]                 - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2024-11-03 16:46:49.614 +02:00 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2024-11-03 16:46:49.614 +02:00 [INF]                 - Volo.Abp.Data.AbpDataModule
+2024-11-03 16:46:49.614 +02:00 [INF]                   - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2024-11-03 16:46:49.614 +02:00 [INF]                   - Volo.Abp.Uow.AbpUnitOfWorkModule
+2024-11-03 16:46:49.614 +02:00 [INF]                   - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2024-11-03 16:46:49.614 +02:00 [INF]               - Volo.Abp.Threading.AbpThreadingModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2024-11-03 16:46:49.614 +02:00 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2024-11-03 16:46:49.614 +02:00 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.Identity.AbpIdentityDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]           - Volo.Abp.Users.AbpUsersDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]           - Volo.Abp.Features.AbpFeaturesModule
+2024-11-03 16:46:49.614 +02:00 [INF]             - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2024-11-03 16:46:49.614 +02:00 [INF]               - Volo.Abp.MultiTenancy.AbpMultiTenancyAbstractionsModule
+2024-11-03 16:46:49.614 +02:00 [INF]             - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.OpenIddict.AbpOpenIddictDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]         - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2024-11-03 16:46:49.614 +02:00 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.Auditing.AbpAuditingModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Json.AbpJsonModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Auditing.AbpAuditingContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.Domain.AbpDddDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.EventBus.AbpEventBusModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.Guids.AbpGuidsModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Specifications.AbpSpecificationsModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Caching.AbpCachingModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.Serialization.AbpSerializationModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Domain.AbpDddDomainSharedModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.BackgroundJobs.AbpBackgroundJobsDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.BackgroundJobs.AbpBackgroundJobsModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.BackgroundJobs.AbpBackgroundJobsAbstractionsModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.Users.AbpUsersDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Users.AbpUsersAbstractionModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.OpenIddict.AbpOpenIddictDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.PermissionManagement.OpenIddict.AbpPermissionManagementDomainOpenIddictModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Authorization.AbpAuthorizationModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.PermissionManagement.Identity.AbpPermissionManagementDomainIdentityModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.Emailing.AbpEmailingModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.TextTemplating.AbpTextTemplatingModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.TextTemplating.Scriban.AbpTextTemplatingScribanModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.TextTemplating.AbpTextTemplatingCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.Account.AbpAccountApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.Account.AbpAccountApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.Identity.AbpIdentityApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.Application.AbpDddApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.PermissionManagement.AbpPermissionManagementApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.Application.AbpDddApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.Http.AbpHttpAbstractionsModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.UI.AbpUiModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - SmartParking.SmartParkingApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementApplicationContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.FluentValidation.AbpFluentValidationModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.FeatureManagement.AbpFeatureManagementApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementApplicationModule
+2024-11-03 16:46:49.615 +02:00 [INF]   - SmartParking.EntityFrameworkCore.SmartParkingEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.Identity.EntityFrameworkCore.AbpIdentityEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.Users.EntityFrameworkCore.AbpUsersEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.OpenIddict.EntityFrameworkCore.AbpOpenIddictEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.EntityFrameworkCore.PostgreSql.AbpEntityFrameworkCorePostgreSqlModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.BackgroundJobs.EntityFrameworkCore.AbpBackgroundJobsEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.FeatureManagement.EntityFrameworkCore.AbpFeatureManagementEntityFrameworkCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]   - SmartParking.SmartParkingHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.Account.AbpAccountHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.Identity.AbpIdentityHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.Http.AbpHttpModule
+2024-11-03 16:46:49.615 +02:00 [INF]               - Volo.Abp.Minify.AbpMinifyModule
+2024-11-03 16:46:49.615 +02:00 [INF]             - Volo.Abp.AspNetCore.AbpAspNetCoreAbstractionsModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2024-11-03 16:46:49.615 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.PermissionManagement.HttpApi.AbpPermissionManagementHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]       - Volo.Abp.FeatureManagement.AbpFeatureManagementHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementHttpApiModule
+2024-11-03 16:46:49.615 +02:00 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2024-11-03 16:46:49.615 +02:00 [INF]   - Volo.Abp.Swashbuckle.AbpSwashbuckleModule
+2024-11-03 16:46:49.615 +02:00 [INF]   - Volo.Abp.AspNetCore.Serilog.AbpAspNetCoreSerilogModule
+2024-11-03 16:46:49.615 +02:00 [INF]   - Volo.Abp.Account.Web.AbpAccountWebOpenIddictModule
+2024-11-03 16:46:49.615 +02:00 [INF]     - Volo.Abp.Account.Web.AbpAccountWebModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.Identity.AspNetCore.AbpIdentityAspNetCoreModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.AbpAspNetCoreMvcUiThemeSharedModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.AbpAspNetCoreMvcUiBootstrapModule
+2024-11-03 16:46:49.616 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.AbpAspNetCoreMvcUiModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Packages.AbpAspNetCoreMvcUiPackagesModule
+2024-11-03 16:46:49.616 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingAbstractionsModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.AspNetCore.Mvc.UI.Widgets.AbpAspNetCoreMvcUiWidgetsModule
+2024-11-03 16:46:49.616 +02:00 [INF]           - Volo.Abp.AspNetCore.Mvc.UI.Bundling.AbpAspNetCoreMvcUiBundlingModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.OpenIddict.AbpOpenIddictAspNetCoreModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2024-11-03 16:46:49.616 +02:00 [INF]   - Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.AbpAspNetCoreComponentsServerLeptonXLiteThemeModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.AbpAspNetCoreComponentsWebLeptonXLiteThemeModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.AspNetCore.Components.Web.Theming.AbpAspNetCoreComponentsWebThemingModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.BlazoriseUI.AbpBlazoriseUIModule
+2024-11-03 16:46:49.616 +02:00 [INF]           - Volo.Abp.AspNetCore.Components.Web.AbpAspNetCoreComponentsWebModule
+2024-11-03 16:46:49.616 +02:00 [INF]             - Volo.Abp.AspNetCore.Components.AbpAspNetCoreComponentsModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.AspNetCore.Components.Server.Theming.AbpAspNetCoreComponentsServerThemingModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.AspNetCore.Components.Server.AbpAspNetCoreComponentsServerModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.Http.Client.AbpHttpClientModule
+2024-11-03 16:46:49.616 +02:00 [INF]           - Volo.Abp.RemoteServices.AbpRemoteServicesModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.AspNetCore.SignalR.AbpAspNetCoreSignalRModule
+2024-11-03 16:46:49.616 +02:00 [INF]   - Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.AbpAspNetCoreMvcUiLeptonXLiteThemeModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.AbpAspNetCoreMvcUiMultiTenancyModule
+2024-11-03 16:46:49.616 +02:00 [INF]   - Volo.Abp.Identity.Blazor.Server.AbpIdentityBlazorServerModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.Identity.Blazor.AbpIdentityBlazorModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.PermissionManagement.Blazor.AbpPermissionManagementBlazorModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.PermissionManagement.Blazor.Server.AbpPermissionManagementBlazorServerModule
+2024-11-03 16:46:49.616 +02:00 [INF]   - Volo.Abp.TenantManagement.Blazor.Server.AbpTenantManagementBlazorServerModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.TenantManagement.Blazor.AbpTenantManagementBlazorModule
+2024-11-03 16:46:49.616 +02:00 [INF]       - Volo.Abp.FeatureManagement.Blazor.AbpFeatureManagementBlazorModule
+2024-11-03 16:46:49.616 +02:00 [INF]         - Volo.Abp.SettingManagement.Blazor.AbpSettingManagementBlazorModule
+2024-11-03 16:46:49.616 +02:00 [INF]     - Volo.Abp.FeatureManagement.Blazor.Server.AbpFeatureManagementBlazorServerModule
+2024-11-03 16:46:49.616 +02:00 [INF]   - Volo.Abp.SettingManagement.Blazor.Server.AbpSettingManagementBlazorServerModule
+2024-11-03 16:46:49.688 +02:00 [DBG] Started background worker: Volo.Abp.BackgroundJobs.BackgroundJobWorker
+2024-11-03 16:46:49.707 +02:00 [DBG] Started background worker: Volo.Abp.OpenIddict.Tokens.TokenCleanupBackgroundWorker
+2024-11-03 16:46:55.713 +02:00 [INF] Initialized all ABP modules.
+2024-11-03 16:46:56.693 +02:00 [DBG] The event OpenIddict.Validation.OpenIddictValidationEvents+ProcessRequestContext was successfully processed by OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:46:56.718 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ResolveRequestUri.
+2024-11-03 16:46:56.721 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.OpenIddictServerHandlers+InferEndpointType.
+2024-11-03 16:46:56.724 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateTransportSecurityRequirement.
+2024-11-03 16:46:56.725 +02:00 [DBG] The event OpenIddict.Server.OpenIddictServerEvents+ProcessRequestContext was successfully processed by OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreHandlers+ValidateHostHeader.
+2024-11-03 16:46:57.144 +02:00 [DBG] Get dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:46:57.150 +02:00 [DBG] Filling dynamic claims cache for user: 3a15eeb4-cae4-0e3c-ab67-2247558ecc40
+2024-11-03 16:46:58.816 +02:00 [DBG] Adding entry for "b8cb42bf-0a45-4275-a74b-51b8e014a442"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+2024-11-03 16:46:58.817 +02:00 [DBG] Updating entry for "b8cb42bf-0a45-4275-a74b-51b8e014a442"/MudBlazor.MudPopoverProvider. 1 total observers.
+2024-11-03 16:47:00.844 +02:00 [ERR] Failed executing DbCommand (73ms) [Parameters=[@__ef_filter__p_0='?' (DbType = Boolean), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT o."Id", o."ActiveCameras", o."ActiveGarages", o."AdditionalHourPrice", o."ArabicName", o."CRExpiryDate", o."CityId", o."ClosingHoursEnd", o."ClosingHoursStart", o."Code", o."ContactMail", o."CountryId", o."CreationTime", o."CreatorId", o."DeleterId", o."DeletionTime", o."EnglishName", o."FirstHourPrice", o."FullDayPrice", o."IsClose", o."IsDeleted", o."IsNumberOfHoursExceeded", o."LastModificationTime", o."LastModifierId", o."LicenseExpiryDate", o."Notes", o."NumberOfHours", o."PhoneNum", o."RegionId", o."SecondHourPrice", o."StateId", o."Status", o."SubscriptionId", o."TenantId", o."ThirdHourPrice", o."UnifiedLicenseNum", o."WhatsAppNum"
+FROM "Organizations" AS o
+WHERE (@__ef_filter__p_0 OR NOT (o."IsDeleted")) AND o."SubscriptionId" = @__p_0
+2024-11-03 16:47:00.860 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'SmartParking.EntityFrameworkCore.SmartParkingDbContext'.
+Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.Load[TSource](IQueryable`1 source)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinder`1.Load(INavigation navigation, InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinderCollectionLoaderAdapter.Load(InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry.Load(LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.LazyLoader.Load(Object entity, String navigationName)
+   at Microsoft.EntityFrameworkCore.Proxies.Internal.LazyLoadingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.SubscriptionProxy.get_Organizations()
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+2024-11-03 16:47:00.872 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:47:01.395 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:47:01.415 +02:00 [DBG] Added 0 entity changes to the current audit log
+2024-11-03 16:47:01.434 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+List`1 -> List`1
+System.Collections.Generic.List`1[[SmartParking.Entities.Subscriptions.Subscription, SmartParking.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.List`1[[SmartParking.Subscriptions.SubscriptionDto, SmartParking.Application.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+Subscription -> SubscriptionDto
+SmartParking.Entities.Subscriptions.Subscription -> SmartParking.Subscriptions.SubscriptionDto
+
+Type Map configuration:
+Subscription -> SubscriptionDto
+SmartParking.Entities.Subscriptions.Subscription -> SmartParking.Subscriptions.SubscriptionDto
+
+Destination Member:
+Organizations
+
+ ---> Npgsql.PostgresException (0x80004005): 42703: column o.ActiveCameras does not exist
+
+POSITION: 16
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__22_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SplitQueryingEnumerable`1.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.Load[TSource](IQueryable`1 source)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinder`1.Load(INavigation navigation, InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Internal.EntityFinderCollectionLoaderAdapter.Load(InternalEntityEntry entry, LoadOptions options)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry.Load(LoadOptions options)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.LazyLoader.Load(Object entity, String navigationName)
+   at Microsoft.EntityFrameworkCore.Proxies.Internal.LazyLoadingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.SubscriptionProxy.get_Organizations()
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column o.ActiveCameras does not exist
+    Position: 16
+    File: parse_relation.c
+    Line: 3727
+    Routine: errorMissingColumn
+   --- End of inner exception stack trace ---
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+   --- End of inner exception stack trace ---
+   at lambda_method4379(Closure, Object, List`1, ResolutionContext)
+   at Volo.Abp.AutoMapper.AutoMapperAutoObjectMappingProvider.Map[TSource,TDestination](Object source)
+   at Volo.Abp.ObjectMapping.DefaultObjectMapper.AutoMap[TSource,TDestination](Object source)
+   at Volo.Abp.ObjectMapping.DefaultObjectMapper.Map[TSource,TDestination](TSource source)
+   at SmartParking.Subscriptions.SubscriptionAppService.GetAllAsync() in E:\Work\MDKHL\SmartParking\src\SmartParking.Application\Subscriptions\SubscriptionAppService.cs:line 244
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.GlobalFeatures.GlobalFeatureInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Authorization.AuthorizationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Auditing.AuditingInterceptor.ProceedByLoggingAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, IAuditingHelper auditingHelper, IAuditLogScope auditLogScope)
+   at Volo.Abp.Auditing.AuditingInterceptor.ProcessWithNewAuditingScopeAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, ICurrentUser currentUser, IAuditingManager auditingManager, IAuditingHelper auditingHelper, IUnitOfWorkManager unitOfWorkManager)
+   at Volo.Abp.Auditing.AuditingInterceptor.ProcessWithNewAuditingScopeAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, ICurrentUser currentUser, IAuditingManager auditingManager, IAuditingHelper auditingHelper, IUnitOfWorkManager unitOfWorkManager)
+   at Volo.Abp.Auditing.AuditingInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Validation.ValidationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at SmartParking.Blazor.Components.Pages.Organizations.OrganizationAdd.OnInitializedAsync() in E:\Work\MDKHL\SmartParking\src\SmartParking.Blazor\Components\Pages\Organizations\OrganizationAdd.razor.cs:line 60
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.<WaitForNonStreamingPendingTasks>g__Execute|38_0()
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.WaitForResultReady(Boolean waitForQuiescence, PrerenderedComponentHtmlContent result)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.<>c.<<InvokeAsync>b__10_0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Volo.Abp.AspNetCore.Security.Claims.AbpDynamicClaimsMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Uow.AbpUnitOfWorkMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.ExceptionHandling.AbpExceptionHandlingMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Volo.Abp.AspNetCore.ExceptionHandling.AbpExceptionHandlingMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.MultiTenancy.MultiTenancyMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Builder.ApplicationBuilderAbpOpenIddictMiddlewareExtension.<>c__DisplayClass0_0.<<UseAbpOpenIddictValidation>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Localization.RequestLocalizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.RequestLocalization.AbpRequestLocalizationMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Tracing.AbpCorrelationIdMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.InterfaceMiddlewareBinder.<>c__DisplayClass2_0.<<CreateMiddleware>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2024-11-03 16:47:01.544 +02:00 [DBG] Removed entry for "b8cb42bf-0a45-4275-a74b-51b8e014a442". 0 total observers after remove.
+2024-11-03 16:47:45.195 +02:00 [INF] Starting web host.
