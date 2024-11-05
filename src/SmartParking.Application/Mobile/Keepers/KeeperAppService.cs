@@ -4,8 +4,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
+using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Results;
 using System;
@@ -28,13 +30,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IOptionsMonitor<OpenIddictServerOptions> _openIddictOptions;
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
-    public KeeperAppService
+    private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
+
+	public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository, 
          SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
          UserManager<Volo.Abp.Identity.IdentityUser> userManager, 
          IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
          IHttpContextAccessor httpContext,
-         IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository)
+         IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
+         IRepository<GarageTransaction,int> garageTransactionRepository)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -42,9 +47,43 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _openIddictOptions = openIddictOptions;
         _httpContext = httpContext;
         _userRepository = userRepository;
+        _garageTransactionRepository = garageTransactionRepository;
     }
-    [RemoteService(isEnabled:false)]
-    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId(int organizationId)
+
+	/// <inheritdoc/>
+	[RemoteService(isEnabled: false)]
+	public async Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber)
+	{
+		var transaction = await _garageTransactionRepository.GetAsync(garageTransactionId); 
+        if (transaction is null) 
+        {
+            return Result.NotFound("transaction not found");
+        }
+        transaction.PlateNumber = plateNumber;
+
+        await _garageTransactionRepository.UpdateAsync(transaction);
+
+        return Result.SuccessWithMessage("PlateNumber corrected successfully");
+	}
+
+	/// <inheritdoc/>
+	[RemoteService(isEnabled: false)]
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync()
+	{
+        var garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null) ;
+
+		var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
+        if(mappedTransaction.Count  < 0 ) 
+        {
+            return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
+        }
+
+        return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+	}
+
+	/// <inheritdoc/>
+	[RemoteService(isEnabled:false)]
+    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
         var unPaidInvoices = await _invoiceRepository.GetListAsync(invo=>invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid);
         
@@ -55,13 +94,14 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
         if (unpaidInvoicesMap.Count < 0)
         {
-            return Result<List<InvoiceDto>>.NotFound();
+            return Result<List<InvoiceDto>>.NotFound("Invoices not found");
         }
 
         return Result<List<InvoiceDto>>.Success(unpaidInvoicesMap);
     }
 
-    [RemoteService(isEnabled: false)]
+	/// <inheritdoc/>
+	[RemoteService(isEnabled: false)]
     public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto input)
     {
         if (input.PhoneNumber is null)

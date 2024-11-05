@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Keepers;
 using SmartParking.Results;
@@ -30,7 +31,20 @@ public class KeeperController : AbpController
     [Authorize(Roles ="Keeper")]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
     {
-        return await _keeperAppService.GetAllInvoicesByOrganizationId(organizationId);
+        return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
     }
 
+    [HttpGet("garageTransaction")]
+    [Authorize(Roles ="Keeper")]
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
+	{
+		return await _keeperAppService.GetAllGarageTransactionsAsync();
+	}
+
+	[HttpPost("correctTransaction")]
+	[Authorize(Roles = "Keeper")]
+	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumner)
+	{
+		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId,plateNumner);
+	}
 }
