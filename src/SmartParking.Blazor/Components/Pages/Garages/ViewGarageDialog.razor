@@ -1,6 +1,7 @@
 ﻿
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
 
 <PageTitle>@L["Details for Garage"]</PageTitle>
@@ -8,20 +9,30 @@
     <MudDialog Class="mud-modal">
 
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Details for Garage"] @Garage.Name</MudText>
+            <MudText Typo="Typo.h6">@L["Details for Garage"]</MudText>
         </TitleContent>
         <DialogContent>
             
                     <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                         <MudGrid>
                             <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.Name"
-                                              For="@(() => Garage.Name)"
+                                <MudTextField @bind-Value="Garage.NameEn"
+                                              For="@(() => Garage.NameEn)"
                                               Variant="Variant.Text"
                                               Class="w-100"
                                               ReadOnly="true"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["Garage Name"]"
+                                              Label="@L["GarageNameEn"]"
+                                               />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.NameAr"
+                                              For="@(() => Garage.NameAr)"
+                                              Variant="Variant.Text"
+                                              Class="w-100"
+                                              ReadOnly="true"
+                                              Placeholder="@L["Type Here"]"
+                                              Label="@L["GarageNameAr"]"
                                                />
                             </MudItem>
                             <MudItem sm="6" md="6">

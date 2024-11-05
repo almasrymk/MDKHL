@@ -142,7 +142,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 InActivationDate = new DateOnly(2025, 10, 1),
                 NumbersOfGarages = 5,
                 NumberOfCameras = 10,
-                NumberOfCustomers = 100,
+                NumberOfUsers = 100,
                 NumberOfMobileCustomers = 50,
                 NumberOfOrganizations = 50,
                 SubscriptionSlotNumber = 10,
@@ -157,7 +157,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 EnglishName = "First Organization",
                 Notes = "This is a sample organization",
                 Code = "00001",
-                UnifiedLicenseNum = "920123451",
+                CommercialRegistrationNumber = "9201234511",
                 CRExpiryDate = new DateOnly(2025, 12, 31),
                 LicenseExpiryDate = new DateOnly(2026, 12, 31),
                 CountryId = egypt.Id,
@@ -179,6 +179,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 ClosingHoursEnd = TimeOnly.MaxValue,
                 Status = Status.Active,
                 SubscriptionId= subscriptionTest.Id,
+                Address = "123 Tahrir St Cairo 12345"
             };
             await _organizationRepostory.InsertAsync(organization,autoSave:true);
             var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
@@ -188,7 +189,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Garage
                 {
                   Code = "O000001-G-01",
-                  Name = "Main Garage",
+                  NameEn = "Main Garage",
+                  NameAr = "الموقف الرئيسي",
                   MaxCapacity = 150,
                   ClosingHours = new TimeOnly(22, 0), 
                   OrganizationId = organizationTest.Id,
@@ -201,7 +203,8 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Garage
                 {
                     Code = "O000001-G-02",
-                    Name = "Secondary Garage",
+                    NameEn = "Secondary Garage",
+                    NameAr = "الموقف الثاني",
                     MaxCapacity = 100,
                     ClosingHours = new TimeOnly(20, 0), 
                     OrganizationId = organizationTest.Id,
@@ -210,7 +213,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 autoSave: true
             );
 
-            var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.Name == "Main Garage");
+            var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
 
 
             await _cameraRepostory.InsertAsync(
@@ -226,7 +229,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
                     CameraType = CameraType.Entry,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
-                    TenantId = null              // Set TenantId if multi-tenant, or null
+                    TenantId = null,              // Set TenantId if multi-tenant, or null
+                    OrganizationId=organizationTest.Id,
+               
                 },
                 autoSave: true
             );

@@ -19,12 +19,20 @@
             <MudForm Model="createUpdateGarage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="createUpdateGarage.Name"
-                                      For="@(() => createUpdateGarage.Name)"
+                        <MudTextField @bind-Value="createUpdateGarage.NameEn"
+                                      For="@(() => createUpdateGarage.NameEn)"
                                       Variant="Variant.Text"
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["Garage Name"]" />
+                                      Label="@L["GarageNameEn"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="createUpdateGarage.NameAr"
+                                      For="@(() => createUpdateGarage.NameAr)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["GarageNameAr"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="createUpdateGarage.MaxCapacity"

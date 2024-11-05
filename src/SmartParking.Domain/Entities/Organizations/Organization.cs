@@ -15,7 +15,7 @@ namespace SmartParking.Entities.Organizations;
 public class Organization : BaseEntity
 {
     public string Code { get; set; }
-    public string UnifiedLicenseNum { get; set; }
+    public string CommercialRegistrationNumber { get; set; }
     public DateOnly CRExpiryDate { get; set; }
     public DateOnly LicenseExpiryDate { get; set; }
     public int CountryId { get; set; }
@@ -48,8 +48,9 @@ public class Organization : BaseEntity
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
     public int? SubscriptionId { get; set; }
     public virtual Subscription  Subscription { get; set; }
-
+    public string Address { get; set; }
     public  int ActiveGarages { get; set; }
     public  int ActiveCameras { get; set; }
+    public string OrganizationPicture { get; set; }
 
 }

@@ -3,6 +3,7 @@
 @using SmartParking.Garages
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
@@ -24,19 +25,37 @@
 
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
 					<MudItem sm="12" md="12">
 						<MudSelect @bind-Value="@Camera.GarageId"
 								   Variant="Variant.Text"
-								   Label="@L["GarageName"]"
+								   Label="@L["GarageNameEn"]"
 								   Placeholder="@L["Choose"]"
-								   Clearable="_clearable"
 								   FullWidth="true">
 							@foreach (var garage in Garages)
 							{
-								<MudSelectItem Value="garage.Id">@garage.Name</MudSelectItem>
+								<MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
 							}
 						</MudSelect>
-					</MudItem>
+						</MudItem>
+					}
+					else
+					{
+						<MudItem sm="12" md="12">
+							<MudSelect @bind-Value="@Camera.GarageId"
+									   Variant="Variant.Text"
+									   Label="@L["GarageNameAr"]"
+									   Placeholder="@L["Choose"]"
+									   FullWidth="true">
+								@foreach (var garage in Garages)
+								{
+									<MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
+								}
+							</MudSelect>
+						</MudItem>
+						
+					}
 
 
 

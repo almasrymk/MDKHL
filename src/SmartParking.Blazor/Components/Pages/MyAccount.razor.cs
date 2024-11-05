@@ -26,7 +26,7 @@ public partial class MyAccount
     private string StateNameEdit { get; set; }
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
-    public string UnifiedLicenseNum { get; set; }
+    public string CommercialRegistrationNumber { get; set; }
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     private string CountrySelectValue { get; set; }
@@ -45,11 +45,12 @@ public partial class MyAccount
     public bool IsClose { get; set; }
     public TimeSpan? ClosingHoursStart { get; set; }
     public TimeSpan? ClosingHoursEnd { get; set; }
-
     public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
+    public string Address { get; set; }
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -73,7 +74,7 @@ public partial class MyAccount
         {
             ArabicName = ArabicName,
             EnglishName = EnglishName,
-            UnifiedLicenseNum = UnifiedLicenseNum,
+            CommercialRegistrationNumber = CommercialRegistrationNumber,
             NumOfCameras = NumOfCameras,
             MaxCapacity = MaxCapacity,
             CityId = int.Parse(CitySelectValue),
@@ -96,6 +97,7 @@ public partial class MyAccount
             IsClose = IsClose,
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
             ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue),
+            Address = Address
         };
 
 
@@ -162,7 +164,7 @@ public partial class MyAccount
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
         NumOfCameras = organization.NumOfCameras;
-        UnifiedLicenseNum = organization.UnifiedLicenseNum;
+        CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         if (organization.Status == Enums.Status.Active)
         {
             Status = true;
@@ -194,6 +196,7 @@ public partial class MyAccount
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         AdditionalHourPrice = organization.AdditionalHourPrice;
+        Address = organization.Address;
     }
     protected override async Task OnInitializedAsync()
     {

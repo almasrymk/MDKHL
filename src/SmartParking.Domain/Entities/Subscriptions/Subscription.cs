@@ -19,7 +19,7 @@ public class Subscription : BaseEntity
     public DateOnly InActivationDate { get; set; }
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
-    public int NumberOfCustomers { get; set; }
+    public int NumberOfUsers { get; set; }
     public int NumberOfMobileCustomers { get; set; }
     public int NumberOfOrganizations { get; set; }
     public int SubscriptionSlotNumber { get; set; }

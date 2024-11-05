@@ -36,6 +36,12 @@
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Label=@L["EnglishName"] />
                         </MudItem>
                         <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
