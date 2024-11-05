@@ -83,16 +83,15 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x=>x.District)
             .NotEmpty()
-            .Matches(@"^[A-Za-z\u0600-\u06FF]{3,20}$")
+            .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
             .MaximumLength(20)
             .WithMessage("District must start with 3 to 20 English or Arabic letters, and the total length must not exceed 25 characters.");
 
-        RuleFor(x=>x.StreetName)
-            .NotEmpty()
-            .Matches(@"^[A-Za-z\u0600-\u06FF]{3,20}$")
-            .MaximumLength(20)
-            .WithMessage("Street Name must start with 3 to 20 English or Arabic letters, and the total length must not exceed 20 characters.");
-
+        RuleFor(x => x.StreetName)
+           .NotEmpty()
+           .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$") 
+           .MaximumLength(20)
+           .WithMessage("Street Name must start with 3 to 20 English or Arabic letters, spaces are allowed, and the total length must not exceed 20 characters.");
 
 
 

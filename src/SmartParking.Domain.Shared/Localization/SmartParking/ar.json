@@ -414,12 +414,13 @@
     "Address": "العنوان",
     "GarageNameEn": "اسم الموقف بالانجليزيه",
     "BuidlingNumber": "رقم المبنى",
-    "Street": "الشارع",
-    "SecondaryNumber": "الرقم الفرعي",
+    "StreetName": "الشارع",
+    "SecondaryNumber": "الرقم الثانوي",
     "District": "الحي",
     "PostalCode": "الرمز البريدي",
     "PhoneNumber": "رقم الهاتف",
-    "UserRole": "دور الموظف"
+    "UserRole": "دور الموظف",
+    "Details for Customer": "تفاصيل عن العميل"
 
 
 

@@ -63,7 +63,7 @@ public partial class AddUser
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
-            if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString()) || currrentUser.IsInRole("admin"))
+            if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString())|| currrentUser.IsInRole("admin"))
             {
                 if (userRole == RolesType.Mdkhl.ToString() || userRole == RolesType.MdkhlEmployee.ToString())
                 {
@@ -78,8 +78,7 @@ public partial class AddUser
                 }
 
             }
-            else if (currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()))
-            {
+            else if (currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString())){
 
                 if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
                 {
