@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Nito.Disposables;
+using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
@@ -29,7 +30,7 @@ namespace SmartParking.Garages;
 [Authorize]
 public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>, IGarageAppService
 {
-    private readonly IRepository<Garage> _repository;
+    private readonly IRepository<Garage,int> _repository;
     private readonly IRepository<Camera,int> _repositoryCamera;
     private readonly IRepository<Organization,int> _organizationRepository;
     private readonly OrganizationsAppService _organizationsAppService;
@@ -38,23 +39,23 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public ICurrentTenant _currentTenant;
 
-	public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera, IRepository<Organization, int> organizationRepository) : base(repository)
-	{
-		_repository = repository;
-		_organizationsAppService = organizationsAppService;
-		_dataFilter = datafilter;
-		_currentUser = currentUser;
-		_currentTenant = currentTenant;
-		_repositoryCamera = repositoryCamera;
-		_organizationRepository = organizationRepository;
-	}
+    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera, IRepository<Organization, int> organizationRepository) : base(repository)
+    {
+        _repository = repository;
+        _organizationsAppService = organizationsAppService;
+        _dataFilter = datafilter;
+        _currentUser = currentUser;
+        _currentTenant = currentTenant;
+        _repositoryCamera = repositoryCamera;
+        _organizationRepository = organizationRepository;
+    }
 
 
 
 
-	/// <inheritdoc/>
+    /// <inheritdoc/>
 
-	public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
+    public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
     {
         var organization = await _organizationRepository.GetAsync(input.OrganizationId);
         if (organization == null)
@@ -113,11 +114,31 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
     {
-        var organization = await _organizationRepository.GetAsync(input.OrganizationId);
-        var garage =await GetAsync(id);
+        Organization organization=new Organization();
+        Garage garage=new Garage();
+        int NumberOfGaragesInInputOrganization = 0;
+
+        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        {
+
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                organization = await _organizationRepository.GetAsync(input.OrganizationId);
+                garage = await _repository.GetAsync(id);
+                var result = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+                NumberOfGaragesInInputOrganization=result.Count;
+
+            }
+        }
         if (organization == null)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
+        }
+        if (garage.OrganizationId != input.OrganizationId)
+        {
+            input.Code=organization.Code;
+            input.Code += GetOrganizationCode(NumberOfGaragesInInputOrganization);
+            
         }
         if(input.Status == Enums.Status.Inactive && garage.Status==Enums.Status.Active)
         {
@@ -373,6 +394,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         List<Camera>cameras = new List<Camera>();
         if (CurrentTenant.Id == null)
         {
+            //if current tenant is MDKHL
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 cameras = await _repositoryCamera.GetListAsync(x => x.GarageId == GarageID);
@@ -381,17 +403,36 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         else
         {
+            //if organization admin
             cameras = await _repositoryCamera.GetListAsync(x => x.GarageId == GarageID);
 
         }
 
         int totalActive = 0;
         var oldTenantId = cameras[0].TenantId??null;
+
+        var organizationId = await _organizationsAppService.GetOrganizationIdByTenant(TenantId);
+        Organization NewOrganization = new Organization();
+        Garage NewGarage = new Garage();
+
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            NewOrganization = await _organizationRepository.GetAsync(organizationId);
+            NewGarage = await _repository.GetAsync(GarageID);
+
+        }
+
+        
+
+
+
         //cahnge cameras from old tenant to new
 		foreach (var camera in cameras)
 		{
+            camera.DeviceId = await GenerateCameraCode(NewOrganization.EnglishName,NewGarage.NameEn,camera.Name);
             // Update the TenantId
 			camera.TenantId = TenantId;
+            camera.GarageId= GarageID;
 
             if(camera.Status == Enums.Status.Active)
             {
@@ -418,6 +459,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                         oldorg.ActiveGarages--;
 						await CurrentUnitOfWork.SaveChangesAsync();
 					}
+                    await _repositoryCamera.UpdateManyAsync(cameras);
 
                     return true;
                 }
@@ -426,7 +468,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         
 
-         var org=await _organizationsAppService.GetOrganizationForCurrentTenat();
+        var org=await _organizationsAppService.GetOrganizationForCurrentTenat();
         org.ActiveCameras += totalActive;
         org.ActiveGarages++;
 		await CurrentUnitOfWork.SaveChangesAsync();
@@ -436,6 +478,32 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         return true;
 
 	}
+    public async Task<string> GenerateCameraCode(string OrgEnglishName, string GarageEnglishName, string CameraEnglishName)
+    {
+        string Code = OrgEnglishName.Substring(0, 3) + '-' + GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2)+'-';
+        string ncode = Code;
+
+        Random rnd = new Random();
+        while (true)
+        {
+            ncode = Code;
+            Camera camera = new Camera();
+            ncode += rnd.Next(00, 99).ToString("00");
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                camera = await _repositoryCamera.FirstOrDefaultAsync(x => x.DeviceId == ncode);
+
+            }
+            if (camera == null)
+            {
+                Code = ncode;
+                break;
+            }
+
+        }
+        return Code;
+
+    }
 
     public override async Task<GarageDto> GetAsync(int id)
     {
