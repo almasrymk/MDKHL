@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Invoices;
+using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.MobileInvoices;
 using SmartParking.Results;
@@ -11,6 +12,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Mobile.Invoices;
 
@@ -43,6 +45,15 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         {
             return Result<InvoiceDto>.Error(ex.Message);
         }
+    }
+
+    public async Task<Result<InvoiceDto>> GetAsync(int id)
+    {
+        var invoice = await _invoiceRepoistory.FindAsync(id);
+        if(invoice == null)
+            return Result<InvoiceDto>.NotFound("There is no such an Invoice , id: 5");
+        var invoiceMap = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            return Result<InvoiceDto>.Success(invoiceMap);
     }
 
     public async Task<Result<PagedResultDto<InvoiceDto>>> GetListAsync(PagedAndSortedResultRequestDto input)

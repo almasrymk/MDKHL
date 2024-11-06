@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
@@ -9,8 +10,10 @@ using SmartParking.Organizations;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
@@ -47,14 +50,23 @@ public partial class OrganizationAdd
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
     public string Address { get; set; }
+    public int BuildingNumber { get; set; }
+    public string StreetName { get; set; }
+    public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+    public string Photo { get; set; }
+
 
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
-    IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
+    IList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     IList<SubscriptionDto> packages = new List<SubscriptionDto>();
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -90,8 +102,9 @@ public partial class OrganizationAdd
 		}
 
 	}
+    
 
-	private async Task Save()
+    private async Task Save()
     {
 		var successedMessage = L["OrganiztionCreatedSuccessfully"];
 		var errorMessage = L["Can'tCreateOrganiztion"];
@@ -106,6 +119,12 @@ public partial class OrganizationAdd
         {
             StatusValue = Enums.Status.Inactive;
         }
+        string newAddress = Address;
+
+
+
+
+
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
             ArabicName = ArabicName,
@@ -125,16 +144,22 @@ public partial class OrganizationAdd
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
             IsClose = IsClose,
             WhatsAppNum = WhatsAppNum,
-            FirstHourPrice =  FirstHourPrice ,
-            SecondHourPrice =  SecondHourPrice,
+            FirstHourPrice = FirstHourPrice,
+            SecondHourPrice = SecondHourPrice,
             ThirdHourPrice = ThirdHourPrice,
             AdditionalHourPrice = AdditionalHourPrice,
-            FullDayPrice = FullDayPrice ,
+            FullDayPrice = FullDayPrice,
             NumberOfHours = NumberOfHours,
-            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) ,
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) ,
+            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
+            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue),
             UserName = UserName,
-            Address = Address,
+            StreetName = StreetName,
+            District = District,
+            BuildingNumber = BuildingNumber,
+            PostalCode = PostalCode,
+            SecondaryNumber = SecondaryNumber,
+            OrganizationPicture = Photo??null
+
         };
        
         
@@ -182,5 +207,16 @@ public partial class OrganizationAdd
     private void Cancel()
     {
         Navigation.NavigateTo("/organizations");
+    }
+    private async void UploadFiles2(IBrowserFile file)
+    {
+        files.Clear();
+        files.Add(file);
+        using var stream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(stream);
+        var bytes = stream.ToArray();
+        Photo = $"data:{file.ContentType};base64,{Convert.ToBase64String(bytes)}";
+        Console.WriteLine($"Image URL: {Photo}"); // Log to verify it's set
+
     }
 }

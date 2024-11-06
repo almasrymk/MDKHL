@@ -4,6 +4,7 @@ using SmartParking.Entities.Subscriptions;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,5 +178,16 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
             totalCount,
             vehicleModelsDto
         );
+    }
+
+    public async Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(m => m.VehiclesBrandId == brandId);
+        var models = await AsyncExecuter.ToListAsync(query);
+        if (models.Count == 0)
+            return Result<List<VehicleModelDto>>.NotFound();
+        var modelsMap = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
+        return Result<List<VehicleModelDto>>.Success(modelsMap);
     }
 }

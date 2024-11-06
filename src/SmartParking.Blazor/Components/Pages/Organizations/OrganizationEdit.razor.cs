@@ -52,6 +52,12 @@ public partial class OrganizationEdit
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
     public string Address { get; set; }
+    public int BuildingNumber { get; set; }
+    public string StreetName { get; set; }
+    public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -102,7 +108,12 @@ public partial class OrganizationEdit
             IsClose = IsClose,
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
             ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
-            Address = Address,
+            BuildingNumber = BuildingNumber,
+            StreetName  = StreetName,
+            SecondaryNumber = SecondaryNumber,
+            PostalCode = PostalCode,
+            District = District,
+
         };
 
 
@@ -192,6 +203,11 @@ public partial class OrganizationEdit
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         AdditionalHourPrice = organization.AdditionalHourPrice;
         Address = organization.Address;
+        BuildingNumber = organization.BuildingNumber;
+        StreetName = organization.StreetName;
+        SecondaryNumber = organization.SecondaryNumber;
+        PostalCode = organization.PostalCode;
+        District = organization.District;
     }
     private async Task GetRegions()
     {

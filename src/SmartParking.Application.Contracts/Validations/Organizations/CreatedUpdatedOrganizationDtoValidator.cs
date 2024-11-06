@@ -14,7 +14,10 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 {
     public CreatedUpdatedOrganizationDtoValidator()
     {
-        RuleFor(x=>x.UnifiedLicenseNum).Length(9).NotEmpty().Matches(@"^920[^\s,]*$");
+        RuleFor(x=>x.CommercialRegistrationNumber)
+            .Length(10)
+            .NotEmpty();
+
         RuleFor(x => x.ArabicName)
         .NotEmpty()
         .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$")
@@ -66,7 +69,34 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
           .GreaterThan(0);
 
         RuleFor(x => x.NumberOfHours)
+            .NotEmpty()
           .GreaterThan(0);
+
+        RuleFor(x => x.BuildingNumber)
+            .NotEmpty()
+            .InclusiveBetween(1, 9999);
+
+        RuleFor(x => x.PostalCode)
+            .NotEmpty()
+            .InclusiveBetween(11111, 99999);
+        
+        RuleFor(x => x.SecondaryNumber)
+            .NotEmpty()
+            .InclusiveBetween(1111, 9999);
+
+        RuleFor(x=>x.District)
+            .NotEmpty()
+            .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
+            .MaximumLength(20)
+            .WithMessage("District must start with 3 to 20 English or Arabic letters, and the total length must not exceed 25 characters.");
+
+        RuleFor(x => x.StreetName)
+           .NotEmpty()
+           .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$") 
+           .MaximumLength(20)
+           .WithMessage("Street Name must start with 3 to 20 English or Arabic letters, spaces are allowed, and the total length must not exceed 20 characters.");
+
+
 
         //RuleFor(x => x.IsNumberOfHoursExceeded)
         //.Must(v=>v == true || v == false)
@@ -76,6 +106,6 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         // .Must(v => v == true || v == false)
         // .WithMessage("The value must be either true or false."); ;
 
-  
+
     }
 }

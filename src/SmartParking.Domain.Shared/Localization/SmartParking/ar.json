@@ -411,9 +411,21 @@
     "UnlimitedUsers": "عدد لا محدود من الموظفين",
     "SaveAsDraft": "حفظ كمسودة",
     "NumberOfUsers": "عدد موظفي المنشأة",
-    "Address": "العنوان"
-    "NumberOfUsers": "عدد موظفي المنشأة",
-    "GarageNameEn": "اسم الموقف بالانجليزيه"
+    "Address": "العنوان",
+    "GarageNameEn": "اسم الموقف بالانجليزيه",
+    "BuidlingNumber": "رقم المبنى",
+    "StreetName": "الشارع",
+    "SecondaryNumber": "الرقم الثانوي",
+    "District": "الحي",
+    "PostalCode": "الرمز البريدي",
+    "PhoneNumber": "رقم الهاتف",
+    "UserRole": "دور الموظف",
+    "Details for Customer": "تفاصيل عن العميل",
+    "OrganoizationLogo": "لوجو المنشأة"
+
+
+
+
 
   }
 }

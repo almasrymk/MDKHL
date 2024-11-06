@@ -388,9 +388,21 @@
     "UnlimitedGarages": "Unlimited Garages",
     "UnlimitedUsers": "Unlimited Users",
     "SaveAsDraft": "Save As Draft",
-    "Address": "Address"
-    "SaveAsDraft": "Save As Draft",
-    "GarageNameEn": "Garage Name"
+    "Address": "Address",
+    "GarageNameEn": "Garage Name",
+    "BuidlingNumber": "Buidling Number",
+    "StreetName": "Street",
+    "SecondaryNumber": "Secondary Number",
+    "District": "District",
+    "PostalCode": "Postal Code",
+    "PhoneNumber": "PhoneNumber",
+    "UserRole": "UserRole",
+    "Details for Customer": "Details for Customer",
+    "OrganoizationLogo": "Organoization Logo"
+
+
+
+
 
 
   } 

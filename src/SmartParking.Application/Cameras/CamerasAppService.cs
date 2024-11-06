@@ -82,10 +82,36 @@ public class CamerasAppService :
 			await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
 
         }
-        Random rnd = new Random();
-        input.Code = organization.EnglishName.Substring(0, 2) + garage.NameEn.Substring(0, 1) + input.Name.Substring(0, 1) + rnd.Next(00, 99).ToString("00");
+       input.DeviceId = await GenerateCameraCode(organization.EnglishName,garage.NameEn,input.Name);
         input.OrganizationId = organization.Id;
         return await base.UpdateAsync(id, input);
+    }
+
+    public async Task<string> GenerateCameraCode(string OrgEnglishName ,string GarageEnglishName,string CameraEnglishName)
+    {
+       string Code = OrgEnglishName.Substring(0, 3) +'-'+ GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2)+'-';
+        string ncode = Code;
+
+        Random rnd = new Random();
+        while (true)
+        {
+            ncode=Code;
+            Camera camera = new Camera();
+            ncode += rnd.Next(00, 99).ToString("00");
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                camera = await _repository.FirstOrDefaultAsync(x => x.DeviceId == ncode);
+
+            }
+            if (camera == null)
+            {
+                Code = ncode;
+                break;
+            }
+
+        }
+        return Code;
+
     }
 
         public override async Task<CameraDto> GetAsync(int id)
@@ -123,18 +149,25 @@ public class CamerasAppService :
 
 		await base.DeleteAsync(id);
         }
-        /// <summary>
-        /// Method that used to create new camera to specific organization
-        /// </summary>
-        /// <param name="input">input is createupdateCameraDto type
-        /// holds data from presentation layer
-        /// </param>
-        /// <returns>Dto of created camera</returns>
-        /// <exception cref="UserFriendlyException"> exception is returned when Camera IP is duplicate </exception>
-        public override async Task<CameraDto> CreateAsync(CreateUpdateCameraDto input)
-        {
-            var garage = await _garageAppService.GetAsync(input.GarageId);
-            var organization = await _organizationRepository.GetAsync(garage.OrganizationId);
+    /// <summary>
+    /// Method that used to create new camera to specific organization
+    /// </summary>
+    /// <param name="input">input is createupdateCameraDto type
+    /// holds data from presentation layer
+    /// </param>
+    /// <returns>Dto of created camera</returns>
+    /// <exception cref="UserFriendlyException"> exception is returned when Camera IP is duplicate </exception>     
+    public override async Task<CameraDto> CreateAsync(CreateUpdateCameraDto input)
+    {
+            GarageDto garage = new GarageDto();
+            Organization organization = new Organization();
+
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                garage = await _garageAppService.GetAsync(input.GarageId);
+                organization = await _organizationRepository.GetAsync(garage.OrganizationId);
+            }
+            
 
             if (await CheckIPUnique(input.CameraIP) == 1)
             {
@@ -143,23 +176,22 @@ public class CamerasAppService :
                     Code = "DuplicateCameraIP"
                 };
             }
-        var numberOfCamerasForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+            var numberOfCamerasForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
 
-        if (organization.Subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
-        {
-            throw new Exception("UPGRADE subscription to add camera to organization.");
+            if (organization.Subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
+            {
+                throw new Exception("UPGRADE subscription to add camera to organization.");
 
         }
-        if (input.Status == Enums.Status.Active)
+            if (input.Status == Enums.Status.Active)
 		    {
                 
 			    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
 		    }
-            Random rnd = new Random();
-            input.Code = organization.EnglishName.Substring(0, 2)+garage.NameEn.Substring(0,1)+input.Name.Substring(0,1)+ rnd.Next(00, 99).ToString("00");
+            input.DeviceId = await GenerateCameraCode(organization.EnglishName,garage.NameEn,input.Name);
             input.OrganizationId = organization.Id;    
             return await base.CreateAsync(input);
-        }
+    }
         /// <summary>
         /// method used to Check if IP is unqiue or not
         /// </summary>
@@ -196,10 +228,9 @@ public class CamerasAppService :
                 queryable = queryable.Where(or =>
                     or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Model.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.MainType.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower())||

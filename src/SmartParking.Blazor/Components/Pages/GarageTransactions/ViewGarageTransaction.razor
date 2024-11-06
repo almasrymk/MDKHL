@@ -125,7 +125,7 @@
 		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
 		GarageName = Garage.NameEn;
 		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
-		cameraCode = Camera.Code;
+		cameraCode = Camera.DeviceId;
 		await base.OnInitializedAsync();
 	}
 

@@ -17,7 +17,6 @@ using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
 using Polly;
 using Microsoft.AspNetCore.Http;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Data;
@@ -30,6 +29,8 @@ using SmartParking.Results;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 using Volo.Abp.MultiTenancy;
+using System.Xml.Linq;
+using SmartParking.Entities.Customers;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -47,6 +48,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IConfiguration _config;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IOptionsMonitor<OpenIddictServerOptions> _oidcOptions;
+    private readonly IRepository<Customer, Guid> _customerRepository;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -57,7 +59,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IIdentityRoleRepository roleRepository,
         IConfiguration config,
         IRepository<Tenant,Guid> tenantRepository,
-        IOptionsMonitor<OpenIddictServerOptions> oidcOptions
+        IOptionsMonitor<OpenIddictServerOptions> oidcOptions,
+        IRepository<Customer, Guid> CustomerRepository
         )
     {
         _signInManager = signInManager;
@@ -68,7 +71,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _roleRepository = roleRepository;
         _config = config;
         _tenantRepository = tenantRepository;
-        _oidcOptions = oidcOptions;    }
+        _oidcOptions = oidcOptions; 
+        _customerRepository = CustomerRepository;
+    }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
     {
@@ -123,6 +128,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return Result<UserDataDto>.Success(new UserDataDto
             {
                 FullName = user.UserName,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
                 Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
             });
         }
@@ -130,12 +137,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
     /// <inheritdoc/>
-    public async Task<Result<LoginResultDto>> LoginAsync(LoginInputDto input)
+    public async Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input)
     {
 
 
         // Step 1: Validate the user's credentials
-        var user = await _userManager.FindByNameAsync(input.Username);
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
             return Result<LoginResultDto>.Invalid(new Results.ValidationError
@@ -218,15 +225,16 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             }
 
             await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
-
-        //    var claims = new List<Claim>
-        //{
-        //    new Claim(OpenIddictConstants.Claims.Subject, user.Id.ToString()),
-        //    new Claim(OpenIddictConstants.Claims.Username, user.UserName),
-        //    // Add additional claims as needed
-        //};
-        //    var identity = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType);
-        //    var principal = new ClaimsPrincipal(identity);
+            var customer = new Customer
+            {
+                ArabicName = "",
+                IdentificationTypes=IdentificationTypes.NationalID,
+                IdentityUser = user,
+                IdentityUserId = user.Id,
+                OtpExpirationDate = DateTime.Now
+                
+            };
+             await _customerRepository.InsertAsync(customer);
             var AccessToken = await GenerateTokenAsync(user) ?? string.Empty;
             return Result<RegisterResultDto>.Success(new RegisterResultDto
             {
@@ -320,5 +328,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     public async Task LogOutAsync()
     {
         await _signInManager.SignOutAsync();
+    }
+
+    public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNum);
+        var query = await _tenantRepository.GetQueryableAsync();
+        query = query.Where(t => t.Name == user.UserName);
+        var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
+        return tenant;
     }
 }

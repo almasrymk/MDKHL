@@ -3,12 +3,14 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
@@ -158,6 +160,15 @@ namespace SmartParking.Vehicles.LookUps
                 totalCount,
                 vehicleBrandsDto
             );
+        }
+        [RemoteService(IsEnabled =false)]
+        public async Task<Result<List<VehicleBrandDto>>> GetbrandsAsync()
+        {
+            var brands = await _repository.GetListAsync();
+            if (brands.Count == 0)
+                return Result<List<VehicleBrandDto>>.NotFound();
+            var brandsMap = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
+            return Result<List<VehicleBrandDto>>.Success(brandsMap);
         }
     }
 }

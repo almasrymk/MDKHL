@@ -49,5 +49,11 @@ public class OrganizationDto
 	public Guid TenantId { get; set; }
     public string Address { get; set; }
     public string OrganizationPicture { get; set; }
+    public int BuildingNumber { get; set; }
+    public string StreetName { get; set; }
+    public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+
 
 }

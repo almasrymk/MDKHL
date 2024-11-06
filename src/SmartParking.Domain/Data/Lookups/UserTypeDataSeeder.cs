@@ -22,7 +22,8 @@ public class UserTypeDataSeeder : IDataSeedContributor, ITransientDependency
                 {
                     new UserType { EnglishName = "Smart Admin", ArabicName = " مدبر النظام" , },
                     new UserType { EnglishName = "Hotel Admin", ArabicName = "مدير الفندق" },
-                    new UserType { EnglishName = "Customer", ArabicName = "عميل"}
+                    new UserType { EnglishName = "Customer", ArabicName = "عميل"},
+                    new UserType {EnglishName = "Keeper",ArabicName = "الحارس"}
                 };
 
             await this._userTypeRepository.InsertManyAsync(userTypes);

@@ -1,0 +1,37 @@
+﻿using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
+using SmartParking.Results;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace SmartParking.Mobile.Keepers;
+
+public interface IKeeperAppService
+{
+    /// <summary>
+    /// Logs in a user with the provided input.
+    /// </summary>
+    /// <param name="input">The login input containing username and password.</param>
+    /// <returns>A <see cref="LoginResponseDto"/> containing the result of the login attempt.</returns>
+    Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto input);
+
+    /// <summary>
+    /// Retrieves a list of all invoices by organization id asynchronously.
+    /// </summary>
+    /// <param name="organizationId">id of specific organization</param>
+    /// <returns>list of InvoiceDto</returns>
+    Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId);
+
+	/// <summary>
+	/// Retrieves a list of all garage transaction  asynchronously.
+	/// </summary>
+	/// <returns>list of GarageTransactionDto</returns>
+	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync();
+
+	/// <summary>
+	/// Update plate number of specific transaction.
+	/// </summary>
+	/// <param name="garageTransactionId">id of specific garageTransaction</param>
+	/// <param name="plateNumber">plate number</param>
+	Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId , string plateNumber);
+}
