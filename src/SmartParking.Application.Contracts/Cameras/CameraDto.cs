@@ -16,7 +16,7 @@ public class CameraDto
     public string Model { get; set; }
     public string MainType { get; set; }
     public string BrandName { get; set; }
-    public string Code { get; set; }
+    public string DeviceId { get; set; }
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }
     public CameraType CameraType { get; set; }

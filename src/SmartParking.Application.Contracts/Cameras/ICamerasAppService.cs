@@ -40,4 +40,18 @@ public interface ICamerasAppService:
     /// <returns>Camera Dto</returns>
     public Task<PagedResultDto<CameraDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
+
+    /// <summary>
+    /// Method used to generate camera's Code.
+    /// It contains of first 3 characters from the organization it belongs to.
+    /// First 2 characters from the garage it belongs to.
+    /// First 2 characters from camera's name.
+    /// 2 Numeric numbers
+    /// </summary>
+    /// <param name="OrgEnglishName">OrganizationEnglishName</param>
+    /// <param name="GarageEnglishName">GarageEnglishName</param>
+    /// <param name="CameraEnglishName">CameraEnglishName</param>
+    /// <returns></returns>
+    Task<string> GenerateCameraCode(string OrgEnglishName, string GarageEnglishName, string CameraEnglishName);
+
 }
