@@ -138,6 +138,7 @@ public partial class Camera
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = false, PropertyNmae = "DeviceId", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "GarageNameEn", IsFilterable = false, PropertyNmae = "Garage.NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -156,6 +157,7 @@ public partial class Camera
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.DeviceId));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
             if(item.Garage is not null)
             {
@@ -193,7 +195,7 @@ public partial class Camera
 		var createUpdateCamera = new CreateUpdateCameraDto
 		{
 			Name = cameraDto.Name,
-			Code = cameraDto.Code,
+            DeviceId = cameraDto.DeviceId,
 			Status = cameraDto.Status,
 			BrandName = cameraDto.BrandName,
 			CameraIP = cameraDto.CameraIP,
@@ -227,7 +229,7 @@ public partial class Camera
         var createUpdateCamera = new CreateUpdateCameraDto
         {
             Name = cameraDto.Name,
-            Code = cameraDto.Code,
+            DeviceId = cameraDto.DeviceId,
             Status = cameraDto.Status,
             BrandName = cameraDto.BrandName,
             CameraIP = cameraDto.CameraIP,
@@ -263,7 +265,7 @@ public partial class Camera
 		var createUpdateCamera = new CreateUpdateCameraDto
 		{
 			Name = cameraDto.Name,
-			Code = cameraDto.Code,
+            DeviceId = cameraDto.DeviceId,
 			Status = cameraDto.Status,
 			BrandName = cameraDto.BrandName,
 			CameraIP = cameraDto.CameraIP,

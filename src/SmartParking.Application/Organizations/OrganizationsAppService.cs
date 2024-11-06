@@ -91,7 +91,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
         organization.Address = input.BuildingNumber.ToString() + ',' + input.StreetName + ',' + input.SecondaryNumber.ToString() + input.District;
         organization.Address += containsArabic ? city.ArabicName: city.EnglishName;
-        organization.Address += " ," + input.PostalCode;
+        organization.Address += " , " + input.PostalCode;
         organization.TenantId = tenant.Id;
         await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -162,11 +162,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public override async Task<OrganizationDto> GetAsync(int id)
     {
+        if(id < 0)
+        {
+            throw new EntityNotFoundException("organization id not found");
+        }
         
-            using (_softDeleteFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetAsync(id);
-            }
+        using (_softDeleteFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+        }
+        
+
     }
 
 

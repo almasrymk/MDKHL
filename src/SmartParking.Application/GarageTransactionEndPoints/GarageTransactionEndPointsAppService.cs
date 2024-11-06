@@ -9,6 +9,7 @@ using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -90,6 +91,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             OrganizationID = organizationId,
             TenantId = camera.TenantId,
             CameraType = camera.CameraType
+            
 
             // Type =camera.Type
         };
@@ -124,25 +126,35 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
             else
             {
-                //Not Customer
-                decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
-                var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-				string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-
-				var invoice = new CreateUpdateInvoiceDto
+                if(GarageTransaction.PlateNumber == null)
                 {
-                    GarageId = garageId,
-                    InvoiceNumber = generatedInvoiceNumber,
-                    InvoicePrice = price,
-                    InvoiceType = InvoiceType.UnPaid,
-                    OrganizationId = GarageTransaction.OrganizationID,
-                    TotalHours = totalHours,
-                    PlateNumber = GarageTransaction.PlateNumber,
-                    InvoiceTime=GarageTransaction.AccurateTime
+                    var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
-                };
-                await _invoiceAppService.CreateAsync(invoice);
-                return await Task.FromResult(false);
+                    return await Task.FromResult(false);
+                }
+                else
+                {
+                    //Not Customer
+                    decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
+                    var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+
+                    var invoice = new CreateUpdateInvoiceDto
+                    {
+                        GarageId = garageId,
+                        InvoiceNumber = generatedInvoiceNumber,
+                        InvoicePrice = price,
+                        InvoiceType = InvoiceType.UnPaid,
+                        OrganizationId = GarageTransaction.OrganizationID,
+                        TotalHours = totalHours,
+                        PlateNumber = GarageTransaction.PlateNumber,
+                        InvoiceTime = GarageTransaction.AccurateTime
+
+                    };
+                    await _invoiceAppService.CreateAsync(invoice);
+                    return await Task.FromResult(false);
+                }
+                
 
             }
             //int succes= await CheckCustomerPackage(GarageTransaction.OrganizationID,GarageTransaction.PlateNumber);
@@ -153,13 +165,27 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         if (GarageTransaction.CameraType == CameraType.Entry)
         {
-            var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId);
+            Garage garage = new Garage();
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId);
+
+            }
+
             if (garage.CurrnetCapicity == garage.MaxCapacity)
+            {
                 return await Task.FromResult(false);
+
+            }
         }
         try
         {
-            var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+            GarageTransactionDto garageTransactionDto = new GarageTransactionDto();
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+            }
+                 
             return await Task.FromResult(true);
 
         }
@@ -175,26 +201,35 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
     private async Task<Camera> GetCamera(string CameraCode)
-        {
+    {
 		
 			using (_dataFilter.Disable<IMultiTenant>())
 			{
-				var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode));
+				var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.DeviceId.Equals(CameraCode));
 
 				return camera;
 			}
 		
-        }
+    }
     private async Task<int> GetOrganizationId(int GarageId)
-        {
-           var garage=await  _garageRepository.FirstAsync(x=>x.Id== GarageId);
-            if(garage is not null)
-                return garage.OrganizationId;
-            else return -1;
-        }
-    private async Task<string> CheckCustomer(string plateNumber)
     {
-        var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.PlateNumber == plateNumber);
+        Garage garage = new Garage();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == GarageId);
+
+        }
+        if (garage is not null)
+        {
+            return garage.OrganizationId;
+
+        }
+        else 
+            return -1;
+    }
+    private async Task<string> CheckCustomer(string? plateNumber)
+    {
+        var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.PlateNumber == null || x.PlateNumber == plateNumber);
 
         if (Customer == null)
         {
@@ -216,13 +251,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 			}
 			return customerPackage.Id;
 		}
-	private async Task<DateTime?> FindEntranceTime(string plateNumber)
+	private async Task<DateTime?> FindEntranceTime(string? plateNumber)
     {
-			// Get the list of transactions for the provided plate number
-			//var latestTransactions = await _garageTransactionRepoistory.GetListAsync();
-        var query = await _garageTransactionRepoistory.GetQueryableAsync();
-        var latestTransaction = query.Where(gt => gt.PlateNumber == plateNumber)
-				.OrderByDescending(gt => gt.SnapTime) // or AccurateTime
+        // Get the list of transactions for the provided plate number
+        //var latestTransactions = await _garageTransactionRepoistory.GetListAsync();
+
+        List<GarageTransaction> query = new List<GarageTransaction>(); 
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+           query = await _garageTransactionRepoistory.GetListAsync();
+
+        }
+
+        var latestTransaction = query
+                .Where(gt => gt.PlateNumber == null || gt.PlateNumber == plateNumber)
+				.OrderByDescending(gt => gt.AccurateTime) // or AccurateTime
 				.FirstOrDefault();
 			// Fetch the latest transaction based on SnapTime or AccurateTime
 			
@@ -243,9 +286,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 	}
     private async Task<Decimal> CalcInvoice(DateTime entrenceTime,int totalHours, CreateUpdateGarageTransactionDto garageTransaction)
     {
-        var organization=await  _organizationRepoistory.FindAsync(garageTransaction.OrganizationID);
+        Organization organization = new Organization();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+           organization = await _organizationRepoistory.FindAsync(garageTransaction.OrganizationID);
+
+        }
         //4 Cases
-        if(organization?.IsNumberOfHoursExceeded==false&&organization.IsClose==false)
+        if (organization?.IsNumberOfHoursExceeded==false&&organization.IsClose==false)
         {
             //case 1
             decimal price = 0;

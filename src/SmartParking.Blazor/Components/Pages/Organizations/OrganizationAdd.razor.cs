@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
@@ -9,6 +10,7 @@ using SmartParking.Organizations;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
@@ -53,6 +55,7 @@ public partial class OrganizationAdd
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
+    public string Photo { get; set; }
 
 
 
@@ -62,6 +65,8 @@ public partial class OrganizationAdd
     IList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     IList<SubscriptionDto> packages = new List<SubscriptionDto>();
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -116,7 +121,8 @@ public partial class OrganizationAdd
         }
         string newAddress = Address;
 
-        
+
+
 
 
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
@@ -138,20 +144,22 @@ public partial class OrganizationAdd
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
             IsClose = IsClose,
             WhatsAppNum = WhatsAppNum,
-            FirstHourPrice =  FirstHourPrice ,
-            SecondHourPrice =  SecondHourPrice,
+            FirstHourPrice = FirstHourPrice,
+            SecondHourPrice = SecondHourPrice,
             ThirdHourPrice = ThirdHourPrice,
             AdditionalHourPrice = AdditionalHourPrice,
-            FullDayPrice = FullDayPrice ,
+            FullDayPrice = FullDayPrice,
             NumberOfHours = NumberOfHours,
-            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue) ,
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue) ,
+            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
+            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue),
             UserName = UserName,
-            StreetName=StreetName,
-            District=District,
-            BuildingNumber=BuildingNumber,
-            PostalCode=PostalCode,
-            SecondaryNumber=SecondaryNumber,
+            StreetName = StreetName,
+            District = District,
+            BuildingNumber = BuildingNumber,
+            PostalCode = PostalCode,
+            SecondaryNumber = SecondaryNumber,
+            OrganizationPicture = Photo??null
+
         };
        
         
@@ -199,5 +207,16 @@ public partial class OrganizationAdd
     private void Cancel()
     {
         Navigation.NavigateTo("/organizations");
+    }
+    private async void UploadFiles2(IBrowserFile file)
+    {
+        files.Clear();
+        files.Add(file);
+        using var stream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(stream);
+        var bytes = stream.ToArray();
+        Photo = $"data:{file.ContentType};base64,{Convert.ToBase64String(bytes)}";
+        Console.WriteLine($"Image URL: {Photo}"); // Log to verify it's set
+
     }
 }

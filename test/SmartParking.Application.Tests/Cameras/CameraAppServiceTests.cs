@@ -47,7 +47,7 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                 Model = "ModelX",                  // Valid Model
                 MainType = "TypeA",                // Valid MainType
                 BrandName = "BrandZ",              // Valid BrandName
-                Code = "C12345",                   // Valid Code
+				DeviceId = "C12345",                   // Valid Code
                 CameraIP = "192.168.1.100",        // Valid Camera IP
                 MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address
                 //Type = "Outdoor",                  // Valid Type
@@ -74,7 +74,7 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                     Model = "Model1",
                     MainType = "Type1",
                     BrandName = "BrandA",
-                    Code = "12345",
+					DeviceId = "12345",
                     CameraIP = "192.168.1.1",
                     MacAddress = "00:1B:44:11:3A:B7",
                     //Type = "Indoor",
