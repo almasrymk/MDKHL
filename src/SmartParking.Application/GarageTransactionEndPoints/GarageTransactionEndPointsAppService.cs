@@ -179,7 +179,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 		
 			using (_dataFilter.Disable<IMultiTenant>())
 			{
-				var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.Code.Equals(CameraCode));
+				var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.DeviceId.Equals(CameraCode));
 
 				return camera;
 			}
