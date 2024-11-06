@@ -151,7 +151,7 @@ public class GarageTransactionsAppService:
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
-      
+        
            input.VehiclePicture = SaveBase64Image(input);
             if (input.VehiclePicture == null)
             return null;
@@ -161,21 +161,28 @@ public class GarageTransactionsAppService:
 
         
         var result=await base.CreateAsync(input);
-        if(result!=null)
+        
+        if (result != null)
         {
-            var garage =await _GarageRepository.GetAsync(result.GarageId);
-            if(input.CameraType==CameraType.Entry)
+            Garage garage = new Garage();
+
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                garage = await _GarageRepository.GetAsync(result.GarageId);
+
+            }
+            if (input.CameraType == CameraType.Entry)
             {
                 garage.CurrnetCapicity++;
             }
-            else if(input.CameraType==CameraType.Exit)
+            else if (input.CameraType == CameraType.Exit)
             {
                 garage.CurrnetCapicity--;
             }
-           // return result;
+
+            // return result;
         }
         return result;
-        //return result;
     }
     public async override Task DeleteAsync(int id)
     {

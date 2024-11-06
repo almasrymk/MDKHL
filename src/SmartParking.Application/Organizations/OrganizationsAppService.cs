@@ -162,11 +162,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public override async Task<OrganizationDto> GetAsync(int id)
     {
+        if(id < 0)
+        {
+            throw new EntityNotFoundException("organization id not found");
+        }
         
-            using (_softDeleteFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetAsync(id);
-            }
+        using (_softDeleteFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+        }
+        
+
     }
 
 

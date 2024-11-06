@@ -57,7 +57,11 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
     {
-        var organization = await _organizationRepository.GetAsync(input.OrganizationId);
+        Organization organization=new Organization();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+             organization = await _organizationRepository.GetAsync(input.OrganizationId);
+        }
         if (organization == null)
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);

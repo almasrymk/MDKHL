@@ -41,10 +41,10 @@ public class KeeperController : AbpController
 		return await _keeperAppService.GetAllGarageTransactionsAsync();
 	}
 
-	[HttpPost("correctTransaction")]
+	[HttpPut("correctTransaction")]
 	[Authorize(Roles = "Keeper")]
-	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumner)
+	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumber)
 	{
-		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId,plateNumner);
+		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
 	}
 }
