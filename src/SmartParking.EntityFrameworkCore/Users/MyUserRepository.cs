@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Users;
 
@@ -31,7 +32,10 @@ public class MyUserRepository
 
     public async Task<IdentityUser?> FindByOrganizationByTenantAsync(Guid? tenantId)
     {
-        var dbContext = await GetDbContextAsync();
-        return await dbContext.Users.Where(user => user.TenantId == tenantId).FirstOrDefaultAsync();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var dbContext = await GetDbContextAsync();
+            return await dbContext.Users.Where(user => user.TenantId == tenantId).FirstOrDefaultAsync();
+        }
     }
 }
