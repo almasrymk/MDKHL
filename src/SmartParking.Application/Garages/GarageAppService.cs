@@ -140,6 +140,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         if (garage.OrganizationId != input.OrganizationId)
         {
+            input.TenantId=organization.TenantId;
             input.Code=organization.Code;
             input.Code += GetOrganizationCode(NumberOfGaragesInInputOrganization);
             
@@ -413,7 +414,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
 
         int totalActive = 0;
-        var oldTenantId = cameras[0].TenantId??null;
+        var oldTenantId = cameras.Count>0? cameras[0].TenantId:null;
 
         var organizationId = await _organizationsAppService.GetOrganizationIdByTenant(TenantId);
         Organization NewOrganization = new Organization();
@@ -431,7 +432,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 
         //cahnge cameras from old tenant to new
-		foreach (var camera in cameras)
+		foreach (var camera in cameras )
 		{
             camera.DeviceId = await GenerateCameraCode(NewOrganization.EnglishName,NewGarage.NameEn,camera.Name);
             // Update the TenantId
@@ -454,7 +455,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 if (!flag) {
                     throw new Exception("Failed to change assign");
                 }
-                else
+                else if(oldTenantId != null) 
                 {
 					var orgId = await _organizationsAppService.GetOrganizationIdByTenant(oldTenantId);
 					var oldorg = await _organizationRepository.FindAsync(orgId);
@@ -470,11 +471,12 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             }  
             
         }
-        
 
-        var org=await _organizationsAppService.GetOrganizationForCurrentTenat();
-        org.ActiveCameras += totalActive;
-        org.ActiveGarages++;
+
+		NewOrganization.ActiveCameras += totalActive;
+		NewOrganization.ActiveGarages++;
+        NewGarage.OrganizationId = NewOrganization.Id;
+        NewGarage.TenantId = TenantId;
 		await CurrentUnitOfWork.SaveChangesAsync();
 
 
@@ -553,8 +555,18 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             return false;
         
         }
-
-        
-            
 	}
+
+    public async Task<Tuple<int,int>> GetMaxCapacityofActiveGaragesAndItsCount()
+    {
+        using (DataFilter.Disable<IMultiTenant>()) {
+            var query =await _repository.GetQueryableAsync();
+            query=query.Where(x=>x.Status==Enums.Status.Active);
+            var count=await AsyncExecuter.CountAsync(query);
+            int maxcapacity = query.Sum(x => x.MaxCapacity);
+            return new Tuple<int,int>(maxcapacity, count);
+
+        }
+
+    }
 }

@@ -30,9 +30,21 @@ public class VehicleController : AbpController
 
     [HttpPost]
     [Authorize]
-    public async Task<Result<VehicleDto>> CreateVehicle(CreateUpdateVehicleDto input)
+    public async Task<Result<VehicleDto>> CreateVehicle(CreateUpdateVehicleMobileDto input)
     {
         return await _vehicleAppService.CreateAsync(input);
+    }    
+    [HttpPut]
+    [Authorize]
+    public async Task<Result<VehicleDto>> EditVehicle(int vehicleId, CreateUpdateVehicleMobileDto input)
+    {
+        return await _vehicleAppService.EditAsync(vehicleId,input);
+    }    
+    [HttpDelete]
+    [Authorize]
+    public async Task<Result<VehicleDto>> DeleteVehicle(int vehicleId)
+    {
+        return await _vehicleAppService.DeleteAsync(vehicleId);
     }
     [HttpGet]
     [Authorize]
