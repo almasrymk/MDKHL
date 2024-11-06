@@ -91,13 +91,15 @@
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
-			
+
 			var tenantId = Organizations.Find(x=>x.Id==Garage.OrganizationId).TenantId;
 			Garage.TenantId = tenantId;
 			var garage=await GaragesAppService.UpdateAsync(UpdatedId, Garage);
-			await GaragesAppService.ChangeTenantForCamerasRelatedToGarage(garage.Id,tenantId);
+			Console.WriteLine(garage.Code);
+			var output = await GaragesAppService.ChangeTenantForCamerasRelatedToGarage(garage.Id,tenantId);
 			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
+			Navigation.NavigateTo("/garages");
 
 		}
 		catch (Exception e)
