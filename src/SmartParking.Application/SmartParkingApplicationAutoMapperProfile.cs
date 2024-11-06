@@ -30,6 +30,7 @@ using SmartParking.SubscriptionTypes;
 using SmartParking.Analysis;
 using System.Collections.Generic;
 using System.Linq;
+using SmartParking.Mobile.Vehicles;
 
 namespace SmartParking;
 
@@ -93,8 +94,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 		CreateMap<VehicleModel, VehicleModelDto>()
              .ForMember(dto => dto.VehicleBrandEnglishName, opt => opt.MapFrom(entity => entity.VehiclesBrand.EnglishName))
-            .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
+             .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
 		CreateMap<CreateUpdateVehicleModelDto, VehicleModel>();
+        CreateMap<CreateUpdateVehicleMobileDto, Vehicle>()
+			.ForMember(dto => dto.ModelYear, opt => opt.MapFrom(entity => entity.Year));
 
 		CreateMap<Vehicle, VehicleDto>();
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();

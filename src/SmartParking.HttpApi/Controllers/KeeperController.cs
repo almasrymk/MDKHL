@@ -28,23 +28,23 @@ public class KeeperController : AbpController
     }
 
     [HttpGet("invoice")]
-    [Authorize(Roles ="Keeper")]
+    [Authorize]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
     {
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
     }
 
     [HttpGet("garageTransaction")]
-    [Authorize(Roles ="Keeper")]
+    [Authorize]
 	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
 	{
 		return await _keeperAppService.GetAllGarageTransactionsAsync();
 	}
 
-	[HttpPost("correctTransaction")]
-	[Authorize(Roles = "Keeper")]
-	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumner)
+	[HttpPut("correctTransaction")]
+	[Authorize]
+	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumber)
 	{
-		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId,plateNumner);
+		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
 	}
 }

@@ -10,7 +10,7 @@ namespace SmartParking.GarageTransactions
 	public class CreateUpdateGarageTransactionDto
 	{
 		public int CameraId { get; set; }
-		public string PlateNumber { get; set; }
+		public string? PlateNumber { get; set; }
 		public DateTime? SnapTime { get; set; }
 		public DateTime? AccurateTime { get; set; }
 		public int OrganizationID { get; set; }

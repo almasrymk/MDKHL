@@ -54,17 +54,33 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	[RemoteService(isEnabled: false)]
 	public async Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber)
 	{
-		var transaction = await _garageTransactionRepository.GetAsync(garageTransactionId); 
+        GarageTransaction transaction = new GarageTransaction();
+
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+             transaction = await _garageTransactionRepository.GetAsync(garageTransactionId);
+
+        }
+
         if (transaction is null) 
         {
             return Result.NotFound("transaction not found");
         }
+
         transaction.PlateNumber = plateNumber;
+        try
+        {
+            await _garageTransactionRepository.UpdateAsync(transaction);
+            return Result.SuccessWithMessage("PlateNumber corrected successfully");
 
-        await _garageTransactionRepository.UpdateAsync(transaction);
+        }
+        catch(Exception ex)
+        {
+            return Result.Error("PlateNumber not corrected" + ex.Message);
 
-        return Result.SuccessWithMessage("PlateNumber corrected successfully");
-	}
+        }
+
+    }
 
 	/// <inheritdoc/>
 	[RemoteService(isEnabled: false)]
@@ -85,16 +101,23 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	[RemoteService(isEnabled:false)]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
-        var unPaidInvoices = await _invoiceRepository.GetListAsync(invo=>invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid);
-        
+        List<Invoice> unPaidInvoices = new List<Invoice>();
+
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+             unPaidInvoices = await _invoiceRepository.GetListAsync(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid );
+
+        }
+
         var sortedInvoices = unPaidInvoices
             .OrderByDescending(invo => invo.InvoiceTime)
             .ToList();
+
         var unpaidInvoicesMap = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(sortedInvoices);
 
         if (unpaidInvoicesMap.Count < 0)
         {
-            return Result<List<InvoiceDto>>.NotFound("Invoices not found");
+            return Result<List<InvoiceDto>>.NotFound("Invoice Not Found");
         }
 
         return Result<List<InvoiceDto>>.Success(unpaidInvoicesMap);
