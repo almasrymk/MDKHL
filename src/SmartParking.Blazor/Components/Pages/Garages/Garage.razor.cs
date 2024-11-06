@@ -249,8 +249,9 @@ public partial class Garage
 		var garageDto= await GarageAppService.GetAsync(id);
 
         var createUpdateGarage=new CreateUpdateGarageDto { 
-            NameEn = garageDto.NameEn   ,
-            Code=garageDto.Code,
+            NameEn = garageDto.NameEn,
+            NameAr = garageDto.NameAr,
+            Code = garageDto.Code,
             Status=garageDto.Status,
             MaxCapacity=garageDto.MaxCapacity,
             ClosingHours=garageDto.ClosingHours,
