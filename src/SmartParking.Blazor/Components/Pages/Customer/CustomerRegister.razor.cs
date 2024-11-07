@@ -16,7 +16,9 @@ public partial class CustomerRegister
 		var successedMessage = L["CustomerCreatedSuccessfullyWith"];
 		try
         {
+      
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+
             var customer =  await CustomerAppService.CreateAsync(createUpdateCustomerDto);
             if (customer != null)
             {

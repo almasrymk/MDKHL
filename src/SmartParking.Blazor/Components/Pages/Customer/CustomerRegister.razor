@@ -2,15 +2,18 @@
 @using SmartParking.Cutomers
 @layout Shared.ProfileLayout
 @inject ICustomerAppService CustomerAppService
+@inject IOrganizationsAppService OrganizationAppService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser currentUser
 @inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
 
 
 <PageTitle>@L["Register"]</PageTitle>

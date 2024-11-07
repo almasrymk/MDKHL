@@ -74,8 +74,12 @@ public class UsersAppService : ApplicationService , IUsersAppService
     }
     public async Task<int> GetOrganizationIdByTenantAsync(Guid? tenantId)
     {
-        var user = await _userRepository.FindByOrganizationByTenantAsync(tenantId);
-        return user.GetProperty<int>("OrganizationId");
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var user = await _userRepository.FindByOrganizationByTenantAsync(tenantId);
+            return user.GetProperty<int>("OrganizationId");
+        }
     }
 
     public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)

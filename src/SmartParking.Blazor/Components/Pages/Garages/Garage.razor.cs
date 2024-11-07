@@ -42,6 +42,7 @@ public partial class Garage
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
     public  int MaxiumumNumberOfGarageAllowedToBeAdded { get; set; }
+    public  int SumOfAllMaximumCapacityforActiveGarages { get; set; }
 
     public int ActiveGarages { get; set; }
 
@@ -66,6 +67,12 @@ public partial class Garage
             ActiveGarages = await OrganizationAppService.GetNumberOfActiveGaragesOfOrganization();
 
         }
+        else if ((currentUser.IsInRole(RolesType.Mdkhl.ToString()) || currentUser.IsInRole(RolesType.MdkhlEmployee.ToString()) || currentTenant.Id == null))
+		{
+            var result =await GarageAppService.GetMaxCapacityofActiveGaragesAndItsCount();
+            ActiveGarages = result.Item2;
+            SumOfAllMaximumCapacityforActiveGarages = result.Item1;
+		}
 		await base.OnInitializedAsync();
 
 	}

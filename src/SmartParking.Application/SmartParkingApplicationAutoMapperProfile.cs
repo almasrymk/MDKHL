@@ -30,6 +30,7 @@ using SmartParking.SubscriptionTypes;
 using SmartParking.Analysis;
 using System.Collections.Generic;
 using System.Linq;
+using SmartParking.Mobile.Vehicles;
 
 namespace SmartParking;
 
@@ -62,6 +63,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
+        CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>().ReverseMap();
 
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
@@ -93,8 +95,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 		CreateMap<VehicleModel, VehicleModelDto>()
              .ForMember(dto => dto.VehicleBrandEnglishName, opt => opt.MapFrom(entity => entity.VehiclesBrand.EnglishName))
-            .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
+             .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
 		CreateMap<CreateUpdateVehicleModelDto, VehicleModel>();
+        CreateMap<CreateUpdateVehicleMobileDto, Vehicle>()
+			.ForMember(dto => dto.ModelYear, opt => opt.MapFrom(entity => entity.Year));
 
 		CreateMap<Vehicle, VehicleDto>();
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();
