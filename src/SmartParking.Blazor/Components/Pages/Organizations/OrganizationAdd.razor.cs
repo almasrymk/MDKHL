@@ -65,7 +65,6 @@ public partial class OrganizationAdd
     IList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     IList<SubscriptionDto> packages = new List<SubscriptionDto>();
-    IList<IBrowserFile> files = new List<IBrowserFile>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -208,15 +207,46 @@ public partial class OrganizationAdd
     {
         Navigation.NavigateTo("/organizations");
     }
-    private async void UploadFiles2(IBrowserFile file)
+    private async Task OnImageUpload(IBrowserFile file)
     {
-        files.Clear();
-        files.Add(file);
-        using var stream = new MemoryStream();
-        await file.OpenReadStream().CopyToAsync(stream);
-        var bytes = stream.ToArray();
-        Photo = $"data:{file.ContentType};base64,{Convert.ToBase64String(bytes)}";
-        Console.WriteLine($"Image URL: {Photo}"); // Log to verify it's set
-
+        var imageFile = file;
+        if (imageFile != null)
+        {
+            // Save the image and get the file path
+            Photo = await SaveImageAndReturnPathAsync(imageFile);
+            StateHasChanged();
+        }
     }
+    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
+	{
+		// Ensure directory structure
+		var imageDirectoryPath = CreateImageDirectory();
+
+		// Generate a unique file name with the original file extension
+		string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
+		string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+		// Save the image to the specified path
+		using (var fileStream = new FileStream(fullPath, FileMode.Create))
+		{
+			// Copy the image data from the IBrowserFile stream to the file stream
+			await imageFile.OpenReadStream().CopyToAsync(fileStream);
+		}
+
+		// Return the relative path for storing in the database
+		return $"/OrganizationImages/{fileName}";
+	}
+
+	private string CreateImageDirectory()
+	{
+		// Define the path where the image will be saved
+		string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
+
+		// Ensure the directory exists
+		if (!Directory.Exists(imageDirectoryPath))
+		{
+			Directory.CreateDirectory(imageDirectoryPath);
+		}
+		return imageDirectoryPath;
+	}
 }
