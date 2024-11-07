@@ -34,14 +34,21 @@ public class KeeperController : AbpController
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
     }
 
-    [HttpGet("garageTransaction")]
+    [HttpGet("garageTransactionWithNoPlateNumber")]
     [Authorize]
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber()
 	{
-		return await _keeperAppService.GetAllGarageTransactionsAsync();
+		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync();
 	}
 
-	[HttpPut("correctTransaction")]
+    [HttpGet("garageTransaction")]
+    [Authorize]
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
+    {
+        return await _keeperAppService.GetAllGarageTransactionsAsync();
+    }
+
+    [HttpPut("correctTransaction")]
 	[Authorize]
 	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumber)
 	{
