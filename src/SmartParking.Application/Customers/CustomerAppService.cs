@@ -112,7 +112,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
                 if (!passportPattern.IsMatch(input.NationalId))
                 {
-                    throw new UserFriendlyException("Passport must be 9 digits");
+                    throw new UserFriendlyException("Passport must be from 6 - 9 digits and atmost one character");
                 }
             }
             var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
