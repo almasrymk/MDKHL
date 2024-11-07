@@ -7,6 +7,7 @@ using SmartParking.Results;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
+using System.Drawing;
+using System.Text;
 
 
 namespace SmartParking.Mobile.Vehicles;
@@ -43,7 +46,8 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         _modelRepository = ModelRepository;
 		_customerRepository = CustomerRepository;
 	}
-    [RemoteService(IsEnabled =false)]
+
+	[RemoteService(IsEnabled =false)]
     public async Task<Result<VehicleDto>> CreateAsync(CreateUpdateVehicleMobileDto input)
     {
         try

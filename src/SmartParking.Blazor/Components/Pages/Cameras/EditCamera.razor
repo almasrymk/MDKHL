@@ -130,11 +130,15 @@
 						</div>
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Status"
-									  For="@(() => Camera.Status)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["Status"]" />
+						<div Class="d-flex flex-row justify-content-between">
+
+
+							<MudRadioGroup @bind-Value="@Camera.Status" Class="d-inline-flex align-content-center">
+								<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+								<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Error">@L["Inactive"]</MudRadio>
+							</MudRadioGroup>
+						</div>
+						
 					</MudItem>
 				</MudGrid>
 			</MudForm>

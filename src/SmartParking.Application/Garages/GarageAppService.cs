@@ -10,7 +10,6 @@ using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -60,7 +59,10 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         Organization organization=new Organization();
         using (DataFilter.Disable<IMultiTenant>())
         {
-             organization = await _organizationRepository.GetAsync(input.OrganizationId);
+             var query = await _organizationRepository.GetQueryableAsync();
+            query = query.Where(x => x.Id ==input.OrganizationId);
+           query= query.Include(x => x.Subscription);
+            organization=query.FirstOrDefault();
         }
         if (organization == null)
         {

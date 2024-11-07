@@ -205,6 +205,8 @@
                                 <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
                                 @foreach (var package in packages)
                                 {
+                                    if (package.Status != Enums.SubscriptionStatus.Active)
+                                        continue;
                                     if (CultureInfo.CurrentCulture.Name == "en")
                                     {
                                     <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
@@ -212,6 +214,7 @@
                                     else
                                     {
                                     <MudSelectItem Value="package.Id.ToString()">@package.ArabicName</MudSelectItem>
+                              
                                     }
                                 }
                             </MudSelect>

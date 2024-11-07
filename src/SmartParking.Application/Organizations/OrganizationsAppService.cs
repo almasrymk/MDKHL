@@ -89,7 +89,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         await _repository.InsertAsync(organization, autoSave: true);
         bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
-        organization.Address = input.BuildingNumber.ToString() + ',' + input.StreetName + ',' + input.SecondaryNumber.ToString() + input.District;
+        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString()+ " ," + input.District + " ,";
         organization.Address += containsArabic ? city.ArabicName: city.EnglishName;
         organization.Address += " , " + input.PostalCode;
         organization.TenantId = tenant.Id;
@@ -192,32 +192,47 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public new async Task<string> DeleteByIdAsync(int id)
     {
-        
-        var orgaization = await GetAsync(id);
-
-        if (orgaization is null)
-            throw new EntityNotFoundException(typeof(Organization), id);
-        else
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            await base.DeleteByIdAsync(id);
-            orgaization.Status = Enums.Status.Deleted;
 
-            return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
+            var orgaization = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (orgaization is null)
+                throw new EntityNotFoundException(typeof(Organization), id);
+            else
+            {
+                //await base.DeleteByIdAsync(id);
+                orgaization.Status = Status.Deleted;
+                await CurrentUnitOfWork.SaveChangesAsync();
+                 //await UpdateAsync(id,orgaization);
+
+                return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
+            }
         }
     }
     ///<inheritdoc/>
 
     public override async Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input)
     {
-        var organization= await GetAsync(id);
-        if (organization is null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
+            var organization = await GetAsync(id);
+            if (organization is null)
+            {
                 throw new EntityNotFoundException(typeof(Organization), id);
 
+            }
+            var city = await _cityAppService.GetAsync(input.CityId);
+            if (organization.Address != input.Address) {
+                bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
+                organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
+                organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
+                organization.Address += " , " + input.PostalCode;
+            }
+
+
+            return await base.UpdateAsync(id, input);
         }
-      
-       
-        return await base.UpdateAsync(id, input);
     }
 
     ///<inheritdoc/>
@@ -378,14 +393,20 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<Organization> GetOrganizationForCurrentTenat()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(org => org.EnglishName == CurrentTenant.Name);
+        query = query.Where(org => org.TenantId == CurrentTenant.Id);
         var org = await AsyncExecuter.FirstOrDefaultAsync(query);
         return org;
+        }
     }
     ///<inheritdoc/>
     public async Task<int> GetNumberOfGaragesAllowedToBeAdded()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var orgId=await _usersAppService.GetOrganizationIdByTenantAsync(CurrentTenant.Id);
         var query =await _repository.GetQueryableAsync();
         query=query.AsNoTracking();
@@ -395,6 +416,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var maxNumberOfGarages=organization?.Subscription?.NumbersOfGarages ?? 0;
         
         return maxNumberOfGarages ;
+        }
     }
 
     public async Task<int> GetNumberOfActiveGaragesOfOrganization()

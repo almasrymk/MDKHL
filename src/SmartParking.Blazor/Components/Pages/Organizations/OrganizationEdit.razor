@@ -57,7 +57,7 @@
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="8">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
                         </MudItem>
 
@@ -94,7 +94,7 @@
                             <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="int" Immediate="true" Required="true" Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            <MudNumericField T="int" Immediate="true" Required="true" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />

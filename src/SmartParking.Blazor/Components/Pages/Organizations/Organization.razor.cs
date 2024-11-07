@@ -53,7 +53,7 @@ public partial class Organization
         {
             if (!result.Canceled)
             {
-                await OrganizationsAppService.DeleteAsync(id);
+                await OrganizationsAppService.DeleteByIdAsync(id);
                 ShowSnackbar(successMessage, Severity.Error);
                 await Task.Delay(1000);
 

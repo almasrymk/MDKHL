@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities.Organizations;
 
-public class Organization : BaseEntity
+public class Organization : BaseEntity 
 {
     public string Code { get; set; }
     public string CommercialRegistrationNumber { get; set; }
@@ -39,7 +39,6 @@ public class Organization : BaseEntity
     public bool IsClose { get; set; }
     public TimeOnly ClosingHoursStart { get; set; }
     public TimeOnly ClosingHoursEnd { get; set; }
-    public Status Status { get; set; } = Status.Active;
     public virtual ICollection<Garage> OrganizationGarages { get; set; }
     public virtual ICollection<Camera> Cameras { get; set; }
     public virtual ICollection<Package> organizationPackages { get; set; }
@@ -57,10 +56,4 @@ public class Organization : BaseEntity
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
-
-
-
-
-
-
 }
