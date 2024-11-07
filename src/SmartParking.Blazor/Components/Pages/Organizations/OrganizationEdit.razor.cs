@@ -80,7 +80,9 @@ public partial class OrganizationEdit
         else
         {
             StatusValue = Enums.Status.Inactive;
-        }
+        } 
+
+       
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
             ArabicName = ArabicName,
@@ -208,6 +210,7 @@ public partial class OrganizationEdit
         SecondaryNumber = organization.SecondaryNumber;
         PostalCode = organization.PostalCode;
         District = organization.District;
+        IsClose = organization.IsClose;
     }
     private async Task GetRegions()
     {
