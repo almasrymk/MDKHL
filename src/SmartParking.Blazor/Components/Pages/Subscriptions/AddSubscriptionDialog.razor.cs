@@ -17,14 +17,23 @@ public partial class AddSubscriptionDialog
     private DateTime? _activateDate = new DateTime();
     private DateTime? _inActivateDate = new DateTime();
     private DateTime? _creationDate = new DateTime();
-    public bool numberOfGarages { get; set; }
-    public bool numberOfOrganizations { get; set; }
-    public bool numberOfCameras { get; set; }
-    public bool numberOfUsers { get; set; }
-    public bool numberOfCustomers { get; set; }
+    public bool maximumNumberOfGarages { get; set; }
+    public int UnlimitedMaximumNumber { get; set; } = 9999;
+	public bool maximumNumberOfOrganizations { get; set; }
+	public bool maximumNumberOfCameras { get; set; }
+	public bool maximumNumberOfUsers { get; set; }
+	public bool maximumNumberOfCustomers { get; set; }
+  
 
 
     public CreateUpdateSubscriptionDto input = new CreateUpdateSubscriptionDto();
+    private int BoundNumberOfUsers;
+    private int BoundNumberOfGarages;
+    private int BoundNumberOfCustomers;
+    private int BoundNumberOfCameras;
+
+    private int BoundNumberOfOrganization;
+
     public List<SubscriptionTypeLookupDto> subscriptions = new List<SubscriptionTypeLookupDto>();
 
     [CascadingParameter]
@@ -48,6 +57,11 @@ public partial class AddSubscriptionDialog
         // Call your service to create the subscription
         try
         {
+            input.NumberOfOrganizations =  BoundNumberOfOrganization;
+            input.NumbersOfGarages = BoundNumberOfGarages;
+            input.NumberOfMobileCustomers =  BoundNumberOfCustomers;
+            input.NumberOfUsers =  BoundNumberOfUsers;
+            input.NumberOfCameras = BoundNumberOfCameras;
             input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
