@@ -403,6 +403,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<int> GetNumberOfGaragesAllowedToBeAdded()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var orgId=await _usersAppService.GetOrganizationIdByTenantAsync(CurrentTenant.Id);
         var query =await _repository.GetQueryableAsync();
         query=query.AsNoTracking();
@@ -412,6 +415,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var maxNumberOfGarages=organization?.Subscription?.NumbersOfGarages ?? 0;
         
         return maxNumberOfGarages ;
+        }
     }
 
     public async Task<int> GetNumberOfActiveGaragesOfOrganization()
