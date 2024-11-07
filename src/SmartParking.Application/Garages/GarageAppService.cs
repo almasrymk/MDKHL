@@ -473,9 +473,18 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
 
 
+		if (NewOrganization.Subscription.NumberOfCameras < NewOrganization.ActiveCameras + totalActive)
+		{
+			throw new Exception("UPGRADE subscription to add cameras to organization.");
+		}
 		NewOrganization.ActiveCameras += totalActive;
+		if (NewOrganization.Subscription.NumbersOfGarages < NewOrganization.ActiveGarages + 1)
+		{
+			throw new Exception("UPGRADE subscription to add garage to organization.");
+
+		}
 		NewOrganization.ActiveGarages++;
-        NewGarage.OrganizationId = NewOrganization.Id;
+		NewGarage.OrganizationId = NewOrganization.Id;
         NewGarage.TenantId = TenantId;
 		await CurrentUnitOfWork.SaveChangesAsync();
 
