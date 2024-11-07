@@ -215,7 +215,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 		if (lastInvoice != null)
 		{
             // Extract the last 3 digits of the previous invoice number (e.g., "ABC23-001")
-            var lastSequenceString = lastInvoice.InvoiceNumber[^3..];
+            var lastSequenceString = lastInvoice.InvoiceNumber[^5..];
 			if (int.TryParse(lastSequenceString, out int lastSequence))
 			{
 				nextInvoiceSequence = lastSequence + 1;
@@ -223,7 +223,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 		}
 
 		// Format the sequence as a three-digit number with leading zeros
-		var formattedSequence = nextInvoiceSequence.ToString().PadLeft(3,'0') ;
+		var formattedSequence = nextInvoiceSequence.ToString().PadLeft(5,'0') ;
 
 		// Combine all parts to form the final invoice number
 		return $"{prefix}{currentYearSuffix}{formattedSequence}";

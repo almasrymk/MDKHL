@@ -63,6 +63,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
+        CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>().ReverseMap();
 
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()

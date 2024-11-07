@@ -23,15 +23,20 @@ public interface IKeeperAppService
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId);
 
 	/// <summary>
+	/// Retrieves a list of all garage transaction with no plate number  asynchronously.
+	/// </summary>
+	/// <returns>list of GarageTransactionDto</returns>
+	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync();
+
+    /// <summary>
 	/// Retrieves a list of all garage transaction  asynchronously.
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
 	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync();
-
-	/// <summary>
-	/// Update plate number of specific transaction.
-	/// </summary>
-	/// <param name="garageTransactionId">id of specific garageTransaction</param>
-	/// <param name="plateNumber">plate number</param>
-	Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId , string plateNumber);
+    /// <summary>
+    /// Update plate number of specific transaction.
+    /// </summary>
+    /// <param name="garageTransactionId">id of specific garageTransaction</param>
+    /// <param name="plateNumber">plate number</param>
+    Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId , string plateNumber);
 }
