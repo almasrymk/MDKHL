@@ -195,15 +195,16 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         using (DataFilter.Disable<IMultiTenant>())
         {
 
-            var orgaization = await GetAsync(id);
+            var orgaization = await _repository.FirstOrDefaultAsync(x => x.Id == id);
 
             if (orgaization is null)
                 throw new EntityNotFoundException(typeof(Organization), id);
             else
             {
                 //await base.DeleteByIdAsync(id);
-                orgaization.Status = Enums.Status.Deleted;
-               // await UpdateAsync(id);
+                orgaization.Status = Status.Deleted;
+                await CurrentUnitOfWork.SaveChangesAsync();
+                 //await UpdateAsync(id,orgaization);
 
                 return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
             }

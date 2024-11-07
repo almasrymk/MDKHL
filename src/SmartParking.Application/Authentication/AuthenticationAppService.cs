@@ -49,6 +49,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IOptionsMonitor<OpenIddictServerOptions> _oidcOptions;
     private readonly IRepository<Customer, Guid> _customerRepository;
+    private readonly IRepository<Organization, int> _organizationRepository;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -60,7 +61,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IConfiguration config,
         IRepository<Tenant,Guid> tenantRepository,
         IOptionsMonitor<OpenIddictServerOptions> oidcOptions,
-        IRepository<Customer, Guid> CustomerRepository
+        IRepository<Customer, Guid> CustomerRepository,
+        IRepository<Organization,int> organizationRepository
         )
     {
         _signInManager = signInManager;
@@ -73,6 +75,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _tenantRepository = tenantRepository;
         _oidcOptions = oidcOptions; 
         _customerRepository = CustomerRepository;
+        _organizationRepository = organizationRepository;
     }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
@@ -201,6 +204,17 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             return null;
         }
+        var organizationId = user.GetProperty<int>("OrganizationId");
+        if (organizationId != 0) 
+        {
+            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId && o.Status == Status.Deleted);
+            if (organization != null)
+            {
+                return null;
+            }
+        }
+
+        
         await _signInManager.SignInAsync(user, isPersistent: false);
 
        
