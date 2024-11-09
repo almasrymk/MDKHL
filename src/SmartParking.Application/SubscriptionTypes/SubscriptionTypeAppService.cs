@@ -64,9 +64,13 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
     /// <inheritdoc/>
     public async Task<List<SubscriptionTypeLookupDto>> GetSubscriptionTypeLookupAsync()
 	{
-		var subscriptionTypes = await _subscriptionTypeRepository.GetListAsync();
-		var subscriptionTypesList = ObjectMapper.Map<List<SubscriptionType>, List<SubscriptionTypeLookupDto>>(subscriptionTypes)
-;
-		return subscriptionTypesList;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+		    var subscriptionTypes = await _subscriptionTypeRepository.GetListAsync();
+		    var subscriptionTypesList = ObjectMapper.Map<List<SubscriptionType>, List<SubscriptionTypeLookupDto>>(subscriptionTypes)
+    ;
+		    return subscriptionTypesList;
+        }
 	}
 }
