@@ -37,4 +37,6 @@ namespace SmartParking.Lookups.LicenceType;
     public Task<PagedResultDto<LicenceTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
     public Task DeleteAsync(int id);
+
+    public Task<List<LicenceTypeDto>> GetAllAsync();
 }

@@ -42,5 +42,7 @@ namespace SmartParking.Lookups.VehicleModel
         public Task<PagedResultDto<VehicleModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
         public Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId);
+
+        Task<List<VehicleModelDto>> GetAllAsync();
     }
 }
