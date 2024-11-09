@@ -74,8 +74,9 @@ public class CustomerPackagesAppService:
         {
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
+        customerPackage.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
 
-
-        await base.DeleteAsync(id);
+        //await base.DeleteAsync(id);
     }
 }

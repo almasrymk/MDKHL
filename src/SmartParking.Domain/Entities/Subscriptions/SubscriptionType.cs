@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,9 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Subscriptions;
 
-public class SubscriptionType : FullAuditedEntity<int>
+public class SubscriptionType : FullAuditedEntity<int> , IBseEntity
 {
     public string Type { get; set; }
     public virtual List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-
+    public Status Status { get ; set ; }
 }

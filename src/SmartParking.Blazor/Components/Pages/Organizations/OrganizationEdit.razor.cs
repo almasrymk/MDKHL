@@ -125,9 +125,7 @@ public partial class OrganizationEdit
 
         try
         {
-           
-           
-           var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
+            var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
             Navigation.NavigateTo("/organizations");
             ShowSnackbar(successedMessage, Severity.Success);
         }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using System;
@@ -174,10 +176,11 @@ namespace SmartParking.Vehicles.LookUps;
 
         if (licenceType is null)
         {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
+            throw new EntityNotFoundException(typeof(LicenceType), id);
         }
+        licenceType.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
 
-
-        await base.DeleteAsync(id);
+        //await base.DeleteAsync(id);
     }
 }

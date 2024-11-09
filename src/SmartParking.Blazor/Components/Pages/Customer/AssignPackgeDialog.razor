@@ -31,6 +31,8 @@
 								   Clearable="_clearable">
 							@foreach (var package in Packages)
 							{
+								if (package.Status != Enums.Status.Active)
+									continue;
 								<MudSelectItem Value="package.Id">@package.EnglishName</MudSelectItem>
 							}
 						</MudSelect>
@@ -39,18 +41,7 @@
 
 
 
-					<MudItem sm="9" md="9" Class="d-inline-flex justify-content-center">
-						<div Class="d-flex flex-row justify-content-between">
-
-
-							<MudRadioGroup @bind-Value="@CustomerPackage.CustomerPackageStatus" Class="d-inline-flex align-content-center">
-								<MudRadio Value="@(Enums.CustomerPackageStatus.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
-								<MudRadio Value="@(Enums.CustomerPackageStatus.InActive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
-								<MudRadio Value="@(Enums.CustomerPackageStatus.Expired)" Color="MudBlazor.Color.Warning">@L["Expired"]</MudRadio>
-							</MudRadioGroup>
-						</div>
-					</MudItem>
-
+					
 
 				
 

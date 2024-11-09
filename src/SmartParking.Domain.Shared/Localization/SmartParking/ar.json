@@ -425,7 +425,8 @@
     "ArabicName must contain at least three Arabic words.": "الاسم يجب ان يكون  ثلاثي ",
     "ArabicName must be at least 10 characters long.": "يجب ان يكون طول الاسم علي الاقل عشر حروف",
     "FullName must contain at least three English words.": "الاسم بالانجليزيه يجب ان يتكون علي الاقل من ثلاث كلمات",
-    "FullName must be at least 10 characters long.": " يجب ان يكون طول الاسم بالانجليزية علي الاقل عشر حروف"
+    "FullName must be at least 10 characters long.": " يجب ان يكون طول الاسم بالانجليزية علي الاقل عشر حروف",
+    "Should Not be empty": "لا يجب ان يكون فارغا"
 
 
 

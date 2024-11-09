@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Results;
@@ -34,11 +36,12 @@ namespace SmartParking.Vehicles.LookUps
 
             if (vehicleBrand is null)
             {
-                throw new EntityNotFoundException(typeof(VehicleModel), id);
+                throw new EntityNotFoundException(typeof(VehicleBrand), id);
             }
 
-
-            await base.DeleteAsync(id);
+            vehicleBrand.Status = Status.Deleted;
+            await CurrentUnitOfWork.SaveChangesAsync();
+            // await base.DeleteAsync(id);
         }
 
         ///<inheritdoc/>

@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Localization;
 using SmartParking.Cameras;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
@@ -11,10 +13,15 @@ namespace SmartParking.Validations.Cameras;
 
 public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCameraDto>
 {
-    public CreatedUpdatedCameraDtoValidator()
+    private readonly IStringLocalizer<SmartParkingResource> _stringLocalizer;
+
+    public CreatedUpdatedCameraDtoValidator(IStringLocalizer<SmartParkingResource> stringLocalizer)
     {
+        _stringLocalizer = stringLocalizer;
+
         RuleFor(x => x.Name)
-            .NotEmpty();
+            .NotEmpty()
+            .WithMessage(_stringLocalizer["Should Not be empty."]);
 
         RuleFor(x => x.Status)
             .IsInEnum();
@@ -25,19 +32,28 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
             
 
         RuleFor(x => x.BrandName)
-            .NotEmpty();
+            .NotEmpty()
+            .WithMessage(_stringLocalizer["Should Not be empty."]);
 
         RuleFor(x => x.Model)
-           .NotEmpty(); 
-        
+           .NotEmpty()
+            .WithMessage(_stringLocalizer["Should Not be empty."]);
+
+
         RuleFor(x => x.MainType)
-           .NotEmpty();     
-        
+           .NotEmpty()
+            .WithMessage(_stringLocalizer["Should Not be empty."]);
+
+
         RuleFor(x => x.CameraIP)
-           .NotEmpty();        
+           .NotEmpty()
+            .WithMessage(_stringLocalizer["Should Not be empty."]);
+
 
         RuleFor(x => x.MacAddress)
-           .NotEmpty();
+           .NotEmpty()
+            .WithMessage(_stringLocalizer["Should Not be empty."]);
+
 
 
     }
