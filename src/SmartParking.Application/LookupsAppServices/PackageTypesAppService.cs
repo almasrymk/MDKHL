@@ -10,6 +10,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.MultiTenancy;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 
@@ -197,6 +198,15 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
         //await base.DeleteAsync(id);
         packageType.Status = Status.Deleted;
         await CurrentUnitOfWork.SaveChangesAsync();
+    }
+
+    public override Task<PagedResultDto<PackageTypeDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            return base.GetListAsync(input);
+
+        }
     }
 
 }

@@ -245,10 +245,14 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 
     public async Task<List<RegionLookupDto>> GetRegionByCountry(int countryId)
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var query = await _regionRepository.GetQueryableAsync();
         query = query.Where(r => r.CountryId == countryId);
         var regions = await AsyncExecuter.ToListAsync(query);
         var regionsList = ObjectMapper.Map<List<Region>, List<RegionLookupDto>>(regions);
         return regionsList;
+        }
     }
 }

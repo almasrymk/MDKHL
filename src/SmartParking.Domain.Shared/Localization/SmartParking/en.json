@@ -398,14 +398,10 @@
     "PhoneNumber": "PhoneNumber",
     "UserRole": "UserRole",
     "Details for Customer": "Details for Customer",
-    "OrganoizationLogo": "Organoization Logo",
     "ArabicName must contain at least three Arabic words.": "ArabicName must contain at least three Arabic words.",
-    "FullName must contain at least three English words.": "FullName must contain at least three English words."
-
-
-
-
-
+    "FullName must contain at least three English words.": "FullName must contain at least three English words.",
+    "OrganizationLogo": "Organization Logo",
+    "Should Not be empty.": "Should Not be empty."
 
   } 
 }

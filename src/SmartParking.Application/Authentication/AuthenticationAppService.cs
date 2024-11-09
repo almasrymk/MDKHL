@@ -207,10 +207,23 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var organizationId = user.GetProperty<int>("OrganizationId");
         if (organizationId != 0) 
         {
-            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId && o.Status == Status.Deleted);
+            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+            if (organization == null) {
+                return null;
+            
+            }
             if (organization != null)
             {
-                return null;
+                Console.WriteLine(organization.Status.ToString());
+                Console.WriteLine(Enums.Status.Deleted.ToString());
+                Console.WriteLine(Enums.Status.Inactive.ToString());
+
+
+                if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
+                {
+                    return null;
+
+                }
             }
         }
 
