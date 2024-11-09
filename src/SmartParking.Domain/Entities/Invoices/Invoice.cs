@@ -1,12 +1,7 @@
 ﻿using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -27,10 +22,10 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public Guid? CustomerId { get; set; }
     public virtual Customer? Customer { get; set; }
     public DateTime? InvoiceTime { get; set; }
-
-    //public int VehicleId { get; set; }
-    //public virtual Vehicle Vehicle { get; set; }
-    // public int PackageId { get; set; }
-    // public virtual Package Package { get; set; }
+    public DateTime? EntranceTime  { get; set; }
     public Guid? TenantId { get; set; }
+    public string CustomerArName { get; set; }
+    public string CustomerEnName { get; set; }
+
+
 }

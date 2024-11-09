@@ -14,5 +14,9 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public string GarageName { get; set; }
     public string PlateNumber { get; set; }
     public DateTime? InvoiceTime { get; set; }
+    public DateTime? EntranceTime { get; set; }
+    public string CustomerArName { get; set; }
+    public string CustomerEnName { get; set; }
+
 
 }
