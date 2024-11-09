@@ -146,9 +146,10 @@ public class CamerasAppService :
         
 		    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
         }
-
-		await base.DeleteAsync(id);
-        }
+        camera.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+        //await base.DeleteAsync(id);
+    }
     /// <summary>
     /// Method that used to create new camera to specific organization
     /// </summary>

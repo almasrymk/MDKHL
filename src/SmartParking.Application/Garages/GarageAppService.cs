@@ -340,7 +340,9 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 				}
 				garage.Status = Status.Deleted;
-				await base.DeleteAsync(id);
+                
+                await CurrentUnitOfWork.SaveChangesAsync();
+                //await base.DeleteAsync(id);
             }
 
         }

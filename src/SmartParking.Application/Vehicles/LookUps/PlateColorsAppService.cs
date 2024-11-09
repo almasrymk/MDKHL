@@ -4,6 +4,8 @@ using SmartParking.Cameras;
 using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using System;
@@ -160,10 +162,11 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 
         if (plateColor is null)
         {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
+            throw new EntityNotFoundException(typeof(PlateColor), id);
         }
+        plateColor.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
 
-
-        await base.DeleteAsync(id);
+        // await base.DeleteAsync(id);
     }
 }

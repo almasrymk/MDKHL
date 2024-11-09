@@ -2,6 +2,8 @@
 using SmartParking.Entities;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.State;
@@ -204,11 +206,13 @@ public class CitiesAppService : CrudAppService<City, CityDto,
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var city = await GetAsync(id);
+        var city = await _repository.FirstOrDefaultAsync(c => c.Id == id);
         if (city == null)
             throw new EntityNotFoundException(typeof(City), id);
 
-        await base.DeleteAsync(id);
+        // await base.DeleteAsync(id);
+        city.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
     public async Task<List<CityLookupDto>> GetCityByState(int stateId)
     {

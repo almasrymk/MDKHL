@@ -137,7 +137,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 EnglishName = "Premium Plan",
                 SubscriptionPrice = 49.99m,
                 SubscriptionDescription = "Access to all features with no limits.",
-                Status = SubscriptionStatus.Draft,
+                StatusSubscription = SubscriptionStatus.Draft,
                 ActivationDate = new DateOnly(2024, 10, 1),
                 InActivationDate = new DateOnly(2025, 10, 1),
                 NumbersOfGarages = 5,
