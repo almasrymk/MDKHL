@@ -194,7 +194,30 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                  user = await _userManager.FindByNameAsync(input.Username);
 
             }
-        }
+
+            var organizationId = user.GetProperty<int>("OrganizationId");
+            if (organizationId != 0)
+            {
+                var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+                if (organization == null)
+                {
+                    return null;
+
+                }
+                if (organization != null)
+                {
+                    Console.WriteLine(organization.Status.ToString());
+                    Console.WriteLine(Enums.Status.Deleted.ToString());
+                    Console.WriteLine(Enums.Status.Inactive.ToString());
+
+
+                    if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
+                    {
+                        return null;
+
+                    }
+                }
+            }
         
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
@@ -204,27 +227,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             return null;
         }
-        var organizationId = user.GetProperty<int>("OrganizationId");
-        if (organizationId != 0) 
-        {
-            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-            if (organization == null) {
-                return null;
-            
-            }
-            if (organization != null)
-            {
-                Console.WriteLine(organization.Status.ToString());
-                Console.WriteLine(Enums.Status.Deleted.ToString());
-                Console.WriteLine(Enums.Status.Inactive.ToString());
-
-
-                if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
-                {
-                    return null;
-
-                }
-            }
+        
         }
 
         
