@@ -174,10 +174,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (GarageTransaction.CameraType == CameraType.Entry)
         {
             Garage garage = new Garage();
+            Organization organization = new Organization();
             using (DataFilter.Disable<IMultiTenant>())
             {
                 garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId);
-
+                organization = await _organizationRepoistory.FirstOrDefaultAsync(o=>o.Id == organizationId);
             }
 
             if (garage.CurrnetCapicity == garage.MaxCapacity)
@@ -185,6 +186,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 return await Task.FromResult(false);
 
             }
+
+           
         }
         try
         {
