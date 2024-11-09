@@ -220,11 +220,11 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Camera
                 {
                     GarageId = garageTest.Id,    // Link camera to the found Garage
-                    Name = "Camera One",         // Provide valid camera name
+                    Name = "Entry",         // Provide valid camera name
                     Model = "Model X",           // Add the model of the camera
                     MainType = "Type A",         // Add the main type
                     BrandName = "Brand Z",       // Add the brand name
-                    DeviceId = "CAM001",             // Add a unique code
+                    DeviceId = "233f1b26-9350-eb14-03e7-78934a049350",             // Add a unique code
                     CameraIP = "192.168.1.10",   // Add camera IP address
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
                     CameraType = CameraType.Entry,            // Set camera type
@@ -235,7 +235,24 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 },
                 autoSave: true
             );
-
+            await _cameraRepostory.InsertAsync(
+            new Camera
+            {
+                GarageId = garageTest.Id,    // Link camera to the found Garage
+                Name = "Exit",         // Provide valid camera name
+                Model = "Model X",           // Add the model of the camera
+                MainType = "Type A",         // Add the main type
+                BrandName = "Brand Z",       // Add the brand name
+                DeviceId = "df9a5b33-adf7-f454-49dd-d9624605adf7",             // Add a unique code
+                CameraIP = "192.168.1.11",   // Add camera IP address
+                MacAddress = "00:11:22:33:44:55", // Add MAC address
+                CameraType = CameraType.Exit,            // Set camera type
+                Status = Status.Active,      // Set the status of the camera
+                TenantId = null,              // Set TenantId if multi-tenant, or null
+                OrganizationId = organizationTest.Id,
+            },
+                    autoSave: true
+            );
             await _cameraRepostory.InsertAsync(
                 new Camera
                 {
@@ -254,7 +271,24 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 },
                 autoSave: true
             );
-
+            await _cameraRepostory.InsertAsync(
+                new Camera
+                {
+                    GarageId = garageTest.Id,    // Link camera to the found Garage
+                    Name = "Camera Two",         // Provide valid camera name
+                    Model = "Model X",           // Add the model of the camera
+                    MainType = "Type A",         // Add the main type
+                    BrandName = "Brand Z",       // Add the brand name
+                    DeviceId = "CAM002",             // Add a unique code
+                    CameraIP = "192.168.1.11",   // Add camera IP address
+                    MacAddress = "00:11:22:33:44:55", // Add MAC address
+                    CameraType = CameraType.Exit,            // Set camera type
+                    Status = Status.Active,      // Set the status of the camera
+                    TenantId = null,              // Set TenantId if multi-tenant, or null
+                    OrganizationId = organizationTest.Id,
+                },
+                autoSave: true
+            );
         }
 
         if (!await _plateColorRepository.AnyAsync())
