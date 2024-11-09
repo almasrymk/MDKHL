@@ -40,7 +40,8 @@
                                               For="@(() => Garage.MaxCapacity)"
                                               Variant="Variant.Text"
                                               Class="w-100"
-                                              Immediate="true"
+                                      ReadOnly="true"
+                                      Immediate="true"
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["Garage Max Capacity"]"
                                                />
@@ -51,7 +52,8 @@
                                               Variant="Variant.Text"
                                               Placeholder="@L["Type Here"]"
                                               Class="w-100"
-                                              Immediate="true"
+                                      ReadOnly="true"
+                                      Immediate="true"
                                               Label="@L["Garage Code"]"
                                                />
                             </MudItem>
@@ -60,22 +62,36 @@
                                               For="@(() => Garage.ClosingHours)"
                                               Variant="Variant.Text"
                                               Class="w-100"
-                                              Immediate="true"
+                                      ReadOnly="true"
+                                      Immediate="true"
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["Closing Hours"]"
                                                />
                             </MudItem>
-                            <MudItem sm="6" md="6" >
-                                <MudTextField @bind-Value="Garage.Status"
-                                              For="@(() => Garage.Status)"
-                                              Variant="Variant.Text"
-                                              Placeholder="@L["Type Here"]"
-                                              Class="w-100"
-                                              Immediate="true"
-                                              Label="@L["Status"]"
-                                               />
+                    <MudItem sm="6" md="6">
+                        <Label>@L["Status"]</Label>
+                        <Div Style=@($"background-color: {(Garage.Status.ToString()=="Active" ? "#b8efb0" : "#f20707")};border:none;color:{(Garage.Status.ToString()=="Active" ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
+                            @if (Garage.Status.ToString() == "Active")
+                            {
+                                <MudText>@L["Active"]</MudText>
+                            }
+                            else if (Garage.Status.ToString() == "Inactive")
+                            {
+                                <MudText>
+                                    @L["InActive"]
+                                </MudText>
+                            }
+                            else
+                            {
 
-                            </MudItem>
+                                <MudText>
+                                    @L["Deleted"]
+                                </MudText>
+                            }
+
+                        </Div>
+
+                    </MudItem>
 
 
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
@@ -91,7 +92,9 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
 
         }
 
-        await base.DeleteAsync(id);
+        customerCategory.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+        //await base.DeleteAsync(id);
     }
 
     /// <summary>

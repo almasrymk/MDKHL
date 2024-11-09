@@ -205,6 +205,8 @@
                                 <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
                                 @foreach (var package in packages)
                                 {
+                                    if (package.Status != Enums.SubscriptionStatus.Active)
+                                        continue;
                                     if (CultureInfo.CurrentCulture.Name == "en")
                                     {
                                     <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
@@ -212,6 +214,7 @@
                                     else
                                     {
                                     <MudSelectItem Value="package.Id.ToString()">@package.ArabicName</MudSelectItem>
+                              
                                     }
                                 }
                             </MudSelect>
@@ -251,17 +254,18 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
 
-                        <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadFiles2" MaximumFileCount="100">
+                        <MudFileUpload Class="ms-3" T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
                             <ActivatorContent>
                                 <MudButton Variant="Variant.Filled"
                                            Color="MudBlazor.Color.Primary"
                                            StartIcon="@Icons.Material.Filled.CloudUpload">
-                                    @L["OrganoizationLogo"]
+                                    @L["OrganizationLogo"]
                                 </MudButton>
                             </ActivatorContent>
+                            
                         </MudFileUpload>
                         
-                  
+                       
                     </MudGrid>
                     <MudItem sm="4" Class="mt-5">
 
@@ -276,11 +280,16 @@
         </MudItem>
         <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-            
-                <div class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="@Photo" Class="rounded-circle" Alt="@L["OrganoizationLogo"]" />
-                   
-                </div>
+              
+              @if(Photo != null )
+              {
+                    <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+
+                        <MudImage Src="@Photo" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+
+                    </MudItem>
+              }
+                
             </MudPaper>
         </MudItem>
 

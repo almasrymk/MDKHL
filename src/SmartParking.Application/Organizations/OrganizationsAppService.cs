@@ -86,14 +86,14 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
 
-
-        await _repository.InsertAsync(organization, autoSave: true);
         bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
-        organization.Address = input.BuildingNumber.ToString() + ',' + input.StreetName + ',' + input.SecondaryNumber.ToString() + input.District;
-        organization.Address += containsArabic ? city.ArabicName: city.EnglishName;
+        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
+        organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
         organization.Address += " , " + input.PostalCode;
         organization.TenantId = tenant.Id;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.InsertAsync(organization, autoSave: true);
+
+        //await CurrentUnitOfWork.SaveChangesAsync();
 
 
         UserCreateDto user = new UserCreateDto()
@@ -119,36 +119,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
 
     }
-    //private string SaveImageAndReturnPath(IFormFile imageFile)
-    //{
-    //    // Ensure directory structure
-    //    var imageDirectoryPath = CreateImageDirectory(imageFile);
-
-    //    // Generate a unique file name with the original file extension
-    //    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-    //    string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-    //    // Save the image to the specified path
-    //    using (var fileStream = new FileStream(fullPath, FileMode.Create))
-    //    {
-    //        imageFile.CopyTo(fileStream);
-    //    }
-
-    //    // Return the relative path for storing in the database
-    //    return $"/OrganizationImages/{fileName}";
-    //}
-    //private string CreateImageDirectory(string image)
-    //{
-    //    // Define the path where the image will be saved
-    //    string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
-
-    //    // Ensure the directory exists
-    //    if (!Directory.Exists(ImageDirectoryPath))
-    //    {
-    //        Directory.CreateDirectory(ImageDirectoryPath);
-    //    }
-    //    return ImageDirectoryPath;
-    //}
+   
     ///<inheritdoc/>
     //[Authorize(Roles = "Mdkhl")]
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
@@ -192,32 +163,47 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public new async Task<string> DeleteByIdAsync(int id)
     {
-        
-        var orgaization = await GetAsync(id);
-
-        if (orgaization is null)
-            throw new EntityNotFoundException(typeof(Organization), id);
-        else
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            await base.DeleteByIdAsync(id);
-            orgaization.Status = Enums.Status.Deleted;
 
-            return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
+            var orgaization = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (orgaization is null)
+                throw new EntityNotFoundException(typeof(Organization), id);
+            else
+            {
+                //await base.DeleteByIdAsync(id);
+                orgaization.Status = Status.Deleted;
+                await CurrentUnitOfWork.SaveChangesAsync();
+                 //await UpdateAsync(id,orgaization);
+
+                return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
+            }
         }
     }
     ///<inheritdoc/>
 
     public override async Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input)
     {
-        var organization= await GetAsync(id);
-        if (organization is null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
+            var organization = await GetAsync(id);
+            if (organization is null)
+            {
                 throw new EntityNotFoundException(typeof(Organization), id);
 
+            }
+            var city = await _cityAppService.GetAsync(input.CityId);
+            if (organization.Address != input.Address) {
+                bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
+                organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
+                organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
+                organization.Address += " , " + input.PostalCode;
+            }
+
+
+            return await base.UpdateAsync(id, input);
         }
-      
-       
-        return await base.UpdateAsync(id, input);
     }
 
     ///<inheritdoc/>
@@ -378,14 +364,20 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<Organization> GetOrganizationForCurrentTenat()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(org => org.EnglishName == CurrentTenant.Name);
+        query = query.Where(org => org.TenantId == CurrentTenant.Id);
         var org = await AsyncExecuter.FirstOrDefaultAsync(query);
         return org;
+        }
     }
     ///<inheritdoc/>
     public async Task<int> GetNumberOfGaragesAllowedToBeAdded()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var orgId=await _usersAppService.GetOrganizationIdByTenantAsync(CurrentTenant.Id);
         var query =await _repository.GetQueryableAsync();
         query=query.AsNoTracking();
@@ -395,6 +387,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var maxNumberOfGarages=organization?.Subscription?.NumbersOfGarages ?? 0;
         
         return maxNumberOfGarages ;
+        }
     }
 
     public async Task<int> GetNumberOfActiveGaragesOfOrganization()

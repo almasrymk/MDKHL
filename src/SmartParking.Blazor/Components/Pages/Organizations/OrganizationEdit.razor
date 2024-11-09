@@ -57,7 +57,7 @@
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="8">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
                         </MudItem>
 
@@ -94,7 +94,7 @@
                             <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="int" Immediate="true" Required="true" Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            <MudNumericField T="int" Immediate="true" Required="true" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
@@ -178,10 +178,23 @@
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
                         </MudItem>
-                       
+
+                        <MudItem sm="4">
+                            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                                <ActivatorContent>
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Primary"
+                                               StartIcon="@Icons.Material.Filled.CloudUpload">
+                                        @L["OrganizationLogo"]
+                                    </MudButton>
+                                </ActivatorContent>
+
+                            </MudFileUpload>
+
+                        </MudItem>
                     </MudGrid>
                    
-                    <div class="d-flex justify-content-between mt-auto">
+                    <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Update">@L["Save"]</MudButton>
                     </div>
@@ -191,17 +204,12 @@
         </MudItem>
         <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <MudText>@L["My Profile"]</MudText>
-                    <MudLink Underline="Underline.Always" Href="/edit-profile">@L["Edit Profile"]</MudLink>
-                </div>
-                <div class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
-                    <div class="d-flex flex-column align-items-center">
-                        <MudText Class="fw-bold">Ahmed Mohamed</MudText>
-                        <MudText>A.Mohamed@mdkhl.com</MudText>
-                    </div>
-                </div>
+               
+                <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+                    <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                </MudItem>
+
+
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
@@ -213,7 +221,6 @@
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewSubscription">@L["Subscriptions"]</MudLink>
                         </MudPaper>
                     </MudItem>
-
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCategories">@L["Categories"]</MudLink>
@@ -226,7 +233,6 @@
 
                         </MudPaper>
                     </MudItem>
-
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>

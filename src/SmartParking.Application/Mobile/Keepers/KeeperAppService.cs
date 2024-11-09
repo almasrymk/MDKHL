@@ -84,11 +84,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
 	/// <inheritdoc/>
 	[RemoteService(isEnabled: false)]
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync()
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync()
 	{
-        var garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null) ;
+        List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null);
 
-		var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
+        }
+
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
         if(mappedTransaction.Count  < 0 ) 
         {
             return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
@@ -97,8 +102,25 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
 	}
 
-	/// <inheritdoc/>
-	[RemoteService(isEnabled:false)]
+    /// <inheritdoc/>
+	[RemoteService(isEnabled: false)]
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync()
+    {
+        List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            garageTransaction = await _garageTransactionRepository.GetListAsync();
+        }
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
+        if (mappedTransaction.Count < 0)
+        {
+            return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
+        }
+
+        return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+    }
+    /// <inheritdoc/>
+    [RemoteService(isEnabled:false)]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
         List<Invoice> unPaidInvoices = new List<Invoice>();

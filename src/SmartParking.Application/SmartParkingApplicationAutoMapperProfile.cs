@@ -30,6 +30,7 @@ using SmartParking.SubscriptionTypes;
 using SmartParking.Analysis;
 using System.Collections.Generic;
 using System.Linq;
+using SmartParking.Mobile.Vehicles;
 using SmartParking.Entities.Payments;
 using SmartParking.Payments;
 
@@ -64,6 +65,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
+        CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>().ReverseMap();
 
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
@@ -95,8 +97,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 		CreateMap<VehicleModel, VehicleModelDto>()
              .ForMember(dto => dto.VehicleBrandEnglishName, opt => opt.MapFrom(entity => entity.VehiclesBrand.EnglishName))
-            .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
+             .ForMember(dto => dto.VehicleBrandArabicName, opt => opt.MapFrom(entity => entity.VehiclesBrand.ArabicName));
 		CreateMap<CreateUpdateVehicleModelDto, VehicleModel>();
+        CreateMap<CreateUpdateVehicleMobileDto, Vehicle>()
+			.ForMember(dto => dto.ModelYear, opt => opt.MapFrom(entity => entity.Year));
 
 		CreateMap<Vehicle, VehicleDto>();
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();
@@ -111,6 +115,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Invoice, InvoiceDto>()
             .ForMember(d => d.GarageName, o => o.MapFrom(s => s.Garage.NameEn))
             .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName))
+            .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
+            .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.Customer.ArabicName))
+            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.Customer.IdentityUser.Name));
+            
             .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()));
         //.ForMember(d => d.PlateNumber, o => o.MapFrom(s => s.Vehicle.PlateNumber));
 
@@ -135,7 +143,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<Subscription, SubscriptionDto>()
             .ForMember(d=>d.SubscriptionType,o=>o.MapFrom(s=>s.SubscriptionType.Type))
-            .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.StatusSubscription.ToString()));
 
         CreateMap<CreateUpdateSubscriptionDto, Subscription>()
             .ForMember(d => d.CreationTime, o => o.MapFrom(s => s.CreationTime))

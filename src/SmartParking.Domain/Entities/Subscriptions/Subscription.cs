@@ -14,7 +14,7 @@ public class Subscription : BaseEntity
 {
     public decimal SubscriptionPrice { get; set; }
     public string SubscriptionDescription { get; set; }
-    public SubscriptionStatus Status { get; set; }
+    public SubscriptionStatus StatusSubscription { get; set; } = SubscriptionStatus.Active;
     public DateOnly ActivationDate { get; set; }
     public DateOnly InActivationDate { get; set; }
     public int NumbersOfGarages { get; set; }

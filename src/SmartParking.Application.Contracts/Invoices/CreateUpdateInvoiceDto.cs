@@ -17,8 +17,10 @@ public class CreateUpdateInvoiceDto
     public int OrganizationId { get; set; }
     public int GarageId { get; set; }
     public string PlateNumber { get; set; }
+    public DateTime? EntranceTime { get; set; }
     public DateTime? InvoiceTime { get; set; }
+    public string CustomerArName { get; set; }
+    public string CustomerEnName { get; set; }
 
-    // public int PackageId { get; set; }
 
 }

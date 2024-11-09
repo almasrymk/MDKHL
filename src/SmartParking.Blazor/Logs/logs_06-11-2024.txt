@@ -1,2 +1,0 @@
-2024-11-06 17:01:41.002 +02:00 [INF] Starting web host.
-2024-11-06 17:03:18.107 +02:00 [INF] Starting web host.

@@ -82,6 +82,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         try
         {
+
             var org = await _organizationAppService.GetOrganizationForCurrentTenat();
 
                 using (_dataFilter.Disable<IMultiTenant>()) {
@@ -108,10 +109,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             }
             else if (input.IdentificationType == IdentificationTypes.Passport)
             {
-                var passportPattern = new Regex(@"^[a-zA-Z0-8]{6,9}$");
+                var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
                 if (!passportPattern.IsMatch(input.NationalId))
                 {
-                    throw new UserFriendlyException("Passport must be 9 digits");
+                    throw new UserFriendlyException("Passport must be from 6 - 9 digits and atmost one character");
                 }
             }
             var result1= await CheckIfPhoneNumberIsUnique(input.MobileNumber);
@@ -336,18 +337,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomer(Guid customerId)
     {
-        var customer = await GetAsync(customerId);
-        if( customer == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("No Customer Found");
+            var customer = await GetAsync(customerId);
+            if (customer == null)
+            {
+                throw new Exception("No Customer Found");
+            }
+
+            var query = await _repositoryVehicle.GetQueryableAsync();
+
+            query = query.Where(x => x.CustomerId == customerId);
+            var result = await AsyncExecuter.ToListAsync(query);
+            var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
+            return output;
         }
-
-        var query = await _repositoryVehicle.GetQueryableAsync();
-
-        query=query.Where(x=>x.CustomerId == customerId);
-        var result = await AsyncExecuter.ToListAsync(query);
-        var output =ObjectMapper.Map<List<Vehicle>,List<VehicleDto>>(result);
-        return output ;
+        
     }
 
 

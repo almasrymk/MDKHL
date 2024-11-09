@@ -74,15 +74,20 @@
                        
                         <MudItem sm="4"  >
                             <Label>@L["Status"]</Label>
-                            <Div Style=@($"background-color: {(Status ? "#b8efb0" : "#f20707")};border:none;color:{(Status ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
-                                @if (Status)
+                            <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
+                                @if (Status==1)
                                 {
                                     <MudText>@L["Active"]</MudText>
                                 }
-                                else
+                                else if(Status==2)
                                 {
                                     <MudText>@L["InActive"]</MudText>
-                                    
+
+                                }
+                                else
+                                {
+                                    <MudText>@L["Deleted"]</MudText>
+
                                 }
 
                                 </Div>
@@ -135,7 +140,7 @@
 
                     </MudGrid>
 
-                    <div class="d-flex justify-content-between mt-auto">
+                    <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Back">@L["Back"]</MudButton>
                     </div>
                 </MudForm>
@@ -144,17 +149,9 @@
         </MudItem>
         <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <MudText>@L["My Profile"]</MudText>
-                    <MudLink Underline="Underline.Always" Href="/edit-profile">@L["Edit Profile"]</MudLink>
-                </div>
-                <div class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="images/profile-avatar.png" Class="rounded-circle" />
-                    <div class="d-flex flex-column align-items-center">
-                        <MudText Class="fw-bold">@currentuser.Name</MudText>
-                        <MudText>@currentuser.Email</MudText>
-                    </div>
-                </div>
+                <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+                    <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                </MudItem>
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">

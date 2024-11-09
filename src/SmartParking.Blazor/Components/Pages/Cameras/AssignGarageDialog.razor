@@ -35,7 +35,9 @@
 								   FullWidth="true">
 							@foreach (var garage in Garages)
 							{
-								<MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+									if (garage.Status != Enums.Status.Active)
+										continue;
+									<MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
 							}
 						</MudSelect>
 						</MudItem>
@@ -50,6 +52,8 @@
 									   FullWidth="true">
 								@foreach (var garage in Garages)
 								{
+									if (garage.Status != Enums.Status.Active)
+										continue;
 									<MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
 								}
 							</MudSelect>

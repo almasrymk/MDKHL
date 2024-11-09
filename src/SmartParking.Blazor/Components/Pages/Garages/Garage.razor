@@ -24,13 +24,21 @@
 
 <MudText Typo="Typo.h5" Class="mb-2">@L["Garages"]</MudText>
 
-	@if (currentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currentTenant.Id != null)
+	@if (currentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()) || currentTenant.Id != null)
 	{
 		
 		<div class="flex-column">
 			<MudText>@L["Max Capacity"] : @MaxiumumNumberOfGarageAllowedToBeAdded </MudText>
 			<MudText>@L["Active"] : @ActiveGarages </MudText>
 		</div>
+	}
+	else
+	{
+		<div class="flex-column">
+			<MudText>@L["Max Capacity"] : @SumOfAllMaximumCapacityforActiveGarages </MudText>
+			<MudText>@L["Active"] : @ActiveGarages </MudText>
+		</div>
+	
 	}
 </div>
 

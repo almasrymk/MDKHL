@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartParking.Invoices;
+using SixLabors.ImageSharp;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Results;
 using SmartParking.Vehicles;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
-
 namespace SmartParking.Controllers;
 
 [Route("api/mobile/Vehicle")]
@@ -30,16 +32,60 @@ public class VehicleController : AbpController
 
     [HttpPost]
     [Authorize]
-    public async Task<Result<VehicleDto>> CreateVehicle(CreateUpdateVehicleDto input)
+    public async Task<Result<VehicleDto>> CreateVehicle(CreateUpdateVehicleMobileDto input)
     {
         return await _vehicleAppService.CreateAsync(input);
+    }    
+    [HttpPut]
+    [Authorize]
+    public async Task<Result<VehicleDto>> EditVehicle(int vehicleId, CreateUpdateVehicleMobileDto input)
+    {
+        return await _vehicleAppService.EditAsync(vehicleId,input);
+    }    
+    [HttpDelete]
+    [Authorize]
+    public async Task<Result<VehicleDto>> DeleteVehicle(int vehicleId)
+    {
+        return await _vehicleAppService.DeleteAsync(vehicleId);
     }
     [HttpGet]
     [Authorize]
     public async Task<Result<PagedResultDto<VehicleDto>>> GetAllVehicles([FromQuery] PagedAndSortedResultRequestDto input)
     {
         return await _vehicleAppService.GetListAsync(input);
-    }
+    }    
+    [HttpGet("image")]
+    [Authorize]
+    public async  Task<string> GetImage(string base64String)
+    {
+		var imageFormat = "jpg"; // Adjust formats as needed
+
+		// Convert Base64 string to byte array
+		byte[] imageBytes = Convert.FromBase64String(base64String);
+		
+		// Define the path where the image will be saved
+		string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "QRCodeImage", "image");
+
+		// Ensure the directory exists
+		if (!Directory.Exists(imageDirectoryPath))
+		{
+			Directory.CreateDirectory(imageDirectoryPath);
+		}
+		// Generate a unique name for the image
+		string fileName = $"{Guid.NewGuid()}.{imageFormat}";
+		string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+        Image img = Image.Load(imageBytes);
+        img.Save(fullPath);
+		// Save the image to the specified path
+		//System.IO.File.WriteAllBytes(fullPath, imageBytes);
+
+		// Return the relative path for storing in the database
+		return $"/QRCodeImage/image/{fileName}";
+
+	}
+
+    
     [HttpGet("getbrands")]
     [Authorize]
     public async Task<Result<List<VehicleBrandDto>>> GetBrands()

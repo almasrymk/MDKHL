@@ -93,5 +93,11 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <param name="NumOfActiveCamera">NumberOfActiveCameras</param>
     /// <returns>Flag detects the status</returns>
     Task<bool> AddActiveCameraRelatedToOrganizationGarage(int GarageId,int NumOfActiveCamera);
+/// <summary>
+/// Method used by mdkhl admin.
+/// To get count of all active garages and its maximum capacity.
+/// </summary>
+/// <returns>tuple of both values.</returns>
+	Task<Tuple<int, int>> GetMaxCapacityofActiveGaragesAndItsCount();
 
 }

@@ -27,7 +27,7 @@ public partial class OrganizationView
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
-    public bool Status { get; set; } = true;
+    public int Status { get; set; } = 1;//1-> active , 2-> inactive 3->deleted 
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
@@ -37,6 +37,8 @@ public partial class OrganizationView
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
+    public string Photo { get; set; }
+    public string OrganizationPicture { get; set; }
 
     private async Task FetchData()
     {
@@ -47,13 +49,18 @@ public partial class OrganizationView
         NumOfCameras = organization.NumOfCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         Address = organization.Address;
+        OrganizationPicture = organization.OrganizationPicture;
         if (organization.Status == Enums.Status.Active)
         {
-            Status = true;
+            Status = 1;
+        }
+        else if (organization.Status == Enums.Status.Inactive)
+        {
+            Status = 2;
         }
         else
         {
-            Status = false;
+            Status = 3;
         }
         if (CultureInfo.CurrentCulture.Name == "en")
         {

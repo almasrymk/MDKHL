@@ -29,7 +29,7 @@
     "License Expiry Date": "License Expiry Date",
     "Emaraa Id": "Emaraa Id",
     "State Id": "State Id",
-    "Status Active": "Status Active",
+    "Status Active": "Active",
     "Country": "Country",
     "Choose": "Choose",
     "City": "City",
@@ -398,12 +398,11 @@
     "PhoneNumber": "PhoneNumber",
     "UserRole": "UserRole",
     "Details for Customer": "Details for Customer",
-    "OrganoizationLogo": "Organoization Logo"
-
-
-
-
-
+    "ArabicName must contain at least three Arabic words.": "ArabicName must contain at least three Arabic words.",
+    "FullName must contain at least three English words.": "FullName must contain at least three English words.",
+    "OrganizationLogo": "Organization Logo",
+    "Should Not be empty.": "Should Not be empty.",
+    "PackageTypeArabicName": "PackageTypeArabicName"
 
   } 
 }

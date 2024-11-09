@@ -28,21 +28,28 @@ public class KeeperController : AbpController
     }
 
     [HttpGet("invoice")]
-    [Authorize(Roles ="Keeper")]
+    [Authorize]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
     {
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
     }
 
-    [HttpGet("garageTransaction")]
-    [Authorize(Roles ="Keeper")]
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
+    [HttpGet("garageTransactionWithNoPlateNumber")]
+    [Authorize]
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber()
 	{
-		return await _keeperAppService.GetAllGarageTransactionsAsync();
+		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync();
 	}
 
-	[HttpPut("correctTransaction")]
-	[Authorize(Roles = "Keeper")]
+    [HttpGet("garageTransaction")]
+    [Authorize]
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
+    {
+        return await _keeperAppService.GetAllGarageTransactionsAsync();
+    }
+
+    [HttpPut("correctTransaction")]
+	[Authorize]
 	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumber)
 	{
 		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);

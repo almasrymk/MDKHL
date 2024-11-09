@@ -14,6 +14,9 @@ using System.Collections.Generic;
 using SmartParking.Subscriptions;
 using Volo.Abp.Validation;
 using SmartParking.Lookups.Country;
+using Microsoft.AspNetCore.Components.Forms;
+using static IdentityServer4.Models.IdentityResources;
+using System.IO;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -57,6 +60,8 @@ public partial class OrganizationEdit
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
+    public string OrganizationPicture { get; set; }
+    public string Photo { get; set; }
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -81,6 +86,8 @@ public partial class OrganizationEdit
         {
             StatusValue = Enums.Status.Inactive;
         }
+
+
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
             ArabicName = ArabicName,
@@ -109,19 +116,17 @@ public partial class OrganizationEdit
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
             ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
             BuildingNumber = BuildingNumber,
-            StreetName  = StreetName,
+            StreetName = StreetName,
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-
+            OrganizationPicture = OrganizationPicture
         };
 
 
         try
         {
-           
-           
-           var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
+            var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
             Navigation.NavigateTo("/organizations");
             ShowSnackbar(successedMessage, Severity.Success);
         }
@@ -208,6 +213,8 @@ public partial class OrganizationEdit
         SecondaryNumber = organization.SecondaryNumber;
         PostalCode = organization.PostalCode;
         District = organization.District;
+        IsClose = organization.IsClose;
+        OrganizationPicture = organization.OrganizationPicture;
     }
     private async Task GetRegions()
     {
@@ -237,21 +244,17 @@ public partial class OrganizationEdit
         }
 
     }
-
-
     protected override async Task OnInitializedAsync()
     {
         await FetchData();
 
         countries = await CountriesAppService.GetCountryLookupAsync();
+
         await GetRegions();
+
         await GetStates();
         
         await GetCities();
-
-     //   await base.OnInitializedAsync();
-
-
     }
     private async Task ViewGarages()
     {
@@ -271,7 +274,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
     }
-
     private async Task ViewContact()
     {
         var id = int.Parse(Id);
@@ -281,7 +283,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
     }
- 
     private async Task ViewCustomers()
     {
         var id = int.Parse(Id);
@@ -321,5 +322,46 @@ public partial class OrganizationEdit
             ["subscription"] = subscription
         };
         await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
+    }
+    private async Task OnImageUpload(IBrowserFile file)
+    {
+        var imageFile = file;
+        if (imageFile != null)
+        {
+            // Save the image and get the file path
+            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            StateHasChanged();
+        }
+    }
+    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
+    {
+        // Ensure directory structure
+        var imageDirectoryPath = CreateImageDirectory();
+
+        // Generate a unique file name with the original file extension
+        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
+        string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+        // Save the image to the specified path
+        using (var fileStream = new FileStream(fullPath, FileMode.Create))
+        {
+            // Copy the image data from the IBrowserFile stream to the file stream
+            await imageFile.OpenReadStream().CopyToAsync(fileStream);
+        }
+
+        // Return the relative path for storing in the database
+        return $"/OrganizationImages/{fileName}";
+    }
+    private string CreateImageDirectory()
+    {
+        // Define the path where the image will be saved
+        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
+
+        // Ensure the directory exists
+        if (!Directory.Exists(imageDirectoryPath))
+        {
+            Directory.CreateDirectory(imageDirectoryPath);
+        }
+        return imageDirectoryPath;
     }
 }
