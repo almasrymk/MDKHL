@@ -60,6 +60,7 @@ public partial class OrganizationEdit
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
+    public string OrganizationPicture { get; set; }
     public string Photo { get; set; }
 
 
@@ -84,9 +85,9 @@ public partial class OrganizationEdit
         else
         {
             StatusValue = Enums.Status.Inactive;
-        } 
+        }
 
-       
+
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
             ArabicName = ArabicName,
@@ -115,11 +116,11 @@ public partial class OrganizationEdit
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
             ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
             BuildingNumber = BuildingNumber,
-            StreetName  = StreetName,
+            StreetName = StreetName,
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-
+            OrganizationPicture = OrganizationPicture
         };
 
 
@@ -213,6 +214,7 @@ public partial class OrganizationEdit
         PostalCode = organization.PostalCode;
         District = organization.District;
         IsClose = organization.IsClose;
+        OrganizationPicture = organization.OrganizationPicture;
     }
     private async Task GetRegions()
     {
@@ -242,21 +244,17 @@ public partial class OrganizationEdit
         }
 
     }
-
-
     protected override async Task OnInitializedAsync()
     {
         await FetchData();
 
         countries = await CountriesAppService.GetCountryLookupAsync();
+
         await GetRegions();
+
         await GetStates();
         
         await GetCities();
-
-     //   await base.OnInitializedAsync();
-
-
     }
     private async Task ViewGarages()
     {
@@ -276,7 +274,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
     }
-
     private async Task ViewContact()
     {
         var id = int.Parse(Id);
@@ -286,7 +283,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
     }
- 
     private async Task ViewCustomers()
     {
         var id = int.Parse(Id);
@@ -333,7 +329,7 @@ public partial class OrganizationEdit
         if (imageFile != null)
         {
             // Save the image and get the file path
-            Photo = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
             StateHasChanged();
         }
     }

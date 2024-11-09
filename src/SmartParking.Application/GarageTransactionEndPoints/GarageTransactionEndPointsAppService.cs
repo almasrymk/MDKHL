@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
@@ -8,6 +9,7 @@ using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +38,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 	private readonly IInvoiceAppService _invoiceAppService;
 	private IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-	public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
+
+    public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
         IRepository<Camera, int> cameraRepository, IRepository<Garage, int> garageRepository,
         ILogger<GarageTransactionEndPointsAppService> logger,
         IRepository<Customer,Guid>customerRepoistory,
@@ -46,7 +50,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         IRepository<GarageTransaction,int>garageTransactionRepoistory,
         IRepository<Organization,int> organizationRepoistory,
         IInvoiceAppService invoiceAppService,
-		IDataFilter dataFilter, ICurrentUser currentUser)
+		IDataFilter dataFilter, ICurrentUser currentUser,
+       IStringLocalizer<SmartParkingResource> localizer)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _cameraRepository = cameraRepository;
@@ -60,6 +65,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 			_invoiceAppService = invoiceAppService;
 		_dataFilter = dataFilter;
 		_currentUser = currentUser;
+        _localizer = localizer;
 	}
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
@@ -78,8 +84,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if(organizationId==-1)
         {
             return await Task.FromResult(false);
-            _logger.LogError($"{DateTime.Now} ====>  org ID is not found");
-
         }
         var GarageTransaction = new CreateUpdateGarageTransactionDto
         {
@@ -135,6 +139,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 }
                 else
                 {
+                    string customerName = _localizer["NotCustomer"];
+
                     //Not Customer
                     decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                     var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
@@ -149,8 +155,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                         OrganizationId = GarageTransaction.OrganizationID,
                         TotalHours = totalHours,
                         PlateNumber = GarageTransaction.PlateNumber,
-                        InvoiceTime = GarageTransaction.AccurateTime
-
+                        InvoiceTime = GarageTransaction.AccurateTime,
+                        EntranceTime = EntranceTime.Value,
+                        CustomerEnName= "Not Customer",
+                        CustomerArName = "ليس عميل",
                     };
                     await _invoiceAppService.CreateAsync(invoice);
                     return await Task.FromResult(false);
@@ -260,7 +268,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 	private async Task<DateTime?> FindEntranceTime(string? plateNumber)
     {
         // Get the list of transactions for the provided plate number
-        //var latestTransactions = await _garageTransactionRepoistory.GetListAsync();
 
         List<GarageTransaction> query = new List<GarageTransaction>(); 
         using (DataFilter.Disable<IMultiTenant>())
@@ -273,7 +280,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 .Where(gt => gt.PlateNumber == null || gt.PlateNumber == plateNumber)
 				.OrderByDescending(gt => gt.AccurateTime) // or AccurateTime
 				.FirstOrDefault();
-			// Fetch the latest transaction based on SnapTime or AccurateTime
 			
         return latestTransaction?.AccurateTime;
     }

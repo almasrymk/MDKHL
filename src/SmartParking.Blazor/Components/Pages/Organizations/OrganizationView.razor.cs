@@ -37,6 +37,8 @@ public partial class OrganizationView
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
+    public string Photo { get; set; }
+    public string OrganizationPicture { get; set; }
 
     private async Task FetchData()
     {
@@ -47,6 +49,7 @@ public partial class OrganizationView
         NumOfCameras = organization.NumOfCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         Address = organization.Address;
+        OrganizationPicture = organization.OrganizationPicture;
         if (organization.Status == Enums.Status.Active)
         {
             Status = 1;

@@ -119,36 +119,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
 
     }
-    //private string SaveImageAndReturnPath(IFormFile imageFile)
-    //{
-    //    // Ensure directory structure
-    //    var imageDirectoryPath = CreateImageDirectory(imageFile);
-
-    //    // Generate a unique file name with the original file extension
-    //    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-    //    string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-    //    // Save the image to the specified path
-    //    using (var fileStream = new FileStream(fullPath, FileMode.Create))
-    //    {
-    //        imageFile.CopyTo(fileStream);
-    //    }
-
-    //    // Return the relative path for storing in the database
-    //    return $"/OrganizationImages/{fileName}";
-    //}
-    //private string CreateImageDirectory(string image)
-    //{
-    //    // Define the path where the image will be saved
-    //    string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
-
-    //    // Ensure the directory exists
-    //    if (!Directory.Exists(ImageDirectoryPath))
-    //    {
-    //        Directory.CreateDirectory(ImageDirectoryPath);
-    //    }
-    //    return ImageDirectoryPath;
-    //}
+   
     ///<inheritdoc/>
     //[Authorize(Roles = "Mdkhl")]
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
