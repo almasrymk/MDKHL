@@ -31,7 +31,7 @@ public class GarageTransactionsAppService:
 	 CrudAppService<GarageTransaction, GarageTransactionDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageTransactionDto>, IGarageTransactionsAppService
 {
 	private readonly IRepository<GarageTransaction, int> _repository;
-    private readonly IRepository<Garage, int> _GarageRepository;
+    private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Organization, int> _OrganizationRepository;
     private readonly IRepository<Camera, int> _CameraRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -43,23 +43,41 @@ public class GarageTransactionsAppService:
         _repository = repository;
         _dataFilter = dataFilter;
         _currentUser = currentUser;
-        _GarageRepository = garagerepository;
+        _garageRepository = garagerepository;
         _OrganizationRepository = organizationRepository;
         _CameraRepository = cameraRepository;
         _httpContextAccessor = httpContextAccessor;
     }
     public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
+        var query = await _repository.GetQueryableAsync();
+
+        query = SortByAccurateTimeDescending(query);
+
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
-			{
-				return await base.GetListAsync(input);
-			}
-		}
-		else
-			return await base.GetListAsync(input);
-	}
+            {
+                var transactions = await AsyncExecuter.ToListAsync(query.Skip(input.SkipCount).Take(input.MaxResultCount));
+                var totalCount = await AsyncExecuter.CountAsync(query);
+
+                return new PagedResultDto<GarageTransactionDto>(
+                    totalCount,
+                    ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions)
+                );
+            }
+        }
+        else
+        {
+            var transactions = await AsyncExecuter.ToListAsync(query.Skip(input.SkipCount).Take(input.MaxResultCount));
+            var totalCount = await AsyncExecuter.CountAsync(query);
+
+            return new PagedResultDto<GarageTransactionDto>(
+                totalCount,
+                ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions)
+            );
+        }
+    }
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
 
@@ -168,7 +186,7 @@ public class GarageTransactionsAppService:
 
             using (DataFilter.Disable<IMultiTenant>())
             {
-                garage = await _GarageRepository.GetAsync(result.GarageId);
+                garage = await _garageRepository.GetAsync(result.GarageId);
 
             }
             if (input.CameraType == CameraType.Entry)
@@ -283,5 +301,10 @@ public class GarageTransactionsAppService:
         }
        
 
+    }
+
+    private IQueryable<GarageTransaction> SortByAccurateTimeDescending(IQueryable<GarageTransaction> input)
+    {
+        return input.OrderByDescending(x => x.AccurateTime);
     }
 }

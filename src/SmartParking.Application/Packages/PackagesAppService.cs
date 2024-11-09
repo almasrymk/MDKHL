@@ -7,6 +7,7 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Packages;
 using SmartParking.Results;
@@ -143,7 +144,8 @@ public class PackagesAppService : CrudAppService<
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-
-        await base.DeleteAsync(id);
+        package.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+        //await base.DeleteAsync(id);
     }
 }

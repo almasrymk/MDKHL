@@ -10,7 +10,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Cameras;
 
-public class Camera : FullAuditedEntity<int>, IMultiTenant
+public class Camera : FullAuditedEntity<int>, IMultiTenant, IBseEntity
 {
     public int Id { get; set; }
     public string Name { get; set; }

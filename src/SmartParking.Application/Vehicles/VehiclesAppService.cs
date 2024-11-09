@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
@@ -88,11 +89,14 @@ public class VehiclesAppService:
         {
             using (_dataFilter.Disable<IMultiTenant>())
 			{
-                
-				await base.DeleteAsync(id);
 
-			}
+                //await base.DeleteAsync(id);
+                vehicle.Status = Status.Deleted;
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
 		}
-		await base.DeleteAsync(id);
-	}
+        //await base.DeleteAsync(id);
+        vehicle.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
 }

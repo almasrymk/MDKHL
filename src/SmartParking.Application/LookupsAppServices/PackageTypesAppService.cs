@@ -11,6 +11,8 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -189,11 +191,13 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var city = await GetAsync(id);
-        if (city == null)
+        var packageType = await _packageTypeRepository.FirstOrDefaultAsync( p => p.Id == id);
+        if (packageType == null)
             throw new EntityNotFoundException(typeof(PackageType), id);
 
-        await base.DeleteAsync(id);
+        //await base.DeleteAsync(id);
+        packageType.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
     public override Task<PagedResultDto<PackageTypeDto>> GetListAsync(PagedAndSortedResultRequestDto input)

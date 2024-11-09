@@ -12,6 +12,8 @@ using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Lookups;
 using SmartParking.Lookups.Country;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.LookupsAppServices;
@@ -128,8 +130,10 @@ public class CountriesAppService : CrudAppService<Country,
         {
             throw new EntityNotFoundException(typeof(Country), id);
         }
-       
-            await _countryRepository.DeleteAsync(country);
+
+        //await _countryRepository.DeleteAsync(country);
+        country.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
 
     }
     /// <summary>

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
@@ -115,8 +117,9 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-        
-            await base.DeleteAsync(id);
+        vehicleModel.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+        // await base.DeleteAsync(id);
     }
 
     /// <inheritdoc/>

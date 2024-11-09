@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Enums;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
@@ -56,9 +58,12 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         var subscription = await _subscriptionTypeRepository.FindAsync(id);
         if (subscription is null)
         {
-            throw new EntityNotFoundException(typeof(Subscription), id);
+            throw new EntityNotFoundException(typeof(SubscriptionType), id);
         }
-            await base.DeleteAsync(id);
+        // await base.DeleteAsync(id);
+
+        subscription.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
     /// <inheritdoc/>

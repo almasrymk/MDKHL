@@ -5,6 +5,7 @@ using Polly;
 using SmartParking.Entities;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Lookups;
 using SmartParking.Lookups.State;
@@ -275,9 +276,12 @@ public class StateAppService : CrudAppService<State, StateDto,
         {
             throw new EntityNotFoundException(typeof(State), id);
         }
-        
-           // await base.DeleteAsync(id);
 
-        await _stateRepository.HardDeleteAsync(state);
+        // await base.DeleteAsync(id);
+
+        // await _stateRepository.HardDeleteAsync(state);
+
+        state.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 }

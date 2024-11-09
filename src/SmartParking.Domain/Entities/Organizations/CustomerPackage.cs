@@ -9,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations
 {
-    public class CustomerPackage:FullAuditedEntity<int>
+    public class CustomerPackage:FullAuditedEntity<int> , IBseEntity
     {
         public virtual Customer Customer { get; set; }
         public Guid CustomerId { get; set; }
@@ -17,6 +17,6 @@ namespace SmartParking.Entities.Organizations
         public int PackageId { get; set; }
         public CustomerPackageStatus CustomerPackageStatus { get; set; }
         public Guid? TenantId { get; set; }
-
+        public Status Status { get ; set ; }
     }
 }
