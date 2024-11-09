@@ -14,6 +14,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -94,10 +95,14 @@ public class CitiesAppService : CrudAppService<City, CityDto,
 
     public async Task<List<CityLookupDto>> GetCityLookupAsync()
     {
-        var cities = await _repository.GetListAsync();
-        var citiesList = ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities)
-;
-        return citiesList;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var cities = await _repository.GetListAsync();
+            var citiesList = ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities)
+    ;
+            return citiesList;
+        }
 
     }
 

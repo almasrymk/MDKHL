@@ -19,6 +19,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Events.Distributed;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -181,25 +182,37 @@ public class StateAppService : CrudAppService<State, StateDto,
 
     public async Task<List<RegionLookupDto>> GetRegionLookupAsync()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var regions = await _regionRepository.GetListAsync();
         var regionsList = ObjectMapper.Map<List<Region>, List<RegionLookupDto>>(regions);
         return regionsList;
+        }
     }
 
     public async Task<List<StateLookupDto>> GetStateLookupAsync()
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var states = await _stateRepository.GetListAsync();
         var statesList = ObjectMapper.Map<List<State>, List<StateLookupDto>>(states);
         return statesList;
+        }
     }
 
     public async Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId)
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
         var query = await _stateRepository.GetQueryableAsync();
         query = query.Where(x => x.RegionId == regionId);
         var states = await AsyncExecuter.ToListAsync(query);
         var statesList = ObjectMapper.Map<List<State>, List<StateLookupDto>>(states);
         return statesList;
+
+        }
     }
     /// <summary>
     /// method used to get list of states

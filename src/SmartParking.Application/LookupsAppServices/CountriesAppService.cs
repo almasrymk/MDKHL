@@ -12,6 +12,7 @@ using Volo.Abp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Lookups;
 using SmartParking.Lookups.Country;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]
@@ -226,8 +227,12 @@ public class CountriesAppService : CrudAppService<Country,
     ///<inheritdoc/>
     public async Task<List<CountryLookupDto>> GetCountryLookupAsync()
     {
-        var countries = await _countryRepository.GetListAsync();
-        var countryList = ObjectMapper.Map<List<Country>, List<CountryLookupDto>>(countries);
-        return countryList;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var countries = await _countryRepository.GetListAsync();
+            var countryList = ObjectMapper.Map<List<Country>, List<CountryLookupDto>>(countries);
+            return countryList;
+        }
     }
 }
