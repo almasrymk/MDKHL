@@ -39,36 +39,18 @@ public partial class AddVehicleDialog
 	protected override async Task OnInitializedAsync()
     {
         createUpdateVehicle.BelongToCompany = false;
-        var resultplate = await PlateColorsAppService.GetListAsync(
-            new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = 0
-            });
-        plateColors= resultplate.Items;
+        var resultplate = await PlateColorsAppService.GetAllAsync();
+        plateColors= resultplate;
 
 
-        var resultLicence = await LicenceTypesAppService.GetListAsync(
-            new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = 0
-            });
-        LicenceTypes= resultLicence.Items;
+        var resultLicence = await LicenceTypesAppService.GetAllAsync();
+        LicenceTypes= resultLicence;
 
-        var resultVehicleBrand = await VehicleBrandAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto
-        {
-            MaxResultCount = 100,
-            SkipCount = 0
-        });
-        VehicleBrands = resultVehicleBrand.Items;
+        var resultVehicleBrand = await VehicleBrandAppService.GetAllAsync();
+        VehicleBrands = resultVehicleBrand;
 
-        var resultVehicleModel = await VehicleModelAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto
-        {
-            MaxResultCount = 100,
-            SkipCount = 0
-        });
-        VehicleModels = resultVehicleModel.Items;
+        var resultVehicleModel = await VehicleModelAppService.GetAllAsync();
+        VehicleModels = resultVehicleModel;
 
     }
 
