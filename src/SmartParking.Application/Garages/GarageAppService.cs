@@ -548,21 +548,29 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         var garage= await GetAsync(GarageId);
         try
         {
-            var org = await _organizationRepository.GetAsync(garage.OrganizationId);
-
-            if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
+            using (DataFilter.Disable<IMultiTenant>())
             {
-                throw new Exception("UPGRADE subscription to add cameras to organization.");
-            }
-            org.ActiveCameras += NumOfActiveCamera;
-            if (org.Subscription.NumbersOfGarages < org.ActiveGarages + 1)
-            {
-                throw new Exception("UPGRADE subscription to add garage to organization.");
 
+                var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+
+                if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
+                {
+                    throw new Exception("UPGRADE subscription to add cameras to organization.");
+                }
+                org.ActiveCameras += NumOfActiveCamera;
+                if (org.Subscription.NumbersOfGarages < org.ActiveGarages + 1)
+                {
+                    throw new Exception("UPGRADE subscription to add garage to organization.");
+
+                }
+                if (NumOfActiveCamera > 0)
+                {
+
+                    org.ActiveGarages++;
+                }
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return true;
             }
-            org.ActiveGarages++;
-            await CurrentUnitOfWork.SaveChangesAsync();
-            return true;
 
 		}
 		catch (Exception ex) {

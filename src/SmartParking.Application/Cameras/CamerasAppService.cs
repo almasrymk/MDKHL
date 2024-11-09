@@ -144,15 +144,16 @@ public class CamerasAppService :
             var camera = await GetAsync(id);
             if (camera == null)
                 throw new EntityNotFoundException(typeof(Camera), id);
-
-        if (camera.Status == Enums.Status.Active) { 
+            if (camera.Status == Enums.Status.Active) { 
         
-		    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+		        await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+            }
+       
+            camera.Status = Status.Deleted;
+      
+            await CurrentUnitOfWork.SaveChangesAsync();
+             //await base.DeleteAsync(id);
         }
-        camera.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        //await base.DeleteAsync(id);
-    }
     /// <summary>
     /// Method that used to create new camera to specific organization
     /// </summary>
