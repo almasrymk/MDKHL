@@ -172,7 +172,7 @@
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
                                     }
-                                    @if (OnClickRowDelete.HasDelegate && ShowDelete)
+                                    @if (OnClickRowDelete.HasDelegate && ShowDelete && !context.Item.Cells.Any(r => r.Key.Contains("Status")&& r.Value.Contains("Deleted") ))
                                     {
                                         <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Delete"
