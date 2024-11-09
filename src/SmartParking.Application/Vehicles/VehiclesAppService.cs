@@ -58,7 +58,7 @@ public class VehiclesAppService:
     }
     public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (CurrentTenant.Id == null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
 			{
