@@ -178,10 +178,23 @@
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Email" @bind-Value="ContactMail" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
                         </MudItem>
-                       
+
+                        <MudItem sm="4">
+                            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                                <ActivatorContent>
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="MudBlazor.Color.Primary"
+                                               StartIcon="@Icons.Material.Filled.CloudUpload">
+                                        @L["OrganizationLogo"]
+                                    </MudButton>
+                                </ActivatorContent>
+
+                            </MudFileUpload>
+
+                        </MudItem>
                     </MudGrid>
                    
-                    <div class="d-flex justify-content-between mt-auto">
+                    <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Update">@L["Save"]</MudButton>
                     </div>
@@ -193,8 +206,10 @@
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                
                 <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="@Photo" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                    <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
                 </MudItem>
+
+
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
@@ -206,7 +221,6 @@
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewSubscription">@L["Subscriptions"]</MudLink>
                         </MudPaper>
                     </MudItem>
-
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCategories">@L["Categories"]</MudLink>
@@ -219,7 +233,6 @@
 
                         </MudPaper>
                     </MudItem>
-
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>
