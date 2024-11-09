@@ -49,6 +49,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IOptionsMonitor<OpenIddictServerOptions> _oidcOptions;
     private readonly IRepository<Customer, Guid> _customerRepository;
+    private readonly IRepository<Organization, int> _organizationRepository;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -60,7 +61,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IConfiguration config,
         IRepository<Tenant,Guid> tenantRepository,
         IOptionsMonitor<OpenIddictServerOptions> oidcOptions,
-        IRepository<Customer, Guid> CustomerRepository
+        IRepository<Customer, Guid> CustomerRepository,
+        IRepository<Organization,int> organizationRepository
         )
     {
         _signInManager = signInManager;
@@ -73,6 +75,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _tenantRepository = tenantRepository;
         _oidcOptions = oidcOptions; 
         _customerRepository = CustomerRepository;
+        _organizationRepository = organizationRepository;
     }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
@@ -191,7 +194,30 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                  user = await _userManager.FindByNameAsync(input.Username);
 
             }
-        }
+
+            var organizationId = user.GetProperty<int>("OrganizationId");
+            if (organizationId != 0)
+            {
+                var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+                if (organization == null)
+                {
+                    return null;
+
+                }
+                if (organization != null)
+                {
+                    Console.WriteLine(organization.Status.ToString());
+                    Console.WriteLine(Enums.Status.Deleted.ToString());
+                    Console.WriteLine(Enums.Status.Inactive.ToString());
+
+
+                    if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
+                    {
+                        return null;
+
+                    }
+                }
+            }
         
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
         {
@@ -201,6 +227,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             return null;
         }
+        
+        }
+
+        
         await _signInManager.SignInAsync(user, isPersistent: false);
 
        

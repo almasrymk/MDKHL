@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using System;
@@ -11,8 +13,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
@@ -21,12 +25,13 @@ namespace SmartParking.Vehicles.LookUps;
 	{
         private readonly IRepository<LicenceType, int> _repository;
         private readonly IRepository<PlateColor, int> _plateColorRepository;
+    private readonly IDataFilter _dataFilter;
 
-
-    public LicenceTypesAppService(IRepository<LicenceType, int> repository, IRepository<PlateColor, int> plateColorRepository) : base(repository)
+    public LicenceTypesAppService(IRepository<LicenceType, int> repository, IRepository<PlateColor, int> plateColorRepository,IDataFilter dataFilter) : base(repository)
     {
         _repository = repository;
         _plateColorRepository = plateColorRepository;
+        _dataFilter = dataFilter;
     }
 
     ///<inheritdoc/>
@@ -174,10 +179,21 @@ namespace SmartParking.Vehicles.LookUps;
 
         if (licenceType is null)
         {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
+            throw new EntityNotFoundException(typeof(LicenceType), id);
         }
+        licenceType.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
 
+        //await base.DeleteAsync(id);
+    }
 
-        await base.DeleteAsync(id);
+    public async Task<List<LicenceTypeDto>> GetAllAsync()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var licenceType = await _repository.GetListAsync();
+            return ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceType);
+        }
+           
     }
 }

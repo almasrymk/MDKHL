@@ -33,6 +33,8 @@
 								   FullWidth="true">
 							@foreach (var org in Organizations)
 							{
+								if (org.Status != Enums.Status.Active)
+									continue;
 								<MudSelectItem Value="org.Id">@org.EnglishName</MudSelectItem>
 							}
 						</MudSelect>

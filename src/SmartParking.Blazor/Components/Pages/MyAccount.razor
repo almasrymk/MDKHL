@@ -85,7 +85,17 @@
                         <MudItem sm="4">
                             <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
+                        <MudItem sm="8">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
+                        </MudItem>
 
+                        <MudItem sm="4">
+                            <MudNumericField Required="true" Min="1" Max="9999" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
+                        </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"

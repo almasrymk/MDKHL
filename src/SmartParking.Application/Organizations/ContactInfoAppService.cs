@@ -4,6 +4,7 @@ using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,8 @@ public class ContactInfoAppService : CrudAppService<ContactInfo, ContactInfoDto,
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-
-        await base.DeleteAsync(id);
+        contactInfo.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+        // await base.DeleteAsync(id);
     }
 }

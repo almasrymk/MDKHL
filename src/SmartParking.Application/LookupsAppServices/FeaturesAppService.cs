@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Lookups;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -17,19 +19,24 @@ public class FeaturesAppService : CrudAppService<Feature,
                                                 CreateUpdateFeatureDto>,
     IFeaturesAppService
 {
+    private readonly IRepository<Feature, int> _repository;
+
     public FeaturesAppService(IRepository<Feature, int> repository) : base(repository)
     {
+       _repository = repository;
     }
 
 
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var city = await GetAsync(id);
-        if (city == null)
+        var feature = await _repository.FirstOrDefaultAsync(f => f.Id == id);
+        if (feature == null)
             throw new EntityNotFoundException(typeof(Feature), id);
 
-        await base.DeleteAsync(id);
+        //await base.DeleteAsync(id);
+        feature.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
 }

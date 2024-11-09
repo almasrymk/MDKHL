@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
@@ -57,7 +58,7 @@ public class VehiclesAppService:
     }
     public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (CurrentTenant.Id == null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
 			{
@@ -88,11 +89,14 @@ public class VehiclesAppService:
         {
             using (_dataFilter.Disable<IMultiTenant>())
 			{
-                
-				await base.DeleteAsync(id);
 
-			}
+                //await base.DeleteAsync(id);
+                vehicle.Status = Status.Deleted;
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
 		}
-		await base.DeleteAsync(id);
-	}
+        //await base.DeleteAsync(id);
+        vehicle.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
 }

@@ -62,7 +62,7 @@
     "Data Grid": "شبكة البيانات",
     "Delete": "حـذف",
     "Deleted": "محذوف",
-    "Description": "وصف",
+    "Description": "الوصف",
     "Details for Garage": "تفاصيل المـوقـف",
     "Edit": "تحرير",
     "Edit Camera": "تعديل الكاميرا",
@@ -136,7 +136,7 @@
     "Profile Details": "تفاصيل الملف الشخصي",
     "Publish From": "توقيت الاتاحة من",
     "Publish To": "توقيت الاتاحة إلى",
-    "Published": "الاتاحة للعملاء",
+    "Published": "الاتاحه",
     "Region": "المنطقة",
     "RegionCreatedSuccessfully": "تم إنشاء المنطقة بنجاح",
     "RegionDeletedSuccessfully": "تم حذف المنطقة بنجاح",
@@ -241,7 +241,7 @@
     "CANCEL": "إلغاء",
     "PackageTypeEnglishName": "نوع الباقة بالانجليزية",
     "SubscriptionName": "اسم الاشتراك",
-    "SubscriptionType": "نوع الاشتراك",
+    "SubscriptionType": "نوع الباقه",
     "SubscriptionPrice": "السعر",
     "SubscriptionStatus": "الحالة",
     "SubscriptionDescription": "الوصف",
@@ -421,7 +421,13 @@
     "PhoneNumber": "رقم الهاتف",
     "UserRole": "دور الموظف",
     "Details for Customer": "تفاصيل عن العميل",
-    "OrganoizationLogo": "لوجو المنشأة"
+    "OrganizationLogo": "لوجو المنشأة",
+    "ArabicName must contain at least three Arabic words.": "الاسم يجب ان يكون  ثلاثي ",
+    "ArabicName must be at least 10 characters long.": "يجب ان يكون طول الاسم علي الاقل عشر حروف",
+    "FullName must contain at least three English words.": "الاسم بالانجليزيه يجب ان يتكون علي الاقل من ثلاث كلمات",
+    "FullName must be at least 10 characters long.": " يجب ان يكون طول الاسم بالانجليزية علي الاقل عشر حروف",
+    "Should Not be empty": "لا يجب ان يكون فارغا",
+    "PackageTypeArabicName": "نوع الباقه بالعربية"
 
 
 

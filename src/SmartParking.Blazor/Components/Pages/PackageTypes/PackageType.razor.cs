@@ -27,6 +27,7 @@ public partial class PackageType
     private TableData itemData = new TableData();
 
     private string termSearch;
+    public bool ShowAdd { get; set; } = true;
 
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
@@ -35,6 +36,15 @@ public partial class PackageType
     public PackageType(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+    }
+    protected override Task OnInitializedAsync()
+    {
+        if (CurrentTenant.Id != null)
+        {
+            ShowAdd = false;
+
+        }
+        return base.OnInitializedAsync();
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Vehicles
 {
-    public class Vehicle : FullAuditedEntity<int>, IMultiTenant
+    public class Vehicle : FullAuditedEntity<int>, IMultiTenant,IBseEntity
 	{
         public int Id { get; set; }
         public Guid CustomerId { get; set; }
@@ -29,6 +30,6 @@ namespace SmartParking.Entities.Vehicles
 		public string? CompanyName { get; set; } 
 
         public Guid? TenantId { get; set; }
-
-	}
+        public Status Status { get; set; }
+    }
 }

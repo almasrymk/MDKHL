@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using SmartParking.Garages;
 using System;
@@ -34,11 +35,12 @@ public class CamerasAppService :
     private readonly IRepository<Camera, int> _repository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IGarageAppService _garageAppService;
+    private readonly IRepository<Subscription, int> _subscriptionRepository;
     private IDataFilter _dataFilter;
     private readonly ICurrentUser _currentUser; // Inject ICurrentUser
 
 
-	public CamerasAppService(IRepository<Camera, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Organization, int> organizationRepository = null, IGarageAppService garageAppService = null)
+	public CamerasAppService(IRepository<Camera, int> repository, IRepository<Subscription, int> subscriptionRepository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Organization, int> organizationRepository = null, IGarageAppService garageAppService = null)
 		: base(repository)
 	{
 		_repository = repository;
@@ -46,7 +48,8 @@ public class CamerasAppService :
 		_currentUser = currentUser;
 		_organizationRepository = organizationRepository;
 		_garageAppService = garageAppService;
-	}
+        _subscriptionRepository = subscriptionRepository;
+    }
 
 
 	public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
@@ -141,13 +144,15 @@ public class CamerasAppService :
             var camera = await GetAsync(id);
             if (camera == null)
                 throw new EntityNotFoundException(typeof(Camera), id);
-
-        if (camera.Status == Enums.Status.Active) { 
+            if (camera.Status == Enums.Status.Active) { 
         
-		    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
-        }
-
-		await base.DeleteAsync(id);
+		        await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+            }
+       
+            camera.Status = Status.Deleted;
+      
+            await CurrentUnitOfWork.SaveChangesAsync();
+             //await base.DeleteAsync(id);
         }
     /// <summary>
     /// Method that used to create new camera to specific organization
@@ -162,12 +167,12 @@ public class CamerasAppService :
             GarageDto garage = new GarageDto();
             Organization organization = new Organization();
 
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                garage = await _garageAppService.GetAsync(input.GarageId);
-                organization = await _organizationRepository.GetAsync(garage.OrganizationId);
-            }
-            
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            garage = await _garageAppService.GetAsync(input.GarageId);
+            organization = await _organizationRepository.GetAsync(garage.OrganizationId);
+
+
 
             if (await CheckIPUnique(input.CameraIP) == 1)
             {
@@ -177,20 +182,21 @@ public class CamerasAppService :
                 };
             }
             var numberOfCamerasForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-
-            if (organization.Subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
+            var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+            if (subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
             {
                 throw new Exception("UPGRADE subscription to add camera to organization.");
 
-        }
+            }
             if (input.Status == Enums.Status.Active)
-		    {
-                
-			    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
-		    }
-            input.DeviceId = await GenerateCameraCode(organization.EnglishName,garage.NameEn,input.Name);
-            input.OrganizationId = organization.Id;    
+            {
+
+                await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
+            }
+            input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+            input.OrganizationId = organization.Id;
             return await base.CreateAsync(input);
+        }
     }
         /// <summary>
         /// method used to Check if IP is unqiue or not

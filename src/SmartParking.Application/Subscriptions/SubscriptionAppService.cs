@@ -70,17 +70,17 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         }
         
         // If the current status is Draft, allow it to change to Active or Inactive
-        if (existingSubscription.Status == SubscriptionStatus.Draft)
+        if (existingSubscription.StatusSubscription == SubscriptionStatus.Draft)
         {
             if (input.Status == SubscriptionStatus.Active || input.Status == SubscriptionStatus.Inactive)
             {
                 // Change status to the new value (Active or Inactive)
-                existingSubscription.Status = input.Status;
+                existingSubscription.StatusSubscription = input.Status;
             }
             
         }
         // If the current status is Active or Inactive, prevent it from changing back to Draft
-        else if (existingSubscription.Status == SubscriptionStatus.Active || existingSubscription.Status == SubscriptionStatus.Inactive)
+        else if (existingSubscription.StatusSubscription == SubscriptionStatus.Active || existingSubscription.StatusSubscription == SubscriptionStatus.Inactive)
         {
             if (input.Status == SubscriptionStatus.Draft)
             {
@@ -89,7 +89,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             else
             {
                 // Allow other status changes
-                existingSubscription.Status = input.Status;
+                existingSubscription.StatusSubscription = input.Status;
             }
         }
 
@@ -121,29 +121,28 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     /// <inheritdoc/>
     public override async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
+       
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 return await base.GetListAsync(input);
             }
-        }
-        else
-            return await base.GetListAsync(input);
     }
 
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var subscription =  await _subscriptionRepository.GetAsync(id);
+        var subscription =  await _subscriptionRepository.FindAsync(id);
 
         if (subscription is null)
         {
             throw new EntityNotFoundException(typeof(Subscription), id);
         }
 
-        
-            await base.DeleteAsync(id);
+
+        //await base.DeleteAsync(id);
+
+        subscription.Status = Status.Deleted;
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
     /// <inheritdoc/>
@@ -235,7 +234,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     [RemoteService(IsEnabled =false)]
     public async Task<List<SubscriptionDto>> GetAllAsync()
     {
-        var subscriptions = await _subscriptionRepository.GetListAsync();
-        return  ObjectMapper.Map<List<Subscription>,List<SubscriptionDto>>(subscriptions);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var subscriptions = await _subscriptionRepository.GetListAsync();
+            var subscriptionsMap = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
+            return subscriptionsMap;
+        }
+            
     }
 }

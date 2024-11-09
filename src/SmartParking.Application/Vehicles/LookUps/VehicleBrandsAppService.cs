@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Results;
@@ -13,8 +15,10 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps
 {
@@ -22,10 +26,12 @@ namespace SmartParking.Vehicles.LookUps
 	public class VehicleBrandsAppService : CrudAppService<VehicleBrand, VehicleBrandDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleBrandDto>, IVehicleBrandsAppService
 	{
         private readonly IRepository<VehicleBrand, int> _repository;
+        private readonly IDataFilter _dataFilter;
 
-        public VehicleBrandsAppService(IRepository<VehicleBrand, int> repository) : base(repository)
+        public VehicleBrandsAppService(IRepository<VehicleBrand, int> repository,IDataFilter dataFilter) : base(repository)
 		{
            _repository = repository;
+            _dataFilter = dataFilter;
         }
         ///<inheritdoc/>
         public override async Task DeleteAsync(int id)
@@ -34,11 +40,12 @@ namespace SmartParking.Vehicles.LookUps
 
             if (vehicleBrand is null)
             {
-                throw new EntityNotFoundException(typeof(VehicleModel), id);
+                throw new EntityNotFoundException(typeof(VehicleBrand), id);
             }
 
-
-            await base.DeleteAsync(id);
+            vehicleBrand.Status = Status.Deleted;
+            await CurrentUnitOfWork.SaveChangesAsync();
+            // await base.DeleteAsync(id);
         }
 
         ///<inheritdoc/>
@@ -169,6 +176,15 @@ namespace SmartParking.Vehicles.LookUps
                 return Result<List<VehicleBrandDto>>.NotFound();
             var brandsMap = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
             return Result<List<VehicleBrandDto>>.Success(brandsMap);
+        }
+
+        public async Task<List<VehicleBrandDto>> GetAllAsync()
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                 var brands = await _repository.GetListAsync();
+                return ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
+            }
         }
     }
 }
