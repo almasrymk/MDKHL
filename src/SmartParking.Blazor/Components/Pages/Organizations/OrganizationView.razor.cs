@@ -27,7 +27,7 @@ public partial class OrganizationView
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     private DateTime? LicenseExpiryDate { get; set; }
-    public bool Status { get; set; } = true;
+    public int Status { get; set; } = 1;//1-> active , 2-> inactive 3->deleted 
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
@@ -49,11 +49,15 @@ public partial class OrganizationView
         Address = organization.Address;
         if (organization.Status == Enums.Status.Active)
         {
-            Status = true;
+            Status = 1;
+        }
+        else if (organization.Status == Enums.Status.Inactive)
+        {
+            Status = 2;
         }
         else
         {
-            Status = false;
+            Status = 3;
         }
         if (CultureInfo.CurrentCulture.Name == "en")
         {

@@ -74,15 +74,20 @@
                        
                         <MudItem sm="4"  >
                             <Label>@L["Status"]</Label>
-                            <Div Style=@($"background-color: {(Status ? "#b8efb0" : "#f20707")};border:none;color:{(Status ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
-                                @if (Status)
+                            <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
+                                @if (Status==1)
                                 {
                                     <MudText>@L["Active"]</MudText>
                                 }
-                                else
+                                else if(Status==2)
                                 {
                                     <MudText>@L["InActive"]</MudText>
-                                    
+
+                                }
+                                else
+                                {
+                                    <MudText>@L["Deleted"]</MudText>
+
                                 }
 
                                 </Div>
