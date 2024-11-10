@@ -178,7 +178,7 @@ namespace SmartParking.Vehicles.LookUps
             return Result<List<VehicleBrandDto>>.Success(brandsMap);
         }
 
-        public async Task<List<VehicleBrandDto>> GetAllAsync()
+        public async Task<List<VehicleBrandDto>> GetAllVehicleBrandsAsync()
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
