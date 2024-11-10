@@ -1710,6 +1710,75 @@ namespace SmartParking.Migrations
                     b.ToTable("PackageTypes", (string)null);
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Payments.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("CheckoutId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EntityId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("PaymentCategory")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PaymentCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PaymentType")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Screen", b =>
                 {
                     b.Property<int>("Id")
@@ -4156,6 +4225,17 @@ namespace SmartParking.Migrations
                     b.Navigation("Package");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.Payments.Payment", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customers")
+                        .WithMany("Payments")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customers");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
                 {
                     b.HasOne("SmartParking.Entities.Subscriptions.SubscriptionType", "SubscriptionType")
@@ -4354,6 +4434,8 @@ namespace SmartParking.Migrations
                     b.Navigation("CustomerPackages");
 
                     b.Navigation("Invoices");
+
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Lookups.Region", b =>

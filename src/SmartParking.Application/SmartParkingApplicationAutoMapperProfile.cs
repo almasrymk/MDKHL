@@ -31,6 +31,8 @@ using SmartParking.Analysis;
 using System.Collections.Generic;
 using System.Linq;
 using SmartParking.Mobile.Vehicles;
+using SmartParking.Entities.Payments;
+using SmartParking.Payments;
 
 namespace SmartParking;
 
@@ -117,6 +119,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.Customer.ArabicName))
             .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.Customer.IdentityUser.Name));
             
+            .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()));
+        //.ForMember(d => d.PlateNumber, o => o.MapFrom(s => s.Vehicle.PlateNumber));
+
+
+        CreateMap<Payment, PaymentDto>()
+        .ReverseMap();
+        CreateMap<CreateUpdatePaymentDto, Payment>().ReverseMap();
 
         CreateMap<CreateUpdateInvoiceDto, Invoice>();
 
