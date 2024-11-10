@@ -39,17 +39,17 @@ public partial class AddVehicleDialog
 	protected override async Task OnInitializedAsync()
     {
         createUpdateVehicle.BelongToCompany = false;
-        var resultplate = await PlateColorsAppService.GetAllAsync();
+        var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
         plateColors= resultplate;
 
 
-        var resultLicence = await LicenceTypesAppService.GetAllAsync();
+        var resultLicence = await LicenceTypesAppService.GetAllLicencesAsync();
         LicenceTypes= resultLicence;
 
-        var resultVehicleBrand = await VehicleBrandAppService.GetAllAsync();
+        var resultVehicleBrand = await VehicleBrandAppService.GetAllVehicleBrandsAsync();
         VehicleBrands = resultVehicleBrand;
 
-        var resultVehicleModel = await VehicleModelAppService.GetAllAsync();
+        var resultVehicleModel = await VehicleModelAppService.GetAllVehicleModelsAsync();
         VehicleModels = resultVehicleModel;
 
     }

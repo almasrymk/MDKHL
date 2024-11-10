@@ -37,5 +37,5 @@ namespace SmartParking.Lookups.PlateColor;
 
 	public  Task DeleteAsync(int id);
 
-    Task<List<PlateColorDto>> GetAllAsync();
+    Task<List<PlateColorDto>> GetAllPlateColorsAsync();
 }

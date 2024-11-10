@@ -43,6 +43,6 @@ namespace SmartParking.Lookups.VehicleModel
 
         public Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId);
 
-        Task<List<VehicleModelDto>> GetAllAsync();
+        Task<List<VehicleModelDto>> GetAllVehicleModelsAsync();
     }
 }

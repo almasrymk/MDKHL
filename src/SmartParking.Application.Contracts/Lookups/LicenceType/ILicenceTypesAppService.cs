@@ -38,5 +38,5 @@ namespace SmartParking.Lookups.LicenceType;
 
     public Task DeleteAsync(int id);
 
-    public Task<List<LicenceTypeDto>> GetAllAsync();
+    public Task<List<LicenceTypeDto>> GetAllLicencesAsync();
 }
