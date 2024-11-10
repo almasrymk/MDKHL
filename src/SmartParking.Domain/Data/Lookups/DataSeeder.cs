@@ -70,10 +70,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Country {EnglishName = "Algeria", ArabicName = "الجزائر", EnglishCapital = "Algiers", ArabicCapital = "الجزائر العاصمة" },
             };
 
-            foreach (var country in countries)
-            {
-                await _countryRepository.InsertAsync(country, autoSave: true);
-            }
+         
+            await _countryRepository.InsertManyAsync(countries, autoSave: true);
+           
             var egypt = await _countryRepository.FirstOrDefaultAsync(c => c.EnglishName == "Egypt");
            
 
@@ -85,10 +84,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             new Region { ArabicName="test", EnglishName = "test", Status = Status.Active,CountryId = egypt.Id},
             };
 
-            foreach (var region in regions)
-            {
-                await _regionRepository.InsertAsync(region, autoSave: true);
-            }
+           
+            await _regionRepository.InsertManyAsync(regions, autoSave: true);
+            
             var test = await _regionRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
 
             var States = new List<State>
@@ -98,10 +96,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new State { ArabicName="test", EnglishName = "test",  RegionId = test.Id, Status = Status.Active },
             };
 
-            foreach (var State in States)
-            {
-                await _stateRepository.InsertAsync(State, autoSave: true);
-            }
+          
+            await _stateRepository.InsertManyAsync(States, autoSave: true);
+            
             var stateTest = await _stateRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
             var cities = new List<City>
             {
@@ -110,10 +107,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new City {  ArabicName="تست", EnglishName = "test", StateId = stateTest.Id},
             };
 
-            foreach (var city in cities)
-            {
-                await _cityRepository.InsertAsync(city, autoSave: true);
-            }
+          
+            await _cityRepository.InsertManyAsync(cities, autoSave: true);
+         
             var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
             
            
@@ -124,10 +120,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new SubscriptionType {Type = "Yearly"},
             };
 
-            foreach (var subscriptionType in subscriptionTypes)
-            {
-                await _subscriptionTypeRepository.InsertAsync(subscriptionType, autoSave: true);
-            }
+         
+            await _subscriptionTypeRepository.InsertManyAsync(subscriptionTypes, autoSave: true);
+            
 
             var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.Type == "Monthly");
 
@@ -150,8 +145,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
             };
             var subscriptionTest = await _subscriptionRepository.InsertAsync(subscription, autoSave: true);
-
-            var organization = new Organization
+            if (!await _organizationRepostory.AnyAsync())
+            {
+                var organization = new Organization
             {
                 ArabicName = "الشركة الأولى",
                 EnglishName = "First Organization",
@@ -184,39 +180,37 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             await _organizationRepostory.InsertAsync(organization,autoSave:true);
             var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
 
-
-            await _garageRepostory.InsertAsync(
+            var Garages = new List<Garage>
+            {
                 new Garage
                 {
                   Code = "O000001-G-01",
                   NameEn = "Main Garage",
                   NameAr = "الموقف الرئيسي",
                   MaxCapacity = 150,
-                  ClosingHours = new TimeOnly(22, 0), 
+                  ClosingHours = new TimeOnly(22, 0),
                   OrganizationId = organizationTest.Id,
                   Status = Status.Active
                 },
-                autoSave: true
-            );
-
-            await _garageRepostory.InsertAsync(
-                new Garage
+                 new Garage
                 {
                     Code = "O000001-G-02",
                     NameEn = "Secondary Garage",
                     NameAr = "الموقف الثاني",
                     MaxCapacity = 100,
-                    ClosingHours = new TimeOnly(20, 0), 
+                    ClosingHours = new TimeOnly(20, 0),
                     OrganizationId = organizationTest.Id,
                     Status = Status.Active
                 },
-                autoSave: true
-            );
+
+            };
+            await _garageRepostory.InsertManyAsync(Garages, autoSave: true);
+
+         
 
             var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
 
-
-            await _cameraRepostory.InsertAsync(
+            var cameras =new List<Camera>{
                 new Camera
                 {
                     GarageId = garageTest.Id,    // Link camera to the found Garage
@@ -230,105 +224,68 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                     CameraType = CameraType.Entry,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
                     TenantId = null,              // Set TenantId if multi-tenant, or null
-                    OrganizationId=organizationTest.Id,
-               
+                    OrganizationId = organizationTest.Id,
+
                 },
-                autoSave: true
-            );
-            await _cameraRepostory.InsertAsync(
-            new Camera
-            {
-                GarageId = garageTest.Id,    // Link camera to the found Garage
-                Name = "Exit",         // Provide valid camera name
-                Model = "Model X",           // Add the model of the camera
-                MainType = "Type A",         // Add the main type
-                BrandName = "Brand Z",       // Add the brand name
-                DeviceId = "df9a5b33-adf7-f454-49dd-d9624605adf7",             // Add a unique code
-                CameraIP = "192.168.1.11",   // Add camera IP address
-                MacAddress = "00:11:22:33:44:55", // Add MAC address
-                CameraType = CameraType.Exit,            // Set camera type
-                Status = Status.Active,      // Set the status of the camera
-                TenantId = null,              // Set TenantId if multi-tenant, or null
-                OrganizationId = organizationTest.Id,
-            },
+                 new Camera
+                 {
+                     GarageId = garageTest.Id,    // Link camera to the found Garage
+                     Name = "Exit",         // Provide valid camera name
+                     Model = "Model X",           // Add the model of the camera
+                     MainType = "Type A",         // Add the main type
+                     BrandName = "Brand Z",       // Add the brand name
+                     DeviceId = "df9a5b33-adf7-f454-49dd-d9624605adf7",             // Add a unique code
+                     CameraIP = "192.168.1.11",   // Add camera IP address
+                     MacAddress = "00:11:22:33:44:55", // Add MAC address
+                     CameraType = CameraType.Exit,            // Set camera type
+                     Status = Status.Active,      // Set the status of the camera
+                     TenantId = null,              // Set TenantId if multi-tenant, or null
+                     OrganizationId = organizationTest.Id,
+                 }
+            };
+         
+
+              await _cameraRepostory.InsertManyAsync(cameras, 
                     autoSave: true
-            );
-            await _cameraRepostory.InsertAsync(
-                new Camera
-                {
-                    GarageId = garageTest.Id,    // Link camera to the found Garage
-                    Name = "Camera Two",         // Provide valid camera name
-                    Model = "Model X",           // Add the model of the camera
-                    MainType = "Type A",         // Add the main type
-                    BrandName = "Brand Z",       // Add the brand name
-                    DeviceId = "CAM002",             // Add a unique code
-                    CameraIP = "192.168.1.11",   // Add camera IP address
-                    MacAddress = "00:11:22:33:44:55", // Add MAC address
-                    CameraType = CameraType.Exit,            // Set camera type
-                    Status = Status.Active,      // Set the status of the camera
-                    TenantId = null,              // Set TenantId if multi-tenant, or null
-                    OrganizationId = organizationTest.Id,
-                },
-                autoSave: true
-            );
-            await _cameraRepostory.InsertAsync(
-                new Camera
-                {
-                    GarageId = garageTest.Id,    // Link camera to the found Garage
-                    Name = "Camera Two",         // Provide valid camera name
-                    Model = "Model X",           // Add the model of the camera
-                    MainType = "Type A",         // Add the main type
-                    BrandName = "Brand Z",       // Add the brand name
-                    DeviceId = "CAM002",             // Add a unique code
-                    CameraIP = "192.168.1.11",   // Add camera IP address
-                    MacAddress = "00:11:22:33:44:55", // Add MAC address
-                    CameraType = CameraType.Exit,            // Set camera type
-                    Status = Status.Active,      // Set the status of the camera
-                    TenantId = null,              // Set TenantId if multi-tenant, or null
-                    OrganizationId = organizationTest.Id,
-                },
-                autoSave: true
-            );
+                );
+            }
+           
         }
 
         if (!await _plateColorRepository.AnyAsync())
         {
-            if (!await _plateColorRepository.AnyAsync())
-            {
+           
 
-                var plateColors = new List<PlateColor>
-        {
-            new PlateColor {  EnglishName = "Red", ArabicName = "أحمر" },
-            new PlateColor {  EnglishName = "Blue", ArabicName = "أزرق" },
-            new PlateColor {  EnglishName = "Green", ArabicName = "أخضر" },
-            new PlateColor {  EnglishName = "Yellow", ArabicName = "أصفر" },
-            new PlateColor {  EnglishName = "White", ArabicName = "أبيض" }
-        };
+               var plateColors = new List<PlateColor>
+               {
+                   new PlateColor {  EnglishName = "Red", ArabicName = "أحمر" },
+                   new PlateColor {  EnglishName = "Blue", ArabicName = "أزرق" },
+                   new PlateColor {  EnglishName = "Green", ArabicName = "أخضر" },
+                   new PlateColor {  EnglishName = "Yellow", ArabicName = "أصفر" },
+                   new PlateColor {  EnglishName = "White", ArabicName = "أبيض" }
+               };
 
-                foreach (var plateColor in plateColors)
-                {
-                    await _plateColorRepository.InsertAsync(plateColor, autoSave: true);
-                }
+              await _plateColorRepository.InsertManyAsync(plateColors, autoSave: true);
+                
                 var redplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Red");
                 var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
 
 
                 var licenceTypes = new List<LicenceType>
-        {
+                {
                 // Two licence types sharing the same PlateColorId (e.g., Red with Id = 1)
                 new LicenceType {  EnglishName = "Personal", ArabicName = "شخصي", PlateColorId = redplate.Id },
-            new LicenceType {  EnglishName = "Commercial", ArabicName = "تجاري", PlateColorId = redplate.Id }, 
+                new LicenceType {  EnglishName = "Commercial", ArabicName = "تجاري", PlateColorId = redplate.Id }, 
 
                 // Unique licence types with their own PlateColorId
                 new LicenceType {  EnglishName = "Government", ArabicName = "حكومي", PlateColorId = blueplate.Id }, // Blue
                 new LicenceType {  EnglishName = "Diplomatic", ArabicName = "دبلوماسي", PlateColorId = blueplate.Id }, // Blue
                 new LicenceType {  EnglishName = "Military", ArabicName = "عسكري", PlateColorId = blueplate.Id}  // Blue
-            };
-                foreach (var licenceType in licenceTypes)
-                {
-                    await _licenceTypeRepository.InsertAsync(licenceType, autoSave: true);
-                }
-            }
+                };
+               
+                await _licenceTypeRepository.InsertManyAsync(licenceTypes, autoSave: true);
+                
+            
         }
     }
 }
