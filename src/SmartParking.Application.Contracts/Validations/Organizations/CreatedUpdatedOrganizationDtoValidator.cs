@@ -42,7 +42,10 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 			.Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$")
 			.WithMessage("please add valid whats app number");
 		RuleFor(x => x.ContactMail).NotEmpty().Matches(@"^(?!.*\.\.)(?!.*\.$)(?=.{1,254}$)(?=.{1,64}@.{1,255}$)[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.(com|net|org|edu|gov|mil|int|co|info|biz|us|eu|uk|ca|jp|cn|in|au|za|tv|me|mobi|name)$");
-        RuleFor(x => x.PhoneNum).NotEmpty().Matches(@"^\d+$").WithMessage("The field must contain only numbers.").MinimumLength(9).WithMessage("Phone Number Can't be less than 9 digits").MaximumLength(10).WithMessage("Phone Number Can't be less than 9 digits");
+        RuleFor(x => x.PhoneNum)
+            .NotEmpty()
+            .Matches(@"^01\d{8}$")
+            .WithMessage("Phone Number must start with '01', contain only numbers, and be exactly 10 digits long.");
 
         RuleFor(x => x.SubscriptionId)
             .Must(id => id == null || id > 0)
