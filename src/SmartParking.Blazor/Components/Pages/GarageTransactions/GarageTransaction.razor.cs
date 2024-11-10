@@ -100,8 +100,13 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		private async Task FetchTableData(PageChangeEventArgs pageInfo)
 		{
+			string sort ;
+			if (pageInfo.SortColumn == "Id")
+				sort = "AccurateTime DESC";
+			else
+				sort = pageInfo.SortColumn;
 
-			CurrentPage = pageInfo.PageNumber;
+            CurrentPage = pageInfo.PageNumber;
 			RowPerPage = pageInfo.RowsPerPage;
 			Console.WriteLine(RowPerPage);
 			// Create a request object for paged and sorted data
@@ -109,8 +114,8 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			{
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-				Sorting = pageInfo.SortColumn
-			};
+				Sorting = sort
+            };
 
 			// Retrieve the list of organizations from the server
 			var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input);
@@ -165,26 +170,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		{
 			ShowSnackbar("Not Working",Severity.Warning);
 			return null;
-			var id = int.Parse(row.Cells[0].Value);
-			Console.WriteLine(id);
-			var garageTransactionDto = await GarageTransactionsAppService.GetAsync(id);
-
-			var createUpdateGarageTransaction = new CreateUpdateGarageTransactionDto
-			{
-				
-
-			};
-
-
-
-			var parameters = new DialogParameters
-			{
-				["GarageTransaction"] = garageTransactionDto,
-				["UpdatedId"] = id
-			};
-
-
-			return await Dialog.ShowAsync<EditPlateColor>("Edit GarageTransaction", parameters);
+			
 
 		}
 
