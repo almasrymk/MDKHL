@@ -16,8 +16,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Vehicles.LookUps;
@@ -26,12 +28,13 @@ namespace SmartParking.Vehicles.LookUps;
 public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, int, PagedAndSortedResultRequestDto, CreateUpdatePlateColorDto>, IPlateColorsAppService
 {
 	private readonly Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> _repository;
+    private readonly IDataFilter _dataFilter;
 
-	public PlateColorsAppService(Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> repository) : base(repository)
+    public PlateColorsAppService(Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> repository,IDataFilter dataFilter) : base(repository)
     {
 		_repository = repository;
-
-	}
+        _dataFilter = dataFilter;
+    }
 
     ///<inheritdoc/>
     public override async Task<PlateColorDto> CreateAsync(CreateUpdatePlateColorDto input)
@@ -168,5 +171,14 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
         await CurrentUnitOfWork.SaveChangesAsync();
 
         // await base.DeleteAsync(id);
+    }
+
+    public async Task<List<PlateColorDto>> GetAllAsync()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var plateColors = await _repository.GetListAsync();
+            return ObjectMapper.Map<List<PlateColor>, List<PlateColorDto>>(plateColors);
+        }
     }
 }

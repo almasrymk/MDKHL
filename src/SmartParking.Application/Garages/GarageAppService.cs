@@ -4,6 +4,7 @@ using Nito.Disposables;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using SmartParking.Organizations;
@@ -32,13 +33,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     private readonly IRepository<Garage,int> _repository;
     private readonly IRepository<Camera,int> _repositoryCamera;
     private readonly IRepository<Organization,int> _organizationRepository;
+    private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly OrganizationsAppService _organizationsAppService;
     private IDataFilter _dataFilter;
     private ICurrentUser _currentUser;
 
     public ICurrentTenant _currentTenant;
 
-    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera, IRepository<Organization, int> organizationRepository) : base(repository)
+    public GarageAppService(IRepository<Garage, int> repository, OrganizationsAppService organizationsAppService, IDataFilter datafilter, ICurrentUser currentUser, ICurrentTenant currentTenant, IRepository<Camera, int> repositoryCamera, IRepository<Organization, int> organizationRepository,IRepository<Subscription,int> subscriptionRepository) : base(repository)
     {
         _repository = repository;
         _organizationsAppService = organizationsAppService;
@@ -47,6 +49,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         _currentTenant = currentTenant;
         _repositoryCamera = repositoryCamera;
         _organizationRepository = organizationRepository;
+        _subscriptionRepository = subscriptionRepository;
     }
 
 
@@ -59,30 +62,31 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         Organization organization=new Organization();
         using (DataFilter.Disable<IMultiTenant>())
         {
-             var query = await _organizationRepository.GetQueryableAsync();
-            query = query.Where(x => x.Id ==input.OrganizationId);
-           query= query.Include(x => x.Subscription);
-            organization=query.FirstOrDefault();
-        }
-        if (organization == null)
-        {
-            throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
-        }
-        if (organization.Status == Enums.Status.Inactive)
-        {
-            throw new Exception("Can't add garage to In active organization.");
+                 var query = await _organizationRepository.GetQueryableAsync();
+                query = query.Where(x => x.Id ==input.OrganizationId);
+                query= query.Include(x => x.Subscription);
+                organization=query.FirstOrDefault();
+            if (organization == null)
+            {
+                throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
+            }
+            if (organization.Status == Enums.Status.Inactive)
+            {
+                throw new Exception("Can't add garage to In active organization.");
             
-        }
-        string code = organization.Code;
-        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+            }
+            string code = organization.Code;
+        
+            var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+            var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+           if (subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1)
+           {
+                throw new Exception("UPGRADE subscription to add garage to organization.");
 
-       if( organization.Subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1)
-       {
-            throw new Exception("UPGRADE subscription to add garage to organization.");
-
-       }
+           }
 
         input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
+        }
         if (input.Status == Enums.Status.Active)
         {
             organization.ActiveGarages++;
@@ -140,13 +144,12 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         {
             throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
         }
-        if (garage.OrganizationId != input.OrganizationId)
-        {
+
             input.TenantId=organization.TenantId;
             input.Code=organization.Code;
             input.Code += GetOrganizationCode(NumberOfGaragesInInputOrganization);
             
-        }
+        
         if(input.Status == Enums.Status.Inactive && garage.Status==Enums.Status.Active)
         {
             organization.ActiveGarages--;
@@ -545,21 +548,29 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         var garage= await GetAsync(GarageId);
         try
         {
-            var org = await _organizationRepository.GetAsync(garage.OrganizationId);
-
-            if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
+            using (DataFilter.Disable<IMultiTenant>())
             {
-                throw new Exception("UPGRADE subscription to add cameras to organization.");
-            }
-            org.ActiveCameras += NumOfActiveCamera;
-            if (org.Subscription.NumbersOfGarages < org.ActiveGarages + 1)
-            {
-                throw new Exception("UPGRADE subscription to add garage to organization.");
 
+                var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+
+                if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
+                {
+                    throw new Exception("UPGRADE subscription to add cameras to organization.");
+                }
+                org.ActiveCameras += NumOfActiveCamera;
+                if (org.Subscription.NumbersOfGarages < org.ActiveGarages + 1)
+                {
+                    throw new Exception("UPGRADE subscription to add garage to organization.");
+
+                }
+                if (NumOfActiveCamera > 0)
+                {
+
+                    org.ActiveGarages++;
+                }
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return true;
             }
-            org.ActiveGarages++;
-            await CurrentUnitOfWork.SaveChangesAsync();
-            return true;
 
 		}
 		catch (Exception ex) {

@@ -337,18 +337,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomer(Guid customerId)
     {
-        var customer = await GetAsync(customerId);
-        if( customer == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("No Customer Found");
+            var customer = await GetAsync(customerId);
+            if (customer == null)
+            {
+                throw new Exception("No Customer Found");
+            }
+
+            var query = await _repositoryVehicle.GetQueryableAsync();
+
+            query = query.Where(x => x.CustomerId == customerId);
+            var result = await AsyncExecuter.ToListAsync(query);
+            var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
+            return output;
         }
-
-        var query = await _repositoryVehicle.GetQueryableAsync();
-
-        query=query.Where(x=>x.CustomerId == customerId);
-        var result = await AsyncExecuter.ToListAsync(query);
-        var output =ObjectMapper.Map<List<Vehicle>,List<VehicleDto>>(result);
-        return output ;
+        
     }
 
 

@@ -19,13 +19,13 @@ public class Organization : BaseEntity
     public DateOnly CRExpiryDate { get; set; }
     public DateOnly LicenseExpiryDate { get; set; }
     public int CountryId { get; set; }
-    public virtual Country Country { get; set; }
+    public virtual Country Country { get; set; } = new Country();
     public int RegionId { get; set; }
-    public virtual Region Region { get; set; }
+    public virtual Region Region { get; set; } = new Region();
     public int StateId { get; set; }
-    public virtual State State { get; set; }
+    public virtual State State { get; set; } = new State();
     public int CityId { get; set; }
-    public virtual City City { get; set; }
+    public virtual City City { get; set; } = new City();
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
@@ -39,14 +39,14 @@ public class Organization : BaseEntity
     public bool IsClose { get; set; }
     public TimeOnly ClosingHoursStart { get; set; }
     public TimeOnly ClosingHoursEnd { get; set; }
-    public virtual ICollection<Garage> OrganizationGarages { get; set; }
-    public virtual ICollection<Camera> Cameras { get; set; }
-    public virtual ICollection<Package> organizationPackages { get; set; }
-    public virtual ICollection<Customer> Customers { get; set; }
-    public virtual ICollection<ContactInfo> organizationContactInfos { get; set; }
-    public virtual ICollection<CustomerCategory> CustomerCategories { get; set; }
+    public virtual ICollection<Garage> OrganizationGarages { get; set; } = new HashSet<Garage>();
+    public virtual ICollection<Camera> Cameras { get; set; } = new HashSet<Camera>();
+    public virtual ICollection<Package> organizationPackages { get; set; } = new HashSet<Package>();
+    public virtual ICollection<Customer> Customers { get; set; } =new HashSet<Customer>();
+    public virtual ICollection<ContactInfo> organizationContactInfos { get; set; } = new HashSet<ContactInfo>();
+    public virtual ICollection<CustomerCategory> CustomerCategories { get; set; } = new HashSet<CustomerCategory>();  
     public int? SubscriptionId { get; set; }
-    public virtual Subscription  Subscription { get; set; }
+    public virtual Subscription Subscription { get; set; } = new Subscription();
     public string Address { get; set; }
     public  int ActiveGarages { get; set; }
     public  int ActiveCameras { get; set; }

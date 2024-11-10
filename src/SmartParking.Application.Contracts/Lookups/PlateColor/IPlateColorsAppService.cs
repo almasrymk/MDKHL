@@ -36,4 +36,6 @@ namespace SmartParking.Lookups.PlateColor;
 	public Task<PagedResultDto<PlateColorDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
 	public  Task DeleteAsync(int id);
+
+    Task<List<PlateColorDto>> GetAllAsync();
 }

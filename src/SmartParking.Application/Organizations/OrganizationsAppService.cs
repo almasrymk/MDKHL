@@ -86,14 +86,14 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
 
-
-        await _repository.InsertAsync(organization, autoSave: true);
         bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
-        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString()+ " ," + input.District + " ,";
-        organization.Address += containsArabic ? city.ArabicName: city.EnglishName;
+        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
+        organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
         organization.Address += " , " + input.PostalCode;
         organization.TenantId = tenant.Id;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.InsertAsync(organization, autoSave: true);
+
+        //await CurrentUnitOfWork.SaveChangesAsync();
 
 
         UserCreateDto user = new UserCreateDto()
