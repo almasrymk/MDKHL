@@ -96,7 +96,8 @@ public partial class DetailsInvoice
         var parameters = new DialogParameters
         {
             ["Invoice"] = invoicedto,
-            ["CommercialRegisteration"]= CommercialRegisteration
+            ["CommercialRegisteration"]= CommercialRegisteration,
+            ["ID"]=Id,
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("",parameters);
         

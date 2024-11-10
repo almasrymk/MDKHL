@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QRCoder;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Enums;
@@ -9,6 +10,7 @@ using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Net.Http;
@@ -33,6 +35,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
     private readonly IRepository<Invoice, int> _repository;
     private readonly IOrganizationsAppService _organizationsAppService;
     private readonly HttpClient _httpClient;
+    private string folderQrImage = "QRCodeImage";
+    private string folderImages = "image";
 
     public InvoiceAppService(IRepository<Invoice,int> repository, IDataFilter dataFilter,IOrganizationsAppService organizationsAppService, HttpClient httpClient) 
     :base(repository)
@@ -229,7 +233,92 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 		return $"{prefix}{currentYearSuffix}{formattedSequence}";
 	}
 
-    public async Task<Result<QRCodeDto>> GetInvoiceQRCode(int invoiceId)
+    public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
+    {
+        string? token = await GetToken();
+        var invoice = await _repository.GetAsync(invoiceId);
+        if (invoice is null)
+        {
+            return Result.NotFound();
+        }
+        QRCodeDto qrCodedto = await GetQrCode(token, invoice);
+        return await GetImage(invoice, qrCodedto);
+    }
+    public async Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            string? token = await GetToken();
+            var invoice = await _repository.GetAsync(invoiceId);
+            if (invoice is null)
+            {
+                return Result.NotFound();
+            }
+            QRCodeDto qrCodedto = await GetQrCode(token, invoice);
+            var result = await GetImage(invoice, qrCodedto);
+            return result;
+        }
+    }
+
+    private async Task<Result<string>> GetImage(Invoice? invoice, QRCodeDto qrCodedto)
+    {
+        //var text = Convert.FromBase64String(qrCodedto.QRCode);
+        using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            
+        using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodedto.QRCode, QRCodeGenerator.ECCLevel.Q))
+        using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+        {
+
+            byte[]  qrCodeImage = qrCode.GetGraphic(20);
+       
+
+        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderQrImage, folderImages);
+
+        if (!Directory.Exists(imageDirectoryPath))
+        {
+            Directory.CreateDirectory(imageDirectoryPath);
+        }
+        string fileName = $"{invoice.InvoiceNumber}.{"png"}";
+        string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+
+        await File.WriteAllBytesAsync(fullPath, qrCodeImage);
+
+        Console.WriteLine($"Image saved successfully at {fullPath}");
+
+        return $"{folderQrImage}/{folderImages}/{fileName}";
+        }
+    }
+
+    private async Task<QRCodeDto> GetQrCode(string? token, Invoice? invoice)
+    {
+        decimal percentage = invoice.InvoicePrice * 0.14m;
+        var oragnization = await _organizationsAppService.GetAsync(invoice.OrganizationId);
+        var qR = new
+        {
+            sellerName =oragnization.EnglishName,
+            vatRegistration = oragnization.CommercialRegistrationNumber,
+            timeStamp = "12-12-2024",
+            invoiceAmount = invoice.InvoicePrice.ToString(),
+            vatAmount = percentage.ToString()
+        };
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
+        HttpResponseMessage responseQR = await _httpClient.PostAsync("https://zatca.mazeedit.com/api/Invoices/V1/QRCode", contentQR);
+
+        responseQR.EnsureSuccessStatusCode();
+
+        var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
+
+        var jsonQR = JObject.Parse(resultResponseQR);
+        var qrCodedto = new QRCodeDto
+        {
+            QRCode = jsonQR["qrCode"]?.ToString()
+        };
+        return qrCodedto;
+    }
+
+    private async Task<string?> GetToken()
     {
         var user = new
         {
@@ -246,34 +335,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
         var json = JObject.Parse(resultResponse);
         var token = json["data"]?["token"]?.ToString();
-        var invoice = await _repository.GetAsync(invoiceId);
-        //var organization = await _organizationsAppService.GetAsync(invoice.OrganizationId);
-        if (invoice is null)
-        {
-            return Result.NotFound();
-        }
-        decimal percentage = invoice.InvoicePrice * 0.14m;
-        var qR = new
-        {
-            sellerName = invoice.Organization.EnglishName,
-            vatRegistration = invoice.Organization.CommercialRegistrationNumber,
-            timeStamp = DateTime.Now.ToString(),
-            invoiceAmount = invoice.InvoicePrice.ToString(),
-            vatAmount = percentage.ToString()
-    };
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
-        HttpResponseMessage responseQR = await _httpClient.PostAsync("https://zatca.mazeedit.com/api/Invoices/V1/QRCode", contentQR);
-
-        responseQR.EnsureSuccessStatusCode();
-
-        var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
-
-        var jsonQR = JObject.Parse(resultResponseQR);
-        var qrCodedto = new QRCodeDto
-        {
-            QRCode = jsonQR["qrCode"]?.ToString()
-        };
-        return Result<QRCodeDto>.Success(qrCodedto);
+        return token;
     }
 }
+//		object.ToString returned	"AQRtYWRlAgo5NjM4NTIxMjMwAyExMOKAj+KAjy8xMeKAj+KAjy8yMDI0IDQ6MTI6MTQg2YUEAzQwMAUGNTbZqzAw"	string

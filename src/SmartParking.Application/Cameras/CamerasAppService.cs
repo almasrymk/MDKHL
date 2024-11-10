@@ -166,6 +166,7 @@ public class CamerasAppService :
     {
             GarageDto garage = new GarageDto();
             Organization organization = new Organization();
+        Subscription subscription = new Subscription();
 
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -182,7 +183,7 @@ public class CamerasAppService :
                 };
             }
             var numberOfCamerasForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-            var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+             subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
             if (subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
             {
                 throw new Exception("UPGRADE subscription to add camera to organization.");

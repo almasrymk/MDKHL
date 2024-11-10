@@ -85,6 +85,36 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
         return tenant;
 
+    } 
+    public async Task<UserDataDto> UpdateUser(string phone,string password)
+    {
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == CurrentUser.Id);
+
+        if (user == null)
+        {
+            throw new ValidationException("User with this phone number does Not exist.");
+        }
+        user.SetPhoneNumber(phone,true);
+        // Change password (if you don’t have the current password, use RemovePassword and AddPassword)
+        var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+        if (!removePasswordResult.Succeeded)
+        {
+            throw new ValidationException("Failed to remove current password.");
+        }
+
+        var addPasswordResult = await _userManager.AddPasswordAsync(user, password);
+        if (!addPasswordResult.Succeeded)
+        {
+            throw new ValidationException("Failed to set new password.");
+        }
+
+        return new UserDataDto
+        {
+            FullName = user.UserName,
+            Email = user.Email,
+            Phone = user.PhoneNumber,
+            Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
+        };
     }
     /// <inheritdoc/>
     public async Task<Result<forgetpasswordDto>> ForgetPasswordAsync(string phone)

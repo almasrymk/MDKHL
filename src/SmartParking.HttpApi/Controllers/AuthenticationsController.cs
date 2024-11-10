@@ -39,7 +39,15 @@ public class AuthenticationsController : ControllerBase
             });
         }
         return await _authenticationApp.LoginAsync(input);
+    }    
+    [HttpPost("userdata")]
+    [Authorize]
+    public async Task<Result<UserDataDto>> UpdateUser(string phone,string password)
+    {
+       
+        return await _authenticationApp.UpdateUser(phone,password);
     }
+
     [HttpPost("register")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
