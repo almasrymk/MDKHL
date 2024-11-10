@@ -121,15 +121,11 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     /// <inheritdoc/>
     public override async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
+       
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 return await base.GetListAsync(input);
             }
-        }
-        else
-            return await base.GetListAsync(input);
     }
 
     /// <inheritdoc/>
@@ -238,7 +234,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     [RemoteService(IsEnabled =false)]
     public async Task<List<SubscriptionDto>> GetAllAsync()
     {
-        var subscriptions = await _subscriptionRepository.GetListAsync();
-        return  ObjectMapper.Map<List<Subscription>,List<SubscriptionDto>>(subscriptions);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var subscriptions = await _subscriptionRepository.GetListAsync();
+            var subscriptionsMap = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
+            return subscriptionsMap;
+        }
+            
     }
 }

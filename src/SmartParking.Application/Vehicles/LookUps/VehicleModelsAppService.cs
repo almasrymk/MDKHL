@@ -193,4 +193,13 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         var modelsMap = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
         return Result<List<VehicleModelDto>>.Success(modelsMap);
     }
+
+    public async Task<List<VehicleModelDto>> GetAllAsync()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var models = await _repository.GetListAsync();
+            return ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
+        }
+    }
 }

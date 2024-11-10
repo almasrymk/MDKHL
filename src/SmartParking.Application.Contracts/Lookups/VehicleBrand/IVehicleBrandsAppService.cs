@@ -44,5 +44,7 @@ namespace SmartParking.Lookups.VehicleBrand
         /// The task result contains a list of <see cref="VehicleBrandDto"/> objects representing the vehicle brands.
         /// </returns>
         Task<Result<List<VehicleBrandDto>>> GetbrandsAsync();
+
+        Task<List<VehicleBrandDto>> GetAllAsync();    
     }
 }

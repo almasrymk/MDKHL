@@ -15,6 +15,8 @@
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
+
 <PageTitle>@L["InvoiceDetails"]</PageTitle>
 
 <MudItem>
@@ -89,7 +91,7 @@
 
                     <MudItem class="d-flex justify-content-between mt-auto">
                         <MudButton OnClick="Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Print"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ViewInvoiceDetails" >@L["Print"]</MudButton>
                     </MudItem>
                 </MudForm>
 
@@ -101,13 +103,13 @@
 
                 <MudText Typo="Typo.h5">@L["ChoosePaymentMethod"]</MudText>
                 <MudItem>
-                    <MudText Class="mb-3" Typo="Typo.h5">@L["Discount"]</MudText>
+                    @* <MudText Class="mb-3" Typo="Typo.h5">@L["Discount"]</MudText>
                     <MudItem Class="d-flex justify-content-between align-items-end">
                         <MudTextField @bind-Value="code" Placeholder="@L["TypeDiscountCode"]" Label="@L["AddDiscount%"]"></MudTextField>
                         <MudLink Underline="Underline.Always" Color="MudBlazor.Color.Tertiary">@L["Apply"]</MudLink>
 
 
-                    </MudItem>
+                    </MudItem> *@
                 </MudItem>
                 <MudText Class="mb-3 mt-3" Typo="Typo.h5">@L["Summary"]</MudText>
 
@@ -116,21 +118,16 @@
                         <MudText Typo="Typo.h6">@L["DueValue"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">620.00 @L["SAR"]</MudText>
+                        <MudText Typo="Typo.h6">@InvoicePrice @L["SAR"]</MudText>
                     </MudItem>
 
                     <MudItem xs="6">
                         <MudText Typo="Typo.h6">@L["VAT"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">45.00 @L["SAR"]</MudText>
+                        <MudText Typo="Typo.h6">@InvoicePrice*0.14 @L["SAR"]</MudText>
                     </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.h6">@L["Discount"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">-400.00 @L["SAR"]</MudText>
-                    </MudItem>
+                   
                     <MudItem xs="6">
                         <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
                     </MudItem>

@@ -12,6 +12,10 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
+using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Blazor.Components.Pages.Invoices;
+using System.Xml.Linq;
+
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -28,12 +32,17 @@ public partial class DetailsInvoice
     public string PlateNumber { get; set; }
     public int TotalHours { get; set; }
     public decimal InvoicePrice { get; set; }
+    public string  OrgAddress { get; set; }
+    public DateTime ?InvoiceTime { get; set; }
+    public string CommercialRegisteration { get; set; }
 
     public List<OrganizationDto> organizations = new List<OrganizationDto>();
 
     public List<GarageDto> garages = new List<GarageDto>();
 
     public List<VehicleDto> vehicles = new List<VehicleDto>();
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,6 +58,7 @@ public partial class DetailsInvoice
         garages = garageDto.Items.ToList();
 
         vehicles = vehicleDto.Items.ToList();
+        CommercialRegisteration = organizations.Find(x => x.ArabicName == OrganizationArabicName).CommercialRegistrationNumber;
 
         await base.OnInitializedAsync();
 
@@ -63,10 +73,33 @@ public partial class DetailsInvoice
         OrganizationArabicName = invoice.OrganizationArabicName;
         GarageName = invoice.GarageName;
         PlateNumber = invoice.PlateNumber;
+        InvoiceTime = invoice.InvoiceTime;
         
     }
     private void Back()
     {
         Navigation.NavigateTo("/invoices");
+    }
+    private Task ViewInvoiceDetails()
+    {
+        var invoicedto = new InvoiceDto
+        {
+            InvoiceNumber = InvoiceNumber,
+            TotalHours = TotalHours,
+            InvoicePrice = InvoicePrice,
+            InvoiceTime = InvoiceTime,
+            GarageName = GarageName,
+            OrganizationArabicName = OrganizationArabicName,
+            PlateNumber = PlateNumber,
+        };
+
+        var parameters = new DialogParameters
+        {
+            ["Invoice"] = invoicedto,
+            ["CommercialRegisteration"]= CommercialRegisteration
+        };
+        return DialogService.ShowAsync<InvoiceDetailsViewDialog>("",parameters);
+        
+
     }
 }
