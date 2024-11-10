@@ -45,6 +45,6 @@ namespace SmartParking.Lookups.VehicleBrand
         /// </returns>
         Task<Result<List<VehicleBrandDto>>> GetbrandsAsync();
 
-        Task<List<VehicleBrandDto>> GetAllAsync();    
+        Task<List<VehicleBrandDto>> GetAllVehicleBrandsAsync();    
     }
 }

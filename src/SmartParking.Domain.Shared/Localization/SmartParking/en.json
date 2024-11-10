@@ -402,7 +402,9 @@
     "FullName must contain at least three English words.": "FullName must contain at least three English words.",
     "OrganizationLogo": "Organization Logo",
     "Should Not be empty.": "Should Not be empty.",
-    "PackageTypeArabicName": "PackageTypeArabicName"
+    "PackageTypeArabicName": "PackageTypeArabicName",
+    "NotCustomer": "Not Customer",
+    "CustomerEnName": "Customer En Name"
 
   } 
 }

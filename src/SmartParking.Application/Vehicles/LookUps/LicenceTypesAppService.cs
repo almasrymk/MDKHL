@@ -187,7 +187,7 @@ namespace SmartParking.Vehicles.LookUps;
         //await base.DeleteAsync(id);
     }
 
-    public async Task<List<LicenceTypeDto>> GetAllAsync()
+    public async Task<List<LicenceTypeDto>> GetAllLicencesAsync()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

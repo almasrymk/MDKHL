@@ -173,7 +173,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
         // await base.DeleteAsync(id);
     }
 
-    public async Task<List<PlateColorDto>> GetAllAsync()
+    public async Task<List<PlateColorDto>> GetAllPlateColorsAsync()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

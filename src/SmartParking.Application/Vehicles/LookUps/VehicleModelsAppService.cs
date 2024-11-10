@@ -194,7 +194,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         return Result<List<VehicleModelDto>>.Success(modelsMap);
     }
 
-    public async Task<List<VehicleModelDto>> GetAllAsync()
+    public async Task<List<VehicleModelDto>> GetAllVehicleModelsAsync()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
