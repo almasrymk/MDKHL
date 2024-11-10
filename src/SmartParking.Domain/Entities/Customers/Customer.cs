@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,6 @@ public class Customer : FullAuditedEntity<Guid> , IMultiTenant
     public virtual ICollection<Organization> Organizations { get; set; }
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
     public virtual ICollection<Invoice> Invoices { get; set; }
+    public virtual ICollection<Payment> Payments { get; set; }
     public Guid? TenantId { get; set; }
 }

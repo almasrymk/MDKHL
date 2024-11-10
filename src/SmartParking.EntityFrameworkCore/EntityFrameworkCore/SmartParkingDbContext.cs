@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using System.Linq.Dynamic.Core;
+using SmartParking.Entities.Payments;
+
 
 namespace SmartParking.EntityFrameworkCore;
 
@@ -92,6 +94,8 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Banner> Banners { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
+
+    public DbSet<Payment> Payments { get; set; }
 
 
     #endregion
