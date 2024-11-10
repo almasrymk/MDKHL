@@ -81,7 +81,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var garageId = camera.GarageId;
         
         var organizationId =await GetOrganizationId(garageId);
-        if(organizationId==-1)
+       var  garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
+        if (organizationId==-1)
         {
             return await Task.FromResult(false);
         }
@@ -174,26 +175,25 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         if (GarageTransaction.CameraType == CameraType.Entry)
         {
-            Garage garage = new Garage();
-            Organization organization = new Organization();
+            
             using (DataFilter.Disable<IMultiTenant>())
             {
-                garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status != Status.Active);
+                garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
+
+
+
+                if (garage == null)
+                {
+                    throw new Exception("This garage is not active");
+                }
+
+                if (garage.CurrnetCapicity == garage.MaxCapacity)
+                {
+                    return await Task.FromResult(false);
+
+                }
 
             }
-           
-            if (garage != null)
-            {
-                throw new Exception("This garage is not active");
-            }
-
-            if (garage.CurrnetCapicity == garage.MaxCapacity)
-            {
-                return await Task.FromResult(false);
-
-            }
-
-           
         }
         try
         {
@@ -201,10 +201,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             using (DataFilter.Disable<IMultiTenant>())
             {
                 garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-            }
-                 
-            return await Task.FromResult(true);
 
+
+                return await Task.FromResult(true);
+            }
         }
         catch (Exception ex)
         {
@@ -220,12 +220,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<Camera> GetCamera(string CameraCode)
     {
 		
-			using (_dataFilter.Disable<IMultiTenant>())
-			{
-				var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.DeviceId.Equals(CameraCode));
+		using (_dataFilter.Disable<IMultiTenant>())
+		{
+			var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.DeviceId == CameraCode);
 
-				return camera;
-			}
+			return camera;
+		}
 		
     }
     private async Task<int> GetOrganizationId(int GarageId)

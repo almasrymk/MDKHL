@@ -1,5 +1,8 @@
 ﻿@using SmartParking.Invoices
-<div class="mud-modal">
+@using Volo.Abp.MultiTenancy
+@inject IInvoiceAppService InvoiceAppService
+@inject ICurrentTenant currentTenant
+ <div class="mud-modal">
     <div class="title-content d-flex justify-content-center align-items-center">
         <h2 class="fw-bold">Invoice @Invoice.InvoiceNumber</h2>
     </div>
@@ -83,7 +86,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="d-flex flex-row">
-                            <p>QR CODE</p>
+                            <div style="width: 120px;">
+                                <img src="@imagepath" alt="Logo" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -100,5 +105,24 @@
 @code {
     [Parameter] public InvoiceDto Invoice { get; set; } 
     [Parameter] public string CommercialRegisteration { get; set; }
-    
+    [Parameter] public int ID { get; set; }
+    public string imagepath { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (currentTenant.Id == null)
+        {
+
+            imagepath = await InvoiceAppService.GetInvoiceQRCodeForMDKHL(ID);
+        }
+        else
+        {
+            imagepath = await InvoiceAppService.GetInvoiceQRCodeForOrganization(ID);
+
+        }
+        await base.OnInitializedAsync();
+
+
+    }
+
 }
