@@ -104,7 +104,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             {
                 new City { ArabicName="تست", EnglishName = "test", StateId = stateTest.Id  },
                 new City { ArabicName="تست", EnglishName = "test", StateId = stateTest.Id },
-                new City {  ArabicName="تست", EnglishName = "test", StateId = stateTest.Id},
+                new City { ArabicName="تست", EnglishName = "test", StateId = stateTest.Id},
             };
 
           
@@ -175,7 +175,12 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 ClosingHoursEnd = TimeOnly.MaxValue,
                 Status = Status.Active,
                 SubscriptionId= subscriptionTest.Id,
-                Address = "123 Tahrir St Cairo 12345"
+                Address = "123 Tahrir St Cairo 12345",
+                StreetName = "123 Tahrir St Cairo 12345",
+                BuildingNumber=12,
+                PostalCode=11145,
+                SecondaryNumber=1163,
+                District="حي العارض"
             };
             await _organizationRepostory.InsertAsync(organization,autoSave:true);
             var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");

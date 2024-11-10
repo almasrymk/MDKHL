@@ -19,13 +19,13 @@ public class Organization : BaseEntity
     public DateOnly CRExpiryDate { get; set; }
     public DateOnly LicenseExpiryDate { get; set; }
     public int CountryId { get; set; }
-    public virtual Country Country { get; set; } = new Country();
+    public virtual Country Country { get; set; } 
     public int RegionId { get; set; }
-    public virtual Region Region { get; set; } = new Region();
+    public virtual Region Region { get; set; } 
     public int StateId { get; set; }
-    public virtual State State { get; set; } = new State();
+    public virtual State State { get; set; } 
     public int CityId { get; set; }
-    public virtual City City { get; set; } = new City();
+    public virtual City City { get; set; }
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string  ContactMail { get; set; }
@@ -46,7 +46,7 @@ public class Organization : BaseEntity
     public virtual ICollection<ContactInfo> organizationContactInfos { get; set; } = new HashSet<ContactInfo>();
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; } = new HashSet<CustomerCategory>();  
     public int? SubscriptionId { get; set; }
-    public virtual Subscription Subscription { get; set; } = new Subscription();
+    public virtual Subscription Subscription { get; set; }
     public string Address { get; set; }
     public  int ActiveGarages { get; set; }
     public  int ActiveCameras { get; set; }
