@@ -43,8 +43,10 @@ public partial class AddGarageDialog
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
         {
-           
-           createUpdateGarage.OrganizationId= await OrganizationAppService.GetOrganizationIdByTenant(currrentUser.TenantId);
+            if (currrentUser.TenantId != null)
+            {
+                createUpdateGarage.OrganizationId = await OrganizationAppService.GetOrganizationIdByTenant(currrentUser.TenantId);
+            }
             
             createUpdateGarage.Code = "";
             createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
