@@ -6,9 +6,12 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Organizations;
+using SmartParking.Repositories;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -32,15 +35,19 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
+    private readonly IRepository<Organization, int> _organizationRepoistory;
+    private readonly IMyUserRepository _myUserRepository;
 
-	public KeeperAppService
+    public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository, 
          SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
          UserManager<Volo.Abp.Identity.IdentityUser> userManager, 
          IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
          IHttpContextAccessor httpContext,
          IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
-         IRepository<GarageTransaction,int> garageTransactionRepository)
+         IRepository<GarageTransaction,int> garageTransactionRepository,
+         IRepository<Organization,int> organizationRepoistory,
+         IMyUserRepository myUserRepository)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -49,6 +56,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _httpContext = httpContext;
         _userRepository = userRepository;
         _garageTransactionRepository = garageTransactionRepository;
+        _organizationRepoistory = organizationRepoistory;
+        _myUserRepository = myUserRepository;
     }
 
 	/// <inheritdoc/>
@@ -84,12 +93,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     }
 
 	/// <inheritdoc/>
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync()
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync(int organizationId)
 	{
         List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
         using (DataFilter.Disable<IMultiTenant>())
         {
-            garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null);
+            garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null && t.OrganizationID == organizationId);
 
         }
 
@@ -103,13 +112,21 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	}
 
     /// <inheritdoc/>
-    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync()
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId,Guid userId)
     {
-        List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
-        using (DataFilter.Disable<IMultiTenant>())
+ 
+        var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+        
+        if (user is null) 
         {
-            garageTransaction = await _garageTransactionRepository.GetListAsync();
+            return Result.Invalid(new Results.ValidationError
+            {
+                ErrorMessage = "User not found"
+            });
         }
+       
+         var garageTransaction = await _garageTransactionRepository.GetListAsync();
+        
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
         if (mappedTransaction.Count < 0)
         {
@@ -147,6 +164,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	/// <inheritdoc/>
     public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto input)
     {
+
         if (input.PhoneNumber is null)
         {
             return Result.Invalid(new Results.ValidationError
@@ -235,9 +253,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return accessToken;
     }
 
-    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync()
+    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId)
     {
-        var existingTransactions = await _garageTransactionRepository.GetListAsync(t=>t.CameraType == CameraType.Entry);
+        var existingTransactions = await _garageTransactionRepository.GetListAsync(t=>t.CameraType != CameraType.Exit && t.OrganizationID == organizationId);
 
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(existingTransactions);
         if (mappedTransaction.Count < 0)
@@ -246,5 +264,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
 
         return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+    }
+    private async Task<Result<OrganizationDto>> GetOrganizationByTenantId(Guid? tenantId)
+    {
+        var organization = await _organizationRepoistory.GetAsync(o=>o.TenantId == tenantId);
+        if (organization is null)
+        {
+            return Result<OrganizationDto>.NotFound("Organization not found");   
+        }
+        var mappedOrganization = ObjectMapper.Map<Organization, OrganizationDto>(organization);
+
+        return Result<OrganizationDto>.Success(mappedOrganization); 
     }
 }

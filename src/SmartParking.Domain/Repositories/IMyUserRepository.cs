@@ -12,4 +12,5 @@ public interface IMyUserRepository : IRepository<IdentityUser, Guid>
 {
     Task<List<IdentityUser>> FindByOrganizationAsync(int oraganizationId);
     Task<IdentityUser> FindByOrganizationByTenantAsync(Guid? tenantId);
+    Task<IdentityUser?> FindUserByOrganizationAsync(int organizationId, Guid userId);
 }

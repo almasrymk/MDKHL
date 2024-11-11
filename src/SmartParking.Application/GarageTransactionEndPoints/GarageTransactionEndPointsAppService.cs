@@ -81,8 +81,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var garageId = camera.GarageId;
         
         var organizationId =await GetOrganizationId(garageId);
-       var  garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
-        if (organizationId==-1)
+
+        var  garage = await _garageRepository.GetAsync(garageId);
+        
+        if (organizationId == -1)
         {
             return await Task.FromResult(false);
         }
@@ -178,10 +180,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
            
             using (DataFilter.Disable<IMultiTenant>())
             {
-                
-
-
-
                 if (garage == null)
                 {
                     throw new Exception("This garage is not active");
