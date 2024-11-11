@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
@@ -23,7 +24,7 @@ using Volo.Abp.Users;
 namespace SmartParking.GarageTransactionEndPoints;
 
 //[Authorize]
-//[IgnoreAntiforgeryToken]
+[IgnoreAntiforgeryToken]
 public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
@@ -207,31 +208,30 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 await _invoiceAppService.CreateAsync(invoice);
                 return await Task.FromResult(false);
             }
-
-
+            
         }
+        return await Task.FromResult(true);
 
+    }
+        ////Check Garage Capicity
 
-        }
-        //Check Garage Capicity
-
-        if (GarageTransaction.CameraType == CameraType.Entry)
-        {
+        //if (GarageTransaction.CameraType == CameraType.Entry)
+        //{
            
-            using (DataFilter.Disable<IMultiTenant>())
-            {
+        //    using (DataFilter.Disable<IMultiTenant>())
+        //    {
                 
 
 
 
-                if (garage == null)
-                {
-                    throw new Exception("This garage is not active");
-                }
+        //        if (garage == null)
+        //        {
+        //            throw new Exception("This garage is not active");
+        //        }
 
-                if (garage.CurrnetCapicity == garage.MaxCapacity)
-                {
-                    return await Task.FromResult(false);
+        //        if (garage.CurrnetCapicity == garage.MaxCapacity)
+        //        {
+        //            return await Task.FromResult(false);
 
     private async Task<Camera> GetCamera(string CameraCode)
     {
