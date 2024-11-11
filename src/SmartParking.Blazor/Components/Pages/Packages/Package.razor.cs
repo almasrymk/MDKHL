@@ -15,6 +15,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Packages;

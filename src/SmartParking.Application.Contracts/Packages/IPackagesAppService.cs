@@ -28,21 +28,20 @@ namespace SmartParking.Packages
         /// <param name="input">Create Package dto</param>
         /// <returns>Package Dto</returns>
         //Task<PackageDto> CreateAsync(CreateUpdatePackageDto input);
-        public Task DeleteAsync(int id);
+         Task DeleteAsync(int id);
         /// <summary>
         /// abstract method to get list of Packages
         /// </summary>
         /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
-        //Task<PagedResultDto<PackageDto>> GetListAsync(PackageListDto input);
-        //public Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+         Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
         /// <summary>
         /// abstract method to get Package by id
         /// </summary>
         /// <param name="id">id of Package</param>
         /// <returns>Package Dto</returns>
-        //Task<PackageDto> GetAsync(int id);
+        Task<PackageDto> GetAsync(int id);
 
         /// <summary>
         /// abstract method to get Packages by OrgnizationId
@@ -60,7 +59,7 @@ namespace SmartParking.Packages
         /// <param name="input">updated Package dto</param>
         /// <returns>updated Package dto</returns>
         /// 
-        //Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input);
+        Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input);
 
         ///// <summary>
         ///// abstract method to delete DefaultPackage

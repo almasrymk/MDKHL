@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -13,7 +14,7 @@ public interface IPackageTypesAppService : ICrudAppService<PackageTypeDto , int 
     /// </summary>
     /// <param name="input">package type  create dto</param>
     /// <returns>package type Dto</returns>
-    public Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input);
+     Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input);
 
     /// <summary>
     /// abstract method to update specific package type 
@@ -21,14 +22,14 @@ public interface IPackageTypesAppService : ICrudAppService<PackageTypeDto , int 
     /// <param name="input">package type  create dto</param>
     /// <param name="id">id of specific package type </param>
     /// <returns>package type Dto</returns>
-    public Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input);
+     Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input);
 
     /// <summary>
     /// abstract method to search of package Types
     /// </summary>
     /// <param name="input">specifies max number of Package Type and if it sorted or not and search term</param>
     /// <returns>PackageTypeDto</returns>
-    public Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+     Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
 
     /// <summary>
@@ -36,12 +37,14 @@ public interface IPackageTypesAppService : ICrudAppService<PackageTypeDto , int 
     /// </summary>
     /// <param name="input">specifies max number of Package Type and if it sorted or not and filter</param>
     /// <returns>PackageTypeDto</returns>
-    public Task<PagedResultDto<PackageTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+     Task<PagedResultDto<PackageTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
     /// <summary>
     /// Method used to delete exists package type
     /// </summary>
     /// <param name="id">Id of package type that needed to be deleted</param>
     /// <returns>No Content</returns>
-    public Task DeleteAsync(int id);
+     Task DeleteAsync(int id);
+     Task<PagedResultDto<PackageTypeDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+     Task<List<PackageTypeDto>> GetAllListAsync();
 }

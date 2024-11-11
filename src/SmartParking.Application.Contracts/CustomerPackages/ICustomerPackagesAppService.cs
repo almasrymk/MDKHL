@@ -21,7 +21,7 @@ namespace SmartParking.CustomerPackages
     {
         Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID, Guid customerID);
         Task<Result<List<PackageDto>>> GetPackageByCustomer();
-
+        Task<Result> AssignPackageToCustomerAsync(int packageId);
 
     }
 }

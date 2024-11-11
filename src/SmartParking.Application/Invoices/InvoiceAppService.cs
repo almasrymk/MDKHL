@@ -294,11 +294,12 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
     {
         decimal percentage = invoice.InvoicePrice * 0.14m;
         var oragnization = await _organizationsAppService.GetAsync(invoice.OrganizationId);
+        //"12-25-2024"
         var qR = new
         {
             sellerName =oragnization.EnglishName,
             vatRegistration = oragnization.CommercialRegistrationNumber,
-            timeStamp = "12-12-2024",
+            timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
             invoiceAmount = invoice.InvoicePrice.ToString(),
             vatAmount = percentage.ToString()
         };

@@ -9,6 +9,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
+using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Mobile.Keepers;
 
@@ -24,7 +25,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
 		_userRepository = userRepository;
 
 	}
-	
+
+	/// <inheritdoc/>
     public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtpAsync(Guid userId, string otp)
 	{
 		if(userId.ToString() is null)
@@ -34,8 +36,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
 				ErrorMessage = "userId is not found"
 			});
 		}
-		var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
-		if (user is null)
+		IdentityUser? user;
+		using(DataFilter.Disable<IMultiTenant>())
+		{
+            user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+        if (user is null)
 		{
 			return Result.Invalid(new ValidationError
 			{
@@ -66,7 +72,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
 	
 	}
 
-	public async Task<Result<string>> GenerateOtpAsync(string phoneNumber)
+    /// <inheritdoc/>
+    public async Task<Result<string>> GenerateOtpAsync(string phoneNumber)
 	{
 		try
 		{
@@ -77,15 +84,19 @@ public class OtpAppService : ApplicationService, IOtpAppService
 					ErrorMessage = "Phone Number is not valid"
 				});
 			}
-			
-			var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+			IdentityUser? user;
+			using (DataFilter.Disable<IMultiTenant>())
+			{
 
+
+			   user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+			}
 			
 			if (user is null)
 			{
 				return Result.Invalid(new ValidationError
 				{
-					ErrorMessage = "ser Not Found"
+					ErrorMessage = "User Not Found"
 				});
 			}
 
@@ -107,7 +118,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
 		}
 	}
 
-	public async Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId)
+    /// <inheritdoc/>
+    public async Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId)
 	{
 		if (userId.ToString() is null)
 		{
@@ -116,7 +128,14 @@ public class OtpAppService : ApplicationService, IOtpAppService
 				ErrorMessage = "User Id Not valid"
 			});
 		}
-		var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
+        IdentityUser? user;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+
+            user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
 		if (user is null)
 		{
 			return Result.Invalid(new ValidationError
@@ -135,7 +154,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
 		return Result.Success(otp, "Otp Generated Successfully");
 	}
 
-	public async Task<Result<bool>> VerifyOtpAsync(string phoneNumber, string otp)
+    /// <inheritdoc/>
+    public async Task<Result<bool>> VerifyOtpAsync(string phoneNumber, string otp)
 	{
 		if(phoneNumber is null)
 		{
@@ -144,7 +164,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
 				ErrorMessage = "Phone Number is not valid"
 			});
 		}
-		var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        IdentityUser? user;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        }
+
 		if (user is null)
 		{
 			return Result.Invalid(new ValidationError
@@ -170,7 +195,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 		}
 
 		// If OTP is invalid or expired, return false
-		return flag == true ? Result.Success(true) : Result.Success(false);
+		return flag == true ? Result.Success(true,"Verfiy Otp Successfully") : Result.Success(false, "Verfiy Otp Failed");
 	}
 
 	//private string GenerateRandomOtp()

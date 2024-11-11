@@ -69,7 +69,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 	}
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
-
+        
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(new { input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName })}");
         var camera = await GetCamera(input.DeviceID);
         //input.PlateNumber ??= "123456";//input.PlateNnumber;
@@ -81,7 +81,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var garageId = camera.GarageId;
         
         var organizationId =await GetOrganizationId(garageId);
-       var  garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
+        Garage garage;
         if (organizationId==-1)
         {
             return await Task.FromResult(false);
@@ -178,10 +178,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
            
             using (DataFilter.Disable<IMultiTenant>())
             {
-                
-
-
-
+                garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
                 if (garage == null)
                 {
                     throw new Exception("This garage is not active");
