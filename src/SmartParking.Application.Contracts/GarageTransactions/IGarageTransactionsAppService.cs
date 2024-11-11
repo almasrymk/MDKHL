@@ -20,6 +20,7 @@ namespace SmartParking.GarageTransactions
 		>
 	{
 		public Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+		Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
 
 		/// <summary>
 		/// abstract method to filter of cameras
@@ -27,6 +28,7 @@ namespace SmartParking.GarageTransactions
 		/// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
 		/// <returns>Camera Dto</returns>
 		public Task<PagedResultDto<GarageTransactionDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+		Task<PagedResultDto<GarageTransactionDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
 		public Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input);
         public Task<GarageTransactionDto> GetAsync(int id);
 

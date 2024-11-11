@@ -32,5 +32,12 @@ public class PackagesController : ControllerBase
     public Task<Result<List<PackageDto>>> GetPackagesCustomer()
     {
         return _customerPackagesApp.GetPackageByCustomer();
+    }    
+    
+    [HttpGet("assignpackage")]
+    [Authorize]
+    public Task<Result> AssignPackageToCustomer(int packageId)
+    {
+        return _customerPackagesApp.AssignPackageToCustomerAsync(packageId);
     }
 }

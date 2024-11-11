@@ -1,7 +1,9 @@
-﻿using AutoMapper.Internal.Mappers;
+﻿
+using AutoMapper.Internal.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -13,10 +15,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.CustomerPackages;
@@ -33,11 +38,15 @@ public class CustomerPackagesAppService:
 {
     private readonly IRepository<CustomerPackage, int> _repository;
     private readonly IRepository<Package> _packageRepository;
+    private readonly IDataFilter _dataFilter;
+    private readonly IRepository<Customer, Guid> _customerRepository;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,IRepository<Package> packageRepository) :base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,IRepository<Package> packageRepository,IDataFilter dataFilter,IRepository<Customer, Guid> customerRepository) :base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
+        _dataFilter = dataFilter;
+        _customerRepository = customerRepository;
     }
   
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
@@ -53,17 +62,45 @@ public class CustomerPackagesAppService:
     }
     public  async Task<Result<List<PackageDto>>> GetPackageByCustomer()
     {
-        var query = await _packageRepository.GetQueryableAsync();
-        query = query.Where(x => x.CustomerPackages.Any(c => c.Customer.IdentityUserId == CurrentUser.Id));
-
-        var result = await AsyncExecuter.ToListAsync(query);
-        
-        if (result.Count==0)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return Result<List<PackageDto>>.NotFound();
+            var query = await _packageRepository.GetQueryableAsync();
+            query = query.Where(x => x.CustomerPackages.Any(c => c.Customer.IdentityUserId == CurrentUser.Id));
+
+            var result = await AsyncExecuter.ToListAsync(query);
+
+            if (result.Count == 0)
+            {
+                return Result<List<PackageDto>>.NotFound();
+            }
+            var packageMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(result);
+            return Result<List<PackageDto>>.Success(packageMap);
         }
-       var packageMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(result);
-        return Result<List<PackageDto>>.Success(packageMap);
+    }
+
+    [RemoteService(IsEnabled =false)]
+    public  async Task<Result> AssignPackageToCustomerAsync(int packageId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _customerRepository.FirstOrDefaultAsync(c => c.IdentityUserId == CurrentUser.Id);
+            if(customer == null)
+                return Result.NotFound("Customer not found");
+            var package = await _packageRepository.GetAsync(p => p.Id == packageId);
+
+            if (package == null)
+                return Result.NotFound("Package not found");
+            var customerPackage = new CustomerPackage
+            {
+                PackageId = packageId,
+                CustomerId = customer.Id,
+            };
+            var assignPackage = await _repository.InsertAsync(customerPackage, true);
+           if(assignPackage == null)
+                return Result.Error("Can't assign package to customer");
+
+            return Result.Success();
+        }
     }
 
     public override async Task DeleteAsync(int id)
