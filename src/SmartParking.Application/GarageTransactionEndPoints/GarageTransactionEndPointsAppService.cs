@@ -178,11 +178,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             Organization organization = new Organization();
             using (DataFilter.Disable<IMultiTenant>())
             {
-                garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status != Status.Active);
+                garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
 
             }
            
-            if (garage != null)
+            if (garage == null)
             {
                 throw new Exception("This garage is not active");
             }
