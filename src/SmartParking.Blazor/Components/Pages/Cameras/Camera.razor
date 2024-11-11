@@ -1,11 +1,13 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Cameras
 @using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
 @inject ICamerasAppService CamerasAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
 
 @page "/cameras"
 

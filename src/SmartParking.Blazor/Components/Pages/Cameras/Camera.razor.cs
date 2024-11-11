@@ -64,11 +64,23 @@ public partial class Camera
             filters = pageInfo.Filters
         };
         // Call the service to perform the search based on the input parameters
-        var camerassDto = await CamerasAppService.Filter(input);
+        if (CurrentTenant.Id != null)
+        {
 
+        var camerassDto = await CamerasAppService.Filter(input);
         // Calculate the total number of pages required to display all results
         TotalItem = (int)camerassDto.TotalCount;
         CreateTable(camerassDto);
+        }
+        else
+        {
+
+            var camerassDto = await CamerasAppService.FilterForMDKHL(input);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)camerassDto.TotalCount;
+            CreateTable(camerassDto);
+        }
+
 
 
     }
@@ -93,13 +105,24 @@ public partial class Camera
             Sorting = pageInfo.SortColumn,
             SearchingTerm = termSearch // The term to use for filtering results
         };
+        if (CurrentTenant.Id != null)
+        {
 
-        // Call the service to perform the search based on the input parameters
-        var camerasDto = await CamerasAppService.Search(input);
+            // Call the service to perform the search based on the input parameters
+            var camerasDto = await CamerasAppService.Search(input);
 
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)camerasDto.TotalCount;
-        CreateTable(camerasDto);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)camerasDto.TotalCount;
+            CreateTable(camerasDto);
+        }
+        else
+        {
+
+            var camerassDto = await CamerasAppService.SearchForMDKHL(input);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)camerassDto.TotalCount;
+            CreateTable(camerassDto);
+        }
     }
 	/// <summary>
 	/// Fetches the table data for the specified page and updates the table with the retrieved data.
