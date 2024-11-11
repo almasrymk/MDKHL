@@ -143,6 +143,41 @@ public class GarageTransactionsAppService:
 			totalCount,
 			garageTransactionsDto
 		);
+	}  
+    public async Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+	{
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+		    // Get the IQueryable<camera> from the repository
+		    var queryable = await _repository.GetQueryableAsync();
+		    // Apply search filtering
+		    if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+		    {
+
+                queryable = queryable.Where(or =>
+                    or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())||
+                    or.SnapTime.Value.ToString().ToLower()== (input.SearchingTerm.ToLower())
+
+                ); ;
+		    }
+		    // Get the total count of filtered records
+		    var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+		    // Apply pagination
+		    queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+		    // Execute the query and get the list of camera entities
+		    var garageTransactions = await AsyncExecuter.ToListAsync(queryable);
+
+		    // Map the hotel entities to cameraDto objects
+		    var garageTransactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransactions);
+		    // Return the paginated result
+		    return new PagedResultDto<GarageTransactionDto>(
+			    totalCount,
+			    garageTransactionsDto
+		    );
+        }
 	}
 
 	/// <summary>
@@ -189,6 +224,49 @@ public class GarageTransactionsAppService:
             totalCount,
             transactionsDto
         );
+    }
+    public async Task<PagedResultDto<GarageTransactionDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
+	{
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            // Get the IQueryable<garage> from the repository
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply filtering
+            var filterExpression = BuildExpression<GarageTransaction>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var transactions = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the garages entities to garagesDto objects
+            var transactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
+            Console.WriteLine(transactionsDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<GarageTransactionDto>(
+                totalCount,
+                transactionsDto
+            );
+        }
     }
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
