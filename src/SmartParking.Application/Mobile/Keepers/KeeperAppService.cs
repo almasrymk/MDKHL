@@ -22,6 +22,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Mobile.Keepers;
 
+[RemoteService(isEnabled: false)]
 public class KeeperAppService : ApplicationService, IKeeperAppService
 {
     private readonly IRepository<Invoice,int> _invoiceRepository;
@@ -51,7 +52,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     }
 
 	/// <inheritdoc/>
-	[RemoteService(isEnabled: false)]
+
 	public async Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber)
 	{
         GarageTransaction transaction = new GarageTransaction();
@@ -83,7 +84,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     }
 
 	/// <inheritdoc/>
-	[RemoteService(isEnabled: false)]
 	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync()
 	{
         List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
@@ -103,7 +103,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	}
 
     /// <inheritdoc/>
-	[RemoteService(isEnabled: false)]
     public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync()
     {
         List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
@@ -146,7 +145,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     }
 
 	/// <inheritdoc/>
-	[RemoteService(isEnabled: false)]
     public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto input)
     {
         if (input.PhoneNumber is null)
@@ -237,5 +235,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return accessToken;
     }
 
+    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync()
+    {
+        var existingTransactions = await _garageTransactionRepository.GetListAsync(t=>t.CameraType == CameraType.Entry);
 
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(existingTransactions);
+        if (mappedTransaction.Count < 0)
+        {
+            return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
+        }
+
+        return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+    }
 }
