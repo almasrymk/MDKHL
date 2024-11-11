@@ -224,6 +224,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                  user = await _userManager.FindByNameAsync(input.Username);
 
             }
+            if (user == null) {
+                return null;
+            }
 
             var organizationId = user.GetProperty<int>("OrganizationId");
             if (organizationId != 0)
