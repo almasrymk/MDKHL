@@ -262,6 +262,50 @@ public class CamerasAppService :
         );
     }
 
+    ///<inheritdoc/>
+    public async Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+        {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            // Get the IQueryable<camera> from the repository
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply search filtering
+
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+
+                queryable = queryable.Where(or =>
+                    or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Model.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.MainType.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
+
+                );
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of camera entities
+            var cameraes = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to cameraDto objects
+            var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
+            // Return the paginated result
+            return new PagedResultDto<CameraDto>(
+                totalCount,
+                cameraesDto
+            );
+        }
+    }
+
     /// <summary>
     /// method used to get list of cameraes
     /// </summary>
@@ -269,8 +313,10 @@ public class CamerasAppService :
     /// <returns>cameraeDto List</returns>
     public async Task<PagedResultDto<CameraDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        // Get the IQueryable<camera> from the repository
-        var queryable = await _repository.GetQueryableAsync();
+        
+
+            // Get the IQueryable<camera> from the repository
+            var queryable = await _repository.GetQueryableAsync();
         // Apply filtering
         var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
@@ -292,5 +338,36 @@ public class CamerasAppService :
             totalCount,
             cameraesDto
         );
+    }
+    ///<inheritdoc/>
+
+    public async Task<PagedResultDto<CameraDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            // Get the IQueryable<camera> from the repository
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply filtering
+            var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of organizations entities
+            var cameraes = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the organizations entities to organizationsDto objects
+            var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
+            // Return the paginated result
+            return new PagedResultDto<CameraDto>(
+                totalCount,
+                cameraesDto
+            );
+        }
     }
 }
