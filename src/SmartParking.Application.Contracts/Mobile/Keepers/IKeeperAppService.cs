@@ -39,4 +39,10 @@ public interface IKeeperAppService
     /// <param name="garageTransactionId">id of specific garageTransaction</param>
     /// <param name="plateNumber">plate number</param>
     Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId , string plateNumber);
+
+    /// <summary>
+	/// Retrieves a list of all existing transaction  asynchronously.
+	/// </summary>
+	/// <returns>list of GarageTransactionDto</returns>
+	Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync();
 }

@@ -54,4 +54,11 @@ public class KeeperController : AbpController
 	{
 		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
 	}
+
+    [HttpGet("existingTransaction")]
+    [Authorize]
+    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions()
+    {
+        return await _keeperAppService.GetAllExistingTransactionsAsync();
+    }
 }
