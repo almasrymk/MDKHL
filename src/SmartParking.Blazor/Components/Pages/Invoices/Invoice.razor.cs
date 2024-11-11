@@ -8,6 +8,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Invoices;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Globalization;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -129,7 +130,16 @@ public partial class Invoice
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = true, PropertyNmae = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = true, PropertyNmae = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyNmae = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
+        
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerEnName"], Name = "CustomerEnName", IsFilterable = true, PropertyNmae = "CustomerEnName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerArName"], Name = "CustomerArName", IsFilterable = true, PropertyNmae = "CustomerArName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
+        }
 
 
         foreach (var item in invoices.Items)
@@ -142,9 +152,17 @@ public partial class Invoice
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], _localizer[$"{item.InvoiceType.ToString()}"]));
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerEnName"], item.CustomerEnName));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerArName"], item.CustomerArName));
+            }
 
-			// _localizer[$"{item.Status.ToString()}"]
-			tableData.Rows.Add(rowDef);
+
+            tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }

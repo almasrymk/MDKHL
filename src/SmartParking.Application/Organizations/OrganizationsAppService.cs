@@ -358,7 +358,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<int> GetOrganizationIdByTenant(Guid? tenantId)
     {
-        return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+        using(DataFilter.Disable<IMultiTenant>())
+        {
+            return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+
+        }
     }
     [RemoteService(isEnabled: false)]
     ///<inheritdoc/>

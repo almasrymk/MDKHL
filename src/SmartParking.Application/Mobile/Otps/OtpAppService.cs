@@ -52,7 +52,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
 
-            return Result.Success(otp);
+            return Result.Success(otp,"Otp Generated Successfully");
         }
         catch
         {

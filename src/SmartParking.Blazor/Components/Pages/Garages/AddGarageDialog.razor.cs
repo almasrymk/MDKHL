@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Blazor.Components.Pages.Customer;
-using SmartParking.Garages;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
@@ -45,11 +43,9 @@ public partial class AddGarageDialog
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
         {
-            if (currrentTenant.Id!=null)
-            {
-
-                createUpdateGarage.OrganizationId= await OrganizationAppService.GetOrganizationIdByTenant(currrentUser.TenantId);
-            }
+           
+           createUpdateGarage.OrganizationId= await OrganizationAppService.GetOrganizationIdByTenant(currrentUser.TenantId);
+            
             createUpdateGarage.Code = "";
             createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
 
