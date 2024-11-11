@@ -1,11 +1,13 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.GarageTransactions
 @using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
 @inject IGarageTransactionsAppService GarageTransactionsAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
 
 @page "/garagetransactions"
 

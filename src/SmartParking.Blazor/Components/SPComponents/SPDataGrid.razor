@@ -4,6 +4,7 @@
 @using SmartParking.Blazor.Components.DataGrid
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @using MudBlazor
 @inject IOrganizationsAppService OrganizationsAppService
@@ -84,10 +85,20 @@
                                     <MudItem>
                                         @L["Operator"]:
                                         <MudSelect  Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-
-                                            @foreach (var column in StringOperator)
+                                            @if (CultureInfo.CurrentCulture.Name == "en")
                                             {
-                                                <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                                @foreach (var column in StringOperatorEn)
+                                                {
+                                                    <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @foreach (var column in StringOperatorAR)
+                                                {
+                                                    <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                                }
+                                                
                                             }
                                         </MudSelect>
                                     </MudItem>

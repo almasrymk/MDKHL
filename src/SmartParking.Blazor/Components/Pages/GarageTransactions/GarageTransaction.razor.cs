@@ -55,12 +55,25 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				filters = pageInfo.Filters
 			};
 			// Call the service to perform the search based on the input parameters
-			var garageTransactionDto = await GarageTransactionsAppService.Filter(input);
+			if (CurrentTenant.Id != null)
+			{
+				var garageTransactionDto = await GarageTransactionsAppService.Filter(input);
 
 
-			// Calculate the total number of pages required to display all results
-			TotalItem = (int)garageTransactionDto.TotalCount;
-			CreateTable(garageTransactionDto);
+				// Calculate the total number of pages required to display all results
+				TotalItem = (int)garageTransactionDto.TotalCount;
+				CreateTable(garageTransactionDto);
+			}
+			else
+			{
+
+                var garageTransactionDto = await GarageTransactionsAppService.FilterForMDKHL(input);
+
+
+                // Calculate the total number of pages required to display all results
+                TotalItem = (int)garageTransactionDto.TotalCount;
+                CreateTable(garageTransactionDto);
+            }
 
 
 		}
@@ -86,12 +99,25 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				SearchingTerm = termSearch // The term to use for filtering results
 			};
 
-			// Call the service to perform the search based on the input parameters
-			var garageTransactionsDto = await GarageTransactionsAppService.Search(input);
+			if (CurrentTenant.Id != null)
+			{
+				// Call the service to perform the search based on the input parameters
+				var garageTransactionsDto = await GarageTransactionsAppService.Search(input);
 
-			// Calculate the total number of pages required to display all results
-			TotalItem = (int)garageTransactionsDto.TotalCount;
-			CreateTable(garageTransactionsDto);
+				// Calculate the total number of pages required to display all results
+				TotalItem = (int)garageTransactionsDto.TotalCount;
+				CreateTable(garageTransactionsDto);
+			}
+			else
+			{
+
+                // Call the service to perform the search based on the input parameters
+                var garageTransactionsDto = await GarageTransactionsAppService.SearchForMDKHL(input);
+
+                // Calculate the total number of pages required to display all results
+                TotalItem = (int)garageTransactionsDto.TotalCount;
+                CreateTable(garageTransactionsDto);
+            }
 		}
 		/// <summary>
 		/// Fetches the table data for the specified page and updates the table with the retrieved data.
