@@ -38,11 +38,13 @@ public class PackagesAppService : CrudAppService<
 {
 		private readonly IRepository<Package, int> _repository;
     private readonly IDataFilter _softDeleteFilter;
+    private readonly IDataFilter _dataFilter;
 
-    public PackagesAppService(IRepository<Package, int> repository, IDataFilter softDeleteFilter) :base(repository)
+    public PackagesAppService(IRepository<Package, int> repository, IDataFilter softDeleteFilter,IDataFilter dataFilter) :base(repository)
     {
             _repository = repository;
             _softDeleteFilter = softDeleteFilter;
+            _dataFilter = dataFilter;
     }
 
 
@@ -62,65 +64,65 @@ public class PackagesAppService : CrudAppService<
         }
          
     }
-        public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-        {
-        // Get the IQueryable<camera> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
+    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+    // Get the IQueryable<camera> from the repository
+    var queryable = await _repository.GetQueryableAsync();
+    // Apply search filtering
+    if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+    {
 
-            queryable = queryable.Where(or =>
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+        queryable = queryable.Where(or =>
+            or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
                 
-            );
-        }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of camera entities
-        var packages = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to cameraDto objects
-        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-        // Return the paginated result
-        return new PagedResultDto<PackageDto>(
-            totalCount,
-            packagesDto
         );
     }
-        public async Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-        {
-        // Get the IQueryable<camera> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
-        var filterExpression = BuildExpression<Package>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
-        {
-            queryable = queryable.Where(filterExpression);
-        }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
+    // Get the total count of filtered records
+    var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
-        var packages = await AsyncExecuter.ToListAsync(queryable);
+    // Apply pagination
+    queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+    // Execute the query and get the list of camera entities
+    var packages = await AsyncExecuter.ToListAsync(queryable);
 
-        // Map the organizations entities to organizationsDto objects
-        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-        // Return the paginated result
-        return new PagedResultDto<PackageDto>(
-            totalCount,
-            packagesDto
-        );
+    // Map the hotel entities to cameraDto objects
+    var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+    // Return the paginated result
+    return new PagedResultDto<PackageDto>(
+        totalCount,
+        packagesDto
+    );
+}
+    public async Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+    // Get the IQueryable<camera> from the repository
+    var queryable = await _repository.GetQueryableAsync();
+    // Apply filtering
+    var filterExpression = BuildExpression<Package>.BuildFilterExpression(input.filters);
+    if (filterExpression is not null)
+    {
+        queryable = queryable.Where(filterExpression);
     }
+    // Get the total count of filtered records
+    var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+    // Apply pagination
+    queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+    // Execute the query and get the list of organizations entities
+    var packages = await AsyncExecuter.ToListAsync(queryable);
+
+    // Map the organizations entities to organizationsDto objects
+    var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+    // Return the paginated result
+    return new PagedResultDto<PackageDto>(
+        totalCount,
+        packagesDto
+    );
+}
 	public async Task<PagedResultDto<PackageDto>> GetPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
 	{
 		var query = await _repository.GetQueryableAsync();
@@ -148,4 +150,27 @@ public class PackagesAppService : CrudAppService<
         await CurrentUnitOfWork.SaveChangesAsync();
         //await base.DeleteAsync(id);
     }
+
+    public override async Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            queryable = queryable.Include(p => p.PackageType);
+
+            queryable = queryable.Where( p => p.TenantId == CurrentTenant.Id);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var packages = await AsyncExecuter.ToListAsync(queryable);
+            var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+
+            return new PagedResultDto<PackageDto>(
+                totalCount,
+                packagesDto
+            );
+        }
+    }
+
 }

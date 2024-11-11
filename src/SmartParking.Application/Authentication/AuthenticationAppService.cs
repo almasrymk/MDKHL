@@ -105,7 +105,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var addPasswordResult = await _userManager.AddPasswordAsync(user, password);
         if (!addPasswordResult.Succeeded)
         {
-            throw new ValidationException("Failed to set new password.");
+            throw new ValidationException("Failed to set new password. Enter validate password");
         }
 
         return new UserDataDto
