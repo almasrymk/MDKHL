@@ -219,10 +219,102 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             garagesDto
         );
     }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<GarageDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            // Get the IQueryable<garage> from the repository
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply search filtering
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+
+                queryable = queryable.Where(or =>
+                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.MaxCapacity.ToString().Contains(input.SearchingTerm)
+
+                );
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of hotel entities
+            var garages = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+            Console.WriteLine(garagesDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<GarageDto>(
+                totalCount,
+                garagesDto
+            );
+        }
+    }
 
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        // Get the IQueryable<garage> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply filtering
+        var filterExpression = BuildExpression<Garage>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        // Apply pagination
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        // Execute the query and get the list of garages entities
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+
+        // Map the garages entities to garagesDto objects
+        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        Console.WriteLine(garagesDto.Count);
+        // Return the paginated result
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garagesDto
+        );
+    } 
+    
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<GarageDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _repository.GetQueryableAsync();
