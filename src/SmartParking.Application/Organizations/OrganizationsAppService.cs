@@ -139,11 +139,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             {
                 throw new EntityNotFoundException("organization id not found");
             }
-        
-            using (_softDeleteFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetAsync(id);
-            }
+            return await base.GetAsync(id);
+            
         }
         
 
@@ -197,11 +194,12 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
             }
             var city = await _cityAppService.GetAsync(input.CityId);
-            if (organization.Address != input.Address) {
+            if (organization.Address != input.Address || organization.Address==null) {
                 bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
                 organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
                 organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
                 organization.Address += " , " + input.PostalCode;
+                input.Address= organization.Address;
             }
 
 
@@ -415,5 +413,18 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         return count;
         
     }
+
+    [RemoteService(isEnabled: false)]
+
+    ///<inheritdoc/>
+
+    public async Task<string> GetOrganizationPictureByOrganizationTenant(Guid ?OrganizationTenantId)
+    {
+        var orgId = await GetOrganizationIdByTenant(OrganizationTenantId);
+        var organization = await GetAsync(orgId);
+        return organization.OrganizationPicture;
+    }
+
+
 }
  
