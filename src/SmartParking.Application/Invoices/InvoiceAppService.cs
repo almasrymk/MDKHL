@@ -49,6 +49,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
+        var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
+        input.TenantId = organization.TenantId;
         if (input.InvoiceNumber is null)
         {
             input.InvoiceNumber = await GenerateInvoiceNumberAsync(input.OrganizationId);
@@ -67,9 +69,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
     [Authorize]
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
+        if (CurrentTenant.Id == null)
         {
-
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 return await base.GetListAsync(input);
