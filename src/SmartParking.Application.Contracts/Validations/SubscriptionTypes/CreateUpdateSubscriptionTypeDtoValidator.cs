@@ -9,8 +9,9 @@ public class CreateUpdateSubscriptionTypeDtoValidator : AbstractValidator<Create
     public CreateUpdateSubscriptionTypeDtoValidator()
     {
         RuleFor(x => x.Type)
-            .NotEmpty()
-            .Matches(@"^[a-zA-Z]*$")
-            .WithMessage("Type must only contain letters , no special characters are allowed."); 
+        .NotEmpty()
+        .Matches(@"^[\u0621-\u064A\u0660-\u0669a-zA-Z\s]*$")
+        .WithMessage("Type must contain only Arabic and English letters, with no special characters allowed.");
+
     }
 }
