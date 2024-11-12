@@ -16,8 +16,8 @@ namespace SmartParking.PDF;
 public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppService
 {
     private readonly IInvoiceAppService _invoicePdfAppService;
-    private string folderQrImage = "Invoice";
-    private string folderImages = "PDFs";
+    private string folderInvoiceImage = "Invoice";
+    private string folderPdfs = "PDFs";
 
     public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService)
     {
@@ -88,6 +88,17 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     {
         var htmlContent = await GenerateInvoiceHtmlAsync(invoiceId);
         var result = GeneratePdfFromHtmlAsync(htmlContent);
+        //string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
+
+        //if (!Directory.Exists(imageDirectoryPath))
+        //{
+        //    Directory.CreateDirectory(imageDirectoryPath);
+        //}
+        //string fileName = $"{invoiceId}.{"pdf"}";
+        //string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+
+        //await File.WriteAllBytesAsync(fullPath, result);
         return result;
     }
 
@@ -106,7 +117,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
             // Using a MemoryStream to store the generated PDF
             using (var ms = new MemoryStream())
             {
-                using (var document = new Document())
+                using (var document = new Document(PageSize.A4, 50, 50, 50, 50))
                 {
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
                     document.Open();
@@ -116,8 +127,11 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
                     using (var cssStream = new MemoryStream(cssBytes))
                     using (var htmlReader = new MemoryStream(htmlBytes))
                     {
+                        cssStream.Position = 0;  
+                        htmlReader.Position = 0;
+
                         // Parse HTML and CSS
-                       XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, htmlReader, cssStream);
+                        XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, htmlReader, cssStream);
                     }
 
                     document.Close();
