@@ -5,6 +5,7 @@ using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Mobile.Keepers;
 
@@ -47,4 +48,6 @@ public interface IKeeperAppService
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
 	Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId);
+
+    Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 }

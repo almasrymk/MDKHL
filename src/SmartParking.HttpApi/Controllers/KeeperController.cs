@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 
 namespace SmartParking.Controllers;
 
@@ -19,18 +21,22 @@ public class KeeperController : AbpController
 {
     private readonly IKeeperAppService _keeperAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService)
+	private readonly ICurrentTenant _currentTenant;
+	private readonly ICurrentUser _currentUser;
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser,ICurrentTenant currentTenant)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
-    }
+        _currentUser = currentUser;
+		_currentTenant = currentTenant;
+	}
 
     [HttpPost("login")]
     public async Task<Result<LoginResponseDto>> Login(LoginRequestDto input)
     {
-        var tenant = await _authenticationAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
-        CurrentTenant.Change(tenant?.Id ?? null);
-        if (CurrentUser.IsAuthenticated)
+        var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
+        _currentTenant.Change(tenant?.Id ?? null);
+        if (_currentUser.IsAuthenticated)
         {
             return Result<LoginResponseDto>.Invalid(new ValidationError
             {

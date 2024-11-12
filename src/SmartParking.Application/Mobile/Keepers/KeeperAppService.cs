@@ -22,6 +22,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Mobile.Keepers;
 
@@ -37,6 +38,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IMyUserRepository _myUserRepository;
+    private readonly IRepository<Tenant,Guid> _tenantRepository;
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository, 
@@ -47,7 +49,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
          IRepository<GarageTransaction,int> garageTransactionRepository,
          IRepository<Organization,int> organizationRepoistory,
-         IMyUserRepository myUserRepository)
+         IMyUserRepository myUserRepository,
+		 IRepository<Tenant, Guid> tenantRepository)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -58,6 +61,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _garageTransactionRepository = garageTransactionRepository;
         _organizationRepoistory = organizationRepoistory;
         _myUserRepository = myUserRepository;
+        _tenantRepository = tenantRepository;
     }
 
 	/// <inheritdoc/>
@@ -276,4 +280,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
         return Result<OrganizationDto>.Success(mappedOrganization); 
     }
+	public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
+	{
+		var query = await _tenantRepository.GetQueryableAsync();
+		query = query.Where(t => t.Name == phoneNum);
+		var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
+		return tenant;
+	}
 }
