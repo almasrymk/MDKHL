@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartParking.Authentication;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Keepers;
 using SmartParking.Results;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 
 namespace SmartParking.Controllers;
 
@@ -16,14 +20,30 @@ namespace SmartParking.Controllers;
 public class KeeperController : AbpController
 {
     private readonly IKeeperAppService _keeperAppService;
-    public KeeperController(IKeeperAppService keeperAppService)
+    private readonly IAuthenticationAppService _authenticationAppService;
+	private readonly ICurrentTenant _currentTenant;
+	private readonly ICurrentUser _currentUser;
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser,ICurrentTenant currentTenant)
     {
         _keeperAppService = keeperAppService;
-    }
+        _authenticationAppService = authenticationAppService;
+        _currentUser = currentUser;
+		_currentTenant = currentTenant;
+	}
 
     [HttpPost("login")]
     public async Task<Result<LoginResponseDto>> Login(LoginRequestDto input)
     {
+        var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
+        _currentTenant.Change(tenant?.Id ?? null);
+        if (_currentUser.IsAuthenticated)
+        {
+            return Result<LoginResponseDto>.Invalid(new ValidationError
+            {
+                ErrorCode = "400",
+                ErrorMessage = "You are already logged in."
+            });
+        }
         return await _keeperAppService.LoginAsync(input);
     }
 
@@ -34,18 +54,18 @@ public class KeeperController : AbpController
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
     }
 
-    [HttpGet("garageTransactionWithNoPlateNumber")]
+    [HttpGet("garageTransactionWithoutPlateNumber")]
     [Authorize]
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber()
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId)
 	{
-		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync();
+		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId);
 	}
 
     [HttpGet("garageTransaction")]
     [Authorize]
-    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions()
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions([FromQuery] int organizationId , Guid userId)
     {
-        return await _keeperAppService.GetAllGarageTransactionsAsync();
+        return await _keeperAppService.GetAllGarageTransactionsAsync(organizationId , userId);
     }
 
     [HttpPut("correctTransaction")]
@@ -54,4 +74,11 @@ public class KeeperController : AbpController
 	{
 		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
 	}
+
+    [HttpGet("existingTransaction")]
+    [Authorize]
+    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId)
+    {
+        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId);
+    }
 }

@@ -365,6 +365,7 @@ public class SmartParkingBlazorModule : AbpModule
             };
         });
         app.UseRouting();
+        app.UseMiddleware<TokenCheckMiddleware>();
         app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints
         app.UseAuthorization();
         app.UseAbpOpenIddictValidation();

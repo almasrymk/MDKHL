@@ -42,6 +42,13 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <param name="input">specifies max number of garage and if it sorted or not and search term</param>
     /// <returns>Garage Dto</returns>
     public Task<PagedResultDto<GarageDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    
+    /// <summary>
+    /// abstract method to search of garages for MDKHL.
+    /// </summary>
+    /// <param name="input">specifies max number of garage and if it sorted or not and search term</param>
+    /// <returns>Garage Dto</returns>
+    public Task<PagedResultDto<GarageDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
 
     /// <summary>
     /// abstract method to filter of garages
@@ -49,6 +56,13 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// <param name="input">specifies max number of garages and if it sorted or not and filter</param>
     /// <returns>Garage Dto</returns>
     public Task<PagedResultDto<GarageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+    
+    /// <summary>
+    /// abstract method to filter of garages
+    /// </summary>
+    /// <param name="input">specifies max number of garages and if it sorted or not and filter</param>
+    /// <returns>Garage Dto</returns>
+    public Task<PagedResultDto<GarageDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
 
 
 

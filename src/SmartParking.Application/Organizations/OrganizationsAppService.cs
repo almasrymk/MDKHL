@@ -133,14 +133,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public override async Task<OrganizationDto> GetAsync(int id)
     {
-        if(id < 0)
-        {
-            throw new EntityNotFoundException("organization id not found");
-        }
-        
         using (_softDeleteFilter.Disable<IMultiTenant>())
         {
-            return await base.GetAsync(id);
+            if (id < 0)
+            {
+                throw new EntityNotFoundException("organization id not found");
+            }
+        
+            using (_softDeleteFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetAsync(id);
+            }
         }
         
 
@@ -185,7 +188,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public override async Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input)
     {
-        using (DataFilter.Disable<IMultiTenant>())
+        using (_softDeleteFilter.Disable<IMultiTenant>())
         {
             var organization = await GetAsync(id);
             if (organization is null)
@@ -209,95 +212,105 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<PagedResultDto<OrganizationDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-        // Get the IQueryable<organization> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
+            using (_softDeleteFilter.Disable<IMultiTenant>())
+            {
 
-            queryable = queryable.Where(or =>
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Country.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+            // Get the IQueryable<organization> from the repository
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply search filtering
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+
+                queryable = queryable.Where(or =>
+                    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Country.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                );
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+            
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of hotel entities
+            var organizations = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
+            Console.WriteLine(organizationsDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<OrganizationDto>(
+                totalCount,
+                organizationsDto
             );
         }
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-            
-        }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of hotel entities
-        var organizations = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to hotelDto objects
-        var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
-        Console.WriteLine(organizationsDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<OrganizationDto>(
-            totalCount,
-            organizationsDto
-        );
     }
 
     ///<inheritdoc/>
     public async Task<PagedResultDto<OrganizationDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        // Get the IQueryable<organization> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
-        var filterExpression = BuildExpression<Organization>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
+        using (_softDeleteFilter.Disable<IMultiTenant>())
         {
-            queryable = queryable.Where(filterExpression);
-        }
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
+
+
+
+            // Get the IQueryable<organization> from the repository
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply filtering
+            var filterExpression = BuildExpression<Organization>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
             {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
+                queryable = queryable.Where(filterExpression);
             }
-            else
+            if (!input.Sorting.IsNullOrEmpty())
             {
-                queryable = queryable.OrderBy(input.Sorting);
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
             }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
 
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of organizations entities
+            var organizations = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the organizations entities to organizationsDto objects
+            var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
+            Console.WriteLine(organizationsDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<OrganizationDto>(
+                totalCount,
+                organizationsDto
+            );
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
-        var organizations = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the organizations entities to organizationsDto objects
-        var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
-        Console.WriteLine(organizationsDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<OrganizationDto>(
-            totalCount,
-            organizationsDto
-        );
     }
     ///<inheritdoc/>
     [RemoteService(IsEnabled = false)]
@@ -358,7 +371,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<int> GetOrganizationIdByTenant(Guid? tenantId)
     {
-        return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+        using(DataFilter.Disable<IMultiTenant>())
+        {
+            return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+
+        }
     }
     [RemoteService(isEnabled: false)]
     ///<inheritdoc/>

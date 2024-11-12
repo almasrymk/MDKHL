@@ -21,6 +21,7 @@ public class CreateUpdateInvoiceDto
     public DateTime? InvoiceTime { get; set; }
     public string CustomerArName { get; set; }
     public string CustomerEnName { get; set; }
+    public Guid? TenantId { get; set; }
 
 
 }

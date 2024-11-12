@@ -7,7 +7,6 @@
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
-
 @inject IPackagesAppService packagesAppService
 @inject IOrganizationsAppService organizationAppService
 @inject IPackageTypesAppService packageTypesAppService
@@ -151,8 +150,12 @@
     {
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         //organizations = organizationsList.Items.ToList();
-        var packageTypesList = await packageTypesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        packageTypes = packageTypesList.Items.ToList();
+       
+       
+           var packageTypesList = await packageTypesAppService.GetAllListAsync();
+      
+
+        packageTypes = packageTypesList;
         timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
         timeSpanTo = createUpdatePackage.PublishTo.ToTimeSpan();
         await base.OnInitializedAsync();

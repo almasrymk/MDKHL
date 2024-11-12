@@ -55,12 +55,25 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				filters = pageInfo.Filters
 			};
 			// Call the service to perform the search based on the input parameters
-			var garageTransactionDto = await GarageTransactionsAppService.Filter(input);
+			if (CurrentTenant.Id != null)
+			{
+				var garageTransactionDto = await GarageTransactionsAppService.Filter(input);
 
 
-			// Calculate the total number of pages required to display all results
-			TotalItem = (int)garageTransactionDto.TotalCount;
-			CreateTable(garageTransactionDto);
+				// Calculate the total number of pages required to display all results
+				TotalItem = (int)garageTransactionDto.TotalCount;
+				CreateTable(garageTransactionDto);
+			}
+			else
+			{
+
+                var garageTransactionDto = await GarageTransactionsAppService.FilterForMDKHL(input);
+
+
+                // Calculate the total number of pages required to display all results
+                TotalItem = (int)garageTransactionDto.TotalCount;
+                CreateTable(garageTransactionDto);
+            }
 
 
 		}
@@ -86,12 +99,25 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				SearchingTerm = termSearch // The term to use for filtering results
 			};
 
-			// Call the service to perform the search based on the input parameters
-			var garageTransactionsDto = await GarageTransactionsAppService.Search(input);
+			if (CurrentTenant.Id != null)
+			{
+				// Call the service to perform the search based on the input parameters
+				var garageTransactionsDto = await GarageTransactionsAppService.Search(input);
 
-			// Calculate the total number of pages required to display all results
-			TotalItem = (int)garageTransactionsDto.TotalCount;
-			CreateTable(garageTransactionsDto);
+				// Calculate the total number of pages required to display all results
+				TotalItem = (int)garageTransactionsDto.TotalCount;
+				CreateTable(garageTransactionsDto);
+			}
+			else
+			{
+
+                // Call the service to perform the search based on the input parameters
+                var garageTransactionsDto = await GarageTransactionsAppService.SearchForMDKHL(input);
+
+                // Calculate the total number of pages required to display all results
+                TotalItem = (int)garageTransactionsDto.TotalCount;
+                CreateTable(garageTransactionsDto);
+            }
 		}
 		/// <summary>
 		/// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -100,8 +126,13 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		private async Task FetchTableData(PageChangeEventArgs pageInfo)
 		{
+			string sort ;
+			if (pageInfo.SortColumn == "Id")
+				sort = "AccurateTime DESC";
+			else
+				sort = pageInfo.SortColumn;
 
-			CurrentPage = pageInfo.PageNumber;
+            CurrentPage = pageInfo.PageNumber;
 			RowPerPage = pageInfo.RowsPerPage;
 			Console.WriteLine(RowPerPage);
 			// Create a request object for paged and sorted data
@@ -109,8 +140,8 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			{
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-				Sorting = pageInfo.SortColumn
-			};
+				Sorting = sort
+            };
 
 			// Retrieve the list of organizations from the server
 			var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input);
@@ -165,26 +196,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		{
 			ShowSnackbar("Not Working",Severity.Warning);
 			return null;
-			var id = int.Parse(row.Cells[0].Value);
-			Console.WriteLine(id);
-			var garageTransactionDto = await GarageTransactionsAppService.GetAsync(id);
-
-			var createUpdateGarageTransaction = new CreateUpdateGarageTransactionDto
-			{
-				
-
-			};
-
-
-
-			var parameters = new DialogParameters
-			{
-				["GarageTransaction"] = garageTransactionDto,
-				["UpdatedId"] = id
-			};
-
-
-			return await Dialog.ShowAsync<EditPlateColor>("Edit GarageTransaction", parameters);
+			
 
 		}
 

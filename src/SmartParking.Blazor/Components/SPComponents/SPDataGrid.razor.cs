@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
+using Microsoft.Extensions.Localization;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -32,6 +34,12 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
+    [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
+
+    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
+    {
+        _stringLocalizer = stringLocalizer;
+    }
 
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
@@ -46,7 +54,7 @@ public partial class SPDataGrid
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
 
     private bool IsNot = false;
-    public Dictionary<string, string> StringOperator { get; set; } = new Dictionary<string, string>
+    public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
         ["not contains"] = "Contains",
@@ -56,6 +64,17 @@ public partial class SPDataGrid
         ["ends with"] = "EndsWith",
         ["is empty"] = "IsNullOrEmpty",
         ["is not empty"] = "IsNullOrEmpty"
+    };
+    public Dictionary<string, string> StringOperatorAR { get; set; } = new Dictionary<string, string>
+    {
+        ["يحتوي على"] = "Contains",
+        ["لا يحتوي على"] = "Contains",
+        ["يساوي"] = "Equals",
+        ["لا يساوي"] = "Equals",
+        ["يبدأ بـ"] = "StartsWith",
+        ["لا يبدأ بـ"] = "EndsWith",
+        ["فارغـًا"] = "IsNullOrEmpty",
+        ["لا يكون فارغـًا"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
         public async Task ClearItem(string key)
@@ -94,7 +113,7 @@ public partial class SPDataGrid
 
         if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
         {
-            if (SelectOperator.Key.Contains("not"))
+            if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
                 IsNot = true;
             FilterRequestDto filterEventArgs = new FilterRequestDto()
             {

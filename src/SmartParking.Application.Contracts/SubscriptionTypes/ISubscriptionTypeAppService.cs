@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Garages;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -35,6 +36,14 @@ public interface ISubscriptionTypeAppService : ICrudAppService<SubscriptionTypeD
     /// </summary>
     /// <returns>SubscriptionTypeLookupDto</returns>
     Task<List<SubscriptionTypeLookupDto>> GetSubscriptionTypeLookupAsync();
+    /// <summary>
+    /// Method used to filter column. 
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    Task<PagedResultDto<SubscriptionTypeDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
+    Task<PagedResultDto<SubscriptionTypeDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
 
-  
+
+
 }

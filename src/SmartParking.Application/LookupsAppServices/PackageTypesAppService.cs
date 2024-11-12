@@ -208,5 +208,15 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
 
         }
     }
+    
+    public  async Task<List<PackageTypeDto>> GetAllListAsync()
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var packageType = await _packageTypeRepository.GetListAsync();
+            var packageTypeMap = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageType);
+            return packageTypeMap;
+        }
+    }
 
 }

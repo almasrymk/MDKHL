@@ -1,4 +1,5 @@
-﻿using SmartParking.Subscriptions;
+﻿using SmartParking.Enums;
+using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,4 +13,6 @@ public class SubscriptionTypeDto : EntityDto<int>
 {
     public string Type { get; set; }
     public List<SubscriptionDto> Subscriptions { get; set; }  = new List<SubscriptionDto>();
+	public Status Status { get; set; }
+
 }

@@ -22,6 +22,7 @@ public class PaymentController : AbpController
     }
     [HttpPost("CreateCheckoutPayment")]
     [Authorize]
+    [IgnoreAntiforgeryToken]
     public async Task<Result<PaymentDto>> CreateCheckoutPayment(CreateUpdatePaymentDto input)
     {
         return await _paymentAppService.CreateCheckoutPaymentAsync(input);
@@ -30,6 +31,7 @@ public class PaymentController : AbpController
 
     [HttpGet("CheckPaymentStatus/{entityId}")]
     //[Authorize]
+    [IgnoreAntiforgeryToken]
     public async Task<Result<PaymentDto>> CheckPaymentStatus(string input , string entityId)
     {
         return await _paymentAppService.GetPaymentStatus(input,entityId);

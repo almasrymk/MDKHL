@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Components;
 using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Blazor.Components.Pages.Invoices;
 using System.Xml.Linq;
+using SmartParking.Entities.Invoices;
 
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
@@ -33,7 +34,12 @@ public partial class DetailsInvoice
     public int TotalHours { get; set; }
     public decimal InvoicePrice { get; set; }
     public string  OrgAddress { get; set; }
+    public string  CustomerName { get; set; }
     public DateTime ?InvoiceTime { get; set; }
+
+    public DateTime ?EntranceTime { get; set; }
+
+    
     public string CommercialRegisteration { get; set; }
 
     public List<OrganizationDto> organizations = new List<OrganizationDto>();
@@ -74,6 +80,8 @@ public partial class DetailsInvoice
         GarageName = invoice.GarageName;
         PlateNumber = invoice.PlateNumber;
         InvoiceTime = invoice.InvoiceTime;
+        EntranceTime = invoice.EntranceTime;
+        CustomerName=invoice.CustomerEnName;
         
     }
     private void Back()
@@ -91,12 +99,14 @@ public partial class DetailsInvoice
             GarageName = GarageName,
             OrganizationArabicName = OrganizationArabicName,
             PlateNumber = PlateNumber,
+            EntranceTime = EntranceTime,
         };
 
         var parameters = new DialogParameters
         {
             ["Invoice"] = invoicedto,
-            ["CommercialRegisteration"]= CommercialRegisteration
+            ["CommercialRegisteration"]= CommercialRegisteration,
+            ["ID"]=Id,
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("",parameters);
         

@@ -1,11 +1,13 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Packages
 @using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
 @inject IPackagesAppService PackagesAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+
 @page "/packages"
 
 <PageTitle>@L["Packages"]</PageTitle>

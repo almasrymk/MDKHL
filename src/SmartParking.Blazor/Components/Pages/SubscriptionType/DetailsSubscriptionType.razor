@@ -1,0 +1,68 @@
+﻿@using System.Globalization
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+
+<PageTitle>@L["SubscriptionTypesDetails"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			@if (CultureInfo.CurrentCulture.Name == "en")
+			{
+				<MudText Typo="Typo.h6">@subscriptionType.Type</MudText>
+
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@subscriptionType.Type</MudText>
+
+			}
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudTextField Value="subscriptionType.Type"
+									  For="@(() => subscriptionType.Type)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label=@L["Type"]
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField Value="@L[subscriptionType.Status.ToString()]"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label=@L["Status"]
+									  Disabled />
+					</MudItem>
+
+
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+
+
+<style>
+	.mud-modal
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+

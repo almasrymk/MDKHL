@@ -97,13 +97,26 @@ public partial class Garage
             SearchingTerm = termSearch, // The term to use for filtering results
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
-        var garagessDto = await GarageAppService.Filter(input);
+        if (currentTenant.Id == null)
+        {
+            // Call the service to perform the search based on the input parameters
+            var garagessDto = await GarageAppService.FilterForMDKHL(input);
 
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)garagessDto.TotalCount;
-        CreateTable(garagessDto);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)garagessDto.TotalCount;
+            CreateTable(garagessDto);
+        }
+        else
+        {
 
+            // Call the service to perform the search based on the input parameters
+            var garagessDto = await GarageAppService.Filter(input);
+
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)garagessDto.TotalCount;
+            CreateTable(garagessDto);
+
+        }
 
     }
     /// <summary>
@@ -129,11 +142,24 @@ public partial class Garage
         };
 
         // Call the service to perform the search based on the input parameters
-        var garagessDto = await GarageAppService.Search(input);
+        if (currentTenant.Id == null)
+        {
+            var garagessDto = await GarageAppService.SearchForMDKHL(input);
 
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)garagessDto.TotalCount;
-        CreateTable(garagessDto);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)garagessDto.TotalCount;
+            CreateTable(garagessDto);
+        }
+        else
+        {
+
+            var garagessDto = await GarageAppService.Search(input);
+
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)garagessDto.TotalCount;
+            CreateTable(garagessDto);
+
+        }
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
