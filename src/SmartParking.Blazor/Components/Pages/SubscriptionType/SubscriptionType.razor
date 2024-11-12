@@ -1,0 +1,18 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.SubscriptionTypes
+@using Volo.Abp.MultiTenancy
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject ISubscriptionTypeAppService SubscriptionTypeAppService
+@page "/subscriptiontypes"
+
+<PageTitle>@L["SubscriptionType"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["SubscriptionType"]</MudText>
+
+<SPDataGrid PageName=@L["SubscriptionType"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreatePackageType" ShowAdd="ShowAdd" OnClickRowDelete="OnClickRowDelete" />
+
+

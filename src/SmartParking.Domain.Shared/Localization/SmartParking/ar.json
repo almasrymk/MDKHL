@@ -429,9 +429,9 @@
     "Should Not be empty": "لا يجب ان يكون فارغا",
     "PackageTypeArabicName": "نوع الباقه بالعربية",
     "NotCustomer": "ليس عميل",
-    "CustomerArName": "اسم العميل بالعربية"
-
-
+    "CustomerArName": "إسم العميل بالعربية",
+    "AddSubscriptionTypes": "إضافة نوع إشتراك",
+    "NewSubscriptionType": "إضافة نوع إشتراك جديد",
 
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,4 +10,6 @@ namespace SmartParking.SubscriptionTypes;
 public class CreateUpdateSubscriptionTypeDto 
 {
     public string Type { get; set; }
+    public Status Status { get; set; }
+
 }
