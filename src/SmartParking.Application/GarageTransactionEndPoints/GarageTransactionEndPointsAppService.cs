@@ -105,27 +105,34 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         if (GarageTransaction.CameraType == CameraType.Entry)
         {
-            return await HandleCamersEntry(garageId);
-        }
-        try
-        {
-            GarageTransactionDto garageTransactionDto = new GarageTransactionDto();
-            using (DataFilter.Disable<IMultiTenant>())
+            bool canEnter =  await HandleCamersEntry(garageId);
+            if (canEnter)
             {
-                garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+				try
+				{
+					GarageTransactionDto garageTransactionDto = new GarageTransactionDto();
+					using (DataFilter.Disable<IMultiTenant>())
+					{
+						garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
 
-                return await Task.FromResult(true);
-            }
+						return await Task.FromResult(true);
+					}
+				}
+				catch (Exception ex)
+				{
+					return await Task.FromResult(false);
+
+				}
+			}
+            
+			
+			
         }
-        catch (Exception ex)
-        {
-            return await Task.FromResult(false);
 
-        }
+		return await Task.FromResult(false);
 
-
-    }
+	}
 
     private async Task<bool> HandleCamersEntry(int garageId)
     {
