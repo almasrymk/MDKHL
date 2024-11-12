@@ -118,10 +118,13 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     /// <inheritdoc/>
     public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId,Guid userId)
     {
- 
-        var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
         
-        if (user is null) 
+		var	user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+
+		
+
+
+		if (user is null) 
         {
             return Result.Invalid(new Results.ValidationError
             {
@@ -140,7 +143,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
     }
     /// <inheritdoc/>
-    [RemoteService(isEnabled:false)]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
         List<Invoice> unPaidInvoices = new List<Invoice>();
@@ -269,17 +271,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
         return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
     }
-    private async Task<Result<OrganizationDto>> GetOrganizationByTenantId(Guid? tenantId)
-    {
-        var organization = await _organizationRepoistory.GetAsync(o=>o.TenantId == tenantId);
-        if (organization is null)
-        {
-            return Result<OrganizationDto>.NotFound("Organization not found");   
-        }
-        var mappedOrganization = ObjectMapper.Map<Organization, OrganizationDto>(organization);
-
-        return Result<OrganizationDto>.Success(mappedOrganization); 
-    }
+    
 	public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
 	{
 		var query = await _tenantRepository.GetQueryableAsync();
