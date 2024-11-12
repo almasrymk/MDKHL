@@ -404,7 +404,8 @@
     "Should Not be empty.": "Should Not be empty.",
     "PackageTypeArabicName": "PackageTypeArabicName",
     "NotCustomer": "Not Customer",
-    "CustomerEnName": "Customer En Name"
-
+    "CustomerEnName": "Customer En Name",
+    "AddSubscriptionTypes": "Add Subscription Type",
+    "NewSubscriptionType": "New Subscription Type"
   } 
 }
