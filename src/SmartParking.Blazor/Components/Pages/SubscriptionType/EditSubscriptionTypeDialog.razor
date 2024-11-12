@@ -1,0 +1,58 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.SubscriptionTypes
+@using System.Globalization
+@inject ISubscriptionTypeAppService SubscriptionTypeAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			@if (CultureInfo.CurrentCulture.Name == "en")
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @subscriptionType.Type</MudText>
+
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @subscriptionType.Type</MudText>
+
+			}
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="subscriptionType.Type"
+									  For="@(() => subscriptionType.Type)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Placeholder=@L["Type Here"]
+									  Label=@L["Type"] />
+					</MudItem>
+
+
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Edit"]</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
