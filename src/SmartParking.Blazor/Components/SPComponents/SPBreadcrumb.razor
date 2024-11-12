@@ -1,14 +1,16 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using MudBlazor
 <div class="d-flex align-items-center gap-1">
     <MudIcon Icon="@Icons.Material.Filled.Home" Size="MudBlazor.Size.Small" class="text-white" aria-label="home" />
     <MudBreadcrumbs Items="_items" Class="text-white"></MudBreadcrumbs>
 </div>
 
 <style>
-
-    .mud-breadcrumbs{
-        padding:0;
+    .mud-breadcrumbs {
+        padding: 0;
     }
+
     .mud-breadcrumb-item > a {
         color: white !important;
     }
@@ -20,15 +22,59 @@
 </style>
 
 @code {
-    [Parameter] public Array Links { get; set; }
+    [Inject] private NavigationManager Navigation { get; set; }
+    [Inject] private IStringLocalizer<SmartParkingResource> L { get; set; }
+    [Parameter] public string URL { get; set; }
 
-    
-
-
-    private List<MudBlazor.BreadcrumbItem> _items = new List<MudBlazor.BreadcrumbItem>
+    private List<MudBlazor.BreadcrumbItem> _items = new();
+    protected override void OnInitialized()
     {
-        new MudBlazor.BreadcrumbItem("Home", href: "/"),
-        new MudBlazor.BreadcrumbItem("Dashboard", href: "/"),
+        _items.Clear();
+        // Replace "Home" with "Dashboard" using its localization
+        _items.Add(new MudBlazor.BreadcrumbItem(L["Dashboard"], href: "/dashboard"));
 
-    };
+    }
+    private string GetTitleForCurrentUri()
+    {
+        // Customize titles based on the current URI
+        return URL switch
+        {
+            "dashboard" => L["Dashboard"],
+            "organizations" => L["Organizations"],
+            "garages" => L["Garages"],
+            "cameras" => @L["Cameras"],
+            "cities" => @L["Cities"],
+            "contact-data" => @L["Contact Data"],
+            "countries" => @L["Countries"],
+            "customers" => @L["Customers"],
+            "garageTransactions" => @L["GarageTransactions"],
+            "invoices" => @L["Invoices"],
+            "licencetypes" => @L["LicenceTypes"],
+            "subscription" => @L["Organization Subscription"],
+            "packages" => @L["Packages"],
+            "packagetypes" => @L["PackageTypes"],
+            "platecolors" => @L["PlateColors"],
+            "regions" => @L["Regions"],
+            "states" => @L["States"],
+            "subscriptions" => @L["Subscriptions"],
+            "subscriptiontypes" => @L["SubscriptionType"],
+            "vehiclebrands" => @L["VehicleBrands"],
+            "vehiclemodels" => @L["VehicleModel"],
+            "profile" => L["Profile"],
+            _ => L[""] // Default title if no match found
+        };
+    }
+    protected override void OnParametersSet()
+    {
+        _items.Clear();
+        // Replace "Home" with "Dashboard" using its localization
+        _items.Add(new MudBlazor.BreadcrumbItem(L["Dashboard"], href: "/dashboard"));
+         var result = GetTitleForCurrentUri();
+        _items.Add(new MudBlazor.BreadcrumbItem(L[($"{result}")], href: $"/{URL}"));
+        
+
+
+    }
+
+
 }
