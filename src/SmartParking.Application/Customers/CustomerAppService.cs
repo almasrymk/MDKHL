@@ -248,17 +248,58 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		    {
 
 			    queryable = queryable.Where(or =>
-				    or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) 
+					or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+					or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+					or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+					or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+				);
+		    }
+		    if (!input.Sorting.IsNullOrEmpty())
+		    {
+			    if (input.Sorting.Contains("DESC"))
+			    {
+				    var sorting = input.Sorting.Split(' ').ToList();
+				    queryable = queryable.OrderBy(sorting[0] + " descending");
+			    }
+			    else
+			    {
+				    queryable = queryable.OrderBy(input.Sorting);
+			    }
 
-			    );
-                queryable = queryable.Where(or =>
-				    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+		    }
+		    var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-			    );
-                queryable = queryable.Where(or =>
-				    or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) 
+		    queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+		    var customers = await AsyncExecuter.ToListAsync(queryable);
 
-			    );
+		    var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+		    Console.WriteLine(customersDto.Count);
+		    return new PagedResultDto<CustomerDto>(
+			    totalCount,
+			    customersDto
+		    );
+        }
+	}
+    public async Task<PagedResultDto<CustomerDto>> SearchMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+	{
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+		    var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(x => x.IdentityUser);
+
+		    if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+		    {
+
+			    queryable = queryable.Where(or =>
+				    or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				    or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				    or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+					or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+
+
+				);
+                
 		    }
 		    if (!input.Sorting.IsNullOrEmpty())
 		    {
@@ -296,7 +337,56 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             var queryable = await _repository.GetQueryableAsync();
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
-           
+
+            queryable = queryable.Where(x => x.Organizations.Any(org => org.Id == orgid));
+
+            var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var customers = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the garages entities to garagesDto objects
+            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            Console.WriteLine(customersDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<CustomerDto>(
+                totalCount,
+                customersDto
+            );
+        }
+	}/// <inheritdoc/>
+	public async Task<PagedResultDto<CustomerDto>> FilterMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
+	{
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var queryable = await _repository.GetQueryableAsync();
+            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+
+            queryable = queryable.Where(x => x.Organizations.Any(org => org.Id == orgid));
+
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
