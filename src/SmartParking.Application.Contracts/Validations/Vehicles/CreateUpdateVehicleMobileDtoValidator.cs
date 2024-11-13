@@ -30,8 +30,9 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
         RuleFor(x => x.ArPlateLetters)
             .Matches(@"^[\p{IsArabic}\d\s]+$")
             .WithMessage("The Plate Letter should only contain Arabic letters")
-            .When(x => !string.IsNullOrEmpty(x.ArPlateLetters))
+            .When(x => x.ArPlateLetters.Length != 0)
             .MinimumLength(1)
+            .When(x => x.ArPlateLetters.Length != 0)
             .MaximumLength(3)
             .WithMessage("The Plate Arabic Letter must be between 1 and 3 characters long.");
 
@@ -39,24 +40,27 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
         RuleFor(x => x.EnPlateLetters)
             .Matches(@"^[A-Za-z\d\s]+$")
             .WithMessage("The Plate Letter should only contain English letters")
-            .When(x => !string.IsNullOrEmpty(x.EnPlateLetters))
+            .When(x => x.EnPlateLetters.Length != 0)
             .MinimumLength(1)
+            .When(x => x.EnPlateLetters.Length != 0)
             .MaximumLength(3)
             .WithMessage("The Plate English Letter must be between 1 and 3 characters long.");
 
         RuleFor(x => x.ArPlateNumber)
             .Matches(@"^[\u0660-\u0669\s]+$")
             .WithMessage("The Plate Number should only contain Arabic numerals.")
-            .When(x => !string.IsNullOrEmpty(x.ArPlateNumber))
+            .When(x => x.ArPlateNumber.Length != 0)
             .MinimumLength(1)
+            .When(x => x.ArPlateNumber.Length != 0)
             .MaximumLength(4)
             .WithMessage("The Plate Number must be between 1 and 4 Arabic numerals long.");
 
         RuleFor(x => x.EnPlateNumber)
             .Matches(@"^[0-9\s]+$")
             .WithMessage("The Plate Number should only contain English numerals.")
-            .When(x => !string.IsNullOrEmpty(x.EnPlateNumber))
+            .When(x => x.EnPlateNumber.Length != 0)
             .MinimumLength(1)
+            .When(x => x.EnPlateNumber.Length != 0)
             .MaximumLength(4)
             .WithMessage("The Plate Number must be between 1 and 4 English numerals long.");
 

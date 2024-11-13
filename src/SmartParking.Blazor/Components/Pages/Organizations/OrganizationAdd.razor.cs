@@ -234,7 +234,7 @@ public partial class OrganizationAdd
 		}
 
 		// Return the relative path for storing in the database
-		return $"/OrganizationImages/{fileName}";
+		return $"images/OrganizationImages/{fileName}";
 	}
 
 	private string CreateImageDirectory()

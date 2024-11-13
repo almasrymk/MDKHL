@@ -106,5 +106,11 @@ public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,
     /// </summary>
     /// <returns>Number of active garages</returns>
     Task<int> GetNumberOfActiveGaragesOfOrganization();
+    /// <summary>
+    /// method used to retrieve organization image by its id.
+    /// </summary>
+    /// <param name="OrganizationId">OrganizationId</param>
+    /// <returns>StringOfBase64forImage</returns>
+    Task<string> GetOrganizationPictureByOrganizationTenant(Guid? OrganizationTenantId);
 
 }

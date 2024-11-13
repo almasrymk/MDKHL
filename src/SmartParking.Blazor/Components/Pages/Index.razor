@@ -187,7 +187,6 @@
     {
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
-        _customersCount = await CustomerAppService.GetAllCustomersCount();
 
 
 
@@ -200,10 +199,13 @@
             labels = value.Names.ToArray();
 
             grid = 4;
+            _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
         }
         else
         {
             grid = 6;
+            _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
+
         }
 
         string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };

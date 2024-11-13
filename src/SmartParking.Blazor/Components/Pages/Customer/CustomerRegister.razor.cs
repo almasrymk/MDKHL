@@ -3,6 +3,8 @@ using SmartParking.Cutomers;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
@@ -11,6 +13,23 @@ public partial class CustomerRegister
 {
     private MudForm form;
     public CreateUpdateCustomerDto createUpdateCustomerDto = new CreateUpdateCustomerDto();
+    public string Picture { get; set; }
+
+
+    protected async override Task OnInitializedAsync()
+        {
+            if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
+            {
+                Picture = "images/MDHKL_04.png";
+
+            }
+            else
+            {
+                Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
+
+            }
+        }
+
     public async  Task HandleSubmit()
     {
 		var successedMessage = L["CustomerCreatedSuccessfullyWith"];

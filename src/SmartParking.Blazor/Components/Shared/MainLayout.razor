@@ -5,6 +5,7 @@
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.Organizations
 @using Volo.Abp.Localization
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.SettingManagement
@@ -13,6 +14,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser CurrentUser
 @inject ICurrentTenant currenttenant
+@inject IOrganizationsAppService OrganizationAppService
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -28,12 +30,12 @@
         <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
             <div class="d-flex flex-column justify-center">
                 <h2 >
-                    @L["Dashboard"]
+                    @GetTitleForCurrentUri()
                 </h2>
-                <SPBreadcrumb />
+                <SPBreadcrumb URL="@CurrentURI" />
             </div>
             <div class="d-flex gap-3 align-center flex-wrap">
-                <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />
+                <MudImage Src="images/svgs/notification.svg" Width="24" Height="24" />
                 <MudMenu>   
                     <ActivatorContent>
                         <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
@@ -48,7 +50,7 @@
                 </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
-                        <MudImage src="images/avatar.png" Width="49" Height="49" />
+                        <MudImage Src="@(Picture)" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
                     </MudAvatar>
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
@@ -75,24 +77,86 @@
     </footer>
 </div>
 
+<style>
+    .bg_w_foto {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>
 @code {
     [Inject] private IOptions<AbpLocalizationOptions> _localizationOptions { get; set; }
     [Inject] private NavigationManager Navigation { get; set; }
+    public string Picture { get; set; } 
+    public string CurrentURI { get; set; } 
+
 
     private string UserName { get; set; }
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         UserName = CurrentUser.Name;
         if (currenttenant.Id == null)
         {
             UserName += " MDKHAL";
+            Picture = "images/MDHKL_04.png";
         }
         else
         {
+
             UserName += " Organization";
+            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
+            Console.WriteLine(Picture);
+
         }
 
+        
+
+    }
+    protected override void OnParametersSet()
+    {
+        UpdateUriAndTitle();
+    }
+
+    private void UpdateUriAndTitle()
+    {
+        CurrentURI = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+    }
+
+    private string GetTitleForCurrentUri()
+    {
+        // Customize titles based on the current URI
+        return CurrentURI switch
+        {
+            "dashboard" => L["Dashboard"],
+            "organizations" => L["Organizations"],
+            "garages" => L["Garages"],
+            "cameras" => @L["Cameras"],
+            "cities" => @L["Cities"],
+            "contact-data" => @L["Contact Data"],
+            "countries" => @L["Countries"],
+            "customers" => @L["Customers"],
+            "garageTransactions" => @L["GarageTransactions"],
+            "invoices" => @L["Invoices"],
+            "licencetypes" => @L["LicenceTypes"],
+            "subscription" => @L["Organization Subscription"],
+            "packages" => @L["Packages"],
+            "packagetypes" => @L["PackageTypes"],
+            "platecolors" => @L["PlateColors"],
+            "regions" => @L["Regions"],
+            "states" => @L["States"],
+            "subscriptions" => @L["Subscriptions"],
+            "subscriptiontypes" => @L["SubscriptionType"],
+            "vehiclebrands" => @L["VehicleBrands"],
+            "vehiclemodels" => @L["VehicleModel"],
+            "profile" => @L["Profile"],
+            "customers/register" => @L["Customers"] + "/" + @L["Add NEW"],
+            _ => L["Dashboard"] // Default title if no match found
+        };
     }
     private void ChangeLanguage()
     {

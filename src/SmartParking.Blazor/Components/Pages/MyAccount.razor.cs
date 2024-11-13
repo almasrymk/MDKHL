@@ -14,6 +14,15 @@ using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
 using SmartParking.Lookups.Country;
+using Microsoft.AspNetCore.Components.Forms;
+using System.IO;
+using Blazorise;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using Image = SixLabors.ImageSharp.Image;
+using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
+using Size = SixLabors.ImageSharp.Size;
+
 
 namespace SmartParking.Blazor.Components.Pages;
 
@@ -53,6 +62,11 @@ public partial class MyAccount
     public int BuildingNumber { get; set; }
     public string StreetName { get; set; }
     public int SecondaryNumber { get; set; }
+    public int PostalCode { get; set; }
+    public string District { get; set; }
+    public string OrganizationPicture { get; set; }
+    public string Photo { get; set; }
+    public string Code { get; set; }
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -74,6 +88,7 @@ public partial class MyAccount
         }
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
+
             ArabicName = ArabicName,
             EnglishName = EnglishName,
             CommercialRegistrationNumber = CommercialRegistrationNumber,
@@ -98,11 +113,15 @@ public partial class MyAccount
             NumberOfHours = NumberOfHours,
             IsClose = IsClose,
             ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue),
-            Address = Address,
+            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
             BuildingNumber = BuildingNumber,
             StreetName = StreetName,
             SecondaryNumber = SecondaryNumber,
+            PostalCode = PostalCode,
+            District = District,
+            OrganizationPicture = OrganizationPicture,
+            TenantId = tenant
+            
         };
 
 
@@ -197,14 +216,21 @@ public partial class MyAccount
         FullDayPrice = organization.FullDayPrice;
         NumberOfHours = organization.NumberOfHours;
         IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
-        IsClose = organization.IsClose;
+        FullDayPrice = organization.FullDayPrice;
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         AdditionalHourPrice = organization.AdditionalHourPrice;
         Address = organization.Address;
-        SecondaryNumber = organization.SecondaryNumber;
         BuildingNumber = organization.BuildingNumber;
         StreetName = organization.StreetName;
+        SecondaryNumber = organization.SecondaryNumber;
+        PostalCode = organization.PostalCode;
+        District = organization.District;
+        IsClose = organization.IsClose;
+        OrganizationPicture = organization.OrganizationPicture;
+        Code = organization.Code;
+        Address= organization.Address;
+        
     }
     protected override async Task OnInitializedAsync()
     {
@@ -286,4 +312,76 @@ public partial class MyAccount
         };
         await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
     }
+
+    private async Task OnImageUpload(IBrowserFile file)
+    {
+        var imageFile = file;
+        if (imageFile != null)
+        {
+            // Save the image and get the file path
+            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            StateHasChanged();
+        }
+    }
+
+    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
+    {
+        // Ensure directory structure
+        var imageDirectoryPath = CreateImageDirectory();
+
+        // Generate a unique file name with the original file extension
+        string fileName = $"{Code}{Path.GetExtension(imageFile.Name)}";
+        string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+        // Set the maximum dimensions
+        int maxWidth = 179;  // Maximum width
+        int maxHeight = 96; // Maximum height
+
+        // Delete the existing file if it exists
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
+        }
+
+        try
+        {
+            // Open the uploaded image file as a stream with a larger size limit
+            using (var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))
+            using (var image = await Image.LoadAsync(stream)) // Asynchronously load the image
+            {
+                // Resize the image if it exceeds the maximum dimensions
+                image.Mutate(x => x.Resize(new ResizeOptions
+                {
+                    Mode = ResizeMode.Max, // Maintains aspect ratio
+                    Size = new Size(maxWidth, maxHeight)
+                }));
+
+                // Save the resized image to the specified path asynchronously
+                await image.SaveAsync(fullPath);
+            }
+
+            // Return the relative path for storing in the database
+            return $"images/OrganizationImages/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing image: {ex.Message}");
+            throw;
+        }
+    }
+
+
+    private string CreateImageDirectory()
+    {
+        // Define the path where the image will be saved
+        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images/OrganizationImages");
+
+        // Ensure the directory exists
+        if (!Directory.Exists(imageDirectoryPath))
+        {
+            Directory.CreateDirectory(imageDirectoryPath);
+        }
+        return imageDirectoryPath;
+    }
+
 }

@@ -56,7 +56,9 @@
             Profile.Email = profile.Email;
             Profile.PhoneNumber = profile.PhoneNumber;
             Profile.UserName = profile.UserName;
+            
         }
+        
         catch (Exception ex)
         {
             Snackbar.Add($"Error loading profile: {ex.Message}", Severity.Error);

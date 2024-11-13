@@ -74,7 +74,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Tenant> Tenants { get; set; }
     //  public DbSet<Volo.Abp.TenantManagement.TenantConnectionString> TenantConnectionStrings { get; set; }
 
-
+    public DbSet<UnLinkedTransaction> UnLinkedTransactions { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<ContactInfo> ContactInfos { get; set; }
     public DbSet<CustomerOrganization> CustomerOrganization { get; set; }
