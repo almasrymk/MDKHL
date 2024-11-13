@@ -85,6 +85,7 @@
                                        Placeholder=@L["Will Be Generated Automatically"]
                                        Label="@L["ActivationDate"]"
                                        Disabled
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
                                        ShowToolbar="false" />
                     </MudItem>
                     <MudItem sm="4">
@@ -94,7 +95,8 @@
                                        Placeholder=@L["Will Be Generated Automatically"]
                                        Label="@L["InActivationDate"]"
                                        Disabled
-                                       ShowToolbar="false" />
+                                       ShowToolbar="false"
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                     </MudItem>
                     <MudItem sm="4">
                        <MudDatePicker @bind-Date="_creationDate"
@@ -103,7 +105,8 @@
                                        Placeholder=@L["Will Be Generated Automatically"]
                                        Label="@L["CreationDate"]"
                                        Disabled
-                                       ShowToolbar="false" />
+                                       ShowToolbar="false"
+                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                     </MudItem>
                     <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="6">

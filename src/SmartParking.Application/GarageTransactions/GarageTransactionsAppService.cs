@@ -71,22 +71,14 @@ public class GarageTransactionsAppService:
                 queryable = queryable.OrderBy(input.Sorting);
             }
         }
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
-           
-                var transactions = await AsyncExecuter.ToListAsync(queryable.Skip(input.SkipCount).Take(input.MaxResultCount));
-                var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-                return new PagedResultDto<GarageTransactionDto>(
-                    totalCount,
-                    ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions)
-                );
-            
-        }
-        else
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetListAsync(input);
+            var transactions = await base.GetListAsync(input);
+
+            return transactions;
         }
+
     }
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {

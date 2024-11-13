@@ -152,7 +152,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 		return await Task.FromResult(false);
 
 	}
-
     private async Task<bool> HandleCamersEntry(int garageId)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -171,7 +170,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return await Task.FromResult(true);
         }
     }
-
     private async Task<bool> HandleCamersExit(int garageId, int organizationId, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         var EntranceTime = await FindEntranceTime(GarageTransaction.PlateNumber);
@@ -239,26 +237,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return await Task.FromResult(true);
 
     }
-        ////Check Garage Capicity
-
-        //if (GarageTransaction.CameraType == CameraType.Entry)
-        //{
-           
-        //    using (DataFilter.Disable<IMultiTenant>())
-        //    {
-                
-
-
-
-        //        if (garage == null)
-        //        {
-        //            throw new Exception("This garage is not active");
-        //        }
-
-        //        if (garage.CurrnetCapicity == garage.MaxCapacity)
-        //        {
-        //            return await Task.FromResult(false);
-
     private async Task<Camera> GetCamera(string CameraCode)
     {
 		
@@ -433,7 +411,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
             return price;
     }
-
     public static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
     {
             // Calculate total time in the garage
