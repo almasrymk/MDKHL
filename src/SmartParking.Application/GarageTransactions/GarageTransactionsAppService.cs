@@ -329,14 +329,6 @@ public class GarageTransactionsAppService:
             // Return the relative path for storing in the database
             return $"/GarageTransactionsImages/{input.OrganizationID}/{input.GarageId}/{input.CameraId}/{fileName}";
         }
-        //catch (FormatException ex)
-        //{
-        //    throw new UserFriendlyException("The provided image is not a valid Base64 string", ex);
-        //}
-        //catch (UnauthorizedAccessException ex)
-        //{
-        //    throw new UserFriendlyException("Failed to save the image due to insufficient permissions", ex);
-        //}
         catch (Exception ex)
         {
             return null;
