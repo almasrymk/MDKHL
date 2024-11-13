@@ -7,6 +7,7 @@
 @inject IGarageAppService GarageAppService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using System.Globalization
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
@@ -91,10 +92,24 @@
 
                                     @foreach (var organization in Organizations)
                                     {
-                                        <MudSelectItem T="int" Value="@organization.Id">
+                                        if (organization.Status != Enums.Status.Active)
+                                                continue;
+
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                             <MudSelectItem T="int" Value="@organization.Id">
                                             
-                                            @organization.EnglishName
-                                        </MudSelectItem>
+                                                @organization.EnglishName
+                                             </MudSelectItem>
+                                        }
+                                        else
+                                        {
+
+                                            <MudSelectItem T="int" Value="@organization.Id">
+
+                                                @organization.ArabicName
+                                            </MudSelectItem>
+                                        }
                                     }
                                 </MudSelect>
 
