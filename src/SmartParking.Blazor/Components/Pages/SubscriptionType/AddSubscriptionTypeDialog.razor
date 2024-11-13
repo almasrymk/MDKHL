@@ -19,14 +19,24 @@
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
                     <MudItem sm="12">
-                        <MudTextField @bind-Value="input.Type"
-                                      For="@(() => input.Type)"
+                        <MudTextField @bind-Value="input.TypeEn"
+                                      For="@(() => input.TypeEn)"
                                       Immediate="true"
                                       Required
                                       Variant="Variant.Text"
                                       InputType="InputType.Text"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["Type"] />
+                                      Label=@L["TypeEn"] />
+                    </MudItem>
+                    <MudItem sm="12">
+                        <MudTextField @bind-Value="input.TypeAr"
+                                      For="@(() => input.TypeAr)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      InputType="InputType.Text"
+                                      Placeholder=@L["Type Here"]
+                                      Label=@L["TypeAr"] />
                     </MudItem>
 
                     <MudItem sm="9" md="9">

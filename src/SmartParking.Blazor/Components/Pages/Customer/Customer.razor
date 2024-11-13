@@ -2,11 +2,14 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Cutomers
 @using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
 @inject IDialogService DialogService
 @inject ICustomerAppService CustomerAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+@inject ICurrentTenant currrentTenant
+
 
 
 <PageTitle>@L["Customers"]</PageTitle>

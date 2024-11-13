@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
+@using System.Globalization
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -34,14 +35,32 @@
 									  Label="@L["EnglishName"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.SubscriptionType"
-									  For="@(() => subscription.SubscriptionType)"
+						@if (CultureInfo.CurrentCulture.Name == "en")
+						{
+							<MudItem sm="6">
+						<MudTextField @bind-Value="subscription.SubscriptionTypeEn"
+									  For="@(() => subscription.SubscriptionTypeEn)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label="@L["SubscriptionType"]"
 									  Disabled />
-					</MudItem>
+							</MudItem>
+
+												
+						}
+						else
+						{
+							<MudItem sm="6">
+								<MudTextField @bind-Value="subscription.SubscriptionTypeAr"
+											  For="@(() => subscription.SubscriptionTypeAr)"
+											  Immediate="true"
+											  Variant="Variant.Text"
+											  Label="@L["SubscriptionType"]"
+											  Disabled />
+							</MudItem>
+
+						}
+				
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.SubscriptionPrice"
 									  For="@(() => subscription.SubscriptionPrice)"

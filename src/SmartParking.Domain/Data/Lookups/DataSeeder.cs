@@ -115,16 +115,17 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
            
             var subscriptionTypes = new List<SubscriptionType>
             {
-                new SubscriptionType {Type = "Monthly"},
-                new SubscriptionType {Type = "Quarterly"},
-                new SubscriptionType {Type = "Yearly"},
+                new SubscriptionType {TypeEn = "Monthly",TypeAr = "شهرية"},
+                new SubscriptionType {TypeEn = "Quarterly",TypeAr = "ربع سنوية"},
+                new SubscriptionType {TypeEn = "Yearly",TypeAr = "سنوية"},
+                
             };
 
          
             await _subscriptionTypeRepository.InsertManyAsync(subscriptionTypes, autoSave: true);
             
 
-            var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.Type == "Monthly");
+            var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.TypeEn == "Monthly");
 
             var subscription = new Subscription
             {

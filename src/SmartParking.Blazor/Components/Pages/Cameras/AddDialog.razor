@@ -4,6 +4,7 @@
 @using SmartParking.Garages
 @using SmartParking.Localization
 @using System.Globalization
+@using System.Security.Authentication
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.Validation
@@ -183,6 +184,7 @@
     public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
 
 
+
     protected override async Task OnInitializedAsync()
     {
         var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
@@ -206,7 +208,8 @@
             {
                 var garage = Garages.Find(x => x.Id == cameraDto.GarageId);
                 cameraDto.TenantId = garage.TenantId;
-                
+                cameraDto.OrganizationId = garage.OrganizationId;
+
 
                 await CamerasAppService.CreateAsync(cameraDto);
                 MudDialog.Close(DialogResult.Ok(true));
@@ -216,27 +219,46 @@
 
                
             }
-            catch (UserFriendlyException ex)
+            catch (AbpValidationException validationException)
             {
-                Snackbar.Add($"{DuplicateCameraIP}", Severity.Error);
-                return;
-            }
-            catch (AbpValidationException ex)
-            {
-                foreach (var validationError in ex.ValidationErrors)
+                foreach (var validationError in validationException.ValidationErrors)
                 {
-                    Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
+                    ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
                 }
-                return;
             }
+            catch (BusinessException ex)
+            {
+
+                ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+            }
+            catch (AuthenticationException ex)
+            {
+                ShowSnackbar($"{errorMessage} : : {ex.Message} + ", Severity.Error);
+            }
+            catch (Exception ex)
+            {
+
+                ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
+            }
+        }
+        /// <summary>
+        /// Displays a snackbar notification with the specified message and severity.
+        /// </summary>
+        /// <param name="message">The message to display in the snackbar.</param>
+        /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+        void ShowSnackbar(string message, Severity severity)
+        {
+            Snackbar.Clear();
+            Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+        }
          
             
             
         }
         
-    }
-    private void Cancel()
-    {
-        MudDialog.Cancel();
+        private void Cancel()
+        {
+            MudDialog.Cancel();
+        }
     }
 }

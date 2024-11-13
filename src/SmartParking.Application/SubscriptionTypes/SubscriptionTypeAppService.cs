@@ -35,7 +35,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.Type == input.Type);
+            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn );
 
             if (existingSubscriptionType != null)
             {
@@ -51,7 +51,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.Type == input.Type);
+            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
 
             if (existingSubscriptionType != null)
             {
@@ -148,7 +148,8 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
 			{
 
 				queryable = queryable.Where(or =>
-					or.Type.ToLower().Contains(input.SearchingTerm.ToLower()) 
+					or.TypeEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+					or.TypeAr.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
 				);
 			}
