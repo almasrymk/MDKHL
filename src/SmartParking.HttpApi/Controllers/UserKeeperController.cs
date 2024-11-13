@@ -18,11 +18,11 @@ public class UserKeeperController : AbpController
 
     }
 
-    [HttpPost("changePassword")]
+    [HttpPost("setNewPassword")]
     [Authorize]
-    public async Task<Result> ChangePassword(ChangePasswordDto input)
+    public async Task<Result> SetNewPassword(ChangePasswordDto input)
     {
-        return await _userAppService.ChangePasswordAsync(input);
+        return await _userAppService.SetNewPasswordAsync(input);
     }
 
     [HttpPost("profileUser")]

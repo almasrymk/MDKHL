@@ -88,6 +88,6 @@ public class AuthenticationsController : ControllerBase
     [IgnoreAntiforgeryToken]
     public async Task<Result> ChangePassword(ChangePasswordInputDto input)
     {
-        return await _authenticationApp.ChangePassword(input);
+        return await _authenticationApp.SetNewPassword(input);
     }
 }

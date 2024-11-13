@@ -13,7 +13,7 @@ public interface IUserAppService : IApplicationService
     /// </summary>
     /// <param name="input">The login input containing username and password.</param>
     /// <returns>message</returns>
-    Task<Result> ChangePasswordAsync(ChangePasswordDto input);
+    Task<Result> SetNewPasswordAsync(ChangePasswordDto input);
 
     /// <summary>
     /// Change password for user 
