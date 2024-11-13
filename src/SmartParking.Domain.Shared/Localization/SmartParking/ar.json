@@ -432,9 +432,15 @@
     "CustomerArName": "إسم العميل بالعربية",
     "AddSubscriptionTypes": "إضافة نوع إشتراك",
     "NewSubscriptionType": "إضافة نوع إشتراك جديد",
-    "Return": "العودة"
-
-
-
+    "Return": "العودة",
+    "UnLinkedTransaction": "حركات غير معرفة",
+    "DeviceId": "كود الكاميرا",
+    "UnLinkedTransactionDeletedSuccessfully": " تم حذف حركات غير معرفة بنجاح",
+    "Can'tDeleteUnLinkedTransaction": "لا يمكن حذف حركات غير معرفة",
+    "AddUnLinkedTransaction": "اضافة حركات غير معرفة",
+    "NewUnLinkedTransaction": "حركات غير معرفة جديدة",
+    "UnLinkedTransactionCreatedSuccessfully": "اضافة حركات غير معرفة بنجاح",
+    "Can'tCreateUnLinkedTransaction": "لا يمكن اضافة حركات غير معرفة",
+    "FailedToAddUnLinkedTransaction": "فشل في اضافة حركات غير معرفة"
   }
 }

@@ -80,14 +80,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if(camera == null )
         {
 
-            var unLinkedTransaction = new UnLinkedTransaction()
-            {
-                DeviceId = input.DeviceID,
-                PlateNumber = input.PlateNumber,
-                SnapTime = input.SnapTime,
-                AccurateTime = input.AccurateTime,
-                VehiclePicture = input.VehiclePicture
-            };
+            var unLinkedTransaction = ObjectMapper.Map<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>(input);
             await _unLinkedTransactionRepository.InsertAsync(unLinkedTransaction,true);
             return await Task.FromResult(false);
         }

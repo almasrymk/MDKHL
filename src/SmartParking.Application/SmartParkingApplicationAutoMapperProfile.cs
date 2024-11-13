@@ -33,6 +33,7 @@ using System.Linq;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Entities.Payments;
 using SmartParking.Payments;
+using SmartParking.GarageTransactionEndPoints;
 
 namespace SmartParking;
 
@@ -134,7 +135,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateBannerDto, Banner>();
 
         CreateMap<GarageTransaction, GarageTransactionDto>();
-        CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();
+        CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();        
+
+        // unLinked transaction 
+        CreateMap<UnLinkedTransaction, UnLinkedTransactionDto>();
+        CreateMap<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>();
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();

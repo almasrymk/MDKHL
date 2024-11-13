@@ -1,0 +1,25 @@
+﻿@page "/unLinkedTransaction"
+@using Microsoft.Extensions.Localization
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
+@inject IUnLinkedTransactionAppService UnLinkedTransactionAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+
+
+
+<PageTitle>@L["UnLinkedTransaction"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["UnLinkedTransaction"]</MudText>
+
+<SPDataGrid PageName=@L["UnLinkedTransaction"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateGarageTransaction(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+
+
+
+
+
+
+
