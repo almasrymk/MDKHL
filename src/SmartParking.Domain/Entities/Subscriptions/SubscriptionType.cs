@@ -10,7 +10,9 @@ namespace SmartParking.Entities.Subscriptions;
 
 public class SubscriptionType : FullAuditedEntity<int> , IBseEntity
 {
-    public string Type { get; set; }
-    public virtual List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+	public string TypeAr { get; set; }
+	public string TypeEn { get; set; }
+	public virtual List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     public Status Status { get ; set ; }
+	public SubscriptionStatus SubscriptionStatus { get; set; }
 }
