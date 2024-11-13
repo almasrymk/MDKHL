@@ -18,6 +18,12 @@ public interface IUnLinkedTransactionAppService:
 {
 
     /// <summary>
+    /// Asynchronously creates a new garage transaction based on the provided input data.
+    /// </summary>
+    /// <param name="input">An instance of <see cref="CreateUpdateGarageTransactionEndPointDto"/> containing the details required to create the transaction.</param>
+    /// <returns>A <see cref="Task{UnLinkedTransactionDto}"/> representing the asynchronous operation, which upon completion, returns the details of the created transaction as an <see cref="UnLinkedTransactionDto"/>.</returns>
+    Task<UnLinkedTransactionDto> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
+    /// <summary>
     /// Retrieves a paged list of unlinked transactions based on the specified paging and sorting parameters.
     /// </summary>
     /// <param name="input">The <see cref="PagedAndSortedResultRequestDto"/> containing pagination and sorting information.</param>

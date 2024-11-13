@@ -157,21 +157,6 @@ public partial class UnLinkedTransaction
         return Dialog.ShowAsync<AddUnLinkedTransactionDialog>("Add UnLinkedTransaction", options);
     }
 
-    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
-    {
-        var id = int.Parse(row.Cells[0].Value);
-
-        var unLinkedTransactionDto = await UnLinkedTransactionAppService.GetAsync(id);
-
-        var parameters = new DialogParameters
-        {
-            ["unLinkedTransaction"] = unLinkedTransactionDto
-        };
-
-
-        return await Dialog.ShowAsync<EditUnLinkedTransactionDialog>("Edit UnLinked Transaction", parameters);
-    }
-
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
 
@@ -181,11 +166,11 @@ public partial class UnLinkedTransaction
 
         var parameters = new DialogParameters
         {
-            ["unLinkedTransaction"] = unLinkedTransactionDto
+            ["unLinkedTransactionDto"] = unLinkedTransactionDto
         };
 
 
-        return await Dialog.ShowAsync<ViewGarageTransaction>("View GarageTransaction", parameters);
+        return await Dialog.ShowAsync<DetailsUnLinkedTransactionDialog>("View unLinked Transaction", parameters);
     }
 
     private async Task OnClickRowDelete(RowDef row)

@@ -1,5 +1,99 @@
-﻿<h3>DetailsUnLinkedTransactionDialog</h3>
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject IUnLinkedTransactionAppService UnLinkedTransactionAppService
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@unLinkedTransactionDto.DeviceId</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="unLinkedTransactionDto.DeviceId"
+									  For="@(() => unLinkedTransactionDto.DeviceId)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["Type"]" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="unLinkedTransactionDto.PlateNumber"
+									  For="@(() => unLinkedTransactionDto.PlateNumber)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["PlateNnumber"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="unLinkedTransactionDto.SnapTime"
+									  For="@(() => unLinkedTransactionDto.SnapTime)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["SnapTime"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="unLinkedTransactionDto.AccurateTime"
+									  For="@(() => unLinkedTransactionDto.AccurateTime)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["AccurateTime"]" />
+					</MudItem>
+					
+
+					
+
+					<MudItem sm="12" md="12" class="d-flex justify-center">
+						<MudImage Src="@unLinkedTransactionDto.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
+					</MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+		</DialogActions>
+
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
 
 @code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter] public UnLinkedTransactionDto unLinkedTransactionDto { get; set; }
+	
+	bool _clearable;
+	private MudForm form;
+
+	protected override async Task OnInitializedAsync()
+	{
+		
+		await base.OnInitializedAsync();
+	}
+
+
+
+	private void OnCloseViewOnly()
+	{
+		MudDialogAdd.Cancel();
+
+	}
 
 }

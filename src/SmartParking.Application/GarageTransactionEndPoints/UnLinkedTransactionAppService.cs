@@ -6,6 +6,7 @@ using SmartParking.Garages;
 using SmartParking.GarageTransactions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -33,6 +34,15 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
         _dataFilter = dataFilter;
     }
 
+
+    public async override Task<UnLinkedTransactionDto> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
+    {
+        input.VehiclePicture = SaveBase64Image(input);
+        if (input.VehiclePicture == null)
+            return null;
+        var result = await base.CreateAsync(input);
+        return result;
+    }
     ///<inheritdoc/>
     public async override  Task<PagedResultDto<UnLinkedTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
@@ -137,5 +147,92 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
         }
     }
 
-    
+    // Function to convert base64 string to image and save it
+    private string SaveBase64Image(CreateUpdateGarageTransactionEndPointDto input)
+    {
+        string base64Image = input.VehiclePicture;
+        try
+        {
+
+            var imageFormat = "jpg"; // Adjust formats as needed
+                                     // CheckBase64(ref base64Image, ref imageFormat);
+            CreateBase64Image(ref base64Image);
+            var imageBytes = Convert.FromBase64String(base64Image);
+
+            var imageDirectoryPath = CreateImageDirectory(input);
+
+
+
+
+            // Generate a unique name for the image
+            string fileName = $"{Guid.NewGuid()}.{imageFormat}";
+            string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+            // Save the image to the specified path
+            File.WriteAllBytes(fullPath, imageBytes);
+
+            // Return the relative path for storing in the database
+            return $"/GarageTransactionsImages/{input.DeviceID}/{input.PlateNumber}/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            return null;
+            // throw new UserFriendlyException("An error occurred while saving the image", ex);
+        }
+    }
+
+    private void CreateBase64Image(ref string base64Image)
+    {
+        if (!base64Image.Contains(","))
+        {
+            byte[] imageBytes = Convert.FromBase64String(base64Image);
+            base64Image = Convert.ToBase64String(imageBytes);
+        }
+        else
+        {
+            base64Image = base64Image.Split(',')[1];
+        }
+    }
+
+    private string CreateImageDirectory(CreateUpdateGarageTransactionEndPointDto input)
+    {
+        // Define the path where the image will be saved
+        string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages", input.DeviceID, input.PlateNumber);
+
+        // Ensure the directory exists
+        if (!Directory.Exists(ImageDirectoryPath))
+        {
+            Directory.CreateDirectory(ImageDirectoryPath);
+        }
+        return ImageDirectoryPath;
+    }
+
+    private void CheckBase64(ref string base64Image, ref string imageFormat)
+    {
+
+        // Validate the base64 string format
+        if (!base64Image.Contains(","))
+        {
+            // Extract the image format and base64 content
+            var base64Parts = base64Image.Split(',');
+            base64Image = base64Parts[1];
+            imageFormat = base64Parts[0] switch
+            {
+                var x when x.Contains("jpeg") => "jpg",
+                var x when x.Contains("webp") => "webp",
+                var x when x.Contains("png") => "png",
+                _ => "jpg"
+            };
+
+        }
+
+        if (string.IsNullOrEmpty(base64Image))
+        {
+            throw new ArgumentException("The provided image is not a valid Base64 string");
+        }
+
+
+    }
+
+
 }
