@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Subscriptions
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject ISubscriptionAppService SubscriptionsAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -17,7 +18,15 @@
                         <div class="price">
                             <MudText>@L["SAR"]</MudText>
                             <MudText Class="fw-bold" Typo="Typo.h5">@subscription.SubscriptionPrice</MudText>
-                            <MudText>@subscription.SubscriptionType</MudText>
+                    @if (CultureInfo.CurrentCulture.Name == "en")
+                    {
+                            <MudText>@subscription.SubscriptionTypeEn</MudText>
+                    }
+                    else
+                    {
+                            <MudText>@subscription.SubscriptionTypeAr</MudText>
+
+                    }
                         </div>
 
                     </div>

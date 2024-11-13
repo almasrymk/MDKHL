@@ -11,6 +11,7 @@
 @using SmartParking.Organizations
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
+@using System.Globalization
 @using Volo.Abp.Identity
 @layout Shared.ProfileLayout
 @inject IOrganizationsAppService OrganizationAppService
@@ -110,6 +111,31 @@
                         </MudItem>
                         <MudItem sm="4">
                             <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <MudItem sm="4">
+                            <MudSelect Variant="Variant.Text"
+                                       Label=@L["Package"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       @bind-Value="@PackageSelectValue">
+                                <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
+                                @foreach (var package in packages)
+                                {
+                                    if (package.Status != Enums.SubscriptionStatus.Active)
+                                        continue;
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="package.Id.ToString()">@package.ArabicName</MudSelectItem>
+
+                                    }
+                                }
+                            </MudSelect>
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />

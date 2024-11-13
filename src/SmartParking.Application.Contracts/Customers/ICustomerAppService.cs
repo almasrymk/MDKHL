@@ -78,12 +78,25 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 	/// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
 	/// <returns>customer Dto</returns>
 	public Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+
+    /// <summary>
+    /// abstract method to search of customers for MDKHL
+    /// </summary>
+    /// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
+    /// <returns>customer Dto</returns>
+    public Task<PagedResultDto<CustomerDto>> SearchMDKHL(PagedAndSortedAndSearchResultRequestDto input);
 	/// <summary>
 	/// abstract method to filter of customers
 	/// </summary>
 	/// <param name="input">specifies max number of customers and if it sorted or not and filter</param>
 	/// <returns>customer Dto</returns>
 	public Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+    /// <summary>
+	/// abstract method to filter of customers
+	/// </summary>
+	/// <param name="input">specifies max number of customers and if it sorted or not and filter</param>
+	/// <returns>customer Dto</returns>
+	public Task<PagedResultDto<CustomerDto>> FilterMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
 
     /// <summary>
     /// Retrieves the customers details associated with a specific organization.

@@ -2,6 +2,7 @@
 @using SmartParking.CustomerPackages
 @using SmartParking.Localization
 @using SmartParking.Packages
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject IPackagesAppService PackagesAppService
@@ -33,7 +34,16 @@
 							{
 								if (package.Status != Enums.Status.Active)
 									continue;
-								<MudSelectItem Value="package.Id">@package.EnglishName</MudSelectItem>
+								if (CultureInfo.CurrentCulture.Name == "en")
+								{
+								  <MudSelectItem Value="package.Id">@package.EnglishName</MudSelectItem>
+
+								}
+								else
+								{
+								  <MudSelectItem Value="package.Id">@package.ArabicName</MudSelectItem>
+
+								}
 							}
 						</MudSelect>
 					</MudItem>

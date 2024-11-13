@@ -91,6 +91,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
         organization.Address += " , " + input.PostalCode;
         organization.TenantId = tenant.Id;
+        organization.SubscriptionId=input.SubscriptionId;
         await _repository.InsertAsync(organization, autoSave: true);
 
         //await CurrentUnitOfWork.SaveChangesAsync();
@@ -135,11 +136,12 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     {
         using (_softDeleteFilter.Disable<IMultiTenant>())
         {
-            if (id < 0)
+            var org = await base.GetAsync(id);
+            if (org is null)
             {
                 throw new EntityNotFoundException("organization id not found");
             }
-            return await base.GetAsync(id);
+            return org;
             
         }
         

@@ -66,13 +66,21 @@ public partial class Customer
 			SearchingTerm = termSearch, // The term to use for filtering results
 			filters = pageInfo.Filters
 		};
-		// Call the service to perform the search based on the input parameters
-		var customersDto = await CustomerAppService.Filter(input);
+		if (currrentTenant.Id == null)
+		{
+			var customersDto = await CustomerAppService.FilterMDKHL(input);
 
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)customersDto.TotalCount;
-		CreateTable(customersDto);
+			TotalItem = (int)customersDto.TotalCount;
+			CreateTable(customersDto);
+		}
+		else
+		{
 
+			var customersDto = await CustomerAppService.Filter(input);
+
+			TotalItem = (int)customersDto.TotalCount;
+			CreateTable(customersDto);
+		}
 
 	}
 	/// <summary>
@@ -97,12 +105,21 @@ public partial class Customer
 			SearchingTerm = termSearch // The term to use for filtering results
 		};
 
-		// Call the service to perform the search based on the input parameters
-		var customersDto = await CustomerAppService.Search(input);
+		if (currrentTenant.Id == null)
+		{
+			var customersDto = await CustomerAppService.SearchMDKHL(input);
 
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)customersDto.TotalCount;
-		CreateTable(customersDto);
+			TotalItem = (int)customersDto.TotalCount;
+			CreateTable(customersDto);
+		}
+		else
+		{
+
+			var customersDto = await CustomerAppService.Search(input);
+
+			TotalItem = (int)customersDto.TotalCount;
+			CreateTable(customersDto);
+		}
 	}
 	/// <summary>
 	/// Fetches the table data for the specified page and updates the table with the retrieved data.

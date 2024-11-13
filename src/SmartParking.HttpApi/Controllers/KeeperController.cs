@@ -32,6 +32,9 @@ public class KeeperController : AbpController
 	}
 
     [HttpPost("login")]
+    [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
+
     public async Task<Result<LoginResponseDto>> Login(LoginRequestDto input)
     {
         var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
@@ -56,9 +59,9 @@ public class KeeperController : AbpController
 
     [HttpGet("garageTransactionWithoutPlateNumber")]
     [Authorize]
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId)
+	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId, Guid userId)
 	{
-		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId);
+		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId,userId);
 	}
 
     [HttpGet("garageTransaction")]
@@ -77,8 +80,8 @@ public class KeeperController : AbpController
 
     [HttpGet("existingTransaction")]
     [Authorize]
-    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId)
+    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId)
     {
-        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId);
+        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId,userId);
     }
 }

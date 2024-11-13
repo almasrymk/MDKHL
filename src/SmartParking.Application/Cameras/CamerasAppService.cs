@@ -66,29 +66,25 @@ public class CamerasAppService :
     }
     public override async Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input)
     {
-        var garage = await _garageAppService.GetAsync(input.GarageId);
-        var organization = await _organizationRepository.GetAsync(garage.OrganizationId);
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
+        
             using (_dataFilter.Disable<IMultiTenant>())
-            {
+		    {
+			    var garage = await _garageAppService.GetAsync(input.GarageId);
+		     	var organization = await _organizationRepository.FirstOrDefaultAsync(x=>x.Id==garage.OrganizationId);
+
                 if (input.Status == Enums.Status.Active)
                 {
                     await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId,1);
 
 				}
-                return await base.UpdateAsync(id, input);
-            }
-        }
-		if (input.Status == Enums.Status.Active)
-        {
-			await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
+			   input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
 
-        }
-       input.DeviceId = await GenerateCameraCode(organization.EnglishName,garage.NameEn,input.Name);
-        input.OrganizationId = organization.Id;
-        return await base.UpdateAsync(id, input);
+			  return await base.UpdateAsync(id, input);
+            }
+        
+	
     }
+    
 
     public async Task<string> GenerateCameraCode(string OrgEnglishName ,string GarageEnglishName,string CameraEnglishName)
     {

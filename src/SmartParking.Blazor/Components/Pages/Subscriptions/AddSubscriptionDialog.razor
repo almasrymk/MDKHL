@@ -2,6 +2,7 @@
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
+@using System.Globalization
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject ISnackbar Snackbar
@@ -54,7 +55,17 @@
 
                                 @foreach (var subscription in subscriptions)
                                 {
-                                    <MudSelectItem Value="@subscription.Id">@subscription.SubscriptionType</MudSelectItem>
+                                    if (subscription.Status != Enums.Status.Active || subscription.SubscriptionStatus!=Enums.SubscriptionStatus.Active)
+                                        continue;
+                                    @if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudText>@subscription.SubscriptionTypeEn</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText>@subscription.SubscriptionTypeAr</MudText>
+
+                                    }
                                 }
                             </MudSelect>
                         </MudItem>
