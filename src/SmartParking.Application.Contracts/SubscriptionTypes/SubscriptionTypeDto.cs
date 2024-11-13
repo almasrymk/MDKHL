@@ -11,8 +11,12 @@ namespace SmartParking.SubscriptionTypes;
 
 public class SubscriptionTypeDto : EntityDto<int>
 {
-    public string Type { get; set; }
-    public List<SubscriptionDto> Subscriptions { get; set; }  = new List<SubscriptionDto>();
-	public Status Status { get; set; }
+
+	public string TypeAr { get; set; }
+	public string TypeEn { get; set; }
+	public List<SubscriptionDto> Subscriptions { get; set; }  = new List<SubscriptionDto>();
+
+    public Status Status { get; set; }
+    public SubscriptionStatus SubscriptionStatus { get; set; }
 
 }

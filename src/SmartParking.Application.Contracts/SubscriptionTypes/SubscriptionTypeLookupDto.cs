@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,10 @@ namespace SmartParking.SubscriptionTypes;
 
 public class SubscriptionTypeLookupDto : EntityDto<int>
 {
-    public string SubscriptionType { get; set; }
+    public string SubscriptionTypeEn { get; set; }
+    public string SubscriptionTypeAr { get; set; }
+
+    public Status Status { get; set; }
+    public SubscriptionStatus SubscriptionStatus { get; set; }
+
 }

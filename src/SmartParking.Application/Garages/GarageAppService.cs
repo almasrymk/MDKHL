@@ -641,11 +641,11 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 	public async Task<bool> AddActiveCameraRelatedToOrganizationGarage(int GarageId, int NumOfActiveCamera)
 	{
-        var garage= await GetAsync(GarageId);
         try
         {
             using (DataFilter.Disable<IMultiTenant>())
             {
+                 var garage= await GetAsync(GarageId);
 
                 var org = await _organizationRepository.GetAsync(garage.OrganizationId);
 

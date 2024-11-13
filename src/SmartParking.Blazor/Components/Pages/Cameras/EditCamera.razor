@@ -4,7 +4,10 @@
 @using SmartParking.Garages
 @using SmartParking.Localization
 @using System.Globalization
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
 @inject NavigationManager Navigation
@@ -179,6 +182,8 @@
 	public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
 	bool _clearable;
 	private MudForm form;
+	private int OrgId { get; set; }
+	private int GarageId { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -188,6 +193,9 @@
 				SkipCount = (1 - 1) * 100
 			});
 		Garages = result.Items.ToList();
+		var garage = Garages.Find(x=>x.Id==Camera.GarageId);
+		GarageId = Camera.GarageId;
+		Camera.OrganizationId = garage.OrganizationId;
 		await base.OnInitializedAsync();
 	}
 
@@ -198,6 +206,12 @@
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
+			if (Camera.GarageId != GarageId)
+			{
+				var newGarage = Garages.Find(x => x.Id == Camera.GarageId);
+				Camera.OrganizationId = newGarage.OrganizationId;
+				Camera.TenantId = newGarage.TenantId;
+			}
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
 			MudDialogAdd.Close(DialogResult.Ok(true));
@@ -207,10 +221,37 @@
 
 
 		}
-		catch (Exception e)
+		catch (AbpValidationException validationException)
 		{
-			Snackbar.Add(errorMessage, Severity.Error);
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+			}
 		}
+		catch (BusinessException ex)
+		{
+
+			ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+		}
+		catch (AuthenticationException ex)
+		{
+			ShowSnackbar($"{errorMessage} : : {ex.Message} + ", Severity.Error);
+		}
+		catch (Exception ex)
+		{
+
+			ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
+		}
+	}
+	/// <summary>
+	/// Displays a snackbar notification with the specified message and severity.
+	/// </summary>
+	/// <param name="message">The message to display in the snackbar.</param>
+	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+	void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Clear();
+		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 	}
 
 	private async Task CancelEdit()
@@ -219,6 +260,7 @@
 
 
 	}
+}
 
 	
 }

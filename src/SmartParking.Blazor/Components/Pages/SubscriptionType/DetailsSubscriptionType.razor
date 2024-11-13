@@ -12,12 +12,12 @@
 		<TitleContent>
 			@if (CultureInfo.CurrentCulture.Name == "en")
 			{
-				<MudText Typo="Typo.h6">@subscriptionType.Type</MudText>
+				<MudText Typo="Typo.h6">@subscriptionType.TypeEn</MudText>
 
 			}
 			else
 			{
-				<MudText Typo="Typo.h6">@subscriptionType.Type</MudText>
+				<MudText Typo="Typo.h6">@subscriptionType.TypeAr</MudText>
 
 			}
 		</TitleContent>
@@ -25,15 +25,23 @@
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
 					<MudItem sm="6">
-						<MudTextField Value="subscriptionType.Type"
-									  For="@(() => subscriptionType.Type)"
+						<MudTextField Value="subscriptionType.TypeEn"
+									  For="@(() => subscriptionType.TypeEn)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label=@L["Type"]
 									  Disabled />
 					</MudItem>
 					<MudItem sm="6">
-						<MudTextField Value="@L[subscriptionType.Status.ToString()]"
+						<MudTextField Value="subscriptionType.TypeAr"
+									  For="@(() => subscriptionType.TypeAr)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label=@L["Type"]
+									  Disabled />
+					</MudItem>
+					<MudItem sm="12">
+						<MudTextField Value="@L[subscriptionType.SubscriptionStatus.ToString()]"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label=@L["Status"]

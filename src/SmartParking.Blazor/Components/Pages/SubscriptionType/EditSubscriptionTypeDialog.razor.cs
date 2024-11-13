@@ -34,7 +34,8 @@ public partial class EditSubscriptionTypeDialog
 			// Create the input object for update
 			var input = new CreateUpdateSubscriptionTypeDto
 			{
-				Type = subscriptionType.Type,
+				TypeEn = subscriptionType.TypeEn,
+				TypeAr = subscriptionType.TypeAr,
 			};
 
 			// Call the update method
