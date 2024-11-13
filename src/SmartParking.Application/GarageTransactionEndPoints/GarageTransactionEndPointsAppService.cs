@@ -20,6 +20,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using static OpenIddict.Server.OpenIddictServerHandlers;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -40,7 +41,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 	private IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
+    private readonly IRepository<UnLinkedTransaction> _unLinkedTransactionRepository;
 
     public GarageTransactionEndPointsAppService(IGarageTransactionsAppService garageTransactionsAppService, 
         IRepository<Camera, int> cameraRepository, IRepository<Garage, int> garageRepository,
@@ -52,7 +53,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         IRepository<Organization,int> organizationRepoistory,
         IInvoiceAppService invoiceAppService,
 		IDataFilter dataFilter, ICurrentUser currentUser,
-       IStringLocalizer<SmartParkingResource> localizer)
+       IStringLocalizer<SmartParkingResource> localizer,
+       IRepository<UnLinkedTransaction> unLinkedTransactionRepository)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _cameraRepository = cameraRepository;
@@ -61,21 +63,38 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _customerRepoistory = customerRepoistory;
         _vehicleRepository = vehicleRepository;
         _customerPackagesAppService = customerPackagesAppService;
-			_garageTransactionRepoistory = garageTransactionRepoistory;
+		_garageTransactionRepoistory = garageTransactionRepoistory;
         _organizationRepoistory = organizationRepoistory;
-			_invoiceAppService = invoiceAppService;
+		_invoiceAppService = invoiceAppService;
 		_dataFilter = dataFilter;
 		_currentUser = currentUser;
         _localizer = localizer;
-	}
+        _unLinkedTransactionRepository = unLinkedTransactionRepository;
+    }
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
         
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(new { input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName })}");
         var camera = await GetCamera(input.DeviceID);
-        _logger.LogError($"{DateTime.Now} ====>  Camera ID is not found");
-        if (camera == null)
+
+        if(camera == null )
+        {
+
+            var unLinkedTransaction = new UnLinkedTransaction()
+            {
+                DeviceId = input.DeviceID,
+                PlateNumber = input.PlateNumber,
+                SnapTime = input.SnapTime,
+                AccurateTime = input.AccurateTime,
+                VehiclePicture = input.VehiclePicture
+            };
+            await _unLinkedTransactionRepository.InsertAsync(unLinkedTransaction,true);
             return await Task.FromResult(false);
+        }
+
+        _logger.LogError($"{DateTime.Now} ====>  Camera ID is not found");
+        
+            
         var cameraId = camera.Id;
         var garageId = camera.GarageId;
         
@@ -246,7 +265,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
 			var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.DeviceId == CameraCode);
-
+            
 			return camera;
 		}
 		
