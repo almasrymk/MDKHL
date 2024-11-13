@@ -2,11 +2,16 @@
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser CurrentUser
 @inject NavigationManager Navigation
 @inherits LayoutComponentBase
+@inject ICurrentTenant currenttenant
+
+@inject IOrganizationsAppService OrganizationAppService
 
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -20,8 +25,7 @@
         </MudItem>
         <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
             <div class="d-flex flex-column justify-center">
-                <h2>@L["My Account"]</h2>
-                <SPBreadcrumb />
+                <h2>@CurrentURI</h2>
             </div>
             <div class="d-flex gap-3 align-center flex-wrap">
                 <MudImage src="images/svgs/notification.svg" Width="24" Height="24" />                
@@ -30,7 +34,7 @@
                     </div>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
-                        <MudImage src="images/avatar.png" Width="49" Height="49" />
+                        <MudImage Src="@(Picture)" Width="49" Height="49" />
                     </MudAvatar>
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
@@ -52,6 +56,12 @@
 </div>
 
 @code {
+    public string Picture { get; set; }
+    public string CurrentURI { get; set; }
+    private string UserName { get; set; }
+
+
+
     MudTheme SPCustomTheme = new MudTheme()
         {
             PaletteLight = new PaletteLight()
@@ -66,20 +76,66 @@
             }
         };
 
-    private string UserName { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
+        UpdateUriAndTitle();
+    }
 
+    private void UpdateUriAndTitle()
+    {
+        CurrentURI = Navigation.ToBaseRelativePath(Navigation.Uri);
+        CurrentURI = GetTitleForCurrentUri();
+    }
+
+    private string GetTitleForCurrentUri()
+    {
+        // Customize titles based on the current URI
+        return CurrentURI switch
+        {
+            "dashboard" => L["Dashboard"],
+            "organizations" => L["Organizations"],
+            "garages" => L["Garages"],
+            "cameras" => @L["Cameras"],
+            "cities" => @L["Cities"],
+            "contact-data" => @L["Contact Data"],
+            "countries" => @L["Countries"],
+            "customers" => @L["Customers"],
+            "garageTransactions" => @L["GarageTransactions"],
+            "invoices" => @L["Invoices"],
+            "licencetypes" => @L["LicenceTypes"],
+            "subscription" => @L["Organization Subscription"],
+            "packages" => @L["Packages"],
+            "packagetypes" => @L["PackageTypes"],
+            "platecolors" => @L["PlateColors"],
+            "regions" => @L["Regions"],
+            "states" => @L["States"],
+            "subscriptions" => @L["Subscriptions"],
+            "subscriptiontypes" => @L["SubscriptionType"],
+            "vehiclebrands" => @L["VehicleBrands"],
+            "vehiclemodels" => @L["VehicleModel"],
+            "profile" => @L["Profile"],
+            "customers/register" => @L["Customers"] + " / " + @L["Add NEW"],
+            _ => L["Dashboard"] // Default title if no match found
+        };
+    }
+    protected async override Task OnInitializedAsync()
+    {
         UserName = CurrentUser.Name;
-        if ( (CurrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) ) || (CurrentUser.IsInRole("admin")) ){
-            UserName = Enums.RolesType.Mdkhl.ToString() + " " + UserName ;
+        if ((CurrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (CurrentUser.IsInRole("admin")))
+        {
+            UserName = Enums.RolesType.Mdkhl.ToString() + " " + UserName;
+            Picture = "images/MDHKL_04.png";
+
         }
         else
         {
             UserName = Enums.RolesType.Organization.ToString() + " " + UserName;
+            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
+
         }
     }
+    
     private void ChangeLanguage()
     {
         Navigation.NavigateTo($"api/SetLanguage?returnUrl={Navigation.Uri}", true);

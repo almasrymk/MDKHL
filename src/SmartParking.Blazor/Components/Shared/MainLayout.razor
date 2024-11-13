@@ -50,7 +50,7 @@
                 </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
-                        <MudImage Src="@Picture" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(Picture)" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
                     </MudAvatar>
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
@@ -102,6 +102,7 @@
         if (currenttenant.Id == null)
         {
             UserName += " MDKHAL";
+            Picture = "images/MDHKL_04.png";
         }
         else
         {
@@ -123,6 +124,7 @@
     private void UpdateUriAndTitle()
     {
         CurrentURI = Navigation.ToBaseRelativePath(Navigation.Uri);
+
     }
 
     private string GetTitleForCurrentUri()
@@ -151,7 +153,8 @@
             "subscriptiontypes" => @L["SubscriptionType"],
             "vehiclebrands" => @L["VehicleBrands"],
             "vehiclemodels" => @L["VehicleModel"],
-            "profile" => L["Profile"],
+            "profile" => @L["Profile"],
+            "customers/register" => @L["Customers"] + "/" + @L["Add NEW"],
             _ => L["Dashboard"] // Default title if no match found
         };
     }
