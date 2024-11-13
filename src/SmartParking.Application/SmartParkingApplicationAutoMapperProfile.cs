@@ -142,7 +142,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<IdentityUser, UserDto>();
 
         CreateMap<Subscription, SubscriptionDto>()
-            .ForMember(d=>d.SubscriptionType,o=>o.MapFrom(s=>s.SubscriptionType.Type))
+            .ForMember(d=>d.SubscriptionTypeEn,o=>o.MapFrom(s=>s.SubscriptionType.TypeEn))
+            .ForMember(d=>d.SubscriptionTypeAr,o=>o.MapFrom(s=>s.SubscriptionType.TypeAr))
             .ForMember(d => d.Status, o => o.MapFrom(s => s.StatusSubscription.ToString()));
 
         CreateMap<CreateUpdateSubscriptionDto, Subscription>()
@@ -151,11 +152,15 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<SubscriptionType, SubscriptionTypeDto>()
-           .ForMember(d => d.Type, o => o.MapFrom(s => s.Type));
+           .ForMember(d => d.TypeEn, o => o.MapFrom(s => s.TypeEn))
+           .ForMember(d => d.TypeAr, o => o.MapFrom(s => s.TypeAr));
 
 		CreateMap<CreateUpdateSubscriptionTypeDto, SubscriptionType>();
-		CreateMap<SubscriptionType, SubscriptionTypeLookupDto>()
-			.ForMember(d => d.SubscriptionType, o => o.MapFrom(s => s.Type));
+        CreateMap<SubscriptionType, SubscriptionTypeLookupDto>()
+            .ForMember(d => d.SubscriptionTypeEn, o => o.MapFrom(s => s.TypeEn))
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.Status))
+            .ForMember(d => d.SubscriptionStatus, o => o.MapFrom(s => s.SubscriptionStatus))
+            .ForMember(d => d.SubscriptionTypeAr, o => o.MapFrom(s => s.TypeAr));
 
 
         CreateMap<Organization, string>()

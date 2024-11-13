@@ -9,7 +9,9 @@ namespace SmartParking.SubscriptionTypes;
 
 public class CreateUpdateSubscriptionTypeDto 
 {
-    public string Type { get; set; }
-    public Status Status { get; set; }
+
+	public string TypeAr { get; set; }
+	public string TypeEn { get; set; }
+	public Status Status { get; set; }
 
 }

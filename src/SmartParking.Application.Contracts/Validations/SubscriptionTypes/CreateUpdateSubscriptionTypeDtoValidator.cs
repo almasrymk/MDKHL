@@ -8,10 +8,16 @@ public class CreateUpdateSubscriptionTypeDtoValidator : AbstractValidator<Create
 {
     public CreateUpdateSubscriptionTypeDtoValidator()
     {
-        RuleFor(x => x.Type)
-        .NotEmpty()
-        .Matches(@"^[\u0621-\u064A\u0660-\u0669a-zA-Z\s]*$")
-        .WithMessage("Type must contain only Arabic and English letters, with no special characters allowed.");
+		RuleFor(x => x.TypeEn)
+		   .NotEmpty()
+		   .MaximumLength(100)
+		   .Matches(@"^[a-zA-Z][a-zA-Z0-9\s]*$")
+		   .WithMessage("Name must start with a letter, accept only English letters and numbers, and cannot contain special characters such as ، / . \\ ,.");
+		RuleFor(x => x.TypeAr)
+			.NotEmpty()
+			.MaximumLength(100)
+			.Matches(@"^[\u0621-\u064A\s]+$")
+			.WithMessage("Name must contain only Arabic letters and spaces, and cannot contain special characters such as ، / . \\ ,.");
 
-    }
+	}
 }
