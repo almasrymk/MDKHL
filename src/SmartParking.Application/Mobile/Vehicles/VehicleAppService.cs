@@ -134,16 +134,16 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
                 return Result<VehicleDto>.NotFound("vehicle not found");
             }
             
-            var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleMobileDto, Vehicle>(input);
+            
             // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 			if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
 			{
-				mappedVehicle.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
+                vehicle.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
 
 			}
 			else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
 			{
-				mappedVehicle.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
+                vehicle.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
 			}
 			else
 			{
@@ -172,18 +172,17 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 				return Result<VehicleDto>.NotFound("Vehicle Model not found");
 			}
 			var customer = await _customerRepository.FirstOrDefaultAsync(b => b.IdentityUserId == CurrentUser.Id);
-            mappedVehicle.Id = vehicleId;
-			mappedVehicle.LicenceType = plateType;
-			mappedVehicle.LicenceTypeId = plateType.Id;
-			mappedVehicle.PlateColorId = plateType.PlateColorId;
-			mappedVehicle.VehicleModelId = model.Id;
-			mappedVehicle.VehicleBrandId = brand.Id;
-			mappedVehicle.CustomerId = customer.Id;
-			var vehicleUpdate = await _vehicleRepository.UpdateAsync(mappedVehicle, autoSave: true);
+            vehicle.LicenceType = plateType;
+            vehicle.LicenceTypeId = plateType.Id;
+            vehicle.PlateColorId = plateType.PlateColorId;
+            vehicle.VehicleModelId = model.Id;
+            vehicle.VehicleBrandId = brand.Id;
+            vehicle.CustomerId = customer.Id;
+			var vehicleUpdate = await _vehicleRepository.UpdateAsync(vehicle, autoSave: true);
 
 			var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicleUpdate);
 
-			return Result<VehicleDto>.Success(vehicleDto, "Vehicle Add Succesuffuly");
+			return Result<VehicleDto>.Success(vehicleDto, "Vehicle Edit Succesuffuly");
 		}
 		catch (Exception ex)
 		{

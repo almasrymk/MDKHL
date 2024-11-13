@@ -79,6 +79,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
         return await base.GetListAsync(input);
     }
+
 	[Authorize]
 	public override async Task<InvoiceDto> GetAsync(int id)
     {

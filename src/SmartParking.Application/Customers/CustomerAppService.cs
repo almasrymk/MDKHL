@@ -414,8 +414,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-    [RemoteService(isEnabled: false)]
-    public async Task<int> GetCountWithoutMultitenant()
+    public async Task<int> GetCountCustomersCountForMDKHL()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -425,25 +424,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             return count;
         }
     }
-    /// <inheritdoc/>
-
-    [RemoteService(isEnabled: false)]
-    public async Task<int> GetAllCustomersCount()
+    
+    
+    public async Task<int> GetCountCustomersCountForOrganization(Guid? CurrentTenantId)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        var orgId =await _organizationAppService.GetOrganizationIdByTenant(CurrentTenantId);
+
+        using (_dataFilter.Disable<IMultiTenant>())
         {
 
-            var countt = await GetCountWithoutMultitenant();
-            return countt;
-            
-        }
-        
-
             var query = await _repository.GetQueryableAsync();
+            query=query.Include(x => x.Organizations).Where(x => x.Organizations.Any(o => o.Id == orgId));
             var count = await AsyncExecuter.CountAsync(query);
             return count;
-        
+        }
     }
+    
     /// <inheritdoc/>
 
     public async Task<bool> CheckIfNationalIDIsUnique(string NationalId)

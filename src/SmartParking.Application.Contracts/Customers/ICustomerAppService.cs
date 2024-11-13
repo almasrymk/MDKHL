@@ -94,11 +94,15 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 
 
     /// <summary>
-    /// Method used to get Count of Customers.
+    /// Method used to get Count of Customers for MDKHL.
     /// </summary>
     /// <returns>Count of Customers</returns>
-    Task<int> GetAllCustomersCount();
-
+    Task<int> GetCountCustomersCountForMDKHL();
+    /// <summary>
+    /// Method used to get Count of Customers for organization.
+    /// </summary>
+    /// <returns>Count of Customers</returns>
+    Task<int> GetCountCustomersCountForOrganization(Guid ?CurrentTenantId);
     /// <summary>
     /// Methods that checks if national id is not duplicate.
     /// </summary>
