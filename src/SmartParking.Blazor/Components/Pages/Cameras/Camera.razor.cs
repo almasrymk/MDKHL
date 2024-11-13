@@ -227,7 +227,6 @@ public partial class Camera
 			MainType = cameraDto.MainType,
 			Model = cameraDto.Model,
 			TenantId = cameraDto.TenantId,
-			//Type = cameraDto.Type,
             CameraType=cameraDto.CameraType,
 
 		};
@@ -261,7 +260,6 @@ public partial class Camera
             MainType = cameraDto.MainType,
             Model = cameraDto.Model,
             TenantId = cameraDto.TenantId,
-            //Type=cameraDto.Type,
            CameraType = cameraDto.CameraType
 
         };

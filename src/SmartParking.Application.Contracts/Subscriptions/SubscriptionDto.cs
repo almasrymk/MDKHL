@@ -17,7 +17,8 @@ public class SubscriptionDto : BaseDto
     public DateOnly ActivationDate { get; set; }
     public DateOnly InActivationDate { get; set; }
     public int SubscriptionTypeId { get; set; }
-    public string SubscriptionType { get; set; }
+    public string SubscriptionTypeEn { get; set; }
+    public string SubscriptionTypeAr { get; set; }
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
     public int NumberOfUsers { get; set; }

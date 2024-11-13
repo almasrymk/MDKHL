@@ -133,15 +133,16 @@ public partial class Subscription
         if (CultureInfo.CurrentCulture.Name == "en")
         { 
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "English Name", IsFilterable = false, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeEn", IsFilterable = true, PropertyNmae = "SubscriptionTypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
         
         }
         else
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "Arabic Name", IsFilterable = false, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeAr", IsFilterable = true, PropertyNmae = "SubscriptionTypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyNmae = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionType", IsFilterable = true, PropertyNmae = "SubscriptionType.Type", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyNmae = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionStatus"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
@@ -154,15 +155,16 @@ public partial class Subscription
             if (CultureInfo.CurrentCulture.Name == "en")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionType"], item.SubscriptionTypeEn));
             
             }
             else
             {
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionType"], item.SubscriptionTypeAr));
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionDescription"], item.SubscriptionDescription));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionType"], item.SubscriptionType));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"], item.SubscriptionPrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionStatus"], _localizer[$"{item.Status.ToString()}"]));
 

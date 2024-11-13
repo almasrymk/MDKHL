@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.OrganizationsGarages
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IGarageAppService GaragesAppService
@@ -35,7 +36,21 @@
 							{
 								if (org.Status != Enums.Status.Active)
 									continue;
-								<MudSelectItem Value="org.Id">@org.EnglishName</MudSelectItem>
+								if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem T="int" Value="@org.Id">
+
+										@org.EnglishName
+									</MudSelectItem>
+								}
+								else
+								{
+
+									<MudSelectItem T="int" Value="@org.Id">
+
+										@org.ArabicName
+									</MudSelectItem>
+								}
 							}
 						</MudSelect>
 					</MudItem>

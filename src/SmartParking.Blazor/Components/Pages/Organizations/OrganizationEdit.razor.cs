@@ -59,9 +59,15 @@ public partial class OrganizationEdit
     public string StreetName { get; set; }
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
+    public int PackageId { get; set; }
     public string District { get; set; }
     public string OrganizationPicture { get; set; }
     public string Photo { get; set; }
+    private string PackageSelectValue { get; set; }
+    private Guid orgTenant { get; set; }
+
+
+
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -126,7 +132,15 @@ public partial class OrganizationEdit
 
         try
         {
+            createUpdateOrganiztion.TenantId = orgTenant;
+
+
             var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
+            if (PackageId != int.Parse(PackageSelectValue))
+            {
+                await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(PackageSelectValue));
+
+            }
             Navigation.NavigateTo("/organizations");
             ShowSnackbar(successedMessage, Severity.Success);
         }
@@ -215,6 +229,8 @@ public partial class OrganizationEdit
         District = organization.District;
         IsClose = organization.IsClose;
         OrganizationPicture = organization.OrganizationPicture;
+        PackageId = organization.PackageId;
+        orgTenant = organization.TenantId;
     }
     private async Task GetRegions()
     {
@@ -255,6 +271,8 @@ public partial class OrganizationEdit
         await GetStates();
         
         await GetCities();
+        packages = await SubscriptionAppService.GetAllAsync();
+
     }
     private async Task ViewGarages()
     {

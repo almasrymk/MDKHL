@@ -29,7 +29,7 @@ public interface IKeeperAppService
     /// Retrieves a list of all garage transaction with no plate number  asynchronously.
     /// </summary>
     /// <returns>list of GarageTransactionDto</returns>
-	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync(int organizationId);
+	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync(int organizationId, Guid userId);
 
     /// <summary>
 	/// Retrieves a list of all garage transaction  asynchronously.
@@ -47,7 +47,7 @@ public interface IKeeperAppService
 	/// Retrieves a list of all existing transaction  asynchronously.
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
-	Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId);
+	Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId);
 
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 }

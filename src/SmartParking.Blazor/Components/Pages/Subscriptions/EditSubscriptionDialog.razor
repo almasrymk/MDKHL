@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
+@using System.Globalization
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject ISnackbar Snackbar
@@ -44,17 +45,25 @@
 
                     <MudItem sm="6">
                         <MudSelect Variant="Variant.Text"
-                                   Label="@L["SubscriptionType"]"
                                    Placeholder="@L["Choose"]"
                                    Clearable="true"
-                                   Required="true"
+                                       Label="@L["SubscriptionType"]"
+                                       Required="true"
                                    AnchorOrigin="Origin.TopCenter"
                                    TransformOrigin="Origin.TopCenter"
                                    @bind-Value="subscription.SubscriptionTypeId">
 
                             @foreach (var subscription in subscriptions)
                             {
-                                <MudSelectItem Value="@subscription.Id">@subscription.SubscriptionType</MudSelectItem>
+                                    @if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudText>@subscription.SubscriptionTypeEn</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText>@subscription.SubscriptionTypeAr</MudText>
+
+                                    }
                             }
                         </MudSelect>
                     </MudItem>
@@ -160,7 +169,6 @@
                             <MudRadioGroup @bind-Value="@subscription.Status" Class="d-inline-flex align-content-center">
                                 <MudRadio Value="@(SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                                 <MudRadio Value="@(SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                                <MudRadio Value="@(SubscriptionStatus.Draft)" Color="MudBlazor.Color.Warning">@L["Status Draft"]</MudRadio>
                             </MudRadioGroup>
                         </MudItem>
                     </MudItem>
