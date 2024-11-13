@@ -20,6 +20,8 @@ public class OtpKeeperController : AbpController
     }
 
     [HttpPost("generateOtp")]
+	[AllowAnonymous]
+	[IgnoreAntiforgeryToken]
 	public async Task<Result<string>> GenerateOtp([FromQuery] string phoneNumber)
 	{
 		return await _otpAppService.GenerateOtpAsync(phoneNumber);
@@ -40,7 +42,9 @@ public class OtpKeeperController : AbpController
 	}
 
 	[HttpPost("forgetPasswordOtp")]
-	public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtp([FromQuery] Guid userId, string otp)
+    [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
+    public async Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtp([FromQuery] Guid userId, string otp)
 	{
 		return await _otpAppService.ForgetPasswordOtpAsync(userId, otp);
 	}
