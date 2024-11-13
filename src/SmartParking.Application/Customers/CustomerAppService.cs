@@ -83,6 +83,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         try
         {
 
+
+
             var org = await _organizationAppService.GetOrganizationForCurrentTenat();
 
                 using (_dataFilter.Disable<IMultiTenant>()) {
@@ -127,14 +129,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("National Id is already exist !");
 
             }
-            if (org == null)
+            if (org == null && CurrentTenant.Id!=null)
             {
                 throw new Exception("Customer must belong to organization");
 
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+            if(CurrentTenant.Id != null)
+            {
             customer.Organizations = new List<Organization>();
+
             customer.Organizations.Add(org);
+            }
             customer.IdentityUser.Name = input.UserName;
             customer.IdentityUser.Surname = input.FullName;
             customer.IdentityUser.SetProperty("OtpCode", null);
