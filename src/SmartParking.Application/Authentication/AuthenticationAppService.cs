@@ -370,23 +370,27 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
     /// <inheritdoc/>
 
-    public async Task<Result> ChangePassword(ChangePasswordInputDto input)
+    public async Task<Result> SetNewPassword(ChangePasswordInputDto input)
     {
 
         var Id = CurrentUser.FindClaim(OpenIddictConstants.Claims.Subject)?.Value;
         var user = await _userManager.FindByIdAsync(Id);
-        if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
+        
+        var password = await _userManager.CheckPasswordAsync(user, input.NewPassword);
+        if(!password)
         {
-            await _userManager.ChangePasswordAsync(user, input.CurrentPassword, input.NewPassword);
-        }
-        else
-        {
-            return Result.Error("Incorrect password.");
+            return Result.Invalid(new Results.ValidationError
+            {
+                ErrorMessage = "Incorrect password."
+            });
 
         }
 
-        return Result.Success();
+        return Result.SuccessWithMessage("Set New Password Successfully");
+
     }
+
+
     /// <inheritdoc/>
     public async Task LogOutAsync()
     {

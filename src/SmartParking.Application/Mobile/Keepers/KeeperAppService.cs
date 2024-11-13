@@ -10,7 +10,6 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
-using SmartParking.Organizations;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using System;

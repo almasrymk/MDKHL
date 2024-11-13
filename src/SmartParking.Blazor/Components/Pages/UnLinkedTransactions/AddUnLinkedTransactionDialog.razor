@@ -1,0 +1,90 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@inject IUnLinkedTransactionAppService UnLinkedTransactionAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+<PageTitle>@L["AddUnLinkedTransaction"]</PageTitle>
+
+<div>
+    <MudItem class="modal-wrapper">
+        <MudDialog class="mud-modal">
+            <TitleContent>
+                <MudText Typo="Typo.h6">@L["NewUnLinkedTransaction"]</MudText>
+            </TitleContent>
+            <DialogContent>
+                <MudForm Class=" flex-grow-1 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                    <MudGrid>
+                        <MudItem sm="6"
+                                 Class="pt-0">
+                            <MudTextField @bind-Value="input.DeviceID"
+                                          For="@(() => input.DeviceID)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          Label="@L["DeviceID"]"
+                                          InputType="InputType.Text"
+                                          Required="true" />
+                        </MudItem>
+
+                        <MudItem sm="6" Class="pt-0">
+                            <MudTextField @bind-Value="input.PlateNumber"
+                                          For="@(() => input.PlateNumber)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          Label="@L["PlateNumber"]"
+                                          InputType="InputType.Text"
+                                          Required="true" />
+                        </MudItem>
+                       
+                        <MudItem sm="6">
+                            <MudTextField @bind-Value="input.VehiclePicture"
+                                          For="@(() => input.VehiclePicture)"
+                                          Immediate="true"
+                                          Placeholder=@L["Type Here"]
+                                          Label="@L["VehiclePicture"]"
+                                          InputType="InputType.Text"
+                                          Required="true" />
+                        </MudItem>
+                       
+
+                        <MudItem sm="4">
+                            <MudDatePicker @bind-Date="input.SnapTime"
+                                           @bind-value="input.SnapTime"
+                                           Variant="Variant.Text"
+                                           Placeholder=@L["Will Be Generated Automatically"]
+                                           Label="@L["SnapTime"]"
+                                           ShowToolbar="true" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudDatePicker @bind-Date="input.AccurateTime"
+                                           @bind-value="input.AccurateTime"
+                                           Variant="Variant.Text"
+                                           Placeholder=@L["Will Be Generated Automatically"]
+                                           Label="@L["InActivationDate"]"
+                                           ShowToolbar="true" />
+                        </MudItem>
+
+                    </MudGrid>
+                </MudForm>
+
+            </DialogContent>
+
+            <DialogActions>
+                <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["SaveAsDraft"]</MudButton>
+            </DialogActions>
+
+        </MudDialog>
+
+    </MudItem>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+        width: auto;
+    }
+</style>
