@@ -421,6 +421,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -507,6 +510,64 @@ namespace SmartParking.Migrations
                     b.ToTable("GarageTransactions");
                 });
 
+            modelBuilder.Entity("SmartParking.Entities.GarageTransactions.UnLinkedTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AccurateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("DeviceId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("PlateNumber")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("SnapTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("VehiclePicture")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UnLinkedTransactions");
+                });
+
             modelBuilder.Entity("SmartParking.Entities.Invoices.Invoice", b =>
                 {
                     b.Property<int>("Id")
@@ -523,6 +584,12 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+                    b.Property<string>("CustomerArName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomerEnName")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
@@ -533,6 +600,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
+
+                    b.Property<DateTime?>("EntranceTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
@@ -774,6 +844,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("PlateColorId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -832,6 +905,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -888,6 +964,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -943,6 +1022,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
@@ -1007,6 +1089,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
@@ -1185,6 +1270,9 @@ namespace SmartParking.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<int>("PackageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
@@ -1627,6 +1715,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("PackageId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -1834,6 +1925,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -1914,6 +2008,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int>("StatusSubscription")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SubscriptionDescription")
                         .HasColumnType("text");
 
@@ -1975,6 +2072,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Type")
                         .HasColumnType("text");
 
@@ -2032,6 +2132,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
@@ -2100,6 +2203,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("PlateNumber")
                         .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
