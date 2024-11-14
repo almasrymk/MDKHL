@@ -113,16 +113,7 @@
                                       Required="true" />
                     </MudItem>
 
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="subscription.NumberOfOrganizations"
-                                      For="@(() => subscription.NumberOfOrganizations)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder="@L["Type Here"]"
-                                      InputType="InputType.Number"
-                                      Label="@L["NumberOfOrganizations"]"
-                                      Required="true" />
-                    </MudItem>
+                  
                     <MudItem sm="4">
                         <MudTextField @bind-Value="subscription.NumberOfCameras"
                                       For="@(() => subscription.NumberOfCameras)"
@@ -144,13 +135,13 @@
                                       Required="true" />
                     </MudItem>
                     <MudItem sm="4">
-                        <MudTextField @bind-Value="subscription.NumberOfMobileCustomers"
-                                      For="@(() => subscription.NumberOfMobileCustomers)"
+                        <MudTextField @bind-Value="subscription.NumberOfCustomers"
+                                      For="@(() => subscription.NumberOfCustomers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder="@L["Type Here"]"
                                       InputType="InputType.Number"
-                                      Label="@L["NumberOfMobileCustomers"]"
+                                          Label="@L["NumberOfCustomers"]"
                                       Required="true" />
                     </MudItem>
                     <MudItem sm="4">
@@ -164,6 +155,16 @@
                                       Required="true" />
                     </MudItem>
 
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="subscription.ParkingSlot"
+                                          For="@(() => subscription.ParkingSlot)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder="@L["Type Here"]"
+                                          InputType="InputType.Number"
+                                          Label="@L["ParkingSlot"]"
+                                          Required="true" />
+                        </MudItem>
                     <MudItem sm="6" Class="d-inline-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@subscription.Status" Class="d-inline-flex align-content-center">

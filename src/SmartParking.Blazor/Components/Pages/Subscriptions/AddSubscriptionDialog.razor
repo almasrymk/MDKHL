@@ -139,29 +139,8 @@
                                        Color="MudBlazor.Color.Primary"
                                        />
                         </MudItem>
-                        <MudItem sm="6">
-
-                            <MudNumericField T="int"
-                                             @bind-Value="@(BoundNumberOfOrganization=maximumNumberOfOrganizations?UnlimitedMaximumNumber:BoundNumberOfOrganization)"
-                                             Immediate="true"
-                                             Variant="Variant.Text"
-                                             Placeholder=@L["Type Here"]
-                                             Label="@L["NumberOfOrganizations"]"
-                                             HideSpinButtons
-                                             Min="0"
-                                             Disabled="maximumNumberOfOrganizations"
-                                             Required="maximumNumberOfOrganizations" />
-
-                        </MudItem>
-
-                        <MudItem sm="6">
-                            <MudSwitch 
-                                Label="@L["UnlimitedOrganizations"]" 
-                                LabelPosition="LabelPosition.Start"
-                                       @bind-Value="maximumNumberOfOrganizations"
-                                       Color="MudBlazor.Color.Primary" />
-
-                        </MudItem>
+                     
+                     
                         <MudItem sm="6">
 
                             <MudNumericField T="int"
@@ -249,8 +228,17 @@
                                       Label="@L["SubscriptionSlotNumber"]"
                                       Required="true" />
                     </MudItem>
-                    
 
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="input.ParkingSlot"
+                                          For="@(() => input.ParkingSlot)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          InputType="InputType.Number"
+                                          Label="@L["ParkingSlot"]"
+                                          Required="true" />
+                        </MudItem>
 
                 </MudGrid>
             </MudForm>

@@ -60,9 +60,9 @@ public partial class OrganizationAdd
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
     public int NumberOfUsers { get; set; }
-    public int NumberOfMobileCustomers { get; set; }
-    public int NumberOfOrganizations { get; set; }
+    public int NumberOfCustomers { get; set; }
     public int SubscriptionSlotNumber { get; set; }
+    public int ParkingSlot { get; set; }
 
     private SubscriptionDto? SelectedPackage;
 
@@ -124,9 +124,9 @@ public partial class OrganizationAdd
             NumbersOfGarages = SelectedPackage.NumbersOfGarages;
             NumberOfCameras = SelectedPackage.NumberOfCameras;
             NumberOfUsers = SelectedPackage.NumberOfUsers;
-            NumberOfMobileCustomers = SelectedPackage.NumberOfMobileCustomers;
-            NumberOfOrganizations = SelectedPackage.NumberOfOrganizations;
+            NumberOfCustomers = SelectedPackage.NumberOfCustomers;
             SubscriptionSlotNumber = SelectedPackage.SubscriptionSlotNumber;
+            ParkingSlot = SelectedPackage.ParkingSlot; 
         }
         else
         {
@@ -134,8 +134,7 @@ public partial class OrganizationAdd
             NumbersOfGarages = 0;
             NumberOfCameras = 0;
             NumberOfUsers = 0;
-            NumberOfMobileCustomers = 0;
-            NumberOfOrganizations = 0;
+            NumberOfCustomers = 0;
             SubscriptionSlotNumber = 0;
         }
 
