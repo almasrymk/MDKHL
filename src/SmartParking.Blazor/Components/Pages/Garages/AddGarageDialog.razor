@@ -81,40 +81,7 @@
                    @*  @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
                     { *@
                         
-                    <MudItem sm="12" md="12">
-                                <MudSelect @bind-Value="@createUpdateGarage.OrganizationId" 
-                                Label="@L["OrganizationName"]" 
-                                Placeholder="@L[ "Choose"]"  
-                                HelperText=@L["Helper Text"]
-                                Required
-                                
-                                >
-
-                                    @foreach (var organization in Organizations)
-                                    {
-                                        if (organization.Status != Enums.Status.Active)
-                                                continue;
-
-                                        if (CultureInfo.CurrentCulture.Name == "en")
-                                        {
-                                             <MudSelectItem T="int" Value="@organization.Id">
-                                            
-                                                @organization.EnglishName
-                                             </MudSelectItem>
-                                        }
-                                        else
-                                        {
-
-                                            <MudSelectItem T="int" Value="@organization.Id">
-
-                                                @organization.ArabicName
-                                            </MudSelectItem>
-                                        }
-                                    }
-                                </MudSelect>
-
-                            </MudItem>
-                    @* } *@
+                    
 
                             <MudItem sm="9" md="9">
 

@@ -10,8 +10,6 @@ namespace SmartParking.Mobile.Keepers;
 public class ChangePasswordDto
 {
     [Required]
-    public string CurrentPassword { get; set; }
-    [Required]
     [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$^+=!*()@%&]).{8,}$",
         ErrorMessage = "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character, and must be at least 8 characters long.")]
     [PasswordPropertyText]

@@ -73,7 +73,7 @@ public interface IAuthenticationAppService : IApplicationService
     /// </summary>
     /// <param name="input">The input containing the current and new passwords.</param>
     /// <returns>A <see cref="BaseResultDto"/> indicating the result of the password change operation.</returns>
-    Task<Result> ChangePassword(ChangePasswordInputDto input);
+    Task<Result> SetNewPassword(ChangePasswordInputDto input);
 
     Task<UserDataDto> UpdateUser(string phone, string password);
 }

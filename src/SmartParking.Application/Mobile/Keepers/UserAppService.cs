@@ -29,16 +29,13 @@ public class UserAppService : ApplicationService, IUserAppService
     }
 
     /// <inheritdoc/>
-    public async Task<Result> ChangePasswordAsync(ChangePasswordDto input)
+    public async Task<Result> SetNewPasswordAsync(ChangePasswordDto input)
     {
-        //string? userName;
+        var Name = CurrentUser.Name;
 
-        //using (DataFilter.Disable<IMultiTenant>())
-        //{
-        //}
-        var userName = CurrentUser.Name;
-  
-        if (userName is null)
+        var user = await _userManager.FindByIdAsync(Name);
+
+        if (user is null)
         {
             return Result.Invalid(new ValidationError
             {
@@ -46,23 +43,18 @@ public class UserAppService : ApplicationService, IUserAppService
             });
         }
 
-        Volo.Abp.Identity.IdentityUser? user;
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-             user = await _userManager.FindByNameAsync(userName);
-        }
+        var password = await _userManager.CheckPasswordAsync(user, input.NewPassword);
 
-        if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
+        if (!password)
         {
-            await _userManager.ChangePasswordAsync(user, input.CurrentPassword, input.NewPassword);
-        }
-        else
-        {
-            return Result.Error("Incorrect password.");
+            return Result.Invalid(new ValidationError
+            {
+                ErrorMessage = "Incorrect password."
+            });
 
         }
 
-        return Result.SuccessWithMessage("Password Changed Successfully");
+        return Result.SuccessWithMessage("Set New Password Successfully");
     }
 
     /// <inheritdoc/>

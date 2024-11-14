@@ -71,22 +71,14 @@ public class GarageTransactionsAppService:
                 queryable = queryable.OrderBy(input.Sorting);
             }
         }
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
-           
-                var transactions = await AsyncExecuter.ToListAsync(queryable.Skip(input.SkipCount).Take(input.MaxResultCount));
-                var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-                return new PagedResultDto<GarageTransactionDto>(
-                    totalCount,
-                    ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions)
-                );
-            
-        }
-        else
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetListAsync(input);
+            var transactions = await base.GetListAsync(input);
+
+            return transactions;
         }
+
     }
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
@@ -337,14 +329,6 @@ public class GarageTransactionsAppService:
             // Return the relative path for storing in the database
             return $"/GarageTransactionsImages/{input.OrganizationID}/{input.GarageId}/{input.CameraId}/{fileName}";
         }
-        //catch (FormatException ex)
-        //{
-        //    throw new UserFriendlyException("The provided image is not a valid Base64 string", ex);
-        //}
-        //catch (UnauthorizedAccessException ex)
-        //{
-        //    throw new UserFriendlyException("Failed to save the image due to insufficient permissions", ex);
-        //}
         catch (Exception ex)
         {
             return null;

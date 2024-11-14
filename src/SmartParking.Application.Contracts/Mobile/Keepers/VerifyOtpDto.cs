@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Mobile.Keepers;
 
-public class ForgetPasswordOtpDto
-{
-
-    public Guid UserId { get; set; }
+public class VerifyOtpDto
+{ 
+    public string AccessToken { get; set; }
 }
