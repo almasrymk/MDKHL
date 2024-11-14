@@ -43,30 +43,29 @@
                                       Required="true" />
                     </MudItem>
 
-                    <MudItem sm="6">
-                        <MudSelect Variant="Variant.Text"
-                                   Placeholder="@L["Choose"]"
-                                   Clearable="true"
+                        <MudItem sm="6">
+                            <MudSelect Variant="Variant.Text"
                                        Label="@L["SubscriptionType"]"
-                                       Required="true"
-                                   AnchorOrigin="Origin.TopCenter"
-                                   TransformOrigin="Origin.TopCenter"
-                                   @bind-Value="subscription.SubscriptionTypeId">
+                                       Placeholder="@L["Choose"]"
+                                       Clearable="true"
+                                       @bind-Value="subscription.SubscriptionTypeId">
 
-                            @foreach (var subscription in subscriptions)
-                            {
-                                    @if (CultureInfo.CurrentCulture.Name == "en")
+                                @foreach (var subscription in subscriptions)
+                                {
+                                   
+                                    if (CultureInfo.CurrentCulture.Name == "en")
                                     {
-                                        <MudText>@subscription.SubscriptionTypeEn</MudText>
+                                        <MudSelectItem Value="subscription.Id">@subscription.SubscriptionTypeEn</MudSelectItem>
+
                                     }
                                     else
                                     {
-                                        <MudText>@subscription.SubscriptionTypeAr</MudText>
+                                        <MudSelectItem Value="subscription.Id">@subscription.SubscriptionTypeAr</MudSelectItem>
 
                                     }
-                            }
-                        </MudSelect>
-                    </MudItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
 
                     <MudItem sm="6">
                         <MudTextField @bind-Value="subscription.SubscriptionPrice"
