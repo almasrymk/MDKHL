@@ -2075,7 +2075,13 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Type")
+                    b.Property<int>("SubscriptionStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TypeAr")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeEn")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
