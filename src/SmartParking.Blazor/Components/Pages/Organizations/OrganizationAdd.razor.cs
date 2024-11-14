@@ -310,7 +310,7 @@ public partial class OrganizationAdd
     }
     private string ValidateBuildingNumber(int value)
     {
-        if (value < 11111)
+        if (value < 0)
             return "The value not valid.";
         if (value > 99999)
             return "The value not valid.";
