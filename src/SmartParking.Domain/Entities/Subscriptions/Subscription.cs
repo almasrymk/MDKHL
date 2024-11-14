@@ -21,9 +21,9 @@ public class Subscription : BaseEntity
     public int NumberOfCameras { get; set; }
     public int NumberOfUsers { get; set; }
     public int NumberOfCustomers { get; set; }
-    public int ParkingSlot { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public int SubscriptionTypeId { get; set; }
+    public int ParkingSlot { get; set; }
     public virtual SubscriptionType SubscriptionType { get; set; }
     public virtual ICollection<Organization> Organizations { get; set; }
 }

@@ -60,6 +60,7 @@ public partial class AddSubscriptionDialog
             input.NumberOfCustomers =  BoundNumberOfCustomers;
             input.NumberOfUsers =  BoundNumberOfUsers;
             input.NumberOfCameras = BoundNumberOfCameras;
+           
             input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);

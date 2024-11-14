@@ -67,7 +67,7 @@ public partial class EditSubscriptionDialog
                 NumbersOfGarages = subscription.NumbersOfGarages,
                 SubscriptionSlotNumber = subscription.SubscriptionSlotNumber,
                 ParkingSlot = subscription.ParkingSlot,
-               
+                
             };
 
             // Call the update method

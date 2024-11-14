@@ -19,9 +19,9 @@ public class CreateUpdateSubscriptionDto : CreateUpdateBaseDto
     public int NumberOfCameras { get; set; }
     public int NumberOfUsers { get; set; }
     public int NumberOfCustomers { get; set; }
-    public int ParkingSlot { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public int SubscriptionTypeId { get; set; }
+    public int ParkingSlot { get; set; }
     public DateTime CreationTime { get; set; }
     public Guid CreatorId { get; set; }
 }
