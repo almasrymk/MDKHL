@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
@@ -47,23 +48,22 @@
                             <MudSelect Variant="Variant.Text"
                                        Label="@L["SubscriptionType"]"
                                        Placeholder="@L["Choose"]"
-                                       HelperText=@L["Helper Text"]
-                                       Required="true"
-                                       AnchorOrigin="Origin.TopCenter"
-                                       TransformOrigin="Origin.TopCenter"
+                                       Clearable="true"
                                        @bind-Value="input.SubscriptionTypeId">
+                               
 
                                 @foreach (var subscription in subscriptions)
                                 {
-                                    if (subscription.Status != Enums.Status.Active || subscription.SubscriptionStatus!=Enums.SubscriptionStatus.Active)
+                                    @if (subscription.Status != Status.Active)
                                         continue;
-                                    @if (CultureInfo.CurrentCulture.Name == "en")
+                                    if(CultureInfo.CurrentCulture.Name == "en")
                                     {
-                                        <MudText>@subscription.SubscriptionTypeEn</MudText>
+                                        <MudSelectItem Value="subscription.Id">@subscription.SubscriptionTypeEn</MudSelectItem>
+
                                     }
                                     else
                                     {
-                                        <MudText>@subscription.SubscriptionTypeAr</MudText>
+                                        <MudSelectItem Value="subscription.Id">@subscription.SubscriptionTypeAr</MudSelectItem>
 
                                     }
                                 }
