@@ -409,8 +409,14 @@
     "NewSubscriptionType": "New Subscription Type",
     "Return": "Return",
     "Type": "Subscription Type",
-    "SubscriptionType": "Subscription Type"
-
-
+    "UnLinkedTransaction": "Un Linked Transaction",
+    "DeviceId": "Device Id",
+    "UnLinkedTransactionDeletedSuccessfully": "UnLinked Transaction Deleted Successfully",
+    "Can'tDeleteUnLinkedTransaction": "Can't Delete UnLinked Transaction",
+    "AddUnLinkedTransaction": "AddUnLinkedTransaction",
+    "NewUnLinkedTransaction": "NewUnLinkedTransaction",
+    "UnLinkedTransactionCreatedSuccessfully": "UnLinkedTransactionCreatedSuccessfully",
+    "Can'tCreateUnLinkedTransaction": "Can'tCreateUnLinkedTransaction",
+    "FailedToAddUnLinkedTransaction": "FailedToAddUnLinkedTransaction"
   } 
 }

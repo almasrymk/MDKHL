@@ -30,15 +30,14 @@ public interface IOtpAppService : IApplicationService
 	/// <param name="phoneNumber">phoneNumber of user</param>
 	/// <param name="otp">otp code</param>
 	/// <returns>boolean</returns>
-	public Task<Result<bool>> VerifyOtpAsync(string phoneNumber, string otp);
+	public Task<Result<VerifyOtpDto>> VerifyOtpAsync(string phoneNumber, string otp);
 
 	/// <summary>
-	/// abstract method to forget password otp by userId
+	/// abstract method to forget password otp by phoneNumber
 	/// </summary>
-	/// <param name="userId">userId</param>
-	/// <param name="otp">userId</param>
-	/// <returns>useriD</returns>
-	public Task<Result<ForgetPasswordOtpDto>> ForgetPasswordOtpAsync(Guid userId, string otp);
+	/// <param name="phoneNumber">userId</param>
+	/// <returns>otp code</returns>
+	public Task<Result<string>> ForgetPasswordOtpAsync(string phoneNumber);
 
 
 }
