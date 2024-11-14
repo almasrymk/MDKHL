@@ -129,24 +129,24 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("National Id is already exist !");
 
             }
-            if (org == null && CurrentTenant.Id!=null)
-            {
-                throw new Exception("Customer must belong to organization");
+            //if (org == null && CurrentTenant.Id!=null)
+            //{
+            //    throw new Exception("Customer must belong to organization");
 
-            }
+            //}
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             if(CurrentTenant.Id != null)
             {
-            customer.Organizations = new List<Organization>();
+                customer.Organizations = new List<Organization>();
+                customer.Organizations.Add(org);
+				customer.IdentityUser.SetProperty("OrganizationId", org.Id);
 
-            customer.Organizations.Add(org);
-            }
-            customer.IdentityUser.Name = input.UserName;
+			}
+			customer.IdentityUser.Name = input.UserName;
             customer.IdentityUser.Surname = input.FullName;
             customer.IdentityUser.SetProperty("OtpCode", null);
             customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
             customer.IdentityUser.SetProperty("UserTypeId", 3);
-            customer.IdentityUser.SetProperty("OrganizationId", org.Id);
             customer.IdentityUser.SetProperty("TenantId", null);
             customer.TenantId = null;
             customer.IdentityUser.Name = input.FullName;
