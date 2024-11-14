@@ -35,10 +35,17 @@ public partial class CustomerRegister
 		var successedMessage = L["CustomerCreatedSuccessfullyWith"];
 		try
         {
-      
-            createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+            CustomerDto customer;
 
-            var customer =  await CustomerAppService.CreateAsync(createUpdateCustomerDto);
+			createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+            if(CurrentTenant.Id == null)
+            {
+				customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
+			}
+            else
+            {
+				customer = await CustomerAppService.CreateAsync(createUpdateCustomerDto);
+			}
             if (customer != null)
             {
 

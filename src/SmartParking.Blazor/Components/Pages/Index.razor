@@ -185,21 +185,21 @@
 
     protected async override Task OnInitializedAsync()
     {
-        _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
-        _garagesCount = await GarageAppService.GetAllGaragesCount();
+        // _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
+        // _garagesCount = await GarageAppService.GetAllGaragesCount();
 
 
 
         if (currenttenant.Id == null)
         {
-            var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
-            value.Count = result.Count;
-            value.Names = result.Names;
-            data = value.Count.ToArray();
-            labels = value.Names.ToArray();
+            // var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
+            // value.Count = result.Count;
+            // value.Names = result.Names;
+            // data = value.Count.ToArray();
+            // labels = value.Names.ToArray();
 
-            grid = 4;
-            _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
+            // grid = 4;
+            // _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
         }
         else
         {

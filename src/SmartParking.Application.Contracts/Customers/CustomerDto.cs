@@ -19,7 +19,8 @@ public class CustomerDto
     public string NationalId { get; set; }
     public IdentificationTypes identificationTypes { get; set; }
     public List<VehicleDto> Vehicles { get; set; }
-
+    public string OrganizationArabicName { get; set; }
+    public string OrganizationEnglishName { get; set; }
     public bool isActive { get; set; }
 }
 

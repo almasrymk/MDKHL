@@ -42,7 +42,7 @@ public class Organization : BaseEntity
     public virtual ICollection<Garage> OrganizationGarages { get; set; } = new HashSet<Garage>();
     public virtual ICollection<Camera> Cameras { get; set; } = new HashSet<Camera>();
     public virtual ICollection<Package> organizationPackages { get; set; } = new HashSet<Package>();
-    public virtual ICollection<Customer> Customers { get; set; } =new HashSet<Customer>();
+    public virtual ICollection<CustomerPackage> Customers { get; set; } =new HashSet<CustomerPackage>();
     public virtual ICollection<ContactInfo> organizationContactInfos { get; set; } = new HashSet<ContactInfo>();
     public virtual ICollection<CustomerCategory> CustomerCategories { get; set; } = new HashSet<CustomerCategory>();  
     public int? SubscriptionId { get; set; }
