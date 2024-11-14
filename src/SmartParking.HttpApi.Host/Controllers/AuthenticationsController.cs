@@ -41,10 +41,10 @@ public class AuthenticationsController : ControllerBase
     {
         return await _authenticationApp.GetUserDataAsync();
     }
-    [HttpPost("changePassword")]
+    [HttpPost("setNewPassword")]
     [IgnoreAntiforgeryToken]
-    public async Task<Result> ChangePassword(ChangePasswordInputDto input)
+    public async Task<Result> SetNewPassword(ChangePasswordInputDto input)
     {
-        return await _authenticationApp.ChangePassword(input);
+        return await _authenticationApp.SetNewPassword(input);
     }
 }
