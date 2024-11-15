@@ -41,7 +41,10 @@
                 <MudNavLink Href="/packages" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                 
                 }
-                <MudNavLink Href="/invoices" Icon="@Icons.Material.Filled.Assignment">@L["Invoices"]</MudNavLink>
+                @if(currenttenant.Id != null)
+                {
+                    <MudNavLink Href="/invoices" Icon="@Icons.Material.Filled.Assignment">@L["Invoices"]</MudNavLink>
+                }
 
                 <MudNavLink Href="/garageTransactions" Icon="@Icons.Material.Filled.CompareArrows">@L["GarageTransactions"]</MudNavLink>
                 @if (currenttenant.Id == null)
