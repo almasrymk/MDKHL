@@ -135,22 +135,22 @@ public partial class Package
 		};
 
 
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
 		if (CultureInfo.CurrentCulture.Name == "en")
 		{
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeEnglishName"], Name = "PackageTypeEnglishName", IsFilterable = true, PropertyNmae = "PackageType.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeEnglishName"], Name = "PackageTypeEnglishName", IsFilterable = true, PropertyName = "PackageType.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		}
 		else
 		{
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeArabicName"], Name = "PackageTypeArabicName", IsFilterable = true, PropertyNmae = "PackageType.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeArabicName"], Name = "PackageTypeArabicName", IsFilterable = true, PropertyName = "PackageType.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 		}
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = true, PropertyNmae = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Description"], Name = "Description", IsFilterable = true, PropertyNmae = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = true, PropertyNmae = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = true, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Description"], Name = "Description", IsFilterable = true, PropertyName = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = true, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in packages.Items)

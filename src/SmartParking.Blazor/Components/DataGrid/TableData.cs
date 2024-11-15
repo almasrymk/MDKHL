@@ -29,6 +29,6 @@ public class ColumnDef
     public bool IsFilterable { get; set; }
     public bool IsSortable { get; set; }
     public int Width { get; set; }
-    public string PropertyNmae { get; set; }
+    public string PropertyName { get; set; }
     public TypeFilter TypeFilter { get; set; }
 }
