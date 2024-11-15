@@ -31,6 +31,7 @@ using OpenIddict.Server;
 using Volo.Abp.MultiTenancy;
 using System.Xml.Linq;
 using SmartParking.Entities.Customers;
+using static Volo.Abp.Identity.IdentityPermissions;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -224,10 +225,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                  user = await _userManager.FindByNameAsync(input.Username);
 
             }
-            if (user == null) {
+            if (user == null ) {
                 return null;
             }
-
+            var role = await  _userManager.GetRolesAsync(user);
+            if (role.FirstOrDefault() == RolesType.OrganizationEmployee.ToString())
+                return null;
             var organizationId = user.GetProperty<int>("OrganizationId");
             if (organizationId != 0)
             {
@@ -239,9 +242,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 }
                 if (organization != null)
                 {
-                    Console.WriteLine(organization.Status.ToString());
-                    Console.WriteLine(Enums.Status.Deleted.ToString());
-                    Console.WriteLine(Enums.Status.Inactive.ToString());
 
 
                     if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
