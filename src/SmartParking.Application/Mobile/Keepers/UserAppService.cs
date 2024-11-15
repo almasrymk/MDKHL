@@ -33,9 +33,14 @@ public class UserAppService : ApplicationService, IUserAppService
     {
         var Name = CurrentUser.Name;
 
-        var user = await _userManager.FindByIdAsync(Name);
+		Volo.Abp.Identity.IdentityUser? user;
+        using(DataFilter.Disable<IMultiTenant>())
+        {
+		  user = await _userManager.FindByNameAsync(Name);
 
-        if (user is null)
+		}
+
+		if (user is null)
         {
             return Result.Invalid(new ValidationError
             {
@@ -43,19 +48,20 @@ public class UserAppService : ApplicationService, IUserAppService
             });
         }
 
-        var password = await _userManager.CheckPasswordAsync(user, input.NewPassword);
+		await _userManager.RemovePasswordAsync(user);
+		var password = await _userManager.AddPasswordAsync(user, input.NewPassword);
 
-        if (!password)
-        {
-            return Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "Incorrect password."
-            });
+		if (password.Succeeded)
+		{
+			return Result.SuccessWithMessage("Set New Password Successfully");
 
-        }
+		}
 
-        return Result.SuccessWithMessage("Set New Password Successfully");
-    }
+		return Result.Invalid(new Results.ValidationError
+		{
+			ErrorMessage = "Incorrect password."
+		});
+	}
 
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> GetUserDataAsync()
