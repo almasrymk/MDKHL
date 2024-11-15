@@ -20,7 +20,15 @@ public class Garage : FullAuditedEntity<int> , IMultiTenant,IBseEntity
     public virtual Organization Organization { get; set; }
     public Status Status { get; set; }
     public int CurrnetCapicity { get; set; }
+    public int CurrnetCapacityForCustomers { get; set; }
+    public int CurrnetCapacityEmployees { get; set; }
+    public int CurrnetCapacityForFree { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<GarageCategories> GarageCategories { get; set; }
+    public int MaxSlotsForCustomers { get; set; }
+    public int MaxSlotsForEmployess { get; set; }
+    public int MaxSlotsForFree { get; set; }
+
+
 
 }

@@ -56,4 +56,6 @@ public class Organization : BaseEntity
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
+
+    public int UsedSlots { get; set; }
 }

@@ -22,4 +22,8 @@ public class GarageDto
     public int OrganizationId { get; set; }
     public Status Status { get; set; }
 	public Guid? TenantId { get; set; }
+    public int MaxSlotsForCustomers { get; set; }
+    public int MaxSlotsForEmployess { get; set; }
+    public int MaxSlotsForFree { get; set; }
+
 }

@@ -55,6 +55,14 @@ public class OrganizationDto
     public int PostalCode { get; set; }
     public string District { get; set; }
     public int PackageId { get; set; }
+    public string SubscriptionEnglishName { get; set; }
+    public string SubscriptionArabicName { get; set; }
+    public int NumberOfUsers { get; set; }
+    public int NumberOfCustomers { get; set; }
+    public int NumbersOfGarages { get; set; }
+    public int NumberOfCameras { get; set; }
+
+
 
 
 

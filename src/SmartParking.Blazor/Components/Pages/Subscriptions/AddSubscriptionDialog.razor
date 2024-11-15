@@ -207,6 +207,22 @@
                                        @bind-Value="maximumNumberOfUsers"
                                 Color="MudBlazor.Color.Primary" />
                         </MudItem>
+                        <MudItem sm="12">
+                            <MudNumericField 
+                               
+                                T="int"
+                                             @bind-Value="@(BoundNumberOfParkingSlots=maximumNumberOfParkingSlots?UnlimitedMaximumNumber:BoundNumberOfParkingSlots)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          HideSpinButtons
+                                          Min="0"
+                                          Disabled="maximumNumberOfParkingSlots"
+                                          Required="maximumNumberOfParkingSlots"
+                                          Label="@L["ParkingSlot"]"
+                                           />
+                        </MudItem>
+
 
 
                         
@@ -229,17 +245,7 @@
                                       Required="true" />
                     </MudItem>
 
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="input.ParkingSlot"
-                                          For="@(() => input.ParkingSlot)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Placeholder=@L["Type Here"]
-                                          InputType="InputType.Number"
-                                          Label="@L["ParkingSlot"]"
-                                          Required="true" />
-                        </MudItem>
-
+                        
                 </MudGrid>
             </MudForm>
 

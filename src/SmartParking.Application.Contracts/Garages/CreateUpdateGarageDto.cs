@@ -24,4 +24,9 @@ public class CreateUpdateGarageDto
     [JsonIgnore]
     public  Guid? TenantId { get; set; }
 
+    public int MaxSlotsForCustomers { get; set; }
+    public int MaxSlotsForEmployess { get; set; }
+    public int MaxSlotsForFree { get; set; }
+
+
 }

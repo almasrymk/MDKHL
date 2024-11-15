@@ -73,7 +73,6 @@
 						<MudTextField @bind-Value="Camera.Name"
 									  For="@(() => Camera.Name)"
 									  Immediate="true"
-									  Disabled=true
 									  Label="@L["Name"]" />
 					</MudItem>
 
@@ -82,7 +81,6 @@
 						<MudTextField @bind-Value="Camera.Model"
 									  For="@(() => Camera.Model)"
 									  Immediate="true"
-									  Disabled=true
 									  Label="@L["Model"]" />
 					</MudItem>
 					
@@ -98,21 +96,18 @@
 						<MudTextField @bind-Value="Camera.BrandName"
 									  For="@(() => Camera.BrandName)"
 									  Immediate="true"
-									  Disabled=true
 									  Label="@L["BrandName"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.CameraIP"
 									  For="@(() => Camera.CameraIP)"
 									  Immediate="true"
-									  Disabled=true
 									  Label="@L["CameraIP"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.MacAddress"
 									  For="@(() => Camera.MacAddress)"
 									  Immediate="true"
-									  Disabled=true
 									  Label="@L["MacAddress"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
@@ -122,26 +117,29 @@
 									  Disabled=true
 									  Label="@L["Id"]" />
 					</MudItem>
-					<MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
-						<div Class="d-flex flex-row justify-content-between">
+					<MudItem sm="12" class="d-flex justify-content-center align-items-center">
+
+						<MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+							<div Class="d-flex flex-row justify-content-between">
 
 
-							<MudRadioGroup @bind-Value="@Camera.CameraType" Class="d-inline-flex align-content-center">
-								<MudRadio Value="@(Enums.CameraType.Entry)" Color="MudBlazor.Color.Primary">@L["Entry"]</MudRadio>
-								<MudRadio Value="@(Enums.CameraType.Exit)" Color="MudBlazor.Color.Error">@L["Exit"]</MudRadio>
-							</MudRadioGroup>
-						</div>
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<div Class="d-flex flex-row justify-content-between">
+								<MudRadioGroup @bind-Value="@Camera.CameraType" Class="d-inline-flex align-content-center">
+									<MudRadio Value="@(Enums.CameraType.Entry)" Color="MudBlazor.Color.Primary">@L["Entry"]</MudRadio>
+									<MudRadio Value="@(Enums.CameraType.Exit)" Color="MudBlazor.Color.Error">@L["Exit"]</MudRadio>
+								</MudRadioGroup>
+							</div>
+						</MudItem>
+						<MudItem sm="6" md="6">
+							<div Class="d-flex flex-row justify-content-between">
 
 
-							<MudRadioGroup @bind-Value="@Camera.Status" Class="d-inline-flex align-content-center">
-								<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
-								<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Error">@L["Inactive"]</MudRadio>
-							</MudRadioGroup>
-						</div>
+								<MudRadioGroup @bind-Value="@Camera.Status" Class="d-inline-flex align-content-center">
+									<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+									<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Error">@L["Inactive"]</MudRadio>
+								</MudRadioGroup>
+							</div>
 						
+						</MudItem>
 					</MudItem>
 				</MudGrid>
 			</MudForm>

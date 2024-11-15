@@ -54,12 +54,15 @@ public partial class Subscription
             SearchingTerm = termSearch, // The term to use for filtering results
             filters = pageInfo.Filters
         };
+       
+       var subscriptionDto = await AppService.Filter(input);
+       // Calculate the total number of pages required to display all results
+       TotalItem = (int)subscriptionDto.TotalCount;
+       CreateTable(subscriptionDto);
+       
         // Call the service to perform the search based on the input parameters
-        var subscriptionDto = await AppService.Filter(input);
 
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)subscriptionDto.TotalCount;
-        CreateTable(subscriptionDto);
+       
 
 
     }
