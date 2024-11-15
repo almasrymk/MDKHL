@@ -18,8 +18,8 @@ public partial class OrganizationView
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
     public string CommercialRegistrationNumber { get; set; }
-    public int NumOfCameras { get; set; }
-    public int MaxCapacity { get; set; }
+    public int NumOfActiveCameras { get; set; }
+    public int NumOfActiveGarages { get; set; }
     private string CountrySelectValue { get; set; }
     private string CitySelectValue { get; set; }
 
@@ -39,6 +39,14 @@ public partial class OrganizationView
     public string District { get; set; }
     public string Photo { get; set; }
     public string OrganizationPicture { get; set; }
+    public string SubscriptionArName { get; set; }
+    public string SubscriptionEnName { get; set; }
+    public int NumbersOfGarages { get; set; }
+    public int NumberOfCameras { get; set; }
+    public int NumberOfUsers { get; set; }
+    public int NumberOfMobileCustomers { get; set; }
+    public int NumberOfOrganizations { get; set; }
+    public int SubscriptionSlotNumber { get; set; }
 
     private async Task FetchData()
     {
@@ -46,7 +54,7 @@ public partial class OrganizationView
         var organization = await OrganizationsAppService.GetAsync(id);
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
-        NumOfCameras = organization.NumOfCameras;
+        NumOfActiveCameras = organization.NumOfCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         Address = organization.Address;
         OrganizationPicture = organization.OrganizationPicture;
@@ -77,7 +85,7 @@ public partial class OrganizationView
             StateName = organization.StateNameAr;
             CityName = organization.CityNameAr;
         }
-        MaxCapacity = organization.MaxCapacity;
+        NumOfActiveGarages = organization.MaxCapacity;
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
@@ -90,6 +98,16 @@ public partial class OrganizationView
         SecondaryNumber = organization.SecondaryNumber;
         PostalCode = organization.PostalCode;
         District = organization.District;
+        SubscriptionArName = organization.SubscriptionArabicName;
+        SubscriptionEnName = organization.SubscriptionEnglishName;
+        NumbersOfGarages = organization.NumbersOfGarages;
+        NumberOfCameras=organization.NumberOfCameras;
+        NumberOfMobileCustomers = organization.NumberOfCustomers;
+        NumberOfUsers= organization.NumberOfUsers;
+        SubscriptionArName = organization.SubscriptionArabicName;
+        SubscriptionEnName= organization.SubscriptionEnglishName;
+        
+
     }
     protected override async Task OnInitializedAsync()
     {
@@ -106,15 +124,7 @@ public partial class OrganizationView
     {
         Navigation.NavigateTo("/organizations");
     }
-    private async Task ViewCategories()
-    {
-        var id = int.Parse(Id);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
-    }
+
 
     private async Task ViewContact()
     {
