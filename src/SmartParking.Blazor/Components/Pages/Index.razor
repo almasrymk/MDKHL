@@ -192,13 +192,13 @@
 
         if (currenttenant.Id == null)
         {
-            // var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
-            // value.Count = result.Count;
-            // value.Names = result.Names;
-            // data = value.Count.ToArray();
-            // labels = value.Names.ToArray();
+            var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
+            value.Count = result.Count;
+            value.Names = result.Names;
+            data = value.Count.ToArray();
+            labels = value.Names.ToArray();
 
-            // grid = 4;
+            grid = 4;
              _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
         }
         else

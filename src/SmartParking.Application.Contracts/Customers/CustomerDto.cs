@@ -1,4 +1,7 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.CustomerPackages;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using SmartParking.Packages;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;

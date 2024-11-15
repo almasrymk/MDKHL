@@ -296,11 +296,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <inheritdoc/>
 	public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-		var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+		 var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
 			var query = await _repository.GetQueryableAsync();
-			query = query.Where(x => x.CustomerPackages.Any(org => org.Id == organization.Id));
+            query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id) && !x.IsEmployee);
 			var totalCount = await AsyncExecuter.CountAsync(query);
 
 			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -313,16 +314,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			};
 		}
 	}
+	/// <inheritdoc/>
 	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
 
 			var query = await _repository.GetQueryableAsync();
+			query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+			query = query.Where(x => !x.IsEmployee);
 			var totalCount = await AsyncExecuter.CountAsync(query);
 			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
 			var customers = await AsyncExecuter.ToListAsync(query);
 			var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            
 			return new PagedResultDto<CustomerDto>
 			{
 				TotalCount = totalCount,
@@ -339,7 +344,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetAsync(id);
+            var customer =  await _repository.GetAsync(c => c.Id == id && !c.IsEmployee);
+            return ObjectMapper.Map<Customer,CustomerDto>(customer);
 
         }
     }
@@ -354,7 +360,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = queryable.Include(x => x.IdentityUser);
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
-            
+            queryable = queryable.Where(c => !c.IsEmployee);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
@@ -398,7 +404,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(x => x.IdentityUser);
-
+            queryable = queryable.Where(c => !c.IsEmployee);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
@@ -449,8 +455,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var queryable = await _repository.GetQueryableAsync();
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
-            
 
+            queryable = queryable.Where(c => !c.IsEmployee);
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
@@ -496,8 +502,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var queryable = await _repository.GetQueryableAsync();
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
-            
 
+            queryable = queryable.Where(c => !c.IsEmployee);
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
@@ -568,7 +574,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 
         var query = await _repository.GetQueryableAsync();
-        //query = query.Where(x => x.Organizations.Any(org => org.Id == organizationId));
+        query = query.Where(c => !c.IsEmployee);
+        query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
         query.OrderBy(x => x.Id);
@@ -590,6 +597,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
 
             var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => !c.IsEmployee);
             var count = await AsyncExecuter.CountAsync(query);
             return count;
         }
@@ -604,7 +612,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
 
             var query = await _repository.GetQueryableAsync();
-            //query = query.Include(x => x.Organizations).Where(x => x.Organizations.Any(o => o.Id == orgId));
+            query = query.Where(c => !c.IsEmployee);
+            query = query.Include(x => x.CustomerPackages).ThenInclude(c => c.Organization).Where(x => x.CustomerPackages.Any(o => o.OrganizationId == orgId));
             var count = await AsyncExecuter.CountAsync(query);
             return count;
         }

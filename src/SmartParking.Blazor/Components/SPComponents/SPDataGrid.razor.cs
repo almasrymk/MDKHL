@@ -115,16 +115,17 @@ public partial class SPDataGrid
         {
             if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
                 IsNot = true;
+            var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
             FilterRequestDto filterEventArgs = new FilterRequestDto()
             {
                 FilterProperty = SelectedColumn,
                 FilterValue = FilterValue,
                 FilterOperator = SelectOperator.Value,
                 IsNot = IsNot,
-                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyNmae == SelectedColumn).TypeFilter
+                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter
             };
             ColumnsFilter.Add(filterEventArgs);
-            ColumnsFilterApply.Add(SelectedColumn);
+            ColumnsFilterApply.Add(DisplayFilter.Name);
 
             ClickFilter = false;
 			SelectedColumn = "";

@@ -182,11 +182,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Organization, double>()
        .ConvertUsing(org => org.Customers.Count);
 
-        CreateMap<Customer, CustomerDto>()
-            .ForMember(d => d.OrganizationArabicName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.ArabicName)))
-            .ForMember(d => d.OrganizationEnglishName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.EnglishName)));
-
-
 
 	}
 }
