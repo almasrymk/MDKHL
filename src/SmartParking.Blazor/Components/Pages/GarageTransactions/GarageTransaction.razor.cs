@@ -1,8 +1,5 @@
 ﻿using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.PlateColors;
-using SmartParking.Lookups.PlateColor;
-using SmartParking.Vehicles.LookUps;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -10,12 +7,14 @@ using SmartParking.GarageTransactions;
 using Volo.Abp.Application.Dtos;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
+using SmartParking.Entities.GarageTransactions;
 
 namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 {
 	public partial class GarageTransaction
 	{
 		private List<GarageTransactionDto> garageTransactions = new List<GarageTransactionDto>();
+
 
 		private int currentPage = 1;
 		private int pageSize = 100;
@@ -142,12 +141,21 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
 				Sorting = sort
             };
+			if(CurrentTenant.Id == null)
+			{
+				// Retrieve the list of organizations from the server
+				var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input);
+				TotalItem = (int)garageTransactionsDto.TotalCount;
+				CreateTable(garageTransactionsDto);
+			}
 
-			// Retrieve the list of organizations from the server
-			var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input);
-			TotalItem = (int)garageTransactionsDto.TotalCount;
-			CreateTable(garageTransactionsDto);
-
+			else
+			{
+				var tenantId = CurrentTenant.Id;	
+				var garageTransactionDto = await GarageTransactionsAppService.GetAllTransactionsByOrganizationAsync(input,tenantId);
+				TotalItem = (int)garageTransactionDto.TotalCount;
+				CreateTable(garageTransactionDto);
+			}
 		}
 
 		private void CreateTable(PagedResultDto<GarageTransactionDto> garageTransactions)

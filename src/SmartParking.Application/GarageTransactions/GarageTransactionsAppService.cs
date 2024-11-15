@@ -1,30 +1,20 @@
-﻿using Abp.UI;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
+﻿
 using Microsoft.AspNetCore.Http;
-using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.GarageTransactions;
 using System.Linq.Dynamic.Core;
-using SmartParking.Entities.Invoices;
-using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
-using SmartParking.Invoices;
-using SmartParking.Lookups.PlateColor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Dynamic.Core;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 
 namespace SmartParking.GarageTransactions;
@@ -389,4 +379,41 @@ public class GarageTransactionsAppService:
 
     }
 
+    /// <inheritdoc/>
+	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
+	{
+		var queryable = await _repository.GetQueryableAsync();
+
+        queryable = queryable.Where(t=>t.TenantId == tenantId);
+
+		if (!input.Sorting.IsNullOrEmpty())
+		{
+			// Determine if the sorting should be ascending or descending
+			if (input.Sorting.Contains("DESC"))
+			{
+				var sorting = input.Sorting.Split(' ').ToList();
+				queryable = queryable.OrderBy(sorting[0] + " descending");
+			}
+			else
+			{
+
+				queryable = queryable.OrderBy(input.Sorting);
+			}
+		}
+         
+			var totalCount = await AsyncExecuter.CountAsync(queryable);
+			var items = await AsyncExecuter.ToListAsync(
+				queryable
+					.Skip(input.SkipCount)
+					.Take(input.MaxResultCount)
+			);
+
+			// Map entities to DTOs
+			var transactionDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(items);
+
+			// Return paged result
+			return new PagedResultDto<GarageTransactionDto>(totalCount, transactionDtos);
+		 
+		
+	}
 }
