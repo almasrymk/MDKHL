@@ -22,6 +22,7 @@ public partial class AddSubscriptionDialog
 	public bool maximumNumberOfCameras { get; set; }
 	public bool maximumNumberOfUsers { get; set; }
 	public bool maximumNumberOfCustomers { get; set; }
+	public bool maximumNumberOfParkingSlots { get; set; }
   
 
 
@@ -30,6 +31,7 @@ public partial class AddSubscriptionDialog
     private int BoundNumberOfGarages;
     private int BoundNumberOfCustomers;
     private int BoundNumberOfCameras;
+    private int BoundNumberOfParkingSlots;
 
     private int BoundNumberOfOrganization;
 
@@ -60,6 +62,7 @@ public partial class AddSubscriptionDialog
             input.NumberOfCustomers =  BoundNumberOfCustomers;
             input.NumberOfUsers =  BoundNumberOfUsers;
             input.NumberOfCameras = BoundNumberOfCameras;
+            input.ParkingSlot = BoundNumberOfParkingSlots;
            
             input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
 
