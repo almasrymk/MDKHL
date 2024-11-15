@@ -22,6 +22,7 @@ public partial class AddGarageDialog
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
 
     private MudForm form;
+    private bool isSlotsReadOnly = true;
 
 
     TimeEditMode editMode = new TimeEditMode();
@@ -109,6 +110,182 @@ public partial class AddGarageDialog
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 
+    private string validateNumber(int value)
+    {
+        if (value < 0)
+            return "The value not valid.";
+        if (value > 9999)
+            return "The value not valid.";
 
+        return null; // No error
+    }
+    private void HandleMaxCapacityChange(int maxCapacity)
+    {
+        createUpdateGarage.MaxCapacity = maxCapacity;
 
+        // Reset all slots to zero to start fresh
+        createUpdateGarage.MaxSlotsForEmployess = 0;
+        createUpdateGarage.MaxSlotsForCustomers = 0;
+        createUpdateGarage.MaxSlotsForFree = 0;
+    }
+
+    private void HandleEmployeeSlotsChange(int maxSlotsForEmployees)
+    {
+        createUpdateGarage.MaxSlotsForEmployess = maxSlotsForEmployees;
+        DistributeRemainingCapacity();
+    }
+
+    private void HandleCustomerSlotsChange(int maxSlotsForCustomers)
+    {
+        createUpdateGarage.MaxSlotsForCustomers = maxSlotsForCustomers;
+        DistributeRemainingCapacity();
+    }
+
+    private void HandleFreeSlotsChange(int maxSlotsForFree)
+    {
+        createUpdateGarage.MaxSlotsForFree = maxSlotsForFree;
+        DistributeRemainingCapacity();
+    }
+
+    private void DistributeRemainingCapacity()
+    {
+        int totalAllocated = createUpdateGarage.MaxSlotsForEmployess
+                           + createUpdateGarage.MaxSlotsForCustomers
+                           + createUpdateGarage.MaxSlotsForFree;
+
+        int remainingCapacity = createUpdateGarage.MaxCapacity - totalAllocated;
+
+        if (remainingCapacity < 0)
+        {
+            // If total slots exceed MaxCapacity, reset to prevent overflow
+            createUpdateGarage.MaxSlotsForEmployess = 0;
+            createUpdateGarage.MaxSlotsForCustomers = 0;
+            createUpdateGarage.MaxSlotsForFree = 0;
+        }
+        else
+        {
+            // Distribute remaining slots dynamically
+            if (createUpdateGarage.MaxSlotsForEmployess > 0)
+            {
+                if(createUpdateGarage.MaxSlotsForCustomers > 0)
+                {
+                    if (createUpdateGarage.MaxSlotsForFree > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            // If total slots exceed MaxCapacity, reset to prevent overflow
+                            createUpdateGarage.MaxSlotsForEmployess = 0;
+                            createUpdateGarage.MaxSlotsForCustomers = 0;
+                            createUpdateGarage.MaxSlotsForFree = 0;
+                        }
+                    }
+                    else
+                    {
+                        createUpdateGarage.MaxSlotsForFree = createUpdateGarage.MaxCapacity- createUpdateGarage.MaxSlotsForEmployess- createUpdateGarage.MaxSlotsForCustomers;
+
+                    }
+
+                }
+                else if (createUpdateGarage.MaxSlotsForFree>0)
+                {
+                    if (createUpdateGarage.MaxSlotsForCustomers > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            createUpdateGarage.MaxSlotsForEmployess = 0;
+                            createUpdateGarage.MaxSlotsForCustomers = 0;
+                            createUpdateGarage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+
+                        createUpdateGarage.MaxSlotsForCustomers=createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForEmployess - createUpdateGarage.MaxSlotsForFree;
+                    }
+
+                }
+            }
+            else if (createUpdateGarage.MaxSlotsForCustomers > 0)
+            {
+                if (createUpdateGarage.MaxSlotsForFree > 0)
+                {
+                    if (createUpdateGarage.MaxSlotsForEmployess > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            createUpdateGarage.MaxSlotsForEmployess = 0;
+                            createUpdateGarage.MaxSlotsForCustomers = 0;
+                            createUpdateGarage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+
+                      createUpdateGarage.MaxSlotsForEmployess = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForCustomers - createUpdateGarage.MaxSlotsForFree;
+                    }
+                }
+                else if (createUpdateGarage.MaxSlotsForEmployess > 0)
+                {
+                    if (createUpdateGarage.MaxSlotsForFree > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            createUpdateGarage.MaxSlotsForEmployess = 0;
+                            createUpdateGarage.MaxSlotsForCustomers = 0;
+                            createUpdateGarage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+                       createUpdateGarage.MaxSlotsForFree = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForEmployess - createUpdateGarage.MaxSlotsForCustomers;
+
+                    }
+
+                }
+            }
+            else if(createUpdateGarage.MaxSlotsForFree > 0)
+            {
+                if (createUpdateGarage.MaxSlotsForEmployess > 0)
+                {
+                    if (createUpdateGarage.MaxSlotsForCustomers > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            createUpdateGarage.MaxSlotsForEmployess = 0;
+                            createUpdateGarage.MaxSlotsForCustomers = 0;
+                            createUpdateGarage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+                    createUpdateGarage.MaxSlotsForCustomers = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForEmployess - createUpdateGarage.MaxSlotsForFree;
+
+                    }
+                }
+                else if (createUpdateGarage.MaxSlotsForCustomers > 0)
+                {
+                    if (createUpdateGarage.MaxSlotsForEmployess > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            createUpdateGarage.MaxSlotsForEmployess = 0;
+                            createUpdateGarage.MaxSlotsForCustomers = 0;
+                            createUpdateGarage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+
+                    createUpdateGarage.MaxSlotsForEmployess = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForFree - createUpdateGarage.MaxSlotsForCustomers;
+                    }
+
+                }
+            }
+        }
+    }
 }
