@@ -44,19 +44,54 @@
                                               Placeholder="@L["Type Here"]"
                                               Label="@L["GarageNameAr"]" />
                             </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudNumericField @bind-Value="createUpdateGarage.MaxCapacity"
-                                              For="@(() => createUpdateGarage.MaxCapacity)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                              Required
-                                              Min="0"
-                                              Max="9999"
-                                              HideSpinButtons="true"
-                                              Immediate="true"
-                                              Placeholder="@L["Type Here"]"
-                                              Label="@L["Garage Max Capacity"]" />
-                            </MudItem>
+                    <MudItem sm="12" md="12">
+                        <MudNumericField 
+                                         For="@(() => createUpdateGarage.MaxCapacity)"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Garage Max Capacity"]"
+                                         ValueChanged="HandleMaxCapacityChange" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="createUpdateGarage.MaxSlotsForEmployess"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Employees"]"
+                                         ValueChanged="HandleEmployeeSlotsChange" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudNumericField 
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         T="int"
+                                          Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         Value="createUpdateGarage.MaxSlotsForCustomers"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Customers"]"
+                                         ValueChanged="HandleCustomerSlotsChange" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="createUpdateGarage.MaxSlotsForFree"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Free"]"
+                                         ValueChanged="HandleFreeSlotsChange" />
+                    </MudItem>
+
+
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="createUpdateGarage.Code"
                                               For="@(() => createUpdateGarage.Code)"
@@ -78,9 +113,39 @@
                                                Placeholder="@L["Type Here"]"
                                                Label="@L["Closing Hours"]" />
                             </MudItem>
-                   @*  @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
-                    { *@
-                        
+                    @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+                    {
+                        <MudItem sm="4">
+                            <MudSelect T="int"
+                                       Variant="Variant.Text"
+                                       Label=@L["Organizations"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       @bind-Value="createUpdateGarage.OrganizationId">
+                                <MudSelectItem Value="0"></MudSelectItem>
+                                @foreach (var organization in Organizations)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
+
+
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    
+                    
+                    
+                    }
+
                     
 
                             <MudItem sm="9" md="9">
