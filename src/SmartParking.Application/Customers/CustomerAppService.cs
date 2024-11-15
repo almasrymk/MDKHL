@@ -56,9 +56,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _userManager = userManager;
         _customerPackageRepository = customerPackageRepository;
     }
-
-
-    [Authorize(Roles = "Customer")]
     /// <inheritdoc/>
     public async Task<string> GenerateOtp(Guid CustomerId)
     {
@@ -94,12 +91,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-					return null;
-					//var query = await _repository.GetQueryableAsync();
-					//query = query.Where(x => x.IdentityUserId == user.Id);
-					//var existCustomer = query.FirstOrDefault();
-					//await _repository.UpdateAsync(existCustomer);
-					//return ObjectMapper.Map<Customer, CustomerDto>(existCustomer);
+					return await UserIsFound(user);
 				}
 
 			}
@@ -118,6 +110,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
     }
 
+	
+
 	/// <inheritdoc/>
 	public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
 	{
@@ -130,12 +124,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-					return null;
-					//var query = await _repository.GetQueryableAsync();
-					//query = query.Where(x => x.IdentityUserId == user.Id);
-					//var existCustomer = query.FirstOrDefault();
-					//await _repository.UpdateAsync(existCustomer);
-					//return ObjectMapper.Map<Customer, CustomerDto>(existCustomer);
+					return await UserIsFound(user);
+
 				}
 
 			}
@@ -152,6 +142,34 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			throw new UserFriendlyException("Registration failed: " + ex.Message);
 		}
 	}
+
+
+	/// <summary>
+	/// Asynchronously checks if the specified user exists and returns the associated customer data if found.
+	/// </summary>
+	/// <param name="user">The <see cref="Volo.Abp.Identity.IdentityUser"/> object representing the user to check.</param>
+	/// <returns>
+	/// A <see cref="CustomerDto"/> object containing customer details if the user is found;
+	/// otherwise, <c>null</c>.
+	/// </returns>
+	/// <remarks>
+	/// This method queries the customer information based on the provided user.
+	/// If the user does not exist, it returns <c>null</c>.
+	/// </remarks>
+	private async Task<CustomerDto> UserIsFound(Volo.Abp.Identity.IdentityUser? user)
+	{
+		var query = await _repository.GetQueryableAsync();
+		query = query.Where(x => x.IdentityUserId == user.Id);
+		var existCustomer = query.FirstOrDefault();
+		await _repository.UpdateAsync(existCustomer);
+		return ObjectMapper.Map<Customer, CustomerDto>(existCustomer);
+	}
+
+	/// <summary>
+	/// Asynchronously checks the validity of a customer based on the provided input data.
+	/// </summary>
+	/// <param name="input">The data transfer object containing customer details to be validated.</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
 	private async Task CheckCustomer(CreateUpdateCustomerDto input)
 	{
 		if (input.IdentificationType == IdentificationTypes.NationalID)
@@ -184,6 +202,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 	}
 
+	/// <summary>
+	/// Asynchronously adds a customer package for a specified organization.
+	/// </summary>
+	/// <param name="organization">The organization to which the customer package will be added.</param>
+	/// <param name="customerAdd">The customer entity containing details for the package to be added.</param>
+	/// <returns>A task that represents the asynchronous operation.</returns>
 	private async Task AddCustomerPackage(Organization organization, Customer customerAdd)
 	{
 		var customerPackage = new CustomerPackage
@@ -196,6 +220,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		await _customerPackageRepository.InsertAsync(customerPackage, true);
 	}
 
+	/// <summary>
+	/// Asynchronously adds a user based on the provided customer data.
+	/// </summary>
+	/// <param name="input">The DTO containing customer details for user creation.</param>
+	/// <param name="customer">The customer entity to associate with the new user.</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
 	private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
 	{
 		customer.IdentityUser.Name = input.UserName;
@@ -218,23 +248,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 	}
 
-	[RemoteService(isEnabled: false)]
-    /// <summary>
-    /// Method used to fromat messages that has been thrown in exception
-    /// </summary>
-    /// <param name="result">IdentityResult type that has message</param>
-    /// <returns>String of contains message</returns>
-    public string FormatErrorMessage(IdentityResult result)
-    {
-        string message = string.Empty;
-        foreach (var error in result.Errors)
-        {
-            message += error.Description;
-        }
-        return message;
-    }
-
-    [Authorize(Roles = "Customer")]
     /// <inheritdoc/>
     public async Task<bool> VerifyOtpAsync(OtpVerificationDto input)
     {
@@ -262,9 +275,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return false;
 
     }
+
+	/// <inheritdoc/>
     [RemoteService(isEnabled: false)]
-    /// <inheritdoc/>
-    public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber)
+	public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber)
     {
         var query = await _repository.GetQueryableAsync();
         var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
@@ -278,9 +292,49 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-    /// <inheritdoc/>
 
-    public override async Task<CustomerDto> GetAsync(Guid id)
+	/// <inheritdoc/>
+	public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+	{
+		var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+		using (_dataFilter.Disable<IMultiTenant>())
+		{
+			var query = await _repository.GetQueryableAsync();
+			query = query.Where(x => x.CustomerPackages.Any(org => org.Id == organization.Id));
+			var totalCount = await AsyncExecuter.CountAsync(query);
+
+			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+			var customers = await AsyncExecuter.ToListAsync(query);
+			var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+			return new PagedResultDto<CustomerDto>
+			{
+				TotalCount = totalCount,
+				Items = cutomersDtos
+			};
+		}
+	}
+	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
+	{
+		using (_dataFilter.Disable<IMultiTenant>())
+		{
+
+			var query = await _repository.GetQueryableAsync();
+			var totalCount = await AsyncExecuter.CountAsync(query);
+			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+			var customers = await AsyncExecuter.ToListAsync(query);
+			var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+			return new PagedResultDto<CustomerDto>
+			{
+				TotalCount = totalCount,
+				Items = cutomersDtos
+			};
+
+		}
+
+	}
+
+	/// <inheritdoc/>
+	public override async Task<CustomerDto> GetAsync(Guid id)
     {
         var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
         using (_dataFilter.Disable<IMultiTenant>())
@@ -528,35 +582,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-    /// <inheritdoc/>
-    public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-    {
-
-		var org = await _organizationAppService.GetOrganizationForCurrentTenat();
-		using (_dataFilter.Disable<IMultiTenant>())
-		{
-
-			var query = await _customerPackageRepository.GetQueryableAsync();
-            //query = query.Where(cp=>cp.Customer);
-			var customers = await AsyncExecuter.ToListAsync(query);
-			//var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-			return new PagedResultDto<CustomerDto>
-			{
-				TotalCount = cutomersDtos.Count,
-				Items = cutomersDtos
-			};
-
-		}
-
-	}
-	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
-	{
-		using (_dataFilter.Disable<IMultiTenant>())
-		{
-			return await base.GetListAsync(input);
-		}
-	
-	}
+   
 
 	public async Task<int> GetCountCustomersCountForMDKHL()
     {
