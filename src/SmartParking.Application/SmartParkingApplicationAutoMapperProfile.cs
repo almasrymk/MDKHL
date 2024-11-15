@@ -34,6 +34,8 @@ using SmartParking.Mobile.Vehicles;
 using SmartParking.Entities.Payments;
 using SmartParking.Payments;
 using SmartParking.GarageTransactionEndPoints;
+using SmartParking.Entities.Customers;
+using SmartParking.Cutomers;
 
 namespace SmartParking;
 
@@ -181,7 +183,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
        .ConvertUsing(org => org.Customers.Count);
 
 
-
-    }
+	}
 }
 

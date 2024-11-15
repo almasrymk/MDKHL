@@ -129,11 +129,11 @@ public partial class Region
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CountryArabicName"], Name = "CountryArabicName", IsFilterable = true, PropertyNmae = "CountryArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CountryEnglishName"], Name = "CountryEnglishName", IsFilterable = true, PropertyNmae = "CountryEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CountryArabicName"], Name = "CountryArabicName", IsFilterable = true, PropertyName = "CountryArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CountryEnglishName"], Name = "CountryEnglishName", IsFilterable = true, PropertyName = "CountryEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
 		foreach (var item in regions.Items)

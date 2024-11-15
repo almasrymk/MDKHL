@@ -136,11 +136,11 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 			};
 
 
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorArabicName"], Name = "PlateColorArabicName", IsFilterable = true, PropertyNmae = "PlateColorArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorEnglishName"], Name = "PlateColorEnglishName", IsFilterable = true, PropertyNmae = "PlateColorEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorArabicName"], Name = "PlateColorArabicName", IsFilterable = true, PropertyName = "PlateColorArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorEnglishName"], Name = "PlateColorEnglishName", IsFilterable = true, PropertyName = "PlateColorEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 			//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
 			//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });

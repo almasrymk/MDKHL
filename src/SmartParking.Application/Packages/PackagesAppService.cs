@@ -151,13 +151,15 @@ public class PackagesAppService : CrudAppService<
         //await base.DeleteAsync(id);
     }
 
+
+    ///<inheritdoc/>
     public override async Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        var queryable = await _repository.GetQueryableAsync();
+        
         using (_dataFilter.Disable<IMultiTenant>())
         {
-
-            queryable = queryable.Include(p => p.PackageType);
+			var queryable = await _repository.GetQueryableAsync();
+			queryable = queryable.Include(p => p.PackageType);
 
             queryable = queryable.Where( p => p.TenantId == CurrentTenant.Id);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -172,5 +174,24 @@ public class PackagesAppService : CrudAppService<
             );
         }
     }
+	///<inheritdoc/>
+	public async Task<List<PackageDto>> GetAllMdkhlAsync()
+	{
+		using (_dataFilter.Disable<IMultiTenant>())
+		{
+			
+			var packages = await _repository.GetListAsync();
+			var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
 
+            return packagesDto;
+		}
+	}
+	///<inheritdoc/>
+	public async Task<List<PackageDto>> GetAllOrganizationAsync()
+	{
+		var packages = await _repository.GetListAsync();
+		var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+
+		return packagesDto;
+	}
 }

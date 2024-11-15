@@ -26,7 +26,7 @@ public class Customer : FullAuditedEntity<Guid> , IMultiTenant
     public IdentificationTypes IdentificationTypes { get; set; }
     public string NationalId { get; set; }
     public string ArabicName { get; set; }
-    public virtual ICollection<Organization> Organizations { get; set; }
+    public bool IsEmployee { get; set; }
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
     public virtual ICollection<Invoice> Invoices { get; set; }
     public virtual ICollection<Payment> Payments { get; set; }

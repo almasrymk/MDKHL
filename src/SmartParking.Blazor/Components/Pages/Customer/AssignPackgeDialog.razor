@@ -4,11 +4,13 @@
 @using SmartParking.Packages
 @using System.Globalization
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
 @inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject IPackagesAppService PackagesAppService
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
+@inject ICurrentTenant CurrentTenant
 
 <PageTitle>@L["Assign Package"]</PageTitle>
 
@@ -94,12 +96,11 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var result = await PackagesAppService.GetListAsync(new PagedAndSortedResultRequestDto
-			{
-				MaxResultCount = 100,
-				SkipCount = (1 - 1) * 100
-			});
-		Packages = result.Items.ToList();
+		if(CurrentTenant.Id is null)
+			Packages = await PackagesAppService.GetAllMdkhlAsync();
+		else
+			Packages = await PackagesAppService.GetAllOrganizationAsync();
+
 		await base.OnInitializedAsync();
 	}
 
@@ -108,8 +109,7 @@
 		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
 		try
 		{
-			CustomerPackage.CustomerId = CustomerId;
-			await CustomerPackagesAppService.CreateAsync(CustomerPackage);
+			await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, CustomerId);
 			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
