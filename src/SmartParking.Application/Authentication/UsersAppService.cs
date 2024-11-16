@@ -28,15 +28,13 @@ public class UsersAppService : ApplicationService , IUsersAppService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
-    private readonly IdentityUserRole _identityUserRole;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager
-        ,IMyUserRepository userRepository , IDataFilter dataFilter,IdentityUserRole identityUserRole)
+        ,IMyUserRepository userRepository , IDataFilter dataFilter)
     {
         _userManager = userManager;
         _userRepository = userRepository;
         _dataFilter = dataFilter;
-        _identityUserRole = identityUserRole;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateAsync(UserCreateDto input)

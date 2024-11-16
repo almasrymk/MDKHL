@@ -1,5 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.CustomerPackages
+@using SmartParking.Cutomers
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Packages
 @using System.Globalization
@@ -89,7 +91,7 @@
 	private MudDialogInstance MudDialogAdd { get; set; }
 	public CreateUpdateCustomerPackageDto CustomerPackage = new CreateUpdateCustomerPackageDto();
 	[Parameter]
-	public Guid CustomerId { get; set; }
+	public CustomerDto Customer { get; set; }
 	public List<PackageDto> Packages { get; set; } = new List<PackageDto>();
 	bool _clearable;
 	private MudForm form;
@@ -97,9 +99,9 @@
 	protected override async Task OnInitializedAsync()
 	{
 		if(CurrentTenant.Id is null)
-			Packages = await PackagesAppService.GetAllMdkhlAsync();
+			Packages = await PackagesAppService.GetAllMdkhlAsync(Customer.OrganizationId, (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), Customer.CustomerCategory));
 		else
-			Packages = await PackagesAppService.GetAllOrganizationAsync();
+			Packages = await PackagesAppService.GetAllOrganizationAsync((CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), Customer.CustomerCategory));
 
 		await base.OnInitializedAsync();
 	}
@@ -109,7 +111,7 @@
 		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
 		try
 		{
-			await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, CustomerId);
+			await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, Customer.Id);
 			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);

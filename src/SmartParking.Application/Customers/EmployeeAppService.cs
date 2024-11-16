@@ -314,7 +314,6 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
 
             var queryable = await _repository.GetQueryableAsync();
-            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
 
             queryable = queryable.Where(c => c.IsEmployee == true);

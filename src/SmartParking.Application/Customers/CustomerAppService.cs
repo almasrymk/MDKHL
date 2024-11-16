@@ -70,7 +70,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 			using (_dataFilter.Disable<IMultiTenant>())
 			{
-				var user = await _userManager.FindByNameAsync(input.UserName);
+				var user = await _userManager.FindByNameAsync(input.UserName); 
 				if (user != null)
 				{
 					return await _baseCustomer.UserIsFound(user);
@@ -116,7 +116,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
 			var customerAdd = await _repository.InsertAsync(customer, true);
-			return ObjectMapper.Map<Customer, CustomerDto>(customer);
+            await _baseCustomer.AddCustomerPackage(input.OrganizationId, customerAdd.Id);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
 		}
 		catch (Exception ex)
 		{

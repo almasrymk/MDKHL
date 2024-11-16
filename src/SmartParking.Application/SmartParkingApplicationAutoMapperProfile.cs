@@ -63,7 +63,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.State.EnglishName))
             .ForMember(dest => dest.StateNameAr, opt => opt.MapFrom(src => src.State.ArabicName))
             .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
-            .ForMember(dest => dest.MaxCapacity, opt => opt.MapFrom(src => src.ActiveGarages))
+            .ForMember(dest => dest.MaxCapacity, opt => opt.MapFrom(src => src.Subscription.ParkingSlot))
             .ForMember(dest => dest.NumOfCameras, opt => opt.MapFrom(src => src.ActiveCameras))
             .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
             .ForMember(dest => dest.SubscriptionArabicName, opt => opt.MapFrom(src => src.Subscription.ArabicName))

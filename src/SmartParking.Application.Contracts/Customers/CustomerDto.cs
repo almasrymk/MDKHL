@@ -24,6 +24,8 @@ public class CustomerDto
     public List<VehicleDto> Vehicles { get; set; }
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
+    public int OrganizationId { get; set; }
     public bool isActive { get; set; }
+    public string CustomerCategory { get; set; }
 }
 
