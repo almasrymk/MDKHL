@@ -31,8 +31,8 @@ namespace SmartParking.Packages
 			//	.WithMessage("Status is invalid");
 
 			RuleFor(x => x.Price)
-				.GreaterThan(0)
-				.WithMessage("Price must be greater than zero.")
+				.GreaterThan(-1)
+				.WithMessage("Price mustnt be negative.")
 				.PrecisionScale(18, 2, false)
 				.WithMessage("Price must not have more than two decimal places and must be less than 18 digits.");
 

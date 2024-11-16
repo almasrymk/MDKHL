@@ -60,9 +60,9 @@ public class OrganizationDto
     public int NumberOfCustomers { get; set; }
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
-
     public int ActiveGarages { get; set; }
     public int ActiveCameras { get; set; }
+    public int ParkingSlots { get; set; }
 
 
 

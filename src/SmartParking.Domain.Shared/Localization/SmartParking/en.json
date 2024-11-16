@@ -73,7 +73,7 @@
     "Active": "Active",
     "InActive": "InActive",
     "Deleted": "Deleted",
-    "Create": "Create",
+    "Create": "Save",
     "Edit Camera": "Edit Camera",
     "GarageId": "GarageId",
     "Id": "Id",
@@ -255,7 +255,7 @@
     "Calender Only": "Calender Only",
     "Commercial Reg. Num.": "Commercial Reg. Num.",
     "Helper Text": "Choose from list",
-    "Add": "Add",
+    "Add": "Save",
     "Or Browse from Computer": "Or Browse from Computer",
     "Verify account": "Verify Account",
     "we send the OTP to": "We will Send The OTP To",
@@ -426,6 +426,10 @@
     "Max Slots For Customers": "Max Slots For Customers",
     "Max Slots For Free": "Max Slots For Free",
     "Employees": "Employees",
-    "Details for Employee": "Details for Employee"
+    "Details for Employee": "Details for Employee",
+    "CameraName": "Camera Name",
+    "SumOfParkingSlotsOfActiveGarage": "Sum Of Parking Slots Of Active Garage",
+    "Total Garage Can be added": "Total Garage Can be added",
+    "ActiveGarages": "Active Garages"
   } 
 }
