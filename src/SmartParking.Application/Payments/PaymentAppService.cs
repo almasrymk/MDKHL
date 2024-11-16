@@ -8,7 +8,6 @@ using SmartParking.Enums;
 using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Net.Http;

@@ -1,13 +1,8 @@
-﻿using Abp.Domain.Repositories;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Polly;
-using SmartParking.Cutomers;
-using SmartParking.Entities.Customers;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -15,22 +10,20 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
 
 [Authorize]
-public class UsersAppService : ApplicationService , IUsersAppService
+public class UsersAppService : ApplicationService, IUsersAppService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
 
-    public UsersAppService(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager
-        ,IMyUserRepository userRepository , IDataFilter dataFilter)
+    public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
+        , IMyUserRepository userRepository, IDataFilter dataFilter)
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -39,15 +32,15 @@ public class UsersAppService : ApplicationService , IUsersAppService
     ///<inheritdoc/>
     public async Task<UserDto> CreateAsync(UserCreateDto input)
     {
-        if(input.RoleNames.Count() == 0 )
+        if (input.RoleNames.Count() == 0)
         {
             throw new Exception(message: "Must be enter Role");
         }
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
-         await CheckPhoneIsUnique(input.PhoneNumber);
+        await CheckPhoneIsUnique(input.PhoneNumber);
         user.Name = input.UserName;
         user.Surname = input.Surname;
-        user.SetProperty("OtpCode",null);
+        user.SetProperty("OtpCode", null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
         user.SetProperty("UserTypeId", input.UserType);
         user.SetProperty("OrganizationId", input.OrganizationId);
@@ -60,7 +53,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
         await _userManager.AddToRolesAsync(user, input.RoleNames);
 
-       var userDto =  ObjectMapper.Map<IdentityUser, UserDto>(user);
+        var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
     }
     /// <summary>
@@ -69,7 +62,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
     /// <param name="phone">The phone number to check for uniqueness.</param>
     /// <returns>The <see cref="IdentityUser"/> associated with the phone number if it exists.</returns>
     /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
-    private async Task<IdentityUser> CheckPhoneIsUnique(string phone )
+    private async Task<IdentityUser> CheckPhoneIsUnique(string phone)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
 
@@ -100,14 +93,14 @@ public class UsersAppService : ApplicationService , IUsersAppService
 
             var users = await _userRepository.FindByOrganizationAsync(organizationId);
             var userMap = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
-             return userMap;
+            return userMap;
         }
 
     }
     ///<inheritdoc/>
     public async Task<PagedResultDto<UserDto>> GetListAsync(PagedResultRequestDto input)
     {
-       
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
@@ -133,7 +126,7 @@ public class UsersAppService : ApplicationService , IUsersAppService
         {
 
             var queryable = await _userRepository.GetQueryableAsync();
-            
+
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
