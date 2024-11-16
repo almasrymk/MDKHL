@@ -176,16 +176,18 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         int totalHours = CalcTime(EntranceTime.Value, GarageTransaction.AccurateTime.Value);
 
         var customer = await CheckCustomer(GarageTransaction.PlateNumber);
+        
         if (customer != null)
         {
-            int succes = await CheckActivePackageForCustomer(Guid.Parse(customer), organizationId);
-            if (succes == -1)
+			Customer exsitCustomer = await GetCustomer(customer);
+
+			int succes = await CheckActivePackageForCustomer(Guid.Parse(customer), organizationId);
+            if (succes == -1 && exsitCustomer.IsEmployee == false)
             {
                 //Customer witouth Active Package
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                Customer exsitCustomer = await GetCustomer(customer);
                 var invoice = new CreateUpdateInvoiceDto
                 {
                     GarageId = garageId,
@@ -204,12 +206,35 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 return await Task.FromResult(false);
 
             }
+            else if(exsitCustomer.IsEmployee == true && succes == -1)
+            {
+				var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+				string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+				var invoice = new CreateUpdateInvoiceDto
+				{
+					GarageId = garageId,
+					InvoiceNumber = generatedInvoiceNumber,
+					InvoicePrice = 0,
+					InvoiceType = InvoiceType.UnPaid,
+					OrganizationId = GarageTransaction.OrganizationID,
+					TotalHours = totalHours,
+					PlateNumber = GarageTransaction.PlateNumber,
+					InvoiceTime = GarageTransaction.AccurateTime,
+					EntranceTime = EntranceTime.Value,
+					CustomerEnName = exsitCustomer.IdentityUser.Name,
+					CustomerArName = exsitCustomer.ArabicName,
+				};
+				await _invoiceAppService.CreateAsync(invoice);
+				return await Task.FromResult(true);
+
+            }
             else
             {
-                // customer with package
-                var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                return await Task.FromResult(true);
-            }
+
+				// customer with package
+				var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+				return await Task.FromResult(true);
+			}
         }
         else
         {
