@@ -1,51 +1,60 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
-using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Organizations;
-using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.MultiTenancy;
-using Volo.Abp.Users;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Payments;
-//[Authorize]
+[Authorize]
 public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, PagedAndSortedResultRequestDto, CreateUpdatePaymentDto>, IPaymentAppService
 {
     private readonly IRepository<Payment, Guid> _repository;
     private readonly IRepository<Customer, Guid> _customerRepo;
+    private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Package, int> _packageRepo;
     private readonly HttpClient _httpClient;
 
-    public PaymentAppService(IRepository<Payment, Guid> repository , IRepository<Invoice, int> invoiceRepo,  IRepository<Package, int> packageRepo , IRepository<Customer, Guid> customerRepo, IDataFilter dataFilter, HttpClient httpClient)
+    private const string EntityId = "8ac7a4ca9244f53c0192473d20e40315";
+    private const string Currency = "KSA";
+    private const string PaymentType = "DB";
+    private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
+    private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
+    private const string tokenType = "Bearer";
+
+    private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
+    {
+        { "VISA", "8ac7a4ca9244f53c0192473d20e40315" },
+        { "MADA", "8ac7a4ca9244f53c019247402c950320" }
+    };
+
+    public PaymentAppService(IRepository<Payment, Guid> repository,
+        IRepository<Invoice, int> invoiceRepo, IRepository<Package, int> packageRepo,
+        IRepository<Customer, Guid> customerRepo, IDataFilter dataFilter,
+        IOrganizationsAppService _organizationsAppService,
+        HttpClient httpClient)
     : base(repository)
     {
-     
+
         _repository = repository;
         _customerRepo = customerRepo;
+        organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
         _packageRepo = packageRepo;
         _httpClient = httpClient;
@@ -53,60 +62,129 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
 
 
-    public async Task<PaymentDto> CreateCheckoutPaymentAsync(CreateUpdatePaymentDto input)
+    public async Task<PaymentCheckoutDto> CreateCheckoutPaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
-        var url = "https://eu-test.oppwa.com/v1/checkouts";
 
         var customer = await _customerRepo.GetQueryableAsync();
-        input.CustomerId =  customer.Where(s=>s.IdentityUserId == CurrentUser.Id).Select(s=>s.Id).FirstOrDefault();
+        var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+        // ENABLE TO VALIDATE var organizationId = organizationsAppService.GetAsync(paymentCheckoutRequest.OrganizationId);
 
-  
-        var content = new StringContent(
-            $"entityId={input.EntityId}&amount={input.Amount}&currency={input.Currency}&paymentType={input.PaymentType}",
-            Encoding.UTF8,
-            "application/x-www-form-urlencoded"
-        );
-
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=");
-
-
-        var response = await _httpClient.PostAsync(url, content);
-
-        if (response.IsSuccessStatusCode)
+        if (customerId != null)
         {
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var responseObject = JObject.Parse(responseContent);
-
-
-            var checkoutId = responseObject["id"]?.ToString();
-            if (!string.IsNullOrEmpty(checkoutId))
+            // handle cash transaction
+            if (paymentCheckoutRequest.PaymentMethod == PaymentMethod.Cash)
             {
-                input.CheckoutId = checkoutId;
+                return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Success);
 
-
-                var payment = ObjectMapper.Map<CreateUpdatePaymentDto, Payment>(input);
-                await _repository.InsertAsync(payment);
-
-
-                return ObjectMapper.Map<Payment, PaymentDto>(payment);
             }
-            else
+            else   //handle online transaction
             {
-                throw new Exception("Checkout ID is missing in the response.");
+
+                var entityId = GetEntityIdByPaymentMethod(paymentCheckoutRequest.PaymentMethod);
+                var checkoutId = await HyperPayPayment(paymentCheckoutRequest, entityId);
+
+                return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Pending,
+                    checkoutid: checkoutId, entityId: entityId);
+
             }
+
+
+
+
+
         }
         else
+            throw new Exception("Customer not found");
+
+
+
+    }
+
+    private async Task<PaymentCheckoutDto> SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
+        Guid customerId,
+        PaymentStatus paymentStatus,
+        string checkoutid = null,
+        string entityId = null)
+    {
+        Payment payment = new Payment
+        {
+            Amount = paymentCheckoutRequest.Amount,
+            Currency = Currency,
+            PaymentMethod = paymentCheckoutRequest.PaymentMethod,
+            InvoiceId = paymentCheckoutRequest.InvoiceId,
+            PackageId = paymentCheckoutRequest.PackageId,
+            OrganizationId = paymentCheckoutRequest.OrganizationId,
+            PaymentCategory = paymentCheckoutRequest.PaymentCategory,
+            CheckoutId = checkoutid,
+            EntityId = entityId,
+            CustomerId = customerId,
+            PaymentStatus = paymentStatus
+        };
+
+        payment = await _repository.InsertAsync(payment);
+
+
+        return new PaymentCheckoutDto
+        {
+            CheckoutId = payment.CheckoutId,
+            PaymentId = payment.Id,
+            PaymentStatus = payment.PaymentStatus,
+            PaymentMethod = payment.PaymentMethod,
+            EntityId = payment.EntityId,
+            TokenId = token
+        };
+
+
+
+    }
+    private async Task<string> HyperPayPayment(PaymentCheckoutRequestDto paymentCheckoutRequest, string entityId)
+    {
+        var content = new StringContent(
+          $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}",
+          Encoding.UTF8,
+          "application/x-www-form-urlencoded"
+      );
+
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
+
+
+        var response = await _httpClient.PostAsync(PaymentUrl, content);
+
+        if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Payment request failed with status: {response.StatusCode}");
         }
+
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var responseObject = JObject.Parse(responseContent);
+        var checkoutId = responseObject["id"]?.ToString();
+        if (string.IsNullOrEmpty(checkoutId))
+        {
+            throw new Exception("Unable to Get CheckOut ID");
+        }
+        return checkoutId;
+
+
+    }
+
+    private string GetEntityIdByPaymentMethod(PaymentMethod paymentMethod)
+    {
+        return paymentMethod switch
+        {
+            PaymentMethod.VISA => PaymentEntityID["VISA"],
+            PaymentMethod.MASTERCARD => PaymentEntityID["VISA"],
+            PaymentMethod.MADA => PaymentEntityID["MADA"],
+            _ => throw new Exception("Payment method is not supported.")
+        };
     }
 
     public async Task<PaymentDto> GetPaymentStatus(string input, string entityId)
     {
-        var url = $"https://eu-test.oppwa.com/v1/checkouts/{input}/payment?entityId={entityId}";
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=");
+        var url = $"{PaymentUrl}/{input}/payment?entityId={EntityId}";
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
 
         var response = await _httpClient.GetAsync(url);
         if (response.IsSuccessStatusCode)
@@ -135,7 +213,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             {
                 if (payment.PaymentCategory == PaymentCategory.Invoice)
                 {
-                    
+
                     var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.PaymentCategoryId);
                     if (invoice != null)
                     {
@@ -145,7 +223,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 }
                 else if (payment.PaymentCategory == PaymentCategory.Package)
                 {
-                
+
                     var package = await _packageRepo.FirstOrDefaultAsync(p => p.Id == payment.PaymentCategoryId);
                     if (package != null)
                     {
