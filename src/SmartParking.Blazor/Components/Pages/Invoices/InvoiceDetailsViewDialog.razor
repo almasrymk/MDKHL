@@ -128,7 +128,7 @@
             imagepath = await InvoiceAppService.GetInvoiceQRCodeForOrganization(ID);
 
         }
-        var pdf = await PdfGenetrayorAppService.GenerateInvoicePdfAsync(ID);
+        var pdf = await PdfGenetrayorAppService.GenerateInvoicePdfAsync(ID, CommercialRegisteration, imagepath);
 
         await base.OnInitializedAsync();
 
