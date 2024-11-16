@@ -31,7 +31,7 @@ public class VehiclesAppService:
 		>,
 	IVehiclesAppService
 {
-	private readonly Volo.Abp.Domain.Repositories.IRepository<Vehicle, int> _repository;
+	private readonly IRepository<Vehicle, int> _repository;
 	private IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
     private readonly IRepository<LicenceType, int> _licenceTypeRepository;

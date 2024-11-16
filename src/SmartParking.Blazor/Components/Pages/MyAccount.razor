@@ -42,19 +42,12 @@
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
                         </MudItem>
 
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="NumOfCameras" HideSpinButtons="true" Min="0" Placeholder=@L["Type Here"] Label=@L["Num Of Cameras"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Min="0" Placeholder=@L["Type Here"] Label=@L["Max Capacity"] />
-                        </MudItem>
+           
                         <MudItem sm="4">
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"]
                                            @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
-                        </MudItem>
+           
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
@@ -94,15 +87,22 @@
                         <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
                         </MudItem>
+                        @if (IsNumberOfHoursExceeded){
+
                         <MudItem sm="4">
-                            <MudNumericField T="int" Immediate="true" Required="true" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                                <MudNumericField T="int" Immediate="true" Required="@IsNumberOfHoursExceeded" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
-                        </MudItem>
+                        }
+                        @if (IsClose)
+                        {
+                            
+                            <MudItem sm="4">
+                                    <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                    <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                            </MudItem>
+                        }
                         <MudItem sm="4">
                             <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
@@ -164,7 +164,7 @@
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
 
                 <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="@OrganizationPicture" Class="rounded-circle" Style="width:290px;" Alt="@L["OrganizationLogo"]" />
+                    <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Style="width:200px;" Alt="@L["OrganizationLogo"]" />
                 </MudItem>
 
 

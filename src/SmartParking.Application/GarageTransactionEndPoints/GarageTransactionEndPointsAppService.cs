@@ -110,7 +110,16 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //check if transaction is input
         if (GarageTransaction.CameraType == CameraType.Exit)
         {
-            return await HandleCamersExit(garageId, organizationId, GarageTransaction);
+            try
+            {
+
+                return await HandleCamersExit(garageId, organizationId, GarageTransaction);
+            }
+            catch (Exception ex)
+            {
+                await CreateUnLinkedTransaction(input);
+                return await Task.FromResult(false);
+            }
         }
         //Check Garage Capicity
 

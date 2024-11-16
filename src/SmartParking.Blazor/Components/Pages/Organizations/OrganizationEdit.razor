@@ -93,15 +93,23 @@
                         <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField T="int" Immediate="true" Required="true" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursStart"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
-                        </MudItem>
+                        @if (IsNumberOfHoursExceeded)
+                        {
+
+                            <MudItem sm="4">
+                                <MudNumericField T="int" Immediate="true" Required="@IsNumberOfHoursExceeded" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            </MudItem>
+                        }
+                        @if (IsClose)
+                        {
+
+                            <MudItem sm="4">
+                                <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                            </MudItem>
+                        }
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
                         <MudItem sm="4">
@@ -114,6 +122,7 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Required
+                                       Value="@ViewSubscriptionArabicName"
                                        ValueChanged="OnPackageSelected">
                                 <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
                                 @foreach (var package in packages)
@@ -152,7 +161,7 @@
 
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["SubscriptionSlotNumber"] @bind-Value="SubscriptionSlotNumber" />
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["ParkingSlot"] @bind-Value="SubscriptionSlotNumber" />
 
                             </MudItem>
 
@@ -254,7 +263,7 @@
                @if(OrganizationPicture!=null)
                {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                        <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
                     </MudItem>
                }
                

@@ -110,9 +110,10 @@ public class CamerasAppService :
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.GarageId == garageId);
-            var Count = await query.CountAsync();
+            var query =await _repository.GetQueryableAsync();
+            query=query.Where(x=>x.GarageId==garageId);
+            var Count=await query.CountAsync();
+            Count++;
             return Count.ToString();
         }
     }
@@ -195,8 +196,8 @@ public class CamerasAppService :
 
                 }
 
-            }
-            input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+			}
+			input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
             input.DeviceId += numberOfCamerasForOrganization;
             input.OrganizationId = organization.Id;
 
@@ -210,6 +211,7 @@ public class CamerasAppService :
 
     private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
     {
+
         if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
         {
             throw new Exception("Upgrade subscription to add cameras to organization.");
