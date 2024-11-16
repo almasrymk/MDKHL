@@ -26,7 +26,7 @@
 
             <MudForm Model="createUpdateVehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
-                    <MudItem sm="6" md="6">
+                    @* <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@createUpdateVehicle.PlateColorId"
                                    Variant="Variant.Text"
                                    Label="@L["PlateColor Name"]"
@@ -40,52 +40,19 @@
                                 <MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
                             }
                         </MudSelect>
-                    </MudItem>
+                    </MudItem> *@
 
-                    <MudItem sm="4" md="4">
-                        <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateLetters"]" @bind-Value="EnPlateLetters" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="4" md="4">
-                        <MudTextField  T="string" InputType="InputType.Text" Label="@L["EnPlateNumber"]" @bind-Value="EnPlateNumber" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="4" md="4">
-                        <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateLetters"]" @bind-Value="ArPlateLetters" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="4" md="4">
-                        <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="ArPlateNumber" Placeholder="@L["Type Here"]" />
+                    <MudItem sm="6" md="6">
+                        <MudTextField  T="string" InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                    </MudItem> 
+                    <MudItem sm="6" md="6">
+                        <MudTextField  T="string" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
+                    </MudItem> 
+                    <MudItem sm="6" md="6">
+                        <MudTextField  T="string" InputType="InputType.Text" Label="@L["EnPlateLetter"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField Required="true" T="string" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@createUpdateVehicle.VehicleModelId"
-                                   Variant="Variant.Text"
-                                   Label="@L["VehicleModel"]"
-                                   Placeholder=@L["Choose"]
-                                   HelperText=@L["Helper Text"]
-                                   Required="true"
-                                   Clearable="_clearable">
-                            @foreach (var vehiclemodel in VehicleModels)
-                            {
-
-                                <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@createUpdateVehicle.VehicleBrandId"
-                                   Variant="Variant.Text"
-                                   Label="@L["VehicleBrand"]"
-                                   Placeholder=@L["Choose"]
-                                   HelperText=@L["Helper Text"]
-                                   Required="true"
-                                   Clearable="_clearable">
-                            @foreach (var vehiclebrand in VehicleBrands)
-                            {
-
-                                <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.EnglishName</MudSelectItem>
-                            }
-                        </MudSelect>
+                        <MudTextField  T="string" InputType="InputType.Text" Label="@L["EnPlateNumber"]" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@createUpdateVehicle.LicenceTypeId"
@@ -103,10 +70,47 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSwitch Label="@L["BelongToCompany"]" LabelPosition="LabelPosition.Start" @bind-Value="createUpdateVehicle.BelongToCompany" Color="MudBlazor.Color.Primary" />
+                        <MudSelect T="int"
+                                   Variant="Variant.Text"
+                                   Label="@L["VehicleBrand"]"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
+                                   Required="true"
+                                   Clearable="_clearable"
+                                   ValueChanged="SelectBrand">
+                            @foreach (var vehiclebrand in VehicleBrands)
+                            {
+
+                                <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="@createUpdateVehicle.VehicleModelId"
+                                   Variant="Variant.Text"
+                                   Label="@L["VehicleModel"]"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
+                                   Required="true"
+                                   Clearable="_clearable">
+                            @foreach (var vehiclemodel in VehicleModels)
+                            {
+
+                                <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                   
+                    <MudItem sm="6" md="6">
+                        <MudTextField Required="true" T="string" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
+                    </MudItem>
+                   
+                    <MudItem sm="6" md="6">
                         <MudTextField Label="@L["CompanyName"]" Disabled="createUpdateVehicle.BelongToCompany==false" T="string" InputType="InputType.Text" @bind-Value="createUpdateVehicle.CompanyName" Placeholder="@L["Type Here"]"  />
+                    </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <MudSwitch Label="@L["BelongToCompany"]" LabelPosition="LabelPosition.Start" @bind-Value="createUpdateVehicle.BelongToCompany" Color="MudBlazor.Color.Primary" />
                     </MudItem>
                 </MudGrid>
             </MudForm>

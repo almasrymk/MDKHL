@@ -1,4 +1,5 @@
-﻿@using SmartParking.Lookups
+﻿@using SmartParking.Enums
+@using SmartParking.Lookups
 @using SmartParking.Packages
 @using SmartParking.Organizations
 @using Microsoft.Extensions.Localization
@@ -89,6 +90,23 @@
                                    @bind-Value="createUpdatePackage.published"
                                    Color="MudBlazor.Color.Primary" />
                     </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="@createUpdatePackage.CustomerCategory"
+                                   Label="@L["customer category"]"
+                                   Placeholder="@L[ "Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   Required>
+
+                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                            {
+                                <MudSelectItem Value="@category">
+
+                                    @category.ToString()
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="createUpdatePackage.Description"
                                       For="@(() => createUpdatePackage.Description)"
@@ -100,7 +118,7 @@
                                       Label="@L["Description"]" />
 
                     </MudItem>
-
+                   
                     <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@createUpdatePackage.Status" Class="d-inline-flex align-content-center">

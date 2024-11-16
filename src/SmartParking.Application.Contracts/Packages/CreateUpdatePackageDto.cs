@@ -17,8 +17,8 @@ namespace SmartParking.Packages
         public bool published { get; set; }
         public TimeOnly PublishFrom { get; set; }
         public TimeOnly PublishTo { get; set; }
-       // public  Organization Organization { get; set; }
-
+        // public  Organization Organization { get; set; }
+        public CustomerCategoryStatus CustomerCategory { get; set; }
         public int OrganizationId { get; set; }
         public Status Status { get; set; }
     }

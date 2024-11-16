@@ -51,11 +51,15 @@ public partial class AddVehicleDialog
         var resultVehicleBrand = await VehicleBrandAppService.GetAllVehicleBrandsAsync();
         VehicleBrands = resultVehicleBrand;
 
-        var resultVehicleModel = await VehicleModelAppService.GetAllVehicleModelsAsync();
-        VehicleModels = resultVehicleModel;
+        
 
     }
-
+    private async Task SelectBrand(int brandId)
+    {
+        createUpdateVehicle.VehicleBrandId = brandId;
+        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId);
+        VehicleModels = resultVehicleModel.Value;
+    }
     private async void SubmitCreate()
     {
         var successedMessage = L["VehichleWasCreatedSuccessfullyAndAddedToCustomer"];

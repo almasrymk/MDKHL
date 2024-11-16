@@ -1,10 +1,12 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Mobile.Vehicles;
+using SmartParking.Results;
 using System;
 
 using System.Threading.Tasks;
@@ -32,34 +34,46 @@ public class VehiclesAppService:
 	private readonly IRepository<Vehicle, int> _repository;
 	private IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
-	private readonly IRepository<LicenceType, int> _licenceTypeRepository;	
-	public VehiclesAppService(IRepository<Vehicle, int> repository,
-		IDataFilter dataFilter, ICurrentUser currentUser,
-		IRepository<LicenceType,int> licenceTypeRepository)
+    private readonly IRepository<LicenceType, int> _licenceTypeRepository;
+
+    public VehiclesAppService(Volo.Abp.Domain.Repositories.IRepository<Vehicle, int> repository,
+		IDataFilter dataFilter, ICurrentUser currentUser,IRepository<LicenceType,int> licenceTypeRepository)
 	   : base(repository)
 	{
 		_repository = repository;
 		_dataFilter = dataFilter;
 		_currentUser = currentUser;
-		_licenceTypeRepository = licenceTypeRepository;
-	}
+        _licenceTypeRepository = licenceTypeRepository;
+    }
 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
-        var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleDto, Vehicle>(input);
+        
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
         if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
         {
-            mappedVehicle.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
+            input.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
 
         }
         else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
         {
-            mappedVehicle.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
+            input.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
         }
-        
+        else
+        {
+             throw new InvalidOperationException("Plate number must include both plate letters and plate numbers, either in Arabic or English.");
+            
+        }
+        // LicenceType is plate type is found 
+        var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
+        if (licenceType == null)
+        {
+            return Result<VehicleDto>.NotFound("licence type not found");
 
-		if(mappedVehicle !=null)
+        }
+        var existingPlatNumber =await _repository.FirstOrDefaultAsync(x=>x.PlateNumber == input.PlateNumber);
+        input.PlateColorId = licenceType.PlateColorId;
+		if(existingPlatNumber !=null)
 		{
 			throw new InvalidOperationException("PlatNumber already exists");
 		}

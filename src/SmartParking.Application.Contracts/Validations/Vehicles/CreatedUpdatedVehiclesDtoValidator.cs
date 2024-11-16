@@ -19,10 +19,6 @@ public class CreatedUpdatedVehiclesDtoValidator:AbstractValidator<CreateUpdateVe
 			.NotEmpty()
 			.GreaterThan(0);
 
-			RuleFor(x => x.PlateColorId)
-			.NotEmpty()
-			.GreaterThan(0);
-
 			RuleFor(x => x.LicenceTypeId)
 			.NotEmpty()
             .GreaterThan(0);
@@ -31,7 +27,43 @@ public class CreatedUpdatedVehiclesDtoValidator:AbstractValidator<CreateUpdateVe
 			.Must(modelYear => int.TryParse(modelYear,out int year) && year >= 1980)
 			.WithMessage("The Model Year must be greater than or equal  1980.");
 
-		
+        RuleFor(x => x.ArPlateLetters)
+       .Matches(@"^[\p{IsArabic}\d\s]+$")
+       .WithMessage("The Plate Letter should only contain Arabic letters")
+       .When(x => x.ArPlateLetters.Length != 0)
+       .MinimumLength(1)
+       .When(x => x.ArPlateLetters.Length != 0)
+       .MaximumLength(3)
+       .WithMessage("The Plate Arabic Letter must be between 1 and 3 characters long.");
+
+
+        RuleFor(x => x.EnPlateLetters)
+            .Matches(@"^[A-Za-z\d\s]+$")
+            .WithMessage("The Plate Letter should only contain English letters")
+            .When(x => x.EnPlateLetters.Length != 0)
+            .MinimumLength(1)
+            .When(x => x.EnPlateLetters.Length != 0)
+            .MaximumLength(3)
+            .WithMessage("The Plate English Letter must be between 1 and 3 characters long.");
+
+        RuleFor(x => x.ArPlateNumber)
+            
+            .Matches(@"^[0-9\u0660-\u0669\s]+$")
+            .WithMessage("The Plate Number should only contain Arabic numerals.")
+            .When(x => x.ArPlateNumber.Length != 0)
+            .MinimumLength(1)
+            .When(x => x.ArPlateNumber.Length != 0)
+            .MaximumLength(4)
+            .WithMessage("The Plate Number must be between 1 and 4 Arabic numerals long.");
+
+        RuleFor(x => x.EnPlateNumber)
+            .Matches(@"^[0-9\s]+$")
+            .WithMessage("The Plate Number should only contain English numerals.")
+            .When(x => x.EnPlateNumber.Length != 0)
+            .MinimumLength(1)
+            .When(x => x.EnPlateNumber.Length != 0)
+            .MaximumLength(4)
+            .WithMessage("The Plate Number must be between 1 and 4 English numerals long.");
 
         // Check that BelongToCompany is not null and if it's true, ensure CompanyName is provided
         RuleFor(x => x.BelongToCompany)

@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Packages
 @using Volo.Abp.Validation
@@ -81,6 +82,23 @@
                                    @bind-Value="Package.published"
                                    Disabled='true'
                                    Color="MudBlazor.Color.Primary" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="@Package.CustomerCategory"
+                                   Label="@L["customer category"]"
+                                   Placeholder="@L[ "Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   Required>
+
+                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                            {
+                                <MudSelectItem Value="@category">
+
+                                    @category.ToString()
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
                     </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="Package.Description"

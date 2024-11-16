@@ -4,6 +4,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;
 using SmartParking.Vehicles.LookUps;
@@ -206,6 +207,7 @@ public partial class Package
 			Status = packageDto.Status,
 			PackageType=packageDto.PackageType,
 			//Organization=packageDto.Organization,
+			CustomerCategory = packageDto.CustomerCategory
 
 		};
 
@@ -244,12 +246,14 @@ public partial class Package
             Status = packageDto.Status,
             PackageType = packageDto.PackageType,
            // Organization = packageDto.Organization,
+		   CustomerCategory = packageDto.CustomerCategory
 
         };
 
 		var parameters = new DialogParameters
 		{
 			["Package"] = createUpdatePackage,
+			["CustomerCategory"] = packageDto.CustomerCategory.ToString(),
 			["UpdatedId"] = id
 
 		};
