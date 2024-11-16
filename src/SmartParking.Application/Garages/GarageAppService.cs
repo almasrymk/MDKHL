@@ -477,6 +477,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> GetGarageByOrganization(PagedAndSortedResultRequestDto input ,int organizationId)
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
             var query = await _repository.GetQueryableAsync();
              query=  query.Where(x => x.OrganizationId == organizationId);
@@ -489,6 +491,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                totalCount,
                garagesDto
            );
+        }
         
     }
 

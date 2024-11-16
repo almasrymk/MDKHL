@@ -42,8 +42,17 @@
                         </MudSelect>
                     </MudItem>
 
-                    <MudItem sm="6" md="6">
-                        <MudTextField Required="true" T="string" InputType="InputType.Text" Label="@L["PlateNumber"]" @bind-Value="createUpdateVehicle.PlateNumber" Placeholder="@L["Type Here"]" />
+                    <MudItem sm="4" md="4">
+                        <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateLetters"]" @bind-Value="EnPlateLetters" Placeholder="@L["Type Here"]" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudTextField  T="string" InputType="InputType.Text" Label="@L["EnPlateNumber"]" @bind-Value="EnPlateNumber" Placeholder="@L["Type Here"]" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateLetters"]" @bind-Value="ArPlateLetters" Placeholder="@L["Type Here"]" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="ArPlateNumber" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField Required="true" T="string" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />

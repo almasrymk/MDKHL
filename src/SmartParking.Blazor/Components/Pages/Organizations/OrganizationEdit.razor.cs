@@ -71,7 +71,7 @@ public partial class OrganizationEdit
 
     private SubscriptionDto? SelectedPackage;
 
-
+    public string ViewSubscriptionArabicName { get; set; }
 
 
 
@@ -95,7 +95,7 @@ public partial class OrganizationEdit
             NumberOfCameras = SelectedPackage.NumberOfCameras;
             NumberOfUsers = SelectedPackage.NumberOfUsers;
             NumberOfCustomers = SelectedPackage.NumberOfCustomers;
-            SubscriptionSlotNumber = SelectedPackage.SubscriptionSlotNumber;
+            SubscriptionSlotNumber = SelectedPackage.ParkingSlot;
             Parkingslot = SelectedPackage.ParkingSlot;
         }
         else
@@ -268,6 +268,11 @@ public partial class OrganizationEdit
         OrganizationPicture = organization.OrganizationPicture;
         PackageId = organization.PackageId;
         orgTenant = organization.TenantId;
+
+
+        PackageSelectValue=organization.SubscriptionId.ToString();
+        ViewSubscriptionArabicName = organization.SubscriptionArabicName;
+
     }
     private async Task GetRegions()
     {

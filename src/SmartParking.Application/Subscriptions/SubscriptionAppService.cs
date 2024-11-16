@@ -108,15 +108,13 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     /// <inheritdoc/>
     public override async Task<SubscriptionDto> GetAsync(int id)
     {
-        if (CurrentUser.IsInRole("MdkhlAdmin"))
-        {
+       
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 return await base.GetAsync(id);
             }
-        }
-        else
-            return await base.GetAsync(id);
+        
+   
     }
     /// <inheritdoc/>
     public override async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input)

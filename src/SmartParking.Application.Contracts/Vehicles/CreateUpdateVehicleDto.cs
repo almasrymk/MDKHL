@@ -18,6 +18,9 @@ namespace SmartParking.Vehicles
 		public string ModelYear { get; set; }
 		public bool BelongToCompany { get; set; }
 		public string? CompanyName { get; set; }
-        public string PlateNumber { get; set; }
-	}
+        public string ArPlateLetters { get; set; }
+        public string EnPlateLetters { get; set; }
+        public string ArPlateNumber { get; set; }
+        public string EnPlateNumber { get; set; }
+    }
 }

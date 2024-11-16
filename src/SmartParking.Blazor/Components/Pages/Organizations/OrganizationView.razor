@@ -190,7 +190,7 @@
                     @if(OrganizationPicture!=null)
                     {
                         <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                            <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                            <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
                         </MudItem>
                     }
                     else
@@ -209,11 +209,11 @@
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewGarages">@L["Garages"]</MudLink>
                         </MudPaper>
                     </MudItem>
-                    <MudItem sm="6">
+              @*       <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark">@L["Subscriptions"]</MudLink>
                         </MudPaper>
-                    </MudItem>
+                    </MudItem> *@
 
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
