@@ -98,6 +98,7 @@ public partial class MyAccount
             ContactMail = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
+            //LicenseExpiryDate = DateOnly.FromDateTime(LicenseExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
             PhoneNum = PhoneNum,
             WhatsAppNum = WhatsAppNum,
@@ -201,6 +202,7 @@ public partial class MyAccount
         StateSelectValue = organization.StateId.ToString();
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
+        //LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
         CitySelectValue = organization.CityId.ToString();
