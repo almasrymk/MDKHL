@@ -212,7 +212,7 @@ public partial class Garage
 
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity",PropertyName= "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Garage Max Capacity"], Name = "Garage Max Capacity", PropertyName= "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();
@@ -230,7 +230,7 @@ public partial class Garage
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationArabicName"], item.OrganizationNameAr));
 
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Garage Max Capacity"], item.MaxCapacity.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[item.Status.ToString()]));
 
 

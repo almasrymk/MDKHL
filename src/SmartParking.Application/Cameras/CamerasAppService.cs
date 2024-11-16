@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
@@ -70,16 +71,28 @@ public class CamerasAppService :
             using (_dataFilter.Disable<IMultiTenant>())
 		    {
 			    var garage = await _garageAppService.GetAsync(input.GarageId);
+                
 		     	var organization = await _organizationRepository.FirstOrDefaultAsync(x=>x.Id==garage.OrganizationId);
-
-                if (input.Status == Enums.Status.Active)
+                var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+                if (subscription == null)
                 {
-                    await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId,1);
+                    throw new Exception("No subscription for organization");
+                }
+                var existingCamera = await _repository.GetAsync(id);
+                if (input.Status == Enums.Status.Active && existingCamera.Status!=Enums.Status.Active)
+                {
+                   var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
+                    if (result) {
+                    organization.ActiveCameras++;
+                    
+                    }
+				   await CurrentUnitOfWork.SaveChangesAsync();
 
-				}
-			   input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+			    }
 
-			  return await base.UpdateAsync(id, input);
+
+
+			return await base.UpdateAsync(id, input);
             }
         
 	
@@ -89,29 +102,20 @@ public class CamerasAppService :
     public async Task<string> GenerateCameraCode(string OrgEnglishName ,string GarageEnglishName,string CameraEnglishName)
     {
        string Code = OrgEnglishName.Substring(0, 3) +'-'+ GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2)+'-';
-        string ncode = Code;
-
-        Random rnd = new Random();
-        while (true)
-        {
-            ncode=Code;
-            Camera camera = new Camera();
-            ncode += rnd.Next(00, 99).ToString("00");
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                camera = await _repository.FirstOrDefaultAsync(x => x.DeviceId == ncode);
-
-            }
-            if (camera == null)
-            {
-                Code = ncode;
-                break;
-            }
-
-        }
         return Code;
 
     }
+
+    public async Task<string> GetNumbersOfCamerasRelatedToGarage(int garageId) {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query =await _repository.GetQueryableAsync();
+            query=query.Where(x=>x.GarageId==garageId);
+            var Count=await query.CountAsync();
+            return Count.ToString();
+        }
+    }
+
 
         public override async Task<CameraDto> GetAsync(int id)
         {
@@ -168,8 +172,7 @@ public class CamerasAppService :
         {
             garage = await _garageAppService.GetAsync(input.GarageId);
             organization = await _organizationRepository.GetAsync(garage.OrganizationId);
-
-
+            subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
 
             if (await CheckIPUnique(input.CameraIP) == 1)
             {
@@ -178,29 +181,51 @@ public class CamerasAppService :
                     Code = "DuplicateCameraIP"
                 };
             }
-            var numberOfCamerasForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-             subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
-            if (subscription.NumbersOfGarages < numberOfCamerasForOrganization.Count + 1)
-            {
-                throw new Exception("UPGRADE subscription to add camera to organization.");
+            var numberOfCamerasForOrganization =await GetNumbersOfCamerasRelatedToGarage(input.GarageId);
 
-            }
+
             if (input.Status == Enums.Status.Active)
             {
+				var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
+				if (result)
+				{
+					organization.ActiveCameras++;
 
-                await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(input.GarageId, 1);
-            }
-            input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+				}
+
+			}
+			input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+            input.DeviceId += numberOfCamerasForOrganization;
             input.OrganizationId = organization.Id;
-            return await base.CreateAsync(input);
+		
+			await CurrentUnitOfWork.SaveChangesAsync();
+
+			return await base.CreateAsync(input);
         }
     }
-        /// <summary>
-        /// method used to Check if IP is unqiue or not
-        /// </summary>
-        /// <param name="cameraIP">Added Camera IP</param>
-        /// <returns>1 if IP Exists</returns>
-        private async Task<int> CheckIPUnique(string cameraIP)
+
+    [RemoteService(isEnabled: false)]
+
+    private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
+    {
+        organization.ActiveCameras = 20;
+
+        if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
+        {
+            throw new Exception("Upgrade subscription to add cameras to organization.");
+
+        }
+
+        return true;
+
+
+    }
+    /// <summary>
+    /// method used to Check if IP is unqiue or not
+    /// </summary>
+    /// <param name="cameraIP">Added Camera IP</param>
+    /// <returns>1 if IP Exists</returns>
+    private async Task<int> CheckIPUnique(string cameraIP)
         {
             // Use FirstOrDefaultAsync to find the camera by IP
             var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
