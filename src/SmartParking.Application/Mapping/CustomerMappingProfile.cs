@@ -25,8 +25,8 @@ public class CustomerMappingProfile : Profile
             .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId))
             .ForMember(dest => dest.identificationTypes, opt => opt.MapFrom(src => src.IdentificationTypes))
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-			.ForMember(dest => dest.OrganizationArabicName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.ArabicName).FirstOrDefault()))
-			.ForMember(dest => dest.OrganizationEnglishName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.EnglishName).FirstOrDefault()))
+			.ForMember(dest => dest.OrganizationArabicName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.ArabicName).FirstOrDefault()??""))
+			.ForMember(dest => dest.OrganizationEnglishName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.EnglishName).FirstOrDefault()??""))
             .ReverseMap();
           //  .ForMember(dest => dest.OTP, opt => opt.Ignore())
             ;
