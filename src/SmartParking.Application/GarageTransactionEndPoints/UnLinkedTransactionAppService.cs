@@ -172,7 +172,7 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
             File.WriteAllBytes(fullPath, imageBytes);
 
             // Return the relative path for storing in the database
-            return $"/GarageTransactionsImages/{input.DeviceID}/{input.PlateNumber}/{fileName}";
+            return $"/UnlinkedGarageTransactionsImages/{input.DeviceID}/{input.PlateNumber}/{fileName}";
         }
         catch (Exception ex)
         {
@@ -197,7 +197,7 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
     private string CreateImageDirectory(CreateUpdateGarageTransactionEndPointDto input)
     {
         // Define the path where the image will be saved
-        string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages", input.DeviceID, input.PlateNumber);
+        string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UnlinkedGarageTransactionsImages", input.DeviceID, input.PlateNumber);
 
         // Ensure the directory exists
         if (!Directory.Exists(ImageDirectoryPath))
