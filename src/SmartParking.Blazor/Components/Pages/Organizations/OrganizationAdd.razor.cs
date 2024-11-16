@@ -34,7 +34,6 @@ public partial class OrganizationAdd
     private string StateSelectValue {  get; set; }
     public string RegionSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
-    private DateTime? LicenseExpiryDate { get; set; }
     public decimal FirstHourPrice { get; set; }
     public decimal SecondHourPrice { get; set; }
     public decimal ThirdHourPrice { get; set; }
@@ -178,7 +177,6 @@ public partial class OrganizationAdd
             ContactMail = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
-            LicenseExpiryDate = DateOnly.FromDateTime(LicenseExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
             PhoneNum = PhoneNum,
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
@@ -189,9 +187,13 @@ public partial class OrganizationAdd
             ThirdHourPrice = ThirdHourPrice,
             AdditionalHourPrice = AdditionalHourPrice,
             FullDayPrice = FullDayPrice,
-            NumberOfHours = NumberOfHours,
-            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MinValue),
+            NumberOfHours = NumberOfHours > 0 ? NumberOfHours : 0,
+            ClosingHoursStart = ClosingHoursStart.HasValue
+            ? TimeOnly.FromTimeSpan(ClosingHoursStart.Value)
+            : null,
+            ClosingHoursEnd = ClosingHoursEnd.HasValue
+            ? TimeOnly.FromTimeSpan(ClosingHoursEnd.Value)
+            : null,
             UserName = UserName,
             StreetName = StreetName,
             District = District,
