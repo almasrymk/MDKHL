@@ -23,12 +23,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
     <PackageReference Include="Blazorise.Bootstrap5" Version="1.6.0" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
     <PackageReference Include="Microsoft.JSInterop" Version="8.0.7" />
     <PackageReference Include="MudBlazor" Version="7.6.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
