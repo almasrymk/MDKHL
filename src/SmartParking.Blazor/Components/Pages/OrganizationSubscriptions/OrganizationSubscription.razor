@@ -1,16 +1,91 @@
 ﻿@page "/subscription"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using System.Globalization
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
+@inject IOrganizationsAppService OrganizationAppService
 @inject IStringLocalizer<SmartParkingResource> L
+@inject ICurrentTenant currentTenant
 
 
 
 <PageTitle>@L["Organization Subscription"]</PageTitle>
-<div class="d-flex justify-content-between align-items-center my-5">
-    <MudText Class="fw-bold" Typo="Typo.h6">Subscription packages</MudText>
-    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.AddCircleOutline" IconClass="text-white">@L["CREATE NEW"]</MudButton>
+<div class="d-flex justify-content-between align-items-center my-5 flex-column">
+    <MudText Class="fw-bold mt-5 align-self-lg-start" Typo="Typo.h6">@L["Organization Subscription"]</MudText>
+
+    <MudGrid Class="mt-5">
+
+    @if (CultureInfo.CurrentCulture.Name == "en")
+    {
+
+
+        <MudItem sm="4">
+            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionEnName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+        </MudItem>
+    }
+    else
+    {
+
+        <MudItem sm="4">
+            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionArName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+        </MudItem>
+    }
+   
+    <MudItem sm="4">
+        <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="NumbersOfGarages" />
+
+    </MudItem>
+    <MudItem sm="4">
+        <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="NumberOfCameras" />
+
+    </MudItem>
+    <MudItem sm="4">
+        <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="NumberOfUsers" />
+
+    </MudItem>
+    <MudItem sm="4">
+        <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfMobileCustomers" />
+
+    </MudItem>
+ <MudItem sm="4">
+            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["ParkingSlots"] @bind-Value="ParkingSlots" />
+
+    </MudItem>
+
+
+    <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+    </MudGrid>
+
+
+
+
 </div>
 
-<MudGrid Class="my-19 d-flex justify-content-center ">
-    <SPSubscriptionCard/>
-</MudGrid>
+
+@code{
+    public string SubscriptionArName { get; set; }
+    public string SubscriptionEnName { get; set; }
+    public int NumbersOfGarages { get; set; }
+    public int NumberOfCameras { get; set; }
+    public int NumberOfUsers { get; set; }
+    public int NumberOfMobileCustomers { get; set; }
+    public int NumberOfOrganizations { get; set; }
+    public int ParkingSlots { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var orgId = await OrganizationAppService.GetOrganizationIdByTenant(currentTenant.Id);
+        var Organization =await OrganizationAppService.GetAsync(orgId);
+
+        SubscriptionArName = Organization.SubscriptionArabicName;
+        SubscriptionEnName = Organization.SubscriptionEnglishName;
+        NumbersOfGarages = Organization.NumbersOfGarages;
+        NumberOfCameras = Organization.NumberOfCameras;
+        NumberOfUsers = Organization.NumberOfUsers;
+        NumberOfMobileCustomers = Organization.NumberOfCustomers;
+        ParkingSlots = Organization.ParkingSlots;
+    }
+
+}

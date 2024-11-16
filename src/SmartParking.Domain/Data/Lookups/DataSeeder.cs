@@ -155,7 +155,6 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 Code = "00001",
                 CommercialRegistrationNumber = "9201234511",
                 CRExpiryDate = new DateOnly(2025, 12, 31),
-                LicenseExpiryDate = new DateOnly(2026, 12, 31),
                 CountryId = egypt.Id,
                 RegionId = test.Id,
                 StateId = stateTest.Id,

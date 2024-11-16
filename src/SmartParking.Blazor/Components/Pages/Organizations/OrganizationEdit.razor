@@ -46,9 +46,7 @@
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"]
                                            @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
-                        </MudItem>
+                        
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
@@ -253,11 +251,21 @@
         </MudItem>
         <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+               @if(OrganizationPicture!=null)
+               {
+                    <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+                        <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                    </MudItem>
+               }
                
-                <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
-                </MudItem>
+                else
+                {
+                    <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
 
+                         <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+
+                    </MudItem>
+                }
 
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
@@ -300,3 +308,14 @@
     </MudGrid>
 </div>
 
+<style>
+    .bg_w_foto 
+    {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>

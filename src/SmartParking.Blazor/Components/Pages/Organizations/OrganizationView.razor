@@ -41,9 +41,6 @@
                         </MudItem>
         
                         <MudItem sm="4">
-                            <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
 
@@ -190,9 +187,21 @@
 
                         </Div>
                     </MudItem>
-                <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
-                </MudItem>
+                    @if(OrganizationPicture!=null)
+                    {
+                        <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+                            <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+
+                            <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+
+                        </MudItem>
+                    }
+
                 </MudGrid>
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
@@ -231,3 +240,14 @@
     </MudGrid>
 </div>
 
+
+<style>
+    .bg_w_foto {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>

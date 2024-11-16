@@ -83,8 +83,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var targetDate = DateOnly.FromDateTime(DateTime.Now).AddYears(yearsNumber);
 
             query = query
-               .Where(o => o.LicenseExpiryDate <= targetDate);
-            var result = query.Select(x => new Organization { EnglishName = x.EnglishName , LicenseExpiryDate = x.LicenseExpiryDate }).ToList();
+               .Where(o => o.CRExpiryDate <= targetDate);
+            var result = query.Select(x => new Organization { EnglishName = x.EnglishName , CRExpiryDate = x.CRExpiryDate }).ToList();
             AnalysisNamesCountDto organizationCustomersDto = new AnalysisNamesCountDto();
             organizationCustomersDto.Names = ObjectMapper.Map<List<Organization>, List<string>>(result);
             organizationCustomersDto.Count.Add(result.Count);
