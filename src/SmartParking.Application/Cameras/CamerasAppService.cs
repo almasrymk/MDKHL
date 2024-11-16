@@ -112,6 +112,7 @@ public class CamerasAppService :
             var query =await _repository.GetQueryableAsync();
             query=query.Where(x=>x.GarageId==garageId);
             var Count=await query.CountAsync();
+            Count++;
             return Count.ToString();
         }
     }
@@ -195,6 +196,8 @@ public class CamerasAppService :
 
 			}
 			input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+            if (numberOfCamerasForOrganization.Length == 1)
+                input.DeviceId += '0';
             input.DeviceId += numberOfCamerasForOrganization;
             input.OrganizationId = organization.Id;
 		
@@ -208,7 +211,6 @@ public class CamerasAppService :
 
     private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
     {
-        organization.ActiveCameras = 20;
 
         if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
         {
