@@ -88,6 +88,14 @@
                                    Disabled='true'
                                    Color="MudBlazor.Color.Primary" />
                     </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="CustomerCategory"
+                                      For="@(() => CustomerCategory)"
+                                      Immediate="true"
+                                      Disabled=true
+                                      Label=@L["customer category"] />
+                    </MudItem>
+                    
                     <MudItem sm="12">
                         <MudTextField @bind-Value="Package.Description"
                                       For="@(() => Package.Description)"
@@ -129,19 +137,22 @@
 </style>
 
 @code {
-	[CascadingParameter]
-	private MudDialogInstance MudDialogAdd { get; set; }
+    [CascadingParameter]
+    private MudDialogInstance MudDialogAdd { get; set; }
     [Parameter] public CreateUpdatePackageDto Package { get; set; }
-	[Parameter]
-	public int UpdatedId { get; set; }
-	
-	bool _clearable;
-	private MudForm form;
+    [Parameter]
+    public int UpdatedId { get; set; }
+    [Parameter]
+    public string CustomerCategory { get; set; }
+    
+    bool _clearable;
+    private MudForm form;
 
-	protected override async Task OnInitializedAsync()
-	{
-		
-		await base.OnInitializedAsync();
+   
+    protected override async Task OnInitializedAsync()
+    {
+        
+        await base.OnInitializedAsync();
 	}
 
 

@@ -458,8 +458,11 @@
     "Total Garage Can be added": "عدد المواقف المتاح تفعيلها",
     "ActiveGarages": "عدد المواقف المفعلة",
     "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
-    "Details for Employee": "تفاصيل للموظف",
-    "customer category": "فئة العملاء"
+    "customer category": "فئة العملاء",
+    "ArPlateNumber": "رقم اللوحة بالعربية",
+    "ArPlateLetter": "حروف اللوحة بالعربية",
+    "EnPlateNumber": "رقم اللوحة بالانجليزية",
+    "EnPlateLetter": "حروف اللوحة بالانجليزية"
 
   }
 }
