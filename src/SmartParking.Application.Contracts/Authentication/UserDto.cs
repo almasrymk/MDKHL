@@ -10,5 +10,4 @@ namespace SmartParking.Authentication;
 
 public class UserDto:IdentityUserDto
 {
-  
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using SmartParking.Results;
+using SmartParking.Enums;
 namespace SmartParking.Packages
 {
 	public interface IPackagesAppService:
@@ -41,14 +42,14 @@ namespace SmartParking.Packages
         /// </summary>
         /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
-        Task<List<PackageDto>> GetAllMdkhlAsync();       
+        Task<List<PackageDto>> GetAllMdkhlAsync(int organizationId, CustomerCategoryStatus customerCategory);       
         
         /// <summary>
         /// abstract method to get all for organization of Packages
         /// </summary>
         /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
-        Task<List<PackageDto>> GetAllOrganizationAsync();
+        Task<List<PackageDto>> GetAllOrganizationAsync(CustomerCategoryStatus customerCategory);
 
 		/// <summary>
 		/// abstract method to get Package by id

@@ -240,10 +240,10 @@ public partial class Customer
    public async Task<IDialogReference> AssignPackage(string id)
 	{
         var Gid = Guid.Parse(id);
-
+		var customer = await CustomerAppService.GetAsync(Gid);
         var parameters = new DialogParameters
         {
-            ["CustomerId"] = Gid,
+            ["Customer"] = customer,
         };
 
         return await DialogService.ShowAsync<AssignPackgeDialog>("Assign Package", parameters);

@@ -28,10 +28,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
             .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
             .WithMessage("The expiry date cannot be earlier than today.");
 
-        RuleFor(x => x.LicenseExpiryDate)
-            .NotEmpty()
-            .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
-            .WithMessage("The expiry date cannot be earlier than today.");
+        
 
         RuleFor(x => x.EnglishName)
             .NotEmpty()
@@ -53,27 +50,26 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x=>x.FirstHourPrice)
             .NotEmpty()
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.SecondHourPrice)
             .NotEmpty()
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.ThirdHourPrice)
             .NotEmpty()
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.AdditionalHourPrice)
            .NotEmpty()
-           .GreaterThan(0);
+           .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.FullDayPrice)
           .NotEmpty()
-          .GreaterThan(0);
+          .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.NumberOfHours)
-            .NotEmpty()
-          .GreaterThan(0);
+         .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.BuildingNumber)
             .NotEmpty()
@@ -101,13 +97,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
 
 
-        //RuleFor(x => x.IsNumberOfHoursExceeded)
-        //.Must(v=>v == true || v == false)
-        //.WithMessage("The value must be either true or false.");
-
-        //RuleFor(x => x.IsFullDayExceeded)
-        // .Must(v => v == true || v == false)
-        // .WithMessage("The value must be either true or false."); ;
+        
 
 
     }

@@ -55,11 +55,7 @@
                         <MudItem sm="4">
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"] @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
-                                           Required="true" Label=@L["License Expiry Date"] Placeholder=@L["Time Placeholder"]
-                                           @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
-                        </MudItem>
+                       
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
                          <MudItem sm="4">
@@ -250,45 +246,45 @@
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
 
 
-
-                        <MudItem sm="6">
-                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                      
-                        
-
-                            <MudItem sm="4">
+                        <MudItem sm="4">
                             <MudNumericField Required @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
-                            </MudItem>
-                            <MudItem sm="4">
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudNumericField Required @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
-                            </MudItem>
-                             <MudItem sm="4">
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudNumericField Required @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
-                            </MudItem>
-                            <MudItem sm="4">
+                        </MudItem>
+
+                        <MudItem sm="4">
                             <MudNumericField Required @bind-Value="AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
-                            </MudItem>
-                            <MudItem sm="4">
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudNumericField Required @bind-Value="FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDayPrice"]" />
-                            </MudItem>
-                            <MudItem sm="4">
-                            <MudNumericField Required @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
-                            </MudItem>
-                        
-                       
-
-                        <MudItem sm="4">
-                            <MudTimePicker  Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                        <MudItem sm="12">
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.End" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
-                        
-
+                        @if (IsClose)
+                        {
+                            <MudItem sm="6">
+                                <MudTimePicker Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                            </MudItem>
+                            <MudItem sm="6">
+                                <MudTimePicker Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                            </MudItem>
+                        }
+                        <MudItem sm="12">
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        @if (IsNumberOfHoursExceeded)
+                        {
+                            <MudItem sm="6">
+                                <MudNumericField Required @bind-Value="NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                            </MudItem>
+                        }
+                          
+                    
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
 
@@ -327,10 +323,29 @@
 
                     </MudItem>
               }
-                
+              else
+              {
+                    <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+
+                        <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto"  Alt="@L["OrganizationLogo"]" />
+
+                    </MudItem>
+              }
+
             </MudPaper>
         </MudItem>
 
     </MudGrid>
 </div>
 
+<style>
+    .bg_w_foto 
+    {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>

@@ -28,4 +28,6 @@ public class Package : BaseEntity
 
     public virtual Organization Organization { get; set; }
 
+    public CustomerCategoryStatus CustomerCategory { get; set; }
+
 }
