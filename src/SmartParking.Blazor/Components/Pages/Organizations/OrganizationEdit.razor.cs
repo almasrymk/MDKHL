@@ -39,7 +39,6 @@ public partial class OrganizationEdit
     public string RegionSelectValue { get; set; }
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
-    private DateTime? LicenseExpiryDate { get; set; }
     public decimal FirstHourPrice { get; set; }
     public decimal SecondHourPrice { get; set; }
     public decimal ThirdHourPrice { get; set; }
@@ -149,7 +148,6 @@ public partial class OrganizationEdit
             ContactMail = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
-            LicenseExpiryDate = DateOnly.FromDateTime(LicenseExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
             PhoneNum = PhoneNum,
             WhatsAppNum = WhatsAppNum,
@@ -247,7 +245,6 @@ public partial class OrganizationEdit
         StateSelectValue = organization.StateId.ToString();
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
         CitySelectValue = organization.CityId.ToString();

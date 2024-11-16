@@ -15,7 +15,6 @@ public class CreateUpdateOrganiztionDto
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     public DateOnly CRExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
-    public DateOnly LicenseExpiryDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public int CountryId { get; set; }
     public int RegionId { get; set; }
     public int StateId { get; set; }
@@ -31,10 +30,10 @@ public class CreateUpdateOrganiztionDto
     public decimal AdditionalHourPrice { get; set; }
     public decimal FullDayPrice { get; set; }
     public bool IsNumberOfHoursExceeded { get; set; }
-    public int NumberOfHours { get; set; }
+    public int? NumberOfHours { get; set; }
     public bool IsClose { get; set; }
-    public TimeOnly ClosingHoursStart { get; set; }
-    public TimeOnly ClosingHoursEnd { get; set; }
+    public TimeOnly? ClosingHoursStart { get; set; }
+    public TimeOnly? ClosingHoursEnd { get; set; }
     public string UserName { get; set; }
     public string Address { get; set; }
     public string OrganizationPicture { get; set; }

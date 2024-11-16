@@ -17,7 +17,6 @@ public class Organization : BaseEntity
     public string Code { get; set; }
     public string CommercialRegistrationNumber { get; set; }
     public DateOnly CRExpiryDate { get; set; }
-    public DateOnly LicenseExpiryDate { get; set; }
     public int CountryId { get; set; }
     public virtual Country Country { get; set; } 
     public int RegionId { get; set; }

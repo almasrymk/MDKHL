@@ -26,7 +26,6 @@ public partial class OrganizationView
     public string RegionSelectValue { get; set; }
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
-    private DateTime? LicenseExpiryDate { get; set; }
     public int Status { get; set; } = 1;//1-> active , 2-> inactive 3->deleted 
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
@@ -88,7 +87,6 @@ public partial class OrganizationView
         NumOfActiveGarages = organization.MaxCapacity;
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
         StateName=organization.StateName;
