@@ -513,6 +513,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             throw new Exception("Critical Data as National Id , Identification. can't be updated");
         }
+        
 
         return await base.UpdateAsync(id, input);
 
