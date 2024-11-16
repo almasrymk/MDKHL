@@ -34,6 +34,8 @@ using SmartParking.Mobile.Vehicles;
 using SmartParking.Entities.Payments;
 using SmartParking.Payments;
 using SmartParking.GarageTransactionEndPoints;
+using SmartParking.Entities.Customers;
+using SmartParking.Cutomers;
 
 namespace SmartParking;
 
@@ -64,6 +66,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.MaxCapacity, opt => opt.MapFrom(src => src.ActiveGarages))
             .ForMember(dest => dest.NumOfCameras, opt => opt.MapFrom(src => src.ActiveCameras))
             .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.EnglishName))
+            .ForMember(dest => dest.SubscriptionArabicName, opt => opt.MapFrom(src => src.Subscription.ArabicName))
+            .ForMember(dest => dest.SubscriptionEnglishName, opt => opt.MapFrom(src => src.Subscription.EnglishName))
+            .ForMember(dest => dest.NumberOfUsers, opt => opt.MapFrom(src => src.Subscription.NumberOfUsers))
+            .ForMember(dest => dest.NumOfCameras, opt => opt.MapFrom(src => src.Subscription.NumberOfCameras))
+            .ForMember(dest => dest.NumberOfCameras, opt => opt.MapFrom(src => src.Subscription.NumberOfCameras))
+            .ForMember(dest => dest.NumbersOfGarages, opt => opt.MapFrom(src => src.Subscription.NumbersOfGarages))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
         CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>().ReverseMap();
@@ -175,7 +183,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
        .ConvertUsing(org => org.Customers.Count);
 
 
-
-    }
+	}
 }
 

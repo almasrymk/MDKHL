@@ -19,10 +19,10 @@ public partial class AddSubscriptionDialog
     private DateTime? _creationDate = new DateTime();
     public bool maximumNumberOfGarages { get; set; }
     public int UnlimitedMaximumNumber { get; set; } = 9999;
-	public bool maximumNumberOfOrganizations { get; set; }
 	public bool maximumNumberOfCameras { get; set; }
 	public bool maximumNumberOfUsers { get; set; }
 	public bool maximumNumberOfCustomers { get; set; }
+	public bool maximumNumberOfParkingSlots { get; set; }
   
 
 
@@ -31,6 +31,7 @@ public partial class AddSubscriptionDialog
     private int BoundNumberOfGarages;
     private int BoundNumberOfCustomers;
     private int BoundNumberOfCameras;
+    private int BoundNumberOfParkingSlots;
 
     private int BoundNumberOfOrganization;
 
@@ -57,11 +58,12 @@ public partial class AddSubscriptionDialog
         // Call your service to create the subscription
         try
         {
-            input.NumberOfOrganizations =  BoundNumberOfOrganization;
             input.NumbersOfGarages = BoundNumberOfGarages;
-            input.NumberOfMobileCustomers =  BoundNumberOfCustomers;
+            input.NumberOfCustomers =  BoundNumberOfCustomers;
             input.NumberOfUsers =  BoundNumberOfUsers;
             input.NumberOfCameras = BoundNumberOfCameras;
+            input.ParkingSlot = BoundNumberOfParkingSlots;
+           
             input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);

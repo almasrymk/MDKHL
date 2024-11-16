@@ -197,22 +197,22 @@ public partial class Garage
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyNmae = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "NameEn", IsFilterable = true, PropertyNmae = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationEnglishName"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyNmae = "OrganizationEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "NameEn", IsFilterable = true, PropertyName = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationEnglishName"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyName = "OrganizationEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameAr"], Name = "NameAr", IsFilterable = true, PropertyNmae = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationArabicName"], Name = "OrganizationArabicName", IsFilterable = false, PropertyNmae = "OrganizationArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameAr"], Name = "NameAr", IsFilterable = true, PropertyName = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationArabicName"], Name = "OrganizationArabicName", IsFilterable = false, PropertyName = "OrganizationArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
 
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity",PropertyNmae= "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity",PropertyName= "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();

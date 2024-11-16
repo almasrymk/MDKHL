@@ -8,6 +8,7 @@
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
+@using System.Globalization
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
 @layout Shared.ProfileLayout
@@ -38,21 +39,65 @@
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
-                        <MudItem sm="8">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
-                        </MudItem>
+        
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["License Expiry Date"]" @bind-Date="LicenseExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="NumOfCameras" HideSpinButtons="true"  Label=@L["Num Of Cameras"] />
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="PhoneNum" Label=@L["Contact Phone"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="MaxCapacity" HideSpinButtons="true"  Label=@L["Max Capacity"] />
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="WhatsAppNum" Label="@L["Whatsapp Num"]" />
                         </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="ContactMail" Label="@L["Contact Email"]" />
+                        </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+                        @if (CultureInfo.CurrentCulture.Name == "en"){
+
+
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionEnName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                        </MudItem>
+                        }else{
+
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionArName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                        </MudItem>
+                        }
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveCameras" HideSpinButtons="true"  Label=@L["Num Of Cameras"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveGarages" HideSpinButtons="true"  Label=@L["Max Capacity"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="NumbersOfGarages" />
+
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="NumberOfCameras" />
+
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="NumberOfUsers" />
+
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfMobileCustomers" />
+
+                        </MudItem>
+
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
 
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
@@ -71,30 +116,13 @@
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                       
-                        <MudItem sm="4"  >
-                            <Label>@L["Status"]</Label>
-                            <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
-                                @if (Status==1)
-                                {
-                                    <MudText>@L["Active"]</MudText>
-                                }
-                                else if(Status==2)
-                                {
-                                    <MudText>@L["InActive"]</MudText>
-
-                                }
-                                else
-                                {
-                                    <MudText>@L["Deleted"]</MudText>
-
-                                }
-
-                                </Div>
-
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
+                       
+                       
 
-                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" 
                                 Variant="Variant.Text"
@@ -128,16 +156,7 @@
                                 
                             </MudTextField>
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string"  @bind-Value="PhoneNum"  Label=@L["Contact Phone"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string"  @bind-Value="WhatsAppNum"  Label="@L["Whatsapp Num"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string"  @bind-Value="ContactMail"  Label="@L["Contact Email"]" />
-                        </MudItem>
-
+                       
                     </MudGrid>
 
                     <div class="d-flex justify-content-between mt-5">
@@ -149,9 +168,32 @@
         </MudItem>
         <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+                <MudGrid Class="mt-3">
+
+                    <MudItem sm="6">
+                        <Label>@L["Status"]</Label>
+                        <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
+                            @if (Status == 1)
+                            {
+                                <MudText>@L["Active"]</MudText>
+                            }
+                            else if (Status == 2)
+                            {
+                                <MudText>@L["InActive"]</MudText>
+
+                            }
+                            else
+                            {
+                                <MudText>@L["Deleted"]</MudText>
+
+                            }
+
+                        </Div>
+                    </MudItem>
                 <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
                     <MudImage Src="@OrganizationPicture" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
                 </MudItem>
+                </MudGrid>
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
@@ -164,12 +206,6 @@
                         </MudPaper>
                     </MudItem>
 
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCategories">@L["Categories"]</MudLink>
-
-                        </MudPaper>
-                    </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCustomers">@L["Customers"]</MudLink>

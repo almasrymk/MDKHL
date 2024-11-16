@@ -46,9 +46,13 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
         .NotEmpty()
         .GreaterThan(0);
 
-        RuleFor(x => x.NumberOfMobileCustomers)
+        RuleFor(x => x.NumberOfCustomers)
         .NotEmpty()
         .GreaterThan(0);
+
+        RuleFor(x => x.ParkingSlot)
+       .NotEmpty()
+       .GreaterThan(0);
 
         RuleFor(x => x.SubscriptionTypeId)
         .NotEmpty()

@@ -28,6 +28,7 @@
                 <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
                 <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["Customers"]</MudNavLink>
+                <MudNavLink Href="/employees" Icon="@Icons.Material.Filled.Man2">@L["Employees"]</MudNavLink>
                 @if (currenttenant.Id == null)
                 {   
                 <MudNavLink Href="/subscriptions" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
@@ -41,7 +42,10 @@
                 <MudNavLink Href="/packages" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                 
                 }
-                <MudNavLink Href="/invoices" Icon="@Icons.Material.Filled.Assignment">@L["Invoices"]</MudNavLink>
+                @if(currenttenant.Id != null)
+                {
+                    <MudNavLink Href="/invoices" Icon="@Icons.Material.Filled.Assignment">@L["Invoices"]</MudNavLink>
+                }
 
                 <MudNavLink Href="/garageTransactions" Icon="@Icons.Material.Filled.CompareArrows">@L["GarageTransactions"]</MudNavLink>
                 @if (currenttenant.Id == null)

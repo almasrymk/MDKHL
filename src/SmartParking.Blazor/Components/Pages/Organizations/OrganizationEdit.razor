@@ -41,13 +41,7 @@
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
                         </MudItem>
-                       
-                        <MudItem sm="4">
-                            <MudNumericField Required="true"  @bind-Value="NumOfCameras" HideSpinButtons="true" Min="0"  Placeholder=@L["Type Here"] Label=@L["Num Of Cameras"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField Required="true" @bind-Value="MaxCapacity" HideSpinButtons="true" Min="0" Placeholder=@L["Type Here"] Label=@L["Max Capacity"] />
-                        </MudItem>
+                      
                         <MudItem sm="4">
                             <MudDatePicker IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" Required="true" Label=@L["CR Expiry Date"] Placeholder=@L["Time Placeholder"]
                                            @bind-Date="CRExpiryDate" ShowToolbar="false" />
@@ -58,26 +52,33 @@
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
-                        <MudItem sm="8">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder=@L["Type Here"] Label=@L["Address"] />
-                        </MudItem>
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Min="1" Max="9999" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidateBuildingNumber))" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Min="1" Max="9999" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
+                            <MudNumericField Validation="@(new Func<int, string>(ValidateSecondaryNumber))" 
+                              Required="true" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Min="11111" Max="99999" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                            <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidatePostalCode))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                        </MudItem>
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
+                        <MudItem sm="4">
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" Required="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
@@ -103,23 +104,19 @@
                         <MudItem sm="4">
                             <MudTimePicker Required="true" Label="@L["ClosingHoursEnd"]"  Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                         </MudItem>
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
                         <MudItem sm="4">
                             <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start"  @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
-                        </MudItem>
-                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+                        <MudItem sm="12">
+                            <MudSelect T="string" Variant="Variant.Text"
                                        Label=@L["Package"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Required
-                                       @bind-Value="@PackageSelectValue">
+                                       ValueChanged="OnPackageSelected">
                                 <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
                                 @foreach (var package in packages)
                                 {
@@ -137,8 +134,34 @@
                                 }
                             </MudSelect>
                         </MudItem>
+                        @if (SelectedPackage != null)
+                        {
 
-                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="NumbersOfGarages" />
+
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="NumberOfCameras" />
+
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="NumberOfUsers" />
+
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfCustomers" />
+
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["SubscriptionSlotNumber"] @bind-Value="SubscriptionSlotNumber" />
+
+                            </MudItem>
+
+
+                        }
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
                             <MudSelect Variant="Variant.Text"
                                        Label=@L["Country"]

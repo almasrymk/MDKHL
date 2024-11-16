@@ -65,6 +65,15 @@ public partial class OrganizationEdit
     public string Photo { get; set; }
     private string PackageSelectValue { get; set; }
     private Guid orgTenant { get; set; }
+    public int NumbersOfGarages { get; set; }
+    public int NumberOfCameras { get; set; }
+    public int NumberOfUsers { get; set; }
+    public int NumberOfCustomers { get; set; }
+    public int SubscriptionSlotNumber { get; set; }
+    public int Parkingslot { get; set; }
+
+    private SubscriptionDto? SelectedPackage;
+
 
 
 
@@ -75,6 +84,39 @@ public partial class OrganizationEdit
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     IList<SubscriptionDto> packages = new List<SubscriptionDto>();
+
+
+    private async Task OnPackageSelected(string value)
+    {
+        PackageSelectValue = value;
+
+        SelectedPackage = packages.FirstOrDefault(p => p.Id.ToString() == value);
+
+        if (SelectedPackage != null)
+        {
+            NumbersOfGarages = SelectedPackage.NumbersOfGarages;
+            NumberOfCameras = SelectedPackage.NumberOfCameras;
+            NumberOfUsers = SelectedPackage.NumberOfUsers;
+            NumberOfCustomers = SelectedPackage.NumberOfCustomers;
+            SubscriptionSlotNumber = SelectedPackage.SubscriptionSlotNumber;
+            Parkingslot = SelectedPackage.ParkingSlot;
+        }
+        else
+        {
+            // Reset values if no package is selected
+            NumbersOfGarages = 0;
+            NumberOfCameras = 0;
+            NumberOfUsers = 0;
+            NumberOfCustomers = 0;
+            SubscriptionSlotNumber = 0;
+            Parkingslot = 0;
+        }
+
+        // Trigger UI update
+        StateHasChanged();
+
+
+    }
     private async Task Update()
     {
         var successedMessage = L["OrganiztionUpdatedSuccessfully"];
@@ -126,7 +168,7 @@ public partial class OrganizationEdit
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-            OrganizationPicture = OrganizationPicture
+            OrganizationPicture = OrganizationPicture,
         };
 
 
@@ -382,4 +424,31 @@ public partial class OrganizationEdit
         }
         return imageDirectoryPath;
     }
+    private string ValidateSecondaryNumber(int value)
+    {
+        if (value < 1111)
+            return "The value not valid.";
+        if (value > 9999)
+            return "The value not valid.";
+
+        return null; // No error
+    }
+    private string ValidatePostalCode(int value)
+    {
+        if (value < 11111)
+            return "The value not valid.";
+        if (value > 99999)
+            return "The value not valid.";
+
+        return null; // No error
+    }private string ValidateBuildingNumber(int value)
+    {
+        if (value < 11111)
+            return "The value not valid.";
+        if (value > 99999)
+            return "The value not valid.";
+
+        return null; // No error
+    }
+
 }

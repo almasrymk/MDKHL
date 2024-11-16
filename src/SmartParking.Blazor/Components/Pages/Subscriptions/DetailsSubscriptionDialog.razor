@@ -96,14 +96,7 @@
 									  Label="@L["CreationTime"]"
 									  Disabled />
 					</MudItem>
-					@* <MudItem sm="6">
-						<MudTextField @bind-Value="subscription.CreatorId"
-									  For="@(() => subscription.CreatorId)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["Creator"]"
-									  Disabled />
-					</MudItem> *@
+					
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.ActivationDate"
 									  For="@(() => subscription.ActivationDate)"
@@ -137,14 +130,7 @@
 									  Label="@L["NumberOfCustomers"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="4">
-						<MudTextField @bind-Value="subscription.NumberOfOrganizations"
-									  For="@(() => subscription.NumberOfOrganizations)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["NumberOfOrganizations"]"
-									  Disabled />
-					</MudItem>
+					
 					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumbersOfGarages"
 									  For="@(() => subscription.NumbersOfGarages)"
@@ -162,11 +148,11 @@
 									  Disabled />
 					</MudItem>
 					<MudItem sm="4">
-						<MudTextField @bind-Value="subscription.NumberOfMobileCustomers"
-									  For="@(() => subscription.NumberOfMobileCustomers)"
+						<MudTextField @bind-Value="subscription.NumberOfCustomers"
+									  For="@(() => subscription.NumberOfCustomers)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["NumberOfMobileCustomers"]"
+										  Label="@L["NumberOfCustomers"]"
 									  Disabled />
 					</MudItem>
 				

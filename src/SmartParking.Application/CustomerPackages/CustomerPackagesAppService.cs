@@ -94,12 +94,38 @@ public class CustomerPackagesAppService:
             {
                 PackageId = packageId,
                 CustomerId = customer.Id,
+                OrganizationId = package.OrganizationId
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
                 return Result.Error("Can't assign package to customer");
 
             return Result.Success();
+        }
+    }
+   ///<inheritdoc/>
+    public  async Task<bool> AssignPackageToCustomerWebAsync(int packageId,Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerId);
+            if(customer == null)
+                return false;
+            var package = await _packageRepository.GetAsync(p => p.Id == packageId);
+
+            if (package == null)
+                return false;
+            var customerPackage = new CustomerPackage
+            {
+                PackageId = packageId,
+                CustomerId = customer.Id,
+                OrganizationId = package.OrganizationId
+            };
+            var assignPackage = await _repository.InsertAsync(customerPackage, true);
+           if(assignPackage == null)
+                return false;
+
+            return true;
         }
     }
 

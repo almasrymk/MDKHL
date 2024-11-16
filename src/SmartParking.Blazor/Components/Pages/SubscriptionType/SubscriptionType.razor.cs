@@ -15,7 +15,6 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using SmartParking.SubscriptionTypes;
 using System.Globalization;
-using JetBrains.Annotations;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
@@ -133,41 +132,24 @@ public partial class SubscriptionType
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        if (CultureInfo.CurrentCulture.Name == "en")
-        {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TypeEn"], Name = "TypeEn", IsFilterable = true, PropertyNmae = "TypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
-        }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+       
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
+        if(CultureInfo.CurrentCulture.Name == "ar")
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyName = "TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         else
-        {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TypeAr"], Name = "TypeAr", IsFilterable = true, PropertyNmae = "TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
-
-        }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyNmae = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
-
-
-
-        foreach (var item in subscriptionType.Items)
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyName = "TypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+		foreach (var item in subscriptionType.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            if (CultureInfo.CurrentCulture.Name == "en")
-            {
-
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TypeEn"], item.TypeEn));
-            }
-
-            else
-            {
-
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TypeAr"], item.TypeAr));
-
-            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
+			if (CultureInfo.CurrentCulture.Name == "ar")
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.TypeAr));
+            else
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.TypeEn));
 
-
-
-            tableData.Rows.Add(rowDef);
+			tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }
@@ -188,8 +170,8 @@ public partial class SubscriptionType
 
         var createUpdateSubscriptionTypeDto = new CreateUpdateSubscriptionTypeDto()
         {
-            TypeEn = subscriptionTypeDto.TypeEn,
             TypeAr = subscriptionTypeDto.TypeAr,
+            TypeEn = subscriptionTypeDto.TypeEn,
         };
 
 
@@ -227,25 +209,12 @@ public partial class SubscriptionType
         var successMessage = _localizer["PackageTypeDeletedSuccessfully"];
         var errorMessage = L["Can'tDeletePackageType"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        string Name;
 
         var id = int.Parse(row.Cells[0].Value);
-		if (CultureInfo.CurrentCulture.Name == "en")
-		{
-			 Name = row.Cells[1].Value;
+        var Name = row.Cells[1].Value;
 
-
-		}
-		else
-		{
-
-			 Name = row.Cells[2].Value;
-
-		}
-
-		var parameters = new DialogParameters
+        var parameters = new DialogParameters
         {
-
             ["Name"] = Name,
 
         };

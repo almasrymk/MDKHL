@@ -139,11 +139,10 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 NumbersOfGarages = 5,
                 NumberOfCameras = 10,
                 NumberOfUsers = 100,
-                NumberOfMobileCustomers = 50,
-                NumberOfOrganizations = 50,
+                NumberOfCustomers = 50,
                 SubscriptionSlotNumber = 10,
                 SubscriptionTypeId = subscriptionTypeTest.Id,
-
+                ParkingSlot = 1000
             };
             var subscriptionTest = await _subscriptionRepository.InsertAsync(subscription, autoSave: true);
             if (!await _organizationRepostory.AnyAsync())

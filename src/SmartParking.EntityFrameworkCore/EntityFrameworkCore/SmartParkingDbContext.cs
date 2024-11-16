@@ -77,7 +77,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<UnLinkedTransaction> UnLinkedTransactions { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<ContactInfo> ContactInfos { get; set; }
-    public DbSet<CustomerOrganization> CustomerOrganization { get; set; }
+    //public DbSet<CustomerOrganization> CustomerOrganization { get; set; }
     public DbSet<Garage> Garages { get; set; }
     public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
@@ -222,16 +222,16 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-        builder.Entity<Customer>()
-             .HasMany(c => c.Organizations).WithMany(o => o.Customers)
-             .UsingEntity<CustomerOrganization>(
-            co =>
-            {
-                co.ToTable("CustomerOrganizations");
-                co.Property(t => t.CustomerId).HasColumnName("CustomerId");
-                co.Property(t => t.OrganizationId).HasColumnName("OrganizationId");
-            }
-            )
-            ;      
+        //builder.Entity<Customer>()
+        //     .HasMany(c => c.Organizations).WithMany(o => o.Customers)
+        //     .UsingEntity<CustomerOrganization>(
+        //    co =>
+        //    {
+        //        co.ToTable("CustomerOrganizations");
+        //        co.Property(t => t.CustomerId).HasColumnName("CustomerId");
+        //        co.Property(t => t.OrganizationId).HasColumnName("OrganizationId");
+        //    }
+        //    )
+        //    ;      
     }
 }

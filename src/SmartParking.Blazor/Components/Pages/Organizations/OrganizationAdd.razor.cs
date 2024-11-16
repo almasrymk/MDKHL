@@ -57,6 +57,16 @@ public partial class OrganizationAdd
     public string District { get; set; }
     public string Photo { get; set; }
 
+    public int NumbersOfGarages { get; set; }
+    public int NumberOfCameras { get; set; }
+    public int NumberOfUsers { get; set; }
+    public int NumberOfCustomers { get; set; }
+    public int SubscriptionSlotNumber { get; set; }
+    public int ParkingSlot { get; set; }
+
+    private SubscriptionDto? SelectedPackage;
+
+
 
 
 
@@ -101,7 +111,38 @@ public partial class OrganizationAdd
 		}
 
 	}
+
+
+    private async Task OnPackageSelected(string value)
+    {
+        PackageSelectValue = value;
+
+        SelectedPackage = packages.FirstOrDefault(p => p.Id.ToString() == value);
+
+        if (SelectedPackage != null)
+        {
+            NumbersOfGarages = SelectedPackage.NumbersOfGarages;
+            NumberOfCameras = SelectedPackage.NumberOfCameras;
+            NumberOfUsers = SelectedPackage.NumberOfUsers;
+            NumberOfCustomers = SelectedPackage.NumberOfCustomers;
+            SubscriptionSlotNumber = SelectedPackage.SubscriptionSlotNumber;
+            ParkingSlot = SelectedPackage.ParkingSlot; 
+        }
+        else
+        {
+            // Reset values if no package is selected
+            NumbersOfGarages = 0;
+            NumberOfCameras = 0;
+            NumberOfUsers = 0;
+            NumberOfCustomers = 0;
+            SubscriptionSlotNumber = 0;
+        }
+
+        // Trigger UI update
+        StateHasChanged();
     
+
+    }
 
     private async Task Save()
     {
@@ -249,4 +290,32 @@ public partial class OrganizationAdd
 		}
 		return imageDirectoryPath;
 	}
+    private string ValidateSecondaryNumber(int value)
+    {
+        if (value < 1111)
+            return "The value not valid.";
+        if (value > 9999)
+            return "The value not valid.";
+
+        return null; // No error
+    }
+    private string ValidatePostalCode(int value)
+    {
+        if (value < 11111)
+            return "The value not valid.";
+        if (value > 99999)
+            return "The value not valid.";
+
+        return null; // No error
+    }
+    private string ValidateBuildingNumber(int value)
+    {
+        if (value < 0)
+            return "The value not valid.";
+        if (value > 99999)
+            return "The value not valid.";
+
+        return null; // No error
+    }
+
 }

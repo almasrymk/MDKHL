@@ -37,11 +37,25 @@ namespace SmartParking.Packages
          Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
 
         /// <summary>
-        /// abstract method to get Package by id
+        /// abstract method to get all for mdkhl of Packages
         /// </summary>
-        /// <param name="id">id of Package</param>
+        /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
-        Task<PackageDto> GetAsync(int id);
+        Task<List<PackageDto>> GetAllMdkhlAsync();       
+        
+        /// <summary>
+        /// abstract method to get all for organization of Packages
+        /// </summary>
+        /// <param name="input">specifies max number of Packages and if it sorted or not</param>
+        /// <returns>Package Dto</returns>
+        Task<List<PackageDto>> GetAllOrganizationAsync();
+
+		/// <summary>
+		/// abstract method to get Package by id
+		/// </summary>
+		/// <param name="id">id of Package</param>
+		/// <returns>Package Dto</returns>
+		Task<PackageDto> GetAsync(int id);
 
         /// <summary>
         /// abstract method to get Packages by OrgnizationId

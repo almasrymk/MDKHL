@@ -73,13 +73,15 @@
                                         {
                                             @if (column.IsFilterable)
                                             {
-                                                <MudSelectItem Value="@column.PropertyNmae">@column.DisplayName</MudSelectItem>
+                                               
+                                                <MudSelectItem Value="@column.PropertyName">@column.DisplayName</MudSelectItem>
+                                                
                                             }
 
                                         }
                                     </MudSelect>
                                 </MudItem>
-                            @if (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyNmae == SelectedColumn).TypeFilter == TypeFilter.Text)
+                            @if (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Text)
                                 
                                 {
                                     <MudItem>
@@ -128,7 +130,7 @@
 
             @foreach (var header in Data.Columns)
             {
-                @if (header.PropertyNmae=="Id")
+                @if (header.PropertyName=="Id")
                     continue;
 
                 <TemplateColumn >
@@ -136,7 +138,7 @@
                         @header.DisplayName
                         @if (header.IsSortable)
                         {
-                            <MudIconButton OnClick="()=> SortTable(header.PropertyNmae)" Size="MudBlazor.Size.Small" ClickPropagation="_ascending" Icon="@(_ascending ? Icons.Material.Filled.ArrowUpward : Icons.Material.Filled.ArrowDownward)">
+                            <MudIconButton OnClick="()=> SortTable(header.PropertyName)" Size="MudBlazor.Size.Small" ClickPropagation="_ascending" Icon="@(_ascending ? Icons.Material.Filled.ArrowUpward : Icons.Material.Filled.ArrowDownward)">
                             </MudIconButton>
                         }
                     </HeaderTemplate>

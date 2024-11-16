@@ -59,43 +59,77 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task<GarageDto> CreateAsync(CreateUpdateGarageDto input)
     {
-        Organization organization=new Organization();
         using (DataFilter.Disable<IMultiTenant>())
         {
-                 var query = await _organizationRepository.GetQueryableAsync();
-                query = query.Where(x => x.Id ==input.OrganizationId);
-                query= query.Include(x => x.Subscription);
-                organization=query.FirstOrDefault();
-            if (organization == null)
-            {
-                throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
-            }
-            if (organization.Status == Enums.Status.Inactive)
-            {
-                throw new Exception("Can't add garage to In active organization.");
-            
-            }
-            string code = organization.Code;
-        
-            var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-            var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
-           if (subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1)
-           {
-                throw new Exception("UPGRADE subscription to add garage to organization.");
+            var organization = await GetAndValidateOrganizationAsync(input.OrganizationId);
 
-           }
+            ValidateSlotCapacity(input);
 
-        input.Code = code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
+            var subscription = await CheckSubscriptionLimitsAsync(organization, input);
+
+            input.Code =await GenerateGarageCode(organization, input);
+
+            UpdateOrganizationUsage(organization, input);
+
+            input.TenantId = organization.TenantId;
+        //    await CurrentUnitOfWork.SaveChangesAsync();
+            return await base.CreateAsync(input);
         }
+    }
+
+    private async Task<Organization> GetAndValidateOrganizationAsync(int organizationId)
+    {
+        var query = await _organizationRepository.GetQueryableAsync();
+        var organization = query
+            .Where(x => x.Id == organizationId)
+            .Include(x => x.Subscription)
+            .FirstOrDefault();
+
+        if (organization == null)
+            throw new EntityNotFoundException(typeof(Organization), organizationId);
+
+        if (organization.Status != Enums.Status.Active)
+            throw new Exception("Can't add garage to inactive organization.");
+
+        return organization;
+    }
+
+    private void ValidateSlotCapacity(CreateUpdateGarageDto input)
+    {
+        if (input.MaxCapacity < input.MaxSlotsForCustomers + input.MaxSlotsForEmployess + input.MaxSlotsForFree)
+        {
+            throw new Exception("Summation of slots is greater than maximum capacity !!");
+        }
+    }
+
+    private async Task<Subscription> CheckSubscriptionLimitsAsync(Organization organization, CreateUpdateGarageDto input)
+    {
+        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+        var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+
+        if (subscription == null || subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1 ||
+            organization.UsedSlots + input.MaxCapacity > subscription.ParkingSlot)
+        {
+            throw new Exception("Upgrade subscription to add garage to organization.");
+        }
+
+        return subscription;
+    }
+
+    private async Task<string> GenerateGarageCode(Organization organization, CreateUpdateGarageDto input)
+    {
+        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+        return organization.Code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
+    }
+
+    private void UpdateOrganizationUsage(Organization organization, CreateUpdateGarageDto input)
+    {
+        organization.UsedSlots += input.MaxCapacity;
         if (input.Status == Enums.Status.Active)
         {
             organization.ActiveGarages++;
         }
-		input.TenantId=organization.TenantId;
-		await CurrentUnitOfWork.SaveChangesAsync();
-        return await base.CreateAsync(input);
     }
-
     [RemoteService(isEnabled: false)]
 
     /// <summary>

@@ -417,6 +417,14 @@
     "NewUnLinkedTransaction": "NewUnLinkedTransaction",
     "UnLinkedTransactionCreatedSuccessfully": "UnLinkedTransactionCreatedSuccessfully",
     "Can'tCreateUnLinkedTransaction": "Can'tCreateUnLinkedTransaction",
-    "FailedToAddUnLinkedTransaction": "FailedToAddUnLinkedTransaction"
+    "FailedToAddUnLinkedTransaction": "FailedToAddUnLinkedTransaction",
+    "Max Number Of Garages": "Max Number Of Garages",
+    "Max Number Of Cameras": "Max Number Of Cameras",
+    "Max Number Of Users": "Max Number Of Users",
+    "Max Number Of Customers": "Max Number Of Customers",
+    "Max Slots For Employees": "Max Slots For Employees",
+    "Max Slots For Customers": "Max Slots For Customers",
+    "Max Slots For Free": "Max Slots For Free",
+    "Employees": "Employees"
   } 
 }

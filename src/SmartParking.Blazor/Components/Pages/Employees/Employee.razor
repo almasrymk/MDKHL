@@ -1,0 +1,19 @@
+﻿@page "/employees"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Customers
+@using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
+@inject IDialogService DialogService
+@inject IEmployeeAppService EmployeeAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject ICurrentTenant currrentTenant
+
+
+
+<PageTitle>@L["Employees"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Employees"]</MudText>
+
+<SPDataGrid PageName=@L["Customers"] Data="@itemData" OnAdd="HandleAdd" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnClickAssign="AssignPackage" OnClickCar="CreateVehicle" OnClickRowView="ShowVehiclesForCustomer"></SPDataGrid>
+

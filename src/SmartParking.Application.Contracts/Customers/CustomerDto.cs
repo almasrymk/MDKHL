@@ -1,4 +1,7 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.CustomerPackages;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using SmartParking.Packages;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -19,7 +22,8 @@ public class CustomerDto
     public string NationalId { get; set; }
     public IdentificationTypes identificationTypes { get; set; }
     public List<VehicleDto> Vehicles { get; set; }
-
+    public string OrganizationArabicName { get; set; }
+    public string OrganizationEnglishName { get; set; }
     public bool isActive { get; set; }
 }
 

@@ -54,12 +54,15 @@ public partial class Subscription
             SearchingTerm = termSearch, // The term to use for filtering results
             filters = pageInfo.Filters
         };
+       
+       var subscriptionDto = await AppService.Filter(input);
+       // Calculate the total number of pages required to display all results
+       TotalItem = (int)subscriptionDto.TotalCount;
+       CreateTable(subscriptionDto);
+       
         // Call the service to perform the search based on the input parameters
-        var subscriptionDto = await AppService.Filter(input);
 
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)subscriptionDto.TotalCount;
-        CreateTable(subscriptionDto);
+       
 
 
     }
@@ -129,22 +132,22 @@ public partial class Subscription
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyNmae = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         { 
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "English Name", IsFilterable = false, PropertyNmae = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeEn", IsFilterable = true, PropertyNmae = "SubscriptionTypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "English Name", IsFilterable = false, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeEn", IsFilterable = true, PropertyName = "SubscriptionTypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
         
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "Arabic Name", IsFilterable = false, PropertyNmae = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeAr", IsFilterable = true, PropertyNmae = "SubscriptionTypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "Arabic Name", IsFilterable = false, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeAr", IsFilterable = true, PropertyName = "SubscriptionTypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyNmae = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyNmae = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionStatus"], Name = "Status", IsFilterable = true, PropertyNmae = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyName = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionStatus"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 
 
