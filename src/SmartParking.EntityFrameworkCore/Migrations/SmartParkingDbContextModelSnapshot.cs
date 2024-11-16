@@ -19,7 +19,7 @@ namespace SmartParking.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.PostgreSql)
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1808,6 +1808,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("EntityId")
                         .HasColumnType("text");
 
+                    b.Property<string>("InvoiceId")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1822,17 +1825,23 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PackageId")
+                        .HasColumnType("text");
+
                     b.Property<int>("PaymentCategory")
                         .HasColumnType("integer");
 
                     b.Property<int>("PaymentCategoryId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PaymentStatus")
+                    b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PaymentType")
-                        .HasColumnType("text");
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
