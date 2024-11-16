@@ -20,4 +20,6 @@ public class CreateUpdateCustomerDto
     public IdentificationTypes IdentificationType { get; set; }
     public string NationalId { get; set; }
     public bool isActive { get; set; } = true;
+    public CustomerCategoryStatus CustomerCategory { get; set; }
+    public int OrganizationId { get; set; }
 }

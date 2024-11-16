@@ -1,22 +1,20 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 using SmartParking.Enums;
+using SmartParking.Lookups.City;
+using SmartParking.Lookups.Country;
+using SmartParking.Lookups.State;
 using SmartParking.Organizations;
-using System.Threading.Tasks;
+using SmartParking.Subscriptions;
 using System;
-using Volo.Abp.Identity;
-using Volo.Abp;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Authentication;
-using Microsoft.AspNetCore.Components;
-using SmartParking.Lookups.City;
-using SmartParking.Lookups.State;
-using System.Collections.Generic;
-using SmartParking.Subscriptions;
+using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Validation;
-using SmartParking.Lookups.Country;
-using Microsoft.AspNetCore.Components.Forms;
-using static IdentityServer4.Models.IdentityResources;
-using System.IO;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -27,11 +25,11 @@ public partial class OrganizationEdit
     private string CountryNameEdit { get; set; }
     private string RegionNameEdit { get; set; }
     private string StateNameEdit { get; set; }
-    [Parameter] 
+    [Parameter]
     public string Id { get; set; }  // Capture string ID
-    public string ArabicName { get; set; } 
-    public string EnglishName { get; set; } 
-    public string CommercialRegistrationNumber { get; set; } 
+    public string ArabicName { get; set; }
+    public string EnglishName { get; set; }
+    public string CommercialRegistrationNumber { get; set; }
     public int NumOfCameras { get; set; }
     public int MaxCapacity { get; set; }
     private string CountrySelectValue { get; set; }
@@ -175,7 +173,7 @@ public partial class OrganizationEdit
             createUpdateOrganiztion.TenantId = orgTenant;
 
 
-            var oragnization =  await OrganizationAppService.UpdateAsync(id,createUpdateOrganiztion);
+            var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
             if (PackageId != int.Parse(PackageSelectValue))
             {
                 await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(PackageSelectValue));
@@ -223,12 +221,12 @@ public partial class OrganizationEdit
     }
     private async Task FetchData()
     {
-         
+
         var id = int.Parse(Id);
         var organization = await OrganizationAppService.GetAsync(id);
-         EnglishName = organization.EnglishName;
-         ArabicName = organization.ArabicName;
-         NumOfCameras = organization.NumOfCameras;
+        EnglishName = organization.EnglishName;
+        ArabicName = organization.ArabicName;
+        NumOfCameras = organization.NumOfCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         if (organization.Status == Enums.Status.Active)
         {
@@ -239,7 +237,7 @@ public partial class OrganizationEdit
             Status = false;
         }
         MaxCapacity = organization.MaxCapacity;
-        CountryNameEdit =  organization.CountryName;
+        CountryNameEdit = organization.CountryName;
         CityNameEdit = organization.CityName;
         RegionNameEdit = organization.RegionName;
         StateSelectValue = organization.StateId.ToString();
@@ -250,11 +248,11 @@ public partial class OrganizationEdit
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();
-        FirstHourPrice=organization.FirstHourPrice;
-        SecondHourPrice=organization.SecondHourPrice;
-        ThirdHourPrice=organization.ThirdHourPrice;
-        FullDayPrice=organization.FullDayPrice;
-        NumberOfHours=organization.NumberOfHours;
+        FirstHourPrice = organization.FirstHourPrice;
+        SecondHourPrice = organization.SecondHourPrice;
+        ThirdHourPrice = organization.ThirdHourPrice;
+        FullDayPrice = organization.FullDayPrice;
+        NumberOfHours = organization.NumberOfHours;
         IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
         FullDayPrice = organization.FullDayPrice;
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
@@ -278,7 +276,7 @@ public partial class OrganizationEdit
     }
     private async Task GetRegions()
     {
-      
+
         if (CountrySelectValue != null)
         {
             regions = await RegionAppService.GetRegionByCountry(int.Parse(CountrySelectValue));
@@ -287,7 +285,7 @@ public partial class OrganizationEdit
     }
     private async Task GetCities()
     {
-       
+
         if (StateSelectValue != null)
         {
             cities = await CitiesAppService.GetCityByState(int.Parse(StateSelectValue));
@@ -296,7 +294,7 @@ public partial class OrganizationEdit
     }
     private async Task GetStates()
     {
-        
+
         if (RegionSelectValue != null)
         {
             states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
@@ -313,7 +311,7 @@ public partial class OrganizationEdit
         await GetRegions();
 
         await GetStates();
-        
+
         await GetCities();
         packages = await SubscriptionAppService.GetAllAsync();
 
@@ -325,7 +323,7 @@ public partial class OrganizationEdit
         {
             ["organizationId"] = id
         };
-        var dialog = await Dialog.ShowAsync<GarageDialog>("view garage",parameters);
+        var dialog = await Dialog.ShowAsync<GarageDialog>("view garage", parameters);
     }
     private async Task ViewCategories()
     {
@@ -352,8 +350,8 @@ public partial class OrganizationEdit
         {
             ["organizationId"] = id
         };
-		var dialog = await Dialog.ShowAsync<CustomerDialog>("view package", parameters);
-	}    
+        var dialog = await Dialog.ShowAsync<CustomerDialog>("view package", parameters);
+    }
     private async Task ViewUsers()
     {
         var id = int.Parse(Id);
@@ -361,8 +359,8 @@ public partial class OrganizationEdit
         {
             ["organizationId"] = id
         };
-		var dialog = await Dialog.ShowAsync<UsersDialog>("view users", parameters);
-	}
+        var dialog = await Dialog.ShowAsync<UsersDialog>("view users", parameters);
+    }
     private async Task ViewSubscription()
     {
         var id = int.Parse(Id);
@@ -371,7 +369,7 @@ public partial class OrganizationEdit
         var subscription = new SubscriptionDto();
         if (org.SubscriptionId != 0)
         {
-          subscription = await SubscriptionAppService.GetAsync(org.SubscriptionId);
+            subscription = await SubscriptionAppService.GetAsync(org.SubscriptionId);
 
         }
         else
@@ -443,7 +441,8 @@ public partial class OrganizationEdit
             return "The value not valid.";
 
         return null; // No error
-    }private string ValidateBuildingNumber(int value)
+    }
+    private string ValidateBuildingNumber(int value)
     {
         if (value < 11111)
             return "The value not valid.";

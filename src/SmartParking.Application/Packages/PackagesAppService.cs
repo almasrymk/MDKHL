@@ -175,21 +175,31 @@ public class PackagesAppService : CrudAppService<
         }
     }
 	///<inheritdoc/>
-	public async Task<List<PackageDto>> GetAllMdkhlAsync()
+	public async Task<List<PackageDto>> GetAllMdkhlAsync(int organizationId , CustomerCategoryStatus customerCategory)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
-			
-			var packages = await _repository.GetListAsync();
-			var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(p => p.PackageType);
+			queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory== customerCategory);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            var packages = await AsyncExecuter.ToListAsync(queryable);
+            var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
 
             return packagesDto;
-		}
+
+
+        }
 	}
 	///<inheritdoc/>
-	public async Task<List<PackageDto>> GetAllOrganizationAsync()
+	public async Task<List<PackageDto>> GetAllOrganizationAsync(CustomerCategoryStatus customerCategory)
 	{
-		var packages = await _repository.GetListAsync();
+		var queryable = await _repository.GetQueryableAsync();
+		queryable = queryable.Include(p => p.PackageType);
+		queryable = queryable.Where(x => x.CustomerCategory == customerCategory);
+		var totalCount = await AsyncExecuter.CountAsync(queryable);
+		var packages = await AsyncExecuter.ToListAsync(queryable);
 		var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
 
 		return packagesDto;

@@ -457,7 +457,9 @@
     "CameraName": "إسم الكاميرا",
     "Total Garage Can be added": "عدد المواقف المتاح تفعيلها",
     "ActiveGarages": "عدد المواقف المفعلة",
-    "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة"
+    "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
+    "Details for Employee": "تفاصيل للموظف",
+    "customer category": "فئة العملاء"
 
   }
 }
