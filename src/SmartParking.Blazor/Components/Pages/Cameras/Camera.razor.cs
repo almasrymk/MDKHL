@@ -162,6 +162,7 @@ public partial class Camera
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = false, PropertyName = "DeviceId", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraName"], Name = "CameraName", IsFilterable = false, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "GarageNameEn", IsFilterable = false, PropertyName = "Garage.NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -181,6 +182,7 @@ public partial class Camera
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.DeviceId));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraName"], item.Name));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
             if(item.Garage is not null)
             {
