@@ -1,0 +1,19 @@
+﻿@page "/users"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
+@inject IDialogService DialogService
+@inject IUsersAppService UsersAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject ICurrentTenant currrentTenant
+
+
+
+<PageTitle>@L["Users"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
+
+<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+

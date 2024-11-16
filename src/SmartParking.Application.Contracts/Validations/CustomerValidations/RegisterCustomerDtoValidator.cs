@@ -20,18 +20,18 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
         _stringLocalizer = stringLocalizer;
 
         RuleFor(x => x.ArabicName)
-    .NotEmpty()
-    .Matches(@"^([\u0600-\u06FF]+\s+){2}[\u0600-\u06FF]+$")
-    .WithMessage(_stringLocalizer["ArabicName must contain at least three Arabic words."])
-    .MinimumLength(10)
-    .WithMessage(_stringLocalizer["ArabicName must be at least 10 characters long."]);
+    .NotEmpty();
+    //.Matches(@"^([\u0600-\u06FF]+\s+){2}[\u0600-\u06FF]+$")
+    //.WithMessage(_stringLocalizer["ArabicName must contain at least three Arabic words."])
+    //.MinimumLength(10)
+    //.WithMessage(_stringLocalizer["ArabicName must be at least 10 characters long."]);
 
         RuleFor(x => x.FullName)
-            .NotEmpty()
-            .Matches(@"^([a-zA-Z]+\s+){2}[a-zA-Z]+$")
-            .WithMessage(_stringLocalizer["FullName must contain at least three English words."])
-            .MinimumLength(10)
-            .WithMessage(_stringLocalizer["FullName must be at least 10 characters long."]);
+            .NotEmpty();
+            //.Matches(@"^([a-zA-Z]+\s+){2}[a-zA-Z]+$")
+            //.WithMessage(_stringLocalizer["FullName must contain at least three English words."])
+            //.MinimumLength(10)
+            //.WithMessage(_stringLocalizer["FullName must be at least 10 characters long."]);
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")

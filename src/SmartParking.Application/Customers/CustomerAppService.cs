@@ -70,7 +70,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 			using (_dataFilter.Disable<IMultiTenant>())
 			{
-				var user = await _userManager.FindByNameAsync(input.UserName);
+				var user = await _userManager.FindByNameAsync(input.UserName); 
 				if (user != null)
 				{
 					return await _baseCustomer.UserIsFound(user);
@@ -116,7 +116,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
 			var customerAdd = await _repository.InsertAsync(customer, true);
-			return ObjectMapper.Map<Customer, CustomerDto>(customer);
+            await _baseCustomer.AddCustomerPackage(input.OrganizationId, customerAdd.Id);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
 		}
 		catch (Exception ex)
 		{
@@ -134,7 +135,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <returns>A task representing the asynchronous operation.</returns>
 	private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
 	{
-		customer.IdentityUser.Name = input.UserName;
 		customer.IdentityUser.Surname = input.FullName;
 		customer.IdentityUser.SetProperty("OtpCode", null);
 		customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
@@ -150,7 +150,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
-			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Mdkhl.ToString()]);
+			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
 		}
 	}
 

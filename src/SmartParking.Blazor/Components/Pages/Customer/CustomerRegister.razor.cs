@@ -1,8 +1,12 @@
 ﻿using MudBlazor;
 using SmartParking.Cutomers;
+using SmartParking.Organizations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using Volo.Abp.Validation;
@@ -15,10 +19,12 @@ public partial class CustomerRegister
     public CreateUpdateCustomerDto createUpdateCustomerDto = new CreateUpdateCustomerDto();
     public string Picture { get; set; }
 
-
+    private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     protected async override Task OnInitializedAsync()
         {
-            if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
+        var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        Organizations = result.Items.ToList();
+        if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
             {
                 Picture = "images/MDHKL_04.png";
 
@@ -37,7 +43,9 @@ public partial class CustomerRegister
         {
             CustomerDto customer;
 
-			createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+            createUpdateCustomerDto.Email = createUpdateCustomerDto.MobileNumber + "@gmail.com";
+            createUpdateCustomerDto.Password = "P@ssw0rd";
+            createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             if(CurrentTenant.Id == null)
             {
 				customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
