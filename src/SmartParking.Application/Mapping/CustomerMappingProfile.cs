@@ -28,10 +28,10 @@ public class CustomerMappingProfile : Profile
             .ForMember(dest => dest.CustomerCategory, opt => opt.MapFrom(src => src.CustomerCategory.ToString()))
 			.ForMember(dest => dest.OrganizationArabicName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.ArabicName).FirstOrDefault()??""))
 			.ForMember(dest => dest.OrganizationEnglishName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.EnglishName).FirstOrDefault()??""))
-			.ForMember(dest => dest.OrganizationId, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.Id).FirstOrDefault()))
-            .ReverseMap();
+			.ForMember(dest => dest.OrganizationId, s => s.MapFrom(o => o.CustomerPackages.Any() ? o.CustomerPackages.Select(c => c.Organization.Id).FirstOrDefault() : 0))
+			.ReverseMap();
           //  .ForMember(dest => dest.OTP, opt => opt.Ignore())
-            ;
+            
 
         // Map RegisterCustomerDto -> Customer (reverse mapping)
         CreateMap<CreateUpdateCustomerDto, Customer>()
