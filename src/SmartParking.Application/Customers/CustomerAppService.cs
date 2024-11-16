@@ -437,9 +437,11 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             throw new EntityNotFoundException(typeof(Organization), organizationId);
 
         }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(c => !c.IsEmployee);
+        query = query.Where(c => c.IsEmployee==false);
         query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -450,6 +452,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
            totalCount,
            customerDtos
        );
+        }
 
 
     }
