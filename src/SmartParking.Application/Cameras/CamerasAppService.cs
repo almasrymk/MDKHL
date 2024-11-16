@@ -8,7 +8,6 @@ using SmartParking.Garages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -41,19 +40,19 @@ public class CamerasAppService :
     private readonly ICurrentUser _currentUser; // Inject ICurrentUser
 
 
-	public CamerasAppService(IRepository<Camera, int> repository, IRepository<Subscription, int> subscriptionRepository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Organization, int> organizationRepository = null, IGarageAppService garageAppService = null)
-		: base(repository)
-	{
-		_repository = repository;
-		_dataFilter = dataFilter;
-		_currentUser = currentUser;
-		_organizationRepository = organizationRepository;
-		_garageAppService = garageAppService;
+    public CamerasAppService(IRepository<Camera, int> repository, IRepository<Subscription, int> subscriptionRepository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Organization, int> organizationRepository = null, IGarageAppService garageAppService = null)
+        : base(repository)
+    {
+        _repository = repository;
+        _dataFilter = dataFilter;
+        _currentUser = currentUser;
+        _organizationRepository = organizationRepository;
+        _garageAppService = garageAppService;
         _subscriptionRepository = subscriptionRepository;
     }
 
 
-	public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
@@ -67,93 +66,96 @@ public class CamerasAppService :
     }
     public override async Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input)
     {
-        
-            using (_dataFilter.Disable<IMultiTenant>())
-		    {
-			    var garage = await _garageAppService.GetAsync(input.GarageId);
-                
-		     	var organization = await _organizationRepository.FirstOrDefaultAsync(x=>x.Id==garage.OrganizationId);
-                var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
-                if (subscription == null)
-                {
-                    throw new Exception("No subscription for organization");
-                }
-                var existingCamera = await _repository.GetAsync(id);
-                if (input.Status == Enums.Status.Active && existingCamera.Status!=Enums.Status.Active)
-                {
-                   var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
-                    if (result) {
-                    organization.ActiveCameras++;
-                    
-                    }
-				   await CurrentUnitOfWork.SaveChangesAsync();
 
-			    }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var garage = await _garageAppService.GetAsync(input.GarageId);
 
-
-
-			return await base.UpdateAsync(id, input);
+            var organization = await _organizationRepository.FirstOrDefaultAsync(x => x.Id == garage.OrganizationId);
+            var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+            if (subscription == null)
+            {
+                throw new Exception("No subscription for organization");
             }
-        
-	
-    }
-    
+            var existingCamera = await _repository.GetAsync(id);
+            if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
+            {
+                var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
+                if (result)
+                {
+                    organization.ActiveCameras++;
 
-    public async Task<string> GenerateCameraCode(string OrgEnglishName ,string GarageEnglishName,string CameraEnglishName)
+                }
+                await CurrentUnitOfWork.SaveChangesAsync();
+
+            }
+
+
+
+            return await base.UpdateAsync(id, input);
+        }
+
+
+    }
+
+
+    public async Task<string> GenerateCameraCode(string OrgEnglishName, string GarageEnglishName, string CameraEnglishName)
     {
-       string Code = OrgEnglishName.Substring(0, 3) +'-'+ GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2)+'-';
+        string Code = OrgEnglishName.Substring(0, 3) + '-' + GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2) + '-';
         return Code;
 
     }
 
-    public async Task<string> GetNumbersOfCamerasRelatedToGarage(int garageId) {
+    public async Task<string> GetNumbersOfCamerasRelatedToGarage(int garageId)
+    {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query =await _repository.GetQueryableAsync();
-            query=query.Where(x=>x.GarageId==garageId);
-            var Count=await query.CountAsync();
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(x => x.GarageId == garageId);
+            var Count = await query.CountAsync();
             return Count.ToString();
         }
     }
 
 
-        public override async Task<CameraDto> GetAsync(int id)
-        {
+    public override async Task<CameraDto> GetAsync(int id)
+    {
 
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-            {
-                using (_dataFilter.Disable<IMultiTenant>())
-                {
-                    return await base.GetAsync(id);
-                }
-            }
-            else
-                return await base.GetAsync(id);
-        }
-        /// <summary>
-        /// methods that deletes camera.
-        /// it takes camera id as parameter , checks if it exists
-        /// if don't it throws an exception
-        /// if exists it deletes it , changes its status to deleted
-        /// </summary>
-        /// <param name="id">camera id</param>
-        /// <returns>string</returns>
-        /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
-        public override async Task DeleteAsync(int id)
         {
-            var camera = await GetAsync(id);
-            if (camera == null)
-                throw new EntityNotFoundException(typeof(Camera), id);
-            if (camera.Status == Enums.Status.Active) { 
-        
-		        await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await base.GetAsync(id);
             }
-       
-            camera.Status = Status.Deleted;
-      
-            await CurrentUnitOfWork.SaveChangesAsync();
-             //await base.DeleteAsync(id);
         }
+        else
+            return await base.GetAsync(id);
+    }
+    /// <summary>
+    /// methods that deletes camera.
+    /// it takes camera id as parameter , checks if it exists
+    /// if don't it throws an exception
+    /// if exists it deletes it , changes its status to deleted
+    /// </summary>
+    /// <param name="id">camera id</param>
+    /// <returns>string</returns>
+    /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
+    public override async Task DeleteAsync(int id)
+    {
+        var camera = await GetAsync(id);
+        if (camera == null)
+            throw new EntityNotFoundException(typeof(Camera), id);
+        if (camera.Status == Enums.Status.Active)
+        {
+
+            await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+        }
+
+        camera.Status = Status.Deleted;
+
+        await CurrentUnitOfWork.SaveChangesAsync();
+        //await base.DeleteAsync(id);
+    }
     /// <summary>
     /// Method that used to create new camera to specific organization
     /// </summary>
@@ -164,8 +166,8 @@ public class CamerasAppService :
     /// <exception cref="UserFriendlyException"> exception is returned when Camera IP is duplicate </exception>     
     public override async Task<CameraDto> CreateAsync(CreateUpdateCameraDto input)
     {
-            GarageDto garage = new GarageDto();
-            Organization organization = new Organization();
+        GarageDto garage = new GarageDto();
+        Organization organization = new Organization();
         Subscription subscription = new Subscription();
 
         using (DataFilter.Disable<IMultiTenant>())
@@ -181,26 +183,26 @@ public class CamerasAppService :
                     Code = "DuplicateCameraIP"
                 };
             }
-            var numberOfCamerasForOrganization =await GetNumbersOfCamerasRelatedToGarage(input.GarageId);
+            var numberOfCamerasForOrganization = await GetNumbersOfCamerasRelatedToGarage(input.GarageId);
 
 
             if (input.Status == Enums.Status.Active)
             {
-				var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
-				if (result)
-				{
-					organization.ActiveCameras++;
+                var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
+                if (result)
+                {
+                    organization.ActiveCameras++;
 
-				}
+                }
 
-			}
-			input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+            }
+            input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
             input.DeviceId += numberOfCamerasForOrganization;
             input.OrganizationId = organization.Id;
-		
-			await CurrentUnitOfWork.SaveChangesAsync();
 
-			return await base.CreateAsync(input);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return await base.CreateAsync(input);
         }
     }
 
@@ -208,8 +210,6 @@ public class CamerasAppService :
 
     private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
     {
-        organization.ActiveCameras = 20;
-
         if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
         {
             throw new Exception("Upgrade subscription to add cameras to organization.");
@@ -226,9 +226,9 @@ public class CamerasAppService :
     /// <param name="cameraIP">Added Camera IP</param>
     /// <returns>1 if IP Exists</returns>
     private async Task<int> CheckIPUnique(string cameraIP)
-        {
-            // Use FirstOrDefaultAsync to find the camera by IP
-            var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
+    {
+        // Use FirstOrDefaultAsync to find the camera by IP
+        var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
 
         // If a camera is found, return 1 (or any positive number to indicate it's not unique)
         if (camera != null)
@@ -236,38 +236,38 @@ public class CamerasAppService :
             return 1; // CameraIP exists
         }
 
-            // Return 0 if the CameraIP is unique (not found)
-            return -1;
-        }
-        /// <summary>
-        /// method used to get list of cameraes
-        /// </summary>
-        /// <param name="input">specifies max number of camera and if it sorted or not</param>
-        /// <returns>cameraDto List</returns>
-        public async Task<PagedResultDto<CameraDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+        // Return 0 if the CameraIP is unique (not found)
+        return -1;
+    }
+    /// <summary>
+    /// method used to get list of cameraes
+    /// </summary>
+    /// <param name="input">specifies max number of camera and if it sorted or not</param>
+    /// <returns>cameraDto List</returns>
+    public async Task<PagedResultDto<CameraDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        // Get the IQueryable<camera> from the repository
+        var queryable = await _repository.GetQueryableAsync();
+        // Apply search filtering
+
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-            // Get the IQueryable<camera> from the repository
-            var queryable = await _repository.GetQueryableAsync();
-            // Apply search filtering
 
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
+            queryable = queryable.Where(or =>
+                or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Model.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.MainType.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
 
-                queryable = queryable.Where(or =>
-                    or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Model.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MainType.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.BrandName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower())||
-                    or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
-                    
-                );
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            );
+        }
+        // Get the total count of filtered records
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
         // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -285,7 +285,7 @@ public class CamerasAppService :
 
     ///<inheritdoc/>
     public async Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
-        {
+    {
         using (DataFilter.Disable<IMultiTenant>())
         {
 
@@ -334,10 +334,10 @@ public class CamerasAppService :
     /// <returns>cameraeDto List</returns>
     public async Task<PagedResultDto<CameraDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        
 
-            // Get the IQueryable<camera> from the repository
-            var queryable = await _repository.GetQueryableAsync();
+
+        // Get the IQueryable<camera> from the repository
+        var queryable = await _repository.GetQueryableAsync();
         // Apply filtering
         var filterExpression = BuildExpression<Camera>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)

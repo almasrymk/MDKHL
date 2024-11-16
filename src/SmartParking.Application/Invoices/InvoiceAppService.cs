@@ -46,7 +46,16 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
-        var organization = await _organizationsRepository.GetAsync(input.OrganizationId);
+        Organization organization = null;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            organization = await _organizationsRepository.GetAsync(input.OrganizationId);
+            if (organization is null)
+            {
+                throw new Exception("Unable to retrive Organization");
+            }
+        }
         input.TenantId = organization.TenantId;
         if (input.InvoiceNumber is null)
         {
