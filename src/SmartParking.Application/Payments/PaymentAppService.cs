@@ -32,7 +32,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly HttpClient _httpClient;
 
     private const string EntityId = "8ac7a4ca9244f53c0192473d20e40315";
-    private const string Currency = "KSA";
+    private const string Currency = "SAR";
     private const string PaymentType = "DB";
     private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
     private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
@@ -142,10 +142,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         var content = new StringContent(
           $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}",
-          Encoding.UTF8,
+          Encoding.ASCII,
           "application/x-www-form-urlencoded"
       );
-
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
 
@@ -169,6 +168,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
 
     }
+
+
 
     private string GetEntityIdByPaymentMethod(PaymentMethod paymentMethod)
     {

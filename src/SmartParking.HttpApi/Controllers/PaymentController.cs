@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Payments;
 using SmartParking.Results;
 using System.Threading.Tasks;
-using Volo.Abp.AspNetCore.Mvc;
 
 namespace SmartParking.Controllers;
 
 [Route("api/mobile/payment")]
 [ApiController]
 
-public class PaymentController : AbpController
+public class PaymentController : ControllerBase
 {
     private readonly IPaymentAppService _paymentAppService;
     public PaymentController(IPaymentAppService paymentAppService)
@@ -19,7 +18,6 @@ public class PaymentController : AbpController
     }
     [HttpPost("CreateCheckoutPayment")]
     [Authorize]
-    [IgnoreAntiforgeryToken]
     public async Task<Result<PaymentCheckoutDto>> CreateCheckoutPayment(PaymentCheckoutRequestDto input)
     {
         return await _paymentAppService.CreateCheckoutPaymentAsync(input);
