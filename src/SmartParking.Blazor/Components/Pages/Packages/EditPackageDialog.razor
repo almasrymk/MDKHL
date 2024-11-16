@@ -52,7 +52,7 @@
                                       Disabled='true'
                                       Label="@L["OrgnizationId"]" />
                     </MudItem>
-
+@* 
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.PackageType.EnglishName"
                                       For="@(() => Package.PackageType.EnglishName)"
@@ -60,7 +60,7 @@
                                       Class="w-100"
                                       Disabled='true'
                                       Label="@L["PackageTypeEnglishName"]" />
-                    </MudItem>
+                    </MudItem> *@
 
                     <MudItem sm="4" md="4">
                         <MudTimePicker Variant="Variant.Text"
@@ -110,7 +110,7 @@
 		</DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Edit"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
         </DialogActions>
 
 	</MudDialog>

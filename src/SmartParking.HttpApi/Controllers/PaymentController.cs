@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartParking.Invoices;
-using SmartParking.MobileInvoices;
 using SmartParking.Payments;
 using SmartParking.Results;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
 
 namespace SmartParking.Controllers;
@@ -23,7 +20,7 @@ public class PaymentController : AbpController
     [HttpPost("CreateCheckoutPayment")]
     [Authorize]
     [IgnoreAntiforgeryToken]
-    public async Task<Result<PaymentDto>> CreateCheckoutPayment(CreateUpdatePaymentDto input)
+    public async Task<Result<PaymentCheckoutDto>> CreateCheckoutPayment(PaymentCheckoutRequestDto input)
     {
         return await _paymentAppService.CreateCheckoutPaymentAsync(input);
     }
@@ -32,9 +29,9 @@ public class PaymentController : AbpController
     [HttpGet("CheckPaymentStatus/{entityId}")]
     //[Authorize]
     [IgnoreAntiforgeryToken]
-    public async Task<Result<PaymentDto>> CheckPaymentStatus(string input , string entityId)
+    public async Task<Result<PaymentDto>> CheckPaymentStatus(string input, string entityId)
     {
-        return await _paymentAppService.GetPaymentStatus(input,entityId);
+        return await _paymentAppService.GetPaymentStatus(input, entityId);
     }
 
 

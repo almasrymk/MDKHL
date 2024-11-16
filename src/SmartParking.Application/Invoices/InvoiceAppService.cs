@@ -4,8 +4,8 @@ using Newtonsoft.Json.Linq;
 using QRCoder;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
-using SmartParking.Organizations;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -26,27 +26,27 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Invoices;
 //[Authorize]
-public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAndSortedResultRequestDto,CreateUpdateInvoiceDto> , IInvoiceAppService
+public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedAndSortedResultRequestDto, CreateUpdateInvoiceDto>, IInvoiceAppService
 {
     private readonly IDataFilter _dataFilter;
-    private readonly IRepository<Invoice, int> _repository;
-    private readonly IOrganizationsAppService _organizationsAppService;
+    private readonly IRepository<Invoice, int> _invoiceRepository;
+    private readonly IRepository<Organization, int> _organizationsRepository;
     private readonly HttpClient _httpClient;
     private string folderQrImage = "QRCodeImage";
     private string folderImages = "image";
 
-    public InvoiceAppService(IRepository<Invoice,int> repository, IDataFilter dataFilter,IOrganizationsAppService organizationsAppService, HttpClient httpClient) 
-    :base(repository)
+    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, HttpClient httpClient)
+    : base(repository)
     {
         _dataFilter = dataFilter;
-        _repository = repository;
-        _organizationsAppService = organizationsAppService;
+        _invoiceRepository = repository;
+        _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
     }
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
-        var organization = await _organizationsAppService.GetAsync(input.OrganizationId);
+        var organization = await _organizationsRepository.GetAsync(input.OrganizationId);
         input.TenantId = organization.TenantId;
         if (input.InvoiceNumber is null)
         {
@@ -77,8 +77,8 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         return await base.GetListAsync(input);
     }
 
-	[Authorize]
-	public override async Task<InvoiceDto> GetAsync(int id)
+    [Authorize]
+    public override async Task<InvoiceDto> GetAsync(int id)
     {
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
@@ -91,23 +91,23 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             return await base.GetAsync(id);
     }
 
-	///<inheritdoc/>
-	[Authorize]
-	public async Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    ///<inheritdoc/>
+    [Authorize]
+    public async Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-      
+        var queryable = await _invoiceRepository.GetQueryableAsync();
+
         // Apply search filtering
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-           
+
 
             queryable = queryable.Where(or =>
                 or.InvoiceNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
-                  // full date-time or includes hour
+                or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            // full date-time or includes hour
             );
 
         }
@@ -141,11 +141,11 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         );
     }
 
-	[Authorize]
-	public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    [Authorize]
+    public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
-        var queryable = await _repository.GetQueryableAsync();
+        var queryable = await _invoiceRepository.GetQueryableAsync();
         // Apply filtering
         var filterExpression = BuildExpression<Invoice>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
@@ -182,10 +182,10 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
             invoicesDto
         );
     }
-	[Authorize]
-	public override async Task DeleteAsync(int id)
+    [Authorize]
+    public override async Task DeleteAsync(int id)
     {
-        var invoice = await _repository.FindAsync(id);
+        var invoice = await _invoiceRepository.FindAsync(id);
 
         if (invoice is null)
         {
@@ -196,46 +196,46 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         await base.DeleteAsync(id);
     }
 
-    [RemoteService(IsEnabled =false)]
+    [RemoteService(IsEnabled = false)]
 
-	public async Task<string> GenerateInvoiceNumberAsync(int organizationId)
-	{
-		var organization = await _organizationsAppService.GetAsync(organizationId);
-		var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
-		var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
+    public async Task<string> GenerateInvoiceNumberAsync(int organizationId)
+    {
+        var organization = await _organizationsRepository.GetAsync(organizationId);
+        var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
+        var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
 
         // Fetch the last invoice for the current year and organization
-        var invoices = await _repository.GetListAsync(i => i.OrganizationId == organizationId);
-			
+        var invoices = await _invoiceRepository.GetListAsync(i => i.OrganizationId == organizationId);
+
         var lastInvoice = invoices
         .Where(i => i.CreationTime.Year == DateTime.Now.Year)
-		.OrderByDescending(i => i.InvoiceNumber)
-		.FirstOrDefault();
+        .OrderByDescending(i => i.InvoiceNumber)
+        .FirstOrDefault();
 
-        
-		int nextInvoiceSequence = 1;
 
-		if (lastInvoice != null)
-		{
+        int nextInvoiceSequence = 1;
+
+        if (lastInvoice != null)
+        {
             // Extract the last 3 digits of the previous invoice number (e.g., "ABC23-001")
             var lastSequenceString = lastInvoice.InvoiceNumber[^5..];
-			if (int.TryParse(lastSequenceString, out int lastSequence))
-			{
-				nextInvoiceSequence = lastSequence + 1;
-			}
-		}
+            if (int.TryParse(lastSequenceString, out int lastSequence))
+            {
+                nextInvoiceSequence = lastSequence + 1;
+            }
+        }
 
-		// Format the sequence as a three-digit number with leading zeros
-		var formattedSequence = nextInvoiceSequence.ToString().PadLeft(5,'0') ;
+        // Format the sequence as a three-digit number with leading zeros
+        var formattedSequence = nextInvoiceSequence.ToString().PadLeft(5, '0');
 
-		// Combine all parts to form the final invoice number
-		return $"{prefix}{currentYearSuffix}{formattedSequence}";
-	}
+        // Combine all parts to form the final invoice number
+        return $"{prefix}{currentYearSuffix}{formattedSequence}";
+    }
 
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
         string? token = await GetToken();
-        var invoice = await _repository.GetAsync(invoiceId);
+        var invoice = await _invoiceRepository.GetAsync(invoiceId);
         if (invoice is null)
         {
             return Result.NotFound();
@@ -248,7 +248,7 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         using (DataFilter.Disable<IMultiTenant>())
         {
             string? token = await GetToken();
-            var invoice = await _repository.GetAsync(invoiceId);
+            var invoice = await _invoiceRepository.GetAsync(invoiceId);
             if (invoice is null)
             {
                 return Result.NotFound();
@@ -263,40 +263,40 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
     {
         //var text = Convert.FromBase64String(qrCodedto.QRCode);
         using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-            
+
         using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodedto.QRCode, QRCodeGenerator.ECCLevel.Q))
         using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
         {
 
-            byte[]  qrCodeImage = qrCode.GetGraphic(20);
-       
-
-        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderQrImage, folderImages);
-
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-            Directory.CreateDirectory(imageDirectoryPath);
-        }
-        string fileName = $"{invoice.InvoiceNumber}.{"png"}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
+            byte[] qrCodeImage = qrCode.GetGraphic(20);
 
 
-        await File.WriteAllBytesAsync(fullPath, qrCodeImage);
+            string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderQrImage, folderImages);
 
-        Console.WriteLine($"Image saved successfully at {fullPath}");
+            if (!Directory.Exists(imageDirectoryPath))
+            {
+                Directory.CreateDirectory(imageDirectoryPath);
+            }
+            string fileName = $"{invoice.InvoiceNumber}.{"png"}";
+            string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
-        return $"{folderQrImage}/{folderImages}/{fileName}";
+
+            await File.WriteAllBytesAsync(fullPath, qrCodeImage);
+
+            Console.WriteLine($"Image saved successfully at {fullPath}");
+
+            return $"{folderQrImage}/{folderImages}/{fileName}";
         }
     }
 
     private async Task<QRCodeDto> GetQrCode(string? token, Invoice? invoice)
     {
         decimal percentage = invoice.InvoicePrice * 0.14m;
-        var oragnization = await _organizationsAppService.GetAsync(invoice.OrganizationId);
+        var oragnization = await _organizationsRepository.GetAsync(invoice.OrganizationId);
         //"12-25-2024"
         var qR = new
         {
-            sellerName =oragnization.EnglishName,
+            sellerName = oragnization.EnglishName,
             vatRegistration = oragnization.CommercialRegistrationNumber,
             timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
             invoiceAmount = invoice.InvoicePrice.ToString(),
@@ -340,22 +340,22 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
 
     /// <inheritdoc/>
 	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
-	{
-		var queryable = await _repository.GetQueryableAsync();
+    {
+        var queryable = await _invoiceRepository.GetQueryableAsync();
 
-		queryable = queryable.Where(t => t.TenantId == tenantId);
+        queryable = queryable.Where(t => t.TenantId == tenantId);
 
-		var totalCount = await AsyncExecuter.CountAsync(queryable);
-		var items = await AsyncExecuter.ToListAsync(
-			queryable
-				.Skip(input.SkipCount)
-				.Take(input.MaxResultCount)
-		);
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        var items = await AsyncExecuter.ToListAsync(
+            queryable
+                .Skip(input.SkipCount)
+                .Take(input.MaxResultCount)
+        );
 
-		// Map entities to DTOs
-		var transactionDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
+        // Map entities to DTOs
+        var transactionDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
 
-		// Return paged result
-		return new PagedResultDto<InvoiceDto>(totalCount, transactionDtos);
-	}
+        // Return paged result
+        return new PagedResultDto<InvoiceDto>(totalCount, transactionDtos);
+    }
 }

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartParking.Enums;
+﻿namespace SmartParking.Enums;
 
 public enum PaymentMethod
 {
-    MADA,
-    ApplePay,
     Cash,
     VISA,
-    MASTERCARD
+    MASTERCARD,
+    MADA,
+    ApplePay,
 }
