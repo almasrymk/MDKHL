@@ -22,6 +22,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
 using System.Linq.Dynamic.Core;
+using SmartParking.Vehicles;
 namespace SmartParking.Customers;
 
 [Authorize]
@@ -379,5 +380,84 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.OrganizationEmployee.ToString()]);
         }
     }
+
+
+    public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
+    {
+
+        bool emailValid = _baseCustomer.IsEmailValid(input.Email);
+        if (!emailValid)
+        {
+            throw new Exception("Email is not valid");
+
+        }
+        if (input.Password != input.RepeatPassword)
+        {
+            throw new Exception("Passwords doesn't match");
+
+        }
+        var customer = await GetAsync(id);
+
+        if (customer == null)
+        {
+            throw new Exception("No Customer Found");
+
+        }
+        if (customer.NationalId != input.NationalId || customer.identificationTypes != input.IdentificationType)
+        {
+            throw new Exception("Critical Data as National Id , Identification. can't be updated");
+        }
+
+        return await base.UpdateAsync(id, input);
+
+    }
+    /// <inheritdoc/>
+
+    public override async Task DeleteAsync(Guid id)
+    {
+        var customer = await _repository.FindAsync(x => x.Id == id);
+        if (customer == null)
+        {
+            throw new Exception("There is no customer related to that id");
+        }
+        await base.DeleteAsync(id);
+
+    }
+    public override async Task<CustomerDto> GetAsync(Guid id)
+    {
+        var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _repository.GetAsync(c => c.Id == id && c.IsEmployee);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
+
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificEmployee(Guid employeeId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query =await _repository.GetQueryableAsync();
+            query=query.Where(x=>x.Id== employeeId && x.IsEmployee==true);
+            var customer =await AsyncExecuter.FirstOrDefaultAsync(query);
+            if (customer == null)
+            {
+                throw new Exception("No Customer Found");
+            }
+
+            var queryVehicles = await _repositoryVehicle.GetQueryableAsync();
+
+            queryVehicles = queryVehicles.Where(x => x.CustomerId == employeeId);
+            var result = await AsyncExecuter.ToListAsync(queryVehicles);
+            var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
+            return output;
+        }
+
+    }
+
+
 
 }

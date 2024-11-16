@@ -96,7 +96,7 @@
 
     private string UserName { get; set; }
 
-    protected override async void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         UserName = CurrentUser.Name;
         if (currenttenant.Id == null)
@@ -110,10 +110,10 @@
             UserName += " Organization";
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
             Console.WriteLine(Picture);
-
         }
 
-        
+
+         base.OnInitializedAsync();
 
     }
     protected override void OnParametersSet()

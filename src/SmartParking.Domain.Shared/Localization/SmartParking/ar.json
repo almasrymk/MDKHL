@@ -452,7 +452,8 @@
     "Max Slots For Employees": "عدد أماكن الركن المتاح للموظفين",
     "Max Slots For Free": "عدد أماكن الركن المتاح مجانًا ",
     "ParkingSlots": "أقصى عدد من الأماكن المخصصه للركن",
-    "Employees": "الموظفين"
+    "Employees": "الموظفين",
+    "Details for Employee": "تفاصيل للموظف"
 
   }
 }

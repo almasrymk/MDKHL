@@ -125,14 +125,16 @@
                         <MudText Typo="Typo.h6">@L["VAT"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">@InvoicePrice*0.14 @L["SAR"]</MudText>
+                        <MudText Typo="Typo.h6">@($"{(int)InvoicePrice * 0.14} {L["SAR"]}")</MudText>
                     </MudItem>
                    
                     <MudItem xs="6">
                         <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">265.00 @L["SAR"]</MudText>
+                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
+                            @($"{(int)(InvoicePrice + (InvoicePrice * 0.14m))} {L["SAR"]}")
+                        </MudText>
                     </MudItem>
                 </MudGrid>
 

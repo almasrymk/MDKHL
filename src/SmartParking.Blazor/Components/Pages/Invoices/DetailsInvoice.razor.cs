@@ -39,7 +39,8 @@ public partial class DetailsInvoice
 
     public DateTime ?EntranceTime { get; set; }
 
-    
+
+
     public string CommercialRegisteration { get; set; }
 
     public List<OrganizationDto> organizations = new List<OrganizationDto>();
@@ -82,7 +83,9 @@ public partial class DetailsInvoice
         InvoiceTime = invoice.InvoiceTime;
         EntranceTime = invoice.EntranceTime;
         CustomerName=invoice.CustomerEnName;
-        
+
+
+
     }
     private void Back()
     {

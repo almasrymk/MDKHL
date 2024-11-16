@@ -1,4 +1,5 @@
 ﻿using SmartParking.Cutomers;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,4 +73,12 @@ public interface IEmployeeAppService : ICrudAppService<CustomerDto, Guid, PagedA
 	/// <param name="input">specifies max number of employees and if it sorted or not and filter</param>
 	/// <returns>employee Dto</returns>
 	public Task<PagedResultDto<CustomerDto>> FilterMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
+    //Task<bool> SendOtpAsync(string mobileNumber);
+
+    /// <summary>
+    /// Method used to get vehicles for specific employee
+    /// </summary>
+    /// <param name="customerId">Customer Id</param>
+    /// <returns>list of vehichles</returns>
+    Task<List<VehicleDto>> GetVehiclesRelatedToSpecificEmployee(Guid employeeId);
 }
