@@ -100,7 +100,6 @@ public partial class MyAccount
             ContactMail = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
-            LicenseExpiryDate = DateOnly.FromDateTime(LicenseExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
             PhoneNum = PhoneNum,
             WhatsAppNum = WhatsAppNum,
@@ -204,7 +203,6 @@ public partial class MyAccount
         StateSelectValue = organization.StateId.ToString();
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        LicenseExpiryDate = organization.LicenseExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
         WhatsAppNum = organization.WhatsAppNum;
         CitySelectValue = organization.CityId.ToString();
@@ -292,19 +290,15 @@ public partial class MyAccount
     }
     private async Task ViewSubscription()
     {
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-        //change it to garage.subscription
-        var org = await OrganizationAppService.GetAsync(id);
-        var subscription = new SubscriptionDto();
-        if (org.SubscriptionId != 0)
-        {
-            subscription = await SubscriptionAppService.GetAsync(org.SubscriptionId);
+        var Org = await OrganizationAppService.GetOrganizationForCurrentTenat();
 
-        }
-        else
-        {
-            subscription = null;
-        }
+        var subscription = await SubscriptionAppService.GetAsync(Org.Id);
+        //change it to garage.subscription
+
+
+
+
+
 
         var parameters = new DialogParameters
         {
