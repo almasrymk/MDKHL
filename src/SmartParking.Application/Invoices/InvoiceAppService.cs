@@ -9,13 +9,11 @@ using SmartParking.Organizations;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -25,7 +23,6 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Invoices;
 //[Authorize]
@@ -340,5 +337,25 @@ public class InvoiceAppService : CrudAppService<Invoice,InvoiceDto,int, PagedAnd
         var token = json["data"]?["token"]?.ToString();
         return token;
     }
+
+    /// <inheritdoc/>
+	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
+	{
+		var queryable = await _repository.GetQueryableAsync();
+
+		queryable = queryable.Where(t => t.TenantId == tenantId);
+
+		var totalCount = await AsyncExecuter.CountAsync(queryable);
+		var items = await AsyncExecuter.ToListAsync(
+			queryable
+				.Skip(input.SkipCount)
+				.Take(input.MaxResultCount)
+		);
+
+		// Map entities to DTOs
+		var transactionDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
+
+		// Return paged result
+		return new PagedResultDto<InvoiceDto>(totalCount, transactionDtos);
+	}
 }
-//		object.ToString returned	"AQRtYWRlAgo5NjM4NTIxMjMwAyExMOKAj+KAjy8xMeKAj+KAjy8yMDI0IDQ6MTI6MTQg2YUEAzQwMAUGNTbZqzAw"	string

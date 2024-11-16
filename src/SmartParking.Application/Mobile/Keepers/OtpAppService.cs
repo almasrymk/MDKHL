@@ -47,10 +47,14 @@ public class OtpAppService : ApplicationService, IOtpAppService
 	/// <inheritdoc/>
     public async Task<Result<string>> ForgetPasswordOtpAsync(string phoneNumber)
 	{
+		Volo.Abp.Identity.IdentityUser? user;
+		using(DataFilter.Disable<IMultiTenant>())
+		{
+		   user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
 
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+		}
 
-        if (user is null)
+		if (user is null)
         {
             return Result.Invalid(new Results.ValidationError
             {
@@ -159,9 +163,14 @@ public class OtpAppService : ApplicationService, IOtpAppService
 				ErrorMessage = "Phone Number is not valid"
 			});
 		}
-        
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-        
+
+		Volo.Abp.Identity.IdentityUser? user;
+
+		using (DataFilter.Disable<IMultiTenant>())
+		{
+			user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+
+		}
 
 		if (user is null)
 		{

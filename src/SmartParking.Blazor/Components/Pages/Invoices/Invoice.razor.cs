@@ -106,12 +106,20 @@ public partial class Invoice
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-
-        // Retrieve the list of cities from the server
-        var invoiceDto = await AppService.GetListAsync(input);
-        TotalItem = (int)invoiceDto.TotalCount;
-        CreateTable(invoiceDto);
-
+        if(CurrentTenant.Id !=null)
+        {
+            var tenantId = CurrentTenant.Id;
+			var invoiceDto = await AppService.GetAllInvoicesByOrganizationAsync(input,tenantId);
+			TotalItem = (int)invoiceDto.TotalCount;
+			CreateTable(invoiceDto);
+		}
+        else
+        {
+			// Retrieve the list of cities from the server
+			var invoiceDto = await AppService.GetListAsync(input);
+			TotalItem = (int)invoiceDto.TotalCount;
+			CreateTable(invoiceDto);
+		}
     }
 
     private void CreateTable(PagedResultDto<InvoiceDto> invoices)
