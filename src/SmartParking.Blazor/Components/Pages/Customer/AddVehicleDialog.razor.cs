@@ -34,9 +34,11 @@ public partial class AddVehicleDialog
 
 	[Parameter]
 	public Guid CustomerId { get; set; }
-
-
-	protected override async Task OnInitializedAsync()
+    public string EnPlateLetters { get; set; } = "";
+    public string EnPlateNumber { get; set; } = "";
+    public string ArPlateLetters { get; set; } = "";
+    public string ArPlateNumber { get; set; } = "";
+    protected override async Task OnInitializedAsync()
     {
         createUpdateVehicle.BelongToCompany = false;
         var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
@@ -61,6 +63,11 @@ public partial class AddVehicleDialog
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
+            createUpdateVehicle.EnPlateLetters = EnPlateLetters;
+            createUpdateVehicle.EnPlateNumber = EnPlateNumber;
+            createUpdateVehicle.ArPlateLetters = ArPlateLetters;
+            createUpdateVehicle.ArPlateNumber  = ArPlateNumber;
+
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
