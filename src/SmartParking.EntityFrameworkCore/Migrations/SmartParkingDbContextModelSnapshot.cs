@@ -335,6 +335,9 @@ namespace SmartParking.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsEmployee")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationTime");
@@ -1167,64 +1170,6 @@ namespace SmartParking.Migrations
                     b.ToTable("CustomerCategories");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerOrganization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CustomerId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("OrganizationId");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("CustomerOrganizations", (string)null);
-                });
-
             modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerPackage", b =>
                 {
                     b.Property<int>("Id")
@@ -1269,7 +1214,10 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int>("PackageId")
+                    b.Property<int?>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PackageId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -1281,6 +1229,8 @@ namespace SmartParking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("PackageId");
 
@@ -1309,6 +1259,15 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+                    b.Property<int>("CurrnetCapacityEmployees")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CurrnetCapacityForCustomers")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CurrnetCapacityForFree")
+                        .HasColumnType("integer");
+
                     b.Property<int>("CurrnetCapicity")
                         .HasColumnType("integer");
 
@@ -1335,6 +1294,15 @@ namespace SmartParking.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<int>("MaxCapacity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxSlotsForCustomers")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxSlotsForEmployess")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxSlotsForFree")
                         .HasColumnType("integer");
 
                     b.Property<string>("NameAr")
@@ -1528,6 +1496,9 @@ namespace SmartParking.Migrations
 
                     b.Property<decimal>("ThirdHourPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("UsedSlots")
+                        .HasColumnType("integer");
 
                     b.Property<string>("WhatsAppNum")
                         .HasColumnType("text");
@@ -1993,16 +1964,16 @@ namespace SmartParking.Migrations
                     b.Property<int>("NumberOfCameras")
                         .HasColumnType("integer");
 
-                    b.Property<int>("NumberOfMobileCustomers")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("NumberOfOrganizations")
+                    b.Property<int>("NumberOfCustomers")
                         .HasColumnType("integer");
 
                     b.Property<int>("NumberOfUsers")
                         .HasColumnType("integer");
 
                     b.Property<int>("NumbersOfGarages")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ParkingSlot")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -2075,7 +2046,13 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Type")
+                    b.Property<int>("SubscriptionStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TypeAr")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeEn")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -4194,25 +4171,6 @@ namespace SmartParking.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerOrganization", b =>
-                {
-                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customers")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organizations")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customers");
-
-                    b.Navigation("Organizations");
-                });
-
             modelBuilder.Entity("SmartParking.Entities.Organizations.CustomerPackage", b =>
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
@@ -4221,13 +4179,17 @@ namespace SmartParking.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
+                        .WithMany("Customers")
+                        .HasForeignKey("OrganizationId");
+
                     b.HasOne("SmartParking.Entities.Organizations.Package", "Package")
                         .WithMany("CustomerPackages")
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PackageId");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Organization");
 
                     b.Navigation("Package");
                 });
@@ -4576,6 +4538,8 @@ namespace SmartParking.Migrations
                     b.Navigation("Cameras");
 
                     b.Navigation("CustomerCategories");
+
+                    b.Navigation("Customers");
 
                     b.Navigation("OrganizationGarages");
 

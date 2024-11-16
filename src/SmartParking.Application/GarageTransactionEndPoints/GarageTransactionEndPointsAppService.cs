@@ -85,7 +85,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return await Task.FromResult(false);
         }
 
-        _logger.LogError($"{DateTime.Now} ====>  Camera ID is not found");
+       // _logger.LogError($"{DateTime.Now} ====>  Camera ID is not found");
         
             
         var cameraId = camera.Id;
