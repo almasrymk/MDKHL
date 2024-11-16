@@ -1,8 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Mobile.Vehicles;
 using System;
 
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 namespace SmartParking.Vehicles;
 
@@ -26,23 +29,37 @@ public class VehiclesAppService:
 		>,
 	IVehiclesAppService
 {
-	private readonly Volo.Abp.Domain.Repositories.IRepository<Vehicle, int> _repository;
+	private readonly IRepository<Vehicle, int> _repository;
 	private IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
-	public VehiclesAppService(Volo.Abp.Domain.Repositories.IRepository<Vehicle, int> repository,
-		IDataFilter dataFilter, ICurrentUser currentUser)
+	private readonly IRepository<LicenceType, int> _licenceTypeRepository;	
+	public VehiclesAppService(IRepository<Vehicle, int> repository,
+		IDataFilter dataFilter, ICurrentUser currentUser,
+		IRepository<LicenceType,int> licenceTypeRepository)
 	   : base(repository)
 	{
 		_repository = repository;
 		_dataFilter = dataFilter;
 		_currentUser = currentUser;
+		_licenceTypeRepository = licenceTypeRepository;
 	}
 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
-		var existingPlatNumber =await _repository.FirstOrDefaultAsync(x=>x.PlateNumber == input.PlateNumber);
+        var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleDto, Vehicle>(input);
+        // check plate number must include both plate letters and plate numbers, either in Arabic or English.
+        if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
+        {
+            mappedVehicle.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
 
-		if(existingPlatNumber !=null)
+        }
+        else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
+        {
+            mappedVehicle.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
+        }
+        
+
+		if(mappedVehicle !=null)
 		{
 			throw new InvalidOperationException("PlatNumber already exists");
 		}
