@@ -23,7 +23,7 @@ namespace SmartParking.Configurations
             builder.HasOne(cp => cp.Package)
                 .WithMany(p => p.CustomerPackages) // Assuming Package entity has ICollection<CustomerPackages>
                 .HasForeignKey(cp => cp.PackageId)
-                .IsRequired();
+                .IsRequired(false);
 
         }
     }

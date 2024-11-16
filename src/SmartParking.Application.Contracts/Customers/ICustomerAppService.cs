@@ -37,11 +37,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
     Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input);
 
-    /// <summary>
-    /// Method Used to create random otp
-    /// </summary>
-    /// <returns>string of generated otp</returns>
-    Task<string> GenerateOtp(Guid CustomerId);
+
     /// <summary>
     /// Method used to get all customers
     /// </summary>
@@ -57,24 +53,6 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 	/// <returns>CustomerDto</returns>
 	Task<CustomerDto> GetAsync(Guid customerId);
     //Task<bool> SendOtpAsync(string mobileNumber);
-
-
-    /// <summary>
-    /// Method used to verify user otp
-    /// </summary>
-    /// <param name="input">Otp dto</param>
-    /// <returns>boolean depends on operation status</returns>
-    /// <exception cref="NotImplementedException">Throws exception if no user with that id in database</exception>    /// <inheritdoc/>
-
-    Task<bool> VerifyOtpAsync(OtpVerificationDto input);
-
-    /// <summary>
-    /// Method used to check if phone number is uniquer per user.
-    /// </summary>
-    /// <param name="phoneNumber">Required to check phone number</param>
-    /// <returns>bool</returns>
-
-    Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber);
     
     /// <summary>
     /// Method used to get vehicles for specific customer
@@ -127,11 +105,5 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <returns>Count of Customers</returns>
     Task<int> GetCountCustomersCountForOrganization(Guid ?CurrentTenantId);
-    /// <summary>
-    /// Methods that checks if national id is not duplicate.
-    /// </summary>
-    /// <param name="NationalId">NationalId of customer</param>
-    /// <returns>Boolean that indicates the existance of National Id</returns>
-    Task<bool> CheckIfNationalIDIsUnique(string NationalId);
 
 }

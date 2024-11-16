@@ -43,10 +43,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private readonly ICurrentUser _currentUser;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
+    private readonly IBaseCustomerAppService _baseCustomer;
 
     public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
         IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager,
-        IRepository<CustomerPackage, int> customerPackageRepository) : base(repository)
+        IRepository<CustomerPackage, int> customerPackageRepository,
+        IBaseCustomerAppService baseCustomer) : base(repository)
     {
         _repository = repository;
         _repositoryVehicle = repositoryVehicle;
@@ -55,29 +57,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _organizationAppService = organizationAppService;
         _userManager = userManager;
         _customerPackageRepository = customerPackageRepository;
+        _baseCustomer = baseCustomer;
     }
-    /// <inheritdoc/>
-    public async Task<string> GenerateOtp(Guid CustomerId)
-    {
-
-        var query = await _repository.GetQueryableAsync();
-        query = query.Where(x => x.Id == CustomerId);
-        var customer = query.FirstOrDefault();
-
-        if (customer == default(Customer))
-        {
-            throw new EntityNotFoundException(typeof(Customer), CustomerId);
-
-        }
-        var random = new Random();
-        string otp = random.Next(1000, 9999).ToString();
-        customer.OTP = otp;
-        customer.OtpExpirationDate = DateTime.UtcNow.AddMinutes(1);
-        await _repository.UpdateAsync(customer);
-        return otp;
-
-    }
-
+  
 
     /// <inheritdoc/>
     public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
@@ -91,16 +73,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-					return await UserIsFound(user);
+					return await _baseCustomer.UserIsFound(user);
 				}
 
 			}
-			await CheckCustomer(input);
+			await _baseCustomer.CheckCustomer(input);
 
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
 			var customerAdd = await _repository.InsertAsync(customer, true);
-			await AddCustomerPackage(organization, customerAdd);
+			await _baseCustomer.AddCustomerPackage(organization.Id, customerAdd.Id);
 			return ObjectMapper.Map<Customer, CustomerDto>(customer);
 		}
 		catch (Exception ex)
@@ -124,12 +106,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-					return await UserIsFound(user);
+					return await _baseCustomer.UserIsFound(user);
 
 				}
 
 			}
-			await CheckCustomer(input);
+			await _baseCustomer.CheckCustomer(input);
 
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
@@ -143,82 +125,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 	}
 
-
-	/// <summary>
-	/// Asynchronously checks if the specified user exists and returns the associated customer data if found.
-	/// </summary>
-	/// <param name="user">The <see cref="Volo.Abp.Identity.IdentityUser"/> object representing the user to check.</param>
-	/// <returns>
-	/// A <see cref="CustomerDto"/> object containing customer details if the user is found;
-	/// otherwise, <c>null</c>.
-	/// </returns>
-	/// <remarks>
-	/// This method queries the customer information based on the provided user.
-	/// If the user does not exist, it returns <c>null</c>.
-	/// </remarks>
-	private async Task<CustomerDto> UserIsFound(Volo.Abp.Identity.IdentityUser? user)
-	{
-		var query = await _repository.GetQueryableAsync();
-		query = query.Where(x => x.IdentityUserId == user.Id);
-		var existCustomer = query.FirstOrDefault();
-		await _repository.UpdateAsync(existCustomer);
-		return ObjectMapper.Map<Customer, CustomerDto>(existCustomer);
-	}
-
-	/// <summary>
-	/// Asynchronously checks the validity of a customer based on the provided input data.
-	/// </summary>
-	/// <param name="input">The data transfer object containing customer details to be validated.</param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	private async Task CheckCustomer(CreateUpdateCustomerDto input)
-	{
-		if (input.IdentificationType == IdentificationTypes.NationalID)
-		{
-			var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
-			if (!nationalIdPattern.IsMatch(input.NationalId))
-			{
-				throw new UserFriendlyException("Nation Id must be 10 digits");
-			}
-		}
-		else if (input.IdentificationType == IdentificationTypes.Passport)
-		{
-			var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
-			if (!passportPattern.IsMatch(input.NationalId))
-			{
-				throw new UserFriendlyException("Passport must be from 6 - 9 digits and atmost one character");
-			}
-		}
-		var result1 = await CheckIfPhoneNumberIsUnique(input.MobileNumber);
-		if (!result1)
-		{
-			throw new Exception("Phone Number is used");
-
-		}
-		var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
-		if (!result2)
-		{
-			throw new Exception("National Id is already exist !");
-
-		}
-	}
-
-	/// <summary>
-	/// Asynchronously adds a customer package for a specified organization.
-	/// </summary>
-	/// <param name="organization">The organization to which the customer package will be added.</param>
-	/// <param name="customerAdd">The customer entity containing details for the package to be added.</param>
-	/// <returns>A task that represents the asynchronous operation.</returns>
-	private async Task AddCustomerPackage(Organization organization, Customer customerAdd)
-	{
-		var customerPackage = new CustomerPackage
-		{
-			CustomerId = customerAdd.Id,
-			CustomerPackageStatus = CustomerPackageStatus.Active,
-			OrganizationId = organization.Id,
-			TenantId = null
-		};
-		await _customerPackageRepository.InsertAsync(customerPackage, true);
-	}
 
 	/// <summary>
 	/// Asynchronously adds a user based on the provided customer data.
@@ -248,49 +154,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 	}
 
-    /// <inheritdoc/>
-    public async Task<bool> VerifyOtpAsync(OtpVerificationDto input)
-    {
 
-        var customer = await _repository.FindAsync(input.CustomerId);
-
-        if (customer == null)
-        {
-
-            throw new BusinessException("No User matched that criteria in Database");
-
-        }
-        if (customer.OTP == input.OtpCode)
-        {
-            if (DateTime.UtcNow <= customer.OtpExpirationDate)
-            {
-                return true;
-            }
-            else
-            {
-                throw new BusinessException("your Otp is expired");
-
-            }
-        }
-        return false;
-
-    }
-
-	/// <inheritdoc/>
-    [RemoteService(isEnabled: false)]
-	public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber)
-    {
-        var query = await _repository.GetQueryableAsync();
-        var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
-
-        if (result.Count == 0)
-        {
-            return true;
-
-        }
-        return false;
-
-    }
+	
 
 
 	/// <inheritdoc/>
@@ -619,27 +484,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
     }
 
-    /// <inheritdoc/>
 
-    public async Task<bool> CheckIfNationalIDIsUnique(string NationalId)
-    {
-        var query = await _repository.GetQueryableAsync();
-        var result = query.Where(x => x.NationalId == NationalId).ToList();
-        if (result.Count == 0)
-        {
-            return true;
-
-        }
-        return false;
-
-    }
 
     /// <inheritdoc/>
 
     public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
     {
 
-        bool emailValid = IsEmailValid(input.Email);
+        bool emailValid = _baseCustomer.IsEmailValid(input.Email);
         if (!emailValid)
         {
             throw new Exception("Email is not valid");
@@ -665,20 +517,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return await base.UpdateAsync(id, input);
 
     }
-
-    [RemoteService(isEnabled: false)]
-    public bool IsEmailValid(string email)
-    {
-        string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-        var emailvalidation = Regex.IsMatch(email, pattern);
-        if (!emailvalidation)
-        {
-            return false;
-
-        }
-        return true;
-    }
-
     /// <inheritdoc/>
 
     public override async Task DeleteAsync(Guid id)
