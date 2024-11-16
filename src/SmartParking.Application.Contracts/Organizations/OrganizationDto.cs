@@ -62,6 +62,9 @@ public class OrganizationDto
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
 
+    public int ActiveGarages { get; set; }
+    public int ActiveCameras { get; set; }
+
 
 
 
