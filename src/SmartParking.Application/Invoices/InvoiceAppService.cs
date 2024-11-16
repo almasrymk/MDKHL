@@ -200,7 +200,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public async Task<string> GenerateInvoiceNumberAsync(int organizationId)
     {
-        var organization = await _organizationsRepository.GetAsync(organizationId);
+        Organization organization = null;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            organization = await _organizationsRepository.GetAsync(organizationId);
+        }
+
         var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
         var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
 
