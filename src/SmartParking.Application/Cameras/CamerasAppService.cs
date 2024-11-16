@@ -211,7 +211,6 @@ public class CamerasAppService :
 
     private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
     {
-        organization.ActiveCameras = 20;
 
         if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
         {
