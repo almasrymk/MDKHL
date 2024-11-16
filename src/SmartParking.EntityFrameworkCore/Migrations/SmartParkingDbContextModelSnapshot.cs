@@ -315,6 +315,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
+                    b.Property<int>("CustomerCategory")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
@@ -1451,9 +1454,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<DateOnly>("LicenseExpiryDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
@@ -1570,6 +1570,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
+
+                    b.Property<int>("CustomerCategory")
+                        .HasColumnType("integer");
 
                     b.Property<string>("DeactivatedBy")
                         .HasColumnType("text");

@@ -1,24 +1,22 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using SmartParking.Blazor.Components.Pages.Organizations;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
+using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
-using System.Linq;
-using SmartParking.Lookups.Country;
-using Microsoft.AspNetCore.Components.Forms;
-using System.IO;
-using Blazorise;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using Image = SixLabors.ImageSharp.Image;
 using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
 using Size = SixLabors.ImageSharp.Size;
@@ -121,7 +119,7 @@ public partial class MyAccount
             District = District,
             OrganizationPicture = OrganizationPicture,
             TenantId = tenant
-            
+
         };
 
 
@@ -168,7 +166,7 @@ public partial class MyAccount
     }
     private void Cancel()
     {
-        if(currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+        if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
         {
 
             Navigation.NavigateTo("/organizations");
@@ -181,7 +179,7 @@ public partial class MyAccount
     }
     private async Task FetchData()
     {
-        
+
         var tenant = currenttenant.Id;
         var id = await OrganizationAppService.GetOrganizationIdByTenant(tenant);
         var organization = await OrganizationAppService.GetAsync(id);
@@ -229,8 +227,8 @@ public partial class MyAccount
         IsClose = organization.IsClose;
         OrganizationPicture = organization.OrganizationPicture;
         Code = organization.Code;
-        Address= organization.Address;
-        
+        Address = organization.Address;
+
     }
     protected override async Task OnInitializedAsync()
     {

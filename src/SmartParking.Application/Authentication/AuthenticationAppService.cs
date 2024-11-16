@@ -1,37 +1,28 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
+using OpenIddict.Server;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-using IdentityUser = Volo.Abp.Identity.IdentityUser;
-using Volo.Abp.Application.Services;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.IO;
-using SmartParking.Entities.Organizations;
-using Volo.Abp.Domain.Entities;
-using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
-using Polly;
-using Microsoft.AspNetCore.Http;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
-using Volo.Abp.Data;
-using SmartParking.Enums;
-using Microsoft.Extensions.Configuration;
-using Volo.Abp;
-using Volo.Abp.TenantManagement;
-using static Volo.Abp.TenantManagement.TenantManagementPermissions;
-using SmartParking.Results;
-using Microsoft.Extensions.Options;
-using OpenIddict.Server;
 using Volo.Abp.MultiTenancy;
-using System.Xml.Linq;
-using SmartParking.Entities.Customers;
-using static Volo.Abp.Identity.IdentityPermissions;
+using Volo.Abp.TenantManagement;
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
 // Service Implementation
@@ -39,7 +30,7 @@ namespace SmartParking.Authentication;
 /// <inheritdoc/>
 public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
 {
-    
+
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager;
@@ -60,10 +51,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IRepository<IdentityUser, Guid> userRepository,
         IIdentityRoleRepository roleRepository,
         IConfiguration config,
-        IRepository<Tenant,Guid> tenantRepository,
+        IRepository<Tenant, Guid> tenantRepository,
         IOptionsMonitor<OpenIddictServerOptions> oidcOptions,
         IRepository<Customer, Guid> CustomerRepository,
-        IRepository<Organization,int> organizationRepository
+        IRepository<Organization, int> organizationRepository
         )
     {
         _signInManager = signInManager;
@@ -74,7 +65,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _roleRepository = roleRepository;
         _config = config;
         _tenantRepository = tenantRepository;
-        _oidcOptions = oidcOptions; 
+        _oidcOptions = oidcOptions;
         _customerRepository = CustomerRepository;
         _organizationRepository = organizationRepository;
     }
@@ -82,12 +73,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
     {
         var query = await _tenantRepository.GetQueryableAsync();
-       query=query.Where(t => t.Name == name);
+        query = query.Where(t => t.Name == name);
         var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
         return tenant;
 
-    } 
-    public async Task<UserDataDto> UpdateUser(string phone,string password)
+    }
+    public async Task<UserDataDto> UpdateUser(string phone, string password)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == CurrentUser.Id);
 
@@ -95,7 +86,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             throw new ValidationException("User with this phone number does Not exist.");
         }
-        user.SetPhoneNumber(phone,true);
+        user.SetPhoneNumber(phone, true);
         // Change password (if you don’t have the current password, use RemovePassword and AddPassword)
         var removePasswordResult = await _userManager.RemovePasswordAsync(user);
         if (!removePasswordResult.Succeeded)
@@ -130,7 +121,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
         catch (Exception ex)
         {
-            return  Result<forgetpasswordDto>.Error(errorMessages : ex.Message);
+            return Result<forgetpasswordDto>.Error(errorMessages: ex.Message);
         }
 
     }
@@ -149,15 +140,15 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> GetUserDataAsync()
     {
-        
+
 
         var userName = CurrentUser.UserName;
-        if(userName.IsNullOrEmpty())
+        if (userName.IsNullOrEmpty())
         {
             return Result<UserDataDto>.NotFound();
         }
         var user = await _userManager.FindByNameAsync(userName);
-        if(user is not null)
+        if (user is not null)
         {
             return Result<UserDataDto>.Success(new UserDataDto
             {
@@ -184,7 +175,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 ErrorCode = "403",
                 ErrorMessage = "Invalid credentials."
             });
-            
+
         }
         if (user.IsActive == false)
         {
@@ -205,8 +196,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
             TenantId = CurrentTenant.Id.ToString()
         });
-       
-    } 
+
+    }
     /// <inheritdoc/>
     [RemoteService(IsEnabled = false)]
     public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
@@ -222,13 +213,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             }
             else
             {
-                 user = await _userManager.FindByNameAsync(input.Username);
+                user = await _userManager.FindByNameAsync(input.Username);
 
             }
-            if (user == null ) {
+            if (user == null)
+            {
                 return null;
             }
-            var role = await  _userManager.GetRolesAsync(user);
+            var role = await _userManager.GetRolesAsync(user);
             if (role.FirstOrDefault() == RolesType.OrganizationEmployee.ToString())
                 return null;
             var organizationId = user.GetProperty<int>("OrganizationId");
@@ -251,22 +243,22 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                     }
                 }
             }
-        
-        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
-        {
-            return user;
-        }
-        if (user.IsActive == false)
-        {
-            return null;
-        }
-        
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+            {
+                return user;
+            }
+            if (user.IsActive == false)
+            {
+                return null;
+            }
+
         }
 
-        
+
         await _signInManager.SignInAsync(user, isPersistent: false);
 
-       
+
         return user;
     }
     /// <inheritdoc/>
@@ -291,13 +283,13 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             var customer = new Customer
             {
                 ArabicName = "",
-                IdentificationTypes=IdentificationTypes.NationalID,
+                IdentificationTypes = IdentificationTypes.NationalID,
                 IdentityUser = user,
                 IdentityUserId = user.Id,
                 OtpExpirationDate = DateTime.Now
-                
+
             };
-             await _customerRepository.InsertAsync(customer);
+            await _customerRepository.InsertAsync(customer);
             var AccessToken = await GenerateTokenAsync(user) ?? string.Empty;
             return Result<RegisterResultDto>.Success(new RegisterResultDto
             {
@@ -307,7 +299,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         catch (Exception ex)
         {
             return Result<RegisterResultDto>.Error(ex.Message);
-            
+
         }
 
 
@@ -380,16 +372,16 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         await _userManager.RemovePasswordAsync(user);
         var password = await _userManager.AddPasswordAsync(user, input.NewPassword);
 
-        if(password.Succeeded)
+        if (password.Succeeded)
         {
-			return Result.SuccessWithMessage("Set New Password Successfully");
+            return Result.SuccessWithMessage("Set New Password Successfully");
 
-		}
+        }
 
-		return Result.Invalid(new Results.ValidationError
-		{
-			ErrorMessage = "Incorrect password."
-		});
+        return Result.Invalid(new Results.ValidationError
+        {
+            ErrorMessage = "Incorrect password."
+        });
 
     }
 
