@@ -150,6 +150,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
 
         CreateMap<IdentityUser, UserDto>();
+            //.ForMember(d => d.Role,s => s.MapFrom(o => o.Roles.FirstOrDefault()));
 
         CreateMap<Subscription, SubscriptionDto>()
             .ForMember(d=>d.SubscriptionTypeEn,o=>o.MapFrom(s=>s.SubscriptionType.TypeEn))

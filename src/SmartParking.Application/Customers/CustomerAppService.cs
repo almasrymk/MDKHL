@@ -134,7 +134,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <returns>A task representing the asynchronous operation.</returns>
 	private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
 	{
-		customer.IdentityUser.Name = input.UserName;
 		customer.IdentityUser.Surname = input.FullName;
 		customer.IdentityUser.SetProperty("OtpCode", null);
 		customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
@@ -150,7 +149,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
-			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Mdkhl.ToString()]);
+			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
 		}
 	}
 
