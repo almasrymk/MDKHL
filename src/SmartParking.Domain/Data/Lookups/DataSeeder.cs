@@ -219,9 +219,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 {
                     GarageId = garageTest.Id,    // Link camera to the found Garage
                     Name = "Entry",         // Provide valid camera name
-                    Model = "Model X",           // Add the model of the camera
-                    MainType = "Type A",         // Add the main type
-                    BrandName = "Brand Z",       // Add the brand name
+                    Model = CameraModel.PanasonicLumix,           // Add the model of the camera
+                    MainType = MainCameraType.Action,         // Add the main type
+                    BrandName = CameraBrand.Panasonic,       // Add the brand name
                     DeviceId = "233f1b26-9350-eb14-03e7-78934a049350",             // Add a unique code
                     CameraIP = "192.168.1.10",   // Add camera IP address
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
@@ -235,9 +235,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                  {
                      GarageId = garageTest.Id,    // Link camera to the found Garage
                      Name = "Exit",         // Provide valid camera name
-                     Model = "Model X",           // Add the model of the camera
-                     MainType = "Type A",         // Add the main type
-                     BrandName = "Brand Z",       // Add the brand name
+                     Model = CameraModel.PanasonicLumix,           // Add the model of the camera
+                     MainType = MainCameraType.Action,         // Add the main type
+                     BrandName = CameraBrand.Panasonic,
                      DeviceId = "df9a5b33-adf7-f454-49dd-d9624605adf7",             // Add a unique code
                      CameraIP = "192.168.1.11",   // Add camera IP address
                      MacAddress = "00:11:22:33:44:55", // Add MAC address

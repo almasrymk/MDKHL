@@ -20,6 +20,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -125,7 +126,18 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         if (GarageTransaction.CameraType == CameraType.Entry)
         {
-            bool canEnter = await HandleCamersEntry(garageId);
+            Customer customer = null;
+            var Id =await CheckCustomer(input.PlateNumber);
+            if (Id != null)
+            {
+               customer = await GetCustomer(Id);
+            }
+            else
+            {
+                customer = null;
+            }
+
+            bool canEnter = await HandleCamersEntry(garageId , customer);
             if (canEnter)
             {
                 try
@@ -162,26 +174,101 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         await _unLinkedTransactionRepository.InsertAsync(unLinkedTransaction, true);
     }
 
-    private async Task<bool> HandleCamersEntry(int garageId)
+    private async Task<Garage> GetGarage(int id)
+    {
+        var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == id && x.Status == Status.Active);
+        if (garage == null)
+        {
+            throw new Exception("This garage is not active");
+        }
+        return garage;
+    }
+    
+
+    private async Task<bool> HandleCamersEntry(int garageId , Customer customer)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
-            if (garage == null)
-            {
-                throw new Exception("This garage is not active");
-            }
+            var garage = await GetGarage(garageId);
+           var result= await CheckAvailableSlots(garage, customer);
+           await CurrentUnitOfWork.SaveChangesAsync();
 
-            if (garage.CurrnetCapicity == garage.MaxCapacity)
-            {
-                return await Task.FromResult(false);
-
-            }
-            return await Task.FromResult(true);
+            return result;
         }
     }
+
+    private async Task<bool> FreeSlots(Garage garage , Customer customer)
+    {
+        bool flag = false;
+        if ((customer == null || customer.CustomerCategory == Enums.CustomerCategoryStatus.Customer))
+        {
+                garage.CurrnetCapacityForCustomers--;
+            flag = true;
+
+        }
+        else if (customer.CustomerCategory == Enums.CustomerCategoryStatus.Employee) {
+
+            
+                garage.CurrnetCapacityEmployees--;
+            flag = true;
+
+
+        }
+        else
+        {
+            
+           garage.CurrnetCapacityForFree--;
+           flag = true;
+
+            
+
+        }
+
+          return await Task.FromResult(flag);
+        
+    }
+
+    private async Task<bool> CheckAvailableSlots(Garage garage , Customer customer)
+    {
+        bool flag = false;
+        if ((customer == null || customer.CustomerCategory == Enums.CustomerCategoryStatus.Customer))
+        {
+            if (garage.CurrnetCapacityForCustomers + 1 <= garage.MaxSlotsForCustomers)
+            {
+                garage.CurrnetCapacityForCustomers++;
+                flag = true;
+            }
+
+        }
+        else if (customer.CustomerCategory == Enums.CustomerCategoryStatus.Employee) {
+
+            if (garage.CurrnetCapacityEmployees + 1 <= garage.MaxSlotsForEmployess)
+            {
+                garage.CurrnetCapacityEmployees++;
+                flag = true;
+
+            }
+
+        }
+        else
+        {
+            if (garage.CurrnetCapacityForFree + 1 <= garage.MaxSlotsForFree)
+            {
+                garage.CurrnetCapacityForFree++;
+                flag = true;
+
+            }
+
+        }
+
+            return await Task.FromResult(flag);
+        
+    }
+
+
     private async Task<bool> HandleCamersExit(int garageId, int organizationId, CreateUpdateGarageTransactionDto GarageTransaction)
     {
+        bool flag = false;
         var EntranceTime = await FindEntranceTime(GarageTransaction.PlateNumber);
         if (EntranceTime is null)
         {
@@ -193,13 +280,15 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         int totalHours = CalcTime(EntranceTime.Value, GarageTransaction.AccurateTime.Value);
 
         var customer = await CheckCustomer(GarageTransaction.PlateNumber);
-
+        Customer exsitCustomer = null;
+        //has plate number 
         if (customer != null)
         {
-            Customer exsitCustomer = await GetCustomer(customer);
+             exsitCustomer = await GetCustomer(customer);
 
             int succes = await CheckActivePackageForCustomer(Guid.Parse(customer), organizationId);
-            if (succes == -1 && exsitCustomer.IsEmployee == false)
+
+            if (succes==-1)
             {
                 //Customer witouth Active Package
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
@@ -220,37 +309,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     CustomerArName = exsitCustomer.ArabicName,
                 };
                 await _invoiceAppService.CreateAsync(invoice);
-                return await Task.FromResult(false);
-
-            }
-            else if (exsitCustomer.IsEmployee == true && succes == -1)
-            {
-                var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice = new CreateUpdateInvoiceDto
-                {
-                    GarageId = garageId,
-                    InvoiceNumber = generatedInvoiceNumber,
-                    InvoicePrice = 0,
-                    InvoiceType = InvoiceType.UnPaid,
-                    OrganizationId = GarageTransaction.OrganizationID,
-                    TotalHours = totalHours,
-                    PlateNumber = GarageTransaction.PlateNumber,
-                    InvoiceTime = GarageTransaction.AccurateTime,
-                    EntranceTime = EntranceTime.Value,
-                    CustomerEnName = exsitCustomer.IdentityUser.Name,
-                    CustomerArName = exsitCustomer.ArabicName,
-                };
-                await _invoiceAppService.CreateAsync(invoice);
-                return await Task.FromResult(true);
-
+                flag = false;
             }
             else
             {
 
                 // customer with package
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                return await Task.FromResult(true);
+                flag = true;
             }
         }
         else
@@ -258,8 +324,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             if (GarageTransaction.PlateNumber == null)
             {
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                flag = false;
 
-                return await Task.FromResult(false);
             }
             else
             {
@@ -285,11 +351,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     CustomerArName = "ليس عميل",
                 };
                 await _invoiceAppService.CreateAsync(invoice);
-                return await Task.FromResult(false);
+                flag = false;
             }
 
         }
-
+        var garage =await GetGarage(garageId);
+        var result =await FreeSlots(garage, exsitCustomer);
+        return flag&&result;
     }
 
     private async Task<Customer> GetCustomer(string customer)

@@ -67,8 +67,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         try
 		{
 			var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
-
+            input.UserName = input.MobileNumber;
 			using (_dataFilter.Disable<IMultiTenant>())
+                
 			{
 				var user = await _userManager.FindByNameAsync(input.UserName); 
 				if (user != null)
