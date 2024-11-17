@@ -22,12 +22,18 @@ public partial class UpdateGarageDialog
     [Parameter]
     public  int UpdatedId { get; set; }
     private TimeSpan? _time = new TimeSpan();
-    protected override Task OnInitializedAsync()
+    private List<OrganizationDto> Organizations = new List<OrganizationDto>();
+    protected async override Task OnInitializedAsync()
     {
         _time = Garage.ClosingHours.ToTimeSpan();
         Console.WriteLine(_time);
+        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+        {
 
-        return base.OnInitializedAsync();
+            var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+            Organizations = result.Items.ToList();
+        }
+        
     }
 
     private async Task SubmitEdit()
@@ -87,4 +93,183 @@ public partial class UpdateGarageDialog
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
+    private string validateNumber(int value)
+    {
+        if (value < 0)
+            return "The value not valid.";
+        if (value > 9999)
+            return "The value not valid.";
+
+        return null; // No error
+    }
+    private void HandleMaxCapacityChange(int maxCapacity)
+    {
+        Garage.MaxCapacity = maxCapacity;
+
+        // Reset all slots to zero to start fresh
+        Garage.MaxSlotsForEmployess = 0;
+        Garage.MaxSlotsForCustomers = 0;
+        Garage.MaxSlotsForFree = 0;
+    }
+
+    private void HandleEmployeeSlotsChange(int maxSlotsForEmployees)
+    {
+        Garage.MaxSlotsForEmployess = maxSlotsForEmployees;
+        DistributeRemainingCapacity();
+    }
+
+    private void HandleCustomerSlotsChange(int maxSlotsForCustomers)
+    {
+        Garage.MaxSlotsForCustomers = maxSlotsForCustomers;
+        DistributeRemainingCapacity();
+    }
+
+    private void HandleFreeSlotsChange(int maxSlotsForFree)
+    {
+        Garage.MaxSlotsForFree = maxSlotsForFree;
+        DistributeRemainingCapacity();
+    }
+
+    private void DistributeRemainingCapacity()
+    {
+        int totalAllocated = Garage.MaxSlotsForEmployess
+                           + Garage.MaxSlotsForCustomers
+                           + Garage.MaxSlotsForFree;
+
+        int remainingCapacity = Garage.MaxCapacity - totalAllocated;
+
+        if (remainingCapacity < 0)
+        {
+            // If total slots exceed MaxCapacity, reset to prevent overflow
+            Garage.MaxSlotsForEmployess = 0;
+            Garage.MaxSlotsForCustomers = 0;
+            Garage.MaxSlotsForFree = 0;
+        }
+        else
+        {
+            // Distribute remaining slots dynamically
+            if (Garage.MaxSlotsForEmployess > 0)
+            {
+                if (Garage.MaxSlotsForCustomers > 0)
+                {
+                    if (Garage.MaxSlotsForFree > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            // If total slots exceed MaxCapacity, reset to prevent overflow
+                            Garage.MaxSlotsForEmployess = 0;
+                            Garage.MaxSlotsForCustomers = 0;
+                            Garage.MaxSlotsForFree = 0;
+                        }
+                    }
+                    else
+                    {
+                        Garage.MaxSlotsForFree = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForCustomers;
+
+                    }
+
+                }
+                else if (Garage.MaxSlotsForFree > 0)
+                {
+                    if (Garage.MaxSlotsForCustomers > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            Garage.MaxSlotsForEmployess = 0;
+                            Garage.MaxSlotsForCustomers = 0;
+                            Garage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+
+                        Garage.MaxSlotsForCustomers = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForFree;
+                    }
+
+                }
+            }
+            else if (Garage.MaxSlotsForCustomers > 0)
+            {
+                if (Garage.MaxSlotsForFree > 0)
+                {
+                    if (Garage.MaxSlotsForEmployess > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            Garage.MaxSlotsForEmployess = 0;
+                            Garage.MaxSlotsForCustomers = 0;
+                            Garage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+
+                        Garage.MaxSlotsForEmployess = Garage.MaxCapacity - Garage.MaxSlotsForCustomers - Garage.MaxSlotsForFree;
+                    }
+                }
+                else if (Garage.MaxSlotsForEmployess > 0)
+                {
+                    if (Garage.MaxSlotsForFree > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            Garage.MaxSlotsForEmployess = 0;
+                            Garage.MaxSlotsForCustomers = 0;
+                            Garage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+                        Garage.MaxSlotsForFree = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForCustomers;
+
+                    }
+
+                }
+            }
+            else if (Garage.MaxSlotsForFree > 0)
+            {
+                if (Garage.MaxSlotsForEmployess > 0)
+                {
+                    if (Garage.MaxSlotsForCustomers > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            Garage.MaxSlotsForEmployess = 0;
+                            Garage.MaxSlotsForCustomers = 0;
+                            Garage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+                        Garage.MaxSlotsForCustomers = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForFree;
+
+                    }
+                }
+                else if (Garage.MaxSlotsForCustomers > 0)
+                {
+                    if (Garage.MaxSlotsForEmployess > 0)
+                    {
+                        if (remainingCapacity < 0)
+                        {
+                            Garage.MaxSlotsForEmployess = 0;
+                            Garage.MaxSlotsForCustomers = 0;
+                            Garage.MaxSlotsForFree = 0;
+                        }
+
+                    }
+                    else
+                    {
+
+                        Garage.MaxSlotsForEmployess = Garage.MaxCapacity - Garage.MaxSlotsForFree - Garage.MaxSlotsForCustomers;
+                    }
+
+                }
+            }
+        }
+    }
+
 }

@@ -5,7 +5,12 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
+@inject ICurrentUser currrentUser
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IOrganizationsAppService OrganizationAppService
 @inject NavigationManager Navigation
 
 <PageTitle>@L["Update Garage"]</PageTitle>
@@ -16,79 +21,147 @@
             <MudText Typo="Typo.h6">@L["Edit"]</MudText>
         </TitleContent>
         <DialogContent>
-         
-                    <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
-                        <MudGrid>
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.NameEn"
-                                              For="@(() => Garage.NameEn)"
-                                              Required
-                                              Variant="Variant.Text"
-                                              Placeholder="@L["Type Here"]"
-                                              Class="w-100"
-                                              Label="@L["GarageNameEn"]" />
-                            </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.NameAr"
-                                              For="@(() => Garage.NameAr)"
-                                              Required
-                                              Variant="Variant.Text"
-                                              Placeholder="@L["Type Here"]"
-                                              Class="w-100"
-                                              Label="@L["GarageNameAr"]" />
-                            </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudNumericField @bind-Value="Garage.MaxCapacity"
-                                              For="@(() => Garage.MaxCapacity)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                              Required
-                                              Min="0"
-                                              Max="9999"
-                                              HideSpinButtons="true"
-                                              Immediate="true"
-                                              Placeholder="@L["Type Here"]" 
-                                              Label="@L["Garage Max Capacity"]" />
-                            </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.Code"
-                                              For="@(() => Garage.Code)"
-                                              Variant="Variant.Text"
-                                              ReadOnly="true"
-                                              Class="w-100"
-                                              Placeholder="@L["Type Here"]"
-                                              Label="@L["Garage Code"]"
-                                               />
-                            </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTimePicker @bind-Time="_time"
-                                               Editable="true"
-                                               Required
-                                               AmPm="true"
-                                               PickerVariant="PickerVariant.Dialog"
-                                               TimeFormat="h:mm tt"
-                                               Variant="Variant.Text"
-                                               Class="w-100"
-                                               Placeholder="@L["Type Here"]"
-                                               Label="@L["Closing Hours"]" />
-                            </MudItem>
 
-                            <MudItem sm="6" md="6">
-
-                                <MudRadioGroup @bind-Value="@Garage.Status" >
-                                    <div Class="d-flex flex-row justify-content-between">
+            <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
+                <MudGrid>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Garage.NameEn"
+                                      For="@(() => Garage.NameEn)"
+                                      Variant="Variant.Text"
+                                      Required
+                                      Class="w-100"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["EnGarageName"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Garage.NameAr"
+                                      For="@(() => Garage.NameAr)"
+                                      Variant="Variant.Text"
+                                      Required
+                                      Class="w-100"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["ArGarageName"]" />
+                    </MudItem>
+                    @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect T="int"
+                                       Variant="Variant.Text"
+                                       Label=@L["Organizations"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       @bind-Value="Garage.OrganizationId">
+                                <MudSelectItem Value="0"></MudSelectItem>
+                                @foreach (var organization in Organizations)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
 
 
-                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
-                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                                    </div>
-                                </MudRadioGroup>
-                            </MudItem>
-                            @*         </MudPaper>
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
 
-                            *@
-                        </MudGrid>
-                    </MudForm>
+
+
+                    }
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Garage.Code"
+                                      For="@(() => Garage.Code)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Placeholder="@L["Will Be Automatically Created"]"
+                                      Label="@L["Garage Code"]"
+                                      ReadOnly="true" />
+                    </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <MudNumericField For="@(() => Garage.MaxCapacity)"
+                                         Variant="Variant.Text"
+                                         Value="@Garage.MaxCapacity"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Garage Max Capacity"]"
+                                         ValueChanged="HandleMaxCapacityChange" />
+                    </MudItem>
+                    @* <MudItem sm="6" md="6">
+                        <MudNumericField Variant="Variant.Text"
+                                         Class="w-100"
+                                         T="int"
+                                        
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         Value="Garage.MaxSlotsForCustomers"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Customers"]"
+                                         ValueChanged="HandleCustomerSlotsChange" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="Garage.MaxSlotsForEmployess"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Employees"]"
+                                         ValueChanged="HandleEmployeeSlotsChange" />
+                    </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="Garage.MaxSlotsForFree"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Free"]"
+                                         ValueChanged="HandleFreeSlotsChange" />
+                    </MudItem> *@
+
+
+
+                    <MudItem sm="6" md="6">
+                        <MudTimePicker @bind-Time="_time"
+                                       @bind-Value="_time"
+                                       Required
+                                       AmPm="true"
+                                       PickerVariant="PickerVariant.Dialog"
+                                       TimeFormat="h:mm tt"
+                                       Variant="Variant.Text"
+                                       Class="w-100"
+                                       Placeholder="@L["Type Here"]"
+                                       Label="@L["Closing Hours"]" />
+                    </MudItem>
+
+
+
+
+                    <MudItem sm="9" md="9">
+
+
+                        <MudRadioGroup @bind-Value="@Garage.Status" Class="d-inline-flex align-content-center">
+                            <div class="d-flex flex-row justify-content-between">
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                            </div>
+                        </MudRadioGroup>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
               
         </DialogContent>
         <DialogActions>
