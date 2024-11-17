@@ -389,7 +389,7 @@
     "UnlimitedUsers": "Unlimited Users",
     "SaveAsDraft": "Save As Draft",
     "Address": "Address",
-    "GarageNameEn": "Garage Name",
+    "EnGarageName": "En Garage Name",
     "BuidlingNumber": "Buidling Number",
     "StreetName": "Street",
     "SecondaryNumber": "Secondary Number",
@@ -435,6 +435,7 @@
     "ArPlateNumber": "ArPlateNumber",
     "ArPlateLetter": "ArPlateLetter",
     "EnPlateNumber": "EnPlateNumber",
-    "EnPlateLetter": "EnPlateLetter"
+    "EnPlateLetter": "EnPlateLetter",
+    "ArGarageName": "Ar Garage Name"
   } 
 }
