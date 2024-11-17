@@ -289,8 +289,9 @@ public partial class MyAccount
     private async Task ViewSubscription()
     {
         var Org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+        int? subsId = Org.SubscriptionId;
 
-        var subscription = await SubscriptionAppService.GetAsync(Org.Id);
+        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId??0);
         //change it to garage.subscription
 
 
