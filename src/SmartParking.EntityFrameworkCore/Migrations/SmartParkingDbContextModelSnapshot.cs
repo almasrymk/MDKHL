@@ -88,8 +88,8 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BrandName")
-                        .HasColumnType("text");
+                    b.Property<int>("BrandName")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CameraIP")
                         .HasColumnType("text");
@@ -136,11 +136,11 @@ namespace SmartParking.Migrations
                     b.Property<string>("MacAddress")
                         .HasColumnType("text");
 
-                    b.Property<string>("MainType")
-                        .HasColumnType("text");
+                    b.Property<int>("MainType")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Model")
-                        .HasColumnType("text");
+                    b.Property<int>("Model")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
