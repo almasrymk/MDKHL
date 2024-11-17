@@ -33,7 +33,7 @@
                                               Required
                                               Class="w-100"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["GarageNameEn"]" />
+                                              Label="@L["EnGarageName"]" />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="createUpdateGarage.NameAr"
@@ -42,76 +42,7 @@
                                               Required
                                               Class="w-100"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["GarageNameAr"]" />
-                            </MudItem>
-                    <MudItem sm="12" md="12">
-                        <MudNumericField 
-                                         For="@(() => createUpdateGarage.MaxCapacity)"
-                                         Variant="Variant.Text"
-                                         Class="w-100"
-                                         Validation="@(new Func<int, string>(validateNumber))"
-                                         HideSpinButtons="true"
-                                         T="int"
-                                         Placeholder="@L["Type Here"]"
-                                         Label="@L["Garage Max Capacity"]"
-                                         ValueChanged="HandleMaxCapacityChange" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudNumericField Value="createUpdateGarage.MaxSlotsForEmployess"
-                                         Variant="Variant.Text"
-                                         Class="w-100"
-                                         Validation="@(new Func<int, string>(validateNumber))"
-                                         HideSpinButtons="true"
-                                         T="int"
-                                         Placeholder="@L["Type Here"]"
-                                         Label="@L["Max Slots For Employees"]"
-                                         ValueChanged="HandleEmployeeSlotsChange" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudNumericField 
-                                         Variant="Variant.Text"
-                                         Class="w-100"
-                                         T="int"
-                                          Validation="@(new Func<int, string>(validateNumber))"
-                                         HideSpinButtons="true"
-                                         Value="createUpdateGarage.MaxSlotsForCustomers"
-                                         Placeholder="@L["Type Here"]"
-                                         Label="@L["Max Slots For Customers"]"
-                                         ValueChanged="HandleCustomerSlotsChange" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudNumericField Value="createUpdateGarage.MaxSlotsForFree"
-                                         Variant="Variant.Text"
-                                         Class="w-100"
-                                         Validation="@(new Func<int, string>(validateNumber))"
-                                         HideSpinButtons="true"
-                                         T="int"
-                                         Placeholder="@L["Type Here"]"
-                                         Label="@L["Max Slots For Free"]"
-                                         ValueChanged="HandleFreeSlotsChange" />
-                    </MudItem>
-
-
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="createUpdateGarage.Code"
-                                              For="@(() => createUpdateGarage.Code)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                              Placeholder="@L["Will Be Automatically Created"]"
-                                              Label="@L["Garage Code"]"
-                                              ReadOnly="true" />
-                            </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTimePicker @bind-Time="_time"
-                                               @bind-Value="_time"
-                                               Required
-                                               AmPm="true" 
-                                               PickerVariant="PickerVariant.Dialog" 
-                                               TimeFormat="h:mm tt"
-                                               Variant="Variant.Text"
-                                               Class="w-100"
-                                               Placeholder="@L["Type Here"]"
-                                               Label="@L["Closing Hours"]" />
+                                              Label="@L["ArGarageName"]" />
                             </MudItem>
                     @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
                     {
@@ -141,10 +72,82 @@
                                 }
                             </MudSelect>
                         </MudItem>
-                    
-                    
-                    
+
+
+
                     }
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="createUpdateGarage.Code"
+                                      For="@(() => createUpdateGarage.Code)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Placeholder="@L["Will Be Automatically Created"]"
+                                      Label="@L["Garage Code"]"
+                                      ReadOnly="true" />
+                    </MudItem>
+
+                    <MudItem sm="12" md="12">
+                        <MudNumericField 
+                                         For="@(() => createUpdateGarage.MaxCapacity)"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Garage Max Capacity"]"
+                                         ValueChanged="HandleMaxCapacityChange" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Variant="Variant.Text"
+                                         Class="w-100"
+                                         T="int"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         Value="createUpdateGarage.MaxSlotsForCustomers"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Customers"]"
+                                         ValueChanged="HandleCustomerSlotsChange" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="createUpdateGarage.MaxSlotsForEmployess"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Employees"]"
+                                         ValueChanged="HandleEmployeeSlotsChange" />
+                    </MudItem>
+                   
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="createUpdateGarage.MaxSlotsForFree"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["Max Slots For Free"]"
+                                         ValueChanged="HandleFreeSlotsChange" />
+                    </MudItem>
+
+
+                           
+                            <MudItem sm="6" md="6">
+                                <MudTimePicker @bind-Time="_time"
+                                               @bind-Value="_time"
+                                               Required
+                                               AmPm="true" 
+                                               PickerVariant="PickerVariant.Dialog" 
+                                               TimeFormat="h:mm tt"
+                                               Variant="Variant.Text"
+                                               Class="w-100"
+                                               Placeholder="@L["Type Here"]"
+                                               Label="@L["Closing Hours"]" />
+                            </MudItem>
+                    
 
                     
 

@@ -288,7 +288,10 @@ public partial class Garage
             Status=garageDto.Status,
             MaxCapacity=garageDto.MaxCapacity,
             ClosingHours=garageDto.ClosingHours,
-            OrganizationId=garageDto.OrganizationId
+            OrganizationId=garageDto.OrganizationId,
+            MaxSlotsForCustomers = garageDto.MaxSlotsForCustomers,
+            MaxSlotsForEmployess = garageDto.MaxSlotsForEmployess,
+            MaxSlotsForFree = garageDto.MaxSlotsForFree,
         };
 
 
