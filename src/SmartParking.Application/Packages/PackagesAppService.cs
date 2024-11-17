@@ -9,6 +9,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
 using System;
@@ -39,12 +40,14 @@ public class PackagesAppService : CrudAppService<
 		private readonly IRepository<Package, int> _repository;
     private readonly IDataFilter _softDeleteFilter;
     private readonly IDataFilter _dataFilter;
+    private readonly IOrganizationsAppService _organizations;
 
-    public PackagesAppService(IRepository<Package, int> repository, IDataFilter softDeleteFilter,IDataFilter dataFilter) :base(repository)
+    public PackagesAppService(IRepository<Package, int> repository, IDataFilter softDeleteFilter,IDataFilter dataFilter,IOrganizationsAppService organizations) :base(repository)
     {
             _repository = repository;
             _softDeleteFilter = softDeleteFilter;
             _dataFilter = dataFilter;
+        this._organizations = organizations;
     }
 
 
@@ -195,11 +198,16 @@ public class PackagesAppService : CrudAppService<
 	///<inheritdoc/>
 	public async Task<List<PackageDto>> GetAllOrganizationAsync(CustomerCategoryStatus customerCategory)
 	{
+        var organization = await _organizations.GetOrganizationForCurrentTenat();
 		var queryable = await _repository.GetQueryableAsync();
-		queryable = queryable.Include(p => p.PackageType);
-		queryable = queryable.Where(x => x.CustomerCategory == customerCategory);
+        queryable = queryable.Include(p => p.PackageType);
+		queryable = queryable.Where(x => x.CustomerCategory == customerCategory && x.OrganizationId == organization.Id);
 		var totalCount = await AsyncExecuter.CountAsync(queryable);
-		var packages = await AsyncExecuter.ToListAsync(queryable);
+        List<Package> packages;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+             packages = await AsyncExecuter.ToListAsync(queryable);
+        }
 		var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
 
 		return packagesDto;

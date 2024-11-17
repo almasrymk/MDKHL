@@ -65,10 +65,15 @@ public class VehiclesAppService:
             
         }
         // LicenceType is plate type is found 
-        var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
+        LicenceType licenceType;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+             licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
+        }
+        
         if (licenceType == null)
         {
-            return Result<VehicleDto>.NotFound("licence type not found");
+            throw new InvalidOperationException("licence type not found");
 
         }
         var existingPlatNumber =await _repository.FirstOrDefaultAsync(x=>x.PlateNumber == input.PlateNumber);

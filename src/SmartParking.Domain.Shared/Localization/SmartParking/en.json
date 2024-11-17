@@ -431,7 +431,10 @@
     "SumOfParkingSlotsOfActiveGarage": "Sum Of Parking Slots Of Active Garage",
     "Total Garage Can be added": "Total Garage Can be added",
     "ActiveGarages": "Active Garages",
-    "Details for Employee": "Details for Employee",
-    "customer category": "customer category"
+    "customer category": "customer category",
+    "ArPlateNumber": "ArPlateNumber",
+    "ArPlateLetter": "ArPlateLetter",
+    "EnPlateNumber": "EnPlateNumber",
+    "EnPlateLetter": "EnPlateLetter"
   } 
 }

@@ -67,10 +67,6 @@ public partial class AddVehicleDialog
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
-            createUpdateVehicle.EnPlateLetters = EnPlateLetters;
-            createUpdateVehicle.EnPlateNumber = EnPlateNumber;
-            createUpdateVehicle.ArPlateLetters = ArPlateLetters;
-            createUpdateVehicle.ArPlateNumber  = ArPlateNumber;
 
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
