@@ -136,19 +136,24 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <returns>A task representing the asynchronous operation.</returns>
 	private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
 	{
-		customer.IdentityUser.Surname = input.FullName;
-		customer.IdentityUser.SetProperty("OtpCode", null);
-		customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
-		customer.IdentityUser.SetProperty("UserTypeId", 3);
-		customer.IdentityUser.SetProperty("TenantId", null);
-		customer.TenantId = null;
-		customer.IdentityUser.Name = input.FullName;
-		var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-		await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
-		if (!createdUser.Succeeded)
-		{
-			throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
-		}
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            customer.IdentityUser.Surname = input.FullName;
+            customer.IdentityUser.SetProperty("OtpCode", null);
+            customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
+            customer.IdentityUser.SetProperty("UserTypeId", 3);
+            customer.IdentityUser.SetProperty("TenantId", null);
+            customer.TenantId = null;
+            customer.IdentityUser.Name = input.FullName;
+
+            var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+            await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
+            if (!createdUser.Succeeded)
+            {
+                throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
+            }
+        }
+
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
 			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
