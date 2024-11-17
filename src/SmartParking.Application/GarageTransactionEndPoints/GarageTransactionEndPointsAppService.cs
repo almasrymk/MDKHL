@@ -176,12 +176,16 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     private async Task<Garage> GetGarage(int id)
     {
-        var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == id && x.Status == Status.Active);
-        if (garage == null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("This garage is not active");
+            var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == id && x.Status == Status.Active);
+            if (garage == null)
+            {
+                throw new Exception("This garage is not active");
+            }
+            return garage;
         }
-        return garage;
+       
     }
     
 
