@@ -8,9 +8,9 @@ public class CameraDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public string Model { get; set; }
-    public string MainType { get; set; }
-    public string BrandName { get; set; }
+    public CameraModel Model { get; set; }
+    public MainCameraType MainType { get; set; }
+    public CameraBrand BrandName { get; set; }
     public string DeviceId { get; set; }
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }
