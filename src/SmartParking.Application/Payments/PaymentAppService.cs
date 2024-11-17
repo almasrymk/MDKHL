@@ -183,7 +183,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
     public async Task<PaymentDto> GetPaymentStatus(string input, string entityId)
     {
-        var url = $"{PaymentUrl}/{input}/payment?entityId={EntityId}";
+        var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
 
         var response = await _httpClient.GetAsync(url);
