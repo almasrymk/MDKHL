@@ -185,13 +185,17 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
 
     public async Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId)
     {
-        var query = await _repository.GetQueryableAsync();
-        query = query.Where(m => m.VehiclesBrandId == brandId);
-        var models = await AsyncExecuter.ToListAsync(query);
-        if (models.Count == 0)
-            return Result<List<VehicleModelDto>>.NotFound();
-        var modelsMap = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
-        return Result<List<VehicleModelDto>>.Success(modelsMap);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(m => m.VehiclesBrandId == brandId);
+            var models = await AsyncExecuter.ToListAsync(query);
+            if (models.Count == 0)
+                return Result<List<VehicleModelDto>>.NotFound();
+            var modelsMap = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
+            return Result<List<VehicleModelDto>>.Success(modelsMap);
+        }
+        
     }
 
     public async Task<List<VehicleModelDto>> GetAllVehicleModelsAsync()
