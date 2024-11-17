@@ -31,6 +31,9 @@
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudTextField T="string" Label="@L["Contact Phone"]" @bind-Value="Customer.MobileNumber" Disabled="true" FullWidth="true" />
+                        </MudItem>                        
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" Label="@L["customer category"]" @bind-Value="Customer.CustomerCategory" Disabled="true" FullWidth="true" />
                         </MudItem>
                     </MudGrid>
                 </MudItem>
