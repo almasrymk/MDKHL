@@ -32,7 +32,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
     private const string EntityId = "8ac7a4ca9244f53c0192473d20e40315";
     private const string Currency = "SAR";
-    private const string PaymentType = "ReadyUI";
+    private const string PaymentType = "DB";
     private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
     private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
     private const string tokenType = "Bearer";
