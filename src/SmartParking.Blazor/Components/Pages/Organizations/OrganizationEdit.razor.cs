@@ -165,6 +165,7 @@ public partial class OrganizationEdit
             PostalCode = PostalCode,
             District = District,
             OrganizationPicture = OrganizationPicture,
+            Address = Address
         };
 
 

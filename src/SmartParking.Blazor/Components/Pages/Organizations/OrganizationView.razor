@@ -27,9 +27,7 @@
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Code" Label=@L["Code"] />
-                        </MudItem>
+                        
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Label=@L["ArabicName"] />
                         </MudItem>
@@ -43,7 +41,9 @@
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
-
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Code" Label=@L["Code"] />
+                        </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
                         <MudItem sm="4">
@@ -114,12 +114,28 @@
                             <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                            <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                        
                        
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true"
+                                          Variant="Variant.Text"
+                                          Label=@L["Country"]
+                                          @bind-Value="@CountryName">
+
+                            </MudTextField>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true"
+                                          Variant="Variant.Text"
+                                          Label=@L["Region"]
+                                          @bind-Value="@RegionName">
+                            </MudTextField>
+                        </MudItem>
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" 
                                 Variant="Variant.Text"
@@ -127,23 +143,8 @@
                                 @bind-Value="@StateName">
                             </MudTextField>
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField 
-                                ReadOnly="true"
-                                Variant="Variant.Text"
-                                Label=@L["Region"]
-                                @bind-Value="@RegionName">
-                            </MudTextField>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField 
-                                ReadOnly="true"
-                                Variant="Variant.Text"
-                                Label=@L["Country"]
-                                @bind-Value="@CountryName">
-                                
-                            </MudTextField>
-                        </MudItem>
+                       
+                      
                         <MudItem sm="4">
                             <MudTextField
                                 ReadOnly="true"
