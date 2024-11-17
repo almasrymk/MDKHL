@@ -22,7 +22,7 @@
                                               Class="w-100"
                                               ReadOnly="true"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["GarageNameEn"]"
+                                              Label="@L["EnGarageName"]"
                                                />
                             </MudItem>
                             <MudItem sm="6" md="6">
@@ -32,7 +32,7 @@
                                               Class="w-100"
                                               ReadOnly="true"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["GarageNameAr"]"
+                                              Label="@L["ArGarageName"]"
                                                />
                             </MudItem>
                             <MudItem sm="6" md="6">
@@ -56,6 +56,46 @@
                                       Immediate="true"
                                               Label="@L["Garage Code"]"
                                                />
+                             </MudItem>
+                           <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.MaxCapacity"
+                                      For="@(() => Garage.MaxCapacity)"
+                                              Variant="Variant.Text"
+                                              Placeholder="@L["Type Here"]"
+                                              Class="w-100"
+                                      ReadOnly="true"
+                                      Immediate="true"
+                                      Label="@L["Garage Max Capacity"]" />
+                            </MudItem>                           
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.MaxSlotsForCustomers"
+                                      For="@(() => Garage.MaxSlotsForCustomers)"
+                                              Variant="Variant.Text"
+                                              Placeholder="@L["Type Here"]"
+                                              Class="w-100"
+                                      ReadOnly="true"
+                                      Immediate="true"
+                                      Label="@L["Max Slots For Customers"]" />
+                            </MudItem>                           
+                            <MudItem sm="6" md="6">
+                                <MudTextField @bind-Value="Garage.MaxSlotsForEmployess"
+                                      For="@(() => Garage.MaxSlotsForEmployess)"
+                                              Variant="Variant.Text"
+                                              Placeholder="@L["Type Here"]"
+                                              Class="w-100"
+                                      ReadOnly="true"
+                                      Immediate="true"
+                                      Label="@L["Max Slots For Employees"]" />
+                            </MudItem>                          
+                            <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Garage.MaxSlotsForFree"
+                                      For="@(() => Garage.MaxSlotsForFree)"
+                                              Variant="Variant.Text"
+                                              Placeholder="@L["Type Here"]"
+                                              Class="w-100"
+                                      ReadOnly="true"
+                                      Immediate="true"
+                                      Label="@L["Max Slots For Free"]" />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="Garage.ClosingHours"
