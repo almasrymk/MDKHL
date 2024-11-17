@@ -25,14 +25,7 @@
 					
 
 
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.GarageId"
-									  For="@(() => Camera.GarageId)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["GarageId"]" />
-					</MudItem>
-
+				
 
 
 
@@ -81,6 +74,15 @@
 									  Disabled=true
 									  Label="@L["MacAddress"]" />
 					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.GarageId"
+									  For="@(() => Camera.GarageId)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["GarageId"]" />
+					</MudItem>
+
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="UpdatedId"
 									  For="@(() => UpdatedId)"

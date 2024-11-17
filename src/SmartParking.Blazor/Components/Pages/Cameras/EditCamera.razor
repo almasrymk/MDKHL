@@ -26,19 +26,92 @@
 
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-					@if (CultureInfo.CurrentCulture.Name == "en")
-					{
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@Camera.GarageId"
-								   Variant="Variant.Text"
-								   Label="@L["GarageNameEn"]"
-								   Placeholder="Choose">
-							@foreach (var garage in Garages)
+					
+
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Name"
+									  For="@(() => Camera.Name)"
+									  Immediate="true"
+									  Label="@L["Name"]" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.DeviceId"
+									  Immediate="true"
+									  Label="@L["Code"]" />
+					</MudItem>
+
+					<MudItem sm="4">
+
+
+						<MudSelect @bind-Value="Camera.Model"
+								   Label="@L["Model"]"
+								   Placeholder="@L["Choose"]"
+								   Variant="Variant.Text">
+							@foreach (var type in Enum.GetValues<CameraModel>())
 							{
-								<MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+								<MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
 							}
+
 						</MudSelect>
 					</MudItem>
+
+					<MudItem sm="4">
+
+
+						<MudSelect @bind-Value="Camera.MainType"
+								   Label="@L["MainType"]"
+								   Placeholder="@L["Choose"]"
+								   Variant="Variant.Text">
+							@foreach (var type in Enum.GetValues<MainCameraType>())
+							{
+								<MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+							}
+
+						</MudSelect>
+					</MudItem>
+					<MudItem sm="4">
+
+
+						<MudSelect @bind-Value="Camera.BrandName"
+								   Label="@L["BrandName"]"
+								   Placeholder="@L["Choose"]"
+								   Variant="Variant.Text">
+							@foreach (var type in Enum.GetValues<CameraBrand>())
+							{
+								<MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+							}
+
+						</MudSelect>
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.CameraIP"
+									  For="@(() => Camera.CameraIP)"
+									  Immediate="true"
+									  Label="@L["CameraIP"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.MacAddress"
+									  For="@(() => Camera.MacAddress)"
+									  Immediate="true"
+									  Label="@L["MacAddress"]" />
+					</MudItem>
+				
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@Camera.GarageId"
+									   Variant="Variant.Text"
+									   Label="@L["GarageNameEn"]"
+									   Placeholder="Choose">
+								@foreach (var garage in Garages)
+								{
+									<MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+								}
+							</MudSelect>
+						</MudItem>
 					}
 					else
 
@@ -48,8 +121,7 @@
 							<MudSelect @bind-Value="@Camera.GarageId"
 									   Variant="Variant.Text"
 									   Label="@L["GarageNameAr"]"
-									   Placeholder="Choose"
-									   >
+									   Placeholder="Choose">
 								@foreach (var garage in Garages)
 								{
 									<MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
@@ -66,51 +138,6 @@
 									  Label="@L["GarageId"]" />
 					</MudItem>
 
-
-
-
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Name"
-									  For="@(() => Camera.Name)"
-									  Immediate="true"
-									  Label="@L["Name"]" />
-					</MudItem>
-
-
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Model"
-									  For="@(() => Camera.Model)"
-									  Immediate="true"
-									  Label="@L["Model"]" />
-					</MudItem>
-					
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.DeviceId"
-									  Immediate="true"
-				
-									  Label="@L["Code"]" />
-					</MudItem>
-
-					
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.BrandName"
-									  For="@(() => Camera.BrandName)"
-									  Immediate="true"
-									  Label="@L["BrandName"]" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.CameraIP"
-									  For="@(() => Camera.CameraIP)"
-									  Immediate="true"
-									  Label="@L["CameraIP"]" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.MacAddress"
-									  For="@(() => Camera.MacAddress)"
-									  Immediate="true"
-									  Label="@L["MacAddress"]" />
-					</MudItem>
-				
 
 					<MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
 						<div Class="d-flex flex-row justify-content-between">
