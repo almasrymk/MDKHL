@@ -22,6 +22,17 @@
 
             <MudForm Class=" flex-grow-1 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
+
+                   <MudItem sm="6" Class="pt-0">
+                        <MudTextField @bind-Value="input.EnglishName"
+                                          For="@(() => input.EnglishName)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          Label="@L["EnglishName"]"
+                                          InputType="InputType.Text"
+                                          Required="true" />
+                   </MudItem>
                     <MudItem sm="6"
                              Class="pt-0">
                         <MudTextField @bind-Value="input.ArabicName"
@@ -30,17 +41,6 @@
                                       Variant="Variant.Text"
                                           Placeholder=@L["Type Here"]
                                           Label="@L["ArabicName"]"
-                                      InputType="InputType.Text"
-                                      Required="true" />
-                    </MudItem>
-
-                    <MudItem sm="6" Class="pt-0">
-                        <MudTextField @bind-Value="input.EnglishName"
-                                      For="@(() => input.EnglishName)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                          Placeholder=@L["Type Here"]
-                                          Label="@L["EnglishName"]"
                                       InputType="InputType.Text"
                                       Required="true" />
                     </MudItem>
@@ -78,6 +78,28 @@
                                           InputType="InputType.Number"
                                           Required="true" />
                         </MudItem>
+                        <MudItem sm="6">
+                            <MudNumericField T="int"
+                                             @bind-Value="@(BoundNumberOfParkingSlots=maximumNumberOfParkingSlots?UnlimitedMaximumNumber:BoundNumberOfParkingSlots)"
+                                             Immediate="true"
+                                             Variant="Variant.Text"
+                                             Placeholder=@L["Type Here"]
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="maximumNumberOfParkingSlots"
+                                             Required="maximumNumberOfParkingSlots"
+                                             Label="@L["ParkingSlot"]" />
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudTextField @bind-Value="input.SubscriptionSlotNumber"
+                                          For="@(() => input.SubscriptionSlotNumber)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          InputType="InputType.Number"
+                                          Label="@L["SubscriptionSlotNumber"]"
+                                          Required="true" />
+                        </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="input.SubscriptionDescription"
                                       For="@(() => input.SubscriptionDescription)"
@@ -88,37 +110,8 @@
                                       InputType="InputType.Text"
                                       Required="true" />
                     </MudItem>
-                   
-                    <MudItem sm="4">
-                        <MudDatePicker @bind-Date="_activateDate"
-                                       @bind-value="_activateDate"
-                                       Variant="Variant.Text"
-                                       Placeholder=@L["Will Be Generated Automatically"]
-                                       Label="@L["ActivationDate"]"
-                                       Disabled
-                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
-                                       ShowToolbar="false" />
-                    </MudItem>
-                    <MudItem sm="4">
-                        <MudDatePicker @bind-Date="_inActivateDate"
-                                       @bind-value="_inActivateDate"
-                                       Variant="Variant.Text"
-                                       Placeholder=@L["Will Be Generated Automatically"]
-                                       Label="@L["InActivationDate"]"
-                                       Disabled
-                                       ShowToolbar="false"
-                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
-                    </MudItem>
-                    <MudItem sm="4">
-                       <MudDatePicker @bind-Date="_creationDate"
-                                      @bind-value="_creationDate"
-                                       Variant="Variant.Text"
-                                       Placeholder=@L["Will Be Generated Automatically"]
-                                       Label="@L["CreationDate"]"
-                                       Disabled
-                                       ShowToolbar="false"
-                                       IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
-                    </MudItem>
+
+                     
                     <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="6">
                             <MudNumericField T="int"
@@ -207,46 +200,44 @@
                                        @bind-Value="maximumNumberOfUsers"
                                 Color="MudBlazor.Color.Primary" />
                         </MudItem>
-                        <MudItem sm="12">
-                            <MudNumericField 
-                               
-                                T="int"
-                                             @bind-Value="@(BoundNumberOfParkingSlots=maximumNumberOfParkingSlots?UnlimitedMaximumNumber:BoundNumberOfParkingSlots)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Placeholder=@L["Type Here"]
-                                          HideSpinButtons
-                                          Min="0"
-                                          Disabled="maximumNumberOfParkingSlots"
-                                          Required="maximumNumberOfParkingSlots"
-                                          Label="@L["ParkingSlot"]"
-                                           />
+
+                       
+
+                    <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+
+                        <MudItem sm="4">
+                            <MudDatePicker @bind-Date="_activateDate"
+                                           @bind-value="_activateDate"
+                                           Variant="Variant.Text"
+                                           Placeholder=@L["Will Be Generated Automatically"]
+                                           Label="@L["ActivationDate"]"
+                                           Disabled
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
+                                           ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudDatePicker @bind-Date="_inActivateDate"
+                                           @bind-value="_inActivateDate"
+                                           Variant="Variant.Text"
+                                           Placeholder=@L["Will Be Generated Automatically"]
+                                           Label="@L["InActivationDate"]"
+                                           Disabled
+                                           ShowToolbar="false"
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudDatePicker @bind-Date="_creationDate"
+                                           @bind-value="_creationDate"
+                                           Variant="Variant.Text"
+                                           Placeholder=@L["Will Be Generated Automatically"]
+                                           Label="@L["CreationDate"]"
+                                           Disabled
+                                           ShowToolbar="false"
+                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                         </MudItem>
 
 
-
-                        
-
-
-           
-                   
-                    
-                  
-                    <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="input.SubscriptionSlotNumber"
-                                      For="@(() => input.SubscriptionSlotNumber)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Number"
-                                      Label="@L["SubscriptionSlotNumber"]"
-                                      Required="true" />
-                    </MudItem>
-
-                        
-                </MudGrid>
+                    </MudGrid>
             </MudForm>
 
         </DialogContent>

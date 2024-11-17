@@ -436,6 +436,7 @@
     "ArPlateLetter": "ArPlateLetter",
     "EnPlateNumber": "EnPlateNumber",
     "EnPlateLetter": "EnPlateLetter",
-    "ArGarageName": "Ar Garage Name"
+    "ArGarageName": "Ar Garage Name",
+    "ParkingSlot": "Parking Slot"
   } 
 }
