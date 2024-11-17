@@ -152,10 +152,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             {
                 throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
             }
-        }
 
-		using (_dataFilter.Disable<IMultiTenant>())
-		{
 			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
 		}
 	}
