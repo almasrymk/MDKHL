@@ -99,7 +99,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     private void ValidateSlotCapacity(CreateUpdateGarageDto input)
     {
-        if (input.MaxCapacity < input.MaxSlotsForCustomers + input.MaxSlotsForEmployess + input.MaxSlotsForFree)
+        if (input.MaxCapacity != input.MaxSlotsForCustomers + input.MaxSlotsForEmployess + input.MaxSlotsForFree)
         {
             throw new Exception("Summation of slots is greater than maximum capacity !!");
         }
@@ -109,7 +109,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     private async Task<Subscription> CheckSubscriptionLimitsAsync(Organization organization, CreateUpdateGarageDto input)
     {
    
-            var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+            var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId&&x.Status==Enums.Status.Active);
             var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
 
             if (subscription == null || subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1 ||
