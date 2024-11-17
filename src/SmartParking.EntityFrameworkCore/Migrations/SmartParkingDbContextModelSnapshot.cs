@@ -1811,8 +1811,8 @@ namespace SmartParking.Migrations
                     b.Property<string>("EntityId")
                         .HasColumnType("text");
 
-                    b.Property<string>("InvoiceId")
-                        .HasColumnType("text");
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1831,8 +1831,8 @@ namespace SmartParking.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PackageId")
-                        .HasColumnType("text");
+                    b.Property<int?>("PackageId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("PaymentCategory")
                         .HasColumnType("integer");
