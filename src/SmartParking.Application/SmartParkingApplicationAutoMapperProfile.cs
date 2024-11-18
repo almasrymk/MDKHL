@@ -132,6 +132,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             
 
         CreateMap<Payment, PaymentDto>()
+        .ReverseMap();        
+        
+        CreateMap<Payment, PaymentResponseDto>()
         .ReverseMap();
         CreateMap<CreateUpdatePaymentDto, Payment>().ReverseMap();
 
