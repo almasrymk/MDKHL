@@ -49,11 +49,11 @@ public partial class Invoice
             filters = pageInfo.Filters
         };
         // Call the service to perform the search based on the input parameters
-        var regionDto = await AppService.Filter(input);
+        var invoiceDtos = await AppService.Filter(input);
 
         // Calculate the total number of pages required to display all results
-        TotalItem = (int)regionDto.TotalCount;
-        CreateTable(regionDto);
+        TotalItem = (int)invoiceDtos.TotalCount;
+        CreateTable(invoiceDtos);
 
 
     }
@@ -140,8 +140,8 @@ public partial class Invoice
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceNumber"], Name = "InvoiceNumber", IsFilterable = true, PropertyName = "InvoiceNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TotalHours"], Name = "TotalHours", IsFilterable = true, PropertyName = "TotalHours", IsSortable = true, TypeFilter = TypeFilter.Text }); 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = true, PropertyName = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TotalHours"], Name = "TotalHours", IsFilterable = false, PropertyName = "TotalHours", IsSortable = true, TypeFilter = TypeFilter.Number }); 
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = false, PropertyName = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = true, PropertyName = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyName = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         
