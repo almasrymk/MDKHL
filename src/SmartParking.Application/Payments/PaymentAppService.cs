@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
+using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
@@ -25,6 +26,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 {
     private readonly IRepository<Payment, Guid> _repository;
     private readonly IRepository<Customer, Guid> _customerRepo;
+    private readonly ICustomerPackagesAppService customerPackagesAppService;
     private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Package, int> _packageRepo;
@@ -46,6 +48,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public PaymentAppService(IRepository<Payment, Guid> repository,
         IRepository<Invoice, int> invoiceRepo, IRepository<Package, int> packageRepo,
         IRepository<Customer, Guid> customerRepo, IDataFilter dataFilter,
+        ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient)
     : base(repository)
@@ -53,6 +56,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         _repository = repository;
         _customerRepo = customerRepo;
+        this.customerPackagesAppService = customerPackagesAppService;
         organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
         _packageRepo = packageRepo;
@@ -214,7 +218,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 if (payment.PaymentCategory == PaymentCategory.Invoice)
                 {
 
-                    var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.PaymentCategoryId);
+                    var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
                     if (invoice != null)
                     {
                         invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
@@ -224,11 +228,15 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 else if (payment.PaymentCategory == PaymentCategory.Package)
                 {
 
-                    var package = await _packageRepo.FirstOrDefaultAsync(p => p.Id == payment.PaymentCategoryId);
-                    if (package != null)
+                    if (status == PaymentStatus.Success)
                     {
-                        package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
-                        await _packageRepo.UpdateAsync(package);
+                        //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
+                        //await _packageRepo.UpdateAsync(package);
+                        var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId, payment.CustomerId);
+                        if (!assignStatus)
+                        {
+                            throw new Exception("Can't assign package to customer");
+                        }
                     }
                 }
 
