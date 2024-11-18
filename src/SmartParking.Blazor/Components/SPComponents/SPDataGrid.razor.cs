@@ -111,7 +111,10 @@ public partial class SPDataGrid
         if(SelectedColumn.Contains("CameraType"))
             SelectOperator = new KeyValuePair<string, string>("CameraType", FilterValue);
 
-        if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
+		if (SelectedColumn.Contains("InvoiceType"))
+			SelectOperator = new KeyValuePair<string, string>("InvoiceType", FilterValue);
+
+		if (!SelectOperator.Key.IsNullOrEmpty()  && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
         {
             if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
                 IsNot = true;
