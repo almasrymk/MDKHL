@@ -39,6 +39,20 @@
                                       Label="@L["Code"]" />
                             </MudItem>
 
+                    <MudItem sm="4">
+
+
+                        <MudSelect @bind-Value="cameraDto.BrandName"
+                                   Label="@L["BrandName"]"
+                                   Placeholder="@L["Choose"]"
+                                   Variant="Variant.Text">
+                            @foreach (var type in Enum.GetValues<CameraBrand>())
+                            {
+                                <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+                            }
+
+                        </MudSelect>
+                    </MudItem>
 
                     <MudItem sm="4">
 
@@ -69,38 +83,8 @@
 
                             </MudSelect>
                     </MudItem>
-                    <MudItem sm="4">
-
-
-                        <MudSelect @bind-Value="cameraDto.BrandName"
-                                   Label="@L["BrandName"]"
-                                   Placeholder="@L["Choose"]"
-                                   Variant="Variant.Text">
-                            @foreach (var type in Enum.GetValues<CameraBrand>())
-                            {
-                                <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
-                            }
-
-                        </MudSelect>
-                    </MudItem>
-                          @*   <MudItem sm="4">
-                                <MudTextField @bind-Value="cameraDto.MainType"
-                                              For="@(() => cameraDto.MainType)"
-                                              Immediate="true"
-                                      Required
-                                      Placeholder="@L["MainType"]"
-                                      Label="@L["MainType"]" />
-                            </MudItem> *@
-                    
-                           @*  <MudItem sm="4">
-                                <MudTextField @bind-Value="cameraDto.BrandName"
-                                              For="@(() => cameraDto.BrandName)"
-                                              Immediate="true"
-                                      Required
-                                      Placeholder="@L["BrandName"]"
-                                      Label="@L["BrandName"]" />
-                            </MudItem> *@
-                          
+                  
+                         
                             <MudItem sm="6">
                        
                                  <MudTextField @bind-Value="cameraDto.CameraIP"
