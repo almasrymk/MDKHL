@@ -2,9 +2,7 @@
 using SmartParking.Enums;
 using SmartParking.Garages;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Modularity;
@@ -13,7 +11,7 @@ using Xunit;
 
 namespace SmartParking.Cameras;
 
-public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
+public abstract class CameraAppServiceTests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
 {
     private ICamerasAppService _cameraAppService;
@@ -21,8 +19,8 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
 
     protected CameraAppServiceTests()
     {
-        _cameraAppService=GetRequiredService<ICamerasAppService>();
-        _garagesAppService=GetRequiredService<IGarageAppService>();
+        _cameraAppService = GetRequiredService<ICamerasAppService>();
+        _garagesAppService = GetRequiredService<IGarageAppService>();
     }
     [Fact]
     public async Task Should_Get_List_of_Cameras()
@@ -37,21 +35,21 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
     public async Task Should_Create_A_Valid_Camera()
     {
         var garages = await _garagesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        var garage= garages.Items.First();
+        var garage = garages.Items.First();
 
 
         var result = await _cameraAppService.CreateAsync(
             new CreateUpdateCameraDto
             {
                 Name = "Camera1",                  // Valid Name
-                Model = CameraModel.PanasonicLumixZS200,                  // Valid Model
+                Model = CameraModel.PanasonicLumix,                  // Valid Model
                 MainType = MainCameraType.Action,                // Valid MainType
                 BrandName = CameraBrand.Panasonic,              // Valid BrandName
-				DeviceId = "C12345",                   // Valid Code
+                DeviceId = "C12345",                   // Valid Code
                 CameraIP = "192.168.1.100",        // Valid Camera IP
                 MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address
                 //Type = "Outdoor",                  // Valid Type
-                CameraType=CameraType.Exit,
+                CameraType = CameraType.Exit,
                 GarageId = garage.Id,                      // Valid Garage ID
                 Status = Status.Active,            // Valid Status
             });
@@ -71,10 +69,10 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
                 new CreateUpdateCameraDto
                 {
                     Name = string.Empty,  // Simulate missing Name
-                    Model = CameraModel.PanasonicLumixZS200,
+                    Model = CameraModel.PanasonicLumix,
                     MainType = MainCameraType.Action,
                     BrandName = CameraBrand.Panasonic,
-					DeviceId = "12345",
+                    DeviceId = "12345",
                     CameraIP = "192.168.1.1",
                     MacAddress = "00:1B:44:11:3A:B7",
                     //Type = "Indoor",
@@ -87,7 +85,7 @@ public abstract class  CameraAppServiceTests<TStartupModule> : SmartParkingAppli
 
         exception.ValidationErrors.ShouldContain(error => error.MemberNames.Contains(nameof(CreateUpdateCameraDto.Name)));
     }
-   
+
 
 
 }
