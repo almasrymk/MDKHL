@@ -463,7 +463,18 @@
     "ArPlateLetter": "حروف اللوحة بالعربية",
     "EnPlateNumber": "رقم اللوحة بالانجليزية",
     "EnPlateLetter": "حروف اللوحة بالانجليزية",
-    "ParkingSlot": "عدد أماكن الركن"
+    "ParkingSlot": "عدد أماكن الركن",
+    "TransactionType": "نوع الحركة",
+    "ParkingSlot": "عدد أماكن الركن",
+    "Payments": "المدفوعات",
+    "PackageName": "اسم الباقة",
+    "Currency": "العملة",
+    "Amount": "المجموع",
+    "PaymentCategory": "فئة الدفع",
+    "PaymentMethod": "طريقة الدفع",
+    "PaymentStatus": "حالة الدفع",
+    "CustomerName": "اسم العميل"
+
 
   }
 }

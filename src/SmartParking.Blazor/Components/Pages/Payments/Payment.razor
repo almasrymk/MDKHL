@@ -1,0 +1,16 @@
+﻿@page "/payments"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Payments
+@using Volo.Abp.MultiTenancy
+@inject ISnackbar Snackbar
+@inject IPaymentWebAppService PaymentWebAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+
+<PageTitle>@L["Payments"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Payments"]</MudText>
+
+<SPDataGrid PageName=@L["Payments"] Data="@itemData" OnSearching="HandleSearch" TotalItemsInTable="TotalItem" OnClickRowView="HandleView" OnPageChanged="FetchTableData"></SPDataGrid>

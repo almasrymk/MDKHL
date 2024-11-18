@@ -9,6 +9,9 @@ namespace SmartParking.Payments;
 
 public interface IPaymentWebAppService
 {
-    //Task<PaymentDto> GetListMdkhlAsync(PagedAndSortedResultRequestDto input);
-    Task<PaymentDto> GetListOrganizationAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<PaymentResponseDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input);
+    Task<PaymentGetResponseDto> GetMdkhlAsync(Guid paymentId);
+    Task<PagedResultDto<PaymentResponseDto>> GetListOrganizationAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<PaymentResponseDto>> SearchMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<PaymentResponseDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
 }

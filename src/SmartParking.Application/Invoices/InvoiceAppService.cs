@@ -75,15 +75,30 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     [Authorize]
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (CurrentTenant.Id == null)
+
+        var queryable = await _invoiceRepository.GetQueryableAsync();
+
+        if (!input.Sorting.IsNullOrEmpty())
         {
-            using (_dataFilter.Disable<IMultiTenant>())
+            // Determine if the sorting should be ascending or descending
+            if (input.Sorting.Contains("DESC"))
             {
-                return await base.GetListAsync(input);
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+
+                queryable = queryable.OrderBy(input.Sorting);
             }
         }
 
-        return await base.GetListAsync(input);
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var invoices = await base.GetListAsync(input);
+
+            return invoices;
+        }
     }
 
     [Authorize]
@@ -359,6 +374,20 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
         queryable = queryable.Where(t => t.TenantId == tenantId);
 
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            // Determine if the sorting should be ascending or descending
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+        }
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         var items = await AsyncExecuter.ToListAsync(
             queryable
@@ -367,9 +396,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         );
 
         // Map entities to DTOs
-        var transactionDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
+        var incoicesDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
 
         // Return paged result
-        return new PagedResultDto<InvoiceDto>(totalCount, transactionDtos);
+        return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
     }
 }
