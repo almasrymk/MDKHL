@@ -95,6 +95,11 @@ public partial class Invoice
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "InvoiceTime DESC";
+        else
+            sort = pageInfo.SortColumn;
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
@@ -104,8 +109,9 @@ public partial class Invoice
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = sort
         };
+
         if(CurrentTenant.Id !=null)
         {
             var tenantId = CurrentTenant.Id;
