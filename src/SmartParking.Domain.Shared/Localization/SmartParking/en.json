@@ -437,6 +437,14 @@
     "EnPlateNumber": "EnPlateNumber",
     "EnPlateLetter": "EnPlateLetter",
     "ArGarageName": "Ar Garage Name",
-    "ParkingSlot": "Parking Slot"
+    "ParkingSlot": "Parking Slot",
+    "Payments": "Payments",
+    "PackageName": "Package Name",
+    "Amount": "Amount",
+    "Currency": "Currency",
+    "PaymentCategory": "PaymentCategory",
+    "PaymentMethod": "PaymentMethod",
+    "PaymentStatus": "PaymentStatus",
+    "CustomerName": "CustomerName"
   } 
 }
