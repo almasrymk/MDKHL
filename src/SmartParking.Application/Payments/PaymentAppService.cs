@@ -188,6 +188,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentDto> GetPaymentStatus(string input, string entityId)
     {
         var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
+
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
 
         var response = await _httpClient.GetAsync(url);
@@ -204,6 +205,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 if (resultDescription.Contains("pending", StringComparison.OrdinalIgnoreCase))
                 {
                     status = PaymentStatus.Pending;
+                    return new PaymentDto
+                    {
+                        CheckoutId = input,
+                        PaymentStatus = status,
+                    };
                 }
                 else if (resultDescription.Contains("successfuly", StringComparison.OrdinalIgnoreCase))
                 {
@@ -232,7 +238,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     {
                         //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
                         //await _packageRepo.UpdateAsync(package);
-                        var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId, payment.CustomerId);
+                        var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
                         if (!assignStatus)
                         {
                             throw new Exception("Can't assign package to customer");
