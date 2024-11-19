@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Abp.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SmartParking.CustomerPackages;
@@ -11,6 +13,7 @@ using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Localization;
+using SmartParking.Packages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -286,35 +289,40 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
              exsitCustomer = await GetCustomer(customer);
 
-            int succes = await CheckActivePackageForCustomer(Guid.Parse(customer), organizationId);
+            var packageDto = await CheckActivePackageForCustomer(Guid.Parse(customer), organizationId);
 
-            if (succes==-1)
+
+            if (packageDto == null)
             {
                 //Customer witouth Active Package
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice = new CreateUpdateInvoiceDto
-                {
-                    GarageId = garageId,
-                    InvoiceNumber = generatedInvoiceNumber,
-                    InvoicePrice = price,
-                    InvoiceType = InvoiceType.UnPaid,
-                    OrganizationId = GarageTransaction.OrganizationID,
-                    TotalHours = totalHours,
-                    PlateNumber = GarageTransaction.PlateNumber,
-                    InvoiceTime = GarageTransaction.AccurateTime,
-                    EntranceTime = EntranceTime.Value,
-                    CustomerEnName = exsitCustomer.IdentityUser.Name,
-                    CustomerArName = exsitCustomer.ArabicName,
-                };
+                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.Now, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name); ;
                 await _invoiceAppService.CreateAsync(invoice);
                 flag = false;
             }
             else
             {
 
+
                 // customer with package
+                var THours = CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto) ;
+                if (THours > 0)
+                {
+
+                   var organization =await GetOrganization(GarageTransaction.OrganizationID);
+                   var price = THours * organization.AdditionalHourPrice;
+                   
+                   string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+                   var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, THours, GarageTransaction.PlateNumber, DateTime.Now, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name); ;
+                   await _invoiceAppService.CreateAsync(invoice);
+                    flag = false;
+                }
+
+
+
+
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 flag = true;
             }
@@ -329,27 +337,17 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
             else
             {
-                string customerName = _localizer["NotCustomer"];
+                string customerEnName = _localizer["NotCustomer"];
+                string customerArName = _localizer["NotCustomer"];
 
                 //Not Customer
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+                //create invoice
+                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, customerEnName, customerArName); ;
 
-                var invoice = new CreateUpdateInvoiceDto
-                {
-                    GarageId = garageId,
-                    InvoiceNumber = generatedInvoiceNumber,
-                    InvoicePrice = price,
-                    InvoiceType = InvoiceType.UnPaid,
-                    OrganizationId = GarageTransaction.OrganizationID,
-                    TotalHours = totalHours,
-                    PlateNumber = GarageTransaction.PlateNumber,
-                    InvoiceTime = GarageTransaction.AccurateTime,
-                    EntranceTime = EntranceTime.Value,
-                    CustomerEnName = "Not Customer",
-                    CustomerArName = "ليس عميل",
-                };
+
                 await _invoiceAppService.CreateAsync(invoice);
                 flag = false;
             }
@@ -360,13 +358,86 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return flag&&result;
     }
 
-    private async Task<Customer> GetCustomer(string customer)
+    private async Task<Customer> GetCustomer(string customerId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return await _customerRepoistory.GetAsync(c => c.Id == Guid.Parse(customer));
+            var query = await _customerRepoistory.GetQueryableAsync();
+            query=query.Include(x=>x.IdentityUser);
+            var customer =await query.FirstOrDefaultAsync(x=>x.Id==Guid.Parse(customerId));
+            return customer;
         }
 
+    }
+    private async Task<CreateUpdateInvoiceDto> CreateInvoice(int GarageId,string GeneratedInvoiceNumber ,decimal Price ,int OrganizationID 
+        ,int TotalHours ,string PlateNumber ,DateTime InvoiceTime , DateTime ?EntranceTime , string CustomerEnName , string CustomerArName)
+    {
+        var invoice = new CreateUpdateInvoiceDto
+        {
+            GarageId = GarageId,
+            InvoiceNumber = GeneratedInvoiceNumber,
+            InvoicePrice = Price,
+            InvoiceType = InvoiceType.UnPaid,
+            OrganizationId = OrganizationID,
+            TotalHours = TotalHours,
+            PlateNumber = PlateNumber,
+            InvoiceTime = InvoiceTime,
+            EntranceTime = EntranceTime,
+            CustomerEnName = CustomerEnName,
+            CustomerArName = CustomerArName,
+        };
+
+        return invoice;
+
+    }
+
+    private int CalculateTimeDependsOnPackage(DateTime ?EntranceTime , DateTime? ExitTime , CustomerPackageDto packageDto )
+    {
+        double totalHours = 0;
+        DateTime excludeStartTime = EntranceTime.Value.Date.AddHours(packageDto.Package.PublishFrom.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
+        DateTime excludeEndTime = EntranceTime.Value.Date.AddHours(packageDto.Package.PublishTo.Hour).AddMinutes(packageDto.Package.PublishTo.Minute);
+        //if entered before package starts
+        totalHours += excludeStartTime.Hour-EntranceTime.Value.Hour > 0 ? excludeStartTime.Hour - EntranceTime.Value.Hour + (excludeStartTime.Minute - EntranceTime.Value.Minute>0?1:0) : 0;
+
+        //enter after package start
+        if (totalHours == 0)
+        {
+
+            if (EntranceTime > excludeEndTime) {
+            
+                //if entered within package time 
+                //and leave after package ends
+               totalHours += ExitTime.Value.Hour - EntranceTime.Value.Hour > 0 ? ExitTime.Value.Hour - EntranceTime.Value.Hour  + (ExitTime.Value.Minute - EntranceTime.Value.Minute > 0 ? 1 : 0) : 0;
+            
+            }
+            else
+            {
+                if(ExitTime.Value.Hour> excludeEndTime.Hour)
+                {
+
+                    totalHours += (ExitTime.Value.Hour - excludeEndTime.Hour) > 0 ? (ExitTime.Value.Hour - excludeEndTime.Hour) : 0;
+                    //ceiling minutes to hours
+                    totalHours += ExitTime.Value.Minute - excludeEndTime.Minute > 0 ? 1 : 0;
+
+                }
+            }
+        }
+        else
+        {
+            if (ExitTime > excludeEndTime)
+            {
+                totalHours += ExitTime.Value.Hour - excludeEndTime.Hour > 0 ? ExitTime.Value.Hour - excludeEndTime.Hour + (ExitTime.Value.Minute - excludeEndTime.Minute > 0 ? 1 : 0) : 0;
+            }
+
+        }
+
+
+        var diffBetweenDates= ExitTime.Value.Subtract(EntranceTime.Value);
+        var tDays=diffBetweenDates.Days;
+        var totalHoursOutOfPackageInStaying=24-diffBetweenDates.Hours;
+        totalHours += tDays * totalHoursOutOfPackageInStaying;
+
+        return (int)Math.Ceiling(totalHours);
     }
 
     private async Task<Camera> GetCamera(string CameraCode)
@@ -377,6 +448,16 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.DeviceId == CameraCode);
 
             return camera;
+        }
+
+    }
+    private async Task<Organization> GetOrganization(int OrganizationID)
+    {
+
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+           var organization = await _organizationRepoistory.FindAsync(OrganizationID);
+            return organization;
         }
 
     }
@@ -409,34 +490,33 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var CustomerId = Customer.CustomerId;
         return CustomerId.ToString();
     }
-    private async Task<int> CheckActivePackageForCustomer(Guid customerId, int organizationId)
+    private async Task<CustomerPackageDto> CheckActivePackageForCustomer(Guid customerId, int organizationId)
     {
         var customerPackage = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrgIdAndCustomerId(organizationId, customerId);
         if (customerPackage == null)
         {
             _logger.LogError($"{DateTime.Now} ====>  customerPackage not found");
-            return -1;
+            return null;
             //return customerId.ToString();
         }
-        return customerPackage.Id;
+        return customerPackage;
     }
     private async Task<DateTime?> FindEntranceTime(string? plateNumber)
     {
         // Get the list of transactions for the provided plate number
-
-        List<GarageTransaction> query = new List<GarageTransaction>();
         using (DataFilter.Disable<IMultiTenant>())
         {
-            query = await _garageTransactionRepoistory.GetListAsync();
 
-        }
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+
 
         var latestTransaction = query
-                .Where(gt => gt.PlateNumber == null || gt.PlateNumber == plateNumber)
+                .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber)&&gt.CameraType==CameraType.Entry)
                 .OrderByDescending(gt => gt.AccurateTime) // or AccurateTime
                 .FirstOrDefault();
 
         return latestTransaction?.AccurateTime;
+        }
     }
     private int CalcTime(DateTime startTime, DateTime endTime)
     {
@@ -453,12 +533,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<Decimal> CalcInvoice(DateTime entrenceTime, int totalHours, CreateUpdateGarageTransactionDto garageTransaction)
     {
-        Organization organization = new Organization();
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            organization = await _organizationRepoistory.FindAsync(garageTransaction.OrganizationID);
-
-        }
+        var organization = await GetOrganization(garageTransaction.OrganizationID);       
         //4 Cases
         if (organization?.IsNumberOfHoursExceeded == false && organization.IsClose == false)
         {
@@ -518,29 +593,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private decimal calcPriceHours(Organization organization, int hours)
     {
         decimal price = 0;
-        if (hours == 1)
-        {
-            price += organization.FirstHourPrice;
-        }
-        else if (hours == 2)
-        {
-            price += organization.FirstHourPrice;
-            price += organization.SecondHourPrice;
-        }
-        else if (hours == 3)
-        {
-            price += organization.FirstHourPrice;
-            price += organization.SecondHourPrice;
-            price += organization.ThirdHourPrice;
-        }
-        else if (hours > 3)
-        {
-            price += organization.FirstHourPrice;
-            price += organization.SecondHourPrice;
-            price += organization.ThirdHourPrice;
-            hours -= 3;
-            price += hours * organization.AdditionalHourPrice;
-        }
+        hours--;
+        price += hours>0? organization.FirstHourPrice:0 ;
+        hours--;
+        price += hours>0?organization.SecondHourPrice:0;
+        hours--;
+        price += hours > 0 ? organization.ThirdHourPrice : 0;
+        price += (hours * organization.AdditionalHourPrice);
         return price;
     }
     public static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
