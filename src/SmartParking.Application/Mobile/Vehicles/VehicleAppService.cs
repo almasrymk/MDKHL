@@ -56,12 +56,12 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             // check plate number must include both plate letters and plate numbers, either in Arabic or English.
             if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
             {
-                mappedVehicle.PlateNumber = input.ArPlateNumber + input.ArPlateLetters;
+                mappedVehicle.PlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
 
             }
             else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
             {
-                mappedVehicle.PlateNumber = input.EnPlateNumber + input.EnPlateLetters;
+                mappedVehicle.PlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
             }
             else
             {
