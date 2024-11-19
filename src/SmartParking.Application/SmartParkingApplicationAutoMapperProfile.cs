@@ -133,9 +133,34 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<Payment, PaymentDto>()
         .ReverseMap();
+
+        CreateMap<Customer, CustomerDto>()
+            .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.IdentityUser.Name))
+            .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.IdentityUser.UserName))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.IdentityUser.NormalizedEmail))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.IdentityUser.Email))
+            .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.IdentityUser.PhoneNumber))
+            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.IdentityUser.UserName))
+            .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId))
+            .ForMember(dest => dest.identificationTypes, opt => opt.MapFrom(src => src.IdentificationTypes))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.CustomerCategory, opt => opt.MapFrom(src => src.CustomerCategory.ToString()))
+            .ForMember(dest => dest.OrganizationArabicName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.ArabicName).FirstOrDefault() ?? ""))
+            .ForMember(dest => dest.OrganizationEnglishName, s => s.MapFrom(o => o.CustomerPackages.Select(c => c.Organization.EnglishName).FirstOrDefault() ?? ""))
+            .ForMember(dest => dest.OrganizationId, s => s.MapFrom(o => o.CustomerPackages.Any() ? o.CustomerPackages.Select(c => c.Organization.Id).FirstOrDefault() : 0))
+            .ReverseMap();
+        CreateMap<Payment, PaymentResponseDto>()
+            .ForMember(d => d.PaymentCategory,s => s.MapFrom(o => o.PaymentCategory.ToString()))
+            .ForMember(d => d.PaymentMethod,s => s.MapFrom(o => o.PaymentMethod.ToString()))
+            .ForMember(d => d.PaymentStatus,s => s.MapFrom(o => o.PaymentStatus.ToString()))
+            .ForMember(d => d.Customers,s => s.MapFrom(o => o.Customers))
+            //.ForPath(d => d.Customers,s => s.MapFrom(o => o.Customers.ArabicName))
+        .ReverseMap();
+        CreateMap<Payment, PaymentGetResponseDto>();
         CreateMap<CreateUpdatePaymentDto, Payment>().ReverseMap();
 
         CreateMap<CreateUpdateInvoiceDto, Invoice>();
+
 
 
         CreateMap<Banner, BannerDto>();

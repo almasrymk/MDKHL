@@ -261,8 +261,11 @@ public partial class Garage
             NameEn = garageDto.NameEn,
             NameAr = garageDto.NameAr,
             OrganizationId = garageDto.OrganizationId,
-            Status = garageDto.Status
-		};
+            Status = garageDto.Status,
+            MaxSlotsForCustomers = garageDto.MaxSlotsForCustomers,
+            MaxSlotsForEmployess = garageDto.MaxSlotsForEmployess,
+            MaxSlotsForFree = garageDto.MaxSlotsForFree,
+        };
 
 
 

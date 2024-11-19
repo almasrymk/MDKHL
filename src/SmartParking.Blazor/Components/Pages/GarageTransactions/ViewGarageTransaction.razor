@@ -27,7 +27,7 @@
 									  For="@(() => GarageTransaction.CameraType)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["Type"]" />
+									  Label="@L["TransactionType"]" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
@@ -82,10 +82,22 @@
 									  Label="@L["cameraCode"]" />
 					</MudItem>
 
+					@* <MudItem sm="12" md="12" class="d-flex justify-center">
+						<div class="zoom-container">
+							<MudImage Class="zoom-image" Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
+						</div>
+					</MudItem> *@
 					<MudItem sm="12" md="12" class="d-flex justify-center">
-						<MudImage Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
+						<div class="zoom-container"
+							 @onmousemove="SetZoomOrigin"
+							 @onmouseleave="ResetZoom">
+							<img src="@GarageTransaction.VehiclePicture"
+								 alt="Vehicle Image"
+								 style="transform-origin: @TransformOrigin; transform: @Scale;" />
+						</div>
 					</MudItem>
-
+						
+					
 				</MudGrid>
 			</MudForm>
 
@@ -102,9 +114,27 @@
 </div>
 
 <style>
-	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	.zoom-container 
+	{
+		position: relative;
+		display: inline-block;
+		overflow: hidden;
+		width: 400px; /* Container width */
+		height: 300px; /* Container height */
+		cursor: zoom-in;
 	}
+
+		.zoom-container img 
+		{
+			width: 100%;
+			height: 100%;
+			transition: transform 0.3s ease, transform-origin 0.3s ease;
+			transform: scale(1);
+		}
+
+		.zoom-container:hover img {
+			transform: scale(2); /* Adjust the scale for zoom level */
+		}
 </style>
 
 @code {
@@ -116,6 +146,25 @@
 	string GarageName = "";
 	bool _clearable;
 	private MudForm form;
+
+	private string TransformOrigin { get; set; } = "center center";
+	private string Scale { get; set; } = "scale(1)";
+
+	private void SetZoomOrigin(MouseEventArgs e)
+	{
+		// Calculate the position of the mouse relative to the container
+		double xPercent = e.OffsetX / 400 * 100; // 400 is the container width
+		double yPercent = e.OffsetY / 300 * 100; // 300 is the container height
+
+		TransformOrigin = $"{xPercent}% {yPercent}%";
+		Scale = "scale(2)"; // Zoom level when hovered
+	}
+
+	private void ResetZoom(MouseEventArgs e)
+	{
+		TransformOrigin = "center center";
+		Scale = "scale(1)"; // Reset zoom when mouse leaves
+	}
 
 	protected override async Task OnInitializedAsync()
 	{

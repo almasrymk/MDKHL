@@ -1,14 +1,9 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using SmartParking.Entities.Lookups.VehiclesLookups;
-using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
-using SmartParking.Mobile.Vehicles;
-using SmartParking.Results;
 using System;
-
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -16,7 +11,6 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 namespace SmartParking.Vehicles;
 
@@ -52,12 +46,12 @@ public class VehiclesAppService:
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
         if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
         {
-            input.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
+            input.PlateNumber =  input.ArPlateNumber.Replace(" ",string.Empty) + input.ArPlateLetters.Replace(" ",string.Empty);
 
         }
         else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
         {
-            input.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
+            input.PlateNumber =  input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ",string.Empty);
         }
         else
         {

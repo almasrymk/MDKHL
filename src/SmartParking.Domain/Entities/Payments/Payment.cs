@@ -9,8 +9,8 @@ public class Payment : FullAuditedEntity<Guid>
 {
     public int OrganizationId { get; set; }
     public string? EntityId { get; set; }
-    public string? InvoiceId { get; set; }
-    public string? PackageId { get; set; }
+    public int? InvoiceId { get; set; }
+    public int? PackageId { get; set; }
     public string? CheckoutId { get; set; }
     public Guid CustomerId { get; set; }
 

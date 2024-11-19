@@ -88,8 +88,8 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BrandName")
-                        .HasColumnType("text");
+                    b.Property<int>("BrandName")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CameraIP")
                         .HasColumnType("text");
@@ -136,11 +136,11 @@ namespace SmartParking.Migrations
                     b.Property<string>("MacAddress")
                         .HasColumnType("text");
 
-                    b.Property<string>("MainType")
-                        .HasColumnType("text");
+                    b.Property<int>("MainType")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Model")
-                        .HasColumnType("text");
+                    b.Property<int>("Model")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -1811,8 +1811,8 @@ namespace SmartParking.Migrations
                     b.Property<string>("EntityId")
                         .HasColumnType("text");
 
-                    b.Property<string>("InvoiceId")
-                        .HasColumnType("text");
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1831,8 +1831,8 @@ namespace SmartParking.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PackageId")
-                        .HasColumnType("text");
+                    b.Property<int?>("PackageId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("PaymentCategory")
                         .HasColumnType("integer");

@@ -170,7 +170,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
 			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id) && !x.IsEmployee);
-			var totalCount = await AsyncExecuter.CountAsync(query);
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    query = query.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    query = query.OrderBy(input.Sorting);
+                }
+
+            }
+            var totalCount = await AsyncExecuter.CountAsync(query);
 
 			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
 			var customers = await AsyncExecuter.ToListAsync(query);
@@ -190,8 +203,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 			var query = await _repository.GetQueryableAsync();
 			query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-			query = query.Where(x => !x.IsEmployee);
-			var totalCount = await AsyncExecuter.CountAsync(query);
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    query = query.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    query = query.OrderBy(input.Sorting);
+                }
+
+            }
+            var totalCount = await AsyncExecuter.CountAsync(query);
 			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
 			var customers = await AsyncExecuter.ToListAsync(query);
 			var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
@@ -228,7 +253,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = queryable.Include(x => x.IdentityUser);
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
-            queryable = queryable.Where(c => !c.IsEmployee);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
@@ -272,7 +296,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(x => x.IdentityUser);
-            queryable = queryable.Where(c => !c.IsEmployee);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
@@ -324,7 +347,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
 
-            queryable = queryable.Where(c => !c.IsEmployee);
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
@@ -371,7 +393,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
 
 
-            queryable = queryable.Where(c => !c.IsEmployee);
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
