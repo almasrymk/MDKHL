@@ -361,7 +361,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var garage =await GetGarage(garageId);
         var result =await FreeSlots(garage, exsitCustomer);
-        return flag&&result;
+        return flag;
     }
 
     private async Task<Customer> GetCustomer(string customerId)
