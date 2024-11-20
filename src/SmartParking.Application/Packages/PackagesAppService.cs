@@ -1,10 +1,7 @@
 ﻿
-using AutoMapper.Internal.Mappers;
+using Abp.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.Bases;
-using SmartParking.Cameras;
-using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -12,19 +9,16 @@ using SmartParking.Garages;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.DefaultPackages;
 
@@ -165,6 +159,20 @@ public class PackagesAppService : CrudAppService<
 			queryable = queryable.Include(p => p.PackageType);
 
             queryable = queryable.Where( p => p.TenantId == CurrentTenant.Id);
+
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
             queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);

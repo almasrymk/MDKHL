@@ -165,12 +165,12 @@ public partial class Camera
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraName"], Name = "CameraName", IsFilterable = false, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "GarageNameEn", IsFilterable = false, PropertyName = "Garage.NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnGarageName"], Name = "NameEn", IsFilterable = false, PropertyName = "Garage.NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
         else
         {
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameAr"], Name = "GarageNameAr", IsFilterable = false, PropertyName = "Garage.NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "NameAr", IsFilterable = false, PropertyName = "Garage.NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = false, PropertyName = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -187,11 +187,11 @@ public partial class Camera
             {
                 if (CultureInfo.CurrentCulture.Name == "en")
                 {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameEn"], item.Garage.NameEn));
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnGarageName"], item.Garage.NameEn));
                 }
                 else
                 {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameAr"], item.Garage.NameAr));
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArGarageName"], item.Garage.NameAr));
 
 
                 }
