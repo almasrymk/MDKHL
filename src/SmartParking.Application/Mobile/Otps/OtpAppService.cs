@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using iText.Kernel.XMP.Options;
+using iText.Signatures;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -9,7 +11,10 @@ using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -24,16 +29,20 @@ public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly Random _random;
     private const int OtpLength = 4;
-    private const int OtpValiditySecounds = 40;
+    private const int OtpValiditySecounds = 60;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private readonly IOptionsMonitor<OpenIddictServerOptions> _openIddictOptions;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly HttpClient _httpClient;
+    private readonly TaqnyatSmsOptionsDto _options;
 
     public OtpAppService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
         UserManager<Volo.Abp.Identity.IdentityUser> userManager,
         IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
-        IHttpContextAccessor httpContext
+        IHttpContextAccessor httpContext,
+      IOptions<TaqnyatSmsOptionsDto> options,
+      HttpClient httpClient 
         )
     {
         //_userManager = userManager;
@@ -42,6 +51,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
         _openIddictOptions = openIddictOptions;
         _userManager = userManager;
         _httpContext = httpContext;
+        _options = options.Value;
+        _httpClient = httpClient;
     }
 
     /// <inheritdoc/>
@@ -65,14 +76,17 @@ public class OtpAppService : ApplicationService, IOtpAppService
                 });
             }
 
-            var otp = "1234"; // call GenerateRandomOtp function   
+            var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
+
             user?.SetProperty("OtpCode", otp);
+
             user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
 
+            await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " +  otp);
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
 
-            return Result.Success(otp,"Otp Generated Successfully");
+            return Result.Success(" رمز التحقق لدخول نظام مدخل هو" +  otp);
         }
         catch(Exception ex) 
         {
@@ -222,5 +236,30 @@ public class OtpAppService : ApplicationService, IOtpAppService
         var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
 
         return accessToken;
+    }
+
+    /// <summary>
+    /// function that send sms 
+    /// </summary>
+    /// <param name="phoneNumber">phoneNumber of user</param>
+    /// <param name="message">messgae that need to send</param>
+    /// <returns>bool</returns>
+    private async Task<bool> SendSms(string phoneNumber, string message)
+    {
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ApiKey}");
+
+        var payload = new
+        {
+            recipients = new[] { phoneNumber },
+            body = message,
+            sender = _options.SenderName
+        };
+
+        var jsonPayload = JsonSerializer.Serialize(payload);
+
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync(_options.ApiUrl, content);
+
+        return response.IsSuccessStatusCode;
     }
 }
