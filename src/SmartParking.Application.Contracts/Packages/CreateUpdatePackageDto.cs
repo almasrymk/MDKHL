@@ -20,6 +20,6 @@ namespace SmartParking.Packages
         // public  Organization Organization { get; set; }
         public CustomerCategoryStatus CustomerCategory { get; set; }
         public int OrganizationId { get; set; }
-        public Status Status { get; set; }
+        public SubscriptionStatus PackageStatus { get; set; }
     }
 }

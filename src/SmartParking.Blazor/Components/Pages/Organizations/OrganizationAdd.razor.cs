@@ -54,8 +54,7 @@ public partial class OrganizationAdd
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
-    public string Photo { get; set; }
-
+    public string OrganizationPicture { get; set; } 
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
     public int NumberOfUsers { get; set; }
@@ -200,7 +199,7 @@ public partial class OrganizationAdd
             BuildingNumber = BuildingNumber,
             PostalCode = PostalCode,
             SecondaryNumber = SecondaryNumber,
-            OrganizationPicture = Photo??null
+            OrganizationPicture = OrganizationPicture
 
         };
        
@@ -256,42 +255,41 @@ public partial class OrganizationAdd
         if (imageFile != null)
         {
             // Save the image and get the file path
-            Photo = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
             StateHasChanged();
         }
     }
     private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
-	{
-		// Ensure directory structure
-		var imageDirectoryPath = CreateImageDirectory();
+    {
+        // Ensure directory structure
+        var imageDirectoryPath = CreateImageDirectory();
 
-		// Generate a unique file name with the original file extension
-		string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
-		string fullPath = Path.Combine(imageDirectoryPath, fileName);
+        // Generate a unique file name with the original file extension
+        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
+        string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
-		// Save the image to the specified path
-		using (var fileStream = new FileStream(fullPath, FileMode.Create))
-		{
-			// Copy the image data from the IBrowserFile stream to the file stream
-			await imageFile.OpenReadStream().CopyToAsync(fileStream);
-		}
+        // Save the image to the specified path
+        using (var fileStream = new FileStream(fullPath, FileMode.Create))
+        {
+            // Copy the image data from the IBrowserFile stream to the file stream
+            await imageFile.OpenReadStream().CopyToAsync(fileStream);
+        }
 
-		// Return the relative path for storing in the database
-		return $"images/OrganizationImages/{fileName}";
-	}
+        // Return the relative path for storing in the database
+        return $"/OrganizationImages/{fileName}";
+    }
+    private string CreateImageDirectory()
+    {
+        // Define the path where the image will be saved
+        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
 
-	private string CreateImageDirectory()
-	{
-		// Define the path where the image will be saved
-		string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
-
-		// Ensure the directory exists
-		if (!Directory.Exists(imageDirectoryPath))
-		{
-			Directory.CreateDirectory(imageDirectoryPath);
-		}
-		return imageDirectoryPath;
-	}
+        // Ensure the directory exists
+        if (!Directory.Exists(imageDirectoryPath))
+        {
+            Directory.CreateDirectory(imageDirectoryPath);
+        }
+        return imageDirectoryPath;
+    }
     private string ValidateSecondaryNumber(int value)
     {
         if (value < 1111)

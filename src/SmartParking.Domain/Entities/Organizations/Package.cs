@@ -23,7 +23,7 @@ public class Package : BaseEntity
     public DateTime DectivationDate { get; set; }
     public string DeactivatedBy { get; set; }
     public int OrganizationId { get; set; }
-    public Status Status { get; set; }
+    public SubscriptionStatus PackageStatus { get; set; } = SubscriptionStatus.Draft;
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
 
     public virtual Organization Organization { get; set; }

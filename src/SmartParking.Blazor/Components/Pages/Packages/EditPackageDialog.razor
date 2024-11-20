@@ -2,6 +2,7 @@
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Packages
+@using System.Globalization
 @using Volo.Abp.Validation
 @inject IPackagesAppService PackagesAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -12,8 +13,17 @@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-            <MudText Typo="Typo.h6">@L["Edit"] @Package.EnglishName</MudText>
-		</TitleContent>
+            @if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                <MudText Typo="Typo.h6">@L["Edit"] @Package.EnglishName</MudText>
+
+            }
+            else
+            {
+                <MudText Typo="Typo.h6">@L["Edit"] @Package.ArabicName</MudText>
+
+            }
+        </TitleContent>
 		<DialogContent>
 
 
@@ -53,16 +63,7 @@
                                       Disabled='true'
                                       Label="@L["OrgnizationId"]" />
                     </MudItem>
-@* 
-                    <MudItem sm="4" md="4">
-                        <MudTextField @bind-Value="Package.PackageType.EnglishName"
-                                      For="@(() => Package.PackageType.EnglishName)"
-                                      Variant="Variant.Text"
-                                      Class="w-100"
-                                      Disabled='true'
-                                      Label="@L["PackageTypeEnglishName"]" />
-                    </MudItem> *@
-
+                  
                     <MudItem sm="4" md="4">
                         <MudTimePicker Variant="Variant.Text"
                                        Class="w-100"
@@ -113,9 +114,9 @@
 
                     <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
-                            <MudRadioGroup @bind-Value="@Package.Status" Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
-                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                            <MudRadioGroup @bind-Value="@Package.PackageStatus" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
                             </MudRadioGroup>
                         </div>
                     </MudItem>
@@ -186,7 +187,7 @@
             Snackbar.Add(successedMessage, Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
-            Navigation.NavigateTo("/packages", true);
+            Navigation.NavigateTo("/packages", forceLoad: true);
         }
         catch (AbpValidationException ex)
         {

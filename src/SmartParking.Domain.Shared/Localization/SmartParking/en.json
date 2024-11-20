@@ -407,7 +407,7 @@
     "CustomerEnName": "Customer En Name",
     "AddSubscriptionTypes": "Add Subscription Type",
     "NewSubscriptionType": "New Subscription Type",
-    "Return": "Return",
+    "Return": "Cancel",
     "Type": "Subscription Type",
     "UnLinkedTransaction": "Un Linked Transaction",
     "DeviceId": "Device Id",
@@ -439,7 +439,6 @@
     "ArGarageName": "Ar Garage Name",
     "ParkingSlot": "Parking Slot",
     "TransactionType": "Transaction Type",
-    "ParkingSlot": "Parking Slot",
     "Payments": "Payments",
     "PackageName": "Package Name",
     "Amount": "Amount",
@@ -447,6 +446,7 @@
     "PaymentCategory": "PaymentCategory",
     "PaymentMethod": "PaymentMethod",
     "PaymentStatus": "PaymentStatus",
-    "CustomerName": "CustomerName"
+    "CustomerName": "CustomerName",
+    "RegionName": "Region"
   } 
 }

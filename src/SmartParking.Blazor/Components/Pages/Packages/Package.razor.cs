@@ -1,23 +1,16 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.Cameras;
-using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;
-using SmartParking.Vehicles.LookUps;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.MultiTenancy;
-using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Packages;
 
@@ -149,9 +142,8 @@ public partial class Package
 
 		}
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = true, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Description"], Name = "Description", IsFilterable = true, PropertyName = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = true, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "PackageStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         foreach (var item in packages.Items)
@@ -171,9 +163,8 @@ public partial class Package
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeArabicName"], item.PackageType.ArabicName));
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Description"], item.Description));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.published.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.PackageStatus.ToString()}"]));
 
 
 			tableData.Rows.Add(rowDef);
@@ -204,9 +195,8 @@ public partial class Package
 			published = packageDto.published,
 			PublishFrom = packageDto.PublishFrom,
 			PublishTo = packageDto.PublishTo,
-			Status = packageDto.Status,
+			PackageStatus = packageDto.PackageStatus,
 			PackageType=packageDto.PackageType,
-			//Organization=packageDto.Organization,
 			CustomerCategory = packageDto.CustomerCategory
 
 		};
@@ -243,9 +233,8 @@ public partial class Package
             published = packageDto.published,
             PublishFrom = packageDto.PublishFrom,
             PublishTo = packageDto.PublishTo,
-            Status = packageDto.Status,
+            PackageStatus = packageDto.PackageStatus,
             PackageType = packageDto.PackageType,
-           // Organization = packageDto.Organization,
 		   CustomerCategory = packageDto.CustomerCategory
 
         };
