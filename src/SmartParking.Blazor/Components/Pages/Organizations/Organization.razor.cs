@@ -215,8 +215,8 @@ public partial class Organization
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionName"], Name = "RegionName", IsFilterable = true, PropertyName = "Region.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Garage Max Capacity"], Name = "Garage Max Capacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlots"], Name = "ParkingSlots", IsFilterable = true,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumOfGarages"], Name = "NumOfGarages", IsFilterable = true, IsSortable = true,PropertyName= "Subscription.NumbersOfGarages", TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         foreach (var item in organizations.Items)
@@ -241,8 +241,8 @@ public partial class Organization
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionName"], item.RegionNameAr));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.NumbersOfGarages.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Garage Max Capacity"], item.ParkingSlots.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlots"], item.NumbersOfGarages.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumOfGarages"], item.ParkingSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Num Of Cameras"], item.NumberOfCameras.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 

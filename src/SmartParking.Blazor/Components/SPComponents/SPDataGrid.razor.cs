@@ -106,13 +106,17 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if (SelectedColumn.Contains("Status")  )
-            SelectOperator = new KeyValuePair<string, string>("Status", FilterValue);
-        if(SelectedColumn.Contains("CameraType"))
-            SelectOperator = new KeyValuePair<string, string>("CameraType", FilterValue);
+        if(Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number || Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
+        {
+            SelectOperator = new KeyValuePair<string, string>(SelectedColumn, FilterValue);
+        }
+          //if (SelectedColumn.Contains("Status")  )
+          //SelectOperator = new KeyValuePair<string, string>("Status", FilterValue);
+          //if(SelectedColumn.Contains("CameraType"))
+          //SelectOperator = new KeyValuePair<string, string>("CameraType", FilterValue);
 
-		if (SelectedColumn.Contains("InvoiceType"))
-			SelectOperator = new KeyValuePair<string, string>("InvoiceType", FilterValue);
+		//if (SelectedColumn.Contains("InvoiceType"))
+		//	SelectOperator = new KeyValuePair<string, string>("InvoiceType", FilterValue);
 
 		if (!SelectOperator.Key.IsNullOrEmpty()  && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
         {
