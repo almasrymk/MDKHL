@@ -377,7 +377,7 @@ img[style*='width:120px;'] {
             throw new EntityNotFoundException(typeof(Invoice),InvoiceId);
         }
         string fileName = $"{InvoiceId}.{"pdf"}";
-        string fullPath = "wwwroot/invoice/PDFs/"+ fileName;
+        string fullPath = "invoice/PDFs/"+ fileName;
 
         return fullPath;
 
