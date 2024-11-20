@@ -10,6 +10,9 @@ using iText.Html2pdf;
 using iText.Kernel.Pdf;
 using iText.Layout.Font;
 using iText.Html2pdf.Css.Apply.Impl;
+using Volo.Abp.Domain.Entities;
+using Volo.Abp;
+using RemoteServiceAttribute = Volo.Abp.RemoteServiceAttribute;
 
 
 namespace SmartParking.PDF;
@@ -19,12 +22,15 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     private readonly IInvoiceAppService _invoicePdfAppService;
     private string folderInvoiceImage = "Invoice";
     private string folderPdfs = "PDFs";
+    private string imageDirectoryPath = null;
 
     public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService)
     {
         _invoicePdfAppService = invoicePdfAppService;
-    }
+        imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
 
+    }
+    [RemoteService(isEnabled:false)]
     public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
     {
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
@@ -138,19 +144,19 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     {
         var htmlContent = await GenerateInvoiceHtmlAsync(invoiceId, commericialRegisteratio, qrCode);
         var result = GeneratePdfFromHtmlAsync(htmlContent, invoiceId);
-        //string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
-
-        //if (!Directory.Exists(imageDirectoryPath))
-        //{
-        //    Directory.CreateDirectory(imageDirectoryPath);
-        //}
-        //string fileName = $"{invoiceId}.{"pdf"}";
-        //string fullPath = Path.Combine(imageDirectoryPath, fileName);
+        if (!Directory.Exists(imageDirectoryPath))
+        {
+           Directory.CreateDirectory(imageDirectoryPath);
+        }
+        string fileName = $"{invoiceId}.{"pdf"}";
+        string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
 
-        //await File.WriteAllBytesAsync(fullPath, result);
+        await File.WriteAllBytesAsync(fullPath, result);
         return result;
     }
+    [RemoteService(isEnabled: false)]
+
 
     public byte[] GeneratePdfFromHtmlAsync(string htmlContent,int invoiceId)
     {
@@ -315,15 +321,7 @@ img[style*='width:120px;'] {
             {htmlContent}
         </body>
         </html>";
-            string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PDF", invoiceId.ToString());
 
-            // Ensure the directory exists
-            if (!Directory.Exists(ImageDirectoryPath))
-            {
-                Directory.CreateDirectory(ImageDirectoryPath);
-            }
-            string fileName = $"{Guid.NewGuid()}.{"pdf"}";
-            string fullPath = Path.Combine(ImageDirectoryPath, fileName);
 
             using (var memoryStream = new MemoryStream())
             {
@@ -347,12 +345,9 @@ img[style*='width:120px;'] {
                                                 </style>
                                                 {combinedHtml}";
 
-                    // Convert the HTML to PDF
                     HtmlConverter.ConvertToPdf(combinedHtmlWithCss, pdfDocument, converterProperties);
                 }
-                File.WriteAllBytes(fullPath, memoryStream.ToArray());
 
-                // Return the PDF content as a byte array
                 return memoryStream.ToArray();
             }
 
@@ -367,10 +362,25 @@ img[style*='width:120px;'] {
             Console.WriteLine("An unexpected error occurred: " + ex.Message);
             throw;
         }
-        //After all of the PDF "stuff" above is done and closed but **before** we
-        //close the MemoryStream, grab all of the active bytes from the stream
+      
 
     }
+    public string GetPdfDirectory(int InvoiceId)
+    {
+        if(InvoiceId < 0)
+        {
+            throw new Exception("Invoice Id can't be null");
+        }
+        var invoice = _invoicePdfAppService.GetAsync(InvoiceId);
+        if (invoice == null)
+        {
+            throw new EntityNotFoundException(typeof(Invoice),InvoiceId);
+        }
+        string fileName = $"{InvoiceId}.{"pdf"}";
+        string fullPath = "wwwroot/invoice/PDFs/"+ fileName;
 
+        return fullPath;
+
+    }
         
 }
