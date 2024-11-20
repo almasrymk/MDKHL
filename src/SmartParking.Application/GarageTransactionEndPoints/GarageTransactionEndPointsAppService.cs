@@ -623,13 +623,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private decimal calcPriceHours(Organization organization, int hours)
     {
         decimal price = 0;
+        price += hours > 0 ? organization.FirstHourPrice : 0;
         hours--;
-        price += hours>0? organization.FirstHourPrice:0 ;
-        hours--;
-        price += hours>0?organization.SecondHourPrice:0;
+        price += hours > 0 ? organization.SecondHourPrice : 0;
         hours--;
         price += hours > 0 ? organization.ThirdHourPrice : 0;
-        price += (hours * organization.AdditionalHourPrice);
+        hours--;
+        price += hours > 0 ? (hours * organization.AdditionalHourPrice) : 0;
         return price;
     }
     public static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
