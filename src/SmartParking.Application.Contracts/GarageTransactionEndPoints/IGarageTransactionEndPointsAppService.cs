@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.CustomerPackages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,4 +11,5 @@ namespace SmartParking.GarageTransactionEndPoints;
 public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
+    int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto);
 }

@@ -397,7 +397,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    private int CalculateTimeDependsOnPackage(DateTime ?entranceTime , DateTime? exitTime , CustomerPackageDto packageDto )
+    public int CalculateTimeDependsOnPackage(DateTime ?entranceTime , DateTime? exitTime , CustomerPackageDto packageDto )
     {
         if (exitTime < entranceTime)
         {
@@ -568,10 +568,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (organization?.IsNumberOfHoursExceeded == false && organization.IsClose == false)
         {
             //case 1
-            decimal price = 0;
-            price += (totalHours / 24) * organization.FullDayPrice;
-            totalHours -= (totalHours / 24) * 24;
-            price += calcPriceHours(organization, totalHours);
+            decimal price = calcPriceHours(organization, totalHours);
             return price;
 
         }
@@ -579,12 +576,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             //case 2
             decimal price = 0;
-            price += (totalHours / 24) * organization.FullDayPrice;
-            totalHours -= (totalHours / 24) * 24;
-            if (totalHours > organization.NumberOfHours)
+            //price += (totalHours / 24) * organization.FullDayPrice;
+            //totalHours -= (totalHours / 24) * 24;
+            if (totalHours >= organization.NumberOfHours)
             {
-                price += organization.FullDayPrice;
-                totalHours = 0;
+                var fullDaysCustomerHasStayed = totalHours / 24;
+                price += (fullDaysCustomerHasStayed*organization.FullDayPrice);
+                totalHours %=24;
             }
             price += calcPriceHours(organization, totalHours);
             return price;
@@ -623,13 +621,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private decimal calcPriceHours(Organization organization, int hours)
     {
         decimal price = 0;
-        price += hours > 0 ? organization.FirstHourPrice : 0;
-        hours--;
-        price += hours > 0 ? organization.SecondHourPrice : 0;
+        price += hours>0? organization.FirstHourPrice:0 ;
         hours--;
         price += hours > 0 ? organization.ThirdHourPrice : 0;
         hours--;
-        price += hours > 0 ? (hours * organization.AdditionalHourPrice) : 0;
+        price += hours > 0 ? organization.ThirdHourPrice : 0;
+        hours--;
+        price += hours > 0 ? (hours * organization.AdditionalHourPrice):0;
         return price;
     }
     public static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
