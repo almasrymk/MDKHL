@@ -1,4 +1,5 @@
 ﻿using Abp.Extensions;
+using Abp.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -19,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
@@ -395,54 +397,78 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    private int CalculateTimeDependsOnPackage(DateTime ?EntranceTime , DateTime? ExitTime , CustomerPackageDto packageDto )
+    private int CalculateTimeDependsOnPackage(DateTime ?entranceTime , DateTime? exitTime , CustomerPackageDto packageDto )
     {
-        double totalHours = 0;
-        DateTime excludeStartTime = EntranceTime.Value.Date.AddHours(packageDto.Package.PublishFrom.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
-        DateTime excludeEndTime = EntranceTime.Value.Date.AddHours(packageDto.Package.PublishTo.Hour).AddMinutes(packageDto.Package.PublishTo.Minute);
-        //if entered before package starts
-        totalHours += excludeStartTime.Hour-EntranceTime.Value.Hour > 0 ? excludeStartTime.Hour - EntranceTime.Value.Hour + (excludeStartTime.Minute - EntranceTime.Value.Minute>0?1:0) : 0;
-
-        //enter after package start
-        if (totalHours == 0)
+        if (exitTime < entranceTime)
         {
+            throw new BusinessException("Leaving date can't be befor entrance date") ;
+        }
 
-            if (EntranceTime > excludeEndTime) {
-            
-                //if entered within package time 
-                //and leave after package ends
-               totalHours += ExitTime.Value.Hour - EntranceTime.Value.Hour > 0 ? ExitTime.Value.Hour - EntranceTime.Value.Hour  + (ExitTime.Value.Minute - EntranceTime.Value.Minute > 0 ? 1 : 0) : 0;
-            
-            }
-            else
+        // Parse package start and end times
+        DateTime packageStart = entranceTime.Value.Date.AddHours(packageDto.Package.PublishFrom.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
+        DateTime packageEnd = entranceTime.Value.Date.AddHours(packageDto.Package.PublishTo.Hour).AddMinutes(packageDto.Package.PublishTo.Minute); ;
+
+        double extraHours = 0;
+
+        // Iterate through each day of the stay
+        DateTime currentDay = entranceTime.Value;
+        DateTime endDay = exitTime.Value;
+
+        while (currentDay <= endDay)
+        {
+            DateTime dayPackageStart = currentDay.Date+packageStart.TimeOfDay;
+            DateTime dayPackageEnd = currentDay.Date + packageEnd.TimeOfDay;
+
+            // Adjust for package end time past midnight
+            if (packageEnd < packageStart)
             {
-                if(ExitTime.Value.Hour> excludeEndTime.Hour)
+                dayPackageEnd = dayPackageEnd.AddDays(1);
+            }
+
+            // Calculate effective times for the current day
+            DateTime effectiveStart = Max(currentDay, dayPackageStart);
+            DateTime effectiveEnd = Min(endDay, dayPackageEnd);
+
+           
+
+            // Calculate extra hours before package start
+            if (currentDay < dayPackageStart)
+            {
+                var smallestDay = (Min(endDay, dayPackageStart) - currentDay);
+                extraHours += smallestDay.Hours + (smallestDay.Minutes>0?1:0);
+                currentDay = dayPackageStart;
+                
+            }
+
+            // Calculate extra hours after package end
+            if (endDay > dayPackageEnd && endDay.Date==currentDay.Date)
+            {
+                extraHours += (endDay - Max(currentDay, dayPackageEnd)).TotalHours;
+            }
+
+            // Move to the next day
+            if(endDay.Date > currentDay.Date)
+            {
+                extraHours += 24 - Math.Abs(dayPackageStart.Hour - dayPackageEnd.Hour) + (Math.Abs(dayPackageStart.Minute - dayPackageEnd.Minute) > 0 ? 1 : 0);
+            }
+            currentDay = currentDay.AddDays(1);
+            if (currentDay.Date == exitTime.Value.Date)
+            {
+                if (exitTime.Value.Hour < packageStart.Hour)
                 {
-
-                    totalHours += (ExitTime.Value.Hour - excludeEndTime.Hour) > 0 ? (ExitTime.Value.Hour - excludeEndTime.Hour) : 0;
-                    //ceiling minutes to hours
-                    totalHours += ExitTime.Value.Minute - excludeEndTime.Minute > 0 ? 1 : 0;
-
+                    extraHours -= packageStart.Hour - exitTime.Value.Hour;
                 }
             }
         }
-        else
-        {
-            if (ExitTime > excludeEndTime)
-            {
-                totalHours += ExitTime.Value.Hour - excludeEndTime.Hour > 0 ? ExitTime.Value.Hour - excludeEndTime.Hour + (ExitTime.Value.Minute - excludeEndTime.Minute > 0 ? 1 : 0) : 0;
-            }
 
-        }
-
-
-        var diffBetweenDates= ExitTime.Value.Subtract(EntranceTime.Value);
-        var tDays=diffBetweenDates.Days;
-        var totalHoursOutOfPackageInStaying=24-diffBetweenDates.Hours;
-        totalHours += tDays * totalHoursOutOfPackageInStaying;
-
-        return (int)Math.Ceiling(totalHours);
+        // Return result
+        return (int) Math.Ceiling( extraHours);
     }
+
+    private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
+
+    private static DateTime Min(DateTime a, DateTime b) => a < b ? a : b;
+
 
     private async Task<Camera> GetCamera(string CameraCode)
     {
