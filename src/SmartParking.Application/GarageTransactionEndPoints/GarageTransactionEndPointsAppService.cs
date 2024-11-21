@@ -562,10 +562,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             (true,false)=> CalculatePriceForExceededHours(totalHours, organization),
             (false,true)=> CalculatePriceForOrganizationIsClosed(totalHours, organization,garageTransaction,entrenceTime),
             (true,true)=> CalculatePriceForOrganizationIsClosedAndExceededHours(totalHours,organization,garageTransaction,entrenceTime), 
-
         };
     }
-   private decimal CalculatePriceForExceededHours(int totalHours,Organization organization)
+    private decimal CalculatePriceForExceededHours(int totalHours,Organization organization)
    {
         decimal price = 0;
         if (totalHours >= organization.NumberOfHours)
