@@ -51,7 +51,7 @@ public class PackagesAppService : CrudAppService<
         using (_softDeleteFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            var pakages = await query.Where(_ => _.OrganizationId == organizationId).ToListAsync();
+            var pakages = await query.Where(_ => _.OrganizationId == organizationId && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
             var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if (pakages.Count == 0)
             {

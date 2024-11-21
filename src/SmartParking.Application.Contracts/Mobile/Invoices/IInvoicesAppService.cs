@@ -1,5 +1,6 @@
 ﻿using SmartParking.Invoices;
 using SmartParking.Results;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -9,7 +10,7 @@ namespace SmartParking.MobileInvoices;
 public interface IInvoicesAppService : IApplicationService
 {
     Task<Result<InvoiceDto>> CreateAsync(CreateUpdateInvoiceDto input);
-    Task<Result<PagedResultDto<InvoiceDto>>> GetListAsync(PagedAndSortedResultRequestDto input);
+    Task<Result<List<InvoiceDto>>> GetListAsync();
 
     /// <summary>
     /// abstract method to get specific invoice

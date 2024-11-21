@@ -14,7 +14,6 @@ namespace SmartParking.Vehicles
         public string EnPlateLetters { get; set; } = "";
         public string ArPlateNumber { get; set; } = "";
         public string EnPlateNumber { get; set; } = "";
-        public string PlateNumber { get; set; }
         public Guid CustomerId { get; set; }
         public int VehicleBrandId { get; set; }
 		public int PlateColorId { get; set; }

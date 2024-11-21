@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Invoices;
 using SmartParking.MobileInvoices;
 using SmartParking.Results;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
@@ -27,9 +28,9 @@ public class InvoicesController : AbpController
     }
     [HttpGet]
     [Authorize]
-    public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoices([FromQuery] PagedAndSortedResultRequestDto input)
+    public async Task<Result<List<InvoiceDto>>> GetAllInvoices()
     {
-        return await _invoicesAppService.GetListAsync(input);
+        return await _invoicesAppService.GetListAsync();
     }  
     
     [HttpGet("getInvoiceDetails")]

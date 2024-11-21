@@ -20,6 +20,7 @@ using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 using System.Drawing;
 using System.Text;
+using Volo.Abp.MultiTenancy;
 
 
 namespace SmartParking.Mobile.Vehicles;
@@ -50,64 +51,66 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 	[RemoteService(IsEnabled =false)]
     public async Task<Result<VehicleDto>> CreateAsync(CreateUpdateVehicleMobileDto input)
     {
-        try
-        {  
-            var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleMobileDto, Vehicle>(input);
-            // check plate number must include both plate letters and plate numbers, either in Arabic or English.
-            if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
-            {
-                mappedVehicle.PlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-
-            }
-            else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
-            {
-                mappedVehicle.PlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-            }
-            else
-            {
-                return Result<VehicleDto>.Invalid(new ValidationError
-                {
-                    ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-                    ErrorMessage = "Plate number must include both plate letters and plate numbers, either in Arabic or English."
-
-                });
-            }
-            // LicenceType is plate type is found 
-            var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
-            if(plateType == null)
-            {
-                return Result<VehicleDto>.NotFound("Plate type not found");
-                
-            }
-            var brand = await _brandRepository.FirstOrDefaultAsync(b => b.Id==input.BrandId);
-            if(brand == null)
-            {
-                return Result<VehicleDto>.NotFound("Vehicle Brand not found");
-            }            
-            var model = await _modelRepository.FirstOrDefaultAsync(b => b.Id==input.ModelId);
-            if(model == null)
-            {
-                return Result<VehicleDto>.NotFound("Vehicle Model not found");
-            }
-            var customer = await _customerRepository.FirstOrDefaultAsync(b => b.IdentityUserId == CurrentUser.Id);
-
-            mappedVehicle.LicenceType = plateType;
-            mappedVehicle.LicenceTypeId = plateType.Id;
-            mappedVehicle.PlateColorId = plateType.PlateColorId;
-            mappedVehicle.VehicleModelId = model.Id;
-            mappedVehicle.VehicleBrandId = brand.Id;
-            mappedVehicle.CustomerId = customer.Id;
-            var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle, autoSave: true);
-
-            var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
-
-            return Result<VehicleDto>.Success(vehicleDto, "Vehicle Update Succesuffuly");
-        }
-        catch (Exception ex)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return Result<VehicleDto>.Error(ex.Message);
-        }
+            try
+            {
+                var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleMobileDto, Vehicle>(input);
+                // check plate number must include both plate letters and plate numbers, either in Arabic or English.
+                if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
+                {
+                    mappedVehicle.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
 
+                }
+                else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
+                {
+                    mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+                }
+                else
+                {
+                    return Result<VehicleDto>.Invalid(new ValidationError
+                    {
+                        ErrorCode = StatusCodes.Status400BadRequest.ToString(),
+                        ErrorMessage = "Plate number must include both plate letters and plate numbers, either in Arabic or English."
+
+                    });
+                }
+                // LicenceType is plate type is found 
+                var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
+                if (plateType == null)
+                {
+                    return Result<VehicleDto>.NotFound("Plate type not found");
+
+                }
+                var brand = await _brandRepository.FirstOrDefaultAsync(b => b.Id == input.BrandId);
+                if (brand == null)
+                {
+                    return Result<VehicleDto>.NotFound("Vehicle Brand not found");
+                }
+                var model = await _modelRepository.FirstOrDefaultAsync(b => b.Id == input.ModelId);
+                if (model == null)
+                {
+                    return Result<VehicleDto>.NotFound("Vehicle Model not found");
+                }
+                var customer = await _customerRepository.FirstOrDefaultAsync(b => b.IdentityUserId == CurrentUser.Id);
+
+                mappedVehicle.LicenceType = plateType;
+                mappedVehicle.LicenceTypeId = plateType.Id;
+                mappedVehicle.PlateColorId = plateType.PlateColorId;
+                mappedVehicle.VehicleModelId = model.Id;
+                mappedVehicle.VehicleBrandId = brand.Id;
+                mappedVehicle.CustomerId = customer.Id;
+                var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle, autoSave: true);
+
+                var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
+
+                return Result<VehicleDto>.Success(vehicleDto, "Vehicle Update Succesuffuly");
+            }
+            catch (Exception ex)
+            {
+                return Result<VehicleDto>.Error(ex.Message);
+            }
+        }
     }
 
    
@@ -138,12 +141,12 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 			if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
 			{
-                vehicle.PlateNumber = input.ArPlateLetters + input.ArPlateNumber;
+                vehicle.ArPlateNumber = input.ArPlateLetters + input.ArPlateNumber;
 
 			}
 			else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
 			{
-                vehicle.PlateNumber = input.EnPlateLetters + input.EnPlateNumber;
+                vehicle.EnPlateNumber = input.EnPlateLetters + input.EnPlateNumber;
 			}
 			else
 			{

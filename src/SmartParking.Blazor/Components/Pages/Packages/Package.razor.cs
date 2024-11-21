@@ -2,6 +2,7 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;
 using System;
@@ -181,10 +182,11 @@ public partial class Package
 	{
        
 		var id = int.Parse(row.Cells[0].Value);
-
+		
 		var packageDto = await PackagesAppService.GetAsync(id);
+       
 
-		var createUpdatePackage = new CreateUpdatePackageDto
+        var createUpdatePackage = new CreateUpdatePackageDto
         {
 			ArabicName=packageDto.ArabicName,
 			PackageTypeId=packageDto.PackageTypeId,
@@ -197,9 +199,9 @@ public partial class Package
 			PublishTo = packageDto.PublishTo,
 			PackageStatus = packageDto.PackageStatus,
 			PackageType=packageDto.PackageType,
-			CustomerCategory = packageDto.CustomerCategory
+			CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory)
 
-		};
+        };
 
 
 
@@ -235,7 +237,7 @@ public partial class Package
             PublishTo = packageDto.PublishTo,
             PackageStatus = packageDto.PackageStatus,
             PackageType = packageDto.PackageType,
-		   CustomerCategory = packageDto.CustomerCategory
+		   CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory)
 
         };
 

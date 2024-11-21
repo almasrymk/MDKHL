@@ -36,6 +36,8 @@ using SmartParking.Payments;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.Entities.Customers;
 using SmartParking.Cutomers;
+using System;
+using SmartParking.Enums;
 
 namespace SmartParking;
 
@@ -117,10 +119,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 		CreateMap<CreateUpdateVehicleDto, Vehicle>();
 
         CreateMap<Package, PackageDto>()
-        .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType));
+        .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))
+        .ForMember(dest => dest.CustomerCategory, opt => opt.MapFrom(src => src.CustomerCategory.ToString()));
         //.ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization)); // Map PackageType
 
         CreateMap<CreateUpdatePackageDto, Package>();
+           
 
 
         CreateMap<Invoice, InvoiceDto>()

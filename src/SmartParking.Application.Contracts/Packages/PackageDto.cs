@@ -32,6 +32,6 @@ namespace SmartParking.Packages
         public string OrganizationArabicName { get; set; }
         public string OrganizationEnglishName { get; set; }
         public SubscriptionStatus PackageStatus { get; set; }
-        public CustomerCategoryStatus CustomerCategory { get; set; }
+        public string CustomerCategory { get; set; }
     }
 }

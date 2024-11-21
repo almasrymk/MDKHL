@@ -509,7 +509,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<string> CheckCustomer(string? plateNumber)
     {
-        var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.PlateNumber == null || x.PlateNumber == plateNumber);
+        var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
 
         if (Customer == null)
         {
