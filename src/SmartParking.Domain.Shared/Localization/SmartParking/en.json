@@ -447,6 +447,7 @@
     "PaymentMethod": "PaymentMethod",
     "PaymentStatus": "PaymentStatus",
     "CustomerName": "CustomerName",
-    "RegionName": "Region"
+    "RegionName": "Region",
+    "NumOfGarages": "Num Of Garages"
   } 
 }

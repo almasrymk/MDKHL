@@ -57,6 +57,14 @@ public static class BuildExpression<T>
                 condition = Expression.Equal(property, valueNumber);
                 combinedExpression = Expression.AndAlso(combinedExpression, condition);
                 continue;
+            }            
+            if (filter.TypeFilter == TypeFilter.Number)
+            {
+                Type propertyType = property.Type;
+                ConstantExpression valueNumber = Expression.Constant(int.Parse(filter.FilterValue));
+                condition = Expression.Equal(property, valueNumber);
+                combinedExpression = Expression.AndAlso(combinedExpression, condition);
+                continue;
             }
 
             // Create the equality expression (x.Property == value)

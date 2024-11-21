@@ -473,7 +473,8 @@
     "PaymentMethod": "طريقة الدفع",
     "PaymentStatus": "حالة الدفع",
     "CustomerName": "اسم العميل",
-    "RegionName": "المنطقة"
+    "RegionName": "المنطقة",
+    "NumOfGarages": "عدد اماكن المـواقـف"
 
 
   }

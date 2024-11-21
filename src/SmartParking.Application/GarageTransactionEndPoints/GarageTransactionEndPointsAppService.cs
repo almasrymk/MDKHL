@@ -627,7 +627,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         decimal price = 0;
         price += hours>0? organization.FirstHourPrice:0 ;
         hours--;
-        price += hours>0?organization.SecondHourPrice:0;
+        price += hours > 0 ? organization.ThirdHourPrice : 0;
         hours--;
         price += hours > 0 ? organization.ThirdHourPrice : 0;
         hours--;
