@@ -474,7 +474,8 @@
     "PaymentStatus": "حالة الدفع",
     "CustomerName": "اسم العميل",
     "RegionName": "المنطقة",
-    "NumOfGarages": "عدد اماكن المـواقـف"
+    "NumOfGarages": "عدد اماكن المـواقـف",
+    "PackageDuration": "مدة صلاحية الباقة"
 
 
   }

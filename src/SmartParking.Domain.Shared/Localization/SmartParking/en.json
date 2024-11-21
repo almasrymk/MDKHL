@@ -448,6 +448,7 @@
     "PaymentStatus": "PaymentStatus",
     "CustomerName": "CustomerName",
     "RegionName": "Region",
-    "NumOfGarages": "Num Of Garages"
+    "NumOfGarages": "Number Of Garages",
+    "PackageDuration": "Duration Of Package"
   } 
 }
