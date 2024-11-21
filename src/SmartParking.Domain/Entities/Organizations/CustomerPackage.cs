@@ -21,4 +21,5 @@ public class CustomerPackage:FullAuditedEntity<int> , IBseEntity
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
     public Guid? TenantId { get; set; }
     public Status Status { get ; set ; }
+    public DateTime ExpiryDate { get; set; }
 }

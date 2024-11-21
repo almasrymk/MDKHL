@@ -208,7 +208,7 @@ public partial class Organization
         }
         else
         {
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
          tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });

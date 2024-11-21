@@ -52,6 +52,16 @@
                                       Class="w-100"
                                       Label=@L["Price"] />
                     </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
+                                      For="@(() => createUpdatePackage.DurationOfPackage)"
+                                      Variant="Variant.Text"
+                                      Min="1"
+                                      HideSpinButtons="true"
+                                      Required
+                                      Class="w-100"
+                                      Label=@L["PackageDuration"] />
+                    </MudItem>
 
 
                 
