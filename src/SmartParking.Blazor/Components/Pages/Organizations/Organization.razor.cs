@@ -241,8 +241,8 @@ public partial class Organization
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionName"], item.RegionNameAr));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlots"], item.NumbersOfGarages.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumOfGarages"], item.ParkingSlots.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlots"], item.ParkingSlots.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumOfGarages"], item.NumbersOfGarages.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Num Of Cameras"], item.NumberOfCameras.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
