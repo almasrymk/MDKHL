@@ -1614,6 +1614,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PackageStatus")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PackageTypeId")
                         .HasColumnType("integer");
 
