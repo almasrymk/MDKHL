@@ -73,6 +73,8 @@ public partial class OrganizationEdit
 
     public string ViewSubscriptionArabicName { get; set; }
 
+    public  int FreeMinutes { get; set; }
+
 
 
 
@@ -165,7 +167,8 @@ public partial class OrganizationEdit
             PostalCode = PostalCode,
             District = District,
             OrganizationPicture = OrganizationPicture,
-            Address = Address
+            Address = Address,
+            FreeMinutes= FreeMinutes,
         };
 
 
@@ -269,6 +272,7 @@ public partial class OrganizationEdit
         OrganizationPicture = organization.OrganizationPicture;
         PackageId = organization.PackageId;
         orgTenant = organization.TenantId;
+        FreeMinutes = organization.FreeMinutes;
 
 
         PackageSelectValue=organization.SubscriptionId.ToString();
