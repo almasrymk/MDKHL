@@ -475,7 +475,8 @@
     "CustomerName": "اسم العميل",
     "RegionName": "المنطقة",
     "NumOfGarages": "عدد المـواقـف",
-    "PackageDuration": "مدة صلاحية الباقة"
+    "PackageDuration": "مدة صلاحية الباقة",
+    "FreeMinutes": "عدد الدقائق المتاحة مجانًا"
 
 
   }

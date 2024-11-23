@@ -449,6 +449,7 @@
     "CustomerName": "CustomerName",
     "RegionName": "Region",
     "NumOfGarages": "Number Of Garages",
-    "PackageDuration": "Duration Of Package"
+    "PackageDuration": "Duration Of Package",
+    "FreeMinutes": "Free Minutes"
   } 
 }
