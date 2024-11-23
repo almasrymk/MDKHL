@@ -22,5 +22,6 @@ public class CreateUpdatePackageDto
     public int OrganizationId { get; set; }
     public SubscriptionStatus PackageStatus { get; set; }
     public int DurationOfPackage { get; set; }
+    public Guid? tenantId { get; set; }
 
 }
