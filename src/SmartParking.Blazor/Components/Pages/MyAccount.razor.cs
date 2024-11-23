@@ -65,6 +65,8 @@ public partial class MyAccount
     public string OrganizationPicture { get; set; }
     public string Photo { get; set; }
     public string Code { get; set; }
+    public int FreeMinutes { get; set; }
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -117,7 +119,8 @@ public partial class MyAccount
             PostalCode = PostalCode,
             District = District,
             OrganizationPicture = OrganizationPicture,
-            TenantId = tenant
+            TenantId = tenant,
+            FreeMinutes = FreeMinutes,
 
         };
 
@@ -226,6 +229,7 @@ public partial class MyAccount
         OrganizationPicture = organization.OrganizationPicture;
         Code = organization.Code;
         Address = organization.Address;
+        FreeMinutes = organization.FreeMinutes;
 
     }
     protected override async Task OnInitializedAsync()

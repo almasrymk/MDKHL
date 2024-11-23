@@ -43,7 +43,7 @@ public class CreateUpdateOrganiztionDto
     public int PostalCode { get; set; }
     public string District { get; set; }
     public Guid TenantId { get; set; }
-
+    public int FreeMinutes { get; set; }
 
 
 

@@ -42,6 +42,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IOptionsMonitor<OpenIddictServerOptions> _oidcOptions;
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
+    private readonly IDataFilter _dataFilter;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -54,7 +55,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IRepository<Tenant, Guid> tenantRepository,
         IOptionsMonitor<OpenIddictServerOptions> oidcOptions,
         IRepository<Customer, Guid> CustomerRepository,
-        IRepository<Organization, int> organizationRepository
+        IRepository<Organization, int> organizationRepository,
+        IDataFilter dataFilter
         )
     {
         _signInManager = signInManager;
@@ -68,6 +70,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _oidcOptions = oidcOptions;
         _customerRepository = CustomerRepository;
         _organizationRepository = organizationRepository;
+        _dataFilter = dataFilter;
     }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
@@ -165,37 +168,40 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     public async Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input)
     {
 
-
-        // Step 1: Validate the user's credentials
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return Result<LoginResultDto>.Invalid(new Results.ValidationError
+            // Step 1: Validate the user's credentials
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
             {
-                ErrorCode = "403",
-                ErrorMessage = "Invalid credentials."
-            });
+                return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                {
+                    ErrorCode = "403",
+                    ErrorMessage = "Invalid credentials."
+                });
 
-        }
-        if (user.IsActive == false)
-        {
-            return Result<LoginResultDto>.Invalid(new Results.ValidationError
+            }
+            if (user.IsActive == false)
             {
-                ErrorCode = "400",
-                ErrorMessage = "Account is In Active"
+                return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                {
+                    ErrorCode = "400",
+                    ErrorMessage = "Account is In Active"
+                });
+            }
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return Result<LoginResultDto>.Success(new LoginResultDto
+            {
+                AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
+                Role = roles.FirstOrDefault(),
+                Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
+                TenantId = CurrentTenant.Id.ToString()
             });
         }
-        await _signInManager.SignInAsync(user, isPersistent: false);
-
-
-        var roles = await _userManager.GetRolesAsync(user);
-        return Result<LoginResultDto>.Success(new LoginResultDto
-        {
-            AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
-            Role = roles.FirstOrDefault(),
-            Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
-            TenantId = CurrentTenant.Id.ToString()
-        });
+        
 
     }
     /// <inheritdoc/>
@@ -394,10 +400,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNum);
-        var query = await _tenantRepository.GetQueryableAsync();
-        query = query.Where(t => t.Name == user.UserName);
-        var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
-        return tenant;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNum);
+            var query = await _tenantRepository.GetQueryableAsync();
+            query = query.Where(t => t.Name == user.UserName);
+            var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return tenant;
+        }
+        
     }
 }

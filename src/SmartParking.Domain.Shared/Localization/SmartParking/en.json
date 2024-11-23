@@ -447,6 +447,9 @@
     "PaymentMethod": "PaymentMethod",
     "PaymentStatus": "PaymentStatus",
     "CustomerName": "CustomerName",
-    "RegionName": "Region"
+    "RegionName": "Region",
+    "NumOfGarages": "Number Of Garages",
+    "PackageDuration": "Duration Of Package",
+    "FreeMinutes": "Free Minutes"
   } 
 }

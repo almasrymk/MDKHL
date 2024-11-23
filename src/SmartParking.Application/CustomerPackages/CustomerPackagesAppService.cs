@@ -51,7 +51,7 @@ public class CustomerPackagesAppService:
   
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
     {
-        var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrganizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active);
+        var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrganizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active&&x.ExpiryDate>=DateTime.Today);
         
         if (result == null)
         {
@@ -94,7 +94,8 @@ public class CustomerPackagesAppService:
             {
                 PackageId = packageId,
                 CustomerId = customer.Id,
-                OrganizationId = package.OrganizationId
+                OrganizationId = package.OrganizationId,
+                ExpiryDate = DateTime.Today.AddDays(package.DurationOfPackage),
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
@@ -119,7 +120,8 @@ public class CustomerPackagesAppService:
             {
                 PackageId = packageId,
                 CustomerId = customer.Id,
-                OrganizationId = package.OrganizationId
+                OrganizationId = package.OrganizationId,
+                ExpiryDate=DateTime.UtcNow.AddDays(package.DurationOfPackage),
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)

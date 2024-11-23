@@ -63,6 +63,8 @@ public partial class OrganizationAdd
     public int ParkingSlot { get; set; }
 
     private SubscriptionDto? SelectedPackage;
+    public int FreeMinutes { get; set; }
+
 
 
 
@@ -199,7 +201,8 @@ public partial class OrganizationAdd
             BuildingNumber = BuildingNumber,
             PostalCode = PostalCode,
             SecondaryNumber = SecondaryNumber,
-            OrganizationPicture = OrganizationPicture
+            OrganizationPicture = OrganizationPicture,
+            FreeMinutes = FreeMinutes,
 
         };
        

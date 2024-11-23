@@ -28,6 +28,7 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
         .WithMessage("The Model Year must be greater than or equal  1980.");
 
         RuleFor(x => x.ArPlateLetters)
+            .NotEmpty()
             .Matches(@"^[\p{IsArabic}\d\s]+$")
             .WithMessage("The Plate Letter should only contain Arabic letters")
             .When(x => x.ArPlateLetters.Length != 0)
@@ -38,6 +39,7 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
 
 
         RuleFor(x => x.EnPlateLetters)
+            .NotEmpty()
             .Matches(@"^[A-Za-z\d\s]+$")
             .WithMessage("The Plate Letter should only contain English letters")
             .When(x => x.EnPlateLetters.Length != 0)
@@ -47,6 +49,7 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
             .WithMessage("The Plate English Letter must be between 1 and 3 characters long.");
 
         RuleFor(x => x.ArPlateNumber)
+            .NotEmpty()
             .Matches(@"^[\u0660-\u0669\s]+$")
             .WithMessage("The Plate Number should only contain Arabic numerals.")
             .When(x => x.ArPlateNumber.Length != 0)
@@ -56,6 +59,7 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
             .WithMessage("The Plate Number must be between 1 and 4 Arabic numerals long.");
 
         RuleFor(x => x.EnPlateNumber)
+            .NotEmpty()
             .Matches(@"^[0-9\s]+$")
             .WithMessage("The Plate Number should only contain English numerals.")
             .When(x => x.EnPlateNumber.Length != 0)

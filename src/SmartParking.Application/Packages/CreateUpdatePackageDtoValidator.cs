@@ -43,7 +43,10 @@ namespace SmartParking.Packages
 			RuleFor(x => x.PublishTo);
 				//.Must(BeAValidTime).WithMessage("End time is not a valid time.");
 
+			RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1);
+
 		}
+
 
 		//private bool BeAValidTime(TimeOnly time)
 		//{

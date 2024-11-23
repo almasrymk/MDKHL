@@ -266,25 +266,37 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                    new PlateColor {  EnglishName = "Blue", ArabicName = "أزرق" },
                    new PlateColor {  EnglishName = "Green", ArabicName = "أخضر" },
                    new PlateColor {  EnglishName = "Yellow", ArabicName = "أصفر" },
-                   new PlateColor {  EnglishName = "White", ArabicName = "أبيض" }
+                   new PlateColor {  EnglishName = "White", ArabicName = "أبيض" },
+                   new PlateColor {  EnglishName = "Silver", ArabicName = "فضى" }
                };
 
               await _plateColorRepository.InsertManyAsync(plateColors, autoSave: true);
                 
                 var redplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Red");
                 var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
+                var whiteplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "White");
+                var yellowplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
+                var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
+                var greenplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Green");
 
 
                 var licenceTypes = new List<LicenceType>
                 {
                 // Two licence types sharing the same PlateColorId (e.g., Red with Id = 1)
-                new LicenceType {  EnglishName = "Personal", ArabicName = "شخصي", PlateColorId = redplate.Id },
-                new LicenceType {  EnglishName = "Commercial", ArabicName = "تجاري", PlateColorId = redplate.Id }, 
+                new LicenceType {  EnglishName = "Private Car", ArabicName = "خاص", PlateColorId = whiteplate.Id },
+                new LicenceType {  EnglishName = "Public Transport", ArabicName = "نقل عام", PlateColorId = yellowplate.Id },
+                new LicenceType {  EnglishName = "Private Transport", ArabicName = "نقل خاص", PlateColorId = blueplate.Id }, 
+                new LicenceType {  EnglishName = "Public Bus", ArabicName = "حافلة صغيرة عامة", PlateColorId = yellowplate.Id }, 
+                new LicenceType {  EnglishName = "Private Bus", ArabicName = "حافلة صغيرة خاصة", PlateColorId = blueplate.Id }, 
+                new LicenceType {  EnglishName = "Taxi", ArabicName = "اجرة", PlateColorId = yellowplate.Id }, 
+                new LicenceType {  EnglishName = "Equipment", ArabicName = "معدات ثقيلة", PlateColorId = blueplate.Id }, 
+                new LicenceType {  EnglishName = "Export", ArabicName = "تصدير", PlateColorId = silverplate.Id }, 
+                new LicenceType {  EnglishName = "Motorcycle", ArabicName = "دراجة نارية", PlateColorId = whiteplate.Id }, 
+                new LicenceType {  EnglishName = "Temp", ArabicName = "مؤقت", PlateColorId = silverplate.Id }, 
 
                 // Unique licence types with their own PlateColorId
-                new LicenceType {  EnglishName = "Government", ArabicName = "حكومي", PlateColorId = blueplate.Id }, // Blue
-                new LicenceType {  EnglishName = "Diplomatic", ArabicName = "دبلوماسي", PlateColorId = blueplate.Id }, // Blue
-                new LicenceType {  EnglishName = "Military", ArabicName = "عسكري", PlateColorId = blueplate.Id}  // Blue
+                new LicenceType {  EnglishName = "Antique", ArabicName = "اقتناء تاريخي", PlateColorId = whiteplate.Id }, 
+                new LicenceType {  EnglishName = "Diplomatic", ArabicName = "دبلوماسي", PlateColorId = greenplate.Id }
                 };
                
                 await _licenceTypeRepository.InsertManyAsync(licenceTypes, autoSave: true);

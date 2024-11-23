@@ -30,4 +30,6 @@ public class Package : BaseEntity
 
     public CustomerCategoryStatus CustomerCategory { get; set; }
 
+    public int DurationOfPackage { get; set; }
+
 }

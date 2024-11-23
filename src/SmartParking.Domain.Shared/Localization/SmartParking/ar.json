@@ -473,7 +473,10 @@
     "PaymentMethod": "طريقة الدفع",
     "PaymentStatus": "حالة الدفع",
     "CustomerName": "اسم العميل",
-    "RegionName": "المنطقة"
+    "RegionName": "المنطقة",
+    "NumOfGarages": "عدد المـواقـف",
+    "PackageDuration": "مدة صلاحية الباقة",
+    "FreeMinutes": "عدد الدقائق المتاحة مجانًا"
 
 
   }

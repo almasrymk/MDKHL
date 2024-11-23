@@ -52,6 +52,16 @@
                                       Class="w-100"
                                       Label=@L["Price"] />
                     </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
+                                      For="@(() => createUpdatePackage.DurationOfPackage)"
+                                      Variant="Variant.Text"
+                                      Min="1"
+                                      HideSpinButtons="true"
+                                      Required
+                                      Class="w-100"
+                                      Label=@L["PackageDuration"] />
+                    </MudItem>
 
 
                 
@@ -161,10 +171,10 @@
     {
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         //organizations = organizationsList.Items.ToList();
-       
-       
-           var packageTypesList = await packageTypesAppService.GetAllListAsync();
-      
+
+
+        var packageTypesList = await packageTypesAppService.GetAllListAsync();
+
 
         packageTypes = packageTypesList;
         timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
@@ -201,6 +211,7 @@
             // Call your service to create the camera
             try
             {
+                createUpdatePackage.tenantId = CurrentTenant.Id;
                 await PackagesAppService.CreateAsync(createUpdatePackage);
                 Snackbar.Add(successedMessage, Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));

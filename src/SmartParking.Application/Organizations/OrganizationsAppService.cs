@@ -217,12 +217,15 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
             // Get the IQueryable<organization> from the repository
             var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(s => s.Subscription);
             // Apply search filtering
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
 
                 queryable = queryable.Where(or =>
                     or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Subscription.ParkingSlot.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Subscription.NumbersOfGarages.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -271,10 +274,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         using (_softDeleteFilter.Disable<IMultiTenant>())
         {
 
-
-
             // Get the IQueryable<organization> from the repository
             var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(x => x.Subscription);
             // Apply filtering
             var filterExpression = BuildExpression<Organization>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)

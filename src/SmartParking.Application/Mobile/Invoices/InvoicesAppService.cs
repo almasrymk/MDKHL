@@ -56,37 +56,19 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
             return Result<InvoiceDto>.Success(invoiceMap);
     }
 
-    public async Task<Result<PagedResultDto<InvoiceDto>>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<Result<List<InvoiceDto>>> GetListAsync()
     {
         var queryable = await _invoiceRepoistory.GetQueryableAsync();
 
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        queryable = queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id);
+        
+       
         // Execute the query and get the list of hotel entities
         var invoices = await AsyncExecuter.ToListAsync(queryable);
 
         // Map the hotel entities to hotelDto objects
         var invoicesDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         // Return the paginated result
-        return new Result<PagedResultDto<InvoiceDto>>(
-           new PagedResultDto<InvoiceDto>
-           (totalCount, invoicesDto)
-       );
+        return invoicesDto;
     }
 }

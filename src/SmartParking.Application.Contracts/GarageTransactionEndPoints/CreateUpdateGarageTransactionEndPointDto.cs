@@ -13,6 +13,6 @@ namespace SmartParking.GarageTransactionEndPoints
         public DateTime? SnapTime { get; set; }
         public DateTime? AccurateTime { get; set; }
         public string VehiclePictureName { get; set; } 
-        public string VehiclePicture { get; set; }  
+        public string VehiclePicture { get; set; }
     }
 }

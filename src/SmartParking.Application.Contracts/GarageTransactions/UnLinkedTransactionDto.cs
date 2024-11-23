@@ -14,4 +14,6 @@ public class UnLinkedTransactionDto
     public DateTime? SnapTime { get; set; }
     public DateTime? AccurateTime { get; set; }
     public string VehiclePicture { get; set; }
+    public bool IsIn { get; set; }
+
 }

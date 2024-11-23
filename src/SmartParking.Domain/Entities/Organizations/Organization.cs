@@ -51,4 +51,5 @@ public class Organization : BaseEntity
     public string District { get; set; }
 
     public int UsedSlots { get; set; }
+    public int FreeMinutes { get; set; }
 }
