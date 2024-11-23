@@ -67,17 +67,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         try
 		{
 			var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
-            input.UserName = input.MobileNumber;
 			using (_dataFilter.Disable<IMultiTenant>())
                 
 			{
 				var user = await _userManager.FindByNameAsync(input.UserName); 
 				if (user != null)
 				{
-					return await _baseCustomer.UserIsFound(user);
-				}
+                    throw new Exception("user already exists");
+                }
 
-			}
+            }
 			await _baseCustomer.CheckCustomer(input);
 
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
@@ -107,7 +106,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-					return await _baseCustomer.UserIsFound(user);
+                    throw new Exception("user already exists");
 
 				}
 
