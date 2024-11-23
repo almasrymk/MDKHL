@@ -481,6 +481,9 @@ namespace SmartParking.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsIn")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationTime");
@@ -551,6 +554,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsIn")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
@@ -1203,6 +1209,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1431,6 +1440,9 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("FirstHourPrice")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("FreeMinutes")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("FullDayPrice")
                         .HasColumnType("numeric");
 
@@ -1590,6 +1602,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<int>("DurationOfPackage")
+                        .HasColumnType("integer");
 
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
@@ -2145,6 +2160,9 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ArPlateNumber")
+                        .HasColumnType("text");
+
                     b.Property<bool>("BelongToCompany")
                         .HasColumnType("boolean");
 
@@ -2170,6 +2188,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
+                    b.Property<string>("EnPlateNumber")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -2192,9 +2213,6 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("PlateColorId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("PlateNumber")
-                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
