@@ -111,14 +111,16 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             GarageId = garageId,
             OrganizationID = organizationId,
             TenantId = camera.TenantId,
-            CameraType = camera.CameraType
+            CameraType = camera.CameraType,
+            IsIn=camera.CameraType==CameraType.Exit?false:true,
+            
+
         };
         //check if transaction is input
         if (GarageTransaction.CameraType == CameraType.Exit)
         {
             try
             {
-
                 return await HandleCamersExit(garageId, organizationId, GarageTransaction);
             }
             catch (Exception ex)
@@ -286,7 +288,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return await Task.FromResult(false);
 
         }
-        int totalHours = CalcTime(EntranceTime.Value, GarageTransaction.AccurateTime.Value);
+        var organization = await GetOrganization(GarageTransaction.OrganizationID);
+
+        int totalHours = CalcTime(EntranceTime.Value, GarageTransaction.AccurateTime.Value,organization.FreeMinutes);
+        if (totalHours == 0)
+        {
+            var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+            return await Task.FromResult(true);
+        }
 
         var customer = await CheckCustomer(GarageTransaction.PlateNumber);
         Customer exsitCustomer = null;
@@ -317,7 +326,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 if (THours > 0)
                 {
 
-                   var organization =await GetOrganization(GarageTransaction.OrganizationID);
                    var price = THours * organization.AdditionalHourPrice;
                    
                    string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
@@ -532,14 +540,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
 
         var latestTransaction = query
-                .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber)&&gt.CameraType==CameraType.Entry)
+                .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber)&&gt.CameraType==CameraType.Entry && gt.IsIn==true)
                 .OrderByDescending(gt => gt.AccurateTime) // or AccurateTime
                 .FirstOrDefault();
 
         return latestTransaction?.AccurateTime;
         }
     }
-    private int CalcTime(DateTime startTime, DateTime endTime)
+    private int CalcTime(DateTime startTime, DateTime endTime, int FreeMinutes)
     {
 
 
@@ -548,13 +556,16 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         // Calculate the hours difference and round up
 
-        int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours);
+        int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours) ;
+        hoursDiff += (timeDifference.Minutes > 0 ? 1 : 0);
 
-        return hoursDiff;
+
+        return (hoursDiff ==0 && timeDifference.Minutes < FreeMinutes) ? 0 : hoursDiff;
     }
     private async Task<Decimal> CalcInvoice(DateTime entrenceTime, int totalHours, CreateUpdateGarageTransactionDto garageTransaction)
     {
         var organization = await GetOrganization(garageTransaction.OrganizationID);
+       
         //4 Cases
         return (organization.IsNumberOfHoursExceeded, organization.IsClose) switch
         {
@@ -624,7 +635,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         decimal price = 0;
         price += hours>0? organization.FirstHourPrice:0 ;
         hours--;
-        price += hours > 0 ? organization.ThirdHourPrice : 0;
+        price += hours > 0 ? organization.SecondHourPrice : 0;
         hours--;
         price += hours > 0 ? organization.ThirdHourPrice : 0;
         hours--;
@@ -634,7 +645,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
     {
         TimeSpan totalDuration = garageTransaction.AccurateTime.Value - entrenceTime;
+
         double totalHours = Math.Ceiling(totalDuration.TotalHours);
+       
 
         double specialHours = 0;
 
