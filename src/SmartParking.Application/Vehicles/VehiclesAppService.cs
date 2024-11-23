@@ -44,20 +44,10 @@ public class VehiclesAppService:
     {
         
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
-        if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
-        {
-            input.ArPlateNumber =  input.ArPlateNumber.Replace(" ",string.Empty) + input.ArPlateLetters.Replace(" ",string.Empty);
-
-        }
-        else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
-        {
-            input.EnPlateNumber =  input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ",string.Empty);
-        }
-        else
-        {
-             throw new InvalidOperationException("Plate number must include both plate letters and plate numbers, either in Arabic or English.");
-            
-        }
+        
+        input.ArPlateNumber =  input.ArPlateNumber.Replace(" ",string.Empty) + input.ArPlateLetters.Replace(" ",string.Empty);
+        input.EnPlateNumber =  input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ",string.Empty);
+        
         // LicenceType is plate type is found 
         LicenceType licenceType;
         using (_dataFilter.Disable<IMultiTenant>())
