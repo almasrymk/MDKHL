@@ -171,10 +171,10 @@
     {
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         //organizations = organizationsList.Items.ToList();
-       
-       
-           var packageTypesList = await packageTypesAppService.GetAllListAsync();
-      
+
+
+        var packageTypesList = await packageTypesAppService.GetAllListAsync();
+
 
         packageTypes = packageTypesList;
         timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
@@ -211,6 +211,7 @@
             // Call your service to create the camera
             try
             {
+                createUpdatePackage.tenantId = CurrentTenant.Id;
                 await PackagesAppService.CreateAsync(createUpdatePackage);
                 Snackbar.Add(successedMessage, Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
