@@ -120,7 +120,8 @@ public class CustomerPackagesAppService:
             {
                 PackageId = packageId,
                 CustomerId = customer.Id,
-                OrganizationId = package.OrganizationId
+                OrganizationId = package.OrganizationId,
+                ExpiryDate=DateTime.UtcNow.AddDays(package.DurationOfPackage),
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
