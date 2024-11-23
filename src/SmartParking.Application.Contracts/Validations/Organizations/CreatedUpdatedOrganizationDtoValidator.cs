@@ -49,19 +49,15 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
             .WithMessage("SubscriptionId must be a positive number if provided.");
 
         RuleFor(x=>x.FirstHourPrice)
-            .NotEmpty()
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.SecondHourPrice)
-            .NotEmpty()
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.ThirdHourPrice)
-            .NotEmpty()
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.AdditionalHourPrice)
-           .NotEmpty()
            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.FullDayPrice)
@@ -82,6 +78,10 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x => x.SecondaryNumber)
             .NotEmpty()
             .InclusiveBetween(1111, 9999);
+
+        RuleFor(x => x.FreeMinutes)
+           .GreaterThanOrEqualTo(0);
+
 
         RuleFor(x=>x.District)
             .NotEmpty()
