@@ -27,8 +27,7 @@ public class Package : BaseEntity
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
 
     public virtual Organization Organization { get; set; }
-
-    public CustomerCategoryStatus CustomerCategory { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; } 
 
     public int DurationOfPackage { get; set; }
 

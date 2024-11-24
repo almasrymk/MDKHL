@@ -313,7 +313,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name); ;
+                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, exsitCustomer); 
                 await _invoiceAppService.CreateAsync(invoice);
                 flag = false;
             }
@@ -384,7 +384,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
     private async Task<CreateUpdateInvoiceDto> CreateInvoice(int GarageId,string GeneratedInvoiceNumber ,decimal Price ,int OrganizationID 
-        ,int TotalHours ,string PlateNumber ,DateTime InvoiceTime , DateTime ?EntranceTime , string CustomerEnName , string CustomerArName)
+        ,int TotalHours ,string PlateNumber ,DateTime InvoiceTime , DateTime ?EntranceTime , string CustomerEnName , string CustomerArName,Guid? Id =null)
     {
         var invoice = new CreateUpdateInvoiceDto
         {
@@ -399,6 +399,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             EntranceTime = EntranceTime,
             CustomerEnName = CustomerEnName,
             CustomerArName = CustomerArName,
+            CustomerId = Id
         };
 
         return invoice;

@@ -57,24 +57,13 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             {
                 var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleMobileDto, Vehicle>(input);
                 // check plate number must include both plate letters and plate numbers, either in Arabic or English.
-                if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
-                {
+
                     mappedVehicle.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
 
-                }
-                else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
-                {
-                    mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-                }
-                else
-                {
-                    return Result<VehicleDto>.Invalid(new ValidationError
-                    {
-                        ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-                        ErrorMessage = "Plate number must include both plate letters and plate numbers, either in Arabic or English."
 
-                    });
-                }
+                
+                    mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+                
                 // LicenceType is plate type is found 
                 var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
                 if (plateType == null)

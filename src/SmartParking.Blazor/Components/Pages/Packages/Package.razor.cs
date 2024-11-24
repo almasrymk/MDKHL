@@ -238,7 +238,7 @@ public partial class Package
             PublishTo = packageDto.PublishTo,
             PackageStatus = packageDto.PackageStatus,
             PackageType = packageDto.PackageType,
-		   CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory)
+            CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory)
 
         };
 
@@ -320,8 +320,6 @@ public partial class Package
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}
-
-
 
 
 }

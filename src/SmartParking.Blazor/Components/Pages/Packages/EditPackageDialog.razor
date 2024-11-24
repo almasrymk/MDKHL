@@ -86,12 +86,34 @@
                                    Disabled='true'
                                    Color="MudBlazor.Color.Primary" />
                     </MudItem>
+                    @if (Package.PackageStatus == SubscriptionStatus.Active)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudDatePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           @bind-Date="ActivationDate"
+                                           Label="@L["ActivationDate"]" />
+                        </MudItem>
+                    }
+
+                    @if(Package.PackageStatus == SubscriptionStatus.Inactive)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudDatePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           @bind-Date="DectivationDate"
+                                           Label="@L["DectivationDate"]" />
+                        </MudItem>
+                    }
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@Package.CustomerCategory"
+                        <MudSelect @bind-SelectedValues="SelectedCustomerCategories"
                                    Label="@L["customer category"]"
                                    Placeholder="@L[ "Choose"]"
                                    HelperText=@L["Helper Text"]
-                                   Required>
+                                   Required
+                                   MultiSelection="true"
+                                   SelectAllText="Select All"
+                                   SelectAll="true">
 
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
@@ -125,7 +147,6 @@
 
                     </MudItem>
                     
-
                     <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@Package.PackageStatus" Class="d-inline-flex align-content-center">
@@ -166,6 +187,11 @@
     private MudForm form;
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
+    private DateTime? ActivationDate { get; set; } = DateTime.Now;
+    private DateTime? DectivationDate { get; set; } = DateTime.Now;
+    private IEnumerable<CustomerCategoryStatus> SelectedCustomerCategories { get; set; } = new List<CustomerCategoryStatus>();
+
+
     protected override async Task OnInitializedAsync()
     {
         timeSpanFrom = Package.PublishFrom.ToTimeSpan();

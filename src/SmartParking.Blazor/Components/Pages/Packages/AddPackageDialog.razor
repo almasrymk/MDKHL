@@ -66,7 +66,7 @@
 
                 
                     <MudItem sm="4" md="4">
-                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["Type"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
+                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
 
                             @foreach (var type in packageTypes)
                             {
@@ -76,36 +76,44 @@
                             }
                         </MudSelect>
                     </MudItem>
-
-                    <MudItem sm="4" md="4">
-                        <MudTimePicker Variant="Variant.Text"
-                                       Class="w-100"
-                                       Required
-                                       TimeChanged="OnTimeFromChanged"
-                                       Placeholder=@L["Time Placeholder"]
-                                       Label="@L["Publish From"]" />
-                    </MudItem>
-
-                    <MudItem sm="4" md="4">
-                        <MudTimePicker Variant="Variant.Text"
-                                       Class="w-100"
-                                       Required
-                                       TimeChanged="OnTimeToChanged"
-                                       Placeholder=@L["Time Placeholder"]
-                                       Label="@L["Publish To"]" />
-                    </MudItem>
                     <MudItem sm="4">
                         <MudSwitch Label="@L["Published"]"
                                    LabelPosition="LabelPosition.Start"
                                    @bind-Value="createUpdatePackage.published"
                                    Color="MudBlazor.Color.Primary" />
                     </MudItem>
+                    @if(createUpdatePackage.published == true)
+                    {
+                        
+
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           TimeChanged="OnTimeFromChanged"
+                                           Placeholder=@L["Time Placeholder"]
+                                           Label="@L["Publish From"]" />
+                        </MudItem>
+
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           TimeChanged="OnTimeToChanged"
+                                           Placeholder=@L["Time Placeholder"]
+                                           Label="@L["Publish To"]" />
+                        </MudItem>
+                    }
+                   
+                  
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@createUpdatePackage.CustomerCategory"
+                        <MudSelect @bind-SelectedValues="SelectedCustomerCategories"
                                    Label="@L["customer category"]"
                                    Placeholder="@L[ "Choose"]"
                                    HelperText=@L["Helper Text"]
-                                   Required>
+                                   Required
+                                   MultiSelection="true"
+                                   SelectAllText="Select All"
+                                   SelectAll="true"
+                                   MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))">
 
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
@@ -117,6 +125,7 @@
                         </MudSelect>
 
                     </MudItem>
+
                     <MudItem sm="12">
                         <MudTextField @bind-Value="createUpdatePackage.Description"
                                       For="@(() => createUpdatePackage.Description)"
@@ -161,11 +170,10 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
-    //private List<OrganizationDto> organizations = new List<OrganizationDto>();
     private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
-    //public List<PackageDto> Garages { get; set; } = new List<GarageDto>();
+    private IEnumerable<CustomerCategoryStatus> SelectedCustomerCategories { get; set; } = new List<CustomerCategoryStatus>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,6 +197,10 @@
             timeSpanFrom = value;
             createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
         }
+        else
+        {
+            createUpdatePackage.PublishFrom = new TimeOnly(0,0,0);
+        }
     }
     private void OnTimeToChanged(TimeSpan? value)
     {
@@ -197,6 +209,10 @@
         {
             timeSpanTo = value;
             createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        }
+        else
+        {
+            createUpdatePackage.PublishTo = new TimeOnly(0,0,0);
         }
     }
     private async Task Submit()
@@ -241,5 +257,10 @@
     private void Cancel()
     {
         MudDialog.Cancel();
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        return $"{selectedValues.Count} Category{(selectedValues.Count > 1 ? "s have" : " has")} been selected";
     }
 }
