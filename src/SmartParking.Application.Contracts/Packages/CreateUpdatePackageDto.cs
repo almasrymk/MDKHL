@@ -22,6 +22,8 @@ public class CreateUpdatePackageDto
         public CustomerCategoryStatus CustomerCategory { get; set; }
         public int DurationOfPackage { get; set; }
 
+    public Guid? tenantId { get; set; }
+
     //public ICollection<CustomerCategoryStatus> CustomerCategories { get; set; }  = new HashSet<CustomerCategoryStatus>();
 
 

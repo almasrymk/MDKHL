@@ -31,7 +31,8 @@ public class PackageDto
         public string OrganizationEnglishName { get; set; }
         public SubscriptionStatus PackageStatus { get; set; }
         public string CustomerCategory { get; set; }
-        //public ICollection<CustomerCategoryStatus> CustomerCategories { get; set; }
+    //public ICollection<CustomerCategoryStatus> CustomerCategories { get; set; }
+    public int DurationOfPackage { get; set; }
 
 
 }
