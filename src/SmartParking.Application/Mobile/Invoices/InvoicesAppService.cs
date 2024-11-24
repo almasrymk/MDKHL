@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Invoices;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.MobileInvoices;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
@@ -20,9 +22,12 @@ namespace SmartParking.Mobile.Invoices;
 public class InvoicesAppService : ApplicationService, IInvoicesAppService
 {
     private readonly IRepository<Invoice, int> _invoiceRepoistory;
-    public InvoicesAppService(IRepository<Invoice, int> invoiceRepoistory)
+    private readonly IDataFilter _dataFilter;
+
+    public InvoicesAppService(IRepository<Invoice, int> invoiceRepoistory,IDataFilter dataFilter)
     {
         _invoiceRepoistory = invoiceRepoistory;
+        _dataFilter = dataFilter;
     }
     public async Task<Result<InvoiceDto>> CreateAsync(CreateUpdateInvoiceDto input)
     {
@@ -49,26 +54,35 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
 
     public async Task<Result<InvoiceDto>> GetAsync(int id)
     {
-        var invoice = await _invoiceRepoistory.FindAsync(id);
-        if(invoice == null)
-            return Result<InvoiceDto>.NotFound("There is no such an Invoice , id: 5");
-        var invoiceMap = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+        using(_dataFilter.Disable<IMultiTenant>()) 
+        {
+            var invoice = await _invoiceRepoistory.FindAsync(id);
+            if (invoice == null)
+                return Result<InvoiceDto>.NotFound("There is no such an Invoice , id: 5");
+            var invoiceMap = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
             return Result<InvoiceDto>.Success(invoiceMap);
+        }
+       
     }
 
     public async Task<Result<List<InvoiceDto>>> GetListAsync()
     {
-        var queryable = await _invoiceRepoistory.GetQueryableAsync();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _invoiceRepoistory.GetQueryableAsync();
+            //queryable = queryable.Include(c => c.Customer.IdentityUser);
 
-        queryable = queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id);
+            queryable = queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id);
+
+
+            // Execute the query and get the list of hotel entities
+            var invoices = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var invoicesDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
+            // Return the paginated result
+            return invoicesDto;
+        }
         
-       
-        // Execute the query and get the list of hotel entities
-        var invoices = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to hotelDto objects
-        var invoicesDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
-        // Return the paginated result
-        return invoicesDto;
     }
 }

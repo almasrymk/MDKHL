@@ -292,7 +292,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 IdentificationTypes = IdentificationTypes.NationalID,
                 IdentityUser = user,
                 IdentityUserId = user.Id,
-                OtpExpirationDate = DateTime.Now
+                OtpExpirationDate = DateTime.Now,
+                CustomerCategory = CustomerCategoryStatus.Customer,
 
             };
             await _customerRepository.InsertAsync(customer);
