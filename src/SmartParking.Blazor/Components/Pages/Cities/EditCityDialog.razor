@@ -47,8 +47,6 @@
 									  Label="@L["EnglishName"]" />
 					</MudItem>
 
-						@* <StateLookups State="" SelectValueChanged="SelectState"></StateLookups> *@
-
 					<MudItem sm="6">
 						<MudSelect Variant="Variant.Text"
 								   Label="@L["State"]"
@@ -57,7 +55,14 @@
 								   @bind-Value="city.StateId">
 							@foreach (var state in states)
 							{
-								<MudSelectItem Value="state.Id">@state.EnglishName</MudSelectItem>
+								@if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem Value="state.Id">@state.EnglishName</MudSelectItem>
+								}
+								else
+								{
+									<MudSelectItem Value="state.Id">@state.ArabicName</MudSelectItem>
+								}
 							}
 						</MudSelect>
 					</MudItem>

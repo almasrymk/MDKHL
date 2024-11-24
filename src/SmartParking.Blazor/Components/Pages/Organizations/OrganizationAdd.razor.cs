@@ -64,11 +64,7 @@ public partial class OrganizationAdd
 
     private SubscriptionDto? SelectedPackage;
     public int FreeMinutes { get; set; }
-
-
-
-
-
+    private string NewAddress { get; set; }
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -159,12 +155,7 @@ public partial class OrganizationAdd
         {
             StatusValue = Enums.Status.Inactive;
         }
-        string newAddress = Address;
-
-
-
-
-
+       
         CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
         {
             ArabicName = ArabicName,
@@ -203,6 +194,7 @@ public partial class OrganizationAdd
             SecondaryNumber = SecondaryNumber,
             OrganizationPicture = OrganizationPicture,
             FreeMinutes = FreeMinutes,
+            Address = Address
 
         };
        
@@ -292,6 +284,11 @@ public partial class OrganizationAdd
             Directory.CreateDirectory(imageDirectoryPath);
         }
         return imageDirectoryPath;
+    }
+
+    private void UpdateAddress()
+    {
+        NewAddress = $"{BuildingNumber}, {StreetName}, {SecondaryNumber}, {District}, {PostalCode}";
     }
     private string ValidateSecondaryNumber(int value)
     {

@@ -56,7 +56,46 @@
                                       Disabled='true'
                                       Label="@L["Price"]" />
                     </MudItem>
+                   
+                    <MudItem sm="4">
+                          <MudSwitch Label="@L["Published"]"
+                                       LabelPosition="LabelPosition.Start"
+                                       @bind-Value="Package.Published"
+                                       Color="MudBlazor.Color.Primary" />
+                    </MudItem>
+                    
+                   @if(Package.Published == false)
+                   {
+                      <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           @bind-Time="timeSpanFrom"
+                                           Label="@L["Publish From"]" />
+                      </MudItem>
 
+                      <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           @bind-Time="timeSpanTo"
+                                           Label="@L["Publish To"]" />
+                        </MudItem>
+                   }
+                   else
+                   {
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           TimeChanged="OnTimeFromChanged"
+                                           Label="@L["Publish From"]" />
+                        </MudItem>
+
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           TimeChanged="OnTimeToChanged"
+                                           Label="@L["Publish To"]" />
+                        </MudItem>
+                   }
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.OrganizationId"
                                       For="@(() => Package.OrganizationId)"
@@ -65,66 +104,7 @@
                                       Disabled='true'
                                       Label="@L["OrgnizationId"]" />
                     </MudItem>
-                  
-                    <MudItem sm="4" md="4">
-                        <MudTimePicker Variant="Variant.Text"
-                                       Class="w-100"
-                                       TimeChanged="OnTimeFromChanged"
-                                       Label="@L["Publish From"]" />
-                    </MudItem>
 
-                    <MudItem sm="4" md="4">
-                        <MudTimePicker Variant="Variant.Text"
-                                       Class="w-100"
-                                       TimeChanged="OnTimeToChanged"
-                                       Label="@L["Publish To"]" />
-                    </MudItem>
-                    <MudItem sm="4">
-                        <MudSwitch Label="@L["Published"]"
-                                   LabelPosition="LabelPosition.Start"
-                                   @bind-Value="Package.published"
-                                   Disabled='true'
-                                   Color="MudBlazor.Color.Primary" />
-                    </MudItem>
-                    @if (Package.PackageStatus == SubscriptionStatus.Active)
-                    {
-                        <MudItem sm="4" md="4">
-                            <MudDatePicker Variant="Variant.Text"
-                                           Class="w-100"
-                                           @bind-Date="ActivationDate"
-                                           Label="@L["ActivationDate"]" />
-                        </MudItem>
-                    }
-
-                    @if(Package.PackageStatus == SubscriptionStatus.Inactive)
-                    {
-                        <MudItem sm="4" md="4">
-                            <MudDatePicker Variant="Variant.Text"
-                                           Class="w-100"
-                                           @bind-Date="DectivationDate"
-                                           Label="@L["DectivationDate"]" />
-                        </MudItem>
-                    }
-                    <MudItem sm="6" md="6">
-                        <MudSelect @bind-SelectedValues="SelectedCustomerCategories"
-                                   Label="@L["customer category"]"
-                                   Placeholder="@L[ "Choose"]"
-                                   HelperText=@L["Helper Text"]
-                                   Required
-                                   MultiSelection="true"
-                                   SelectAllText="Select All"
-                                   SelectAll="true">
-
-                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
-                            {
-                                <MudSelectItem Value="@category">
-
-                                    @category.ToString()
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
-
-                    </MudItem>
                     <MudItem sm="4" md="4">
                         <MudNumericField @bind-Value="Package.DurationOfPackage"
                                          For="@(() => Package.DurationOfPackage)"
@@ -136,6 +116,54 @@
                                          Label=@L["PackageDuration"] />
                     </MudItem>
 
+                    @if (Package.PackageStatus == SubscriptionStatus.Active)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudDatePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           @bind-Date="ActivationDate"
+                                           Disabled
+                                           Label="@L["ActivationDate"]" />
+                        </MudItem>
+                    }
+
+                    @if(Package.PackageStatus == SubscriptionStatus.Inactive)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudDatePicker Variant="Variant.Text"
+                                           Class="w-100"
+                                           @bind-Date="DectivationDate"
+                                           Disabled
+                                           Label="@L["DectivationDate"]" />
+                        </MudItem>
+                    }
+
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="Package.CustomerCategory"
+                                   Label="@L["customer category"]"
+                                   Placeholder="@L[ "Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   Required>
+
+                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                            {
+                                <MudSelectItem Value="@category">
+
+                                    @category.ToString()
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
+
+                    <MudItem sm="6" md="6" >
+                      
+                            <MudRadioGroup @bind-Value="@Package.PackageStatus" Class="d-flex">
+                                <MudRadio Value="@(Enums.SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                            </MudRadioGroup>
+                    </MudItem>
+
                     <MudItem sm="12">
                         <MudTextField @bind-Value="Package.Description"
                                       For="@(() => Package.Description)"
@@ -145,15 +173,6 @@
                                       Disabled='true'
                                       Label="@L["Description"]" />
 
-                    </MudItem>
-                    
-                    <MudItem sm="12" md="12" Class="d-inline-flex justify-content-center">
-                        <div Class="d-flex flex-row justify-content-between">
-                            <MudRadioGroup @bind-Value="@Package.PackageStatus" Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
-                                <MudRadio Value="@(Enums.SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                            </MudRadioGroup>
-                        </div>
                     </MudItem>
 
 				</MudGrid>
@@ -189,7 +208,6 @@
     private TimeSpan? timeSpanTo;
     private DateTime? ActivationDate { get; set; } = DateTime.Now;
     private DateTime? DectivationDate { get; set; } = DateTime.Now;
-    private IEnumerable<CustomerCategoryStatus> SelectedCustomerCategories { get; set; } = new List<CustomerCategoryStatus>();
 
 
     protected override async Task OnInitializedAsync()
@@ -245,8 +263,6 @@
 	private async Task CancelEdit()
 	{
 	    	MudDialogAdd.Cancel();
-
-
 	}
 
 

@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IStateAppService StateAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -13,7 +14,14 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@L["Edit"] @state.EnglishName</MudText>
+			@if(CultureInfo.CurrentCulture.Name == "en")
+            {
+				<MudText Typo="Typo.h6">@L["Edit"] @state.EnglishName</MudText>
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @state.ArabicName</MudText>
+			}
 		</TitleContent>
 		<DialogContent>
 
@@ -40,8 +48,6 @@
 									  Label="@L["EnglishName"]" />
 					</MudItem>
 					
-					@* <RegionLookups SelectValueChanged="SelectRegion"></RegionLookups> *@
-
 					<MudItem sm="6">
 						<MudSelect Variant="Variant.Text"
 								   Label="@L["Region"]"
@@ -50,7 +56,15 @@
 								   @bind-Value="state.RegionId">
 							@foreach (var region in regions)
 							{
-								<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
+
+								@if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem Value="region.Id">@region.EnglishName</MudSelectItem>
+								}
+								else
+								{
+									<MudSelectItem Value="region.Id">@region.ArabicName</MudSelectItem>
+								}
 							}
 						</MudSelect>
 					</MudItem>

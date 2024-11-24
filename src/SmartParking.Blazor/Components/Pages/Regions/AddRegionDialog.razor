@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Region
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
@@ -41,8 +42,7 @@
                                       InputType="InputType.Text"
                                           Label="@L["EnglishName"]" />
                     </MudItem>
-@*                     <Countrylookups SelectValueChanged="SelectCountry"></Countrylookups>
- *@ 
+ 
                     <MudItem sm="6">
                         <MudSelect Variant="Variant.Text"
                                    Label="@L["Country"]"
@@ -51,7 +51,16 @@
                                    @bind-Value="input.CountryId">
                             @foreach (var country in countries)
                             {
-                                <MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="country.Id">@country.EnglishName</MudSelectItem>
+
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="country.Id">@country.ArabicName</MudSelectItem>
+
+                                }
                             }
                         </MudSelect>
                     </MudItem>

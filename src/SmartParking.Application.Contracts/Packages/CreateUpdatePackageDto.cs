@@ -13,7 +13,7 @@ public class CreateUpdatePackageDto
         public int PackageTypeId { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
-        public bool published { get; set; }
+        public bool Published { get; set; }
         public TimeOnly PublishFrom { get; set; }
         public TimeOnly PublishTo { get; set; }
         public int OrganizationId { get; set; }

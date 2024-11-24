@@ -5,6 +5,7 @@
 @using SmartParking.Lookups.VehicleBrand
 @using SmartParking.Lookups.VehicleModel
 @using SmartParking.Vehicles
+@using System.Globalization
 @inject IPlateColorsAppService PlateColorsAppService
 @inject ILicenceTypesAppService LicenceTypesAppService
 @inject IVehicleBrandsAppService VehicleBrandAppService
@@ -64,8 +65,15 @@
                                    Clearable="_clearable">
                             @foreach (var licenceType in LicenceTypes)
                             {
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="licenceType.Id">@licenceType.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="licenceType.Id">@licenceType.ArabicName</MudSelectItem>
 
-                                <MudSelectItem Value="licenceType.Id">@licenceType.EnglishName</MudSelectItem>
+                                }
                             }
                         </MudSelect>
                     </MudItem>
@@ -80,8 +88,16 @@
                                    ValueChanged="SelectBrand">
                             @foreach (var vehiclebrand in VehicleBrands)
                             {
+                                @if(CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.EnglishName</MudSelectItem>
 
-                                <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.ArabicName</MudSelectItem>
+
+                                }
                             }
                         </MudSelect>
                     </MudItem>
@@ -95,8 +111,15 @@
                                    Clearable="_clearable">
                             @foreach (var vehiclemodel in VehicleModels)
                             {
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.ArabicName</MudSelectItem>
+                                }
 
-                                <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>

@@ -71,7 +71,7 @@
 
 
                          <MudItem sm="4">
-                             <MudNumericField T="int" Required="true" Validation="@(new Func<int, string>(ValidateBuildingNumber))"  @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField T="int" Required="true" Validation="@(new Func<int, string>(ValidateBuildingNumber))"  @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                          </MudItem>
 
                          <MudItem sm="4">
@@ -88,7 +88,10 @@
                          <MudItem sm="4">
                             <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidatePostalCode))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                        
+                        <MudItem sm="4">
+                            <MudTextField Disabled T="string" InputType="InputType.Text" ValueChanged="UpdateAddress" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                        </MudItem>
+
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
 
@@ -164,7 +167,6 @@
                                 </MudSelect>
                             </MudItem>
                         }
-
                         @if (!RegionSelectValue.IsNullOrEmpty())
                         {
                             <MudItem sm="4">
