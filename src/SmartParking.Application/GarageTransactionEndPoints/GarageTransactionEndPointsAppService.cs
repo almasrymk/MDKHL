@@ -313,7 +313,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, exsitCustomer); 
+                var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName);
+
                 await _invoiceAppService.CreateAsync(invoice);
                 flag = false;
             }
@@ -555,13 +556,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         // Calculate the time difference
         TimeSpan timeDifference = endTime - startTime;
 
-        // Calculate the hours difference and round up
+        
 
-        int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours) ;
+        if ((int)timeDifference.TotalHours == 0&& timeDifference.Minutes<=FreeMinutes)
+        {
+            return 0;
+            
+        }
+
+        int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours);
+
+         
         hoursDiff += (timeDifference.Minutes > 0 ? 1 : 0);
 
 
-        return (hoursDiff ==0 && timeDifference.Minutes < FreeMinutes) ? 0 : hoursDiff;
+        return hoursDiff;
     }
     private async Task<Decimal> CalcInvoice(DateTime entrenceTime, int totalHours, CreateUpdateGarageTransactionDto garageTransaction)
     {
