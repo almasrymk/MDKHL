@@ -22,4 +22,5 @@ public class CreateUpdatePackageDto
         public int DurationOfPackage { get; set; }
         public Guid? TenantId { get; set; }
 
+
 }
