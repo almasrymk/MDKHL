@@ -31,6 +31,14 @@ namespace SmartParking.CustomerPackages
 		/// <returns>A task that represents the asynchronous operation. The task result is <c>true</c> if the package was successfully assigned; otherwise, <c>false</c>.</returns>
 		Task<bool> AssignPackageToCustomerWebAsync(int packageId, Guid customerId);
 
+        /// <summary>
+        /// Retrieves a list of packages associated with a specific customer.
+        /// </summary>
+        /// <param name="customerId">The unique identifier of the customer whose packages are to be retrieved.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the customer.</returns>
+        Task<List<PackageDto>> GetListPackagesByCustomer(Guid customerId);
 
-	}
+
+
+    }
 }

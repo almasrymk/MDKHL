@@ -41,7 +41,7 @@ public class PackagesAppService : CrudAppService<
             _repository = repository;
             _softDeleteFilter = softDeleteFilter;
             _dataFilter = dataFilter;
-        this._organizations = organizations;
+        _organizations = organizations;
     }
 
 

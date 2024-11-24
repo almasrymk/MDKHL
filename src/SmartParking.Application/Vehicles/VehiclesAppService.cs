@@ -4,6 +4,8 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -119,4 +121,6 @@ public class VehiclesAppService:
         vehicle.Status = Status.Deleted;
         await CurrentUnitOfWork.SaveChangesAsync();
     }
+
+   
 }
