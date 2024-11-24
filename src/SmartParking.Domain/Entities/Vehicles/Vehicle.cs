@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Lookups.VehiclesLookups;
+﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace SmartParking.Entities.Vehicles
 	{
         public int Id { get; set; }
         public Guid CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
         public virtual VehicleModel VehicleModel { get; set; }
         public int VehicleModelId { get; set; }
         public virtual VehicleBrand VehicleBrand { get; set; }

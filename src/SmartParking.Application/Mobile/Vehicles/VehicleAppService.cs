@@ -182,45 +182,18 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 		}
 	}
 
-    public async Task<Result<PagedResultDto<VehicleDto>>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<Result<List<VehicleDto>>> GetListAsync()
     {
-
-        // Check if the user is authenticated
-        //if (!_currentUser.IsInRole("admin"))
-        //{
-        //    return Result<VehicleDto>.Error("User is not authenticated");
-        //}
-
-        var queryable = await _vehicleRepository.GetQueryableAsync();
-
-        if (!input.Sorting.IsNullOrEmpty())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
+            var queryable = await _vehicleRepository.GetQueryableAsync();
+            queryable = queryable.Where(_ => _.Customer.IdentityUser.Id == CurrentUser.Id);
+            var vehicles = await AsyncExecuter.ToListAsync(queryable);
+            var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
+            return vehiclesDto;
+           
         }
-        //Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        //Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        //Execute the query and get the list of hotel entities
-        var vehicles = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to hotelDto objects
-        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
-        // Return the paginated result
-        return new Result<PagedResultDto<VehicleDto>>(
-           new PagedResultDto<VehicleDto>
-           (totalCount, vehiclesDto)
-       );
+        
 
     }
 
