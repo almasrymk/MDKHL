@@ -16,13 +16,10 @@ public class CreateUpdatePackageDto
         public bool published { get; set; }
         public TimeOnly PublishFrom { get; set; }
         public TimeOnly PublishTo { get; set; }
-        // public  Organization Organization { get; set; }
         public int OrganizationId { get; set; }
         public SubscriptionStatus PackageStatus { get; set; }
         public CustomerCategoryStatus CustomerCategory { get; set; }
         public int DurationOfPackage { get; set; }
-
-    //public ICollection<CustomerCategoryStatus> CustomerCategories { get; set; }  = new HashSet<CustomerCategoryStatus>();
-
+        public Guid? TenantId { get; set; }
 
 }

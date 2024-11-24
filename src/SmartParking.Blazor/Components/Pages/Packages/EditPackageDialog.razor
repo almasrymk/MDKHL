@@ -222,7 +222,7 @@
       
         try
         {
-            Package.tenantId = CurrentTenant.Id;
+            Package.TenantId = CurrentTenant.Id;
             await PackagesAppService.UpdateAsync(UpdatedId, Package);
             Snackbar.Add(successedMessage, Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
