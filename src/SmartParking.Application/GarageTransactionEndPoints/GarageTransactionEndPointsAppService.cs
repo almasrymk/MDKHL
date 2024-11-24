@@ -563,7 +563,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             
         }
 
-        int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours);
+        int hoursDiff = (int)timeDifference.TotalHours;
 
          
         hoursDiff += (timeDifference.Minutes > 0 ? 1 : 0);
@@ -655,7 +655,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         TimeSpan totalDuration = garageTransaction.AccurateTime.Value - entrenceTime;
 
-        double totalHours = Math.Ceiling(totalDuration.TotalHours);
+        double totalHours = (int)totalDuration.TotalHours;
+        totalHours += totalDuration.Minutes > 0 ? 1 : 0;
        
 
         double specialHours = 0;
@@ -681,7 +682,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 TimeSpan specialDurationBeforeMidnight = effectiveEnd - effectiveStart;
                 if (specialDurationBeforeMidnight.TotalHours > 0)
                 {
-                    specialHours += Math.Ceiling(specialDurationBeforeMidnight.TotalHours); // Round up
+                    specialHours += (int)specialDurationBeforeMidnight.TotalHours; // Round up
+                        specialHours += specialDurationBeforeMidnight.Minutes > 0 ? 1 : 0;
                 }
              }
 
@@ -694,8 +696,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                   TimeSpan specialDurationAfterMidnight = effectiveEnd - effectiveStart;
                   if (specialDurationAfterMidnight.TotalHours > 0)
                   {
-                      specialHours += Math.Ceiling(specialDurationAfterMidnight.TotalHours); // Round up
-                  }
+                        specialHours += (int)specialDurationAfterMidnight.TotalHours; // Round up
+                        specialHours += specialDurationAfterMidnight.Minutes > 0 ? 1 : 0;
+                    }
               }
             
           }
@@ -710,7 +713,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     TimeSpan specialDuration = effectiveEnd - effectiveStart;
                     if (specialDuration.TotalHours > 0)
                     {
-                        specialHours += Math.Ceiling(specialDuration.TotalHours); // Round up
+                        specialHours += (int)specialDuration.TotalHours; // Round up
+                        specialHours += specialDuration.Minutes > 0 ? 1 : 0;
                     }
                 }
             }
