@@ -407,11 +407,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    public int CalculateTimeDependsOnPackage(DateTime ?entranceTime , DateTime? exitTime , CustomerPackageDto packageDto )
+    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto)
     {
         if (exitTime < entranceTime)
         {
-            throw new BusinessException("Leaving date can't be befor entrance date") ;
+            throw new BusinessException("Leaving date can't be befor entrance date");
         }
 
         DateTime packageStart = entranceTime.Value.Date.AddHours(packageDto.Package.PublishFrom.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
@@ -424,7 +424,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         while (currentDay <= endDay)
         {
-            DateTime dayPackageStart = currentDay.Date+packageStart.TimeOfDay;
+            DateTime dayPackageStart = currentDay.Date + packageStart.TimeOfDay;
             DateTime dayPackageEnd = currentDay.Date + packageEnd.TimeOfDay;
 
             if (packageEnd < packageStart)
@@ -435,22 +435,29 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             DateTime effectiveStart = Max(currentDay, dayPackageStart);
             DateTime effectiveEnd = Min(endDay, dayPackageEnd);
 
-           
+
 
             if (currentDay < dayPackageStart)
             {
                 var smallestDay = (Min(endDay, dayPackageStart) - currentDay);
-                extraHours += smallestDay.Hours + (smallestDay.Minutes>0?1:0);
+                extraHours += smallestDay.Hours + (smallestDay.Minutes > 0 ? 1 : 0);
                 currentDay = dayPackageStart;
-                
+
+            }
+            if(currentDay.TimeOfDay> dayPackageEnd.TimeOfDay)
+            {
+                var hours = currentDay.Hour - dayPackageEnd.Hour;
+                currentDay.AddHours(hours);
+                extraHours-=hours;
             }
 
-            if (endDay > dayPackageEnd && endDay.Date==currentDay.Date)
+            if (endDay > dayPackageEnd && endDay.Date == currentDay.Date)
             {
                 extraHours += (endDay - Max(currentDay, dayPackageEnd)).TotalHours;
+                extraHours += (endDay - Max(currentDay, dayPackageEnd)).Minutes > 0 ? 1:0 ;
             }
 
-            if(endDay.Date > currentDay.Date)
+            if (endDay.Date > currentDay.Date)
             {
                 extraHours += 24 - Math.Abs(dayPackageStart.Hour - dayPackageEnd.Hour) + (Math.Abs(dayPackageStart.Minute - dayPackageEnd.Minute) > 0 ? 1 : 0);
             }
@@ -465,8 +472,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
 
         // Return result
-        return (int) Math.Ceiling( extraHours);
+        return (int)extraHours;
     }
+
 
     private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
 
@@ -510,16 +518,20 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<string> CheckCustomer(string? plateNumber)
     {
-        var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
-
-        if (Customer == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            _logger.LogError($"{DateTime.Now} ====>  CustomerID ");
 
-            return null;
+            var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
+
+            if (Customer == null)
+            {
+                _logger.LogError($"{DateTime.Now} ====>  CustomerID ");
+
+                return null;
+            }
+            var CustomerId = Customer.CustomerId;
+            return CustomerId.ToString();
         }
-        var CustomerId = Customer.CustomerId;
-        return CustomerId.ToString();
     }
     private async Task<CustomerPackageDto> CheckActivePackageForCustomer(Guid customerId, int organizationId)
     {
