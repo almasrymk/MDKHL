@@ -63,13 +63,5 @@ public class OrganizationDto
     public int ActiveGarages { get; set; }
     public int ActiveCameras { get; set; }
     public int ParkingSlots { get; set; }
-
     public int FreeMinutes { get; set; }
-
-
-
-
-
-
-
 }

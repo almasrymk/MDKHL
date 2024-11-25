@@ -313,7 +313,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name); ;
+                var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, DateTime.UtcNow, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name,exsitCustomer.Id); 
                 await _invoiceAppService.CreateAsync(invoice);
                 flag = false;
             }
@@ -329,7 +329,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                    var price = THours * organization.AdditionalHourPrice;
                    
                    string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                   var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, THours, GarageTransaction.PlateNumber, DateTime.Now, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name); ;
+                   var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, THours, GarageTransaction.PlateNumber, DateTime.Now, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name,exsitCustomer.Id); ;
                    await _invoiceAppService.CreateAsync(invoice);
                     flag = false;
                 }
@@ -384,7 +384,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
     private async Task<CreateUpdateInvoiceDto> CreateInvoice(int GarageId,string GeneratedInvoiceNumber ,decimal Price ,int OrganizationID 
-        ,int TotalHours ,string PlateNumber ,DateTime InvoiceTime , DateTime ?EntranceTime , string CustomerEnName , string CustomerArName)
+        ,int TotalHours ,string PlateNumber ,DateTime InvoiceTime , DateTime ?EntranceTime , string CustomerEnName , string CustomerArName,Guid? customerId =null)
     {
         var invoice = new CreateUpdateInvoiceDto
         {
@@ -399,6 +399,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             EntranceTime = EntranceTime,
             CustomerEnName = CustomerEnName,
             CustomerArName = CustomerArName,
+            CustomerId = customerId
         };
 
         return invoice;
@@ -554,13 +555,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         // Calculate the time difference
         TimeSpan timeDifference = endTime - startTime;
 
-        // Calculate the hours difference and round up
+        
 
-        int hoursDiff = (int)Math.Ceiling(timeDifference.TotalHours) ;
+        if ((int)timeDifference.TotalHours == 0&& timeDifference.Minutes<=FreeMinutes)
+        {
+            return 0;
+            
+        }
+
+        int hoursDiff = (int)timeDifference.TotalHours;
+
+         
         hoursDiff += (timeDifference.Minutes > 0 ? 1 : 0);
 
 
-        return (hoursDiff ==0 && timeDifference.Minutes < FreeMinutes) ? 0 : hoursDiff;
+        return hoursDiff;
     }
     private async Task<Decimal> CalcInvoice(DateTime entrenceTime, int totalHours, CreateUpdateGarageTransactionDto garageTransaction)
     {
@@ -569,7 +578,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //4 Cases
         return (organization.IsNumberOfHoursExceeded, organization.IsClose) switch
         {
-            (false, false) => calcPriceHours(organization, totalHours),
+            (false, false) => calcPriceHoursExceededDay(organization, totalHours),
             (true,false)=> CalculatePriceForExceededHours(totalHours, organization),
             (false,true)=> CalculatePriceForOrganizationIsClosed(totalHours, organization,garageTransaction,entrenceTime),
             (true,true)=> CalculatePriceForOrganizationIsClosedAndExceededHours(totalHours,organization,garageTransaction,entrenceTime), 
@@ -642,11 +651,29 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         price += hours > 0 ? (hours * organization.AdditionalHourPrice):0;
         return price;
     }
+    private decimal calcPriceHoursExceededDay(Organization organization, int hours)
+    {
+        decimal price = 0;
+        while (hours > 0)
+        {
+            price += hours > 0 ? organization.FirstHourPrice : 0;
+            hours--;
+            price += hours > 0 ? organization.SecondHourPrice : 0;
+            hours--;
+            price += hours > 0 ? organization.ThirdHourPrice : 0;
+            hours--;
+            price += hours > 0 ? (Math.Min(hours,21) * organization.AdditionalHourPrice) : 0;
+            hours -= 21;
+
+        }
+        return price;
+    }
     private static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
     {
         TimeSpan totalDuration = garageTransaction.AccurateTime.Value - entrenceTime;
 
-        double totalHours = Math.Ceiling(totalDuration.TotalHours);
+        double totalHours = (int)totalDuration.TotalHours;
+        totalHours += totalDuration.Minutes > 0 ? 1 : 0;
        
 
         double specialHours = 0;
@@ -672,7 +699,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 TimeSpan specialDurationBeforeMidnight = effectiveEnd - effectiveStart;
                 if (specialDurationBeforeMidnight.TotalHours > 0)
                 {
-                    specialHours += Math.Ceiling(specialDurationBeforeMidnight.TotalHours); // Round up
+                    specialHours += (int)specialDurationBeforeMidnight.TotalHours; // Round up
+                        specialHours += specialDurationBeforeMidnight.Minutes > 0 ? 1 : 0;
                 }
              }
 
@@ -685,8 +713,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                   TimeSpan specialDurationAfterMidnight = effectiveEnd - effectiveStart;
                   if (specialDurationAfterMidnight.TotalHours > 0)
                   {
-                      specialHours += Math.Ceiling(specialDurationAfterMidnight.TotalHours); // Round up
-                  }
+                        specialHours += (int)specialDurationAfterMidnight.TotalHours; // Round up
+                        specialHours += specialDurationAfterMidnight.Minutes > 0 ? 1 : 0;
+                    }
               }
             
           }
@@ -701,7 +730,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     TimeSpan specialDuration = effectiveEnd - effectiveStart;
                     if (specialDuration.TotalHours > 0)
                     {
-                        specialHours += Math.Ceiling(specialDuration.TotalHours); // Round up
+                        specialHours += (int)specialDuration.TotalHours; // Round up
+                        specialHours += specialDuration.Minutes > 0 ? 1 : 0;
                     }
                 }
             }

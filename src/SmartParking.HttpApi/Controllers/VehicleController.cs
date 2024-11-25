@@ -50,9 +50,9 @@ public class VehicleController : AbpController
     }
     [HttpGet]
     [Authorize]
-    public async Task<Result<PagedResultDto<VehicleDto>>> GetAllVehicles([FromQuery] PagedAndSortedResultRequestDto input)
+    public async Task<Result<List<VehicleDto>>> GetAllVehicles()
     {
-        return await _vehicleAppService.GetListAsync(input);
+        return await _vehicleAppService.GetListAsync();
     }    
     [HttpGet("image")]
     [Authorize]

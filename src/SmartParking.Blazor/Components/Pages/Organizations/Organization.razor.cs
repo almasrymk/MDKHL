@@ -10,9 +10,7 @@ using Volo.Abp;
 using SmartParking.Blazor.Components.SPComponents;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
-using SmartParking.Vehicles.LookUps;
 using System.Globalization;
-using YamlDotNet.Core.Tokens;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -200,8 +198,8 @@ public partial class Organization
         if (CultureInfo.CurrentCulture.Name == "en")
         {
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionName"], Name = "RegionName", IsFilterable = true, PropertyName = "Region.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 

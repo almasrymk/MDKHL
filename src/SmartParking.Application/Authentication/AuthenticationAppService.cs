@@ -292,7 +292,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 IdentificationTypes = IdentificationTypes.NationalID,
                 IdentityUser = user,
                 IdentityUserId = user.Id,
-                OtpExpirationDate = DateTime.Now
+                OtpExpirationDate = DateTime.Now,
+                CustomerCategory = CustomerCategoryStatus.Customer,
 
             };
             await _customerRepository.InsertAsync(customer);
@@ -388,6 +389,30 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             ErrorMessage = "Incorrect password."
         });
+
+    }
+
+    public async Task<bool> SetNewPasswordWeb(string input , string NewPassword)
+    {
+        var user =await _userManager.FindByEmailAsync(input);
+        if (user == null)
+        {
+            throw new Exception("user isn't exist");
+
+        }
+
+        await _userManager.RemovePasswordAsync(user);
+        var password = await _userManager.AddPasswordAsync(user, NewPassword);
+
+        if (password.Succeeded)
+        {
+            return true;
+
+        }
+        else
+        {
+            return false;
+        }
 
     }
 

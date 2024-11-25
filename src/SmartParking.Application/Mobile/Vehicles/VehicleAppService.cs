@@ -57,24 +57,13 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             {
                 var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleMobileDto, Vehicle>(input);
                 // check plate number must include both plate letters and plate numbers, either in Arabic or English.
-                if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
-                {
+
                     mappedVehicle.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
 
-                }
-                else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
-                {
-                    mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-                }
-                else
-                {
-                    return Result<VehicleDto>.Invalid(new ValidationError
-                    {
-                        ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-                        ErrorMessage = "Plate number must include both plate letters and plate numbers, either in Arabic or English."
 
-                    });
-                }
+                
+                    mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+                
                 // LicenceType is plate type is found 
                 var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
                 if (plateType == null)
@@ -193,45 +182,18 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 		}
 	}
 
-    public async Task<Result<PagedResultDto<VehicleDto>>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<Result<List<VehicleDto>>> GetListAsync()
     {
-
-        // Check if the user is authenticated
-        //if (!_currentUser.IsInRole("admin"))
-        //{
-        //    return Result<VehicleDto>.Error("User is not authenticated");
-        //}
-
-        var queryable = await _vehicleRepository.GetQueryableAsync();
-
-        if (!input.Sorting.IsNullOrEmpty())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
+            var queryable = await _vehicleRepository.GetQueryableAsync();
+            queryable = queryable.Where(_ => _.Customer.IdentityUser.Id == CurrentUser.Id);
+            var vehicles = await AsyncExecuter.ToListAsync(queryable);
+            var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
+            return vehiclesDto;
+           
         }
-        //Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        //Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        //Execute the query and get the list of hotel entities
-        var vehicles = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to hotelDto objects
-        var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
-        // Return the paginated result
-        return new Result<PagedResultDto<VehicleDto>>(
-           new PagedResultDto<VehicleDto>
-           (totalCount, vehiclesDto)
-       );
+        
 
     }
 
