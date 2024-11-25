@@ -320,7 +320,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     {
         using (_softDeleteFilter.Disable<IMultiTenant>())
         {
-            var organizations = await _repository.GetListAsync();
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(_ => _.IsDeleted != true && _.Status != Status.Deleted && _.Status != Status.Inactive);
+            var organizations = await AsyncExecuter.ToListAsync(query);
             var organizationsMap = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
             if (organizationsMap.Count == 0)
             {
