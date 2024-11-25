@@ -53,7 +53,14 @@
 
                                 @foreach (var organization in organizations)
                                 {
-                                    <MudSelectItem Value="@organization.Id">@organization.EnglishName</MudSelectItem>
+                                    @if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="@organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="@organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
                                 }
                             </MudSelect>
                         </MudItem>

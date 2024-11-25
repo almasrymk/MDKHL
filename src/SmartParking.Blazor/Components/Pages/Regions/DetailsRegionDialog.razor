@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Region
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IRegionAppService RegionAppService
 @inject ICountriesAppService CountriesAppService
@@ -12,7 +13,16 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@region.EnglishName</MudText>
+			@if(CultureInfo.CurrentCulture.Name == "en")
+			{
+				<MudText Typo="Typo.h6">@region.EnglishName</MudText>
+
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@region.ArabicName</MudText>
+
+			}
 		</TitleContent>
 		<DialogContent>
 

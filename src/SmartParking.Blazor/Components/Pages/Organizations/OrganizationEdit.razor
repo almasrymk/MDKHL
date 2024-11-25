@@ -71,7 +71,7 @@
                             <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidatePostalCode))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                            <MudTextField Disabled  T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">

@@ -3,6 +3,7 @@
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Lookups.PlateColor
 @using SmartParking.Vehicles.LookUps
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IPlateColorsAppService PlateColorsAppService
 @inject ILicenceTypesAppService LicenceTypesAppService
@@ -14,7 +15,16 @@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.EnglishName</MudText>
+			@if(CultureInfo.CurrentCulture.Name == "en")
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.EnglishName</MudText>
+
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.ArabicName</MudText>
+
+			}
 		</TitleContent>
 		<DialogContent>
 
@@ -32,7 +42,16 @@
 								   Clearable="_clearable">
 							@foreach (var platecolor in plateColors)
 							{
-								<MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
+								@if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
+									
+								}
+								else
+								{
+									<MudSelectItem Value="platecolor.Id">@platecolor.ArabicName</MudSelectItem>
+
+								}
 							}
 						</MudSelect>
 					</MudItem>

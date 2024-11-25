@@ -60,6 +60,7 @@ public class CustomerPackagesAppService:
        
         return  ObjectMapper.Map<CustomerPackage,CustomerPackageDto>(result);
     }
+    ///<inheritdoc/>
     public  async Task<Result<List<PackageDto>>> GetPackageByCustomer()
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -77,7 +78,20 @@ public class CustomerPackagesAppService:
             return Result<List<PackageDto>>.Success(packageMap);
         }
     }
+    ///<inheritdoc/>
+    public async Task<List<PackageDto>> GetListPackagesByCustomer(Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _packageRepository.GetQueryableAsync();
+            query = query.Where(x => x.CustomerPackages.Any(c => c.CustomerId == customerId));
 
+            var result = await AsyncExecuter.ToListAsync(query);
+            var packageMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(result);
+            return packageMap;
+        }
+    }
+    ///<inheritdoc/>
     [RemoteService(IsEnabled =false)]
     public  async Task<Result> AssignPackageToCustomerAsync(int packageId)
     {

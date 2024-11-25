@@ -4,6 +4,7 @@
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
 @using SmartParking.Lookups.State
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject ICitiesAppService CitiesAppService
@@ -40,9 +41,7 @@
                                       Label="@L["EnglishName"]"
                                       Placeholder="@L["Type Here"]" />
                     </MudItem>
-                    
-                   
-                    @* <StateLookups SelectValueChanged="SelectState"></StateLookups> *@
+                  
                     <MudItem sm="6">
                         <MudSelect Variant="Variant.Text"
                                    Label="@L["State"]"
@@ -51,7 +50,15 @@
                                    @bind-Value="input.StateId">
                             @foreach (var state in states)
                             {
-                                <MudSelectItem Value="state.Id">@state.EnglishName</MudSelectItem>
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="state.Id">@state.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="state.Id">@state.ArabicName</MudSelectItem>
+                                }
+
                             }
                         </MudSelect>
                     </MudItem>

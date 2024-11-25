@@ -225,7 +225,7 @@
     "InvoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "Can'tCreateInvoice": "لا يمكن إنشاء فاتورة",
     "OrganizationArabicName": " إسم المنشأة",
-    "ArGarageName": "إسم الجراج بالعربية",
+    "ArGarageName": "إسم الموقف بالعربية",
     "InvoiceDetails": "تفاصيل الفاتورة",
     "Print": "طباعة",
     "ChoosePaymentMethod": "إختر طريقة الدفع",
@@ -256,11 +256,6 @@
     "EnterYourSubscriptionDescription": "أدخل وصف الإشتراك الخاص بك",
     "EnterYourSubscriptionPrice": "أدخل سعر الإشتراك الخاص بك",
     "ChooseDate": "إختيار التاريخ",
-    "EnterYourInActivationDate": "أدخل تاريخ انهاء التفعيل الخاص بك",
-    "EnterYourNumberOfCustomers": "أدخل عدد المستخدمين الخاص بك",
-    "EnterYourNumberOfCameras": "أدخل عدد الكاميرات الخاصة بك",
-    "EnterYourNumbersOfGarages": "أدخل عدد المـواقـف الخاصة بك",
-    "EnterYourNumberOfMobileCustomers": "أدخل عدد لمستخدمى الموبايل الخاص بك",
     "AddSubscription": "إضافة الإشتراك",
     "NewSubscription": "إشتراك جديد",
     "SubscriptionDetails": "تفاصيل الإشتراك",
@@ -477,9 +472,8 @@
     "NumOfGarages": "عدد المـواقـف",
     "PackageDuration": "مدة صلاحية الباقة",
     "FreeMinutes": "عدد الدقائق المتاحة مجانًا",
-    "PackageType": "نوع الباقة"
-   
-
-
+    "PackageType": "نوع الباقة",
+    "DectivationDate": "تاريــخ انهاء التفعيل",
+    "OrgCustomers": "عملائى"
   }
 }

@@ -68,11 +68,8 @@ public partial class OrganizationEdit
     public int NumberOfCustomers { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public int Parkingslot { get; set; }
-
     private SubscriptionDto? SelectedPackage;
-
     public string ViewSubscriptionArabicName { get; set; }
-
     public  int FreeMinutes { get; set; }
 
 
@@ -167,7 +164,7 @@ public partial class OrganizationEdit
             PostalCode = PostalCode,
             District = District,
             OrganizationPicture = OrganizationPicture,
-            Address = Address,
+            Address = BuildingNumber + StreetName + SecondaryNumber + PostalCode + District,
             FreeMinutes= FreeMinutes,
         };
 
@@ -273,8 +270,6 @@ public partial class OrganizationEdit
         PackageId = organization.PackageId;
         orgTenant = organization.TenantId;
         FreeMinutes = organization.FreeMinutes;
-
-
         PackageSelectValue=organization.SubscriptionId.ToString();
         ViewSubscriptionArabicName = organization.SubscriptionArabicName;
 
