@@ -51,6 +51,9 @@ public class CustomerPackagesAppService:
   
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
         var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrganizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active&&x.ExpiryDate>=DateTime.Today);
         
         if (result == null)
@@ -59,6 +62,7 @@ public class CustomerPackagesAppService:
         }
        
         return  ObjectMapper.Map<CustomerPackage,CustomerPackageDto>(result);
+        }
     }
     ///<inheritdoc/>
     public  async Task<Result<List<PackageDto>>> GetPackageByCustomer()
