@@ -1,6 +1,7 @@
 ﻿
 using AutoMapper.Internal.Mappers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
@@ -51,14 +52,21 @@ public class CustomerPackagesAppService:
   
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
     {
-        var result=await _repository.FirstOrDefaultAsync(x=>x.Package.OrganizationId == orgID&&x.CustomerId==customerID&&x.CustomerPackageStatus==CustomerPackageStatus.Active&&x.ExpiryDate>=DateTime.Today);
-        
-        if (result == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return null; // Or throw an appropriate exception if necessary
+            var query = await _repository.GetQueryableAsync();
+            query = query.Include(p => p.Customer).Include(p => p.Organization).Include(p => p.Package);
+            query = query.Where(x => x.OrganizationId == orgID && x.CustomerId == customerID && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= DateTime.Today);
+            var result = await query.FirstOrDefaultAsync();
+
+            if (result == null)
+            {
+                return null; // Or throw an appropriate exception if necessary
+            }
+
+            return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
         }
-       
-        return  ObjectMapper.Map<CustomerPackage,CustomerPackageDto>(result);
+        
     }
     ///<inheritdoc/>
     public  async Task<Result<List<PackageDto>>> GetPackageByCustomer()

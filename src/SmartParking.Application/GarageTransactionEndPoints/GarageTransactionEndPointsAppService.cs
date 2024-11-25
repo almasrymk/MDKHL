@@ -510,16 +510,20 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<string> CheckCustomer(string? plateNumber)
     {
-        var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
-
-        if (Customer == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            _logger.LogError($"{DateTime.Now} ====>  CustomerID ");
+            var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
 
-            return null;
+            if (Customer == null)
+            {
+                _logger.LogError($"{DateTime.Now} ====>  CustomerID ");
+
+                return null;
+            }
+            var CustomerId = Customer.CustomerId;
+            return CustomerId.ToString();
         }
-        var CustomerId = Customer.CustomerId;
-        return CustomerId.ToString();
+        
     }
     private async Task<CustomerPackageDto> CheckActivePackageForCustomer(Guid customerId, int organizationId)
     {
