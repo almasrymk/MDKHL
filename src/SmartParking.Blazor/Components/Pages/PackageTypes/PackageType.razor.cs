@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Cities;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
 using SmartParking.Lookups;
@@ -14,7 +12,6 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.PackageTypes;
 

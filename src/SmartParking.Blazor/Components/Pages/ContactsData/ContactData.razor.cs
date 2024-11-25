@@ -38,57 +38,57 @@ public partial class ContactData
     /// </summary>
     /// <param name="columnFilter">The name of column to filter for among contact data.</param>
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    //private async Task HandleFilter(PageChangeEventArgs pageInfo)
-    //{
-    //    // Log the search term to the console for debugging purposes
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    {
+        // Log the search term to the console for debugging purposes
 
-    //    // Create a new search input object with pagination, sorting, and search term parameters
-    //    var input = new PagedAndSortedAndFilteredResultRequestDto
-    //    {
-    //        MaxResultCount = pageInfo.RowsPerPage,
-    //        SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-    //        Sorting = pageInfo.SortColumn,
-    //        SearchingTerm = termSearch, // The term to use for filtering results
-    //        filters = pageInfo.Filters
-    //    };
-    //    // Call the service to perform the search based on the input parameters
-    //    var categoryDto = await CustomerCategoryAppService.Filter(input);
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndFilteredResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var contactInfoDto = await ContactInfoAppService.Filter(input);
 
-    //    // Calculate the total number of pages required to display all results
-    //    TotalItem = (int)categoryDto.TotalCount;
-    //    CreateTable(categoryDto);
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)contactInfoDto.TotalCount;
+        CreateTable(contactInfoDto);
 
 
-    //}
+    }
     /// <summary>
     /// Searches for contact data on the server side using the contact data code search term.
     /// </summary>
     /// <param name="searchTerm">The term to search for among contact data.</param>
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    //private async Task HandleSearch(PageChangeEventArgs pageInfo)
-    //{
-    //    // Log the search term to the console for debugging purposes
-    //    Console.WriteLine(pageInfo.SearchTerm);
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
+    {
+        // Log the search term to the console for debugging purposes
+        Console.WriteLine(pageInfo.SearchTerm);
 
-    //    // Update the term used for searching with the provided search term
-    //    termSearch = pageInfo.SearchTerm;
+        // Update the term used for searching with the provided search term
+        termSearch = pageInfo.SearchTerm;
 
-    //    // Create a new search input object with pagination, sorting, and search term parameters
-    //    var input = new PagedAndSortedAndSearchResultRequestDto
-    //    {
-    //        MaxResultCount = pageInfo.RowsPerPage,
-    //        SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-    //        Sorting = pageInfo.SortColumn,
-    //        SearchingTerm = termSearch // The term to use for filtering results
-    //    };
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
+        };
 
-    //    // Call the service to perform the search based on the input parameters
-    //    var garagessDto = await CustomerCategoryAppService.Search(input);
+        // Call the service to perform the search based on the input parameters
+        var contactInfosDto = await ContactInfoAppService.Search(input);
 
-    //    // Calculate the total number of pages required to display all results
-    //    TotalItem = (int)garagessDto.TotalCount;
-    //    CreateTable(garagessDto);
-    //}
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)contactInfosDto.TotalCount;
+        CreateTable(contactInfosDto);
+    }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
@@ -115,7 +115,7 @@ public partial class ContactData
 
     }
 
-    private void CreateTable(PagedResultDto<ContactInfoDto> garages)
+    private void CreateTable(PagedResultDto<ContactInfoDto> contactInfos)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -127,11 +127,11 @@ public partial class ContactData
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNum"], Name = "PhoneNum", IsFilterable = false, PropertyName = "PhoneNum", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["WhatsAppNum"], Name = "WhatsAppNum", IsFilterable = false, PropertyName = "WhatsAppNum", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ContactMail"], Name = "ContactMail", IsFilterable = false, PropertyName = "ContactMail", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNum"], Name = "PhoneNum", IsFilterable = true, PropertyName = "PhoneNum", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["WhatsAppNum"], Name = "WhatsAppNum", IsFilterable = true, PropertyName = "WhatsAppNum", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ContactMail"], Name = "ContactMail", IsFilterable = true, PropertyName = "ContactMail", IsSortable = false, TypeFilter = TypeFilter.Text });
 
-        foreach (var item in garages.Items)
+        foreach (var item in contactInfos.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));

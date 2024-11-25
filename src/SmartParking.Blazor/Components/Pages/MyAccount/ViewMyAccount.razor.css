@@ -1,0 +1,15 @@
+﻿::deep .main-layout-paper {
+    background-color: #F2F2F2;
+}
+
+::deep .mud-paper {
+    border-radius: 0 10px 0 10px !important;
+}
+
+::deep .mud-input-label-inputcontrol {
+    font-weight: 700 !important;
+}
+
+::deep .mud-input-underline:before {
+    border-bottom: 2px solid #434341 !important;
+}

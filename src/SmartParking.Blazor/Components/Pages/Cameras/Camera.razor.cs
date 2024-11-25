@@ -141,6 +141,8 @@ public partial class Camera
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
+             
+
         };
 
         // Retrieve the list of organizations from the server

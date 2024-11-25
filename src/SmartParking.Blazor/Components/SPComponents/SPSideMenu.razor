@@ -23,7 +23,7 @@
                 }                
                 @if(currenttenant.Id != null)
                 {
-                    <MudNavLink Href="/my-account" Icon="@Icons.Material.Filled.LocationCity">@L["My Account"]</MudNavLink>
+                    <MudNavLink Href="/viewMyAccount" Icon="@Icons.Material.Filled.LocationCity">@L["MyAccount"]</MudNavLink>
                 }
                 <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
@@ -49,7 +49,7 @@
                 {
                     
                 <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Organization Subscription"]</MudNavLink>
-                <MudNavLink Href="/packages" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
+                <MudNavLink Href="/package" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                 
                 }
                 @if(currenttenant.Id != null)
