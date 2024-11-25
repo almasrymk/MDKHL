@@ -578,7 +578,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //4 Cases
         return (organization.IsNumberOfHoursExceeded, organization.IsClose) switch
         {
-            (false, false) => calcPriceHours(organization, totalHours),
+            (false, false) => calcPriceHoursExceededDay(organization, totalHours),
             (true,false)=> CalculatePriceForExceededHours(totalHours, organization),
             (false,true)=> CalculatePriceForOrganizationIsClosed(totalHours, organization,garageTransaction,entrenceTime),
             (true,true)=> CalculatePriceForOrganizationIsClosedAndExceededHours(totalHours,organization,garageTransaction,entrenceTime), 
@@ -649,6 +649,23 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         price += hours > 0 ? organization.ThirdHourPrice : 0;
         hours--;
         price += hours > 0 ? (hours * organization.AdditionalHourPrice):0;
+        return price;
+    }
+    private decimal calcPriceHoursExceededDay(Organization organization, int hours)
+    {
+        decimal price = 0;
+        while (hours > 0)
+        {
+            price += hours > 0 ? organization.FirstHourPrice : 0;
+            hours--;
+            price += hours > 0 ? organization.SecondHourPrice : 0;
+            hours--;
+            price += hours > 0 ? organization.ThirdHourPrice : 0;
+            hours--;
+            price += hours > 0 ? (Math.Min(hours,21) * organization.AdditionalHourPrice) : 0;
+            hours -= 21;
+
+        }
         return price;
     }
     private static (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
