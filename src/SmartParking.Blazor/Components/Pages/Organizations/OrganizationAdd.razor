@@ -314,7 +314,7 @@
                 @if (OrganizationPicture != null)
                 {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Width="100" Style="width:100px;" Height="100" Alt="@L["OrganizationLogo"]" />
                     </MudItem>
                 }
 
@@ -322,11 +322,12 @@
                 {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
 
-                        <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Style="width:200px;" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
 
                     </MudItem>
                 }
-                
+                    <MudItem sm="12">
+
                     <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
                         <ActivatorContent>
                             <MudButton Variant="Variant.Filled"
@@ -337,6 +338,7 @@
                         </ActivatorContent>
 
                     </MudFileUpload>
+                    </MudItem>
 
                 
             </MudPaper>
