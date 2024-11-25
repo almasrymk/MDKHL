@@ -45,7 +45,7 @@
                         <p> </p>
                     </div>
                     <div class="col-md-12 d-flex flex-column">
-                        <strong>Payment Date:</strong><p> @DateTime.Now</p>
+                        <strong>Payment Date:</strong><p> @DateTime.UtcNow.ToString()</p>
                     </div>
                     <div class="col-md-12 d-flex flex-column">
                         <strong>Plate Number:</strong> <p>@Invoice.PlateNumber</p>
@@ -57,7 +57,7 @@
                         <strong>Exit Date:</strong><p>@Invoice.InvoiceTime.ToString() </p>
                     </div>
                     <div class="col-md-6 d-flex flex-column align-items-center">
-                        <strong>Checkout Date:</strong><p>@DateTime.Now</p>
+                        <strong>Checkout Date:</strong><p>@DateTime.UtcNow.ToString()</p>
                     </div>
                 </div>
             </div>
@@ -84,12 +84,12 @@
                             <p><strong>Total Pre VAT:</strong> @Invoice.InvoicePrice SAR</p>
                         </div>
                         <div class="d-flex flex-row">
-                            <p><strong>VAT 14%:</strong> @($"{(int)(Invoice.InvoicePrice * 0.14m)} ") SAR</p>
+                            <p><strong>VAT 14%:</strong> @($"{Math.Round((Invoice.InvoicePrice * 0.14m),2)} ") SAR</p>
                         </div>
                         <div class="d-flex flex-row">
                             <p>
                                 <strong>Total Include VAT:</strong>
-                                @($"{(int)(Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.14m))} ") SAR
+                                @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.14m)),2)} ") SAR
                             </p>
                         </div>
                     </div>
