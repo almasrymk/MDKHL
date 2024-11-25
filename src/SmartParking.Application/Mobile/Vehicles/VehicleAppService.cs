@@ -58,12 +58,20 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
                 var mappedVehicle = ObjectMapper.Map<CreateUpdateVehicleMobileDto, Vehicle>(input);
                 // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 
-                    mappedVehicle.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+                mappedVehicle.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
 
 
-                
-                    mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-                
+
+                mappedVehicle.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+                var existVehicle = await _vehicleRepository.FirstOrDefaultAsync(_ => _.ArPlateNumber == mappedVehicle.ArPlateNumber || _.EnPlateNumber == mappedVehicle.EnPlateNumber);
+                if (existVehicle is not null)
+                {
+                    return Result<VehicleDto>.Invalid(new ValidationError
+                    {
+                        ErrorCode = StatusCodes.Status400BadRequest.ToString(),
+                        ErrorMessage = "this vehicle is exist"
+                    });
+                }
                 // LicenceType is plate type is found 
                 var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
                 if (plateType == null)
@@ -102,7 +110,6 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         }
     }
 
-   
 
     public async Task<Result<VehicleDto>> DeleteAsync(int vehicleId)
     {

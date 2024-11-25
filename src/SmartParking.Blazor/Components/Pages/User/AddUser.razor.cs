@@ -12,6 +12,7 @@ using System.Linq;
 using Volo.Abp.Validation;
 using SmartParking.Enums;
 using SmartParking.Entities.Organizations;
+using Microsoft.Extensions.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -40,59 +41,30 @@ public partial class AddUser
     private async void SubmitCreate()
     {
         int orgId = 0;
-        Guid? TenantId= null;
-        if(currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()))
+        Guid? TenantId = null;
+        if (currrentTenant.Id is not null)
         {
-
-           orgId= await OrganizationAppService.GetOrganizationIdByTenant(currrentTenant.Id);
-           var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            orgId = org.Id;
             TenantId = org.TenantId;
-            
-
         }
-        else
+        if(userRole == RolesType.Organization.ToString())
         {
-           var result = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
-            orgId= result.Id;
-            TenantId = result.TenantId;
-
+            var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
+            orgId = org.Id;
+            TenantId = org.TenantId;
         }
-
         var successedMessage = L["UserCreatedSuccessfully"];
         var errorMessage = L["Can'tCreateUser"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        await AddUserAsync(orgId, TenantId, successedMessage, errorMessage, validationErrorMessage);
+    }
+
+    private async Task AddUserAsync(int orgId, Guid? TenantId, LocalizedString successedMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
+    {
         try
         {
-            if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole(Enums.RolesType.MdkhlEmployee.ToString())|| currrentUser.IsInRole("admin"))
-            {
-                if (userRole == RolesType.Mdkhl.ToString() || userRole == RolesType.MdkhlEmployee.ToString())
-                {
-                    userCreate.TenantId = null;
-                    userCreate.UserType = 1;
-                }
-                else if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
-                {
-                    userCreate.OrganizationId = orgId;
-                    userCreate.TenantId = TenantId;
-                    userCreate.UserType = 2;
-                }
-
-            }
-            else if (currrentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currrentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString())){
-
-                if (userRole == RolesType.Organization.ToString() || userRole == RolesType.OrganizationEmployee.ToString() || userRole == RolesType.Keeper.ToString())
-                {
-                    userCreate.OrganizationId = orgId;
-                    userCreate.TenantId = TenantId;
-                    userCreate.UserType = 2;
-                }
-            }
-
-            userCreate.Password = "P@ssw0rd";
-            Roles[0] = userRole;
-            userCreate.RoleNames=Roles;
-            userCreate.UserName = userCreate.PhoneNumber;
-
+            CheckUser(orgId, TenantId);
 
             var user = await UsersAppService.CreateAsync(userCreate);
             if (user != null)
@@ -129,7 +101,28 @@ public partial class AddUser
         }
     }
 
-  
+    private void CheckUser(int orgId, Guid? TenantId)
+    {
+        if (userRole == RolesType.Mdkhl.ToString())
+        {
+            userCreate.TenantId = TenantId;
+            userCreate.UserType = 0;
+        }
+        else if (userRole == RolesType.Organization.ToString())
+        {
+            userCreate.OrganizationId = orgId;
+            userCreate.TenantId = TenantId;
+            userCreate.UserType = 1;
+            userRole = RolesType.Organization.ToString();
+        }
+
+        userCreate.Password = "P@ssw0rd";
+        Roles[0] = userRole;
+        userCreate.RoleNames = Roles;
+        userCreate.UserName = userCreate.PhoneNumber;
+    }
+
+
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.
     /// </summary>

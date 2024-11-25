@@ -520,7 +520,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-
             var Customer = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
 
             if (Customer == null)
@@ -532,6 +531,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             var CustomerId = Customer.CustomerId;
             return CustomerId.ToString();
         }
+        
     }
     private async Task<CustomerPackageDto> CheckActivePackageForCustomer(Guid customerId, int organizationId)
     {
