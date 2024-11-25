@@ -1209,6 +1209,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
+                    b.Property<int>("DurationOfPackage")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("timestamp without time zone");
 
