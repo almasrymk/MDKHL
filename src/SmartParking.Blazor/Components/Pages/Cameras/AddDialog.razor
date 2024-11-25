@@ -49,6 +49,7 @@
                                    Variant="Variant.Text"
                         
                         >
+                            
                             @foreach (var type in Enum.GetValues<CameraBrand>())
                             {
                                 <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
@@ -64,9 +65,11 @@
                                    Label="@L["Model"]"
                                    Placeholder="@L["Choose"]"
                                    Clearable="true"
-                                   Variant="Variant.Text">
+                                   Variant="Variant.Text"
+                        >
                             @foreach (var type in Enum.GetValues<CameraModel>())
                             {
+
                                 <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
                             }
 
@@ -83,6 +86,7 @@
                                    Variant="Variant.Text">
                             @foreach (var type in Enum.GetValues<MainCameraType>())
                             {
+
                                 <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
                             }
 

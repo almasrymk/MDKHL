@@ -8,6 +8,7 @@ namespace SmartParking.Enums;
 
 public enum MainCameraType
 {
+    None,
     DSLR,
     Mirrorless,
     Action,

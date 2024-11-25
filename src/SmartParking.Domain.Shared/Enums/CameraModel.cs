@@ -8,6 +8,7 @@ namespace SmartParking.Enums;
 
 public enum CameraModel
 {
+    None,
     CanonEOS5D,
     SonyAlpha,
     GoProHero,
