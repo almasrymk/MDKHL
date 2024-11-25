@@ -41,7 +41,7 @@ public class PackagesAppService : CrudAppService<
             _repository = repository;
             _softDeleteFilter = softDeleteFilter;
             _dataFilter = dataFilter;
-        this._organizations = organizations;
+        _organizations = organizations;
     }
 
 
@@ -193,7 +193,7 @@ public class PackagesAppService : CrudAppService<
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(p => p.PackageType);
-			queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory== customerCategory);
+			queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             var packages = await AsyncExecuter.ToListAsync(queryable);
             var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);

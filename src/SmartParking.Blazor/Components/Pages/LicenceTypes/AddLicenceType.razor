@@ -2,6 +2,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Lookups.PlateColor
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -27,8 +28,15 @@
                                            Clearable="_clearable">
                                     @foreach (var platecolor in plateColors)
                                     {
-                                        
-                                        <MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
+                                        @if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="platecolor.Id">@platecolor.ArabicName</MudSelectItem>
+                                        }
+
                                     }
                                 </MudSelect>
                             </MudItem>

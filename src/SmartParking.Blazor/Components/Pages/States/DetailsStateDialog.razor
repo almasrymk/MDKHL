@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IStateAppService StateAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -11,7 +12,15 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@state.EnglishName</MudText>
+			@if(CultureInfo.CurrentCulture.Name == "en")
+			{
+				<MudText Typo="Typo.h6">@state.EnglishName</MudText>
+			}
+			else
+			{
+				<MudText Typo="Typo.h6">@state.ArabicName</MudText>
+
+			}
 		</TitleContent>
 		<DialogContent>
 

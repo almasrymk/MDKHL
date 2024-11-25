@@ -29,20 +29,18 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
 
         RuleFor(x => x.CameraType)
             .IsInEnum();
-            
+
 
         RuleFor(x => x.BrandName)
-            .NotEmpty()
-            .WithMessage(_stringLocalizer["Should Not be empty."]);
+            .IsInEnum();
+
 
         RuleFor(x => x.Model)
-           .NotEmpty()
-            .WithMessage(_stringLocalizer["Should Not be empty."]);
-
+            .IsInEnum();
 
         RuleFor(x => x.MainType)
-           .NotEmpty()
-            .WithMessage(_stringLocalizer["Should Not be empty."]);
+            .IsInEnum();
+          
 
 
         RuleFor(x => x.CameraIP)

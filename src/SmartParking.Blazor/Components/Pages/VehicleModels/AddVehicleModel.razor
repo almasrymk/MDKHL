@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
 @using SmartParking.Lookups.VehicleModel
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -28,8 +29,16 @@
                                            Clearable="_clearable">
                                     @foreach (var vehicleBrand in VehicleBrands)
                                     {
-                                        <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
-                                    }
+                                        @if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.ArabicName</MudSelectItem>       
+                                        }
+
+                                    }   
                                 </MudSelect>
                             </MudItem>
 

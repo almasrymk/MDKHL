@@ -448,8 +448,11 @@
     "PaymentStatus": "PaymentStatus",
     "CustomerName": "CustomerName",
     "RegionName": "Region",
+    "PackageType": "Package Type",
     "NumOfGarages": "Number Of Garages",
     "PackageDuration": "Duration Of Package",
-    "FreeMinutes": "Free Minutes"
+    "FreeMinutes": "Free Minutes",
+    "DectivationDate": "Dectivation Date",
+    "OrgCustomers": "Customers"
   } 
 }

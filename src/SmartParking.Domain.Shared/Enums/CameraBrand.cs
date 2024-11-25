@@ -10,7 +10,7 @@ public enum CameraBrand
 {
     Canon,
     Sony,
-    GoPro,
+    GoPro, 
     Panasonic,
     Hikvision
 }

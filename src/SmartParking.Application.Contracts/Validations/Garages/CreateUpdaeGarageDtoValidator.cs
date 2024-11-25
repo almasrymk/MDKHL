@@ -15,13 +15,14 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
         RuleFor(x => x.NameEn)
             .NotEmpty()
             .MaximumLength(100)
-            .Matches(@"^[a-zA-Z][a-zA-Z0-9\s]*$")
-            .WithMessage("Name must start with a letter, accept only English letters and numbers, and cannot contain special characters such as ، / . \\ ,.");
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9\s.,\-\\_]*$")
+            .WithMessage("Name must start with a letter and can include English letters, numbers, spaces, and special characters such as ، / . \\ ,.");
+        
         RuleFor(x => x.NameAr)
             .NotEmpty()
             .MaximumLength(100)
-            .Matches(@"^[\u0621-\u064A\s]+$")
-            .WithMessage("Name must contain only Arabic letters and spaces, and cannot contain special characters such as ، / . \\ ,.");
+            .Matches(@"^[\u0621-\u064A\s،./\\_\-]+$")
+            .WithMessage("Name must contain only Arabic letters, spaces, and special characters such as ، / . \\.");
 
         RuleFor(x => x.ClosingHours.ToString("HH:mm"))
            .Matches(@"^([01]?[0-9]|2[0-3]):[0-5][0-9]$")

@@ -164,7 +164,7 @@ public partial class Package
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeArabicName"], item.PackageType.ArabicName));
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.published.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.PackageStatus.ToString()}"]));
 
 
@@ -194,7 +194,7 @@ public partial class Package
 			EnglishName = packageDto.EnglishName,
             OrganizationId = packageDto.OrganizationId,
 			Price = packageDto.Price,
-			published = packageDto.published,
+			Published = packageDto.Published,
 			PublishFrom = packageDto.PublishFrom,
 			PublishTo = packageDto.PublishTo,
 			PackageStatus = packageDto.PackageStatus,
@@ -224,7 +224,7 @@ public partial class Package
 
 		var packageDto = await PackagesAppService.GetAsync(id);
 
-		var createUpdatePackage = new CreateUpdatePackageDto
+		var package = new PackageDto
         {
 
             ArabicName = packageDto.ArabicName,
@@ -233,18 +233,19 @@ public partial class Package
             EnglishName = packageDto.EnglishName,
 			OrganizationId = packageDto.OrganizationId,
             Price = packageDto.Price,
-            published = packageDto.published,
+            Published = packageDto.Published,
             PublishFrom = packageDto.PublishFrom,
             PublishTo = packageDto.PublishTo,
             PackageStatus = packageDto.PackageStatus,
             PackageType = packageDto.PackageType,
-		   CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory)
+            CustomerCategory = packageDto.CustomerCategory,
+			DurationOfPackage  =  packageDto.DurationOfPackage
 
         };
 
 		var parameters = new DialogParameters
 		{
-			["Package"] = createUpdatePackage,
+			["Package"] = package,
 			["CustomerCategory"] = packageDto.CustomerCategory.ToString(),
 			["UpdatedId"] = id
 
@@ -320,8 +321,6 @@ public partial class Package
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}
-
-
 
 
 }

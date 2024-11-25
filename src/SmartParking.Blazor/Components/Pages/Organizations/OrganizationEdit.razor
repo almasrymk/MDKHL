@@ -71,7 +71,7 @@
                             <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidatePostalCode))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                            <MudTextField Disabled  T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
@@ -258,7 +258,7 @@
                @if(OrganizationPicture!=null)
                {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Width="100" Style="width:100px;" Height="100" Alt="@L["OrganizationLogo"]" />
                     </MudItem>
                }
                
@@ -266,23 +266,11 @@
                 {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
 
-                         <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Style="width:200px;" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
 
                     </MudItem>
                 }
-                <MudItem sm="6">
-                    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
-                        <ActivatorContent>
-                            <MudButton Variant="Variant.Filled"
-                                       Color="MudBlazor.Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.CloudUpload">
-                                @L["OrganizationLogo"]
-                            </MudButton>
-                        </ActivatorContent>
-
-                    </MudFileUpload>
-
-                </MudItem>
+                
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
@@ -315,6 +303,19 @@
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewContact">@L["Contact Data"]</MudLink>
                         </MudPaper>
+                    </MudItem>
+                    <MudItem sm="12">
+                        <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                            <ActivatorContent>
+                                <MudButton Variant="Variant.Filled"
+                                           Color="MudBlazor.Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.CloudUpload">
+                                    @L["OrganizationLogo"]
+                                </MudButton>
+                            </ActivatorContent>
+
+                        </MudFileUpload>
+
                     </MudItem>
 
                 </MudGrid>

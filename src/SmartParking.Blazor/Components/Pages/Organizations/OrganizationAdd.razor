@@ -71,7 +71,7 @@
 
 
                          <MudItem sm="4">
-                             <MudNumericField T="int" Required="true" Validation="@(new Func<int, string>(ValidateBuildingNumber))"  @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField T="int" Required="true" Validation="@(new Func<int, string>(ValidateBuildingNumber))"  @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                          </MudItem>
 
                          <MudItem sm="4">
@@ -88,7 +88,10 @@
                          <MudItem sm="4">
                             <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidatePostalCode))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                        
+                        <MudItem sm="4">
+                            <MudTextField Disabled T="string" InputType="InputType.Text" ValueChanged="UpdateAddress" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                        </MudItem>
+
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
 
@@ -164,7 +167,6 @@
                                 </MudSelect>
                             </MudItem>
                         }
-
                         @if (!RegionSelectValue.IsNullOrEmpty())
                         {
                             <MudItem sm="4">
@@ -314,7 +316,7 @@
                 @if (OrganizationPicture != null)
                 {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Width="100" Style="width:100px;" Height="100" Alt="@L["OrganizationLogo"]" />
                     </MudItem>
                 }
 
@@ -322,11 +324,12 @@
                 {
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
 
-                        <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Style="width:200px;" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
 
                     </MudItem>
                 }
-                
+                    <MudItem sm="12">
+
                     <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
                         <ActivatorContent>
                             <MudButton Variant="Variant.Filled"
@@ -337,6 +340,7 @@
                         </ActivatorContent>
 
                     </MudFileUpload>
+                    </MudItem>
 
                 
             </MudPaper>

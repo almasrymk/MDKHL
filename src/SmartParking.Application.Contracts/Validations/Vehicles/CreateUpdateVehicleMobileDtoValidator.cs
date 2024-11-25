@@ -31,9 +31,9 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
             .NotEmpty()
             .Matches(@"^[\p{IsArabic}\d\s]+$")
             .WithMessage("The Plate Letter should only contain Arabic letters")
-            .When(x => x.ArPlateLetters.Length != 0)
+            
             .MinimumLength(1)
-            .When(x => x.ArPlateLetters.Length != 0)
+            
             .MaximumLength(3)
             .WithMessage("The Plate Arabic Letter must be between 1 and 3 characters long.");
 
@@ -42,9 +42,9 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
             .NotEmpty()
             .Matches(@"^[A-Za-z\d\s]+$")
             .WithMessage("The Plate Letter should only contain English letters")
-            .When(x => x.EnPlateLetters.Length != 0)
+            
             .MinimumLength(1)
-            .When(x => x.EnPlateLetters.Length != 0)
+            
             .MaximumLength(3)
             .WithMessage("The Plate English Letter must be between 1 and 3 characters long.");
 
@@ -52,9 +52,9 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
             .NotEmpty()
             .Matches(@"^[\u0660-\u0669\s]+$")
             .WithMessage("The Plate Number should only contain Arabic numerals.")
-            .When(x => x.ArPlateNumber.Length != 0)
+            
             .MinimumLength(1)
-            .When(x => x.ArPlateNumber.Length != 0)
+            
             .MaximumLength(4)
             .WithMessage("The Plate Number must be between 1 and 4 Arabic numerals long.");
 
@@ -62,9 +62,7 @@ public class CreateUpdateVehicleMobileDtoValidator : AbstractValidator<CreateUpd
             .NotEmpty()
             .Matches(@"^[0-9\s]+$")
             .WithMessage("The Plate Number should only contain English numerals.")
-            .When(x => x.EnPlateNumber.Length != 0)
             .MinimumLength(1)
-            .When(x => x.EnPlateNumber.Length != 0)
             .MaximumLength(4)
             .WithMessage("The Plate Number must be between 1 and 4 English numerals long.");
 
