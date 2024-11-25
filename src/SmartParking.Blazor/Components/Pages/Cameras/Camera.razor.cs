@@ -345,16 +345,16 @@ public partial class Camera
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete camera: {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delet camera: {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete camera: {ex.Message} + ", Severity.Error);
         }
 
     }
