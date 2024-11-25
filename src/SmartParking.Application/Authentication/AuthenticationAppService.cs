@@ -392,6 +392,30 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
 
+    public async Task<bool> SetNewPasswordWeb(string input , string NewPassword)
+    {
+        var user =await _userManager.FindByEmailAsync(input);
+        if (user == null)
+        {
+            throw new Exception("user isn't exist");
+
+        }
+
+        await _userManager.RemovePasswordAsync(user);
+        var password = await _userManager.AddPasswordAsync(user, NewPassword);
+
+        if (password.Succeeded)
+        {
+            return true;
+
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
 
     /// <inheritdoc/>
     public async Task LogOutAsync()
