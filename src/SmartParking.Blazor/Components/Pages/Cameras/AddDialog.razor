@@ -45,10 +45,7 @@
                         <MudSelect @bind-Value="cameraDto.BrandName"
                                    Label="@L["BrandName"]"
                                    Placeholder="@L["Choose"]"
-                                   Clearable="true"
-                                   Variant="Variant.Text"
-                        
-                        >
+                                   Variant="Variant.Text">
                             
                             @foreach (var type in Enum.GetValues<CameraBrand>())
                             {
@@ -64,12 +61,12 @@
                         <MudSelect @bind-Value="cameraDto.Model"
                                    Label="@L["Model"]"
                                    Placeholder="@L["Choose"]"
-                                   Clearable="true"
                                    Variant="Variant.Text"
                         >
+
+
                             @foreach (var type in Enum.GetValues<CameraModel>())
                             {
-
                                 <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
                             }
 
@@ -79,14 +76,13 @@
                     <MudItem sm="4">
 
 
-                        <MudSelect @bind-Value="cameraDto.MainType" 
+                        <MudSelect @bind-Value="cameraDto.MainType"
                                    Label="@L["MainType"]"
                                    Placeholder="@L["Choose"]" 
-                                   Clearable="true"
                                    Variant="Variant.Text">
+
                             @foreach (var type in Enum.GetValues<MainCameraType>())
                             {
-
                                 <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
                             }
 
@@ -238,8 +234,18 @@
                 var garage = Garages.Find(x => x.Id == cameraDto.GarageId);
                 cameraDto.TenantId = garage.TenantId;
                 cameraDto.OrganizationId = garage.OrganizationId;
-
-
+                if (cameraDto?.MainType is null)
+                {
+                    cameraDto.MainType = MainCameraType.DSLR; // Default type
+                }
+                if (cameraDto?.BrandName is null)
+                {
+                    cameraDto.BrandName = CameraBrand.Canon; // Default type
+                }
+                if (cameraDto?.Model is null)
+                {
+                    cameraDto.Model = CameraModel.CanonEOS5D; // Default type
+                }
                 await CamerasAppService.CreateAsync(cameraDto);
                 MudDialog.Close(DialogResult.Ok(true));
                 Snackbar.Add($"{successedMessage}", Severity.Success);

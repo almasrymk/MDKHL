@@ -8,7 +8,6 @@ namespace SmartParking.Enums;
 
 public enum CameraBrand
 {
-    None,
     Canon,
     Sony,
     GoPro, 
