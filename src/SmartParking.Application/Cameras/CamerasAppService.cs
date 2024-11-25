@@ -149,10 +149,19 @@ public class CamerasAppService :
         if (camera.Status == Enums.Status.Active)
         {
 
-            await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
-        }
+           var result = await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
 
-        camera.Status = Status.Deleted;
+            if (result == true)
+            {
+            camera.Status = Status.Deleted;
+
+            }
+            else
+            {
+                throw new Exception("Can't delete camera");
+            }
+        }
+        
 
         await CurrentUnitOfWork.SaveChangesAsync();
         //await base.DeleteAsync(id);
