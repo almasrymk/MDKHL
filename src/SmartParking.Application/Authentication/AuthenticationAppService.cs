@@ -252,7 +252,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
             {
-                return user;
+                return null;
             }
             if (user.IsActive == false)
             {
@@ -401,7 +401,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         }
 
-        await _userManager.RemovePasswordAsync(user);
+       var user1= await _userManager.RemovePasswordAsync(user);
+
+
         var password = await _userManager.AddPasswordAsync(user, NewPassword);
 
         if (password.Succeeded)
