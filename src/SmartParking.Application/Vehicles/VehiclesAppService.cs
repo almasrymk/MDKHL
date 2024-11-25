@@ -32,7 +32,7 @@ public class VehiclesAppService:
 	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
     private readonly IRepository<LicenceType, int> _licenceTypeRepository;
 
-    public VehiclesAppService(Volo.Abp.Domain.Repositories.IRepository<Vehicle, int> repository,
+    public VehiclesAppService(IRepository<Vehicle, int> repository,
 		IDataFilter dataFilter, ICurrentUser currentUser,IRepository<LicenceType,int> licenceTypeRepository)
 	   : base(repository)
 	{
@@ -44,30 +44,30 @@ public class VehiclesAppService:
 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
-        
+
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
-        
-        input.ArPlateNumber =  input.ArPlateNumber.Replace(" ",string.Empty) + input.ArPlateLetters.Replace(" ",string.Empty);
-        input.EnPlateNumber =  input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ",string.Empty);
-        
+
+        input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+        input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+        await CheckVehicleIfFound(input);
         // LicenceType is plate type is found 
         LicenceType licenceType;
         using (_dataFilter.Disable<IMultiTenant>())
         {
-             licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
+            licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
         }
-        
+
         if (licenceType == null)
         {
             throw new InvalidOperationException("licence type not found");
 
         }
-        var existingPlatNumber =await _repository.FirstOrDefaultAsync(x=>x.ArPlateNumber == input.ArPlateNumber || x.EnPlateNumber == input.EnPlateNumber);
+        var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.ArPlateNumber || x.EnPlateNumber == input.EnPlateNumber);
         input.PlateColorId = licenceType.PlateColorId;
-		if(existingPlatNumber !=null)
-		{
-			throw new InvalidOperationException("PlatNumber already exists");
-		}
+        if (existingPlatNumber != null)
+        {
+            throw new InvalidOperationException("PlatNumber already exists");
+        }
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -78,6 +78,16 @@ public class VehiclesAppService:
         else
             return await base.CreateAsync(input);
     }
+
+    private async Task CheckVehicleIfFound(CreateUpdateVehicleDto input)
+    {
+        var existVehicle = await _repository.FirstOrDefaultAsync(_ => _.ArPlateNumber == input.ArPlateNumber || _.EnPlateNumber == input.EnPlateNumber);
+        if (existVehicle is not null)
+        {
+            throw new InvalidOperationException("this vehicle is exist");
+        }
+    }
+
     public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
         if (CurrentTenant.Id == null)
