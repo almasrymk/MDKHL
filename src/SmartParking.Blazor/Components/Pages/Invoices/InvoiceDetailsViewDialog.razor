@@ -42,7 +42,7 @@
                     </div>
                     <div class="col-md-6 d-flex flex-column align-items-center">
                         <strong>Hotel Address:</strong>
-                        <p> </p>
+                        <p> @OrganizationAddress</p>
                     </div>
                     <div class="col-md-12 d-flex flex-column">
                         <strong>Payment Date:</strong><p> @DateTime.UtcNow.ToString()</p>
@@ -112,6 +112,7 @@
     [Parameter] public InvoiceDto Invoice { get; set; } 
     [Parameter] public string CommercialRegisteration { get; set; }
     [Parameter] public int ID { get; set; }
+    [Parameter] public string OrganizationAddress { get; set; }
     public string imagepath { get; set; }
 
     protected override async Task OnInitializedAsync()

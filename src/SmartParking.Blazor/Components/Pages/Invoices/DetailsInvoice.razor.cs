@@ -66,6 +66,7 @@ public partial class DetailsInvoice
 
         vehicles = vehicleDto.Items.ToList();
         CommercialRegisteration = organizations.Find(x => x.ArabicName == OrganizationArabicName).CommercialRegistrationNumber;
+        OrgAddress = organizations.Find(x => x.ArabicName == OrganizationArabicName).Address;
 
         await base.OnInitializedAsync();
 
@@ -103,13 +104,15 @@ public partial class DetailsInvoice
             OrganizationArabicName = OrganizationArabicName,
             PlateNumber = PlateNumber,
             EntranceTime = EntranceTime,
+            
         };
-
+        
         var parameters = new DialogParameters
         {
             ["Invoice"] = invoicedto,
             ["CommercialRegisteration"]= CommercialRegisteration,
             ["ID"]=Id,
+            ["OrganizationAddress"]=OrgAddress,
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("",parameters);
         
