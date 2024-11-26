@@ -12,8 +12,8 @@
 @inject IOrganizationsAppService organizationAppService
 @inject IPackageTypesAppService packageTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
-@inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
+@inject NavigationManager NavigationManager
 
 
 <PageTitle>@L["New Package"]</PageTitle>
@@ -105,26 +105,32 @@
                                            Placeholder=@L["Time Placeholder"]
                                            Label="@L["Publish To"]" />
                         </MudItem>
+
+
                     }
-                   
+                    else
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
+                                       Label="@L["customer category"]"
+                                       Placeholder="@L[ "Choose"]"
+                                       HelperText=@L["Helper Text"]
+                                       Required>
+
+                                @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                                {
+                                    <MudSelectItem Value="@category">
+
+                                        @category.ToString()
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+
+                        </MudItem>
+                    }
+
                   
-                    <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
-                                   Label="@L["customer category"]"
-                                   Placeholder="@L[ "Choose"]"
-                                   HelperText=@L["Helper Text"]
-                                   Required >
-
-                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
-                            {
-                                <MudSelectItem Value="@category">
-
-                                    @category.ToString()
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
-
-                    </MudItem>
+                   
 
                     <MudItem sm="12">
                         <MudTextField @bind-Value="createUpdatePackage.Description"
@@ -225,7 +231,7 @@
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         if (form.IsValid)
         {
-            // Call your service to create the camera
+            // Call your service to create the package
             try
             {
                 createUpdatePackage.TenantId = CurrentTenant.Id;
@@ -233,7 +239,7 @@
                 Snackbar.Add(successedMessage, Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
-                Navigation.NavigateTo("/packages", forceLoad:true);
+                NavigationManager.NavigateTo("/package", true);
             }
             catch (AbpValidationException ex)
             {
@@ -260,8 +266,5 @@
         MudDialog.Cancel();
     }
 
-    private string GetMultiSelectionText(List<string> selectedValues)
-    {
-        return $"{selectedValues.Count} Category{(selectedValues.Count > 1 ? "s have" : " has")} been selected";
-    }
+   
 }
