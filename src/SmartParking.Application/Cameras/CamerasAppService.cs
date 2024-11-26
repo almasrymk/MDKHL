@@ -149,10 +149,19 @@ public class CamerasAppService :
         if (camera.Status == Enums.Status.Active)
         {
 
-            await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
-        }
+           var result = await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
 
-        camera.Status = Status.Deleted;
+            if (result == true)
+            {
+            camera.Status = Status.Deleted;
+
+            }
+            else
+            {
+                throw new Exception("Can't delete camera");
+            }
+        }
+        
 
         await CurrentUnitOfWork.SaveChangesAsync();
         //await base.DeleteAsync(id);
@@ -257,11 +266,7 @@ public class CamerasAppService :
 
             queryable = queryable.Where(or =>
                 or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Model.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.MainType.ToString().Contains(input.SearchingTerm.ToLower()) ||
-                or.BrandName.ToString().Contains(input.SearchingTerm.ToLower()) ||
-                or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) |
                 or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
@@ -300,11 +305,7 @@ public class CamerasAppService :
 
                 queryable = queryable.Where(or =>
                     or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Model.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MainType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.BrandName.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.CameraIP.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())

@@ -92,16 +92,16 @@ public partial class AddVehicleDialog
 		catch (BusinessException ex)
 		{
 
-			ShowSnackbar($"Failed to add organizagaragetion: {ex.Code} + ", Severity.Error);
+			ShowSnackbar($"Failed to add vehicle: {ex.Code} + ", Severity.Error);
 		}
 		catch (AuthenticationException ex)
 		{
-			ShowSnackbar($"Failed to add garage: {ex.Message} + ", Severity.Error);
+			ShowSnackbar($"Failed to add vehicle: {ex.Message} + ", Severity.Error);
 		}
 		catch (Exception ex)
 		{
 
-			ShowSnackbar($"Failed to add garage: {ex.Message} + ", Severity.Error);
+			ShowSnackbar($"Failed to add vehicle: {ex.Message} + ", Severity.Error);
 		}
 
 	}

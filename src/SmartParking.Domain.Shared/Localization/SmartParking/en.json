@@ -175,7 +175,7 @@
     "TotalHours": "Total Hours",
     "InvoiceCreatedSuccessfully": "Invoice Created Successfully",
     "Can'tCreateInvoice": "Can't Create Invoice",
-    "OrganizationArabicName": "Ar Name",
+    "OrganizationArabicName": "Org ArName",
     "GarageName": "Garage Name",
     "InvoiceDetails": "Invoice Details",
     "Print": "Print",
@@ -251,7 +251,7 @@
     "Email Address /  User Name": "Email Address /  User Name",
     "Forget Your Password Don't worry ..": "Forget Your Password Don't worry ..",
     "Click here to reset": "Click here to reset",
-    "My Account": "My Account",
+    "EditMyAccount": "Edit My Account",
     "Calender Only": "Calender Only",
     "Commercial Reg. Num.": "Commercial Reg. Num.",
     "Helper Text": "Choose from list",
@@ -357,7 +357,7 @@
     "InvoiceTime": "InvoiceTime",
     "Entry": "Entry",
     "Exit": "Exit",
-    "OrganizationEnglishName": "En Name",
+    "OrganizationEnglishName": "Org EnName",
     "CameraType": "Type",
     "AddContactData": "AddContactData",
     "NewContactData": "NewContactData",
@@ -453,6 +453,8 @@
     "PackageDuration": "Duration Of Package",
     "FreeMinutes": "Free Minutes",
     "DectivationDate": "Dectivation Date",
-    "OrgCustomers": "Customers"
+    "OrgCustomers": "Customers",
+    "ViewMyAccount": "View My Account",
+    "MyAccount": "My Account"
   } 
 }

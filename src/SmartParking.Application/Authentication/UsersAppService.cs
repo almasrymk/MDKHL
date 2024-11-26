@@ -83,6 +83,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return user.GetProperty<int>("OrganizationId");
         }
     }
+
     ///<inheritdoc/>
     public async Task<List<UserDto>> GetUserByOrganizationId(int organizationId)
     {

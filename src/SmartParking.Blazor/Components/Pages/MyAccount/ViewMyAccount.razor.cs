@@ -1,30 +1,18 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using SmartParking.Blazor.Components.Pages.Organizations;
-using SmartParking.Enums;
+using SmartParking.Organizations;
+using System.Globalization;
+using System.Threading.Tasks;
+using System;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
-using SmartParking.Organizations;
-using SmartParking.Subscriptions;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using Volo.Abp;
-using Volo.Abp.Validation;
-using Image = SixLabors.ImageSharp.Image;
-using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
-using Size = SixLabors.ImageSharp.Size;
 
+namespace SmartParking.Blazor.Components.Pages.MyAccount;
 
-namespace SmartParking.Blazor.Components.Pages;
-
-public partial class MyAccount
+public partial class ViewMyAccount
 {
     private bool CountryClicked = false;
     private string CityNameEdit { get; set; }
@@ -52,7 +40,6 @@ public partial class MyAccount
     public bool IsClose { get; set; }
     public TimeSpan? ClosingHoursStart { get; set; }
     public TimeSpan? ClosingHoursEnd { get; set; }
-    public bool Status { get; set; } = true;
     public string PhoneNum { get; set; }
     public string WhatsAppNum { get; set; }
     public string ContactMail { get; set; }
@@ -66,122 +53,18 @@ public partial class MyAccount
     public string Photo { get; set; }
     public string Code { get; set; }
     public int FreeMinutes { get; set; }
-
+    private string CityName { get; set; }
+    private string CountryName { get; set; }
+    private string RegionName { get; set; }
+    private string StateName { get; set; }
+    public int Status { get; set; } = 1;
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
-    private async Task Update()
-    {
-        var tenant = currenttenant.Id.Value;
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-
-        Status StatusValue;
-        if (Status)
-        {
-            StatusValue = Enums.Status.Active;
-        }
-        else
-        {
-            StatusValue = Enums.Status.Inactive;
-        }
-        CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
-        {
-
-            ArabicName = ArabicName,
-            EnglishName = EnglishName,
-            CommercialRegistrationNumber = CommercialRegistrationNumber,
-            NumOfCameras = NumOfCameras,
-            MaxCapacity = MaxCapacity,
-            CityId = int.Parse(CitySelectValue),
-            RegionId = int.Parse(RegionSelectValue),
-            StateId = int.Parse(StateSelectValue),
-            ContactMail = ContactMail,
-            CountryId = int.Parse(CountrySelectValue),
-            CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
-            Status = StatusValue,
-            PhoneNum = PhoneNum,
-            WhatsAppNum = WhatsAppNum,
-            FirstHourPrice = FirstHourPrice,
-            SecondHourPrice = SecondHourPrice,
-            ThirdHourPrice = ThirdHourPrice,
-            AdditionalHourPrice = AdditionalHourPrice,
-            FullDayPrice = FullDayPrice,
-            IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
-            NumberOfHours = NumberOfHours,
-            IsClose = IsClose,
-            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
-            BuildingNumber = BuildingNumber,
-            StreetName = StreetName,
-            SecondaryNumber = SecondaryNumber,
-            PostalCode = PostalCode,
-            District = District,
-            OrganizationPicture = OrganizationPicture,
-            TenantId = tenant,
-            FreeMinutes = FreeMinutes,
-
-        };
-
-
-        try
-        {
-
-
-            await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
-
-            ShowSnackbar("Update Orgainzation Successfully", Severity.Success);
-        }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-            }
-        }
-        catch (BusinessException ex)
-        {
-
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
-        }
-        catch (AuthenticationException ex)
-        {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
-        }
-        catch (Exception ex)
-        {
-
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
-        }
-    }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-    private void Cancel()
-    {
-        if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
-        {
-
-            Navigation.NavigateTo("/organizations");
-        }
-        else
-        {
-            Navigation.NavigateTo("/");
-
-        }
-    }
     private async Task FetchData()
     {
-
         var tenant = currenttenant.Id;
         var id = await OrganizationAppService.GetOrganizationIdByTenant(tenant);
         var organization = await OrganizationAppService.GetAsync(id);
@@ -191,11 +74,30 @@ public partial class MyAccount
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         if (organization.Status == Enums.Status.Active)
         {
-            Status = true;
+            Status = 1;
+        }
+        else if (organization.Status == Enums.Status.Inactive)
+        {
+            Status = 2;
         }
         else
         {
-            Status = false;
+            Status = 3;
+        }
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            CountryName = organization.CountryName;
+            RegionName = organization.RegionName;
+            StateName = organization.StateName;
+            CityName = organization.CityName;
+        }
+        else
+        {
+
+            CountryName = organization.CountryNameAr;
+            RegionName = organization.RegionNameAr;
+            StateName = organization.StateNameAr;
+            CityName = organization.CityNameAr;
         }
         MaxCapacity = organization.MaxCapacity;
         CountryNameEdit = organization.CountryName;
@@ -231,7 +133,10 @@ public partial class MyAccount
         Address = organization.Address;
         FreeMinutes = organization.FreeMinutes;
 
+
     }
+
+
     protected override async Task OnInitializedAsync()
     {
         states = await StateAppService.GetStateLookupAsync();
@@ -261,7 +166,6 @@ public partial class MyAccount
         };
         var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
     }
-
     private async Task ViewContact()
     {
         var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
@@ -271,7 +175,6 @@ public partial class MyAccount
         };
         var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
     }
-
     private async Task ViewCustomers()
     {
         var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
@@ -295,13 +198,8 @@ public partial class MyAccount
         var Org = await OrganizationAppService.GetOrganizationForCurrentTenat();
         int? subsId = Org.SubscriptionId;
 
-        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId??0);
+        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId ?? 0);
         //change it to garage.subscription
-
-
-
-
-
 
         var parameters = new DialogParameters
         {
@@ -310,75 +208,8 @@ public partial class MyAccount
         await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
     }
 
-    private async Task OnImageUpload(IBrowserFile file)
+    private void Navigate()
     {
-        var imageFile = file;
-        if (imageFile != null)
-        {
-            // Save the image and get the file path
-            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
-            StateHasChanged();
-        }
+        Navigation.NavigateTo("/editMyAccount");
     }
-
-    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
-    {
-        // Ensure directory structure
-        var imageDirectoryPath = CreateImageDirectory();
-
-        // Generate a unique file name with the original file extension
-        string fileName = $"{Code}{Path.GetExtension(imageFile.Name)}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-        // Set the maximum dimensions
-        int maxWidth = 179;  // Maximum width
-        int maxHeight = 96; // Maximum height
-
-        // Delete the existing file if it exists
-        if (File.Exists(fullPath))
-        {
-            File.Delete(fullPath);
-        }
-
-        try
-        {
-            // Open the uploaded image file as a stream with a larger size limit
-            using (var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))
-            using (var image = await Image.LoadAsync(stream)) // Asynchronously load the image
-            {
-                // Resize the image if it exceeds the maximum dimensions
-                image.Mutate(x => x.Resize(new ResizeOptions
-                {
-                    Mode = ResizeMode.Max, // Maintains aspect ratio
-                    Size = new Size(maxWidth, maxHeight)
-                }));
-
-                // Save the resized image to the specified path asynchronously
-                await image.SaveAsync(fullPath);
-            }
-
-            // Return the relative path for storing in the database
-            return $"images/OrganizationImages/{fileName}";
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error processing image: {ex.Message}");
-            throw;
-        }
-    }
-
-
-    private string CreateImageDirectory()
-    {
-        // Define the path where the image will be saved
-        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images/OrganizationImages");
-
-        // Ensure the directory exists
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-            Directory.CreateDirectory(imageDirectoryPath);
-        }
-        return imageDirectoryPath;
-    }
-
 }

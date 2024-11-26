@@ -279,7 +279,7 @@ public partial class Package
                 ShowSnackbar(successedMessage, Severity.Error);
                 await Task.Delay(1000);
 
-                Navigation.NavigateTo("/packages", forceLoad: true);
+                Navigation.NavigateTo("/package", true);
 
             }
 

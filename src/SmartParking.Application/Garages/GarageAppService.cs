@@ -766,7 +766,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             {
                  var garage= await GetAsync(GarageId);
 
-                var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+                var query = await _organizationRepository.GetQueryableAsync();
+                query = query.Include(x => x.Subscription);
+                var org = await query.FirstOrDefaultAsync(x => x.Id == garage.OrganizationId);
+
+                if (org == null || org.Subscription == null) {
+                    throw new Exception("Organization must have subscription.");
+
+                }
 
                 if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
                 {

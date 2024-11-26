@@ -240,7 +240,7 @@
     private async Task SubmitEdit()
     {
         var successedMessage = L["PackageUpdatedSuccessfully"];
-      
+
         try
         {
             Package.TenantId = CurrentTenant.Id;
@@ -248,7 +248,7 @@
             Snackbar.Add(successedMessage, Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
-            Navigation.NavigateTo("/packages", forceLoad: true);
+            Navigation.NavigateTo("/package", true);
         }
         catch (AbpValidationException ex)
         {
