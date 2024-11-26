@@ -104,6 +104,7 @@ public partial class DetailsInvoice
             OrganizationArabicName = OrganizationArabicName,
             PlateNumber = PlateNumber,
             EntranceTime = EntranceTime,
+            CustomerArName=CustomerName,
             
         };
         
