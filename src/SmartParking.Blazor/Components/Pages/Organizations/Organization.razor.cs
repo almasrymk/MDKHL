@@ -197,20 +197,20 @@ public partial class Organization
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = false, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionName"], Name = "RegionName", IsFilterable = true, PropertyName = "Region.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionName"], Name = "RegionName", IsFilterable = true, PropertyName = "Region.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
         else
         {
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionName"], Name = "RegionName", IsFilterable = true, PropertyName = "Region.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Country Name"], Name = "CountryName", IsFilterable = true, PropertyName = "Country.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionName"], Name = "RegionName", IsFilterable = true, PropertyName = "Region.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["State Name"], Name = "StateName", IsFilterable = true, PropertyName = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlots"], Name = "ParkingSlots", IsFilterable = true,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
@@ -226,18 +226,18 @@ public partial class Organization
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionName"], item.RegionName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityName));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionName"], item.RegionName));
             }
             else
             {
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateNameAr));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Country Name"], item.CountryNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionName"], item.RegionNameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateNameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityNameAr));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlots"], item.ParkingSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumOfGarages"], item.NumbersOfGarages.ToString()));

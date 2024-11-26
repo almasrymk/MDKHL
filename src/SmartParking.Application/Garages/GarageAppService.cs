@@ -113,9 +113,9 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
 
             if (subscription == null || subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1 ||
-                organization.UsedSlots + input.MaxCapacity > subscription.ParkingSlot)
+                organization.UsedSlots + input.MaxCapacity > subscription.ParkingSlot || input.MaxCapacity > subscription.ParkingSlot)
             {
-                throw new Exception("Upgrade subscription to add garage to organization.");
+                throw new Exception($"Upgrade subscription to add garage to organization valid slots less than {subscription?.ParkingSlot} ");
             }
 
             return subscription;
