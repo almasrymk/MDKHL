@@ -320,9 +320,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             else
             {
 
-
+                var ExpiryDate =await _customerPackagesAppService.GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(organizationId,exsitCustomer.Id,packageDto.PackageId);
                 // customer with package
-                var THours = CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto) ;
+                var THours = CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto , ExpiryDate) ;
                 if (THours > 0)
                 {
 
@@ -357,6 +357,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
                 //Not Customer
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
+
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
                 //create invoice
@@ -407,7 +408,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto)
+    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime? PackageExpiryDate)
     {
         if (exitTime < entranceTime)
         {
@@ -415,14 +416,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
 
         DateTime packageStart = entranceTime.Value.Date.AddHours(packageDto.Package.PublishFrom.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
-        DateTime packageEnd = entranceTime.Value.Date.AddHours(packageDto.Package.PublishTo.Hour).AddMinutes(packageDto.Package.PublishTo.Minute); ;
+        DateTime packageEnd = entranceTime.Value.Date.AddHours(packageDto.Package.PublishTo.Hour).AddMinutes(packageDto.Package.PublishTo.Minute); 
 
         double extraHours = 0;
 
         DateTime currentDay = entranceTime.Value;
         DateTime endDay = exitTime.Value;
 
-        while (currentDay <= endDay)
+        while (currentDay <= Min(PackageExpiryDate.Value,exitTime.Value) )
         {
             DateTime dayPackageStart = currentDay.Date + packageStart.TimeOfDay;
             DateTime dayPackageEnd = currentDay.Date + packageEnd.TimeOfDay;
@@ -469,6 +470,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     extraHours -= packageStart.Hour - exitTime.Value.Hour;
                 }
             }
+        }
+
+
+        if(endDay > PackageExpiryDate)
+        {
+            extraHours -= packageStart.Hour;
+            extraHours += (endDay - PackageExpiryDate).Value.Hours ;
+            extraHours += (endDay - currentDay).Minutes > 0 ? 1 : 0;
         }
 
         // Return result
@@ -649,7 +658,17 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         // calculates full days price
         price += totalDays * (double)organization.FullDayPrice;
         //calculates hours
-        price += (double)calcPriceHours(organization, (int)normalHours);
+        if((int)normalHours + (int)specialHours > 24)
+        {
+            price += (double)calcPriceHoursExceededDay(organization, (int)normalHours+(int)specialHours);
+            price -= totalDays * closingHour * (double) organization.AdditionalHourPrice;
+
+        }
+        else
+        {
+            price += (double)calcPriceHoursExceededDay(organization, (int)normalHours );
+
+        }
         return (decimal)price;
     }
     private decimal calcPriceHours(Organization organization, int hours)

@@ -11,5 +11,5 @@ namespace SmartParking.GarageTransactionEndPoints;
 public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
-    int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto);
+    int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime? PackageExpiryDate);
 }
