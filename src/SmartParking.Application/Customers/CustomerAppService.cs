@@ -31,6 +31,7 @@ using Abp.Domain.Entities;
 using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
 using System.Text.RegularExpressions;
 using Castle.Core.Resource;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking.Customers;
 [Authorize]
@@ -244,13 +245,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
+            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
             var queryable = await _repository.GetQueryableAsync();
             
             queryable = queryable.Include(x => x.IdentityUser);
-            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+            queryable = queryable.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid) && !x.IsEmployee);
 
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
@@ -292,6 +296,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(x => x.IdentityUser);
@@ -342,8 +348,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-            var queryable = await _repository.GetQueryableAsync();
             var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+            var queryable = await _repository.GetQueryableAsync();
+
+            queryable = queryable.Include(x => x.IdentityUser);
+            queryable = queryable.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid) && !x.IsEmployee);
 
 
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
