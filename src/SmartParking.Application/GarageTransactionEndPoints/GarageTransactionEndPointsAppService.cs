@@ -600,7 +600,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private decimal CalculatePriceForExceededHours(int totalHours,Organization organization)
    {
         decimal price = 0;
-        if (totalHours >= organization.NumberOfHours)
+        if (totalHours > organization.NumberOfHours)
         {
             int fullDaysCustomerHasStayed = 0;
             if (totalHours >= 24)
