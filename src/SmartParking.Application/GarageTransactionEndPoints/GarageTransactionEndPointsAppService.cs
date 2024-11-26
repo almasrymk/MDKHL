@@ -201,7 +201,19 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         using (DataFilter.Disable<IMultiTenant>())
         {
             var garage = await GetGarage(garageId);
-           var result= await CheckAvailableSlots(garage, customer);
+            if (garage.Status != Status.Active)
+            {
+                return false;
+            }
+            var org = await GetOrganization(garage.OrganizationId);
+            if (org.Status != Status.Active)
+            {
+                return false;
+            }
+
+
+
+            var result= await CheckAvailableSlots(garage, customer);
            await CurrentUnitOfWork.SaveChangesAsync();
 
             return result;
@@ -313,7 +325,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value, EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name,exsitCustomer.Id); 
+                var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value, EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName, exsitCustomer.Id); 
                 await _invoiceAppService.CreateAsync(invoice);
                 flag = false;
             }
@@ -330,7 +342,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                    
                    string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
                    var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, THours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value
-                       , EntranceTime, exsitCustomer.ArabicName, exsitCustomer.IdentityUser.Name,exsitCustomer.Id); ;
+                       , EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName, exsitCustomer.Id); ;
                    await _invoiceAppService.CreateAsync(invoice);
                     flag = false;
                 }
