@@ -2,6 +2,7 @@
 using Abp.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -9,6 +10,7 @@ using SmartParking.Garages;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -31,16 +33,16 @@ public class PackagesAppService : CrudAppService<
             CreateUpdatePackageDto
             >, IPackagesAppService
 {
-		private readonly IRepository<Package, int> _repository;
-    private readonly IDataFilter _softDeleteFilter;
+	private readonly IRepository<Package, int> _repository;
+    private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IDataFilter _dataFilter;
     private readonly IOrganizationsAppService _organizations;
 
-    public PackagesAppService(IRepository<Package, int> repository, IDataFilter softDeleteFilter,IDataFilter dataFilter,IOrganizationsAppService organizations) :base(repository)
+    public PackagesAppService(IRepository<Package, int> repository,IRepository<Customer,Guid> customerRepository,IDataFilter dataFilter,IOrganizationsAppService organizations) :base(repository)
     {
-            _repository = repository;
-            _softDeleteFilter = softDeleteFilter;
-            _dataFilter = dataFilter;
+        _repository = repository;
+        _customerRepository = customerRepository;
+        _dataFilter = dataFilter;
         _organizations = organizations;
     }
 
@@ -48,10 +50,11 @@ public class PackagesAppService : CrudAppService<
   
     public async Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId)
     {
-        using (_softDeleteFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
+            var customer = await _customerRepository.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
             var query = await _repository.GetQueryableAsync();
-            var pakages = await query.Where(_ => _.OrganizationId == organizationId && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
+            var pakages = await query.Where(_ => _.OrganizationId == organizationId && _.CustomerCategory == customer.CustomerCategory).ToListAsync();
             var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if (pakages.Count == 0)
             {
@@ -147,8 +150,6 @@ public class PackagesAppService : CrudAppService<
         await CurrentUnitOfWork.SaveChangesAsync();
         //await base.DeleteAsync(id);
     }
-
-
     ///<inheritdoc/>
     public override async Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
