@@ -204,18 +204,19 @@
                        
 
                     <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-
-                        <MudItem sm="4">
-                            <MudDatePicker @bind-Date="_activateDate"
-                                           @bind-value="_activateDate"
-                                           Variant="Variant.Text"
-                                           Placeholder=@L["Will Be Generated Automatically"]
-                                           Label="@L["ActivationDate"]"
-                                           Disabled
-                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
-                                           ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
+                    
+                            <MudItem sm="4">
+                                <MudDatePicker @bind-Date="_activateDate"
+                                               @bind-value="_activateDate"
+                                               Variant="Variant.Text"
+                                               Placeholder=@L["Will Be Generated Automatically"]
+                                               Label="@L["ActivationDate"]"
+                                               Disabled
+                                               IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)"
+                                               ShowToolbar="false" />
+                            </MudItem>
+                     
+                            <MudItem sm="4">
                             <MudDatePicker @bind-Date="_inActivateDate"
                                            @bind-value="_inActivateDate"
                                            Variant="Variant.Text"
@@ -225,6 +226,8 @@
                                            ShowToolbar="false"
                                            IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
                         </MudItem>
+                        
+                        
                         <MudItem sm="4">
                             <MudDatePicker @bind-Date="_creationDate"
                                            @bind-value="_creationDate"

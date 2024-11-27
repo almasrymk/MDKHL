@@ -22,6 +22,6 @@ public class CreateUpdateSubscriptionDto : CreateUpdateBaseDto
     public int SubscriptionSlotNumber { get; set; }
     public int SubscriptionTypeId { get; set; }
     public int ParkingSlot { get; set; }
-    public DateTime CreationTime { get; set; }
+    public DateTime? CreationTime { get; set; }
     public Guid CreatorId { get; set; }
 }

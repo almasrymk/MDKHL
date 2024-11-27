@@ -24,9 +24,9 @@
         </TitleContent>
         <DialogContent>
 
-            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+            <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="createUpdatePackage.ArabicName"
                                       For="@(() => createUpdatePackage.ArabicName)"
                                       Variant="Variant.Text"
@@ -35,7 +35,7 @@
                                       Required
                                       Label=@L["ArabicName"] />
                     </MudItem>
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="createUpdatePackage.EnglishName"
                                       For="@(() => createUpdatePackage.EnglishName)"
                                       Variant="Variant.Text"
@@ -44,7 +44,7 @@
                                       Placeholder=@L["Type Here"]
                                       Label=@L["EnglishName"] />
                     </MudItem>
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="createUpdatePackage.Price"
                                       For="@(() => createUpdatePackage.Price)"
                                       Variant="Variant.Text"
@@ -54,7 +54,7 @@
                                       Class="w-100"
                                       Label=@L["Price"] />
                     </MudItem>
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
                                       For="@(() => createUpdatePackage.DurationOfPackage)"
                                       Variant="Variant.Text"
@@ -65,9 +65,9 @@
                                       Label=@L["PackageDuration"] />
                     </MudItem>
 
-
+                 
                 
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
 
                             @foreach (var type in packageTypes)
@@ -78,13 +78,30 @@
                             }
                         </MudSelect>
                     </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
+                                   Label="@L["customer category"]"
+                                   Placeholder="@L[ "Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   Required>
+
+                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                            {
+                                <MudSelectItem Value="@category">
+
+                                    @category.ToString()
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
                     <MudItem sm="4">
                         <MudSwitch Label="@L["Published"]"
                                    LabelPosition="LabelPosition.Start"
                                    @bind-Value="createUpdatePackage.Published"
                                    Color="MudBlazor.Color.Primary" />
                     </MudItem>
-                    @if(createUpdatePackage.Published == true)
+                    @if(createUpdatePackage.Published == false)
                     {
                         
 
@@ -108,30 +125,7 @@
 
 
                     }
-                    else
-                    {
-                        <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
-                                       Label="@L["customer category"]"
-                                       Placeholder="@L[ "Choose"]"
-                                       HelperText=@L["Helper Text"]
-                                       Required>
-
-                                @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
-                                {
-                                    <MudSelectItem Value="@category">
-
-                                        @category.ToString()
-                                    </MudSelectItem>
-                                }
-                            </MudSelect>
-
-                        </MudItem>
-                    }
-
-                  
-                   
-
+                    
                     <MudItem sm="12">
                         <MudTextField @bind-Value="createUpdatePackage.Description"
                                       For="@(() => createUpdatePackage.Description)"
@@ -144,9 +138,6 @@
 
                     </MudItem>
                    
-               
-
-
 
                 </MudGrid>
             </MudForm>

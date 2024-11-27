@@ -229,25 +229,30 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             var role = await _userManager.GetRolesAsync(user);
             if (role.FirstOrDefault() == RolesType.OrganizationEmployee.ToString())
                 return null;
-            var organizationId = user.GetProperty<int>("OrganizationId");
-            if (organizationId != 0)
+
+            using (DataFilter.Disable<IMultiTenant>())
             {
-                var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-                if (organization == null)
+                var organizationId = user.GetProperty<int>("OrganizationId");
+                if (organizationId != 0)
                 {
-                    return null;
-
-                }
-                if (organization != null)
-                {
-
-
-                    if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
+                    var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+                    if (organization == null)
                     {
                         return null;
 
                     }
+                    if (organization != null)
+                    {
+
+
+                        if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
+                        {
+                            return null;
+
+                        }
+                    }
                 }
+
             }
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))

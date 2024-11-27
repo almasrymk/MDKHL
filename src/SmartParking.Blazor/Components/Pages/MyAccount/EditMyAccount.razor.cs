@@ -260,15 +260,6 @@ public partial class EditMyAccount
         };
         var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
     }
-    private async Task ViewContact()
-    {
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
-    }
     private async Task ViewCustomers()
     {
         var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);

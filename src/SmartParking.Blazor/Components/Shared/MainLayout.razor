@@ -52,14 +52,14 @@
                 </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
-                        <MudImage Src="@(Picture)" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(Picture ?? "images/MDHKL_04.png")" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
                     </MudAvatar>
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
                         <p class="mb-0 fw-bold">@UserName </p>
 
                         <Link Class="text-white border-bottom text-decoration-none"
-                              href=@(currenttenant.Id != null ? "/my-account" : "/edit-profile")>
+                              href=@(currenttenant.Id != null ? "/view-my-account" : "/edit-profile")>
                             @L["Profile Details"]
                         </Link>
                     </div>

@@ -1,4 +1,5 @@
 ﻿using Castle.MicroKernel.Registration;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
@@ -110,30 +111,36 @@
 									  Disabled />
 					</MudItem>
 					
-					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.ActivationDate"
-									  For="@(() => subscription.ActivationDate)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["ActivationDate"]"
-									  Disabled />
-					</MudItem>
+                        @if (subscription.Status == SubscriptionStatus.Inactive)
+                        {
+							<MudItem sm="6">
+								<MudTextField @bind-Value="subscription.InActivationDate"
+											  For="@(() => subscription.InActivationDate)"
+											  Immediate="true"
+											  Variant="Variant.Text"
+											  Label="@L["InActivationDate"]"
+											  Disabled />
+							</MudItem>
+						}
+						@if (subscription.Status == SubscriptionStatus.Active)
+                        {
+							<MudItem sm="6">
+								<MudTextField @bind-Value="subscription.ActivationDate"
+											  For="@(() => subscription.ActivationDate)"
+											  Immediate="true"
+											  Variant="Variant.Text"
+											  Label="@L["ActivationDate"]"
+											  Disabled />
+							</MudItem>
+						}
 					
-					<MudItem sm="6">
-						<MudTextField @bind-Value="subscription.InActivationDate"
-									  For="@(() => subscription.InActivationDate)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["InActivationDate"]"
-									  Disabled />
-					</MudItem>
 								
 					<MudItem sm="4">
 						<MudTextField @bind-Value="subscription.NumberOfUsers"
 									  For="@(() => subscription.NumberOfUsers)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["NumberOfCustomers"]"
+									  Label="@L["NumbersOfUsers"]"
 									  Disabled />
 					</MudItem>
 					

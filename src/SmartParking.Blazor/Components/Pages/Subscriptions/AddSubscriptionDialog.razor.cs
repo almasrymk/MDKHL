@@ -17,6 +17,7 @@ public partial class AddSubscriptionDialog
     private DateTime? _activateDate = new DateTime();
     private DateTime? _inActivateDate = new DateTime();
     private DateTime? _creationDate = new DateTime();
+    private DateTime? creationTime = DateTime.Now;
     public bool maximumNumberOfGarages { get; set; }
     public int UnlimitedMaximumNumber { get; set; } = 9999;
 	public bool maximumNumberOfCameras { get; set; }
@@ -68,7 +69,7 @@ public partial class AddSubscriptionDialog
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
             input.Status = Enums.SubscriptionStatus.Draft;
-
+            input.CreationTime = creationTime;
             var subscription = await SubscriptionAppService.CreateAsync(input);
 
             if (subscription != null)

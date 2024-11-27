@@ -93,12 +93,6 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             }
         }
 
-        if (input.InActivationDate <= input.ActivationDate)
-        {
-            throw new InvalidOperationException("InActivationDate must be more than ActivationDate");
-
-        }
-
         
             return await base.UpdateAsync(id, input);
         

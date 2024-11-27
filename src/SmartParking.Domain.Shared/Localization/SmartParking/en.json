@@ -206,7 +206,7 @@
     "Passport": "Passport",
     "FullName": "Full Name",
     "Register": "Add Customer",
-    "PackageTypeEnglishName": "Package Type En Name",
+    "PackageTypeEnName": "Package Type En Name",
     "Price": "Price",
     "Description": "Description",
     "Published": "Published",
@@ -454,7 +454,7 @@
     "FreeMinutes": "Free Minutes",
     "DectivationDate": "Dectivation Date",
     "OrgCustomers": "Customers",
-    "ViewMyAccount": "View My Account",
-    "MyAccount": "My Account"
+    "ViewMyAccount": "My Account",
+    "NumbersOfUsers": "Num Of Users"
   } 
 }

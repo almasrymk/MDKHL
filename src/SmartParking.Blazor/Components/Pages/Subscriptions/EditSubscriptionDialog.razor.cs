@@ -9,7 +9,6 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
-using SmartParking.Entities.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -22,17 +21,14 @@ public partial class EditSubscriptionDialog
 
     private MudForm editForm;
 
-    private DateTime? _activateDate = new DateTime();
+    private DateTime? ActivationDate = DateTime.Now;
 
-    private DateTime? _inActivateDate = new DateTime();
+    private DateTime? InActivationDate = DateTime.Now;
 
     bool _clearable;
     [Parameter] public int UpdatedId { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        _activateDate = subscription.ActivationDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        _inActivateDate = subscription.InActivationDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-
         var result = await SubscriptionTypeAppService.GetSubscriptionTypeLookupAsync();
         subscriptions = result;
     }
@@ -59,15 +55,15 @@ public partial class EditSubscriptionDialog
                 SubscriptionPrice = subscription.SubscriptionPrice,
                 Status = subscription.Status,
                 SubscriptionTypeId = subscription.SubscriptionTypeId,
-                ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.MinValue),
-                InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue),
+                ActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MinValue),
+                InActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MaxValue),
                 NumberOfCameras = subscription.NumberOfCameras,
-                NumberOfCustomers = subscription.NumberOfCustomers,
+                NumberOfCustomers = subscription.NumberOfCustomers, 
                 NumberOfUsers = subscription.NumberOfUsers ,
                 NumbersOfGarages = subscription.NumbersOfGarages,
                 SubscriptionSlotNumber = subscription.SubscriptionSlotNumber,
                 ParkingSlot = subscription.ParkingSlot,
-                
+                CreationTime = subscription.CreationTime
             };
 
             // Call the update method

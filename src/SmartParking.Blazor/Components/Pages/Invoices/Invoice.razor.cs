@@ -168,7 +168,7 @@ public partial class Invoice
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], _localizer[$"{item.InvoiceType.ToString()}"]));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerEnName"], item.CustomerEnName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerEnName"],item.CustomerEnName));
             }
             else
             {

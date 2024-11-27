@@ -143,7 +143,7 @@ public class CustomerPackagesAppService:
                 PackageId = packageId,
                 CustomerId = customer.Id,
                 OrganizationId = package.OrganizationId,
-                ExpiryDate=DateTime.UtcNow.AddDays(package.DurationOfPackage),
+                ExpiryDate = DateTime.UtcNow.AddDays(package.DurationOfPackage).Date.AddDays(1).AddTicks(-1),
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
@@ -152,6 +152,26 @@ public class CustomerPackagesAppService:
             return true;
         }
     }
+
+   public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
+   {
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query =await _repository.GetQueryableAsync();
+            query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
+            var result =await AsyncExecuter.FirstOrDefaultAsync(query);
+            return result.ExpiryDate;
+
+        }
+
+
+
+
+   }
+
+
+
 
     public override async Task DeleteAsync(int id)
     {

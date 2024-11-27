@@ -1,4 +1,4 @@
-﻿@page "/editMyAccount"
+﻿@page "/edit-my-account"
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.LookUps
@@ -9,6 +9,7 @@
 @using SmartParking.Organizations
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
+@using System.Globalization
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
@@ -94,8 +95,16 @@
                                 <MudSelectItem Value="CountryNameEdit"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
-                                    <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="country.Id.ToString()">@country.ArabicName</MudSelectItem>
+                                    }
                                 }
+
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
@@ -107,8 +116,18 @@
                                 <MudSelectItem Value="RegionNameEdit"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
-                                    <MudSelectItem Value="region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="region.Id.ToString()">@region.EnglishName</MudSelectItem>
+
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="region.Id.ToString()">@region.ArabicName</MudSelectItem>
+
+                                    }
                                 }
+
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
@@ -120,7 +139,15 @@
                                 <MudSelectItem Value="StateNameEdit"></MudSelectItem>
                                 @foreach (var state in states)
                                 {
-                                    <MudSelectItem Value="state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="state.Id.ToString()">@state.ArabicName</MudSelectItem>
+                                    }
                                 }
                             </MudSelect>
                         </MudItem>
@@ -133,26 +160,21 @@
                                 <MudSelectItem Value="CityNameEdit"></MudSelectItem>
                                 @foreach (var city in cities)
                                 {
-                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
+                                    if(CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="city.Id.ToString()">@city.ArabicName</MudSelectItem>
+                                    }
                                 }
                             </MudSelect>
                         </MudItem>
 
                        
                        
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["City"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       @bind-Value="@CitySelectValue">
-                                <MudSelectItem Value="CityNameEdit"></MudSelectItem>
-                                @foreach (var city in cities)
-                                {
-                                    <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
+                      
                         <MudItem sm="4">
                             <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
@@ -230,7 +252,19 @@
 
                     </MudItem>
                 }
+                <MudItem sm="12">
+                    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                                @L["OrganizationLogo"]
+                            </MudButton>
+                        </ActivatorContent>
 
+                    </MudFileUpload>
+
+                </MudItem>
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
@@ -259,24 +293,8 @@
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>
                         </MudPaper>
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewContact">@L["Contact Data"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="12">
-                        <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
-                            <ActivatorContent>
-                                <MudButton Variant="Variant.Filled"
-                                           Color="MudBlazor.Color.Primary"
-                                           StartIcon="@Icons.Material.Filled.CloudUpload">
-                                    @L["OrganizationLogo"]
-                                </MudButton>
-                            </ActivatorContent>
-
-                        </MudFileUpload>
-
-                    </MudItem>
+                  
+                   
 
                 </MudGrid>
             </MudPaper>

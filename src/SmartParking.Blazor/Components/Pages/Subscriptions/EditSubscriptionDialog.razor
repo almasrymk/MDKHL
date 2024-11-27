@@ -155,23 +155,26 @@
                                           Label="@L["NumberOfCustomers"]"
                                       Required="true" />
                     </MudItem>
-                        <MudItem sm="6">
-                            <MudDatePicker @bind-Date="_activateDate"
-                                           Variant="Variant.Text"
-                                           Label="@L["ActivationDate"]"
-                                           Required="true"
-                                           ShowToolbar="false"
-                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudDatePicker @bind-Date="_inActivateDate"
-                                           Variant="Variant.Text"
-                                           Label="@L["InActivationDate"]"
-                                           Required="true"
-                                           ShowToolbar="false"
-                                           IsDateDisabledFunc="@((DateTime dt) => dt.Date < DateTime.Today)" />
-                        </MudItem>
-                   
+                        @if(subscription.Status == SubscriptionStatus.Active)
+                        {
+                            <MudItem sm="6">
+                                <MudDatePicker Variant="Variant.Text"
+                                               Class="w-100"
+                                               @bind-Date="ActivationDate"
+                                               Disabled
+                                               Label="@L["ActivationDate"]" />
+                            </MudItem>
+                        }
+                        @if(subscription.Status == SubscriptionStatus.Inactive)
+                        {
+                            <MudItem sm="6">
+                                <MudDatePicker Variant="Variant.Text"
+                                               Class="w-100"
+                                               @bind-Date="InActivationDate"
+                                               Disabled
+                                               Label="@L["InActivationDate"]" />
+                            </MudItem>
+                        }
 
                       
                     <MudItem sm="12" Class="d-inline-flex justify-content-center">

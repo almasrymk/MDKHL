@@ -100,7 +100,7 @@
     "Max Capacity": "عدد اماكن الركن",
     "Menu:Home": "الصفحة الرئيسية",
     "Model": "نموذج",
-    "ُEditMyAccount": "تعديل حسابي",
+    "ُEditMyAccount": "تعديل حسابى",
     "My Profile": "ملفي الشخصي",
     "Name": "الإسم",
     "New Camera": "إضــافة كاميرا",
@@ -239,7 +239,7 @@
     "Total": "المجموع",
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء",
-    "PackageTypeEnglishName": "نوع الباقة بالإنجليزية",
+    "PackageTypeEnName": "نوع الباقة بالإنجليزية",
     "SubscriptionName": "إسم الإشتراك",
     "SubscriptionType": "نوع الإشتراك",
     "SubscriptionPrice": "السعر",
@@ -247,7 +247,7 @@
     "SubscriptionDescription": "الوصف",
     "ActivationDate": "تاريــخ التفعيل",
     "InActivationDate": "تاريــخ انهاء التفعيل",
-    "NumberOfCustomers": "الحد الاقصى للمستخدمين",
+    "NumberOfCustomers": "الحد الاقصى للعملاء",
     "NumberOfCameras": "الحد الاقصى لعدد الكاميرات",
     "NumbersOfGarages": "الحد الاقصى لعدد المـواقـف",
     "NumberOfMobileCustomers": "الحد الاقصى لمستخدمى الموبايل",
@@ -422,7 +422,7 @@
     "FullName must contain at least three English words.": "الإسم بالانجليزية يجب أن يتكون علي الأقل من ثلاث كلمات",
     "FullName must be at least 10 characters long.": " يجب أن يكون طول الإسم بالإنجليزية علي الاقل عشرة أحرف",
     "Should Not be empty": "لا يجب أن يكون فارغا",
-    "PackageTypeArabicName": "نوع الباقه بالعربية",
+    "PackageTypeArName": "نوع الباقه بالعربية",
     "NotCustomer": "ليس عميل",
     "CustomerArName": "إسم العميل بالعربية",
     "AddSubscriptionTypes": "إضافة نوع إشتراك",
@@ -475,6 +475,8 @@
     "PackageType": "نوع الباقة",
     "DectivationDate": "تاريــخ انهاء التفعيل",
     "OrgCustomers": "عملائى",
-    "ViewMyAccount": "حسابى"
+    "ViewMyAccount": "حسابى",
+    "NumbersOfUsers": "الحد الاقصى للمستخدمين"
+
   }
 }

@@ -1,4 +1,4 @@
-﻿@page "/viewMyAccount"
+﻿@page "/view-my-account"
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.LookUps
@@ -148,9 +148,10 @@
                         </MudItem>
                     </MudGrid>
 
-                    <div class="d-flex justify-content-between mt-5">
+                    <div class="d-flex justify-content-end"> 
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Navigate">@L["Edit"]</MudButton>
                     </div>
+                  
                 </MudForm>
 
             </MudPaper>
@@ -189,11 +190,7 @@
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>
                         </MudPaper>
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewContact">@L["Contact Data"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
+                   
 
                 </MudGrid>
             </MudPaper>
