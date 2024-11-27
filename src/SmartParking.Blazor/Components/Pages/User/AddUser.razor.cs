@@ -70,6 +70,8 @@ public partial class AddUser
             if (user != null)
             {
                 ShowSnackbar($"{successedMessage}", Severity.Success);
+                Task.Delay(1000);
+                NavigationManager.NavigateTo("/users", true);
             }
             else
             {
