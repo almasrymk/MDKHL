@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups;
-using SmartParking.LookupsAppServices;
 using System.Threading.Tasks;
 using System;
 using Volo.Abp;

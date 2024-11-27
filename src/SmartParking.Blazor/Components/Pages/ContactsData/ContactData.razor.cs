@@ -137,8 +137,8 @@ public partial class ContactData
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Name"], item.Name));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNum"], item.PhoneNum));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["WhatsAppNum"], item.PhoneNum));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ContactMail"], item.PhoneNum));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["WhatsAppNum"], item.WhatsAppNum));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ContactMail"], item.ContactMail));
 
 
             tableData.Rows.Add(rowDef);
