@@ -5,11 +5,9 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
-using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
-using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +21,6 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 
 namespace SmartParking.Garages;
@@ -301,9 +298,11 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.MaxCapacity.ToString().Contains(input.SearchingTerm) 
-               
-            );
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                
+			);
         }
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -350,10 +349,12 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                     or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MaxCapacity.ToString().Contains(input.SearchingTerm)
+			        or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				    or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+				    or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
 
-                );
-            }
+				);
+			}
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
