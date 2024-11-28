@@ -1,16 +1,11 @@
 ﻿using SmartParking.Entities.Customers;
 using SmartParking.Enums;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations;
 
-public class CustomerPackage:FullAuditedEntity<int> , IBseEntity
+public class CustomerPackage : FullAuditedEntity<int>, IBseEntity
 {
     public virtual Customer Customer { get; set; }
     public Guid CustomerId { get; set; }
@@ -20,6 +15,7 @@ public class CustomerPackage:FullAuditedEntity<int> , IBseEntity
     public int? OrganizationId { get; set; }
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
     public Guid? TenantId { get; set; }
-    public Status Status { get ; set ; }
+    public Status Status { get; set; }
     public DateTime ExpiryDate { get; set; }
+    public int DurationOfPackage { get; set; }
 }

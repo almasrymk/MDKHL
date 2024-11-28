@@ -14,15 +14,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
     <PackageReference Include="itext7" Version="8.0.5" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.5" />
     <PackageReference Include="itext7.pdfhtml" Version="5.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
     <PackageReference Include="OpenIddict.Server" Version="5.5.0" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="Volo.Abp.Account.Application" Version="8.2.1" />
     <PackageReference Include="Volo.Abp.Identity.Application" Version="8.2.1" />
     <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="8.2.1" />
