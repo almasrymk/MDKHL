@@ -8,6 +8,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using Microsoft.AspNetCore.Components;
 using SmartParking.Cutomers;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -57,13 +58,24 @@ public partial class CustomerDialog
 			SearchingTerm = termSearch, // The term to use for filtering results
 			filters = pageInfo.Filters
 		};
-		// Call the service to perform the search based on the input parameters
-		var CustomersDto = await CustomersAppService.Filter(input);
+		if (currentTenant.Id == null)
+		{
+			// Call the service to perform the search based on the input parameters
+			var CustomersDto = await CustomersAppService.FilterMDKHL(input);
 
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)CustomersDto.TotalCount;
-		CreateTable(CustomersDto);
+			// Calculate the total number of pages required to display all results
+			TotalItem = (int)CustomersDto.TotalCount;
+			CreateTable(CustomersDto);
+		}
+		else
+		{
+            // Call the service to perform the search based on the input parameters
+            var CustomersDto = await CustomersAppService.Filter(input);
 
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)CustomersDto.TotalCount;
+            CreateTable(CustomersDto);
+        }
 
 	}
 	/// <summary>
@@ -87,14 +99,24 @@ public partial class CustomerDialog
 			Sorting = pageInfo.SortColumn,
 			SearchingTerm = termSearch // The term to use for filtering results
 		};
-
-		// Call the service to perform the search based on the input parameters
-		var CustomersDto = await CustomersAppService.Search(input);
-
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)CustomersDto.TotalCount;
-		CreateTable(CustomersDto);
-	}
+		if (currentTenant.Id == null)
+		{
+			// Call the service to perform the search based on the input parameters
+			var CustomersDto = await CustomersAppService.SearchMDKHL(input);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)CustomersDto.TotalCount;
+            CreateTable(CustomersDto);
+        }
+		else
+		{
+            // Call the service to perform the search based on the input parameters
+            var CustomersDto = await CustomersAppService.Search(input);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)CustomersDto.TotalCount;
+            CreateTable(CustomersDto);
+        }
+    }
+		
 	/// <summary>
 	/// Fetches the table data for the specified page and updates the table with the retrieved data.
 	/// </summary>
@@ -132,10 +154,10 @@ public partial class CustomerDialog
 
 
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "PackageTypeEnglishName", IsFilterable = true, PropertyName = "PackageTypeEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Price", IsFilterable = true, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "Description", IsFilterable = true, PropertyName = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "IdentityUser.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = true, PropertyName = "IdentityUser.PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 		foreach (var item in Customers .Items)
 		{

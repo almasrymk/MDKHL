@@ -161,7 +161,7 @@ public partial class GarageDialog
             else
             {
 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameAr"], item.NameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameAr"], item.NameAr));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));

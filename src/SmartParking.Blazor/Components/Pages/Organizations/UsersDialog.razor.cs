@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Authentication;
+using static Volo.Abp.Identity.IdentityPermissions;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -52,23 +54,25 @@ public partial class UsersDialog
         //// Log the search term to the console for debugging purposes
 
         //// Create a new search input object with pagination, sorting, and search term parameters
-        //var input = new PagedAndSortedAndFilteredResultRequestDto
-        //{
-        //    MaxResultCount = pageInfo.RowsPerPage,
-        //    SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-        //    Sorting = pageInfo.SortColumn,
-        //    SearchingTerm = termSearch, // The term to use for filtering results
-        //    filters = pageInfo.Filters
-        //};
-        //// Call the service to perform the search based on the input parameters
-        //var garagessDto = await UsersAppService.Filter(input);
+        var input = new PagedAndSortedAndFilteredResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var pagedList = await UsersAppService.Filter(input);
 
-        //// Calculate the total number of pages required to display all results
-        //TotalItem = (int)garagessDto.TotalCount;
-        //CreateTable(garagessDto);
+		// Calculate the total number of pages required to display all results
+		var usersDto = pagedList.Items.ToList();
+		// Calculate the total number of pages required to display all results
+		TotalItem = (int)pagedList.TotalCount;
+		CreateTable(usersDto);
 
 
-    }
+	}
     /// <summary>
     /// Searches for hotels on the server side using the hotel code search term.
     /// </summary>
@@ -77,26 +81,26 @@ public partial class UsersDialog
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
         //// Log the search term to the console for debugging purposes
-        //Console.WriteLine(pageInfo.SearchTerm);
+        Console.WriteLine(pageInfo.SearchTerm);
 
         //// Update the term used for searching with the provided search term
-        //termSearch = pageInfo.SearchTerm;
+        termSearch = pageInfo.SearchTerm;
 
-        //// Create a new search input object with pagination, sorting, and search term parameters
-        //var input = new PagedAndSortedAndSearchResultRequestDto
-        //{
-        //    MaxResultCount = pageInfo.RowsPerPage,
-        //    SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-        //    Sorting = pageInfo.SortColumn,
-        //    SearchingTerm = termSearch // The term to use for filtering results
-        //};
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
+        };
 
-        //// Call the service to perform the search based on the input parameters
-        //var garagessDto = await GarageAppService.Search(input);
-
-        //// Calculate the total number of pages required to display all results
-        //TotalItem = (int)garagessDto.TotalCount;
-        //CreateTable(garagessDto);
+        // Call the service to perform the search based on the input parameters
+        var pagedList = await UsersAppService.Search(input);
+        var usersDto = pagedList.Items.ToList(); 
+		// Calculate the total number of pages required to display all results
+		TotalItem = (int)pagedList.TotalCount;
+        CreateTable(usersDto);
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -118,13 +122,13 @@ public partial class UsersDialog
         };
 
         // Retrieve the list of organizations from the server
-        var garagessDto = await UsersAppService.GetUserByOrganizationId( organizationId);
+        var userDto = await UsersAppService.GetUserByOrganizationId( organizationId);
         //TotalItem = (int)garagessDto.TotalCount;
-        CreateTable(garagessDto);
+        CreateTable(userDto);
 
     }
 
-    private void CreateTable(List<UserDto> garages)
+    private void CreateTable(List<UserDto> users)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -139,7 +143,7 @@ public partial class UsersDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "Email", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Phone Number"], Name = "PhoneNumber", IsFilterable = true, PropertyName = "PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
        
-        foreach (var item in garages)
+        foreach (var item in users)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
