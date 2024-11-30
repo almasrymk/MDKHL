@@ -40,7 +40,7 @@ public class MyUserRepository
         using (DataFilter.Disable<IMultiTenant>())
         {
             var dbContext = await GetDbContextAsync();
-            return await dbContext.Users.Where(user => user.TenantId == tenantId && EF.Property<int>(user, "UserTypeId")!=3).FirstOrDefaultAsync();
+            return await dbContext.Users.Where(user => user.TenantId == tenantId && EF.Property<int>(user, "UserTypeId")==1).FirstOrDefaultAsync();
         }
     }
 }

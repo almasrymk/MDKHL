@@ -60,7 +60,7 @@
 
                                 @foreach (var role in Enum.GetValues(typeof(RolesType)))
                                 {
-                                    if (role.ToString() == Enums.RolesType.Mdkhl.ToString() || role.ToString() == Enums.RolesType.Organization.ToString())
+                                    if (role.ToString() == Enums.RolesType.Mdkhl.ToString() || role.ToString() == Enums.RolesType.Organization.ToString() || role.ToString() == Enums.RolesType.Keeper.ToString())
                                     {
                                             <MudSelectItem Value="@role.ToString()">
                                                 @role.ToString()
@@ -72,7 +72,7 @@
                         </MudItem>
                     }
 
-            @if (userRole == RolesType.Organization.ToString())
+            @if (userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString())
                     {
 
                         <MudItem sm="6" md="6">

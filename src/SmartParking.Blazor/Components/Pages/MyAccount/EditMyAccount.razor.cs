@@ -174,7 +174,7 @@ public partial class EditMyAccount
         }
         else
         {
-            Navigation.NavigateTo("/viewMyAccount");
+            Navigation.NavigateTo("/view-my-account");
 
         }
     }

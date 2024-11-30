@@ -61,7 +61,7 @@ public class CustomerPackagesAppService:
 
             if (result == null)
             {
-                return null; // Or throw an appropriate exception if necessary
+                return null; 
             }
 
             return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);

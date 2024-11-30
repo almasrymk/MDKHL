@@ -12,4 +12,5 @@ public class UserDataDto
     public string Image { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
+    public int OrganizationId { get; set; }
 }

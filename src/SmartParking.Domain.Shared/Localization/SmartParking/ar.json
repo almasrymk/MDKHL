@@ -201,7 +201,7 @@
     "VehicleBrandEnglishName": "ماركة المركبة بالإنجليزية",
     "Email": "البريـد الإلكترونـي",
     "UserName": "إسـم المستـخدم",
-    "NationalId": "الهوية / الإقامة",
+    "NationalId": " الهوية / الإقامة/ جواز السفر",
     "MobileNumber": "رقـم الجـوال",
     "ModelYear": "سنـة الموديـل",
     "BelongToCompany": "تـابعـة لشركة",
@@ -439,14 +439,14 @@
     "UnLinkedTransactionCreatedSuccessfully": "اضافة حركات غير معرفة بنجاح",
     "Can'tCreateUnLinkedTransaction": "لا يمكن اضافة حركات غير معرفة",
     "FailedToAddUnLinkedTransaction": "فشل في اضافة حركات غير معرفة",
-    "Max Number Of Garages": "أقصى عدد متاح من المواقف",
-    "Max Number Of Cameras": "أقصى عدد متاح من الكاميرات",
-    "Max Number Of Users": "أقصى عدد متاح من المستخدمين",
-    "Max Number Of Customers": "أقصى عدد متاح من العملاء",
+    "Max Number Of Garages": " المتاح من المواقف",
+    "Max Number Of Cameras": "المتاح من الكاميرات",
+    "Max Number Of Users": "المتاح من المستخدمين",
+    "Max Number Of Customers": "عدد العملاء",
     "Max Slots For Customers": "عدد أماكن الركن المتاح للعملاء",
     "Max Slots For Employees": "عدد أماكن الركن المتاح للموظفين",
     "Max Slots For Free": "عدد أماكن الركن المتاح مجانًا ",
-    "ParkingSlots": "أقصى عدد من الأماكن المخصصه للركن",
+    "ParkingSlots": "عدد أماكن الوقوف",
     "Employees": "الموظفين",
     "Details for Employee": "تفاصيل للموظف",
     "CameraName": "إسم بالعربية",
@@ -476,7 +476,9 @@
     "DectivationDate": "تاريــخ انهاء التفعيل",
     "OrgCustomers": "عملائى",
     "ViewMyAccount": "حسابى",
-    "NumbersOfUsers": "الحد الاقصى للمستخدمين"
+    "NumbersOfUsers": "الحد الاقصى للمستخدمين",
+    "Organization - Users": "المنشأة - المستخدمون",
+    "WhatsAppNum": "رقم الواتس اب"
 
   }
 }

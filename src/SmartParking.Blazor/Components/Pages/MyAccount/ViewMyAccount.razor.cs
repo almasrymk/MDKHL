@@ -203,4 +203,10 @@ public partial class ViewMyAccount
     {
         Navigation.NavigateTo("/edit-my-account");
     }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/");
+    }
 }
+

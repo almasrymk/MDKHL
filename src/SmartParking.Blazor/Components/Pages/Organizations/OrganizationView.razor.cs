@@ -55,7 +55,7 @@ public partial class OrganizationView
         ArabicName = organization.ArabicName;
         NumOfActiveCameras = organization.NumOfCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
-        Address = organization.Address;
+        
         OrganizationPicture = organization.OrganizationPicture;
         if (organization.Status == Enums.Status.Active)
         {
@@ -75,7 +75,8 @@ public partial class OrganizationView
              RegionName = organization.RegionName;
              StateName=organization.StateName;
              CityName = organization.CityName;
-}
+            Address = organization.Address + organization.CityName;
+        }
         else
         {
 
@@ -83,6 +84,7 @@ public partial class OrganizationView
             RegionName = organization.RegionNameAr;
             StateName = organization.StateNameAr;
             CityName = organization.CityNameAr;
+            Address = organization.Address + organization.CityNameAr;
         }
         NumOfActiveGarages = organization.MaxCapacity;
         ContactMail = organization.ContactMail;

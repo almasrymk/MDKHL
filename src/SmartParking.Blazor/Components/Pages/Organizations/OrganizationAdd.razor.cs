@@ -194,7 +194,7 @@ public partial class OrganizationAdd
             SecondaryNumber = SecondaryNumber,
             OrganizationPicture = OrganizationPicture,
             FreeMinutes = FreeMinutes,
-            Address = Address
+            Address = NewAddress
 
         };
        

@@ -139,11 +139,11 @@ public partial class GarageDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameEn"], Name = "GarageNameEn", IsFilterable = true, PropertyName = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnGarageName"], Name = "EnGarageName", IsFilterable = true, PropertyName = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageNameAr"], Name = "GarageNameAr", IsFilterable = true, PropertyName = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "ArGarageName", IsFilterable = true, PropertyName = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
 
@@ -156,12 +156,12 @@ public partial class GarageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameEn"], item.NameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnGarageName"], item.NameEn));
             }
             else
             {
 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageNameAr"], item.NameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArGarageName"], item.NameAr));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));

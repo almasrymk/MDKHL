@@ -120,14 +120,19 @@
                             <MudTimePicker Variant="Variant.Text"
                                            Class="w-100"
                                            @bind-Time="timeSpanFrom"
-                                           Label="@L["Publish From"]" />
+                                           Label="@L["Publish From"]" 
+                                           ShowToolbar="false"
+                                          
+                                           />
                       </MudItem>
 
                       <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                                            Class="w-100"
                                            @bind-Time="timeSpanTo"
-                                           Label="@L["Publish To"]" />
+                                           Label="@L["Publish To"]"
+                                           ShowToolbar="false"
+                                            />
                         </MudItem>
                    }
                    else
@@ -135,15 +140,21 @@
                         <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                                            Class="w-100"
-                                           TimeChanged="OnTimeFromChanged"
-                                           Label="@L["Publish From"]" />
+                                           @bind-Time="timeSpanFrom"
+                                           Label="@L["Publish From"]"
+                                           ShowToolbar="false"
+                                           
+                                            />
                         </MudItem>
 
                         <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                                            Class="w-100"
-                                           TimeChanged="OnTimeToChanged"
-                                           Label="@L["Publish To"]" />
+                                           @bind-Time="timeSpanTo"
+                                           Label="@L["Publish To"]"
+                                           ShowToolbar="false"
+                                         
+                                           />
                         </MudItem>
                    }
                     <MudItem sm="4" md="4">

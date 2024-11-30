@@ -1,16 +1,20 @@
-﻿@using SmartParking.Authentication
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.Localization
 @inject IUsersAppService UsersAppService
 @inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal ">
         <TitleContent>
-            <MudText Class="fw-bold">Organization - Users</MudText>
+            <MudText Class="fw-bold">@L["Organization - Users"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" ></SPDataGrid>
+            <SPDataGrid Data="@itemData" TotalItemsInTable="TotalItem" OnSearching="HandleSearch" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" ></SPDataGrid>
         </DialogContent>
         <DialogActions>
-            <MudButton Variant="Variant.Filled" FullWidth="true" class="mx-3 mt-5" Color="MudBlazor.Color.Primary" OnClick="Cancel">Cancel</MudButton>
+
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>
