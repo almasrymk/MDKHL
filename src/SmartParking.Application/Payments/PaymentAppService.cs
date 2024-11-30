@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
@@ -6,7 +7,11 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Invoices;
 using SmartParking.Organizations;
+using SmartParking.Packages;
+using SmartParking.Results;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -270,6 +275,48 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         else
         {
             throw new Exception($"Payment status request failed with status: {response.StatusCode}");
+        }
+    }
+    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var org = await organizationsAppService.GetAsync(OrganizationId);
+            var customerquery = await _customerRepo.GetQueryableAsync();
+            customerquery = customerquery.Include(cust => cust.IdentityUser);
+            var customer =await AsyncExecuter.FirstAsync(customerquery);
+
+            var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
+            var packagedto = new PayementPackageDto()
+            {
+                OrganizationAddress = org.Address,
+                OrganizationArabicName = org.ArabicName,
+                OrganizationEnglishName = org.EnglishName,
+                CustomerArabicName=customer.ArabicName,
+                CustomerEnglishName=customer.IdentityUser.Name,
+                PayementTime=payement.CreationTime,
+                Price=package.Price,
+                Description=package.Description,
+
+
+            };
+            return Result<PayementPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
+
+
+        }
+    }
+    public async Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var invoice = await _invoiceRepo.GetAsync(x => x.Id == payement.InvoiceId);
+            var invoicedto= ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            return Result<InvoiceDto>.Success(invoicedto, "Invoice Details Retrieved Succesuffuly");
+
         }
     }
 
