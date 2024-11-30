@@ -45,7 +45,7 @@ public class PaymentController : ControllerBase
 
     [HttpGet("GetPackagePayementDetails/{oragnizationId}/{CustomerId}/{PaymentId}")]
     [Authorize]
-    public async Task<Result<PackageDto>> GetPackagePaymentDetails(int oragnizationId, Guid CustomerId, Guid PaymentId)
+    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetails(int oragnizationId, Guid CustomerId, Guid PaymentId)
     {
         return await _paymentAppService.GetPackagePaymentDetailsAsync(oragnizationId, CustomerId, PaymentId);
     }
