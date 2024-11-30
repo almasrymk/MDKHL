@@ -262,8 +262,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     PaymentStatus = status,
                     PaymentCategory = payment.PaymentCategory,
                     InvoiceId = payment.InvoiceId,
-                    PackageId = payment.PackageId
-
+                    PackageId = payment.PackageId,
+                    OrganizatioId = payment.OrganizationId
                 };
             }
         }

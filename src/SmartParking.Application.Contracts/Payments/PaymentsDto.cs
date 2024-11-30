@@ -13,6 +13,7 @@ public class PaymentDto
     public int? InvoiceId { get; set; }
     public int? PackageId { get; set; }
     public PaymentCategory PaymentCategory { get; set; }
+    public int OrganizatioId { get; set; }
 
 
 }
