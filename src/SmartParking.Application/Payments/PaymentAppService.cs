@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
@@ -276,15 +277,32 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             throw new Exception($"Payment status request failed with status: {response.StatusCode}");
         }
     }
-    public async Task<Result<PackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
     {
 
         using (dataFilter.Disable<IMultiTenant>())
         {
             var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var org = await organizationsAppService.GetAsync(OrganizationId);
+            var customerquery = await _customerRepo.GetQueryableAsync();
+            customerquery = customerquery.Include(cust => cust.IdentityUser);
+            var customer =await AsyncExecuter.FirstAsync(customerquery);
+
             var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
-            var packagedto = ObjectMapper.Map<Package, PackageDto>(package);
-            return Result<PackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
+            var packagedto = new PayementPackageDto()
+            {
+                OrganizationAddress = org.Address,
+                OrganizationArabicName = org.ArabicName,
+                OrganizationEnglishName = org.EnglishName,
+                CustomerArabicName=customer.ArabicName,
+                CustomerEnglishName=customer.IdentityUser.Name,
+                PayementTime=payement.CreationTime,
+                Price=package.Price,
+                Description=package.Description,
+
+
+            };
+            return Result<PayementPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
 
 
         }
