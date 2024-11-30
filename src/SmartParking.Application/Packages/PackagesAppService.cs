@@ -73,9 +73,10 @@ public class PackagesAppService : CrudAppService<
                 or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PackageType.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PackageType.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
         // Get the total count of filtered records
