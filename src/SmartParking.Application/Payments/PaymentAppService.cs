@@ -6,7 +6,11 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Invoices;
 using SmartParking.Organizations;
+using SmartParking.Packages;
+using SmartParking.Results;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -270,6 +274,31 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         else
         {
             throw new Exception($"Payment status request failed with status: {response.StatusCode}");
+        }
+    }
+    public async Task<Result<PackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
+            var packagedto = ObjectMapper.Map<Package, PackageDto>(package);
+            return Result<PackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
+
+
+        }
+    }
+    public async Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var invoice = await _invoiceRepo.GetAsync(x => x.Id == payement.InvoiceId);
+            var invoicedto= ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            return Result<InvoiceDto>.Success(invoicedto, "Invoice Details Retrieved Succesuffuly");
+
         }
     }
 
