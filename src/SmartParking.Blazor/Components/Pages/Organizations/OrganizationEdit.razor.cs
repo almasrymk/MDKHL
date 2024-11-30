@@ -15,6 +15,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
+using YamlDotNet.Core.Tokens;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -68,7 +69,7 @@ public partial class OrganizationEdit
     public int NumberOfCustomers { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public int Parkingslot { get; set; }
-    private SubscriptionDto? SelectedPackage;
+    private SubscriptionDto SelectedPackage = new SubscriptionDto();
     public string ViewSubscriptionArabicName { get; set; }
     public  int FreeMinutes { get; set; }
 
@@ -164,7 +165,7 @@ public partial class OrganizationEdit
             PostalCode = PostalCode,
             District = District,
             OrganizationPicture = OrganizationPicture,
-            Address = BuildingNumber + StreetName + SecondaryNumber + PostalCode + District,
+            Address = BuildingNumber + StreetName + SecondaryNumber + District + PostalCode + CityNameEdit ,
             FreeMinutes= FreeMinutes,
         };
 
@@ -225,6 +226,7 @@ public partial class OrganizationEdit
 
         var id = int.Parse(Id);
         var organization = await OrganizationAppService.GetAsync(id);
+        SelectedPackage = await SubscriptionAppService.GetAsync(organization.SubscriptionId);
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
         NumOfCameras = organization.NumOfCameras;
@@ -272,6 +274,12 @@ public partial class OrganizationEdit
         FreeMinutes = organization.FreeMinutes;
         PackageSelectValue=organization.SubscriptionId.ToString();
         ViewSubscriptionArabicName = organization.SubscriptionArabicName;
+        NumbersOfGarages = SelectedPackage.NumbersOfGarages;
+        NumberOfCameras = SelectedPackage.NumberOfCameras;
+        NumberOfUsers = SelectedPackage.NumberOfUsers;
+        NumberOfCustomers = SelectedPackage.NumberOfCustomers;
+        SubscriptionSlotNumber = SelectedPackage.ParkingSlot;
+        Parkingslot = SelectedPackage.ParkingSlot;
 
     }
     private async Task GetRegions()

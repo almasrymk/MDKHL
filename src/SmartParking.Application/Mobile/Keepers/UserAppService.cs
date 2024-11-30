@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
@@ -87,7 +88,8 @@ public class UserAppService : ApplicationService, IUserAppService
                 FullName = user.UserName,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
-                Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
+                Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png",
+                OrganizationId = user.GetProperty<int>("OrganizationId")
             });
         }
         return Result<UserDataDto>.NotFound("User not found with the specified username");

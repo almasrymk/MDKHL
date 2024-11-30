@@ -127,18 +127,18 @@ public partial class ContactData
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNum"], Name = "PhoneNum", IsFilterable = true, PropertyName = "PhoneNum", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "PhoneNum", IsFilterable = true, PropertyName = "PhoneNum", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["WhatsAppNum"], Name = "WhatsAppNum", IsFilterable = true, PropertyName = "WhatsAppNum", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ContactMail"], Name = "ContactMail", IsFilterable = true, PropertyName = "ContactMail", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "ContactMail", IsFilterable = true, PropertyName = "ContactMail", IsSortable = false, TypeFilter = TypeFilter.Text });
 
         foreach (var item in contactInfos.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Name"], item.Name));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNum"], item.PhoneNum));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MobileNumber"], item.PhoneNum));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["WhatsAppNum"], item.WhatsAppNum));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ContactMail"], item.ContactMail));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.ContactMail));
 
 
             tableData.Rows.Add(rowDef);
