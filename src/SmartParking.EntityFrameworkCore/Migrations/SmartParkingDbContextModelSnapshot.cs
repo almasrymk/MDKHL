@@ -2232,6 +2232,8 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
                     b.HasIndex("LicenceTypeId");
 
                     b.HasIndex("PlateColorId");
@@ -4353,6 +4355,12 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.Vehicles.Vehicle", b =>
                 {
+                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", "LicenceType")
                         .WithMany()
                         .HasForeignKey("LicenceTypeId")
@@ -4376,6 +4384,8 @@ namespace SmartParking.Migrations
                         .HasForeignKey("VehicleModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Customer");
 
                     b.Navigation("LicenceType");
 

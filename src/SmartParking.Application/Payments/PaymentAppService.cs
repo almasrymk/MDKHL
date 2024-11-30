@@ -19,6 +19,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Payments;
 [Authorize]
@@ -26,6 +27,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 {
     private readonly IRepository<Payment, Guid> _repository;
     private readonly IRepository<Customer, Guid> _customerRepo;
+    private readonly IDataFilter dataFilter;
     private readonly ICustomerPackagesAppService customerPackagesAppService;
     private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
@@ -56,6 +58,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         _repository = repository;
         _customerRepo = customerRepo;
+        this.dataFilter = dataFilter;
         this.customerPackagesAppService = customerPackagesAppService;
         organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
@@ -216,47 +219,53 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     status = PaymentStatus.Success;
                 }
             }
-
-            var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
-
-            if (payment != null)
+            using (dataFilter.Disable<IMultiTenant>())
             {
-                if (payment.PaymentCategory == PaymentCategory.Invoice)
-                {
 
-                    var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-                    if (invoice != null)
-                    {
-                        invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
-                        await _invoiceRepo.UpdateAsync(invoice);
-                    }
-                }
-                else if (payment.PaymentCategory == PaymentCategory.Package)
+                var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
+                if (payment != null)
                 {
-
-                    if (status == PaymentStatus.Success)
+                    if (payment.PaymentCategory == PaymentCategory.Invoice)
                     {
-                        //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
-                        //await _packageRepo.UpdateAsync(package);
-                        var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
-                        if (!assignStatus)
+
+                        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+                        if (invoice != null)
                         {
-                            throw new Exception("Can't assign package to customer");
+                            invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
+                            await _invoiceRepo.UpdateAsync(invoice);
                         }
                     }
+                    else if (payment.PaymentCategory == PaymentCategory.Package)
+                    {
+
+                        if (status == PaymentStatus.Success)
+                        {
+                            //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
+                            //await _packageRepo.UpdateAsync(package);
+                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
+                            if (!assignStatus)
+                            {
+                                throw new Exception("Can't assign package to customer");
+                            }
+                        }
+                    }
+
+                    payment.PaymentStatus = status;
+                    await _repository.UpdateAsync(payment);
                 }
 
-                payment.PaymentStatus = status;
-                await _repository.UpdateAsync(payment);
-            }
+                return new PaymentDto
+                {
+                    CheckoutId = payment.CheckoutId,
+                    CustomerId = payment.CustomerId,
+                    Id = payment.Id,
+                    PaymentStatus = status,
+                    PaymentCategory = payment.PaymentCategory,
+                    InvoiceId = payment.InvoiceId,
+                    PackageId = payment.PackageId
 
-            return new PaymentDto
-            {
-                CheckoutId = payment.CheckoutId,
-                CustomerId = payment.CustomerId,
-                Id = payment.Id,
-                PaymentStatus = status,
-            };
+                };
+            }
         }
         else
         {
