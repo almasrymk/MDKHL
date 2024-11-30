@@ -2,10 +2,13 @@
 @using SmartParking.Cutomers
 @using SmartParking.Localization
 @using SmartParking.Packages
+@using Volo.Abp.MultiTenancy
 @inject ICustomerAppService CustomersAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
+@inject ICurrentTenant currentTenant
+
 <div class="modal-wrapper ">
 
 
@@ -19,7 +22,7 @@
         </DialogContent>
         <DialogActions>
 
-            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

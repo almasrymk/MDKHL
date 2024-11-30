@@ -260,8 +260,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             {
 
                 queryable = queryable.Where(or =>
-                    or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
                 );
@@ -305,12 +304,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             {
 
                 queryable = queryable.Where(or =>
-                    or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
-
-
                 );
 
             }

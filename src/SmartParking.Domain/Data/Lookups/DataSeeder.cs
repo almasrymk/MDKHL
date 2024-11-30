@@ -37,10 +37,10 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
         IRepository<State, int> stateRepository,
         IRepository<PlateColor, int> plateColorRepository,
         IRepository<LicenceType, int> licenceTypeRepository,
-        IRepository<Organization,int> organization,
+        IRepository<Organization, int> organization,
         IRepository<Garage, int> garageRepostory,
         IRepository<Camera, int> cameraRepostory,
-        IRepository<Subscription,int> subscriptionRepository,
+        IRepository<Subscription, int> subscriptionRepository,
         IRepository<SubscriptionType, int> subscriptionTypeRepository)
 
     {
@@ -59,6 +59,7 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
     public async Task SeedAsync(DataSeedContext context)
     {
+        return;
         if (!await _countryRepository.AnyAsync())
         {
 
@@ -70,13 +71,13 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new Country {EnglishName = "Algeria", ArabicName = "الجزائر", EnglishCapital = "Algiers", ArabicCapital = "الجزائر العاصمة" },
             };
 
-         
-            await _countryRepository.InsertManyAsync(countries, autoSave: true);
-           
-            var egypt = await _countryRepository.FirstOrDefaultAsync(c => c.EnglishName == "Egypt");
-           
 
-    
+            await _countryRepository.InsertManyAsync(countries, autoSave: true);
+
+            var egypt = await _countryRepository.FirstOrDefaultAsync(c => c.EnglishName == "Egypt");
+
+
+
             var regions = new List<Region>
             {
             new Region { ArabicName="test", EnglishName = "test",  Status = Status.Active,CountryId = egypt.Id },
@@ -84,9 +85,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             new Region { ArabicName="test", EnglishName = "test", Status = Status.Active,CountryId = egypt.Id},
             };
 
-           
+
             await _regionRepository.InsertManyAsync(regions, autoSave: true);
-            
+
             var test = await _regionRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
 
             var States = new List<State>
@@ -96,9 +97,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new State { ArabicName="test", EnglishName = "test",  RegionId = test.Id, Status = Status.Active },
             };
 
-          
+
             await _stateRepository.InsertManyAsync(States, autoSave: true);
-            
+
             var stateTest = await _stateRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
             var cities = new List<City>
             {
@@ -107,23 +108,23 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 new City { ArabicName="تست", EnglishName = "test", StateId = stateTest.Id},
             };
 
-          
+
             await _cityRepository.InsertManyAsync(cities, autoSave: true);
-         
+
             var cityTest = await _cityRepository.FirstOrDefaultAsync(g => g.EnglishName == "test");
-            
-           
+
+
             var subscriptionTypes = new List<SubscriptionType>
             {
                 new SubscriptionType {TypeEn = "Monthly",TypeAr = "شهرية"},
                 new SubscriptionType {TypeEn = "Quarterly",TypeAr = "ربع سنوية"},
                 new SubscriptionType {TypeEn = "Yearly",TypeAr = "سنوية"},
-                
+
             };
 
-         
+
             await _subscriptionTypeRepository.InsertManyAsync(subscriptionTypes, autoSave: true);
-            
+
 
             var subscriptionTypeTest = await _subscriptionTypeRepository.FirstOrDefaultAsync(g => g.TypeEn == "Monthly");
 
@@ -148,43 +149,43 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
             if (!await _organizationRepostory.AnyAsync())
             {
                 var organization = new Organization
-            {
-                ArabicName = "الشركة الأولى",
-                EnglishName = "First Organization",
-                Notes = "This is a sample organization",
-                Code = "00001",
-                CommercialRegistrationNumber = "9201234511",
-                CRExpiryDate = new DateOnly(2025, 12, 31),
-                CountryId = egypt.Id,
-                RegionId = test.Id,
-                StateId = stateTest.Id,
-                CityId = cityTest.Id,
-                PhoneNum = "012345678",
-                WhatsAppNum = "+966531234567",
-                ContactMail = "contact@organization.com",
-                FirstHourPrice = 50,
-                SecondHourPrice = 50,
-                ThirdHourPrice = 50,
-                AdditionalHourPrice = 60,
-                FullDayPrice = 150,
-                IsNumberOfHoursExceeded = false,
-                NumberOfHours = 3,
-                IsClose = false,  
-                ClosingHoursStart = TimeOnly.MinValue,
-                ClosingHoursEnd = TimeOnly.MaxValue,
-                Status = Status.Active,
-                SubscriptionId= subscriptionTest.Id,
-                Address = "123 Tahrir St Cairo 12345",
-                StreetName = "123 Tahrir St Cairo 12345",
-                BuildingNumber=12,
-                PostalCode=11145,
-                SecondaryNumber=1163,
-                District="حي العارض"
-            };
-            await _organizationRepostory.InsertAsync(organization,autoSave:true);
-            var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
+                {
+                    ArabicName = "الشركة الأولى",
+                    EnglishName = "First Organization",
+                    Notes = "This is a sample organization",
+                    Code = "00001",
+                    CommercialRegistrationNumber = "9201234511",
+                    CRExpiryDate = new DateOnly(2025, 12, 31),
+                    CountryId = egypt.Id,
+                    RegionId = test.Id,
+                    StateId = stateTest.Id,
+                    CityId = cityTest.Id,
+                    PhoneNum = "012345678",
+                    WhatsAppNum = "+966531234567",
+                    ContactMail = "contact@organization.com",
+                    FirstHourPrice = 50,
+                    SecondHourPrice = 50,
+                    ThirdHourPrice = 50,
+                    AdditionalHourPrice = 60,
+                    FullDayPrice = 150,
+                    IsNumberOfHoursExceeded = false,
+                    NumberOfHours = 3,
+                    IsClose = false,
+                    ClosingHoursStart = TimeOnly.MinValue,
+                    ClosingHoursEnd = TimeOnly.MaxValue,
+                    Status = Status.Active,
+                    SubscriptionId = subscriptionTest.Id,
+                    Address = "123 Tahrir St Cairo 12345",
+                    StreetName = "123 Tahrir St Cairo 12345",
+                    BuildingNumber = 12,
+                    PostalCode = 11145,
+                    SecondaryNumber = 1163,
+                    District = "حي العارض"
+                };
+                await _organizationRepostory.InsertAsync(organization, autoSave: true);
+                var organizationTest = await _organizationRepostory.FirstOrDefaultAsync(g => g.EnglishName == "First Organization");
 
-            var Garages = new List<Garage>
+                var Garages = new List<Garage>
             {
                 new Garage
                 {
@@ -208,13 +209,13 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                 },
 
             };
-            await _garageRepostory.InsertManyAsync(Garages, autoSave: true);
+                await _garageRepostory.InsertManyAsync(Garages, autoSave: true);
 
-         
 
-            var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
 
-            var cameras =new List<Camera>{
+                var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
+
+                var cameras = new List<Camera>{
                 new Camera
                 {
                     GarageId = garageTest.Id,    // Link camera to the found Garage
@@ -247,20 +248,20 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                      OrganizationId = organizationTest.Id,
                  }
             };
-         
 
-              await _cameraRepostory.InsertManyAsync(cameras, 
-                    autoSave: true
-                );
+
+                await _cameraRepostory.InsertManyAsync(cameras,
+                      autoSave: true
+                  );
             }
-           
+
         }
 
         if (!await _plateColorRepository.AnyAsync())
         {
-           
 
-               var plateColors = new List<PlateColor>
+
+            var plateColors = new List<PlateColor>
                {
                    new PlateColor {  EnglishName = "Red", ArabicName = "أحمر" },
                    new PlateColor {  EnglishName = "Blue", ArabicName = "أزرق" },
@@ -270,38 +271,38 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                    new PlateColor {  EnglishName = "Silver", ArabicName = "فضى" }
                };
 
-              await _plateColorRepository.InsertManyAsync(plateColors, autoSave: true);
-                
-                var redplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Red");
-                var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
-                var whiteplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "White");
-                var yellowplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
-                var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
-                var greenplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Green");
+            await _plateColorRepository.InsertManyAsync(plateColors, autoSave: true);
+
+            var redplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Red");
+            var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
+            var whiteplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "White");
+            var yellowplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
+            var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
+            var greenplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Green");
 
 
-                var licenceTypes = new List<LicenceType>
+            var licenceTypes = new List<LicenceType>
                 {
                 // Two licence types sharing the same PlateColorId (e.g., Red with Id = 1)
                 new LicenceType {  EnglishName = "Private Car", ArabicName = "خاص", PlateColorId = whiteplate.Id },
                 new LicenceType {  EnglishName = "Public Transport", ArabicName = "نقل عام", PlateColorId = yellowplate.Id },
-                new LicenceType {  EnglishName = "Private Transport", ArabicName = "نقل خاص", PlateColorId = blueplate.Id }, 
-                new LicenceType {  EnglishName = "Public Bus", ArabicName = "حافلة صغيرة عامة", PlateColorId = yellowplate.Id }, 
-                new LicenceType {  EnglishName = "Private Bus", ArabicName = "حافلة صغيرة خاصة", PlateColorId = blueplate.Id }, 
-                new LicenceType {  EnglishName = "Taxi", ArabicName = "اجرة", PlateColorId = yellowplate.Id }, 
-                new LicenceType {  EnglishName = "Equipment", ArabicName = "معدات ثقيلة", PlateColorId = blueplate.Id }, 
-                new LicenceType {  EnglishName = "Export", ArabicName = "تصدير", PlateColorId = silverplate.Id }, 
-                new LicenceType {  EnglishName = "Motorcycle", ArabicName = "دراجة نارية", PlateColorId = whiteplate.Id }, 
+                new LicenceType {  EnglishName = "Private Transport", ArabicName = "نقل خاص", PlateColorId = blueplate.Id },
+                new LicenceType {  EnglishName = "Public Bus", ArabicName = "حافلة صغيرة عامة", PlateColorId = yellowplate.Id },
+                new LicenceType {  EnglishName = "Private Bus", ArabicName = "حافلة صغيرة خاصة", PlateColorId = blueplate.Id },
+                new LicenceType {  EnglishName = "Taxi", ArabicName = "اجرة", PlateColorId = yellowplate.Id },
+                new LicenceType {  EnglishName = "Equipment", ArabicName = "معدات ثقيلة", PlateColorId = blueplate.Id },
+                new LicenceType {  EnglishName = "Export", ArabicName = "تصدير", PlateColorId = silverplate.Id },
+                new LicenceType {  EnglishName = "Motorcycle", ArabicName = "دراجة نارية", PlateColorId = whiteplate.Id },
                 new LicenceType {  EnglishName = "Temp", ArabicName = "مؤقت", PlateColorId = silverplate.Id }, 
 
                 // Unique licence types with their own PlateColorId
-                new LicenceType {  EnglishName = "Antique", ArabicName = "اقتناء تاريخي", PlateColorId = whiteplate.Id }, 
+                new LicenceType {  EnglishName = "Antique", ArabicName = "اقتناء تاريخي", PlateColorId = whiteplate.Id },
                 new LicenceType {  EnglishName = "Diplomatic", ArabicName = "دبلوماسي", PlateColorId = greenplate.Id }
                 };
-               
-                await _licenceTypeRepository.InsertManyAsync(licenceTypes, autoSave: true);
-                
-            
+
+            await _licenceTypeRepository.InsertManyAsync(licenceTypes, autoSave: true);
+
+
         }
     }
 }
