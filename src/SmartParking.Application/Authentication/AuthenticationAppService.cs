@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,22 +15,27 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
+using static QRCoder.PayloadGenerator;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
 // Service Implementation
 
 /// <inheritdoc/>
-public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
+public class AuthenticationAppService : ApplicationService, IAuthenticationAppService 
 {
 
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -43,6 +50,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IDataFilter _dataFilter;
+    private readonly IEmailSender _emailSender;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -57,7 +65,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IRepository<Customer, Guid> CustomerRepository,
         IRepository<Organization, int> organizationRepository,
         IDataFilter dataFilter
-        )
+,
+        IEmailSender emailSender)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -71,6 +80,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _customerRepository = CustomerRepository;
         _organizationRepository = organizationRepository;
         _dataFilter = dataFilter;
+        _emailSender = emailSender;
     }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
@@ -442,4 +452,104 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
         
     }
+    public async Task<bool> GenerateTokeForUser(string email)
+    {
+        IdentityUser user;
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+ 
+                if (email.Contains("@"))
+                {
+                    user = await _userManager.FindByEmailAsync(email);
+
+                }
+                else
+                {
+                    user = await _userManager.FindByNameAsync(email);
+
+                }
+                if (user == null)
+                {
+                    throw new Exception("user isn't exist");
+                }
+                
+        var OTP = GenrateOTP();
+
+       var result = await SendEmail(user.Email, OTP);
+        user.SetProperty("OtpCode", OTP);
+        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddMinutes(2));
+        await CurrentUnitOfWork.SaveChangesAsync();
+        return result;
+        }
+
+
+    }
+    private string GenrateOTP()
+    {
+        int min = 1000;  
+        int max = 9999;
+        Random random = new Random();
+        return random.Next(min, max).ToString();
+    }
+
+    public async Task<bool> SendEmail(string Email , string Otp)
+    {
+        MailMessage message = new MailMessage(
+
+                    "info@mdkhl.com",
+                    Email,     // target email address
+                    "Verify Otp",         // subject
+                   $"Your One-Time Password (OTP) is: {Otp}");
+
+        await _emailSender.SendAsync(message);
+        return true;
+
+    }
+    public async Task<bool> VerifyOtp(string Email, string Otp)
+    {
+        IdentityUser user;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            if (Email.Contains("@"))
+            {
+                user = await _userManager.FindByEmailAsync(Email);
+
+            }
+            else
+            {
+                user = await _userManager.FindByNameAsync(Email);
+
+            }
+            if (user == null)
+            {
+                throw new Exception("user isn't exist");
+            }
+            var result = CheckOtp(Otp, EF.Property<string>(user, "OtpCode"), EF.Property<DateTime>(user, "OtpExpirationDate"));
+            if (result == true)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return true;
+            }
+            return false;
+
+
+
+
+        }
+    }
+
+    private bool CheckOtp(string Otp , string CurrentOtp , DateTime ExpiryTime)
+    {
+        if(CurrentOtp==Otp && ExpiryTime.TimeOfDay >= DateTime.UtcNow.TimeOfDay)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+
+
 }

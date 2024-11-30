@@ -81,4 +81,33 @@ public interface IAuthenticationAppService : IApplicationService
     /// <returns>A <see cref="BaseResultDto"/> indicating the result of the password change operation.</returns>
     Task<bool> SetNewPasswordWeb(string input, string NewPassword);
     Task<UserDataDto> UpdateUser(string phone, string password);
+    /// <summary>
+    /// Method used to generate toke for user.
+    ///Token is 4 numbers.
+    /// </summary>
+    /// <param name="email">Email for user that needs to generate its token.</param>
+    /// <returns>Boolean describes status of process.</returns>
+    Task<bool> GenerateTokeForUser(string email);
+
+    /// <summary>
+    /// Method sends email with otp to user email.
+    /// </summary>
+    /// <param name="Email">UserEmail</param>
+    /// <param name="Otp">Otp</param>
+    /// <returns>flag</returns>
+    Task<bool> SendEmail(string Email, string Otp);
+
+
+    /// <summary>
+    /// Method that verifies otp.
+    /// </summary>
+    /// <param name="Email">Email for user to be register</param>
+    /// <param name="OTP">Otp user have written</param>
+    /// <returns>flag</returns>
+
+    Task<bool> VerifyOtp(string Email, string OTP);
+
+
+
+
 }
