@@ -13,4 +13,5 @@ public class LoginResponseDto
     public string UserId { get; set; }
     public string Baseurl { get; set; }
     public string TenantId { get; set; }
+    public int OrganizationId { get; set; }
 }

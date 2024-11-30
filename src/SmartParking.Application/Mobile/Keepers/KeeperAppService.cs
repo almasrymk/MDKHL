@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
@@ -98,18 +99,22 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	/// <inheritdoc/>
 	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync(int organizationId,Guid userId)
 	{
+        Volo.Abp.Identity.IdentityUser? user;
+        List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
 
-        var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
-
-        if (user is null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            return Result.Invalid(new Results.ValidationError
-            {
-                ErrorMessage = "User not found"
-            });
-        }
-        var garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null );
+            user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
 
+            if (user is null)
+            {
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "User not found"
+                });
+            }
+            garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null);
+        }
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
         if(mappedTransaction.Count  < 0 ) 
         {
@@ -122,18 +127,23 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     /// <inheritdoc/>
     public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId,Guid userId)
     {
-        var	user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+        Volo.Abp.Identity.IdentityUser? user;
+        List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
 
-        if (user is null) 
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            return Result.Invalid(new Results.ValidationError
+            user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+
+            if (user is null)
             {
-                ErrorMessage = "User not found"
-            });
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "User not found"
+                });
+            }
+
+            garageTransaction = await _garageTransactionRepository.GetListAsync();
         }
-       
-        var garageTransaction = await _garageTransactionRepository.GetListAsync();
-        
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
         if (mappedTransaction.Count < 0)
         {
@@ -215,7 +225,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 Role = roles.FirstOrDefault(),
                 Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
                 TenantId = tenantId,
-                UserId = user.Id.ToString()
+                UserId = user.Id.ToString(),
+                OrganizationId = user.GetProperty<int>("OrganizationId")
+
             });
         }
     }
@@ -261,18 +273,34 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId,Guid userId)
     {
-        var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+        Volo.Abp.Identity.IdentityUser? user;
+        List<GarageTransaction> existingTransactions = new List<GarageTransaction>();
 
-        if (user is null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            return Result.Invalid(new Results.ValidationError
+            user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+
+            if (user is null)
             {
-                ErrorMessage = "User not found"
-            });
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "User not found"
+                });
+            }
+
+            var entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn);
+
+            // Fetch all transactions with IsIn == false (exits)
+            var exitTransactions = await _garageTransactionRepository.GetListAsync(t => !t.IsIn);
+
+            // Filter to keep only entrance transactions that do not have a corresponding exit
+            existingTransactions = entranceTransactions
+                .Where(entrance =>
+                    !exitTransactions.Any(exit =>
+                        exit.PlateNumber == entrance.PlateNumber)) // Exit occurs after entry
+                .ToList();
+
         }
-
-        var existingTransactions = await _garageTransactionRepository.GetListAsync(t=>t.CameraType != CameraType.Exit );
-
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(existingTransactions);
         
         if (mappedTransaction.Count < 0)

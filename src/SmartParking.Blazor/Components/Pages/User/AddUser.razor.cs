@@ -54,6 +54,12 @@ public partial class AddUser
             orgId = org.Id;
             TenantId = org.TenantId;
         }
+        if (userRole == RolesType.Keeper.ToString())
+        {
+            var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
+            orgId = org.Id;
+            TenantId = org.TenantId;
+        }
         var successedMessage = L["UserCreatedSuccessfully"];
         var errorMessage = L["Can'tCreateUser"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
@@ -110,12 +116,19 @@ public partial class AddUser
             userCreate.TenantId = TenantId;
             userCreate.UserType = 0;
         }
-        else if (userRole == RolesType.Organization.ToString())
+        else if (userRole == RolesType.Organization.ToString() )
         {
             userCreate.OrganizationId = orgId;
             userCreate.TenantId = TenantId;
             userCreate.UserType = 1;
             userRole = RolesType.Organization.ToString();
+        }
+        else if(userRole == RolesType.Keeper.ToString())
+        {
+            userCreate.OrganizationId = orgId;
+            userCreate.TenantId = TenantId;
+            userCreate.UserType = 4;
+            userRole = RolesType.Keeper.ToString();
         }
 
         userCreate.Password = "P@ssw0rd";
