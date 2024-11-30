@@ -1,18 +1,34 @@
 ﻿@page "/verify-account"
 @layout Shared.AuthLayout
 @using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IAuthenticationAppService AuthenticationAppService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+
 
 
 <PageTitle>@L["Verify account"]</PageTitle>
 
 <h2>@L["Verify account"]</h2>
 <MudText Class="w-50 text-center">
-    @L["we send the OTP to"] <a class="fw-bold" href="mailto:info@mdkhl.com">info@mdkhl.com</a>
-   @L["enter the code bellow to verify account"]
-</MudText>
+    @L["we send the OTP to"] <a >
+        <MudTextField T="string"  Typo="Typo.h6"
+        Label=@L["Email Address / User Name"] @bind-Value="Email" />
 
+    </a>
+</MudText>
+<MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Send">@L["Send"]</MudButton>
+
+
+
+<MudText Class="w-50 text-center">
+
+    @L["enter the code bellow to verify account"]
+</MudText>
 <div>
     <MudForm @ref="otpForm">
         <MudGrid Justify="Justify.Center" Class="my-5">
@@ -20,37 +36,54 @@
             {
                 <MudItem xs="2">
                     <MudNumericField @bind-Value="_otp[i]"
-                                     HideSpinButtons="true"
-                                     MaxLength="1"
-                                     InputType="InputType.Number"
-                                     OnKeyDown="@(e => MoveNext(e, i))"
-                                     Variant="Variant.Text"
-                                     Typo="Typo.h5"
-                                     />
+                    HideSpinButtons="true"
+                    MaxLength="1"
+                    OnKeyDown="@(e => MoveNext(e, i))"
+                    Variant="Variant.Text"
+                    Typo="Typo.h5"
+                    />
                 </MudItem>
             }
         </MudGrid>
         <MudText Class="text-center my-5">@L["Didn't receive the code .."]<MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">@L["Resend"]</MudLink></MudText>
-        <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Type="Submit">@L["VERIFY"]</MudButton>
+        <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["VERIFY"]</MudButton>
     </MudForm>
 </div>
 <MudText Class="text-center mt-5">@L["if the mail is wrong change it in previous page .."] <MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">@L["Back"]</MudLink></MudText>
 @code {
+    public string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+    public string Email;
+
+
     private string[] _otp = new string[5];
     private MudTextField<string>[] _otpRefs = new MudTextField<string>[5];
     private MudForm otpForm;
     private async void MoveNext(KeyboardEventArgs e, int index)
     {
-        // Check for valid indices to prevent IndexOutOfRangeException
-        if (e.Key == "Backspace" && index > 0)
-        {
-            // Move focus to the previous field if the index is valid
-            await _otpRefs[index - 1].FocusAsync();
+        await _otpRefs[(index + 1)%4].FocusAsync();
+    }
+
+    private async void Send(){
+
+        try{
+
+        var result=await AuthenticationAppService.GenerateTokeForUser(Email);
+        }catch(Exception ex){
+            Snackbar.Add(ex.Message, Severity.Error);
+
         }
-        else if (!string.IsNullOrWhiteSpace(_otp[index]) && index < _otp.Length - 1)
-        {
-            // Automatically move to the next field after input, ensuring index is within bounds
-            await _otpRefs[index + 1].FocusAsync();
+    }
+    private async void Submit(){
+        string OTP = "";
+        foreach(var x in _otpRefs){
+            OTP += x;
         }
+       var result = await AuthenticationAppService.VerifyOtp(Email, OTP);
+       if(result){
+            Snackbar.Add("OTP Verified correctly", Severity.Success);
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/change-password");
+       }
+
     }
 }
