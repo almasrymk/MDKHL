@@ -72,7 +72,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
 
             <div class=""invoice-body d-flex flex-column justify-content-between"">
                 <h4>
-                    This is the receipt for payment of {(int)(invoice.InvoicePrice + (invoice.InvoicePrice * 0.14m))} SAR
+                    This is the receipt for payment of {(int)(invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m))} SAR
                 </h4>
                 <div class=""row"">
                     <div class=""col-md-6 d-flex flex-column"">
@@ -125,10 +125,10 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
                             <p><strong>Total Pre VAT:</strong> {invoice.InvoicePrice} SAR</p>
                         </div>
                         <div class=""d-flex flex-row"">
-                            <p><strong>VAT 14%:</strong> {(int)(invoice.InvoicePrice * 0.14m)} SAR</p>
+                            <p><strong>VAT 14%:</strong> {(int)(invoice.InvoicePrice * 0.15m)} SAR</p>
                         </div>
                         <div class=""d-flex flex-row"">
-                            <p><strong>Total Including VAT:</strong> {(int)(invoice.InvoicePrice + (invoice.InvoicePrice * 0.14m))} SAR</p>
+                            <p><strong>Total Including VAT:</strong> {(int)(invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m))} SAR</p>
                         </div>
                     </div>
                     <div class=""col-md-6"">
