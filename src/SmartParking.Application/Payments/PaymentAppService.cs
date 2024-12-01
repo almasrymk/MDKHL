@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
@@ -6,7 +7,11 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Invoices;
 using SmartParking.Organizations;
+using SmartParking.Packages;
+using SmartParking.Results;
+using SmartParking.Vehicles;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -20,6 +25,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Payments;
 [Authorize]
@@ -27,6 +33,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 {
     private readonly IRepository<Payment, Guid> _repository;
     private readonly IRepository<Customer, Guid> _customerRepo;
+    private readonly IDataFilter dataFilter;
     private readonly ICustomerPackagesAppService customerPackagesAppService;
     private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
@@ -58,6 +65,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         _repository = repository;
         _customerRepo = customerRepo;
+        this.dataFilter = dataFilter;
         this.customerPackagesAppService = customerPackagesAppService;
         organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
@@ -182,8 +190,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
     }
 
-
-
     private string GetEntityIdByPaymentMethod(PaymentMethod paymentMethod)
     {
         return paymentMethod switch
@@ -226,56 +232,104 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     status = PaymentStatus.Success;
                 }
             }
-
-            var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
-
-            if (payment != null)
+            using (dataFilter.Disable<IMultiTenant>())
             {
-                if (payment.PaymentCategory == PaymentCategory.Invoice)
-                {
 
-                    var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-                    if (invoice != null)
-                    {
-                        invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
-                        await _invoiceRepo.UpdateAsync(invoice);
-                    }
-                }
-                else if (payment.PaymentCategory == PaymentCategory.Package)
+                var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
+                if (payment != null)
                 {
-
-                    if (status == PaymentStatus.Success)
+                    if (payment.PaymentCategory == PaymentCategory.Invoice)
                     {
-                        //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
-                        //await _packageRepo.UpdateAsync(package);
-                        var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
-                        if (!assignStatus)
+
+                        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+                        if (invoice != null)
                         {
-                            throw new Exception("Can't assign package to customer");
+                            invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
+                            await _invoiceRepo.UpdateAsync(invoice);
                         }
                     }
-                }
-                // add QrCode
-                payment.PaymentStatus = status;
-                // add QrCode
-                var token = await _invoiceUtility.GetTokenAsync();
-                var qrCode = _invoiceUtility.GetQrCodeAsync(token, payment.InvoiceId);
-                payment.QrCodeInvoice = qrCode.Result.QRCode;
-                await _repository.UpdateAsync(payment);
-            }
+                    else if (payment.PaymentCategory == PaymentCategory.Package)
+                    {
 
-            return new PaymentDto
-            {
-                CheckoutId = payment.CheckoutId,
-                CustomerId = payment.CustomerId,
-                Id = payment.Id,
-                PaymentStatus = status,
-                QrCodeInvoice = payment.QrCodeInvoice,
-            };
+                        if (status == PaymentStatus.Success)
+                        {
+                            //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
+                            //await _packageRepo.UpdateAsync(package);
+                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
+                            if (!assignStatus)
+                            {
+                                throw new Exception("Can't assign package to customer");
+                            }
+                        }
+                    }
+
+                    // add QrCode
+                    payment.PaymentStatus = status;
+                    var token = await _invoiceUtility.GetTokenAsync();
+                    var qrCode = _invoiceUtility.GetQrCodeAsync(token, payment.InvoiceId);
+                    payment.QrCodeInvoice = qrCode.Result.QRCode;
+                    await _repository.UpdateAsync(payment);
+                }
+
+                return new PaymentDto
+                {
+                    CheckoutId = payment.CheckoutId,
+                    CustomerId = payment.CustomerId,
+                    Id = payment.Id,
+                    PaymentStatus = status,
+                    PaymentCategory = payment.PaymentCategory,
+                    InvoiceId = payment.InvoiceId,
+                    PackageId = payment.PackageId,
+                    OrganizatioId = payment.OrganizationId,
+                    QrCodeInvoice = payment.QrCodeInvoice,
+                };
+            }
         }
         else
         {
             throw new Exception($"Payment status request failed with status: {response.StatusCode}");
+        }
+    }
+    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var org = await organizationsAppService.GetAsync(OrganizationId);
+            var customerquery = await _customerRepo.GetQueryableAsync();
+            customerquery = customerquery.Include(cust => cust.IdentityUser);
+            var customer =await AsyncExecuter.FirstAsync(customerquery);
+
+            var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
+            var packagedto = new PayementPackageDto()
+            {
+                OrganizationAddress = org.Address,
+                OrganizationArabicName = org.ArabicName,
+                OrganizationEnglishName = org.EnglishName,
+                CustomerArabicName=customer.ArabicName,
+                CustomerEnglishName=customer.IdentityUser.Name,
+                PayementTime=payement.CreationTime,
+                Price=package.Price,
+                Description=package.Description,
+
+
+            };
+            return Result<PayementPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
+
+
+        }
+    }
+    public async Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var invoice = await _invoiceRepo.GetAsync(x => x.Id == payement.InvoiceId);
+            var invoicedto= ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            return Result<InvoiceDto>.Success(invoicedto, "Invoice Details Retrieved Succesuffuly");
+
         }
     }
 

@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartParking.Entities.Organizations;
+using SmartParking.Invoices;
+using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.Results;
+using System;
 using System.Threading.Tasks;
 
 namespace SmartParking.Controllers;
@@ -32,6 +36,19 @@ public class PaymentController : ControllerBase
         return await _paymentAppService.GetPaymentStatus(input, entityId);
     }
 
+    [HttpGet("GetInvoicePayementDetails/{oragnizationId}/{CustomerId}/{PaymentId}")]
+    [Authorize]
+    public async Task<Result<InvoiceDto>> GetInvoicePaymentDetails(int oragnizationId, Guid CustomerId, Guid PaymentId)
+    {
+        return await _paymentAppService.GetInvoicePaymentDetailsAsync(oragnizationId, CustomerId, PaymentId);
+    }
+
+    [HttpGet("GetPackagePayementDetails/{oragnizationId}/{CustomerId}/{PaymentId}")]
+    [Authorize]
+    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetails(int oragnizationId, Guid CustomerId, Guid PaymentId)
+    {
+        return await _paymentAppService.GetPackagePaymentDetailsAsync(oragnizationId, CustomerId, PaymentId);
+    }
 
 }
 
