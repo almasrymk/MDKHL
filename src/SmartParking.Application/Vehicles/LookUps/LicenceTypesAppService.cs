@@ -5,12 +5,15 @@ using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
+using SmartParking.Lookups.VehicleModel;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -21,8 +24,8 @@ using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
     [Authorize]
-	public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
-	{
+public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
+{
         private readonly IRepository<LicenceType, int> _repository;
         private readonly IRepository<PlateColor, int> _plateColorRepository;
     private readonly IDataFilter _dataFilter;
@@ -83,7 +86,7 @@ namespace SmartParking.Vehicles.LookUps;
 
         if (exisitingPlateColor is null)
         {
-            throw new InvalidOperationException("Plate color doesnot exist");
+            throw new InvalidOperationException("Licence type doesnot exist");
         }
 
         var LicenceType = await _repository.FirstOrDefaultAsync
@@ -195,5 +198,20 @@ namespace SmartParking.Vehicles.LookUps;
             return ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceType);
         }
            
+    }
+
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypesAsync()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var licenceTypes = await _repository.GetListAsync();
+
+            var mappedLicenceType = ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceTypes);
+
+            return Result<List<LicenceTypeDto>>.Success(mappedLicenceType);
+        }
+
     }
 }

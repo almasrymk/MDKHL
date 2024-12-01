@@ -114,8 +114,13 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
             garageTransaction = await _garageTransactionRepository.GetListAsync(t => t.PlateNumber == null);
+
+
         }
-        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
+        var sortedTransaction = garageTransaction.OrderByDescending(t => t.AccurateTime).ToList();
+
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
+        
         if(mappedTransaction.Count  < 0 ) 
         {
             return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
@@ -144,7 +149,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
             garageTransaction = await _garageTransactionRepository.GetListAsync();
         }
-        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransaction);
+
+        var sortedTransaction = garageTransaction.OrderByDescending(t => t.AccurateTime).ToList();
+
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
+        
         if (mappedTransaction.Count < 0)
         {
             return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
@@ -301,7 +310,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 .ToList();
 
         }
-        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(existingTransactions);
+
+        var sortedTransaction = existingTransactions.OrderByDescending(t => t.AccurateTime).ToList();
+
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
         
         if (mappedTransaction.Count < 0)
         {
