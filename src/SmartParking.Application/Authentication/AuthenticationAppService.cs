@@ -199,6 +199,15 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                     ErrorMessage = "Account is In Active"
                 });
             }
+            if(!user.PhoneNumberConfirmed)
+            {
+                return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                {
+                    ErrorCode = "400",
+                    ErrorMessage = "Verfiy phone number"
+                });
+            }
+
             await _signInManager.SignInAsync(user, isPersistent: false);
 
 
