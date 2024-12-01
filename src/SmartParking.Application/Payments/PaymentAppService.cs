@@ -7,6 +7,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Organizations;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Package, int> _packageRepo;
     private readonly HttpClient _httpClient;
-
+    private readonly IInvoiceUtility _invoiceUtility;
     private const string EntityId = "8ac7a4ca9244f53c01924741733e0327";
     private const string Currency = "SAR";
     private const string PaymentType = "DB";
@@ -50,7 +51,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         IRepository<Customer, Guid> customerRepo, IDataFilter dataFilter,
         ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
-        HttpClient httpClient)
+        HttpClient httpClient,
+        IInvoiceUtility invoiceUtility)
     : base(repository)
     {
 
@@ -61,6 +63,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         _invoiceRepo = invoiceRepo;
         _packageRepo = packageRepo;
         _httpClient = httpClient;
+        _invoiceUtility = invoiceUtility;
     }
 
 
@@ -78,6 +81,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             // handle cash transaction
             if (paymentCheckoutRequest.PaymentMethod == PaymentMethod.Cash)
             {
+                
+
                 return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Success);
 
             }
@@ -110,6 +115,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         string checkoutid = null,
         string entityId = null)
     {
+        // add QrCode
+        var token = await _invoiceUtility.GetTokenAsync();
+        var qrCode = _invoiceUtility.GetQrCodeAsync(token, paymentCheckoutRequest.InvoiceId);
         Payment payment = new Payment
         {
             Amount = paymentCheckoutRequest.Amount,
@@ -122,7 +130,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             CheckoutId = checkoutid,
             EntityId = entityId,
             CustomerId = customerId,
-            PaymentStatus = paymentStatus
+            PaymentStatus = paymentStatus,
+            QrCodeInvoice = qrCode.Result.QRCode
         };
 
         payment = await _repository.InsertAsync(payment);
@@ -135,7 +144,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             PaymentStatus = payment.PaymentStatus,
             PaymentMethod = payment.PaymentMethod,
             EntityId = payment.EntityId,
-            TokenId = token
+            TokenId = token,
+            QrCodeInvoice = qrCode.Result.QRCode
         };
 
 
@@ -245,8 +255,12 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         }
                     }
                 }
-
+                // add QrCode
                 payment.PaymentStatus = status;
+                // add QrCode
+                var token = await _invoiceUtility.GetTokenAsync();
+                var qrCode = _invoiceUtility.GetQrCodeAsync(token, payment.InvoiceId);
+                payment.QrCodeInvoice = qrCode.Result.QRCode;
                 await _repository.UpdateAsync(payment);
             }
 
@@ -256,6 +270,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 CustomerId = payment.CustomerId,
                 Id = payment.Id,
                 PaymentStatus = status,
+                QrCodeInvoice = payment.QrCodeInvoice,
             };
         }
         else

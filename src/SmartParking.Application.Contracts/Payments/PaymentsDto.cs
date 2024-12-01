@@ -16,6 +16,7 @@ public class PaymentDto
     public Guid CustomerId { get; set; }
     public string  CheckoutId { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
+    public string QrCodeInvoice { get; set; }
 
 
 }

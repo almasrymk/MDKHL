@@ -124,7 +124,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
                     <div class=""col-md-6"">
                         <div class=""d-flex flex-row justify-content-end"">
                             <div style=""width: 120px;"">
-                                <img src=""data:image/png;base64,{qrCode}"" alt=""Logo"" style=""width:120px;"" />
+                                <img src=""data:image/png;base64,{qrCode}"" alt=""UnPaid"" style=""width:120px;"" />
                             </div>
                         </div>
                     </div>
