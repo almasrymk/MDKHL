@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SmartParking.Utilities;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.AutoMapper;
@@ -28,6 +29,7 @@ public class SmartParkingApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddTransient<IInvoiceUtility, InvoiceUtility>();
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<SmartParkingApplicationModule>();

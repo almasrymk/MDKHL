@@ -21,5 +21,6 @@ public class Payment : FullAuditedEntity<Guid>
     public PaymentStatus PaymentStatus { get; set; }
     public string Currency { get; set; }
     public virtual Customer Customers { get; set; }
+    public string QrCodeInvoice { get; set; }
 
 }

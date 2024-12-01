@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
+using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
 using SmartParking.Mobile.Vehicles;
@@ -22,12 +23,14 @@ public class VehicleController : AbpController
     private readonly IVehicleAppService _vehicleAppService;
     private readonly IVehicleBrandsAppService _vehicleBrandsAppService;
     private readonly IVehicleModelsAppService _vehicleModelsAppService;
+    private readonly ILicenceTypesAppService _licenceTypesAppService;
 
-    public VehicleController(IVehicleAppService vehicleAppService,IVehicleBrandsAppService vehicleBrandsAppService,IVehicleModelsAppService vehicleModelsAppService)
+    public VehicleController(IVehicleAppService vehicleAppService,IVehicleBrandsAppService vehicleBrandsAppService,IVehicleModelsAppService vehicleModelsAppService,ILicenceTypesAppService licenceTypesAppService)
     {
         _vehicleAppService = vehicleAppService;
         _vehicleBrandsAppService = vehicleBrandsAppService;
         _vehicleModelsAppService = vehicleModelsAppService;
+        _licenceTypesAppService = licenceTypesAppService;
     }
 
     [HttpPost]
@@ -97,5 +100,11 @@ public class VehicleController : AbpController
     public async Task<Result<List<VehicleModelDto>>> GetModelsByBrand(int brandId)
     {
         return await _vehicleModelsAppService.GetModelsByBrandAsync(brandId);
+    }
+    [HttpGet("licenceTypes")]
+    [Authorize]
+    public async Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypes()
+    {
+        return await _licenceTypesAppService.GetAllLicenceTypesAsync();
     }
 }

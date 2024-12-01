@@ -14,6 +14,7 @@ public class PaymentDto
     public int? PackageId { get; set; }
     public PaymentCategory PaymentCategory { get; set; }
     public int OrganizatioId { get; set; }
+    public string QrCodeInvoice { get; set; }
 
 
 }
