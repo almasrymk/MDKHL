@@ -13,6 +13,15 @@ using iText.Html2pdf.Css.Apply.Impl;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp;
 using RemoteServiceAttribute = Volo.Abp.RemoteServiceAttribute;
+using iText.IO.Image;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Layout;
+using iText.Kernel.Colors;
+using SmartParking.Organizations;
+using iText.Layout.Borders;
+using iText.Kernel.Pdf.Colorspace;
+
 
 
 namespace SmartParking.PDF;
@@ -34,7 +43,8 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
     {
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
-        string imageDirectory = "images/logo/MDHKL_01.png";
+
+        string imageDirectory = "wwwroot/images/logo/MDHKL_01.png";
 
         var htmlContent = $@"
 <div class=""mud-modal"">
@@ -149,10 +159,12 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
            Directory.CreateDirectory(imageDirectoryPath);
         }
         string fileName = $"{invoiceId}.{"pdf"}";
+
+
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
+        await SaveInvoicePdf(invoiceId);
 
 
-        await File.WriteAllBytesAsync(fullPath, result);
         return result;
     }
     [RemoteService(isEnabled: false)]
@@ -382,5 +394,171 @@ img[style*='width:120px;'] {
         return fullPath;
 
     }
-        
+
+    public async Task SaveInvoicePdf(int invoiceId)
+    {
+        var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
+        var image = await _invoicePdfAppService.GetInvoiceQRCodeForOrganization(invoiceId);
+        string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
+        string fileName = $"{invoiceId}.{"pdf"}";
+        string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+
+        PdfWriter writer = new PdfWriter(fullPath);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        Style styleBold = new Style();
+        styleBold.SetBold();
+
+        Style Center = new Style();
+
+        Paragraph header = new Paragraph(invoice.InvoiceNumber.ToString()).
+          AddStyle(styleBold)
+         .SetTextAlignment(TextAlignment.CENTER)
+         .SetFontSize(20);
+        Image imageMdkhlLogo = new Image(ImageDataFactory
+        .Create(imageDirectoryPdf)).SetHorizontalAlignment(HorizontalAlignment.CENTER).SetWidth(120);
+
+        Paragraph subheader = new Paragraph(" * **Simplified tax invoice***")
+         .SetTextAlignment(TextAlignment.CENTER)
+         .SetFontSize(15);
+
+        Paragraph Vat = new Paragraph("VAT : ")
+            .AddStyle(styleBold)
+         .SetTextAlignment(TextAlignment.CENTER)
+         .SetFontSize(15).Add(@"1230000000");
+
+        Paragraph RecieptPayemntDetails = new Paragraph($"This is the receipt for payment of This is the receipt for payment of {invoice.InvoicePrice} SAR")
+            .AddStyle(styleBold)
+         .SetTextAlignment(TextAlignment.LEFT)
+         .SetFontSize(15);
+        Table table = new Table(2).SetWidth(UnitValue.CreatePercentValue(100));
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Payment Number:")));
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph($"{invoice.InvoiceNumber}")));
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Hotel Name:")));
+        table.AddCell(new Cell(1, 1)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetBorder(Border.NO_BORDER)
+            .Add(new Paragraph($"{invoice.OrganizationArabicName}")));
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Customer Name:")));
+        table.AddCell(new Cell(1, 1)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetBorder(Border.NO_BORDER)
+            .Add(new Paragraph($"{invoice.CustomerEnName ?? "Unkown"}")));
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Cashier No.:")));
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph($"{invoice.GarageName}")));
+
+        table.AddCell(new Cell(1, 1)
+             .SetBorder(Border.NO_BORDER)
+             .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Payment Date:")));
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph(DateTime.UtcNow.ToString())));
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Plate Number:")));
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph($"{invoice.PlateNumber}"))).SetBorder(Border.NO_BORDER);
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Entry Date:")));
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph($"{invoice.EntranceTime.ToString()}")));
+
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph("Exit Date:")))
+            .AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .Add(new Paragraph($"{invoice.InvoiceTime.ToString()}")));
+
+
+        Table table1 = new Table(3).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(25);
+
+
+        table1.AddCell(new Cell(1, 1)
+            .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+            .Add(new Paragraph("Subscription\nHour").SetFontSize(14).SetBold()));
+
+        table1.AddCell(new Cell(1, 1)
+            .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+            .Add(new Paragraph("Quota\n" + ((int)invoice.InvoicePrice / invoice.TotalHours) + " Hour SAR/Hour").SetFontSize(14).SetBold()));
+
+        table1.AddCell(new Cell(1, 1)
+            .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+            .Add(new Paragraph("Interval\n" + invoice.TotalHours + " Hour").SetFontSize(14).SetBold()));
+
+
+        Table table2 = new Table(2).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(25);
+
+        table2.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER) // No border
+            .SetTextAlignment(TextAlignment.LEFT)
+            .SetVerticalAlignment(VerticalAlignment.TOP)
+            .Add(new Paragraph("Total Pre VAT: " + invoice.InvoicePrice.ToString("F2") + " SAR").SetFontSize(12).SetBold()));
+
+        table2.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.LEFT)
+            .SetVerticalAlignment(VerticalAlignment.TOP)
+            .Add(new Paragraph("VAT 15%: " + (Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " SAR").SetFontSize(12).SetBold()));
+
+        table2.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.LEFT)
+            .SetVerticalAlignment(VerticalAlignment.TOP)
+            .Add(new Paragraph("Total Include VAT: " + (Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + " SAR").SetFontSize(12).SetBold()));
+
+
+
+        document.Add(header);
+        document.Add(imageMdkhlLogo);
+        document.Add(subheader);
+        document.Add(Vat);
+        document.Add(RecieptPayemntDetails);
+        document.Add(table);
+        document.Add(table1);
+        document.Add(table2);
+        document.Close();
+    }
 }
