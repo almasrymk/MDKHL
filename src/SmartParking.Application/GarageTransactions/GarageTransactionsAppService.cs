@@ -32,6 +32,7 @@ public class GarageTransactionsAppService:
 	private readonly IRepository<GarageTransaction, int> _repository;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Organization, int> _OrganizationRepository;
+    private readonly IRepository<Customer, Guid> _CustomerRepository;
     private readonly IRepository<Vehicle, int> _VehicleRepository;
     private readonly IRepository<Camera, int> _CameraRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -48,6 +49,7 @@ public class GarageTransactionsAppService:
         _CameraRepository = cameraRepository;
         _httpContextAccessor = httpContextAccessor;
         _VehicleRepository = vehicleRepository;
+        _CustomerRepository= customerRepository;
     }
     public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
@@ -397,16 +399,31 @@ public class GarageTransactionsAppService:
 		
 	}
 
-    public async Task<Result<List<string>>> GetCustomerPlateNumbersInGarage(Guid customerId, int garageId)
+    private async Task<Guid> GetCurrentCustomerId()
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+             var customer = await _CustomerRepository.GetQueryableAsync();
+             var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
+    }
+
+
+
+    public async Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId)
+    {
+        var customerId= await GetCurrentCustomerId();
         using (_dataFilter.Disable<IMultiTenant>()) {
             var query = await _VehicleRepository.GetQueryableAsync();
             query = query.Where(x => x.CustomerId == customerId);
             var garageTransactionQuery =await _repository.GetQueryableAsync();
-            garageTransactionQuery = garageTransactionQuery.Where(GT=>GT.GarageId==garageId);
+            garageTransactionQuery = garageTransactionQuery.Where(GT=>GT.OrganizationID== organizationId);
             garageTransactionQuery = garageTransactionQuery.Where(GT => query.Any(vehicle => vehicle.ArPlateNumber == GT.PlateNumber || vehicle.EnPlateNumber == GT.PlateNumber));
-            var plateNumbers = await garageTransactionQuery.Select(x => x.PlateNumber).ToListAsync();
-            return Result.Success(plateNumbers);
+            var transactions = await AsyncExecuter.ToListAsync(garageTransactionQuery);
+            var transactionsDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
+            return Result.Success(transactionsDtos);
 
         }
     }
