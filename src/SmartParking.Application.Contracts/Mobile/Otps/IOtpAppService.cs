@@ -20,9 +20,8 @@ public interface IOtpAppService : IApplicationService
 	/// <summary>
 	/// abstract method to generate otp by userId
 	/// </summary>
-	/// <param name="userId">userId</param>
 	/// <returns>otp code</returns>
-	public Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId);
+	public Task<Result<string>> GenerateOtpByUserIdAsync();
 
 	/// <summary>
 	/// abstract method to verfiy otp by phoneNumber 

@@ -20,6 +20,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Mobile.Otps;
 
@@ -35,6 +36,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
     private readonly IOptionsMonitor<OpenIddictServerOptions> _openIddictOptions;
     private readonly IHttpContextAccessor _httpContext;
     private readonly HttpClient _httpClient;
+    private readonly IDataFilter _dataFilter;
     private readonly TaqnyatSmsOptionsDto _options;
 
     public OtpAppService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
@@ -42,7 +44,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
         IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
         IHttpContextAccessor httpContext,
       IOptions<TaqnyatSmsOptionsDto> options,
-      HttpClient httpClient 
+      HttpClient httpClient,
+      IDataFilter dataFilter
         )
     {
         //_userManager = userManager;
@@ -53,6 +56,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
         _httpContext = httpContext;
         _options = options.Value;
         _httpClient = httpClient;
+        _dataFilter = dataFilter;
     }
 
     /// <inheritdoc/>
@@ -148,32 +152,28 @@ public class OtpAppService : ApplicationService, IOtpAppService
     }
 
     /// <inheritdoc/>
-    public async Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId)
+    public async Task<Result<string>> GenerateOtpByUserIdAsync()
     {
-        if (userId.ToString() is null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-           return Result.Invalid(new Results.ValidationError
-           {
-                    ErrorMessage = "User Id Not valid"
-           });
-        }
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == userId);
-        if (user is null)
-        {
-            return Result.Invalid(new Results.ValidationError
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == CurrentUser.Id);
+            if (user is null)
             {
-               ErrorMessage = "User Not Found"
-            });
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "Login first"
+                });
+            }
+
+            var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
+            user.SetProperty("OtpCode", otp);
+            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
+
+            // Update the user with OTP in the database
+            await _userRepository.UpdateAsync(user);
+
+            return Result.Success(otp);
         }
-
-        var otp = "1234"; // call GenerateRandomOtp function   
-        user?.SetProperty("OtpCode", otp);
-        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
-
-        // Update the user with OTP in the database
-        await _userRepository.UpdateAsync(user);
-
-        return Result.Success(otp);
     }
 
     /// <inheritdoc/>
