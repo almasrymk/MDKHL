@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QRCoder;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,17 +34,19 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
-    private readonly HttpClient _httpClient;
     private string folderQrImage = "QRCodeImage";
     private string folderImages = "image";
+    private readonly IInvoiceUtility _invoiceUtility;
+    private readonly IRepository<Payment, Guid> _paymentRepository;
 
-    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, HttpClient httpClient)
+    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtility invoiceUtility , IRepository<Payment, Guid> paymentRepository)
     : base(repository)
     {
         _dataFilter = dataFilter;
         _invoiceRepository = repository;
         _organizationsRepository = organizationsRepository;
-        _httpClient = httpClient;
+        _invoiceUtility = invoiceUtility;
+        _paymentRepository = paymentRepository;
     }
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
@@ -265,37 +270,51 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
-        string? token = await GetToken();
+        string? token = await _invoiceUtility.GetTokenAsync();
         var invoice = await _invoiceRepository.GetAsync(invoiceId);
         if (invoice is null)
         {
             return Result.NotFound();
         }
-        QRCodeDto qrCodedto = await GetQrCode(token, invoice);
-        return await GetImage(invoice, qrCodedto);
+        string? qrCode = await GetQrCodeAsync(invoice);
+
+        return await GetImage(invoice, qrCode);
     }
+
+    private async Task<string?> GetQrCodeAsync(Invoice? invoice)
+    {
+        var paymentQuery = await _paymentRepository.GetQueryableAsync();
+        string? qrCode = await paymentQuery
+                .Where(p => p.InvoiceId == invoice.Id)
+                .Select(p => p.QrCodeInvoice)
+                .FirstOrDefaultAsync();
+        return qrCode;
+    }
+
     public async Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            string? token = await GetToken();
+            string? token = await _invoiceUtility.GetTokenAsync();
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
             if (invoice is null)
             {
                 return Result.NotFound();
             }
-            QRCodeDto qrCodedto = await GetQrCode(token, invoice);
-            var result = await GetImage(invoice, qrCodedto);
+            string? qrCode = await GetQrCodeAsync(invoice);
+            var result = await GetImage(invoice, qrCode);
             return result;
         }
     }
 
-    private async Task<Result<string>> GetImage(Invoice? invoice, QRCodeDto qrCodedto)
+    private async Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto)
     {
         //var text = Convert.FromBase64String(qrCodedto.QRCode);
+        if (qrCodedto.IsNullOrEmpty())
+            return " ";
         using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
 
-        using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodedto.QRCode, QRCodeGenerator.ECCLevel.Q))
+        using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodedto, QRCodeGenerator.ECCLevel.Q))
         using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
         {
 
@@ -318,55 +337,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
             return $"{folderQrImage}/{folderImages}/{fileName}";
         }
-    }
-
-    private async Task<QRCodeDto> GetQrCode(string? token, Invoice? invoice)
-    {
-        decimal percentage = invoice.InvoicePrice * 0.14m;
-        var oragnization = await _organizationsRepository.GetAsync(invoice.OrganizationId);
-        //"12-25-2024"
-        var qR = new
-        {
-            sellerName = oragnization.EnglishName,
-            vatRegistration = oragnization.CommercialRegistrationNumber,
-            timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
-            invoiceAmount = invoice.InvoicePrice.ToString(),
-            vatAmount = percentage.ToString()
-        };
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
-        HttpResponseMessage responseQR = await _httpClient.PostAsync("https://zatca.mazeedit.com/api/Invoices/V1/QRCode", contentQR);
-
-        responseQR.EnsureSuccessStatusCode();
-
-        var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
-
-        var jsonQR = JObject.Parse(resultResponseQR);
-        var qrCodedto = new QRCodeDto
-        {
-            QRCode = jsonQR["qrCode"]?.ToString()
-        };
-        return qrCodedto;
-    }
-
-    private async Task<string?> GetToken()
-    {
-        var user = new
-        {
-            userName = "ibrahimia-1",
-            password = "ibrahimiaP@ssw0rd"
-        };
-        var contentUser = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-
-        HttpResponseMessage response = await _httpClient.PostAsync("https://zatca.mazeedit.com/api/Auth/Login", contentUser);
-
-        response.EnsureSuccessStatusCode();
-
-        var resultResponse = await response.Content.ReadAsStringAsync();
-
-        var json = JObject.Parse(resultResponse);
-        var token = json["data"]?["token"]?.ToString();
-        return token;
     }
 
     /// <inheritdoc/>

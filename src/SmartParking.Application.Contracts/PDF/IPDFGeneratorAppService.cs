@@ -14,4 +14,6 @@ public interface IPDFGeneratorAppService : IApplicationService
     Task<byte[]> GenerateInvoicePdfAsync(int invoiceId,string commericialRegisteratio,string qrCode);
     byte[] GeneratePdfFromHtmlAsync(string htmlContent, int invoiceId);
     Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio, string qrCode);
+
+    Task SaveInvoicePdf(int invoiceId);
 }

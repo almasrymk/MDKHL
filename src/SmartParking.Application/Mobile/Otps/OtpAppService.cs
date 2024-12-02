@@ -29,7 +29,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly Random _random;
     private const int OtpLength = 4;
-    private const int OtpValiditySecounds = 60;
+    private const int OtpValidityMinutes = 5;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private readonly IOptionsMonitor<OpenIddictServerOptions> _openIddictOptions;
@@ -80,7 +80,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
             user?.SetProperty("OtpCode", otp);
 
-            user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
+            user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
 
             await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " +  otp);
             // Update the user with OTP in the database
@@ -114,13 +114,13 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otpExpirationDate = user?.GetProperty<DateTime>("OtpExpirationDate");
 
-
         var currentTime= DateTime.Now;
 
         // Check if the provided OTP matches the stored OTP and if the OTP has not expired
-        if (storedOtp == otp && otpExpirationDate >= currentTime   )
+        if (storedOtp == otp && otpExpirationDate >= currentTime )
         {
             // OTP is valid, clear OTP fields
+            user.SetPhoneNumberConfirmed(true);
             user?.SetProperty("OtpCode", null);
             user?.SetProperty("OtpExpirationDate", DateTime.Now);
             await _userRepository.UpdateAsync(user);
@@ -168,7 +168,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otp = "1234"; // call GenerateRandomOtp function   
         user?.SetProperty("OtpCode", otp);
-        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);
@@ -190,7 +190,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
         }
         var otp = "1234"; // call GenerateRandomOtp function   
         user?.SetProperty("OtpCode", otp);
-        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
+        user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
 
         // Update the user with OTP in the database
         await _userRepository.UpdateAsync(user);
