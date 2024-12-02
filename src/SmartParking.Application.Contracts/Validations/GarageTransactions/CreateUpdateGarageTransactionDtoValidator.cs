@@ -16,11 +16,9 @@ namespace SmartParking.Validations.GarageTransactions
             RuleFor(x=>x.AccurateTime).NotEmpty();
             RuleFor(x=>x.SnapTime).NotEmpty();
             RuleFor(x=>x.PlateNumber);
-            RuleFor(x => x.CameraId).NotEmpty();
             RuleFor(x => x.GarageId).NotEmpty();
             RuleFor(x => x.OrganizationID).NotEmpty();
             RuleFor(x => x.VehiclePicture).NotEmpty();
-            RuleFor(x => x.CameraId).NotEmpty();
 
         }
     }
