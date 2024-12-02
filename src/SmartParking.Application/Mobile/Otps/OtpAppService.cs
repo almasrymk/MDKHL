@@ -167,7 +167,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
             var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
             user.SetProperty("OtpCode", otp);
-            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
+            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(120));
 
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
@@ -261,5 +261,10 @@ public class OtpAppService : ApplicationService, IOtpAppService
         var response = await _httpClient.PostAsync(_options.ApiUrl, content);
 
         return response.IsSuccessStatusCode;
+    }
+
+    public Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId)
+    {
+        throw new NotImplementedException();
     }
 }
