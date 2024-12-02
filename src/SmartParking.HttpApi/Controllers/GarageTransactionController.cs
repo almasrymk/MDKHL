@@ -29,17 +29,17 @@ public class GarageTransactionController : ControllerBase
 
     [HttpGet("carsingarage")]
     [Authorize]
-    public async Task<Result<List<string>>> GetCustomerPlateNumbersInGarage(Guid CustomerId , int GarageId)
+    public async Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int OrganizationId)
     {
-       return await _garageTransactionsAppService.GetCustomerPlateNumbersInGarage(CustomerId,GarageId);
+       return await _garageTransactionsAppService.GetCustomerTransactionsInOrganization(OrganizationId);
 
     }
 
-    [HttpGet("platenumbercheckout")]
+    [HttpGet("transactioncheckout")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> CheckoutForPlateNumber(Guid CustomerId,string plateNumber)
+    public async Task<Result<InvoiceDto>> CheckoutForTransaction(GarageTransactionDto transactionDto)
     {
-        return await _garageTransactionEndPointsAppService.CheckoutMobile(CustomerId, plateNumber);
+        return await _garageTransactionEndPointsAppService.CheckoutMobile(transactionDto);
 
     }
 
