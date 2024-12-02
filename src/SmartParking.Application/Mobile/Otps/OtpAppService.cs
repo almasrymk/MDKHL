@@ -1,6 +1,4 @@
-﻿using iText.Kernel.XMP.Options;
-using iText.Signatures;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -86,20 +84,20 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
             user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
 
-            await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " +  otp);
+            await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
 
-            return Result.Success(" رمز التحقق لدخول نظام مدخل هو" +  otp);
+            return Result.Success(" رمز التحقق لدخول نظام مدخل هو" + otp);
         }
-        catch(Exception ex) 
+        catch (Exception ex)
         {
             return Result.Invalid(new Results.ValidationError
             {
                 ErrorMessage = ex.Message
             });
         }
-       
+
     }
 
     /// <inheritdoc/>
@@ -118,10 +116,10 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otpExpirationDate = user?.GetProperty<DateTime>("OtpExpirationDate");
 
-        var currentTime= DateTime.Now;
+        var currentTime = DateTime.Now;
 
         // Check if the provided OTP matches the stored OTP and if the OTP has not expired
-        if (storedOtp == otp && otpExpirationDate >= currentTime )
+        if (storedOtp == otp && otpExpirationDate >= currentTime)
         {
             // OTP is valid, clear OTP fields
             user.SetPhoneNumberConfirmed(true);
@@ -133,7 +131,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
             return Result.Success(
             new VerifyOtpDto
             {
-                 AccessToken = await GenerateTokenAsync(user) ?? null,
+                AccessToken = await GenerateTokenAsync(user) ?? null,
             }, "Verfiy Otp Successfully");
         }
         else
@@ -167,7 +165,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
             var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
             user.SetProperty("OtpCode", otp);
-            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(120));
+            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
 
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
@@ -185,7 +183,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
         {
             return Result.Invalid(new Results.ValidationError
             {
-                 ErrorMessage = "User Not Found"
+                ErrorMessage = "User Not Found"
             });
         }
         var otp = "1234"; // call GenerateRandomOtp function   
