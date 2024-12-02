@@ -11,7 +11,6 @@ using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
-using SmartParking.Vehicles;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -79,42 +78,44 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentCheckoutDto> CreateCheckoutPaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
 
-        var customer = await _customerRepo.GetQueryableAsync();
-        var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
-        // ENABLE TO VALIDATE var organizationId = organizationsAppService.GetAsync(paymentCheckoutRequest.OrganizationId);
-
-        if (customerId != null)
+        using (dataFilter.Disable<IMultiTenant>())
         {
+            var customer = await _customerRepo.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            // ENABLE TO VALIDATE var organizationId = organizationsAppService.GetAsync(paymentCheckoutRequest.OrganizationId);
 
-            // handle cash transaction
-            if (paymentCheckoutRequest.PaymentMethod == PaymentMethod.Cash)
-            {
-                
-
-                return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Success);
-
-            }
-            else   //handle online transaction
+            if (customerId != null)
             {
 
-                var entityId = GetEntityIdByPaymentMethod(paymentCheckoutRequest.PaymentMethod);
-                var checkoutId = await HyperPayPayment(paymentCheckoutRequest, entityId);
+                // handle cash transaction
+                if (paymentCheckoutRequest.PaymentMethod == PaymentMethod.Cash)
+                {
 
-                return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Pending,
-                    checkoutid: checkoutId, entityId: entityId);
+
+                    return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Success);
+
+                }
+                else   //handle online transaction
+                {
+
+                    var entityId = GetEntityIdByPaymentMethod(paymentCheckoutRequest.PaymentMethod);
+                    var checkoutId = await HyperPayPayment(paymentCheckoutRequest, entityId);
+
+                    return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Pending,
+                        checkoutid: checkoutId, entityId: entityId);
+
+                }
+
+
+
+
 
             }
-
-
-
+            else
+                throw new Exception("Customer not found");
 
 
         }
-        else
-            throw new Exception("Customer not found");
-
-
-
     }
 
     private async Task<PaymentCheckoutDto> SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
@@ -299,7 +300,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             var org = await organizationsAppService.GetAsync(OrganizationId);
             var customerquery = await _customerRepo.GetQueryableAsync();
             customerquery = customerquery.Include(cust => cust.IdentityUser);
-            var customer =await AsyncExecuter.FirstAsync(customerquery);
+            var customer = await AsyncExecuter.FirstAsync(customerquery);
 
             var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
             var packagedto = new PayementPackageDto()
@@ -307,11 +308,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 OrganizationAddress = org.Address,
                 OrganizationArabicName = org.ArabicName,
                 OrganizationEnglishName = org.EnglishName,
-                CustomerArabicName=customer.ArabicName,
-                CustomerEnglishName=customer.IdentityUser.Name,
-                PayementTime=payement.CreationTime,
-                Price=package.Price,
-                Description=package.Description,
+                CustomerArabicName = customer.ArabicName,
+                CustomerEnglishName = customer.IdentityUser.Name,
+                PayementTime = payement.CreationTime,
+                Price = package.Price,
+                Description = package.Description,
 
 
             };
@@ -327,7 +328,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         {
             var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
             var invoice = await _invoiceRepo.GetAsync(x => x.Id == payement.InvoiceId);
-            var invoicedto= ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            var invoicedto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
             return Result<InvoiceDto>.Success(invoicedto, "Invoice Details Retrieved Succesuffuly");
 
         }
