@@ -38,7 +38,7 @@ public class GarageTransactionsAppService:
     private readonly IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser;
 
-    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor, IRepository<Customer, Guid> customerRepository) : base(repository)
+    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
@@ -47,7 +47,7 @@ public class GarageTransactionsAppService:
         _OrganizationRepository = organizationRepository;
         _CameraRepository = cameraRepository;
         _httpContextAccessor = httpContextAccessor;
-        _CustomerRepository = customerRepository;
+        _VehicleRepository = vehicleRepository;
     }
     public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
@@ -261,15 +261,7 @@ public class GarageTransactionsAppService:
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
-        
-           input.VehiclePicture = SaveBase64Image(input);
-            if (input.VehiclePicture == null)
-            return null;
-        
-      
             
-
-    
         var result=await base.CreateAsync(input);
         
         return result;
