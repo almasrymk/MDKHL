@@ -16,5 +16,5 @@ public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
     int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime? PackageExpiryDate);
-    Task<Result<InvoiceDto>> CheckoutMobile(Guid customerId, string plateNumber);
+    Task<Result<InvoiceDto>> CheckoutMobile(GarageTransactionDto garageTransaction);
 }

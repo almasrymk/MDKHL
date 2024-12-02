@@ -894,30 +894,39 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         double normalHours = totalHours - specialHours;
         return (specialHours, normalHours);
     }
-
-    public async Task<Result<InvoiceDto>> CheckoutMobile(Guid customerId, string plateNumber)
+    private async Task<Guid> GetCurrentCustomerId()
     {
-        var customerID =await CheckCustomer(plateNumber);
-        var transaction = await FindTransaction(plateNumber);
-        var Customer = await GetCustomer(customerID);
-        var camera = await GetAnExitCameraByGarageId(transaction.GarageId);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var customer = await _customerRepoistory.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
+    }
+
+    public async Task<Result<InvoiceDto>> CheckoutMobile(GarageTransactionDto garageTransaction)
+    {
+        var customerID =await GetCurrentCustomerId();
+        var Customer = await GetCustomer(customerID.ToString());
+        var camera = await GetAnExitCameraByGarageId(garageTransaction.GarageId);
 
         var GarageTransaction = new CreateUpdateGarageTransactionDto
         {
             AccurateTime=DateTime.Now,
-            PlateNumber=plateNumber,
-            GarageId = transaction.GarageId,
-            OrganizationID=transaction.OrganizationID,
+            PlateNumber= garageTransaction.PlateNumber,
+            GarageId = garageTransaction.GarageId,
+            OrganizationID= garageTransaction.OrganizationID,
             CameraId=camera.Id,
             SnapTime=DateTime.UtcNow,
-            TenantId=transaction.TenantId,
+            TenantId= garageTransaction.TenantId,
             IsIn=true,
             CheckoutMobile=DateTime.Now,
-            VehiclePicture=transaction.VehiclePicture,
+            VehiclePicture= garageTransaction.VehiclePicture,
             CameraType=CameraType.Exit
         };
-        var flag =await CheckoutMobileProcess(Guid.Parse(customerID), transaction.AccurateTime.Value,GarageTransaction, Customer);
-        var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(Guid.Parse(customerID) , transaction.OrganizationID , transaction.GarageId);
+        var flag =await CheckoutMobileProcess(customerID, garageTransaction.AccurateTime,GarageTransaction, Customer);
+        var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(customerID , garageTransaction.OrganizationID , garageTransaction.GarageId);
         return invoice;
 
     }
