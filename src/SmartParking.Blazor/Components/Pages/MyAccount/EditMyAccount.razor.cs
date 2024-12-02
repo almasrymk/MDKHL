@@ -65,6 +65,7 @@ public partial class EditMyAccount
     public string Photo { get; set; }
     public string Code { get; set; }
     public int FreeMinutes { get; set; }
+    public int Graceperiod { get; set; }
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -120,6 +121,7 @@ public partial class EditMyAccount
             OrganizationPicture = OrganizationPicture,
             TenantId = tenant,
             FreeMinutes = FreeMinutes,
+            Graceperiod= Graceperiod,
 
         };
 
@@ -229,6 +231,7 @@ public partial class EditMyAccount
         Code = organization.Code;
         Address = organization.Address;
         FreeMinutes = organization.FreeMinutes;
+        Graceperiod = organization.Graceperiod;
 
     }
     protected override async Task OnInitializedAsync()
