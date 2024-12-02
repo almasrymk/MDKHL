@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
 using SmartParking.Results;
 using SmartParking.Vehicles;
 using System;
@@ -36,9 +37,9 @@ public class GarageTransactionController : ControllerBase
 
     [HttpGet("platenumbercheckout")]
     [Authorize]
-    public async Task<Result<List<string>>> CheckoutForPlateNumber(string plateNumber)
+    public async Task<Result<InvoiceDto>> CheckoutForPlateNumber(Guid CustomerId,string plateNumber)
     {
-       return await _garageTransactionEndPointsAppService.
+        return await _garageTransactionEndPointsAppService.CheckoutMobile(CustomerId, plateNumber);
 
     }
 
