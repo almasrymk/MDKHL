@@ -87,15 +87,15 @@ public class CustomerPackagesAppService:
         }
     }
     ///<inheritdoc/>
-    public async Task<List<PackageDto>> GetListPackagesByCustomer(Guid customerId)
+    public async Task<List<CustomerPackageDto>> GetListPackagesByCustomer(Guid customerId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query = await _packageRepository.GetQueryableAsync();
-            query = query.Where(x => x.CustomerPackages.Any(c => c.CustomerId == customerId));
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.CustomerId == customerId && c.PackageId != 0);
 
             var result = await AsyncExecuter.ToListAsync(query);
-            var packageMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(result);
+            var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
             return packageMap;
         }
     }
@@ -118,6 +118,14 @@ public class CustomerPackagesAppService:
                 CustomerId = customer.Id,
                 OrganizationId = package.OrganizationId,
                 ExpiryDate = DateTime.Today.AddDays(package.DurationOfPackage),
+                ActivationDateOfPackage = package.ActivationDate,
+                DectivationDateOfPackage = package.DectivationDate,
+                DescriptionOfPackage = package.Description,
+                DurationOfPackage = package.DurationOfPackage,
+                PriceOfPackage = package.Price,
+                PublishFromOfPackage = package.PublishFrom,
+                PublishToOfPackage = package.PublishTo,
+                publishedOfPackage = package.published
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
@@ -144,6 +152,14 @@ public class CustomerPackagesAppService:
                 CustomerId = customer.Id,
                 OrganizationId = package.OrganizationId,
                 ExpiryDate = DateTime.UtcNow.AddDays(package.DurationOfPackage).Date.AddDays(1).AddTicks(-1),
+                ActivationDateOfPackage = package.ActivationDate,
+                DectivationDateOfPackage = package.DectivationDate,
+                DescriptionOfPackage = package.Description,
+                DurationOfPackage = package.DurationOfPackage,
+                PriceOfPackage = package.Price,
+                PublishFromOfPackage = package.PublishFrom,
+                PublishToOfPackage = package.PublishTo,
+                publishedOfPackage = package.published
             };
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
@@ -169,10 +185,6 @@ public class CustomerPackagesAppService:
 
 
    }
-
-
-
-
     public override async Task DeleteAsync(int id)
     {
         var customerPackage = await _repository.FindAsync(id);
@@ -181,9 +193,9 @@ public class CustomerPackagesAppService:
         {
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
-        customerPackage.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        //customerPackage.Status = Status.Deleted;
+        //await CurrentUnitOfWork.SaveChangesAsync();
 
-        //await base.DeleteAsync(id);
+        await base.DeleteAsync(id);
     }
 }

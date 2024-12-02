@@ -17,5 +17,12 @@ public class CustomerPackage : FullAuditedEntity<int>, IBseEntity
     public Guid? TenantId { get; set; }
     public Status Status { get; set; }
     public DateTime ExpiryDate { get; set; }
-    public int DurationOfPackage { get; set; }
+    public int? DurationOfPackage { get; set; }
+    public decimal? PriceOfPackage { get; set; }
+    public string? DescriptionOfPackage { get; set; }
+    public bool? publishedOfPackage { get; set; }
+    public TimeOnly? PublishFromOfPackage { get; set; }
+    public TimeOnly? PublishToOfPackage { get; set; }
+    public DateTime? ActivationDateOfPackage { get; set; }
+    public DateTime? DectivationDateOfPackage { get; set; }
 }

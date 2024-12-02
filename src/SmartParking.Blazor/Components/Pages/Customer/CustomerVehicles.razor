@@ -1,4 +1,5 @@
-﻿@using Microsoft.Extensions.Localization
+﻿@using Abp.Application.Navigation
+@using Microsoft.Extensions.Localization
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Localization
@@ -8,6 +9,9 @@
 @inject ICustomerAppService CustomerAppService
 @inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IDialogService Dialog
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 <PageTitle>@L["Details Of Customer"] @Customer.FullName</PageTitle>
 
 <div class="modal-wrapper">
@@ -68,9 +72,10 @@
                 <MudItem xs="12">
                     <MudText>@L["Packages"]</MudText>
                     <MudGrid>
-                        <MudTable T="PackageDto" Items="Packages" Breakpoint="MudBlazor.Breakpoint.LgAndUp" Class="w-100">
+                        <MudTable T="CustomerPackageDto" Items="Packages" Breakpoint="MudBlazor.Breakpoint.LgAndUp" Class="w-100">
                             <HeaderContent>
                                 <MudTh>@L["Price"]</MudTh>
+                                
                                 @if (CultureInfo.CurrentCulture.Name == "en")
                                 {
                                     <MudTh>@L["EnglishName"]</MudTh>
@@ -81,22 +86,30 @@
                                     <MudTh>@L["ArabicName"]</MudTh>
                                     <MudTh>@L["PackageTypeArabicName"]</MudTh>
                                 }
-                                    
+                                <MudTh>@L["Actions"]</MudTh>
 
                             </HeaderContent>
                             <RowTemplate>
-                                <MudTd DataLabel="@L["Price"]">@context.Price</MudTd>
+                                <MudTd DataLabel="@L["Price"]">@context.Package.Price</MudTd>
+                                
                                 @if (CultureInfo.CurrentCulture.Name == "en")
                                 {
-                                    <MudTd DataLabel="@L["EnglishName"]">@context.EnglishName</MudTd>
-                                    <MudTd DataLabel="@L["PackageTypeEnglishName"]">@context.PackageType.EnglishName</MudTd>
+                                    <MudTd DataLabel="@L["EnglishName"]">@context.Package.EnglishName</MudTd>
+                                    <MudTd DataLabel="@L["PackageTypeEnglishName"]">@context.Package.PackageType.EnglishName</MudTd>
                                 }
                                 else
                                 {
-                                    <MudTd DataLabel="@L["ArabicName"]">@context.ArabicName</MudTd>
-                                    <MudTd DataLabel="@L["PackageTypeArabicName"]">@context.PackageType.ArabicName</MudTd>
+                                    <MudTd DataLabel="@L["ArabicName"]">@context.Package.ArabicName</MudTd>
+                                    <MudTd DataLabel="@L["PackageTypeArabicName"]">@context.Package.PackageType.ArabicName</MudTd>
                                 }
-                                
+                                <MudTd DataLabel="@L["Actions"]">
+                                    <MudIconButton OnClick="@(e => DeletePackage(context.Id))"
+                                                   Icon="@Icons.Material.Filled.Delete"
+                                                   Variant="Variant.Filled"
+                                                   Color="MudBlazor.Color.Error"
+                                                   Size="MudBlazor.Size.Small"
+                                                   Class="mx-1" />
+                                </MudTd>
                             </RowTemplate>
                         </MudTable>
                     </MudGrid>

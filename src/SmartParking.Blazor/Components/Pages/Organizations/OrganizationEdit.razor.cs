@@ -72,6 +72,7 @@ public partial class OrganizationEdit
     private SubscriptionDto SelectedPackage = new SubscriptionDto();
     public string ViewSubscriptionArabicName { get; set; }
     public  int FreeMinutes { get; set; }
+    public  int Graceperiod { get; set; }
 
 
 
@@ -167,6 +168,7 @@ public partial class OrganizationEdit
             OrganizationPicture = OrganizationPicture,
             Address = BuildingNumber + StreetName + SecondaryNumber + District + PostalCode + CityNameEdit ,
             FreeMinutes= FreeMinutes,
+            Graceperiod= Graceperiod,
         };
 
 
@@ -280,6 +282,7 @@ public partial class OrganizationEdit
         NumberOfCustomers = SelectedPackage.NumberOfCustomers;
         SubscriptionSlotNumber = SelectedPackage.ParkingSlot;
         Parkingslot = SelectedPackage.ParkingSlot;
+        Graceperiod = Graceperiod;
 
     }
     private async Task GetRegions()

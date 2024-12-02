@@ -52,4 +52,6 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
 	/// <param name="tenantId"> id of tenant</param>
 	/// <returns>PagedResultDto of Invoice Dto</returns>
 	public Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input,Guid? tenantId);
+
+    Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(Guid customerId,int OrganizationId,int GarageId);
 }

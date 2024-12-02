@@ -64,6 +64,7 @@ public partial class OrganizationAdd
 
     private SubscriptionDto? SelectedPackage;
     public int FreeMinutes { get; set; }
+    public int Graceperiod { get; set; }
     private string NewAddress { get; set; }
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -194,7 +195,8 @@ public partial class OrganizationAdd
             SecondaryNumber = SecondaryNumber,
             OrganizationPicture = OrganizationPicture,
             FreeMinutes = FreeMinutes,
-            Address = NewAddress
+            Address = NewAddress,
+            Graceperiod = Graceperiod,
 
         };
        

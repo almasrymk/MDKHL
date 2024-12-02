@@ -1,4 +1,8 @@
 ﻿using SmartParking.CustomerPackages;
+using SmartParking.Entities.Customers;
+using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,4 +16,5 @@ public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
     int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime? PackageExpiryDate);
+    Task<Result<InvoiceDto>> CheckoutMobile(Guid customerId, string plateNumber);
 }

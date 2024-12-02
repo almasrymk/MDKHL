@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using SmartParking.Cameras;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using SmartParking.Enums;
 using System.Globalization;
@@ -271,4 +268,28 @@ public partial class Customer
 		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
 	}
+
+	public async Task<IDialogReference> HandleEdit(RowDef row)
+	{
+        var customerId = Guid.Parse(row.Cells[0].Value);
+        var customerData = await CustomerAppService.GetAsync(customerId);
+		var customerUpdate = new CreateUpdateCustomerDto
+        {
+			ArabicName = customerData.ArabicName,
+			 Email = customerData.Email,
+			 FullName = customerData.FullName,
+			 IdentificationType = customerData.identificationTypes,
+			 MobileNumber= customerData.MobileNumber,
+			 NationalId = customerData.NationalId,
+			 UserName = customerData.UserName,	
+			CustomerCategory = (CustomerCategoryStatus) Enum.Parse(typeof(CustomerCategoryStatus),customerData.CustomerCategory),
+
+		};
+        var parameters = new DialogParameters
+        {
+            ["customerDataDto"] = customerUpdate,
+            ["customerId"] = customerId.ToString()
+        };
+       return await DialogService.ShowAsync<UpdateCustomerDialog>("Update Customer", parameters);
+    }
 }

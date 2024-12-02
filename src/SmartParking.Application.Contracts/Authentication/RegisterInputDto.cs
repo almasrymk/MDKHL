@@ -18,7 +18,10 @@ public class RegisterInputDto
     [Phone]
     public string Phone { get; set; }
     [Required]
+    [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        ErrorMessage = "Email is not valid.")]
     [EmailAddress]
+
     public string Email { get; set; }
     [Required]
     [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$^+=!*()@%&]).{8,}$",
