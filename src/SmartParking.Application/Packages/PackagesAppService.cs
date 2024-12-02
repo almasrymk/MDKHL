@@ -51,7 +51,7 @@ public class PackagesAppService : CrudAppService<
         {
             var customer = await _customerRepository.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
             var query = await _repository.GetQueryableAsync();
-            var pakages = await query.Where(_ => _.OrganizationId == organizationId && _.CustomerCategory == customer.CustomerCategory).ToListAsync();
+            var pakages = await query.Where(_ => _.OrganizationId == organizationId && _.CustomerCategory == customer.CustomerCategory && _.PackageStatus == SubscriptionStatus.Active).ToListAsync();
             var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if (pakages.Count == 0)
             {
