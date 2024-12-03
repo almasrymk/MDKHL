@@ -1,15 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
 using SmartParking.Invoices;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using SmartParking.Entities.Organizations;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Utilities;
@@ -21,7 +19,7 @@ public class InvoiceUtility : IInvoiceUtility
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private string zatcaInvoices = "https://zatca.mazeedit.com/api/Invoices/V1/QRCode";
     private string zatcaLogin = "https://zatca.mazeedit.com/api/Auth/Login";
-    public InvoiceUtility(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice,int> invoiceRepository)
+    public InvoiceUtility(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository)
     {
         _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
@@ -33,16 +31,30 @@ public class InvoiceUtility : IInvoiceUtility
         var invoice = await _invoiceRepository.GetAsync(i => i.Id == invoiceId);
         decimal percentage = invoice.InvoicePrice * 0.14m;
         var oragnization = await _organizationsRepository.GetAsync(invoice.OrganizationId);
+        return await GetQrCodeAsync(invoice.InvoicePrice, invoice.OrganizationId);
+    }
+
+
+
+    public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, int organizationId)
+    {
+
+        var oragnization = await _organizationsRepository.GetAsync(organizationId);
         //"12-25-2024"
         var qR = new
         {
             sellerName = oragnization.EnglishName,
             vatRegistration = oragnization.CommercialRegistrationNumber,
             timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
-            invoiceAmount = invoice.InvoicePrice.ToString(),
-            vatAmount = percentage.ToString()
+            invoiceAmount = amount.ToString(),
+            vatAmount = amount * 0.15M
         };
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return await GetZatkaCode(qR);
+    }
+
+    private async Task<QRCodeDto> GetZatkaCode(object qR)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
         var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
         HttpResponseMessage responseQR = await _httpClient.PostAsync(zatcaInvoices, contentQR);
 
