@@ -103,13 +103,13 @@
         UserName = CurrentUser.Name;
         if (currenttenant.Id == null)
         {
-            UserName += " MDKHAL";
+            //UserName += " MDKHAL";
             Picture = "images/MDHKL_04.png";
         }
         else
         {
 
-            UserName += " Organization";
+            //UserName += " Organization";
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
             Console.WriteLine(Picture);
         }
