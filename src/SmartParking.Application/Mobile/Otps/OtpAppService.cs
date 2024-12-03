@@ -260,9 +260,4 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         return response.IsSuccessStatusCode;
     }
-
-    public Task<Result<string>> GenerateOtpByUserIdAsync(Guid userId)
-    {
-        throw new NotImplementedException();
-    }
 }
