@@ -21,6 +21,8 @@ using iText.Kernel.Colors;
 using SmartParking.Organizations;
 using iText.Layout.Borders;
 using iText.Kernel.Pdf.Colorspace;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 
 
@@ -153,7 +155,8 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     public async Task<byte[]> GenerateInvoicePdfAsync(int invoiceId, string commericialRegisteratio, string qrCode)
     {
         var htmlContent = await GenerateInvoiceHtmlAsync(invoiceId, commericialRegisteratio, qrCode);
-        var result = GeneratePdfFromHtmlAsync(htmlContent, invoiceId);
+         var result = GeneratePdfFromHtmlAsync(htmlContent, invoiceId);
+        var file =await GetInvoicePDF(invoiceId);
         if (!Directory.Exists(imageDirectoryPath))
         {
            Directory.CreateDirectory(imageDirectoryPath);
@@ -394,8 +397,8 @@ img[style*='width:120px;'] {
         return fullPath;
 
     }
-
-    public async Task SaveInvoicePdf(int invoiceId)
+    [RemoteServiceAttribute(isEnabled:true)]
+    public async Task<Stream> SaveInvoicePdf(int invoiceId)
     {
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
         var image = await _invoicePdfAppService.GetInvoiceQRCodeForOrganization(invoiceId);
@@ -403,10 +406,11 @@ img[style*='width:120px;'] {
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
-
-        PdfWriter writer = new PdfWriter(fullPath);
+        MemoryStream stream = new MemoryStream();
+        PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
+
         Style styleBold = new Style();
         styleBold.SetBold();
 
@@ -560,5 +564,12 @@ img[style*='width:120px;'] {
         document.Add(table1);
         document.Add(table2);
         document.Close();
+        return stream;
+    }
+
+    public async Task<IActionResult> GetInvoicePDF(int invoiceId)
+    {
+        var stream = await SaveInvoicePdf(invoiceId);
+        return new FileContentResult(stream.GetAllBytes(), "application/pdf");
     }
 }
