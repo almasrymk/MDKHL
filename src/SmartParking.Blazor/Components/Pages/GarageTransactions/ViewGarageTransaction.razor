@@ -24,62 +24,62 @@
 
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.CameraType"
-									  For="@(() => GarageTransaction.CameraType)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["TransactionType"]" />
+						For="@(() => GarageTransaction.CameraType)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["TransactionType"]" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.PlateNumber"
-									  For="@(() => GarageTransaction.PlateNumber)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["PlateNnumber"]" />
+						For="@(() => GarageTransaction.PlateNumber)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["PlateNnumber"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.SnapTime"
-									  For="@(() => GarageTransaction.SnapTime)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["SnapTime"]" />
+						For="@(() => GarageTransaction.SnapTime)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["SnapTime"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageTransaction.AccurateTime"
-									  For="@(() => GarageTransaction.AccurateTime)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["AccurateTime"]" />
+						For="@(() => GarageTransaction.AccurateTime)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["AccurateTime"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="OrgName"
-									  For="@(() => OrgName)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["Organization Name"]" />
+						For="@(() => OrgName)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["Organization Name"]" />
 					</MudItem>
-				
+
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="GarageName"
-									  For="@(() => GarageName)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["Garage Name"]" />
+						For="@(() => GarageName)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["Garage Name"]" />
 					</MudItem>
-				@* 	<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.CameraId"
-									  For="@(() => GarageTransaction.CameraId)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["CameraId"]" />
-					</MudItem> *@
+					<MudItem sm="6" md="6">
+						<MudTextField
+							@bind-Value="CustomerCategory"
+							Immediate="true"
+							Disabled=true
+						    Label="@L["customer category"]" />
+					</MudItem> 
 
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="cameraCode"
-									  For="@(() => cameraCode)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["cameraCode"]" />
+						For="@(() => cameraCode)"
+						Immediate="true"
+						Disabled=true
+						Label="@L["cameraCode"]" />
 					</MudItem>
 
 					@* <MudItem sm="12" md="12" class="d-flex justify-center">
@@ -89,15 +89,15 @@
 					</MudItem> *@
 					<MudItem sm="12" md="12" class="d-flex justify-center">
 						<div class="zoom-container"
-							 @onmousemove="SetZoomOrigin"
-							 @onmouseleave="ResetZoom">
+						@onmousemove="SetZoomOrigin"
+						@onmouseleave="ResetZoom">
 							<img src="@GarageTransaction.VehiclePicture"
-								 alt="Vehicle Image"
-								 style="transform-origin: @TransformOrigin; transform: @Scale;" />
+							alt="Vehicle Image"
+							style="transform-origin: @TransformOrigin; transform: @Scale;" />
 						</div>
 					</MudItem>
-						
-					
+
+
 				</MudGrid>
 			</MudForm>
 
@@ -116,25 +116,25 @@
 <style>
 	.zoom-container 
 	{
-		position: relative;
-		display: inline-block;
-		overflow: hidden;
-		width: 400px; /* Container width */
-		height: 300px; /* Container height */
-		cursor: zoom-in;
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	width: 400px; /* Container width */
+	height: 300px; /* Container height */
+	cursor: zoom-in;
 	}
 
-		.zoom-container img 
-		{
-			width: 100%;
-			height: 100%;
-			transition: transform 0.3s ease, transform-origin 0.3s ease;
-			transform: scale(1);
-		}
+	.zoom-container img 
+	{
+	width: 100%;
+	height: 100%;
+	transition: transform 0.3s ease, transform-origin 0.3s ease;
+	transform: scale(1);
+	}
 
-		.zoom-container:hover img {
-			transform: scale(2); /* Adjust the scale for zoom level */
-		}
+	.zoom-container:hover img {
+	transform: scale(2); /* Adjust the scale for zoom level */
+	}
 </style>
 
 @code {
@@ -144,6 +144,7 @@
 	string cameraCode = "";
 	string OrgName="";
 	string GarageName = "";
+	string CustomerCategory = "";
 	bool _clearable;
 	private MudForm form;
 
@@ -175,6 +176,7 @@
 		GarageName = Garage.NameEn;
 		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
 		cameraCode = Camera.DeviceId;
+		CustomerCategory = GarageTransaction.CustomerCategory.ToString();
 		await base.OnInitializedAsync();
 	}
 
