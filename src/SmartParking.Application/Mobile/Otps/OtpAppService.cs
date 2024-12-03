@@ -28,6 +28,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly Random _random;
     private const int OtpLength = 4;
+    private const int OtpValiditySecounds = 60;
     private const int OtpValidityMinutes = 5;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
