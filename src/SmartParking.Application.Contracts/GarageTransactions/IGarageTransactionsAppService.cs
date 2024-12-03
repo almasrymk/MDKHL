@@ -52,7 +52,7 @@ namespace SmartParking.GarageTransactions
 		/// <returns>Paged Result of garage transactions</returns>
 		Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId);
 
-		Task<Result<List<string>>> GetCustomerPlateNumbersInGarage(Guid customerId, int garageId);
+		Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
 
 
     }

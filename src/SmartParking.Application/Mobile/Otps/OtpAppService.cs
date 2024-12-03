@@ -28,6 +28,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly Random _random;
     private const int OtpLength = 4;
+    private const int OtpValiditySecounds = 60;
     private const int OtpValidityMinutes = 5;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
@@ -165,8 +166,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
             var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
             user.SetProperty("OtpCode", otp);
-            user.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
-
+            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
 
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
