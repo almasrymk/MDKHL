@@ -1,4 +1,5 @@
-﻿using Abp.Extensions;
+﻿using Abp.Domain.Entities;
+using Abp.Extensions;
 using Abp.Json;
 using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
@@ -905,10 +906,32 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
     }
 
-    public async Task<Result<InvoiceDto>> CheckoutMobile(GarageTransactionDto garageTransaction)
+    private async Task<GarageTransactionDto> GetTransactionById(int garagetransactionId)
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        { 
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            query = query.Where(transaction => transaction.Id == garagetransactionId);
+            var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
+            if (transaction != null) {
+
+                var transactionDto= ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(transaction);
+
+                return transactionDto;
+            }
+            throw new EntityNotFoundException($"Transaction with id {garagetransactionId} is not found");
+
+
+        }
+
+    }
+
+    public async Task<Result<InvoiceDto>> CheckoutMobile(int garageTransactionId)
+    {
+        var garageTransaction = await GetTransactionById(garageTransactionId);
         var customerID =await GetCurrentCustomerId();
         var Customer = await GetCustomer(customerID.ToString());
+        
         var camera = await GetAnExitCameraByGarageId(garageTransaction.GarageId);
 
         var GarageTransaction = new CreateUpdateGarageTransactionDto
