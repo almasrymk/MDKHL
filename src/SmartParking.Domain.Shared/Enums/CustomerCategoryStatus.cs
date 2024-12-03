@@ -10,5 +10,6 @@ public enum CustomerCategoryStatus
 {
     visitor,
     Employee,
-    Customer
+    Customer,
+    NotCustomer
 }
