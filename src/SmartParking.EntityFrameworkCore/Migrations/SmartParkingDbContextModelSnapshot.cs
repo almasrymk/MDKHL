@@ -1867,6 +1867,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
 
+                    b.Property<string>("QrCodeInvoice")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
