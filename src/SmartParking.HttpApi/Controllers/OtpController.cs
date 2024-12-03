@@ -42,9 +42,9 @@ public class OtpController : AbpController
     }
     [HttpPost("requestOtp")]
     [Authorize]
-    public async Task<Result<string>> RequestOtp([FromQuery] Guid userId)
+    public async Task<Result<string>> RequestOtp()
     {
-        return await _otpAppService.GenerateOtpByUserIdAsync(userId);
+        return await _otpAppService.GenerateOtpByUserIdAsync();
     }
 
     [HttpPost("forgetPasswordOtp")]

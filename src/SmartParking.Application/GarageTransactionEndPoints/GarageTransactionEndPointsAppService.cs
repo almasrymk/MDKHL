@@ -1,5 +1,7 @@
-﻿using Abp.Extensions;
+﻿using Abp.Domain.Entities;
+using Abp.Extensions;
 using Abp.Json;
+using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -15,9 +17,12 @@ using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Localization;
 using SmartParking.Packages;
+using SmartParking.Payments;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -40,6 +45,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private readonly IRepository<Customer, Guid> _customerRepoistory;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly IPaymentAppService _paymentAppService;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepoistory;
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IInvoiceAppService _invoiceAppService;
@@ -59,7 +65,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         IInvoiceAppService invoiceAppService,
         IDataFilter dataFilter, ICurrentUser currentUser,
        IStringLocalizer<SmartParkingResource> localizer,
-       IRepository<UnLinkedTransaction> unLinkedTransactionRepository)
+       IRepository<UnLinkedTransaction> unLinkedTransactionRepository, IPaymentAppService paymentAppService)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _cameraRepository = cameraRepository;
@@ -75,6 +81,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _currentUser = currentUser;
         _localizer = localizer;
         _unLinkedTransactionRepository = unLinkedTransactionRepository;
+        _paymentAppService = paymentAppService;
     }
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
@@ -286,21 +293,110 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             return await Task.FromResult(flag);
         
+    }  
+    private async Task<bool> CalculateInvoiceForCustomerWithoutPackage(DateTime EntranceTime , int totalHours,Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction)
+    {
+        decimal price = await CalcInvoice(EntranceTime, totalHours, GarageTransaction);
+        var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+        var invoice = await CreateInvoice(GarageTransaction.GarageId, generatedInvoiceNumber, price, GarageTransaction.OrganizationID, totalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value, EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName, exsitCustomer.Id);
+        await _invoiceAppService.CreateAsync(invoice);
+
+        return await Task.FromResult(false);
+        
+    }   
+    private async Task<bool> CalculateInvoiceForCustomerPackage(DateTime EntranceTime , Organization organization, Customer exsitCustomer, CustomerPackageDto packageDto, CreateUpdateGarageTransactionDto GarageTransaction)
+    {
+        var ExpiryDate = await _customerPackagesAppService.GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(organization.Id, exsitCustomer.Id, packageDto.PackageId);
+        // customer with package
+        var THours = CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto, ExpiryDate);
+        if (THours > 0)
+        {
+            var price = THours * organization.AdditionalHourPrice;
+
+            string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
+            var invoice = await CreateInvoice(GarageTransaction.GarageId, generatedInvoiceNumber, price, organization.Id, THours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value
+                , EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName, exsitCustomer.Id); ;
+            await _invoiceAppService.CreateAsync(invoice);
+            return await Task.FromResult(false);
+        }
+
+
+        var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        return await Task.FromResult(true);
     }
+    private async Task<bool> CheckoutMobileProcess(Guid customerId , DateTime EntranceTime ,CreateUpdateGarageTransactionDto GarageTransaction , Customer customer)
+    {
+        var organization = await GetOrganization(GarageTransaction.OrganizationID);
 
+        int totalHours = CalcTime(EntranceTime, GarageTransaction.AccurateTime.Value, organization.FreeMinutes);
+        if (totalHours == 0)
+        {
+            var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+            return await Task.FromResult(true);
+        }
 
+        var packageDto = await CheckActivePackageForCustomer(customerId, GarageTransaction.OrganizationID);
+
+       return  packageDto switch
+        {
+            (null) => await CalculateInvoiceForCustomerWithoutPackage(EntranceTime, totalHours, customer, GarageTransaction),
+            (not null) => await CalculateInvoiceForCustomerPackage(EntranceTime, organization, customer, packageDto, GarageTransaction),
+
+        };
+
+    }
+    private async Task<bool> IfLoggedOutFromMobile(string plateNumber)
+    {
+        var transaction = await CheckIfCheckoutFromMobile(plateNumber);
+        return transaction.CheckoutMobile != null ? true : false;
+
+    }
+    private async Task<bool> CheckIfPassGraceTime(DateTime Checkout , int GraceMinutes)
+    {
+        if ((int)(DateTime.UtcNow - Checkout).TotalMinutes > GraceMinutes )
+        {
+            return true;
+        }
+        return false;
+      
+
+    }
     private async Task<bool> HandleCamersExit(int garageId, int organizationId, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         bool flag = false;
         var EntranceTime = await FindEntranceTime(GarageTransaction.PlateNumber);
         if (EntranceTime is null)
         {
+            var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null ");
 
             return await Task.FromResult(false);
 
         }
         var organization = await GetOrganization(GarageTransaction.OrganizationID);
+        var customer = await CheckCustomer(GarageTransaction.PlateNumber);
+        Customer exsitCustomer = await GetCustomer(customer);
+
+        var CheckIfLoggedOutFromMobile =await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);
+        if (CheckIfLoggedOutFromMobile)
+        {
+            var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(Guid.Parse(customer), organizationId,GarageTransaction.GarageId);
+            
+            var PassGraceTime =await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value,organization.Graceperiod);
+            if (invoice.Value.InvoiceType== InvoiceType.Paid.ToString() && !PassGraceTime)
+            {
+                return await Task.FromResult(true);
+            }
+            else if(invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && PassGraceTime)
+            {
+                int Hours =(int) (invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).TotalHours + (invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).Minutes>0?1:0;
+
+               return await  CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction);
+
+            }
+        }
 
         int totalHours = CalcTime(EntranceTime.Value, GarageTransaction.AccurateTime.Value,organization.FreeMinutes);
         if (totalHours == 0)
@@ -309,50 +405,19 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return await Task.FromResult(true);
         }
 
-        var customer = await CheckCustomer(GarageTransaction.PlateNumber);
-        Customer exsitCustomer = null;
         //has plate number 
         if (customer != null)
         {
-             exsitCustomer = await GetCustomer(customer);
 
-            var packageDto = await CheckActivePackageForCustomer(Guid.Parse(customer), organizationId);
+            var packageDto = await CheckActivePackageForCustomer(Guid.Parse(customer), organization.Id);
 
-
-            if (packageDto == null)
+            flag = packageDto switch
             {
-                //Customer witouth Active Package
-                decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
-                var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value, EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName, exsitCustomer.Id); 
-                await _invoiceAppService.CreateAsync(invoice);
-                flag = false;
-            }
-            else
-            {
+                (null) =>await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value,totalHours,exsitCustomer,GarageTransaction),
+                (not null) =>await CalculateInvoiceForCustomerPackage(EntranceTime.Value,organization,exsitCustomer,packageDto,GarageTransaction),
 
-                var ExpiryDate =await _customerPackagesAppService.GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(organizationId,exsitCustomer.Id,packageDto.PackageId);
-                // customer with package
-                var THours = CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto , ExpiryDate) ;
-                if (THours > 0)
-                {
+            };
 
-                   var price = THours * organization.AdditionalHourPrice;
-                   
-                   string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-                   var invoice = await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, THours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value
-                       , EntranceTime, exsitCustomer.IdentityUser.Name, exsitCustomer.ArabicName, exsitCustomer.Id); ;
-                   await _invoiceAppService.CreateAsync(invoice);
-                    flag = false;
-                }
-
-
-
-
-                var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                flag = true;
-            }
         }
         else
         {
@@ -373,7 +438,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
                 //create invoice
-                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organizationId, totalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value, EntranceTime, customerEnName, customerArName); ;
+                var invoice =await CreateInvoice(garageId, generatedInvoiceNumber, price, organization.Id, totalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value, EntranceTime, customerEnName, customerArName); ;
 
 
                 await _invoiceAppService.CreateAsync(invoice);
@@ -385,7 +450,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var result =await FreeSlots(garage, exsitCustomer);
         return flag;
     }
-
     private async Task<Customer> GetCustomer(string customerId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -511,6 +575,17 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
 
     }
+    private async Task<Camera> GetAnExitCameraByGarageId(int GarageId)
+    {
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var camera = await _cameraRepository.FirstOrDefaultAsync(x => x.GarageId==GarageId && x.CameraType==CameraType.Exit);
+
+            return camera;
+        }
+
+    }
     private async Task<Organization> GetOrganization(int OrganizationID)
     {
 
@@ -580,6 +655,38 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 .FirstOrDefault();
 
         return latestTransaction?.AccurateTime;
+        }
+    }
+
+    private async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+
+
+            var latestTransaction = query
+                    .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) && gt.CameraType == CameraType.Exit && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime) 
+                    .FirstOrDefault();
+
+            return latestTransaction;
+        }
+    }private async Task<GarageTransaction> FindTransaction(string? plateNumber)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+
+
+            var latestTransaction = query
+                    .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) && gt.CameraType == CameraType.Entry && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime) 
+                    .FirstOrDefault();
+
+            return latestTransaction;
         }
     }
     private int CalcTime(DateTime startTime, DateTime endTime, int FreeMinutes)
@@ -788,7 +895,64 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         double normalHours = totalHours - specialHours;
         return (specialHours, normalHours);
     }
+    private async Task<Guid> GetCurrentCustomerId()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
+            var customer = await _customerRepoistory.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
+    }
+
+    private async Task<GarageTransactionDto> GetTransactionById(int garagetransactionId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        { 
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            query = query.Where(transaction => transaction.Id == garagetransactionId);
+            var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
+            if (transaction != null) {
+
+                var transactionDto= ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(transaction);
+
+                return transactionDto;
+            }
+            throw new EntityNotFoundException($"Transaction with id {garagetransactionId} is not found");
+
+
+        }
+
+    }
+
+    public async Task<Result<InvoiceDto>> CheckoutMobile(int garageTransactionId)
+    {
+        var garageTransaction = await GetTransactionById(garageTransactionId);
+        var customerID =await GetCurrentCustomerId();
+        var Customer = await GetCustomer(customerID.ToString());
+        
+        var camera = await GetAnExitCameraByGarageId(garageTransaction.GarageId);
+
+        var GarageTransaction = new CreateUpdateGarageTransactionDto
+        {
+            AccurateTime=DateTime.Now,
+            PlateNumber= garageTransaction.PlateNumber,
+            GarageId = garageTransaction.GarageId,
+            OrganizationID= garageTransaction.OrganizationID,
+            CameraId=camera.Id,
+            SnapTime=DateTime.UtcNow,
+            TenantId= garageTransaction.TenantId,
+            IsIn=true,
+            CheckoutMobile=DateTime.Now,
+            VehiclePicture= garageTransaction.VehiclePicture,
+            CameraType=CameraType.Exit
+        };
+        var flag =await CheckoutMobileProcess(customerID, garageTransaction.AccurateTime,GarageTransaction, Customer);
+        var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(customerID , garageTransaction.OrganizationID , garageTransaction.GarageId);
+        return invoice;
+
+    }
 }
 
 

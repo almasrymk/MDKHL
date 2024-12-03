@@ -21,6 +21,7 @@ using Volo.Abp.Users;
 using System.Drawing;
 using System.Text;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Lookups.LicenceType;
 
 
 namespace SmartParking.Mobile.Vehicles;
@@ -203,7 +204,6 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         
 
     }
-
 
 
 }

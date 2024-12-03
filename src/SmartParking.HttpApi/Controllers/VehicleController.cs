@@ -57,36 +57,7 @@ public class VehicleController : AbpController
     {
         return await _vehicleAppService.GetListAsync();
     }    
-    [HttpGet("image")]
-    [Authorize]
-    public async  Task<string> GetImage(string base64String)
-    {
-		var imageFormat = "jpg"; // Adjust formats as needed
-
-		// Convert Base64 string to byte array
-		byte[] imageBytes = Convert.FromBase64String(base64String);
-		
-		// Define the path where the image will be saved
-		string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "QRCodeImage", "image");
-
-		// Ensure the directory exists
-		if (!Directory.Exists(imageDirectoryPath))
-		{
-			Directory.CreateDirectory(imageDirectoryPath);
-		}
-		// Generate a unique name for the image
-		string fileName = $"{Guid.NewGuid()}.{imageFormat}";
-		string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-        Image img = Image.Load(imageBytes);
-        img.Save(fullPath);
-		// Save the image to the specified path
-		//System.IO.File.WriteAllBytes(fullPath, imageBytes);
-
-		// Return the relative path for storing in the database
-		return $"/QRCodeImage/image/{fileName}";
-
-	}
+    
 
     
     [HttpGet("getbrands")]
@@ -101,7 +72,7 @@ public class VehicleController : AbpController
     {
         return await _vehicleModelsAppService.GetModelsByBrandAsync(brandId);
     }
-    [HttpGet("licenceTypes")]
+    [HttpGet("platetypes")]
     [Authorize]
     public async Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypes()
     {

@@ -16,6 +16,12 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using SmartParking.Results;
+using SmartParking.Vehicles;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Vehicles;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartParking.GarageTransactions;
 
@@ -26,12 +32,14 @@ public class GarageTransactionsAppService:
 	private readonly IRepository<GarageTransaction, int> _repository;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Organization, int> _OrganizationRepository;
+    private readonly IRepository<Customer, Guid> _CustomerRepository;
+    private readonly IRepository<Vehicle, int> _VehicleRepository;
     private readonly IRepository<Camera, int> _CameraRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IDataFilter _dataFilter;
 	private readonly ICurrentUser _currentUser;
 
-    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor) : base(repository)
+    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
@@ -40,6 +48,8 @@ public class GarageTransactionsAppService:
         _OrganizationRepository = organizationRepository;
         _CameraRepository = cameraRepository;
         _httpContextAccessor = httpContextAccessor;
+        _VehicleRepository = vehicleRepository;
+        _CustomerRepository= customerRepository;
     }
     public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
@@ -253,37 +263,9 @@ public class GarageTransactionsAppService:
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
-        
-           input.VehiclePicture = SaveBase64Image(input);
-            if (input.VehiclePicture == null)
-            return null;
-        
-      
             
-
-        
         var result=await base.CreateAsync(input);
         
-        if (result != null)
-        {
-            Garage garage = new Garage();
-
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                garage = await _garageRepository.GetAsync(result.GarageId);
-
-            }
-            if (input.CameraType == CameraType.Entry)
-            {
-                garage.CurrnetCapicity++;
-            }
-            else if (input.CameraType == CameraType.Exit)
-            {
-                garage.CurrnetCapicity--;
-            }
-
-            // return result;
-        }
         return result;
     }
     public async override Task DeleteAsync(int id)
@@ -416,4 +398,33 @@ public class GarageTransactionsAppService:
 		 
 		
 	}
+
+    private async Task<Guid> GetCurrentCustomerId()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+             var customer = await _CustomerRepository.GetQueryableAsync();
+             var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
+    }
+
+
+
+    public async Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId)
+    {
+        var customerId= await GetCurrentCustomerId();
+        using (_dataFilter.Disable<IMultiTenant>()) {
+            var query = await _VehicleRepository.GetQueryableAsync();
+            query = query.Where(x => x.CustomerId == customerId);
+            var garageTransactionQuery =await _repository.GetQueryableAsync();
+            garageTransactionQuery = garageTransactionQuery.Where(GT=>GT.OrganizationID== organizationId);
+            garageTransactionQuery = garageTransactionQuery.Where(GT => query.Any(vehicle => vehicle.ArPlateNumber == GT.PlateNumber || vehicle.EnPlateNumber == GT.PlateNumber));
+            var transactions = await AsyncExecuter.ToListAsync(garageTransactionQuery);
+            var transactionsDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
+            return Result.Success(transactionsDtos);
+
+        }
+    }
 }

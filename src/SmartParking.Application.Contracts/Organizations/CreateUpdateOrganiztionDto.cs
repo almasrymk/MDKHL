@@ -44,6 +44,7 @@ public class CreateUpdateOrganiztionDto
     public string District { get; set; }
     public Guid TenantId { get; set; }
     public int FreeMinutes { get; set; }
+    public int Graceperiod { get; set; }
 
 
 

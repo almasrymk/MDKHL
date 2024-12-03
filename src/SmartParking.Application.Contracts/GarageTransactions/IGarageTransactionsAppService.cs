@@ -1,6 +1,8 @@
 ﻿using SmartParking.Cameras;
 using SmartParking.Garages;
 using SmartParking.Lookups.PlateColor;
+using SmartParking.Results;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,5 +52,8 @@ namespace SmartParking.GarageTransactions
 		/// <returns>Paged Result of garage transactions</returns>
 		Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId);
 
-	}
+		Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
+
+
+    }
 }

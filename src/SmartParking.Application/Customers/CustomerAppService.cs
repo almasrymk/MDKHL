@@ -234,10 +234,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <inheritdoc/>
 	public override async Task<CustomerDto> GetAsync(Guid id)
     {
-        var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+        
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var customer =  await _repository.GetAsync(c => c.Id == id && !c.IsEmployee);
+            var customer =  await _repository.GetAsync(c => c.Id == id);
             return ObjectMapper.Map<Customer,CustomerDto>(customer);
 
         }
@@ -522,32 +522,19 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
     {
-
-        bool emailValid = _baseCustomer.IsEmailValid(input.Email);
-        if (!emailValid)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("Email is not valid");
+            var customer = await _repository.FirstOrDefaultAsync(c => c.Id == id);
 
-        }
-        if (input.Password != input.RepeatPassword)
-        {
-            throw new Exception("Passwords doesn't match");
+            if (customer == null)
+            {
+                throw new Exception("No Customer Found");
 
-        }
-        var customer = await GetAsync(id);
+            }
 
-        if (customer == null)
-        {
-            throw new Exception("No Customer Found");
-
-        }
-        if (customer.NationalId != input.NationalId || customer.identificationTypes != input.IdentificationType)
-        {
-            throw new Exception("Critical Data as National Id , Identification. can't be updated");
+            return await base.UpdateAsync(id, input);
         }
         
-
-        return await base.UpdateAsync(id, input);
 
     }
     /// <inheritdoc/>
