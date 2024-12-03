@@ -29,6 +29,7 @@ public partial class OrganizationEdit
     [Parameter]
     public string Id { get; set; }  // Capture string ID
     public string ArabicName { get; set; }
+    public string code { get; set; }
     public string EnglishName { get; set; }
     public string CommercialRegistrationNumber { get; set; }
     public int NumOfCameras { get; set; }
@@ -283,6 +284,7 @@ public partial class OrganizationEdit
         SubscriptionSlotNumber = SelectedPackage.ParkingSlot;
         Parkingslot = SelectedPackage.ParkingSlot;
         Graceperiod = Graceperiod;
+        code = organization.Code;
 
     }
     private async Task GetRegions()
