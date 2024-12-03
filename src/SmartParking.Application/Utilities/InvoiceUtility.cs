@@ -29,7 +29,6 @@ public class InvoiceUtility : IInvoiceUtility
     public async Task<QRCodeDto> GetQrCodeAsync(string? token, int? invoiceId)
     {
         var invoice = await _invoiceRepository.GetAsync(i => i.Id == invoiceId);
-        decimal percentage = invoice.InvoicePrice * 0.14m;
         var oragnization = await _organizationsRepository.GetAsync(invoice.OrganizationId);
         return await GetQrCodeAsync(invoice.InvoicePrice, invoice.OrganizationId);
     }
@@ -41,10 +40,16 @@ public class InvoiceUtility : IInvoiceUtility
 
         var oragnization = await _organizationsRepository.GetAsync(organizationId);
         //"12-25-2024"
+        return await GetQrCodeAsync(amount, oragnization);
+    }
+
+    public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, Organization organization)
+    {
+
         var qR = new
         {
-            sellerName = oragnization.EnglishName,
-            vatRegistration = oragnization.CommercialRegistrationNumber,
+            sellerName = organization.EnglishName,
+            vatRegistration = organization.CommercialRegistrationNumber,
             timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
             invoiceAmount = amount.ToString(),
             vatAmount = amount * 0.15M
@@ -55,19 +60,25 @@ public class InvoiceUtility : IInvoiceUtility
     private async Task<QRCodeDto> GetZatkaCode(object qR)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
+        JObject jsonQR = await CreateRequest(zatcaInvoices, qR);
+        var qrCodedto = new QRCodeDto
+        {
+            QRCode = jsonQR["qrCode"]?.ToString()
+        };
+        return qrCodedto;
+    }
+
+    private async Task<JObject> CreateRequest(string path, object qR)
+    {
         var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
-        HttpResponseMessage responseQR = await _httpClient.PostAsync(zatcaInvoices, contentQR);
+        HttpResponseMessage responseQR = await _httpClient.PostAsync(path, contentQR);
 
         responseQR.EnsureSuccessStatusCode();
 
         var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
 
         var jsonQR = JObject.Parse(resultResponseQR);
-        var qrCodedto = new QRCodeDto
-        {
-            QRCode = jsonQR["qrCode"]?.ToString()
-        };
-        return qrCodedto;
+        return jsonQR;
     }
 
     public async Task<string?> GetTokenAsync()
@@ -77,15 +88,8 @@ public class InvoiceUtility : IInvoiceUtility
             userName = "ibrahimia-1",
             password = "ibrahimiaP@ssw0rd"
         };
-        var contentUser = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
-        HttpResponseMessage response = await _httpClient.PostAsync(zatcaLogin, contentUser);
-
-        response.EnsureSuccessStatusCode();
-
-        var resultResponse = await response.Content.ReadAsStringAsync();
-
-        var json = JObject.Parse(resultResponse);
+        JObject json = await CreateRequest(zatcaLogin, user);
         var token = json["data"]?["token"]?.ToString();
         return token;
     }
