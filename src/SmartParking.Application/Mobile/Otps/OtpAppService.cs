@@ -42,9 +42,9 @@ public class OtpAppService : ApplicationService, IOtpAppService
         UserManager<Volo.Abp.Identity.IdentityUser> userManager,
         IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
         IHttpContextAccessor httpContext,
-      IOptions<TaqnyatSmsOptionsDto> options,
-      HttpClient httpClient,
-      IDataFilter dataFilter
+        IOptions<TaqnyatSmsOptionsDto> options,
+        HttpClient httpClient,
+        IDataFilter dataFilter
         )
     {
         //_userManager = userManager;

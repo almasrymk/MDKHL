@@ -20,6 +20,14 @@ namespace SmartParking.CustomerPackages
         public  PackageDto Package { get; set; }
         public  OrganizationDto Organization { get; set; }
         public Guid? TenantId { get; set; }
+        public int? DurationOfPackage { get; set; }
+        public decimal? PriceOfPackage { get; set; }
+        public string? DescriptionOfPackage { get; set; }
+        public bool? publishedOfPackage { get; set; }
+        public TimeOnly? PublishFromOfPackage { get; set; }
+        public TimeOnly? PublishToOfPackage { get; set; }
+        public DateTime? ActivationDateOfPackage { get; set; }
+        public DateTime? DectivationDateOfPackage { get; set; }
 
     }
 }

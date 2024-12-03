@@ -1,9 +1,5 @@
-﻿using SmartParking.Entities.Invoices;
+﻿using SmartParking.Entities.Organizations;
 using SmartParking.Invoices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartParking.Utilities;
@@ -11,5 +7,7 @@ namespace SmartParking.Utilities;
 public interface IInvoiceUtility
 {
     Task<QRCodeDto> GetQrCodeAsync(string? token, int? invoiceId);
+    Task<QRCodeDto> GetQrCodeAsync(decimal amount, int organizationId);
+    Task<QRCodeDto> GetQrCodeAsync(decimal amount, Organization organization);
     Task<string?> GetTokenAsync();
 }
