@@ -145,6 +145,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             if (Id != null)
             {
                customer = await GetCustomer(Id);
+                GarageTransaction.CustomerCategory = customer.CustomerCategory; 
             }
             else
             {
@@ -382,6 +383,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var CheckIfLoggedOutFromMobile =await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);
         if (CheckIfLoggedOutFromMobile)
         {
+            GarageTransaction.CustomerCategory = exsitCustomer.CustomerCategory;
+
             var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(Guid.Parse(customer), organizationId,GarageTransaction.GarageId);
             
             var PassGraceTime =await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value,organization.Graceperiod);
@@ -393,7 +396,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             {
                 int Hours =(int) (invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).TotalHours + (invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).Minutes>0?1:0;
 
-               return await  CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction);
+                return await  CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction);
 
             }
         }
@@ -448,6 +451,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var garage =await GetGarage(garageId);
         var result =await FreeSlots(garage, exsitCustomer);
+        await CurrentUnitOfWork.SaveChangesAsync();
+
         return flag;
     }
     private async Task<Customer> GetCustomer(string customerId)
@@ -673,7 +678,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             return latestTransaction;
         }
-    }private async Task<GarageTransaction> FindTransaction(string? plateNumber)
+    }
+    private async Task<GarageTransaction> FindTransaction(string? plateNumber)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
