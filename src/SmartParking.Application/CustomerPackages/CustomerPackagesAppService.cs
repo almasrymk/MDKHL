@@ -1,6 +1,7 @@
 ﻿
 using AutoMapper.Internal.Mappers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
@@ -105,6 +106,7 @@ public class CustomerPackagesAppService:
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+
             var customer = await _customerRepository.FirstOrDefaultAsync(c => c.IdentityUserId == CurrentUser.Id);
             if(customer == null)
                 return Result.NotFound("Customer not found");
@@ -112,6 +114,16 @@ public class CustomerPackagesAppService:
 
             if (package == null)
                 return Result.NotFound("Package not found");
+            var customerPackageIsExist = await _repository.FirstOrDefaultAsync(p => p.PackageId == packageId && p.OrganizationId == package.OrganizationId && p.CustomerId == customer.Id);
+            if (customerPackageIsExist is not null)
+            {
+                return Result.Invalid(new ValidationError
+                {
+                    ErrorCode = StatusCodes.Status400BadRequest.ToString(),
+                    ErrorMessage = "This customer hanve the same package"
+
+                });
+            }
             var customerPackage = new CustomerPackage
             {
                 PackageId = packageId,
@@ -127,6 +139,7 @@ public class CustomerPackagesAppService:
                 PublishToOfPackage = package.PublishTo,
                 publishedOfPackage = package.published
             };
+
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
                 return Result.Error("Can't assign package to customer");
@@ -146,6 +159,11 @@ public class CustomerPackagesAppService:
 
             if (package == null)
                 return false;
+            var customerPackageIsExist = await _repository.FirstOrDefaultAsync(p => p.PackageId == packageId && p.OrganizationId == package.OrganizationId && p.CustomerId == customer.Id);
+            if (customerPackageIsExist is not null)
+            {
+                return false;
+            }
             var customerPackage = new CustomerPackage
             {
                 PackageId = packageId,

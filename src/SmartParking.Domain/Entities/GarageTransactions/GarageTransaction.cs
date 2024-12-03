@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
-namespace SmartParking.Entities.GarageTransactions
-{
+namespace SmartParking.Entities.GarageTransactions;
+
 	public class GarageTransaction : FullAuditedEntity<int>, IMultiTenant
 	{
 
@@ -28,7 +28,8 @@ namespace SmartParking.Entities.GarageTransactions
         public Guid? TenantId { get; set; }
         public bool IsIn { get; set; }
         public DateTime? CheckoutMobile { get; set; }
+        public CustomerCategoryStatus CustomerCategory { get; set; }
 
 
-    }
+
 }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Tls;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Invoices;
@@ -45,14 +46,14 @@ public class InvoiceUtility : IInvoiceUtility
 
     public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, Organization organization)
     {
-
+        
         var qR = new
         {
             sellerName = organization.EnglishName,
             vatRegistration = organization.CommercialRegistrationNumber,
             timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
             invoiceAmount = amount.ToString(),
-            vatAmount = amount * 0.15M
+            vatAmount = (amount * 0.15M).ToString()
         };
         return await GetZatkaCode(qR);
     }

@@ -111,7 +111,9 @@
 		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
 		try
 		{
-			await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, Customer.Id);
+			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, Customer.Id);
+			if (!assignPackage)
+				throw new Exception("can't assign package for this customer");
 			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
