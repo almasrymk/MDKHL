@@ -2,6 +2,7 @@
 using SmartParking.Entities.Invoices;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,5 +16,5 @@ public interface IPDFGeneratorAppService : IApplicationService
     byte[] GeneratePdfFromHtmlAsync(string htmlContent, int invoiceId);
     Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio, string qrCode);
 
-    Task SaveInvoicePdf(int invoiceId);
+    Task<Stream> SaveInvoicePdf(int invoiceId);
 }
