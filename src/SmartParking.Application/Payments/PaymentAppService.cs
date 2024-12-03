@@ -125,8 +125,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         string entityId = null)
     {
         // add QrCode
-        var token = await _invoiceUtility.GetTokenAsync();
-        var qrCode = _invoiceUtility.GetQrCodeAsync(token, paymentCheckoutRequest.InvoiceId);
+        // var token = await _invoiceUtility.GetTokenAsync();
+        var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
         Payment payment = new Payment
         {
             Amount = paymentCheckoutRequest.Amount,
@@ -140,7 +140,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             EntityId = entityId,
             CustomerId = customerId,
             PaymentStatus = paymentStatus,
-            QrCodeInvoice = qrCode.Result.QRCode
+            QrCodeInvoice = qrCode.QRCode
         };
 
         payment = await _repository.InsertAsync(payment);
@@ -154,7 +154,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             PaymentMethod = payment.PaymentMethod,
             EntityId = payment.EntityId,
             TokenId = token,
-            QrCodeInvoice = qrCode.Result.QRCode
+            QrCodeInvoice = qrCode.QRCode
         };
 
 
@@ -266,9 +266,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
                     // add QrCode
                     payment.PaymentStatus = status;
-                    var token = await _invoiceUtility.GetTokenAsync();
-                    var qrCode = _invoiceUtility.GetQrCodeAsync(token, payment.InvoiceId);
-                    payment.QrCodeInvoice = qrCode.Result.QRCode;
+                    //var token = await _invoiceUtility.GetTokenAsync();
+                    var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
+                    payment.QrCodeInvoice = qrCode.QRCode;
                     await _repository.UpdateAsync(payment);
                 }
 

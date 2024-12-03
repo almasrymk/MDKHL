@@ -456,6 +456,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("CameraType")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("CheckoutMobile")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1187,6 +1190,9 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("ActivationDateOfPackage")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1201,6 +1207,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("CustomerPackageStatus")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("DectivationDateOfPackage")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
@@ -1209,7 +1218,10 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("DurationOfPackage")
+                    b.Property<string>("DescriptionOfPackage")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("DurationOfPackage")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("ExpiryDate")
@@ -1235,11 +1247,23 @@ namespace SmartParking.Migrations
                     b.Property<int?>("PackageId")
                         .HasColumnType("integer");
 
+                    b.Property<decimal?>("PriceOfPackage")
+                        .HasColumnType("numeric");
+
+                    b.Property<TimeOnly?>("PublishFromOfPackage")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeOnly?>("PublishToOfPackage")
+                        .HasColumnType("time without time zone");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool?>("publishedOfPackage")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -1448,6 +1472,9 @@ namespace SmartParking.Migrations
 
                     b.Property<decimal>("FullDayPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("Graceperiod")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsClose")
                         .HasColumnType("boolean");
@@ -1866,6 +1893,9 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
+
+                    b.Property<string>("QrCodeInvoice")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

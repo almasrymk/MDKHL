@@ -1,4 +1,3 @@
-using Abp.Threading;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +17,6 @@ using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
-using SmartParking.Data.Lookups;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
@@ -45,7 +42,6 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
-using Volo.Abp.Data;
 using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
@@ -72,7 +68,7 @@ namespace SmartParking.Blazor;
     typeof(AbpIdentityBlazorServerModule),
     typeof(AbpTenantManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule)
-   
+
    )]
 public class SmartParkingBlazorModule : AbpModule
 {
@@ -151,12 +147,12 @@ public class SmartParkingBlazorModule : AbpModule
         {
             config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomEnd;
 
-       
+
         });
         context.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        ConfigureAuthentication(context,configuration);
+        ConfigureAuthentication(context, configuration);
         ConfigureUrls(configuration);
         ConfigureBundles();
         ConfigureAutoMapper();
@@ -168,18 +164,18 @@ public class SmartParkingBlazorModule : AbpModule
         ConfigureMenu(context);
     }
 
-    private void ConfigureAuthentication(ServiceConfigurationContext context , IConfiguration configuration)
+    private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
     {
-        
+
         context.Services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.Name = ".AspNetCore.Identity.Application"; 
-            
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(60); 
-            options.SlidingExpiration = true; 
-            
+            options.Cookie.Name = ".AspNetCore.Identity.Application";
+
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+            options.SlidingExpiration = true;
+
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Events.OnRedirectToLogin = async(context) =>
+            options.Events.OnRedirectToLogin = async (context) =>
             {
                 string path = context.Request.Path;
                 if (path.StartsWith("/api/mobile"))
@@ -196,7 +192,7 @@ public class SmartParkingBlazorModule : AbpModule
                 //"\"error\": \"Unauthorized access - token is invalid or expired.\"}"
                 // If no Bearer token, allow redirect to login page
                 context.Response.Redirect(context.RedirectUri);
-                
+
                 await Task.CompletedTask;
             };
         });
@@ -265,13 +261,13 @@ public class SmartParkingBlazorModule : AbpModule
             options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartParking API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) => 
+                options.DocInclusionPredicate((docName, description) =>
                 true);
                 options.CustomSchemaIds(type => type.FullName);
-				options.DocumentFilter<CustomSwaggerFilter>();
+                options.DocumentFilter<CustomSwaggerFilter>();
 
-			}
-		);
+            }
+        );
     }
 
     private void ConfigureBlazorise(ServiceConfigurationContext context)
@@ -312,27 +308,27 @@ public class SmartParkingBlazorModule : AbpModule
             options.AddMaps<SmartParkingBlazorModule>();
         });
     }
-    
+
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
-        
 
 
-        AsyncHelper.RunSync(async () =>
-        {
-            using (var scope = context.ServiceProvider.CreateScope())
-            {
-                var dataSeeder = scope.ServiceProvider.GetRequiredService<RolesDataSeeder>();
 
-                // Pass a DataSeedContext here
-                var dataSeedContext = new DataSeedContext();
+        //AsyncHelper.RunSync(async () =>
+        //{
+        //    using (var scope = context.ServiceProvider.CreateScope())
+        //    {
+        //        var dataSeeder = scope.ServiceProvider.GetRequiredService<RolesDataSeeder>();
 
-                await dataSeeder.SeedAsync(dataSeedContext);
-            }
-        });
-       
+        //        // Pass a DataSeedContext here
+        //        var dataSeedContext = new DataSeedContext();
+
+        //        await dataSeeder.SeedAsync(dataSeedContext);
+        //    }
+        //});
+
 
         if (env.IsDevelopment())
         {
@@ -340,7 +336,7 @@ public class SmartParkingBlazorModule : AbpModule
         }
         else
         {
-           
+
             app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
@@ -377,7 +373,7 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseUnitOfWork();
         app.UseDynamicClaims();
         app.UseAntiforgery();
-      
+
 
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>
