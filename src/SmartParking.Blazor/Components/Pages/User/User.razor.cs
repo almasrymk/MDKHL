@@ -13,6 +13,9 @@ using System;
 using Volo.Abp.Users;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Authentication;
+using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Garages;
+using SmartParking.OrganizationsGarages;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -180,4 +183,18 @@ public partial class User
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
+    public async Task<IDialogReference> AssignRole(string id)
+    {
+        var Gid = Guid.Parse(id);
+        var parameters = new DialogParameters
+        {
+            ["Id"] = Gid,
+        };
+
+        return await DialogService.ShowAsync<AssignationDialog>("Assign Role", parameters);
+
+    }
+
+
+
 }
