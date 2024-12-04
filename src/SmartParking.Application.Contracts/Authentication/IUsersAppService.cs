@@ -70,4 +70,6 @@ public interface IUsersAppService:  IApplicationService
     Task<UserDto> UpdateAsync(Guid id, UpdateUserDto input);
 
     Task<UserDto> GetAsync(Guid id);
+
+    Task<UserDto> AssignRoleToUser(Guid userId,string roleName);
 }
