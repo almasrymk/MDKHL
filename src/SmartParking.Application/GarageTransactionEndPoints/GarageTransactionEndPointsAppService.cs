@@ -113,6 +113,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             TenantId = camera.TenantId,
             CameraType = camera.CameraType,
             IsIn = camera.CameraType == CameraType.Exit ? false : true,
+            
 
 
         };
@@ -403,6 +404,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //has plate number 
         if (customer != null)
         {
+            GarageTransaction.CustomerCategory = exsitCustomer.CustomerCategory;
 
             var packageDto = await CheckActivePackageForCustomer(Guid.Parse(customer), organization.Id);
 
