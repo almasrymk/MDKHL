@@ -7,6 +7,11 @@
 @inject ICurrentTenant currentTenant
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
 <div class="mud-modal">
+    <div class=" d-flex justify-content-center align-items-center">
+
+    <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank">Get PDF</a>
+    </div>
+
     <div class="title-content d-flex justify-content-center align-items-center">
         <h2 class="fw-bold">Invoice @Invoice.InvoiceNumber</h2>
     </div>
@@ -14,6 +19,7 @@
         <div class="main-layout-paper d-flex flex-column p-3" style="width: 100%; height: 100%; margin-top: 20px;">
             <div class="d-flex justify-content-center align-items-center" style="margin-top: 20px;">
                 <div style="width: 120px;">
+
                     <img src="images/logo/MDHKL_01.png" alt="Logo" />
                 </div>
 
@@ -24,7 +30,6 @@
                 <div class="d-flex flex-row">
                     <h5 class="fw-bold">VAT:</h5>
                     <h5>@CommercialRegisteration</h5>
-                    <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank">Get PDF</a>
                 </div>
             </div>
 
