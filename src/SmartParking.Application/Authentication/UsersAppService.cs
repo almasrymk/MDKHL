@@ -219,12 +219,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-             var user =await _userManager.Users.FirstOrDefaultAsync(x=>x.Id==userId);
-            if (user == null) {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
                 throw new Exception("User not found");
-            
+
             }
             await _userManager.AddToRoleAsync(user, roleName);
+            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            return userDto;
+        }
+    }
 
     /// <inheritdoc/>
     public async Task<UserDto> UpdateAsync(Guid id, UpdateUserDto input)
