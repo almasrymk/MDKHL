@@ -38,15 +38,15 @@
 						Label="@L["PlateNnumber"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.SnapTime"
-						For="@(() => GarageTransaction.SnapTime)"
+						<MudTextField
+						Value="GarageTransaction.SnapTime.Value.ToString()"
 						Immediate="true"
 						Disabled=true
 						Label="@L["SnapTime"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.AccurateTime"
-						For="@(() => GarageTransaction.AccurateTime)"
+						<MudTextField 
+						Value="GarageTransaction.AccurateTime.Value.ToString()"
 						Immediate="true"
 						Disabled=true
 						Label="@L["AccurateTime"]" />
@@ -68,10 +68,10 @@
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField
-							@bind-Value="CustomerCategory"
-							Immediate="true"
-							Disabled=true
-						    Label="@L["customer category"]" />
+						@bind-Value="CustomerCategory"
+						Immediate="true"
+						Disabled=true
+						Label="@L["customer category"]" />
 					</MudItem> 
 
 					<MudItem sm="6" md="6">
@@ -177,7 +177,11 @@
 		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
 		cameraCode = Camera.DeviceId;
 		CustomerCategory = GarageTransaction.CustomerCategory.ToString();
+		Console.WriteLine(GarageTransaction.AccurateTime.Value.ToString());
 		await base.OnInitializedAsync();
+
+
+
 	}
 
 

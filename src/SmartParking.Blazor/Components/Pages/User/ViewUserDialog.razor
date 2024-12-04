@@ -1,0 +1,47 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IUsersAppService UsersAppService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>@L["View User"]</PageTitle>
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["View User"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="userDto">
+                <MudGrid>
+                    <MudItem sm="6">
+                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.UserName" Label="@L["UserName"]"  />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.Name" Label="@L["Name"]" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.Email" Label="@L["Email"]" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="userDto.PhoneNumber" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+            
+        </DialogActions>
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

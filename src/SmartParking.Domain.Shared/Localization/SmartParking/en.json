@@ -459,8 +459,12 @@
     "NumbersOfUsers": "Num Of Users",
     "Organization - Users": "Organization - Users",
     "Graceperiod": "Grace Period",
-    "Organization - Users": "Organization - Users",
     "CustomerUpdateSuccessfullyWith": "Customer Update Success fully With",
-    "customer package Deleted Successfully": "customer package Deleted Successfully"
+    "customer package Deleted Successfully": "customer package Deleted Successfully",
+    "Role Added to User Successfully": "Role Added to User Successfully",
+    "customer package Deleted Successfully": "customer package Deleted Successfully",
+    "Update User": "Update User",
+    "UserUpdateSuccessfullyWith": "User Update Successfully With",
+    "View User": "View User"
   } 
 }
