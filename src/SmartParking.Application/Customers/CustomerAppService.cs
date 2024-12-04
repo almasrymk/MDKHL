@@ -254,7 +254,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             
             queryable = queryable.Include(x => x.IdentityUser);
             queryable = queryable.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid) && !x.IsEmployee);
+            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid));
 
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
@@ -295,9 +295,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
-
-
+           
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(x => x.IdentityUser);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
@@ -349,7 +347,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             queryable = queryable.Include(x => x.IdentityUser);
             queryable = queryable.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid) && !x.IsEmployee);
+            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid));
 
 
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
@@ -395,9 +393,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
 
             var queryable = await _repository.GetQueryableAsync();
-            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
-
-
             var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
