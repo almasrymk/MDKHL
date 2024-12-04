@@ -201,7 +201,7 @@
     "VehicleBrandEnglishName": "ماركة المركبة بالإنجليزية",
     "Email": "البريـد الإلكترونـي",
     "UserName": "إسـم المستـخدم",
-    "NationalId": " الهوية / الإقامة/ جواز السفر",
+    "NationalId": " الهوية / الإقامة",
     "MobileNumber": "رقـم الجـوال",
     "ModelYear": "سنـة الموديـل",
     "BelongToCompany": "تـابعـة لشركة",
@@ -212,7 +212,7 @@
     "Customers": "العملاء",
     "Repeat Password": "إعـادة ادخال كلمة المرور",
     "Password": "كلمـة المرور",
-    "Passport": "البـاسبور",
+    "Passport": "جواز السفر",
     "FullName": "الإسـم بالكـامل",
     "Register": "إضــافة عميل",
     "InvoiceNumber": "رقم الفاتورة",
@@ -483,9 +483,9 @@
     "CustomerUpdateSuccessfullyWith": "تم تعديل العميل بنجاح ",
     "customer package Deleted Successfully": "تم حذف باقة العميل بنجاح ",
     "Role Added to User Successfully": "تم إضافة دور للمستخدم بنجاح",
-    "customer package Deleted Successfully": "تم حذف باقة العميل بنجاح ",
     "Update User": "تعديل المستخدم",
     "UserUpdateSuccessfullyWith": "تم تعديل المستخدم بنجاح",
-    "View User"  : "عرض المستخدم"
+    "View User": "عرض المستخدم",
+    "PackageStatus": "حالة الباقة"
   }
 }
