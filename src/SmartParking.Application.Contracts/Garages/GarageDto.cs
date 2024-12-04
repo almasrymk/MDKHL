@@ -25,5 +25,8 @@ public class GarageDto
     public int MaxSlotsForCustomers { get; set; }
     public int MaxSlotsForEmployess { get; set; }
     public int MaxSlotsForFree { get; set; }
+    public int CurrnetCapacityForCustomers { get; set; }
+    public int CurrnetCapacityEmployees { get; set; }
+    public int CurrnetCapacityForFree { get; set; }
 
 }

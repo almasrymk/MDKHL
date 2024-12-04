@@ -337,6 +337,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<bool> IfLoggedOutFromMobile(string plateNumber)
     {
         var transaction = await CheckIfCheckoutFromMobile(plateNumber);
+        if (transaction is null)
+            return false;
         return transaction.CheckoutMobile != null ? true : false;
 
     }
@@ -365,7 +367,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var organization = await GetOrganization(GarageTransaction.OrganizationID);
         var customer = await CheckCustomer(GarageTransaction.PlateNumber);
-        Customer exsitCustomer = await GetCustomer(customer);
+        Customer exsitCustomer=null;
+        if (customer != null) {
+            exsitCustomer = await GetCustomer(customer);
+        }
 
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);
         if (CheckIfLoggedOutFromMobile)
