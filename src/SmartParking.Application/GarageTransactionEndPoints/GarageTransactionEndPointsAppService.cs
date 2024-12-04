@@ -337,7 +337,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<bool> IfLoggedOutFromMobile(string plateNumber)
     {
         var transaction = await CheckIfCheckoutFromMobile(plateNumber);
-        return transaction.CheckoutMobile != null ? true : false;
+        return transaction?.CheckoutMobile != null ? true : false;
 
     }
     private async Task<bool> CheckIfPassGraceTime(DateTime Checkout, int GraceMinutes)
@@ -659,7 +659,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
 
             var latestTransaction = query
-                    .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) && gt.CameraType == CameraType.Exit && gt.IsIn == true)
+                    .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) 
+                    && gt.CameraType == CameraType.Exit && gt.IsIn == true)
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
 
