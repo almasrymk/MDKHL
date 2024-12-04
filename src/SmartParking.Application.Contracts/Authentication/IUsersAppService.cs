@@ -57,4 +57,17 @@ public interface IUsersAppService:  IApplicationService
     Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
     Task<PagedResultDto<UserDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    /// <summary>
+    /// Updates an existing user with the specified ID using the provided input data.
+    /// </summary>
+    /// <param name="id">The unique identifier of the user to be updated.</param>
+    /// <param name="input">The <see cref="UserCreateDto"/> object containing the updated user details.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation.
+    /// The task result contains the updated <see cref="UserDto"/> object.
+    /// </returns>
+    Task<UserDto> UpdateAsync(Guid id, UpdateUserDto input);
+
+    Task<UserDto> GetAsync(Guid id);
 }

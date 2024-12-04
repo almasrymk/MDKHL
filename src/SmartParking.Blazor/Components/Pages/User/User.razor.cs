@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Customer;
-using SmartParking.Customers;
-using SmartParking.Cutomers;
-using SmartParking.Enums;
 using SmartParking.Localization;
 using System.Collections.Generic;
 using System.Globalization;
@@ -179,5 +175,25 @@ public partial class User
         Snackbar.Clear();
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
+    }
+
+    public async Task<IDialogReference> HandleEdit(RowDef row)
+    {
+        var userId = Guid.Parse(row.Cells[0].Value);
+        var userData = await UsersAppService.GetAsync(userId);
+        var userUpdate = new UpdateUserDto
+        {
+            Name = userData.Name,
+            Email = userData.Email,
+            Surname = userData.Surname,
+            PhoneNumber = userData.PhoneNumber,
+            UserName = userData.UserName
+        };
+        var parameters = new DialogParameters
+        {
+            ["updateUserDto"] = userUpdate,
+            ["userId"] = userId.ToString()
+        };
+        return await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters);
     }
 }

@@ -15,5 +15,5 @@
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
-<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
 

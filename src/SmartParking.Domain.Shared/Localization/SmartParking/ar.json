@@ -480,8 +480,9 @@
     "Organization - Users": "المنشأة - المستخدمون",
     "WhatsAppNum": "رقم الواتس اب",
     "Graceperiod": "فترة سماح",
-    "WhatsAppNum": "رقم الواتس اب",
     "CustomerUpdateSuccessfullyWith": "تم تعديل العميل بنجاح ",
-    "customer package Deleted Successfully": "تم حذف باقة العميل بنجاح "
+    "customer package Deleted Successfully": "تم حذف باقة العميل بنجاح ",
+    "Update User": "تعديل المستخدم",
+    "UserUpdateSuccessfullyWith": "تم تعديل المستخدم بنجاح"
   }
 }
