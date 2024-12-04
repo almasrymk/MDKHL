@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -212,4 +214,20 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
+    public async Task<UserDto> AssignRoleToUser(Guid userId, string roleName)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+             var user =await _userManager.Users.FirstOrDefaultAsync(x=>x.Id==userId);
+            if (user == null) {
+                throw new Exception("User not found");
+            
+            }
+            await _userManager.AddToRoleAsync(user, roleName);
+
+            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            return userDto;
+
+        }
+    }
 }

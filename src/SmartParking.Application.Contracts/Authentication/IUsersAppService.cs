@@ -57,4 +57,6 @@ public interface IUsersAppService:  IApplicationService
     Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
     Task<PagedResultDto<UserDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+
+    Task<UserDto> AssignRoleToUser(Guid userId,string roleName);
 }
