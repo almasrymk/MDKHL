@@ -212,5 +212,25 @@ public partial class User
             ["userId"] = userId.ToString()
         };
         return await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters);
+    }   
+    public async Task<IDialogReference> HandleView(RowDef row)
+    {
+        var userId = Guid.Parse(row.Cells[0].Value);
+        var userData = await UsersAppService.GetAsync(userId);
+        var userUpdate = new UserDto
+        {
+            Name = userData.Name,
+            Email = userData.Email,
+            Surname = userData.Surname,
+            PhoneNumber = userData.PhoneNumber,
+            UserName = userData.UserName
+        };
+        var parameters = new DialogParameters
+        {
+            ["userDto"] = userUpdate,
+            ["userId"] = userId.ToString()
+        };
+        
+        return await DialogService.ShowAsync<ViewUserDialog>("User View", parameters);
     }
 }

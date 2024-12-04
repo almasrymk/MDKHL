@@ -485,6 +485,7 @@
     "Role Added to User Successfully": "تم إضافة دور للمستخدم بنجاح",
     "customer package Deleted Successfully": "تم حذف باقة العميل بنجاح ",
     "Update User": "تعديل المستخدم",
-    "UserUpdateSuccessfullyWith": "تم تعديل المستخدم بنجاح"
+    "UserUpdateSuccessfullyWith": "تم تعديل المستخدم بنجاح",
+    "View User"  : "عرض المستخدم"
   }
 }
