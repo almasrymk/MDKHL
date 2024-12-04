@@ -68,7 +68,8 @@
                     </MudGrid>
                 </MudItem>
                 <MudDivider />
-                
+                @if(Packages.Count!=0){
+
                 <MudItem xs="12">
                     <MudText>@L["Packages"]</MudText>
                     <MudGrid>
@@ -90,6 +91,11 @@
 
                             </HeaderContent>
                             <RowTemplate>
+
+                                @if(context.DescriptionOfPackage is null){
+                                    return;
+                                }
+                                
                                 <MudTd DataLabel="@L["Price"]">@context.PriceOfPackage</MudTd>
                                 
                                 @if (CultureInfo.CurrentCulture.Name == "en")
@@ -114,6 +120,7 @@
                         </MudTable>
                     </MudGrid>
                 </MudItem>
+                }
             </MudGrid>
         </DialogContent>
 
