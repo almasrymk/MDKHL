@@ -75,7 +75,7 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _packageRepository.GetQueryableAsync();
-            query = query.Where(x => x.CustomerPackages.Any(c => c.Customer.IdentityUserId == CurrentUser.Id));
+            query = query.Where(x => x.CustomerPackages.Any(c => c.Customer.IdentityUserId == CurrentUser.Id && c.PackageId != null));
 
             var result = await AsyncExecuter.ToListAsync(query);
 
@@ -93,7 +93,7 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.CustomerId == customerId && c.PackageId != 0);
+            query = query.Where(c => c.CustomerId == customerId && c.PackageId != null);
 
             var result = await AsyncExecuter.ToListAsync(query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
