@@ -294,7 +294,7 @@
     "Didn't receive the code ..": "لـم أستلـم الـرمز ",
     "Resend": "إعـادة إرسـال",
     "VERIFY": "تأكيـد",
-    "if the mail is wrong change it in previous page ..": "البريـد خاطيء العـودة لتغييـره",
+    "WrongEmail": "البريـد خاطيء العـودة لتغييـره",
     "Add Vehicle for Customer": "إضـافـة مركـبة لعميـل",
     "Cars": "مركـبات",
     "Update Garage": "تحـديـث بيـانـات مـوقـف",
