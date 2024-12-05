@@ -26,6 +26,7 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public Guid? TenantId { get; set; }
     public string CustomerArName { get; set; }
     public string CustomerEnName { get; set; }
+    public bool IsPackage { get; set; }
 
 
 }
