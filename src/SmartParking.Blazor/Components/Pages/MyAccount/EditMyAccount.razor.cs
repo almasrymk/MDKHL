@@ -66,6 +66,7 @@ public partial class EditMyAccount
     public string Code { get; set; }
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
+    public int? SubscriptionId { get; set; }
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -121,8 +122,8 @@ public partial class EditMyAccount
             OrganizationPicture = OrganizationPicture,
             TenantId = tenant,
             FreeMinutes = FreeMinutes,
-            Graceperiod= Graceperiod,
-
+            Graceperiod = Graceperiod,
+            SubscriptionId = SubscriptionId,
         };
 
 
@@ -232,6 +233,7 @@ public partial class EditMyAccount
         Address = organization.Address;
         FreeMinutes = organization.FreeMinutes;
         Graceperiod = organization.Graceperiod;
+        SubscriptionId = organization.SubscriptionId;
 
     }
     protected override async Task OnInitializedAsync()
@@ -286,7 +288,7 @@ public partial class EditMyAccount
         var Org = await OrganizationAppService.GetOrganizationForCurrentTenat();
         int? subsId = Org.SubscriptionId;
 
-        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId??0);
+        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId ?? 0);
         //change it to garage.subscription
 
         var parameters = new DialogParameters

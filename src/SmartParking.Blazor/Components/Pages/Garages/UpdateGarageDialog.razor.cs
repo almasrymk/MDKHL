@@ -2,15 +2,14 @@
 using MudBlazor;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System;
-using Volo.Abp.Application.Dtos;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Security.Authentication;
-using Volo.Abp;
-using Volo.Abp.Validation;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
 
@@ -18,30 +17,29 @@ public partial class UpdateGarageDialog
 {
     [CascadingParameter]
     private MudDialogInstance MudDialogAdd { get; set; }
-   [Parameter] public CreateUpdateGarageDto Garage { get; set; }
+    [Parameter] public CreateUpdateGarageDto Garage { get; set; }
     [Parameter]
-    public  int UpdatedId { get; set; }
+    public int UpdatedId { get; set; }
     private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     protected async override Task OnInitializedAsync()
     {
         _time = Garage.ClosingHours.ToTimeSpan();
-        Console.WriteLine(_time);
         if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
         {
 
             var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
             Organizations = result.Items.ToList();
         }
-        
+
     }
 
     private async Task SubmitEdit()
     {
-		var successedMessage = L["Garage Updated Successfully"];
-		var errorMessage = L["Failed to update garage"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-		try
+        var successedMessage = L["Garage Updated Successfully"];
+        var errorMessage = L["Failed to update garage"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        try
         {
             Garage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
 
@@ -106,9 +104,7 @@ public partial class UpdateGarageDialog
         Garage.MaxCapacity = maxCapacity;
 
         // Reset all slots to zero to start fresh
-        Garage.MaxSlotsForEmployess = 0;
-        Garage.MaxSlotsForCustomers = 0;
-        Garage.MaxSlotsForFree = 0;
+        SetSlotsZero();
     }
 
     private void HandleEmployeeSlotsChange(int maxSlotsForEmployees)
@@ -137,15 +133,16 @@ public partial class UpdateGarageDialog
 
         int remainingCapacity = Garage.MaxCapacity - totalAllocated;
 
+
         if (remainingCapacity < 0)
         {
             // If total slots exceed MaxCapacity, reset to prevent overflow
-            Garage.MaxSlotsForEmployess = 0;
-            Garage.MaxSlotsForCustomers = 0;
-            Garage.MaxSlotsForFree = 0;
+
+            SetSlotsZero();
         }
         else
         {
+
             // Distribute remaining slots dynamically
             if (Garage.MaxSlotsForEmployess > 0)
             {
@@ -156,9 +153,8 @@ public partial class UpdateGarageDialog
                         if (remainingCapacity < 0)
                         {
                             // If total slots exceed MaxCapacity, reset to prevent overflow
-                            Garage.MaxSlotsForEmployess = 0;
-                            Garage.MaxSlotsForCustomers = 0;
-                            Garage.MaxSlotsForFree = 0;
+
+                            SetSlotsZero();
                         }
                     }
                     else
@@ -174,9 +170,7 @@ public partial class UpdateGarageDialog
                     {
                         if (remainingCapacity < 0)
                         {
-                            Garage.MaxSlotsForEmployess = 0;
-                            Garage.MaxSlotsForCustomers = 0;
-                            Garage.MaxSlotsForFree = 0;
+                            SetSlotsZero();
                         }
 
                     }
@@ -196,9 +190,8 @@ public partial class UpdateGarageDialog
                     {
                         if (remainingCapacity < 0)
                         {
-                            Garage.MaxSlotsForEmployess = 0;
-                            Garage.MaxSlotsForCustomers = 0;
-                            Garage.MaxSlotsForFree = 0;
+
+                            SetSlotsZero();
                         }
 
                     }
@@ -214,9 +207,8 @@ public partial class UpdateGarageDialog
                     {
                         if (remainingCapacity < 0)
                         {
-                            Garage.MaxSlotsForEmployess = 0;
-                            Garage.MaxSlotsForCustomers = 0;
-                            Garage.MaxSlotsForFree = 0;
+
+                            SetSlotsZero();
                         }
 
                     }
@@ -236,9 +228,8 @@ public partial class UpdateGarageDialog
                     {
                         if (remainingCapacity < 0)
                         {
-                            Garage.MaxSlotsForEmployess = 0;
-                            Garage.MaxSlotsForCustomers = 0;
-                            Garage.MaxSlotsForFree = 0;
+
+                            SetSlotsZero();
                         }
 
                     }
@@ -254,9 +245,7 @@ public partial class UpdateGarageDialog
                     {
                         if (remainingCapacity < 0)
                         {
-                            Garage.MaxSlotsForEmployess = 0;
-                            Garage.MaxSlotsForCustomers = 0;
-                            Garage.MaxSlotsForFree = 0;
+                            SetSlotsZero();
                         }
 
                     }
@@ -271,4 +260,10 @@ public partial class UpdateGarageDialog
         }
     }
 
+    private void SetSlotsZero()
+    {
+        Garage.MaxSlotsForEmployess = 0;
+        Garage.MaxSlotsForCustomers = 0;
+        Garage.MaxSlotsForFree = 0;
+    }
 }
