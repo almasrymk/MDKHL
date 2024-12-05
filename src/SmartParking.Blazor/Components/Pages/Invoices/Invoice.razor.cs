@@ -165,7 +165,7 @@ public partial class Invoice
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceNumber"], item.InvoiceNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], _localizer[$"{item.InvoiceType.ToString()}"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"],!item.IsPackage?_localizer[$"{item.InvoiceType.ToString()}"]: _localizer[$"Package"]));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerEnName"],item.CustomerEnName));
