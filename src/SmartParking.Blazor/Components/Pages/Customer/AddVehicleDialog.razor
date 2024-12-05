@@ -27,21 +27,6 @@
 
             <MudForm Model="createUpdateVehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
-                    @* <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@createUpdateVehicle.PlateColorId"
-                                   Variant="Variant.Text"
-                                   Label="@L["PlateColor Name"]"
-                                   Placeholder=@L["Choose"]
-                                   HelperText=@L["Helper Text"]
-                                   Required="true"
-                                   Clearable="_clearable">
-                            @foreach (var platecolor in plateColors)
-                            {
-
-                                <MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem> *@
 
                     <MudItem sm="6" md="6">
                         <MudTextField  T="string" InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
