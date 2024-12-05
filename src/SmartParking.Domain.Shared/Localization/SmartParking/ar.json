@@ -487,6 +487,8 @@
     "Update User": "تعديل المستخدم",
     "UserUpdateSuccessfullyWith": "تم تعديل المستخدم بنجاح",
     "View User": "عرض المستخدم",
-    "ExitTime": "توقيت الخروج"
+    "ExitTime": "توقيت الخروج",
+    "EntranceTime": "توقيت الدخول",
+
   }
 }

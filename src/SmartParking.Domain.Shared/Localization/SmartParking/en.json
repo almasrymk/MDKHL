@@ -465,6 +465,7 @@
     "Update User": "Update User",
     "UserUpdateSuccessfullyWith": "User Update Successfully With",
     "View User": "View User",
-    "ExitTime": "Exit Time"
+    "ExitTime": "Exit Time",
+    "EntranceTime": "Entrance Time"
   } 
 }
