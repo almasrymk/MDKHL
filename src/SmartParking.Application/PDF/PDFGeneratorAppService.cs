@@ -424,17 +424,25 @@ img[style*='width:120px;'] {
           AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(20);
-        Table tableimages = new Table(2);
+        Table tableimages = new Table(2).UseAllAvailableWidth(); 
 
-        Image imageMdkhlLogo = new Image(ImageDataFactory
-        .Create(imageDirectoryPdf)).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetWidth(120);
+        Image imageMdkhlLogo = new Image(ImageDataFactory.Create(imageDirectoryPdf))
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
+            .SetWidth(120);
 
-        Image OrgLogo = new Image(ImageDataFactory
-        .Create(OrganizationLogo?? imageDirectoryPdf)).SetHorizontalAlignment(HorizontalAlignment.RIGHT).SetWidth(120);
-        tableimages.AddCell(new Cell().Add(imageMdkhlLogo).SetBorder(Border.NO_BORDER).SetHorizontalAlignment(HorizontalAlignment.LEFT)).SetHorizontalAlignment(HorizontalAlignment.LEFT);
+        Image OrgLogo = new Image(ImageDataFactory.Create(OrganizationLogo ?? imageDirectoryPdf))
+            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+            .SetWidth(120);
 
-        // Add the second image to the second column
-        tableimages.AddCell(new Cell().Add(OrgLogo).SetBorder(Border.NO_BORDER).SetHorizontalAlignment(HorizontalAlignment.RIGHT)).SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+        tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+            .SetBorder(Border.NO_BORDER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT)); 
+
+        tableimages.AddCell(new Cell().Add(OrgLogo)
+            .SetBorder(Border.NO_BORDER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
+            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)); 
 
         Paragraph subheader = new Paragraph(" * **Simplified tax invoice***")
          .SetTextAlignment(TextAlignment.CENTER)

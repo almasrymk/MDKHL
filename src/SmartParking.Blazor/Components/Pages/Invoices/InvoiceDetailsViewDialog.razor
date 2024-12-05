@@ -44,7 +44,6 @@
                 </h4>
                 <div class="row">
                     <div class="col-md-6 d-flex flex-column">
-                        <strong>Payment Number:</strong><p>@Invoice.InvoiceNumber </p>
                     </div>
                     <div class="col-md-6 d-flex flex-column align-items-center">
                         <strong>Hotel Name:</strong><p> @Invoice.OrganizationArabicName</p>
@@ -55,9 +54,6 @@
                     <div class="col-md-6 d-flex flex-column align-items-center">
                         <strong>Hotel Address:</strong>
                         <p> @OrganizationAddress</p>
-                    </div>
-                    <div class="col-md-12 d-flex flex-column">
-                        <strong>Payment Date:</strong><p> @DateTime.UtcNow.ToString()</p>
                     </div>
                     <div class="col-md-12 d-flex flex-column">
                         <strong>Plate Number:</strong> <p>@Invoice.PlateNumber</p>
@@ -78,7 +74,7 @@
                 </div>
                 <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
                     <h5>Interval</h5>
-                    <h5>@Invoice.TotalHours Hour</h5>
+                    <h5>@Invoice.TotalHours Hour(s)</h5>
                 </div>
             </div>
 
