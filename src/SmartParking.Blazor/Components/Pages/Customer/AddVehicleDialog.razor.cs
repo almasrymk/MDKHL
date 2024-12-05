@@ -34,10 +34,6 @@ public partial class AddVehicleDialog
 
 	[Parameter]
 	public Guid CustomerId { get; set; }
-    public string EnPlateLetters { get; set; } = "";
-    public string EnPlateNumber { get; set; } = "";
-    public string ArPlateLetters { get; set; } = "";
-    public string ArPlateNumber { get; set; } = "";
     protected override async Task OnInitializedAsync()
     {
         createUpdateVehicle.BelongToCompany = false;

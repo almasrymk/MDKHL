@@ -16,6 +16,7 @@
 @inject ICurrentTenant CurrentTenant
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
+@inject IDialogService DialogService
 
 <PageTitle>@L["Edit"]</PageTitle>
 <div>
@@ -76,14 +77,22 @@
                     </div>
                 </div>
                 <MudGrid Class="mt-3">
+                    @if (CurrentTenant.Id is not null)
+                    {
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewInvoice">@L["Invoices"]</MudLink>
+                            </MudPaper>
+                        </MudItem>
+                    }
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Invoices"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
                         </MudPaper>
                     </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark">@L["Cars"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">@L["Packages"]</MudLink>
                         </MudPaper>
                     </MudItem>
                 </MudGrid>

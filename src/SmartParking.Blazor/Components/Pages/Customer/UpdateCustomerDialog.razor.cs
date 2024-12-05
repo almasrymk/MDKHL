@@ -117,4 +117,41 @@ public partial class UpdateCustomerDialog
         Navigation.NavigateTo("/customers", true);
 
     }
+
+    private async Task<IDialogReference> ViewVehicle()
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+
+
+        return await DialogService.ShowAsync<ViewCustomerVehicleDialog>("view customer vehicle", parameters);
+    }
+    private async Task<IDialogReference> ViewInvoice()
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+
+
+        return await DialogService.ShowAsync<ViewCustomerInvoiceDialog>("view customer invoice", parameters);
+    }
+    private async Task<IDialogReference> ViewPackage()
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+
+
+        return await DialogService.ShowAsync<ViewCustomerPackageDialog>("view customer package", parameters);
+    }
 }

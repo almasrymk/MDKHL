@@ -35,10 +35,6 @@ public partial class CustomerRegister
     IReadOnlyList<LicenceTypeDto> LicenceTypes = new List<LicenceTypeDto>();
     IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
     IReadOnlyList<VehicleModelDto> VehicleModels = new List<VehicleModelDto>();
-    public string EnPlateLetters { get; set; } = "";
-    public string EnPlateNumber { get; set; } = "";
-    public string ArPlateLetters { get; set; } = "";
-    public string ArPlateNumber { get; set; } = "";
     public string Picture { get; set; }
 
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();

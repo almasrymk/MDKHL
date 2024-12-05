@@ -387,4 +387,14 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
         }
     }
+
+    public async Task<List<InvoiceDto>> GetInvoiceForCustomer(Guid customerId)
+    {
+
+            var query = await _invoiceRepository.GetQueryableAsync();
+            query = query.Where(inv => inv.CustomerId == customerId);
+            var invoice = await AsyncExecuter.ToListAsync(query);
+            var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoice);
+            return invoiceDto;
+    }
 }

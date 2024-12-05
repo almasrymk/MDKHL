@@ -36,7 +36,13 @@ namespace SmartParking.CustomerPackages
         /// </summary>
         /// <param name="customerId">The unique identifier of the customer whose packages are to be retrieved.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the customer.</returns>
-        Task<List<CustomerPackageDto>> GetListPackagesByCustomer(Guid customerId);
+        Task<List<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId);        
+        /// <summary>
+        /// Retrieves a list of packages associated with a specific customer.
+        /// </summary>
+        /// <param name="customerId">The unique identifier of the customer whose packages are to be retrieved.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the customer.</returns>
+        Task<List<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId);
 
         Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId,Guid CustomerId , int PackageId);
 

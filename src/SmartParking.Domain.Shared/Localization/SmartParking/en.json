@@ -466,6 +466,12 @@
     "UserUpdateSuccessfullyWith": "User Update Successfully With",
     "View User": "View User",
     "ExitTime": "Exit Time",
-    "EntranceTime": "Entrance Time"
+    "EntranceTime": "Entrance Time",
+    "CustomerVehicle": "Customer - Vehicle",
+    "VehicleDeletedSuccessfully": "Vehicle Deleted Successfully",
+    "CustomerPackages": "Customer - Package",
+    "PriceOfPackage": "Price Of Package",
+    "ExpiryDate": "Expiry Date",
+    "CustomerInvoice": "Customer - Mapping"
   } 
 }

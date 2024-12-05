@@ -435,7 +435,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
     /// <inheritdoc/>
-    public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomer(Guid customerId)
+    public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

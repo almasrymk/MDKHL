@@ -489,6 +489,12 @@
     "View User": "عرض المستخدم",
     "ExitTime": "توقيت الخروج",
     "EntranceTime": "توقيت الدخول",
+    "CustomerVehicle": "مركبات - العميل",
+    "VehicleDeletedSuccessfully": "حذف المركبة بنجاح",
+    "CustomerPackages": "باقة - العميل",
+    "PriceOfPackage": "سعر الباقة",
+    "ExpiryDate": "تاريخ إنتهاء",
+    "CustomerInvoice": "المطابقة - العميل"
 
   }
 }

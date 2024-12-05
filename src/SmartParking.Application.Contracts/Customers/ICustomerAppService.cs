@@ -59,7 +59,8 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <param name="customerId">Customer Id</param>
     /// <returns>list of vehichles</returns>
-    Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomer(Guid customerId);
+    Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId);    
+
 
 	/// <summary>
 	/// abstract method to search of customers

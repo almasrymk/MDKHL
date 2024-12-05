@@ -10,6 +10,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
 using System;
@@ -42,13 +43,15 @@ public class CustomerPackagesAppService:
     private readonly IRepository<Package> _packageRepository;
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Customer, Guid> _customerRepository;
+    private readonly IOrganizationsAppService _organizationsApp;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,IRepository<Package> packageRepository,IDataFilter dataFilter,IRepository<Customer, Guid> customerRepository) :base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,IRepository<Package> packageRepository,IDataFilter dataFilter,IRepository<Customer, Guid> customerRepository,IOrganizationsAppService organizationsApp) :base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
         _dataFilter = dataFilter;
         _customerRepository = customerRepository;
+        _organizationsApp = organizationsApp;
     }
   
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
@@ -87,19 +90,7 @@ public class CustomerPackagesAppService:
             return Result<List<PackageDto>>.Success(packageMap);
         }
     }
-    ///<inheritdoc/>
-    public async Task<List<CustomerPackageDto>> GetListPackagesByCustomer(Guid customerId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.CustomerId == customerId && c.PackageId != null);
 
-            var result = await AsyncExecuter.ToListAsync(query);
-            var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
-            return packageMap;
-        }
-    }
     ///<inheritdoc/>
     [RemoteService(IsEnabled =false)]
     public  async Task<Result> AssignPackageToCustomerAsync(int packageId)
@@ -223,5 +214,32 @@ public class CustomerPackagesAppService:
         //await CurrentUnitOfWork.SaveChangesAsync();
 
         await base.DeleteAsync(id);
+    }
+
+    public async Task<List<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.CustomerId == customerId);
+
+            var result = await AsyncExecuter.ToListAsync(query);
+            var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
+            return packageMap;
+        }
+    }
+
+    public async Task<List<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId)
+    {
+        var org = await _organizationsApp.GetOrganizationForCurrentTenat();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.CustomerId == customerId && c.OrganizationId == org.Id);
+
+            var result = await AsyncExecuter.ToListAsync(query);
+            var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
+            return packageMap;
+        }
     }
 }
