@@ -16,66 +16,47 @@ using static MudBlazor.CategoryTypes;
 using Volo.Abp;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class CustomerVehicles
 {
-    [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
-
     [Parameter]
-    public Guid CustomerId { get; set; }
-
-    public List<VehicleDto> vehicles { get; set; } = new List<VehicleDto>();
-    public List<CustomerPackageDto> Packages { get; set; } = new List<CustomerPackageDto>();
-    public CustomerDto Customer = new CustomerDto();
-    private readonly IStringLocalizer<SmartParkingResource> _localizer;
-    protected override async Task OnInitializedAsync()
+    public string customerId { get; set; }
+    public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
+    public string Picture { get; set; }
+    protected async override Task OnInitializedAsync()
     {
-        Customer = await CustomerAppService.GetAsync(CustomerId);
-        vehicles = await CustomerAppService.GetVehiclesRelatedToSpecificCustomer(CustomerId);
-        Packages = await CustomerPackagesAppService.GetListPackagesByCustomer(CustomerId);
+        await Fetch();
 
+        if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
+        {
+            Picture = "images/MDHKL_04.png";
+
+        }
+        else
+        {
+            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
+
+        }
     }
-    public CustomerVehicles(IStringLocalizer<SmartParkingResource> localizer)
+
+    private async Task Fetch()
     {
-        _localizer = localizer;
-    }
-    private async Task DeletePackage(int id)
-    {
-        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Delete Customer Package");
-        var result = await dialog.Result;
-        try
+        var customer = await CustomerAppService.GetAsync(Guid.Parse(customerId));
+
+        customerDataDto = new CreateUpdateCustomerDto
         {
-            if (!result.Canceled)
-            {
-                await CustomerPackagesAppService.DeleteAsync(id);
-                ShowSnackbar($"{L["customer package Deleted Successfully"]} ", Severity.Error);
-
-                await Task.Delay(1000);
-
-                Navigation.NavigateTo("/customers", forceLoad: true);
-
-            }
-
-
-        }
-        catch (BusinessException ex)
-        {
-
-            ShowSnackbar($"Failed to delete camera: {ex.Code} + ", Severity.Error);
-        }
-        catch (AuthenticationException ex)
-        {
-            ShowSnackbar($"Failed to delet camera: {ex.Message} + ", Severity.Error);
-        }
-        catch (Exception ex)
-        {
-
-            ShowSnackbar($"Failed to delete camera: {ex.Message} + ", Severity.Error);
-        }
-
+            ArabicName = customer.ArabicName,
+            Email = customer.Email,
+            FullName = customer.FullName,
+            IdentificationType = customer.identificationTypes,
+            MobileNumber = customer.MobileNumber,
+            NationalId = customer.NationalId,
+            UserName = customer.UserName,
+            CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customer.CustomerCategory)
+        };
     }
     /// <summary>
 
@@ -95,9 +76,9 @@ public partial class CustomerVehicles
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
-    private void OnCloseViewOnly()
+    public void CancelView()
     {
-        MudDialogAdd.Cancel();
+        Navigation.NavigateTo("/customers", true);
 
     }
 

@@ -1,142 +1,105 @@
-﻿@using Abp.Application.Navigation
+﻿@page "/customers/view/{customerId}"
 @using Microsoft.Extensions.Localization
-@using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
+@using SmartParking.Enums
 @using SmartParking.Localization
-@using SmartParking.Packages
-@using SmartParking.Vehicles
 @using System.Globalization
+@using SmartParking.Organizations
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
+@layout Shared.ProfileLayout
 @inject ICustomerAppService CustomerAppService
-@inject ICustomerPackagesAppService CustomerPackagesAppService
-@inject IStringLocalizer<SmartParkingResource> L
-@inject IDialogService Dialog
 @inject NavigationManager Navigation
+@inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-<PageTitle>@L["Details Of Customer"] @Customer.FullName</PageTitle>
+@inject ICurrentTenant CurrentTenant
+@inject ICurrentUser currentUser
+@inject IOrganizationsAppService OrganizationAppService
 
-<div class="modal-wrapper">
-    <MudDialog Class="mud-modal">
-        <TitleContent>
-            <MudText Typo="Typo.h6">@L["Details Of Customer"] @Customer.FullName</MudText>
-        </TitleContent>
-
-        <DialogContent>
-            <MudGrid>
-                <MudItem xs="12">
+<PageTitle>@L["Details Of Customer"]</PageTitle>
+<div>
+    <MudGrid>
+        <MudItem sm="8">
+            <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
+                <h3 Color="fw-bold">@L["Details Of Customer"]</h3>
+                <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
-                        <MudItem xs="12" sm="4">
-                            <MudTextField T="string" @bind-Value="Customer.FullName" Label="@L["EnglishName"]" ReadOnly="true" FullWidth="true" />
+
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.FullName" Label="@L["EnglishName"]" Required />
                         </MudItem>
-                        <MudItem xs="12" sm="4">
-                            <MudTextField T="string" @bind-Value="Customer.ArabicName" Label="@L["ArabicName"]" ReadOnly="true" FullWidth="true" />
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.ArabicName" Label="@L["ArabicName"]" Required />
                         </MudItem>
-                        
-                        <MudItem xs="12" sm="4">
-                            <MudTextField T="string" Label="@L["NationalId"]" @bind-Value="Customer.NationalId" ReadOnly="true" FullWidth="true" />
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.Email" Label="@L["Email"]" Required />
                         </MudItem>
-                        <MudItem xs="12" sm="6">
-                            <MudTextField T="string" Label="@L["Email"]" @bind-Value="Customer.Email" ReadOnly="true" FullWidth="true" />
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.UserName" Label="@L["UserName"]" Required />
                         </MudItem>
-                        <MudItem xs="12" sm="6">
-                            <MudTextField T="string" Label="@L["Contact Phone"]" @bind-Value="Customer.MobileNumber" ReadOnly="true" FullWidth="true" />
-                        </MudItem>                        
-                        <MudItem xs="12" sm="6">
-                            <MudTextField T="string" Label="@L["customer category"]" @bind-Value="Customer.CustomerCategory" ReadOnly="true" FullWidth="true" />
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="customerDataDto.MobileNumber" Required />
                         </MudItem>
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="customerDataDto.NationalId" Required />
+                        </MudItem>
+                        <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                            <MudItem Class="d-flex flex-row justify-content-between">
+                                <MudRadioGroup @bind-Value="@customerDataDto.IdentificationType" Class="d-inline-flex align-content-center">
+                                    <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                                    <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                                </MudRadioGroup>
+                            </MudItem>
+                        </MudItem>
+
                     </MudGrid>
-                </MudItem>
+                    <div class="d-flex justify-content-between mt-auto">
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="CancelView">@L["Back"]</MudButton>
+                       
+                    </div>
+                </MudForm>
 
-                <MudDivider />
+            </MudPaper>
+        </MudItem>
+        <MudItem sm="4">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <MudText>@L["My Profile"]</MudText>
+                    <MudLink Underline="Underline.Always" Href="/edit-profile">@L["Edit Profile"]</MudLink>
+                </div>
+                <div class="d-flex flex-column align-content-center gap-4 p-5">
+                    <MudImage Src="@Picture" Class="bg_w_foto " Width="200" Height="200" />
+                    <div class="d-flex flex-column align-items-center">
+                        <MudText Class="fw-bold">@currentUser.Name</MudText>
+                        <MudText>@currentUser.Email</MudText>
+                    </div>
+                </div>
+                <MudGrid Class="mt-3">
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">@L["Invoices"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark">@L["Cars"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
 
-                <MudItem xs="12">
-                    <MudText>@Customer.FullName Vehicles</MudText>
-                    <MudGrid>
-                        <MudTable T="VehicleDto" Items="vehicles" Breakpoint="MudBlazor.Breakpoint.LgAndUp" Class="w-100">
-                            <HeaderContent>
-                                <MudTh>@L["ModelYear"]</MudTh>
-                                <MudTh>@L["PlateNumber"]</MudTh>
-                                <MudTh>@L["BelongToCompany"]</MudTh>
-                                <MudTh>@L["CompanyName"]</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="@L["ModelYear"]">@context.ModelYear</MudTd>
-                                <MudTd DataLabel="@L["PlateNumber"]">@context.EnPlateNumber</MudTd>
-                                <MudTd DataLabel="@L["BelongToCompany"]">@context.BelongToCompany</MudTd>
-                                <MudTd DataLabel="@L["CompanyName"]">@context.CompanyName</MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                    </MudGrid>
-                </MudItem>
-                <MudDivider />
-                @if(Packages.Count!=0){
-
-                <MudItem xs="12">
-                    <MudText>@L["Packages"]</MudText>
-                    <MudGrid>
-                        <MudTable T="CustomerPackageDto" Items="Packages" Breakpoint="MudBlazor.Breakpoint.LgAndUp" Class="w-100">
-                            <HeaderContent>
-                                <MudTh>@L["Price"]</MudTh>
-                                
-                                @if (CultureInfo.CurrentCulture.Name == "en")
-                                {
-                                    <MudTh>@L["EnglishName"]</MudTh>
-                                    <MudTh>@L["PackageTypeEnglishName"]</MudTh>
-                                }
-                                else
-                                {
-                                    <MudTh>@L["ArabicName"]</MudTh>
-                                    <MudTh>@L["PackageTypeArabicName"]</MudTh>
-                                }
-                                <MudTh>@L["Actions"]</MudTh>
-
-                            </HeaderContent>
-                            <RowTemplate>
-
-                                @if(context.DescriptionOfPackage is null){
-                                    return;
-                                }
-                                
-                                <MudTd DataLabel="@L["Price"]">@context.PriceOfPackage</MudTd>
-                                
-                                @if (CultureInfo.CurrentCulture.Name == "en")
-                                {
-                                    <MudTd DataLabel="@L["EnglishName"]">@context.Package.EnglishName</MudTd>
-                                    <MudTd DataLabel="@L["PackageTypeEnglishName"]">@context.Package.PackageType.EnglishName</MudTd>
-                                }
-                                else
-                                {
-                                    <MudTd DataLabel="@L["ArabicName"]">@context.Package.ArabicName</MudTd>
-                                    <MudTd DataLabel="@L["PackageTypeArabicName"]">@context.Package.PackageType.ArabicName</MudTd>
-                                }
-                                <MudTd DataLabel="@L["Actions"]">
-                                    <MudIconButton OnClick="@(e => DeletePackage(context.Id))"
-                                                   Icon="@Icons.Material.Filled.Delete"
-                                                   Variant="Variant.Filled"
-                                                   Color="MudBlazor.Color.Error"
-                                                   Size="MudBlazor.Size.Small"
-                                                   Class="mx-1" />
-                                </MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                    </MudGrid>
-                </MudItem>
-                }
-            </MudGrid>
-        </DialogContent>
-
-        <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-        </DialogActions>
-    </MudDialog>
-
-
-
+    </MudGrid>
 </div>
 
-
 <style>
-
-    .mud-modal {
-        border-radius: 0 20px 0 20px;
+    .bg_w_foto {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
     }
 </style>

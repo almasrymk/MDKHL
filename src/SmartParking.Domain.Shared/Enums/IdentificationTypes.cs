@@ -8,6 +8,7 @@ namespace SmartParking.Enums;
 
 public enum  IdentificationTypes
 {
-    Passport,
-    NationalID
+    NationalID,
+    Passport
+
 }
