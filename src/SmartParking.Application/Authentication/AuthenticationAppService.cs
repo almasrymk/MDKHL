@@ -141,13 +141,17 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     private async Task<IdentityUser> CheckPhoneISFound(string phone)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
-
-        if (user == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new ValidationException("User with this phone number does Not exist.");
-        }
-        return user;
+			var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
+
+			if (user == null)
+			{
+				throw new ValidationException("User with this phone number does Not exist.");
+			}
+			return user;
+		}
+            
     }
 
     /// <inheritdoc/>
@@ -316,8 +320,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 IdentificationTypes = IdentificationTypes.NationalID,
                 IdentityUser = user,
                 IdentityUserId = user.Id,
-                OtpExpirationDate = DateTime.Now,
-                CustomerCategory = CustomerCategoryStatus.Customer,
+                OtpExpirationDate = DateTime.Now
 
             };
             await _customerRepository.InsertAsync(customer);
@@ -373,23 +376,6 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
 
         return accessToken;
-    }
-    /// <summary>
-    /// Checks if the provided phone number is unique and associated with a user.
-    /// </summary>
-    /// <param name="phone">The phone number to check for uniqueness.</param>
-    /// <returns>The <see cref="IdentityUser"/> associated with the phone number if it exists.</returns>
-    /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
-    private async Task<IdentityUser> CheckPhoneIsUnique(string phone)
-    {
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
-
-        if (user != null)
-        {
-            throw new ValidationException("User with this phone number does  exist.");
-        }
-        return user;
-
     }
     /// <inheritdoc/>
 

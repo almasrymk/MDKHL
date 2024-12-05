@@ -22,4 +22,5 @@ public class CreateUpdateCustomerDto
     public bool isActive { get; set; } = true;
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public int OrganizationId { get; set; }
+    public int PackageId { get; set; }
 }

@@ -10,9 +10,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Customers;
 
@@ -21,22 +23,41 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
 {
     private readonly IRepository<Customer, Guid> _repository;
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
+	private readonly IRepository<Package, int> _packageRepository;
+	private readonly IDataFilter _dataFilter;
 
-    public BaseCustomerAppService(IRepository<Customer, Guid> repository, IRepository<CustomerPackage, int> customerPackageRepository)
+	public BaseCustomerAppService(IRepository<Customer, Guid> repository, IRepository<CustomerPackage, int> customerPackageRepository,IRepository<Package,int> packageRepository , IDataFilter dataFilter)
     {
         _repository = repository;
         _customerPackageRepository = customerPackageRepository;
-    }
+		_packageRepository = packageRepository;
+		_dataFilter = dataFilter;
+	}
     ///<inheritdoc/>
-    public async Task AddCustomerPackage(int organizationId, Guid customerId)
+    public async Task AddCustomerPackage(int organizationId, Guid customerId,int packageId)
     {
+        var package = await _packageRepository.GetAsync(packageId);
         var customerPackage = new CustomerPackage
         {
             CustomerId = customerId,
             CustomerPackageStatus = CustomerPackageStatus.Active,
             OrganizationId = organizationId,
-            TenantId = null
-        };
+            TenantId = null,
+            PackageId = packageId,
+            PackageArabicName = package.ArabicName,
+            PackageEnglishName = package.EnglishName,
+            PriceOfPackage = package.Price,
+            publishedOfPackage = package.published,
+            ActivationDateOfPackage = package.ActivationDate,
+            DectivationDateOfPackage= package.DectivationDate,
+            DescriptionOfPackage = package.Description,
+            DurationOfPackage = package.DurationOfPackage,
+            ExpiryDate = DateTime.Today.AddDays(package.DurationOfPackage),
+            PublishFromOfPackage = package.PublishFrom,
+            PublishToOfPackage = package.PublishTo,
+            
+
+		};
         await _customerPackageRepository.InsertAsync(customerPackage, true);
     }
 
@@ -92,15 +113,19 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
     /// <inheritdoc/>
     public async Task<bool> CheckIfPhoneNumberIsUnique(string phoneNumber)
     {
-        var query = await _repository.GetQueryableAsync();
-        var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
-
-        if (result.Count == 0)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return true;
+			var query = await _repository.GetQueryableAsync();
+			var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
 
-        }
-        return false;
+			if (result.Count == 0)
+			{
+				return true;
+
+			}
+			return false;
+		}
+       
 
     }
 

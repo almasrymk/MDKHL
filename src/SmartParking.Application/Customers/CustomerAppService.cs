@@ -32,6 +32,7 @@ using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
 using System.Text.RegularExpressions;
 using Castle.Core.Resource;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using SmartParking.CustomerPackages;
 
 namespace SmartParking.Customers;
 [Authorize]
@@ -45,11 +46,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     private readonly IBaseCustomerAppService _baseCustomer;
+	private readonly ICustomerPackagesAppService _packagesAppService;
 
-    public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
+	public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
         IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager,
         IRepository<CustomerPackage, int> customerPackageRepository,
-        IBaseCustomerAppService baseCustomer) : base(repository)
+        IBaseCustomerAppService baseCustomer , ICustomerPackagesAppService packagesAppService) : base(repository)
     {
         _repository = repository;
         _repositoryVehicle = repositoryVehicle;
@@ -59,7 +61,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _userManager = userManager;
         _customerPackageRepository = customerPackageRepository;
         _baseCustomer = baseCustomer;
-    }
+		_packagesAppService = packagesAppService;
+	}
   
 
     /// <inheritdoc/>
@@ -83,7 +86,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
 			var customerAdd = await _repository.InsertAsync(customer, true);
-			await _baseCustomer.AddCustomerPackage(organization.Id, customerAdd.Id);
+            await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
+			
 			return ObjectMapper.Map<Customer, CustomerDto>(customer);
 		}
 		catch (Exception ex)
@@ -117,8 +121,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
 			var customerAdd = await _repository.InsertAsync(customer, true);
-            await _baseCustomer.AddCustomerPackage(input.OrganizationId, customerAdd.Id);
-            return ObjectMapper.Map<Customer, CustomerDto>(customer);
+			await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
+			return ObjectMapper.Map<Customer, CustomerDto>(customer);
 		}
 		catch (Exception ex)
 		{
