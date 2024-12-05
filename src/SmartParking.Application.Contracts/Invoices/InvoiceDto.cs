@@ -17,6 +17,8 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public DateTime? EntranceTime { get; set; }
     public string CustomerArName { get; set; }
     public string CustomerEnName { get; set; }
+    public bool IsPackage { get; set; }
+
 
 
 }

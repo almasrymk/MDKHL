@@ -417,7 +417,7 @@ public class GarageTransactionsAppService :
             var query = await _VehicleRepository.GetQueryableAsync();
             query = query.Where(x => x.CustomerId == customerId);
             var garageTransactionQuery = await _repository.GetQueryableAsync();
-            garageTransactionQuery = garageTransactionQuery.Where(GT => GT.OrganizationID == organizationId);
+            garageTransactionQuery = garageTransactionQuery.Where(GT => GT.OrganizationID == organizationId && GT.IsIn==true);
             garageTransactionQuery = garageTransactionQuery.Where(GT => query.Any(vehicle => vehicle.ArPlateNumber == GT.PlateNumber || vehicle.EnPlateNumber == GT.PlateNumber));
             var transactions = await AsyncExecuter.ToListAsync(garageTransactionQuery);
             var transactionsDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);

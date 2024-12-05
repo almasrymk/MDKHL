@@ -23,6 +23,8 @@ public class CreateUpdateInvoiceDto
     public string CustomerEnName { get; set; }
     public Guid? TenantId { get; set; }
     public Guid? CustomerId { get; set; }
+    public bool IsPackage { get; set; }
+
 
 
 }
