@@ -33,7 +33,7 @@
 <PageTitle>@L["Register"]</PageTitle>
 <div>
     <MudGrid>
-        <MudItem sm="showVehicle?8:12">
+        <MudItem sm="showVehicle?7:12">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <h3 Color="fw-bold">@L["Register"]</h3>
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
@@ -159,7 +159,7 @@
         </MudItem>
         @if (showVehicle)
         {
-            <MudItem sm="4">
+            <MudItem sm="5">
                 <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                 <MudForm Model="createUpdateVehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                     <MudGrid>
@@ -256,8 +256,12 @@
                         <MudItem sm="6" md="6">
                             <MudSwitch Label="@L["BelongToCompany"]" LabelPosition="LabelPosition.Start" @bind-Value="createUpdateVehicle.BelongToCompany" Color="MudBlazor.Color.Primary" />
                         </MudItem>
-                        <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
+                        <MudItem sm="6" md="6">
+                                <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
+                        </MudItem>
+                        <MudItem sm="6" md="6">
                         <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate">@L["Create"]</MudButton>
+                        </MudItem>
                     </MudGrid>
                 </MudForm>
                 </MudPaper>

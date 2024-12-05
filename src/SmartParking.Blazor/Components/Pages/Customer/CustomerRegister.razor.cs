@@ -28,7 +28,7 @@ public partial class CustomerRegister
 {
     private MudForm form;
     public CreateUpdateCustomerDto createUpdateCustomerDto = new CreateUpdateCustomerDto();
-    bool showVehicle = true;
+    bool showVehicle = false;
     Guid CustomerId;
     public CreateUpdateVehicleDto createUpdateVehicle = new CreateUpdateVehicleDto();
     IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
@@ -106,6 +106,7 @@ public partial class CustomerRegister
             {
                 CustomerId = customer.Id;
                 ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}" ,Severity.Success);
+                showVehicle = true;
                 //await Task.Delay(1000);
                 //Navigation.NavigateTo("/customers",true);
 
