@@ -19,7 +19,10 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 public partial class Customer 
 {
 	private int TotalItem;
-	public int CurrentPage { get; set; } = 1; // Default current page value is 10
+
+	private bool assign = true;
+
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
 	public int RowPerPage { get; set; } = 10; // Default value is 10
 
 	private TableData itemData = new TableData();
@@ -41,7 +44,8 @@ public partial class Customer
     {
 		if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
 		{
-			ViewAdd= false;
+            assign = false;
+            ViewAdd = false;
 
 		}
 		return base.OnInitializedAsync();
@@ -171,15 +175,19 @@ public partial class Customer
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NationalId"], Name = "NationalId", IsFilterable = false, PropertyName = "NationalId", IsSortable = false, TypeFilter = TypeFilter.Enum });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = false, PropertyName = "MobileNumber", IsSortable = false, TypeFilter = TypeFilter.Number });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = false, TypeFilter = TypeFilter.Enum });
-		if(currrentTenant.Id == null)
+		
+		if(currrentTenant.Id != null)
 		{
-            if (CultureInfo.CurrentCulture.DisplayName == "ar")
-
-                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
-            else
-                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         }
+		//if(currrentTenant.Id == null)
+		//{
+  //          if (CultureInfo.CurrentCulture.DisplayName == "ar")
+
+  //              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+  //          else
+  //              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+  //      }
 		
 		foreach (var item in customers.Items)
 		{

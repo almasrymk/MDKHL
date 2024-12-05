@@ -25,4 +25,7 @@ public class CustomerPackage : FullAuditedEntity<int>, IBseEntity
     public TimeOnly? PublishToOfPackage { get; set; }
     public DateTime? ActivationDateOfPackage { get; set; }
     public DateTime? DectivationDateOfPackage { get; set; }
+	public string PackageArabicName { get; set; }
+	public string PackageEnglishName { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; }
 }

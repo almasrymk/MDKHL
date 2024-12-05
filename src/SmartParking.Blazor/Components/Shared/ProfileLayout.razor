@@ -124,13 +124,13 @@
         UserName = CurrentUser.Name;
         if ((CurrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (CurrentUser.IsInRole("admin")))
         {
-            UserName = Enums.RolesType.Mdkhl.ToString() + " " + UserName;
+            UserName = /*Enums.RolesType.Mdkhl.ToString() + " " +*/ UserName;
             Picture = "images/MDHKL_04.png";
 
         }
         else
         {
-            UserName = Enums.RolesType.Organization.ToString() + " " + UserName;
+            UserName = /*Enums.RolesType.Organization.ToString() + " " + */UserName;
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
 
         }

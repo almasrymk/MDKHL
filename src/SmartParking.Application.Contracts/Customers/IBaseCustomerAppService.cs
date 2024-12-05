@@ -44,7 +44,7 @@ public interface IBaseCustomerAppService
     /// <param name="organization">The organization to which the customer package will be added.</param>
     /// <param name="customerAdd">The customer entity containing details for the package to be added.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task AddCustomerPackage(int organizationId, Guid customerId);
+    Task AddCustomerPackage(int organizationId, Guid customerId, int packageId);
 
     /// <summary>
     /// Method Used to create random otp

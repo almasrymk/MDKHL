@@ -114,7 +114,7 @@ public class CustomerPackagesAppService:
 
             if (package == null)
                 return Result.NotFound("Package not found");
-            var customerPackageIsExist = await _repository.FirstOrDefaultAsync(p => p.PackageId == packageId && p.OrganizationId == package.OrganizationId && p.CustomerId == customer.Id);
+            var customerPackageIsExist = await _repository.FirstOrDefaultAsync(p => p.PackageId == packageId && p.OrganizationId == package.OrganizationId && p.CustomerId == customer.Id && p.ExpiryDate >= DateTime.Today);
             if (customerPackageIsExist is not null)
             {
                 return Result.Invalid(new ValidationError
@@ -137,7 +137,11 @@ public class CustomerPackagesAppService:
                 PriceOfPackage = package.Price,
                 PublishFromOfPackage = package.PublishFrom,
                 PublishToOfPackage = package.PublishTo,
-                publishedOfPackage = package.published
+                publishedOfPackage = package.published,
+                CustomerCategory = package.CustomerCategory,
+                PackageArabicName = package.ArabicName,
+                PackageEnglishName = package.EnglishName
+                
             };
 
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
@@ -177,8 +181,12 @@ public class CustomerPackagesAppService:
                 PriceOfPackage = package.Price,
                 PublishFromOfPackage = package.PublishFrom,
                 PublishToOfPackage = package.PublishTo,
-                publishedOfPackage = package.published
-            };
+                publishedOfPackage = package.published,
+				CustomerCategory = package.CustomerCategory,
+				PackageArabicName = package.ArabicName,
+				PackageEnglishName = package.EnglishName,
+                
+			};
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
            if(assignPackage == null)
                 return false;
