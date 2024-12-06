@@ -145,9 +145,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
 			var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
 
-			if (user == null)
+			if (user != null)
 			{
-				throw new ValidationException("User with this phone number does Not exist.");
+				throw new ValidationException("User with this phone number does exist.");
 			}
 			return user;
 		}
