@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Castle.Core.Resource;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
@@ -84,7 +85,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
             // ENABLE TO VALIDATE var organizationId = organizationsAppService.GetAsync(paymentCheckoutRequest.OrganizationId);
 
-            if (customerId != null)
+            if (customerId != null )
             {
 
                 // handle cash transaction
@@ -92,7 +93,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 {
 
 
-                    return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Success);
+                    return await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, customerId);
 
                 }
                 else   //handle online transaction
@@ -101,7 +102,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     var entityId = GetEntityIdByPaymentMethod(paymentCheckoutRequest.PaymentMethod);
                     var checkoutId = await HyperPayPayment(paymentCheckoutRequest, entityId);
 
-                    return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Pending,
+                    return await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Pending,customerId,
                         checkoutid: checkoutId, entityId: entityId);
 
                 }
@@ -112,15 +113,17 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
             }
             else
-                throw new Exception("Customer not found");
+            {
+                throw new Exception("Customer Not Found");
+            }
 
 
         }
     }
 
     private async Task<PaymentCheckoutDto> SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
-        Guid customerId,
         PaymentStatus paymentStatus,
+        Guid? customerId,
         string checkoutid = null,
         string entityId = null)
     {
@@ -275,7 +278,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 return new PaymentDto
                 {
                     CheckoutId = payment.CheckoutId,
-                    CustomerId = payment.CustomerId,
+                    CustomerId = (Guid)payment.CustomerId,
                     Id = payment.Id,
                     PaymentStatus = status,
                     PaymentCategory = payment.PaymentCategory,
@@ -334,7 +337,25 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
     }
 
+    public async Task<PaymentCheckoutDto> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
+    {
+        var paymentCheckoutDto= await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+       await UpdatePaymentStatusAsync(paymentCheckoutRequest.InvoiceId);
+        return paymentCheckoutDto;
+    }
 
+    private async Task<Result<bool>> UpdatePaymentStatusAsync(int? InvoiceId)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var invoice =await _invoiceRepo.FirstOrDefaultAsync(x => x.Id == InvoiceId);
+            if (invoice == null) {  return Result<bool>.Success(false); }
+            invoice.InvoiceType = InvoiceType.Paid;
+            await _invoiceRepo.UpdateAsync(invoice);
+            return Result.Success(true);
+
+        }
+    }
 }
 
 

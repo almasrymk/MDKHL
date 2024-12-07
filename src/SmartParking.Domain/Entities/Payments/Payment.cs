@@ -12,7 +12,7 @@ public class Payment : FullAuditedEntity<Guid>
     public int? InvoiceId { get; set; }
     public int? PackageId { get; set; }
     public string? CheckoutId { get; set; }
-    public Guid CustomerId { get; set; }
+    public Guid? CustomerId { get; set; }
 
     public PaymentCategory PaymentCategory { get; set; }
     public PaymentMethod PaymentMethod { get; set; }

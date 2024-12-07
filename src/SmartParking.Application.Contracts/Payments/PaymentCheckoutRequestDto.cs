@@ -1,4 +1,5 @@
 ﻿using SmartParking.Enums;
+using System;
 
 namespace SmartParking.Payments;
 
@@ -10,4 +11,5 @@ public class PaymentCheckoutRequestDto
     public int? PackageId { get; set; }
     public decimal Amount { get; set; }
     public int OrganizationId { get; set; }
+    public Guid? CustomerId { get; set; }
 }

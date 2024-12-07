@@ -16,6 +16,8 @@ using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Blazor.Components.Pages.Invoices;
 using System.Xml.Linq;
 using SmartParking.Entities.Invoices;
+using SmartParking.Payments;
+using FluentValidation;
 
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
@@ -44,6 +46,12 @@ public partial class DetailsInvoice
     public DateTime ?EntranceTime { get; set; }
     public DateTime ?ExitTime { get; set; }
 
+    public int OrganizationId { get; set; }
+    public Guid? CustomerId { get; set; }
+
+    public bool IsPaid { get; set; }
+
+
 
 
     public string CommercialRegisteration { get; set; }
@@ -71,7 +79,9 @@ public partial class DetailsInvoice
 
         vehicles = vehicleDto.Items.ToList();
         CommercialRegisteration = organizations.Find(x => x.ArabicName == OrganizationArabicName).CommercialRegistrationNumber;
-        OrgAddress = organizations.Find(x => x.ArabicName == OrganizationArabicName).Address;
+        var org = organizations.Find(x => x.ArabicName == OrganizationArabicName);
+        OrgAddress=org.Address;
+        OrganizationId = org.Id;
 
         await base.OnInitializedAsync();
 
@@ -90,6 +100,8 @@ public partial class DetailsInvoice
         EntranceTime = invoice.EntranceTime;
         CustomerName=invoice.CustomerEnName;
         ExitTime = invoice.InvoiceTime;
+        CustomerId = invoice.CustomerId;
+        IsPaid= invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
 
 
 
@@ -97,6 +109,26 @@ public partial class DetailsInvoice
     private void Back()
     {
         Navigation.NavigateTo("/invoices");
+    }
+    private async Task PayInvoice()
+    {
+        var paymentChekout = new PaymentCheckoutRequestDto
+        {
+            OrganizationId=OrganizationId,
+            PaymentCategory=PaymentCategory.Invoice,
+            InvoiceId= Id,
+            PaymentMethod=PaymentMethod.Cash,
+            Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
+            CustomerId= CustomerId
+
+
+        };
+        var payment =await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        if (payment != null) {
+            Snackbar.Add("Payment Done Successfully ",MudBlazor.Severity.Success);
+            await Task.Delay(1000);
+            Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+        }
     }
     private Task ViewInvoiceDetails()
     {

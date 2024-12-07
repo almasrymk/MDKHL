@@ -4,6 +4,7 @@ using SmartParking.Authentication;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Keepers;
+using SmartParking.Payments;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -83,5 +84,12 @@ public class KeeperController : AbpController
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId)
     {
         return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId,userId);
+    }
+    
+    [HttpGet("payInvoice")]
+    [Authorize]
+    public async Task<Result<PaymentCheckoutDto>> PayInvoice(int InvoiceId)
+    {
+        return await _keeperAppService.PayCashAsync(InvoiceId);
     }
 }
