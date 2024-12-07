@@ -19,7 +19,7 @@ using SmartParking.Localization;
 using SmartParking.Enums;
 using Blazorise;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
-using SmartParking.Blazor.Components.Pages.Customer.Packages;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 

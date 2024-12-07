@@ -1,0 +1,34 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.CustomerPackages
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ICustomerPackagesAppService CustomerPackagesAppService
+@inject ICustomerAppService CustomerAppService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+<PageTitle>@L["CustomerPackages"]</PageTitle>
+<div class="modal-wrapper ">
+    <MudDialog class="mud-modal ">
+        <TitleContent>
+            <MudText Class="fw-bold">@L["CustomerPackages"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <SPDataGrid PageName=@L["CustomerPackages"] Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
+        </DialogContent>
+        <DialogActions>
+
+            <MudButton Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
