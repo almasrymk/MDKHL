@@ -632,8 +632,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (customerPackage == null)
         {
             _logger.LogError($"{DateTime.Now} ====>  customerPackage not found");
-            return null;
-            //return customerId.ToString();
         }
         return customerPackage;
     }
