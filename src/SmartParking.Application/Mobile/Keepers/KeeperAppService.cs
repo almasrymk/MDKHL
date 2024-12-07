@@ -10,6 +10,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Payments;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using System;
@@ -39,18 +40,20 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IMyUserRepository _myUserRepository;
     private readonly IRepository<Tenant,Guid> _tenantRepository;
+    private readonly IPaymentAppService _paymentAppService;
 
     public KeeperAppService
-        (IRepository<Invoice, int> invoiceRepository, 
+        (IRepository<Invoice, int> invoiceRepository,
          SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
-         UserManager<Volo.Abp.Identity.IdentityUser> userManager, 
+         UserManager<Volo.Abp.Identity.IdentityUser> userManager,
          IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
          IHttpContextAccessor httpContext,
          IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
-         IRepository<GarageTransaction,int> garageTransactionRepository,
-         IRepository<Organization,int> organizationRepoistory,
+         IRepository<GarageTransaction, int> garageTransactionRepository,
+         IRepository<Organization, int> organizationRepoistory,
          IMyUserRepository myUserRepository,
-		 IRepository<Tenant, Guid> tenantRepository)
+         IRepository<Tenant, Guid> tenantRepository,
+         IPaymentAppService paymentAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -62,11 +65,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _organizationRepoistory = organizationRepoistory;
         _myUserRepository = myUserRepository;
         _tenantRepository = tenantRepository;
+        _paymentAppService = paymentAppService;
     }
 
-	/// <inheritdoc/>
+    /// <inheritdoc/>
 
-	public async Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber)
+    public async Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber)
 	{
         GarageTransaction transaction = new GarageTransaction();
 
@@ -330,4 +334,22 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
 		return tenant;
 	}
+
+    public async Task<Result<PaymentCheckoutDto>> PayCashAsync(int invoiceId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            var paymentRequest = new PaymentCheckoutRequestDto
+            {
+                PaymentCategory=PaymentCategory.Invoice,
+                PaymentMethod=PaymentMethod.Cash,
+                Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+                CustomerId=invoice.CustomerId,
+                OrganizationId=invoice.OrganizationId,
+                InvoiceId=invoiceId,
+            };
+            return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+        }
+    }
 }

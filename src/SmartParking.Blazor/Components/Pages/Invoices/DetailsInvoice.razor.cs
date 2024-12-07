@@ -110,7 +110,7 @@ public partial class DetailsInvoice
     {
         Navigation.NavigateTo("/invoices");
     }
-    private async void PayInvoice()
+    private async Task PayInvoice()
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {
@@ -123,7 +123,7 @@ public partial class DetailsInvoice
 
 
         };
-        var payment =await PaymentAppSerivce.CreateCheckoutPaymentAsync(paymentChekout);
+        var payment =await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         if (payment != null) {
             Snackbar.Add("Payment Done Successfully ",MudBlazor.Severity.Success);
             await Task.Delay(1000);
