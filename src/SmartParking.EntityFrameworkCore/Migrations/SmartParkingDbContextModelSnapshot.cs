@@ -1860,7 +1860,7 @@ namespace SmartParking.Migrations
                     b.Property<string>("Currency")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CustomerId")
+                    b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("DeleterId")
@@ -4380,9 +4380,7 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customers")
                         .WithMany("Payments")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.Navigation("Customers");
                 });

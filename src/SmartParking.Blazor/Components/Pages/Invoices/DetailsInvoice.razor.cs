@@ -125,9 +125,9 @@ public partial class DetailsInvoice
         };
         var payment =await PaymentAppSerivce.CreateCheckoutPaymentAsync(paymentChekout);
         if (payment != null) {
-            await Task.Delay(1000);
             Snackbar.Add("Payment Done Successfully ",MudBlazor.Severity.Success);
-
+            await Task.Delay(1000);
+            Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
         }
     }
     private Task ViewInvoiceDetails()
