@@ -646,9 +646,6 @@ namespace SmartParking.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
-                    b.Property<bool>("IsPackage")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationTime");
@@ -1207,9 +1204,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CreatorId");
 
-                    b.Property<int>("CustomerCategory")
-                        .HasColumnType("integer");
-
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
 
@@ -1252,12 +1246,6 @@ namespace SmartParking.Migrations
 
                     b.Property<int?>("OrganizationId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("PackageArabicName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PackageEnglishName")
-                        .HasColumnType("text");
 
                     b.Property<int?>("PackageId")
                         .HasColumnType("integer");
