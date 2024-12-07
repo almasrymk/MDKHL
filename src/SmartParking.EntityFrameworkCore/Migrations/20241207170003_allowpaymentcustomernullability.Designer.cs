@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20241207160959_CustomerIdInPaymentNULLABLE")]
-    partial class CustomerIdInPaymentNULLABLE
+    [Migration("20241207170003_allowpaymentcustomernullability")]
+    partial class allowpaymentcustomernullability
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
