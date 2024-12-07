@@ -126,8 +126,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 
     public async Task<Result<VehicleDto>> EditAsync(int vehicleId, CreateUpdateVehicleMobileDto input)
     {
-		try
-		{
+
             var vehicle = await _vehicleRepository.GetAsync(vehicleId);
             if (vehicle == null)
             {
@@ -183,11 +182,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 			var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicleUpdate);
 
 			return Result<VehicleDto>.Success(vehicleDto, "Vehicle Edit Succesuffuly");
-		}
-		catch (Exception ex)
-		{
-			return Result<VehicleDto>.Error(ex.Message);
-		}
+
 	}
 
     public async Task<Result<List<VehicleDto>>> GetListAsync()

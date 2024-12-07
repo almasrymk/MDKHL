@@ -15,8 +15,10 @@ using SmartParking.Blazor.Components.SPComponents;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Entities.Vehicles;
+using System.Text.RegularExpressions;
 
-namespace SmartParking.Blazor.Components.Pages.Customer;
+namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
 public partial class ViewCustomerVehicleDialog
 {
@@ -33,10 +35,17 @@ public partial class ViewCustomerVehicleDialog
 
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
+    private bool ShowEdit;
 
     public ViewCustomerVehicleDialog(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+    }
+    protected override Task OnInitializedAsync()
+    {
+        if (CurrentTenant.Id is null)
+            ShowEdit = true;
+        return base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -104,6 +113,41 @@ public partial class ViewCustomerVehicleDialog
         return await DialogService.ShowAsync<AddVehicleDialog>("view customer vehicle", parameters);
     }
 
+    private async Task<CreateUpdateVehicleDto> CreateVehicleEditDto(VehicleDto vehicle)
+    {
+        var ArPlate = await VehiclesAppService.SplitPlateAsync(vehicle.ArPlateNumber);
+        var EnPlate = await VehiclesAppService.SplitPlateAsync(vehicle.EnPlateNumber);
+
+        return new CreateUpdateVehicleDto
+        {
+            ArPlateLetters = ArPlate.letters,
+            ArPlateNumber = ArPlate.numbers,
+            BelongToCompany = vehicle.BelongToCompany,
+            CompanyName = vehicle.CompanyName,
+            EnPlateLetters = EnPlate.letters,
+            EnPlateNumber = EnPlate.numbers,
+            LicenceTypeId = vehicle.LicenceTypeId,
+            ModelYear = vehicle.ModelYear,
+            PlateColorId = vehicle.PlateColorId,
+            VehicleBrandId = vehicle.VehicleBrandId,
+            VehicleModelId = vehicle.VehicleModelId,
+            CustomerId = vehicle.CustomerId,
+        };
+    }
+    private async Task<IDialogReference> HandleEdit(RowDef row)
+    {
+        var vehicleId = int.Parse(row.Cells[0].Value);
+        var vehicle = await VehiclesAppService.GetAsync(vehicleId);
+        var vehicleEdit = await CreateVehicleEditDto(vehicle);
+         
+        var parameters = new DialogParameters
+        {
+            ["VehicleId"] = vehicleId,
+            ["Vehicle"] = vehicleEdit
+        };
+
+        return await DialogService.ShowAsync<EditVehicleDialog>("edit customer vehicle", parameters);
+    }
     private async Task HandleDelete(RowDef row)
     {
         var successMessage = _localizer["VehicleDeletedSuccessfully"];

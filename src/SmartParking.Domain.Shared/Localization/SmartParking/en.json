@@ -472,6 +472,8 @@
     "CustomerPackages": "Customer - Package",
     "PriceOfPackage": "Price Of Package",
     "ExpiryDate": "Expiry Date",
-    "CustomerInvoice": "Customer - Mapping"
+    "CustomerInvoice": "Customer - Mapping",
+    "VehichleWasUpdatedSuccessfully": "Vehichle Was Updated Successfully",
+    "EditVehicle": "Edit Vehicle for Customer"
   } 
 }

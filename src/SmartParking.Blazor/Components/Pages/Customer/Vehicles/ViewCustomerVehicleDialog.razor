@@ -1,24 +1,24 @@
 ﻿@using Microsoft.Extensions.Localization
-@using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Localization
+@using SmartParking.Vehicles
 @using Volo.Abp.MultiTenancy
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
-@inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject ICustomerAppService CustomerAppService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject IVehiclesAppService VehiclesAppService
 @inject ICurrentTenant CurrentTenant
-<PageTitle>@L["CustomerPackages"]</PageTitle>
+<PageTitle>@L["CustomerVehicle"]</PageTitle>
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal ">
         <TitleContent>
-            <MudText Class="fw-bold">@L["CustomerPackages"]</MudText>
+            <MudText Class="fw-bold">@L["CustomerVehicle"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["CustomerPackages"] Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
+            <SPDataGrid PageName=@L["CustomerVehicle"] Data="@itemData" OnClickRowEdit="HandleEdit" ShowEdit="ShowEdit" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
         </DialogContent>
         <DialogActions>
 
