@@ -494,7 +494,10 @@
     "CustomerPackages": "باقة - العميل",
     "PriceOfPackage": "سعر الباقة",
     "ExpiryDate": "تاريخ إنتهاء",
-    "CustomerInvoice": "المطابقة - العميل"
+    "CustomerInvoice": "المطابقة - العميل",
+    "VehichleWasUpdatedSuccessfully": "تم تعديل المركبة بنجاح",
+    "EditVehicle": "تعديل مركبة العميل",
+    "Details Of Customer" : "تفاصيل العميل"
 
   }
 }

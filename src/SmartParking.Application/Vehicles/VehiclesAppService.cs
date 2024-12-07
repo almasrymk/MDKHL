@@ -1,11 +1,13 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -81,10 +83,13 @@ public class VehiclesAppService:
 
     private async Task CheckVehicleIfFound(CreateUpdateVehicleDto input)
     {
-        var existVehicle = await _repository.FirstOrDefaultAsync(_ => _.ArPlateNumber == input.ArPlateNumber || _.EnPlateNumber == input.EnPlateNumber);
-        if (existVehicle is not null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new InvalidOperationException("this vehicle is exist");
+            var existVehicle = await _repository.FirstOrDefaultAsync(_ => (_.ArPlateNumber == input.ArPlateNumber || _.EnPlateNumber == input.EnPlateNumber));
+            if (existVehicle is not null)
+            {
+                throw new InvalidOperationException("this vehicle is exist");
+            }
         }
     }
 
@@ -102,14 +107,74 @@ public class VehiclesAppService:
 	}
 	public override async Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input)
 	{
-        
-		return await base.UpdateAsync(id, input);
-	}
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+            input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+            
+            var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
 
-	public override async Task<VehicleDto> GetAsync(int id)
-	{
+            if (licenceType == null)
+            {
+                throw new InvalidOperationException("licence type not found");
+
+            }
+            var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.ArPlateNumber && x.EnPlateNumber == input.EnPlateNumber);
+            input.PlateColorId = licenceType.PlateColorId;
+            if (existingPlatNumber != null && existingPlatNumber.LicenceTypeId == input.LicenceTypeId && existingPlatNumber.PlateColorId == input.PlateColorId && existingPlatNumber.VehicleBrandId == input.VehicleBrandId && existingPlatNumber.BelongToCompany == input.BelongToCompany && existingPlatNumber.CompanyName == input.CompanyName)
+            {
+                throw new InvalidOperationException("PlatNumber already exists");
+            }
+
+            return await base.UpdateAsync(id,input);
+        }
+    }
+
+    public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
+    {
         
-			return await base.GetAsync(id);
+        await Task.Yield(); 
+
+        var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
+
+        string letters, numbers;
+
+        if (match.Success)
+        {
+            letters = match.Groups["letters"].Value;
+            numbers = match.Groups["numbers"].Value;
+        }
+        else
+        {
+            letters = "";
+            numbers = plate;
+        }
+
+        return (numbers, letters);
+    }
+
+    public void SplitPlate(string plate, out string numbers, out string letters)
+    {
+        var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
+        if (match.Success)
+        {
+            letters = match.Groups["letters"].Value;
+            numbers = match.Groups["numbers"].Value;
+        }
+        else
+        {
+            letters = "";
+            numbers = plate;
+        }
+    }
+
+
+    public override async Task<VehicleDto> GetAsync(int id)
+	{
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+        }
 	}
 
 	public override async Task DeleteAsync(int id)

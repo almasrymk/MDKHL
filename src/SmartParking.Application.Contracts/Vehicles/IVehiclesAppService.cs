@@ -23,5 +23,9 @@ namespace SmartParking.Vehicles
 
 		Task<VehicleDto> GetAsync(int id);
 		Task  DeleteAsync(int id);
-	}
+
+		void SplitPlate(string plate, out string numbers, out string letters);
+		Task<(string numbers, string letters)> SplitPlateAsync(string plate);
+
+    }
 }

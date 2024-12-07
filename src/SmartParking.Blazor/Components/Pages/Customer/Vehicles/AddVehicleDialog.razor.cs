@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
-namespace SmartParking.Blazor.Components.Pages.Customer;
+namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
 public partial class AddVehicleDialog
 {
