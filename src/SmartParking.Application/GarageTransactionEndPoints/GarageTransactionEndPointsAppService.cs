@@ -27,6 +27,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -326,9 +327,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task SaveTransactionWithInvoice(DateTime EntranceTime, Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction, int TotalHours, decimal price, bool IsPackage)
     {
         var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-        string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
-        var invoice = await CreateInvoice(GarageTransaction.GarageId, generatedInvoiceNumber, price, GarageTransaction.OrganizationID, TotalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value
-               , EntranceTime, exsitCustomer is not null ? exsitCustomer.IdentityUser.Name : customerEnName,exsitCustomer is not null ? exsitCustomer.ArabicName:customerArName, IsPackage, exsitCustomer.Id);
+        string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID); var invoice = await CreateInvoice(
+          GarageTransaction.GarageId,
+          generatedInvoiceNumber,
+          price,
+          GarageTransaction.OrganizationID,
+          TotalHours,
+          GarageTransaction.PlateNumber,
+          GarageTransaction.AccurateTime.Value,
+          EntranceTime,
+          exsitCustomer?.IdentityUser.Name ?? customerEnName,
+          exsitCustomer?.ArabicName ?? customerArName,
+          IsPackage,
+          exsitCustomer?.Id ?? null
+        );
+
 
         await _invoiceAppService.CreateAsync(invoice);
     }
@@ -377,6 +390,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var EntranceTime = await FindEntranceTime(GarageTransaction.PlateNumber);
         if (EntranceTime is null)
         {
+            GarageTransaction.IsIn = false;
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null ");
@@ -389,6 +403,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var customer = await CheckCustomer(GarageTransaction.PlateNumber);
         Customer exsitCustomer=null;
         if (customer != null) {
+            var packg = await CheckActivePackageForCustomer(Guid.Parse(customer), GarageTransaction.OrganizationID);
+            GarageTransaction.CustomerCategory = packg is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
+
             exsitCustomer = await GetCustomer(customer);
         }
 
