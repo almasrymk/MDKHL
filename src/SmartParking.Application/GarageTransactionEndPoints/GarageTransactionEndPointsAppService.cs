@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -387,7 +388,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
 
             var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(Guid.Parse(customer), organizationId,GarageTransaction.GarageId);
-            await CloseCheckoutMobileTransaction(GarageTransaction.PlateNumber);
+            await CloseEntryTransaction(GarageTransaction.PlateNumber,true);
 
             var PassGraceTime =await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value,organization.Graceperiod);
             if (invoice.Value.InvoiceType== InvoiceType.Paid.ToString() && !PassGraceTime)
@@ -443,7 +444,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
 
         }
-        await CloseEntryTransaction(GarageTransaction.PlateNumber);
+        await CloseEntryTransaction(GarageTransaction.PlateNumber,false);
         
         await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -687,40 +688,29 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return latestTransaction;
         }
     }
-    private async Task CloseEntryTransaction(string? plateNumber)
+    private async Task CloseEntryTransaction(string? plateNumber, bool IsMobile)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
 
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            if (IsMobile)
+            {
+                query.Where(gt => gt.CameraType == CameraType.Exit);
+            }
 
 
             var latestTransaction = query
                     .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) && gt.IsIn == true)
                     .OrderByDescending(gt => gt.AccurateTime)
+
                     .FirstOrDefault();
 
             latestTransaction.IsIn= false; 
             await CurrentUnitOfWork.SaveChangesAsync();
         }
     }
-    private async Task CloseCheckoutMobileTransaction(string? plateNumber)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-
-
-            var latestTransaction = query
-                    .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) &&gt.CameraType==CameraType.Exit &&gt.IsIn == true)
-                    .OrderByDescending(gt => gt.AccurateTime)
-                    .FirstOrDefault();
-
-            latestTransaction.IsIn= false; 
-            await CurrentUnitOfWork.SaveChangesAsync();
-        }
-    }
+ 
     
     private int CalcTime(DateTime startTime, DateTime endTime, int FreeMinutes)
     {
