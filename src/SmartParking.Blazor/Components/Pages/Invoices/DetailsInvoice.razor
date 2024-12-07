@@ -149,7 +149,7 @@
 
                 <MudGrid Class="mt-4">
                     <MudItem xs="12" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice">@L["CONFIRM"]</MudButton>
+                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ?L["Paid"] :L["CONFIRM"])  </MudButton>
                     </MudItem>
                     <MudItem xs="12" Class="text-center mt-2">
                         <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark" OnClick="Back">@L["CANCEL"]</MudButton>
