@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -129,7 +130,7 @@ public class VehiclesAppService:
             return await base.UpdateAsync(id,input);
         }
     }
-
+    [RemoteService(IsEnabled = false)]
     public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
     {
         
@@ -152,7 +153,7 @@ public class VehiclesAppService:
 
         return (numbers, letters);
     }
-
+    [RemoteService(IsEnabled = false)]
     public void SplitPlate(string plate, out string numbers, out string letters)
     {
         var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
