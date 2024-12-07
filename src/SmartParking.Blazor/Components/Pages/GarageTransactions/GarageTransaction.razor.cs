@@ -231,6 +231,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				CameraId=garageTransactionDto.CameraId,
 				GarageId=garageTransactionDto.GarageId,
 				OrganizationID=garageTransactionDto.OrganizationID,
+				CustomerCategory=garageTransactionDto.CustomerCategory
 			};
 
 			var parameters = new DialogParameters

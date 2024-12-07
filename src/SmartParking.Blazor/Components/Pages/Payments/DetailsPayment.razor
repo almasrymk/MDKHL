@@ -75,7 +75,10 @@
                 
                 <MudItem sm="4">
                     <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Amount" Label=@L["Amount"] />
-                </MudItem>  
+                </MudItem>
+            @if(Payment.Customers is not null){
+
+            
                 @if (CultureInfo.CurrentCulture.Name == "ar")
                 {
                     <MudItem sm="4">
@@ -88,6 +91,7 @@
                         <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.Customers.UserName" Label=@L["CustomerName"] />
                     </MudItem>
                 }
+            }
                 </MudGrid>
                 </MudForm>
 </div>
