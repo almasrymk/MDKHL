@@ -14,7 +14,7 @@ using Volo.Abp.Users;
 using SmartParking.Enums;
 using System.Globalization;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
-using SmartParking.Blazor.Components.Pages.Customer.Packages;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
