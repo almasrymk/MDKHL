@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -18,6 +19,7 @@ using SmartParking.Payments;
 using SmartParking.Results;
 using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -146,7 +148,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             if (Id != null)
             {
                var packg=await CheckActivePackageForCustomer(Guid.Parse(Id), GarageTransaction.OrganizationID);
-                GarageTransaction.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package.CustomerCategory);
+                GarageTransaction.CustomerCategory = packg is not null ?(CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package.CustomerCategory): CustomerCategoryStatus.Customer;
 
                customer = await GetCustomer(Id);
             }
@@ -320,6 +322,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
         var invoice = await CreateInvoice(GarageTransaction.GarageId, generatedInvoiceNumber, price, GarageTransaction.OrganizationID, TotalHours, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value
                , EntranceTime, exsitCustomer is not null ? exsitCustomer.IdentityUser.Name : customerEnName,exsitCustomer is not null ? exsitCustomer.ArabicName:customerArName, IsPackage, exsitCustomer.Id);
+
         await _invoiceAppService.CreateAsync(invoice);
     }
 
@@ -386,7 +389,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
 
             var invoice =await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(Guid.Parse(customer), organizationId,GarageTransaction.GarageId);
-            
+            await CloseCheckoutMobileTransaction(GarageTransaction.PlateNumber);
+
             var PassGraceTime =await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value,organization.Graceperiod);
             if (invoice.Value.InvoiceType== InvoiceType.Paid.ToString() && !PassGraceTime)
             {
@@ -395,7 +399,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             else if (invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && PassGraceTime)
             {
                 int Hours = (int)(invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).TotalHours + (invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).Minutes > 0 ? 1 : 0;
-
                 return await  CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction,CustomerCategoryStatus.Customer);
 
             }
@@ -442,6 +445,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
 
         }
+        await CloseEntryTransaction(GarageTransaction.PlateNumber);
         
         await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -632,8 +636,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (customerPackage == null)
         {
             _logger.LogError($"{DateTime.Now} ====>  customerPackage not found");
-            return null;
-            //return customerId.ToString();
         }
         return customerPackage;
     }
@@ -687,6 +689,41 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return latestTransaction;
         }
     }
+    private async Task CloseEntryTransaction(string? plateNumber)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+
+            await SaveClosedEntryTransaction(plateNumber, query);
+        }
+    }
+
+    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query)
+    {
+        var latestTransaction = query
+                .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) && gt.IsIn == true)
+                .OrderByDescending(gt => gt.AccurateTime)
+                .FirstOrDefault();
+
+        latestTransaction.IsIn = false;
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
+
+    private async Task CloseCheckoutMobileTransaction(string? plateNumber)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            query.Where(gt => gt.CameraType == CameraType.Exit);
+            await SaveClosedEntryTransaction(plateNumber, query);
+
+
+        }
+    }
+    
     private int CalcTime(DateTime startTime, DateTime endTime, int FreeMinutes)
     {
 
