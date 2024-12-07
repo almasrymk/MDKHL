@@ -92,7 +92,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 {
 
 
-                    return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Success);
+                    return await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, customerId);
 
                 }
                 else   //handle online transaction
@@ -101,7 +101,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     var entityId = GetEntityIdByPaymentMethod(paymentCheckoutRequest.PaymentMethod);
                     var checkoutId = await HyperPayPayment(paymentCheckoutRequest, entityId);
 
-                    return await SavePaymentRequest(paymentCheckoutRequest, customerId, PaymentStatus.Pending,
+                    return await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Pending,customerId,
                         checkoutid: checkoutId, entityId: entityId);
 
                 }
@@ -112,15 +112,18 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
             }
             else
-                throw new Exception("Customer not found");
+            {
+                return await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, customerId );
+
+            }
 
 
         }
     }
 
     private async Task<PaymentCheckoutDto> SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
-        Guid customerId,
         PaymentStatus paymentStatus,
+        Guid customerId,
         string checkoutid = null,
         string entityId = null)
     {
@@ -275,7 +278,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 return new PaymentDto
                 {
                     CheckoutId = payment.CheckoutId,
-                    CustomerId = payment.CustomerId,
+                    CustomerId = (Guid)payment.CustomerId,
                     Id = payment.Id,
                     PaymentStatus = status,
                     PaymentCategory = payment.PaymentCategory,

@@ -29,7 +29,7 @@ namespace SmartParking.CustomerPackages
 		/// <param name="packageId">The ID of the package to be assigned.</param>
 		/// <param name="customerId">The unique identifier (GUID) of the customer to whom the package will be assigned.</param>
 		/// <returns>A task that represents the asynchronous operation. The task result is <c>true</c> if the package was successfully assigned; otherwise, <c>false</c>.</returns>
-		Task<bool> AssignPackageToCustomerWebAsync(int packageId, Guid customerId);
+		Task<bool> AssignPackageToCustomerWebAsync(int packageId, Guid? customerId);
 
         /// <summary>
         /// Retrieves a list of packages associated with a specific customer.

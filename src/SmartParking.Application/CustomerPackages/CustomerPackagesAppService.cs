@@ -143,7 +143,7 @@ public class CustomerPackagesAppService:
         }
     }
    ///<inheritdoc/>
-    public  async Task<bool> AssignPackageToCustomerWebAsync(int packageId,Guid customerId)
+    public  async Task<bool> AssignPackageToCustomerWebAsync(int packageId,Guid? customerId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

@@ -4,6 +4,7 @@
 @using SmartParking.Invoices
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using SmartParking.Payments
 @using SmartParking.Vehicles
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
@@ -16,6 +17,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
+@inject IPaymentAppService PaymentAppSerivce
 
 <PageTitle>@L["InvoiceDetails"]</PageTitle>
 
@@ -147,10 +149,10 @@
 
                 <MudGrid Class="mt-4">
                     <MudItem xs="12" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["CONFIRM"]</MudButton>
+                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice">@L["CONFIRM"]</MudButton>
                     </MudItem>
                     <MudItem xs="12" Class="text-center mt-2">
-                        <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark">@L["CANCEL"]</MudButton>
+                        <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark" OnClick="Back">@L["CANCEL"]</MudButton>
                     </MudItem>
                 </MudGrid>
 
