@@ -9,25 +9,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages
-{
-    public class CustomerPackageDto
-    {
-        public int Id { get; set; }
-        public Guid CustomerId { get; set; }
-        public int PackageId { get; set; }
-        public CustomerPackageStatus CustomerPackageStatus { get; set; }
-        public  PackageDto Package { get; set; }
-        public  OrganizationDto Organization { get; set; }
-        public Guid? TenantId { get; set; }
-        public int? DurationOfPackage { get; set; }
-        public decimal? PriceOfPackage { get; set; }
-        public string? DescriptionOfPackage { get; set; }
-        public bool? publishedOfPackage { get; set; }
-        public TimeOnly? PublishFromOfPackage { get; set; }
-        public TimeOnly? PublishToOfPackage { get; set; }
-        public DateTime? ActivationDateOfPackage { get; set; }
-        public DateTime? DectivationDateOfPackage { get; set; }
+namespace SmartParking.CustomerPackages;
 
-    }
+public class CustomerPackageDto
+{
+    public int Id { get; set; }
+    public Guid CustomerId { get; set; }
+    public int PackageId { get; set; }
+    public CustomerPackageStatus CustomerPackageStatus { get; set; }
+    public  PackageDto Package { get; set; }
+    public  OrganizationDto Organization { get; set; }
+    public Guid? TenantId { get; set; }
+    public int? DurationOfPackage { get; set; }
+    public decimal? PriceOfPackage { get; set; }
+    public string? DescriptionOfPackage { get; set; }
+    public bool? publishedOfPackage { get; set; }
+    public TimeOnly? PublishFromOfPackage { get; set; }
+    public TimeOnly? PublishToOfPackage { get; set; }
+    public DateTime? ActivationDateOfPackage { get; set; }
+    public DateTime? DectivationDateOfPackage { get; set; }
+    public DateTime ExpiryDate { get; set; }
+    public string PackageArabicName { get; set; }
+    public string PackageEnglishName { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; }
+
 }

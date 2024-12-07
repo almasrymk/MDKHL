@@ -22,6 +22,10 @@ namespace SmartParking.Blazor.Components.Pages.Invoices;
 
 public partial class DetailsInvoice 
 {
+    // باشمهندس معاذ قال سيبها علشان هو عايز يسلم النهاردة الخميس 5/12 بسرررعة 
+    // الكومنت اهو يا هندسة 
+    //@MoazzHammam
+    // مش انا اللي كنت كات الكود ده 
     public string code;
     [Parameter] 
     public int Id { get; set; }
@@ -38,6 +42,7 @@ public partial class DetailsInvoice
     public DateTime ?InvoiceTime { get; set; }
 
     public DateTime ?EntranceTime { get; set; }
+    public DateTime ?ExitTime { get; set; }
 
 
 
@@ -84,6 +89,7 @@ public partial class DetailsInvoice
         InvoiceTime = invoice.InvoiceTime;
         EntranceTime = invoice.EntranceTime;
         CustomerName=invoice.CustomerEnName;
+        ExitTime = invoice.InvoiceTime;
 
 
 

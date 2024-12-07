@@ -1,5 +1,6 @@
 ﻿using SmartParking.Results;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -54,4 +55,6 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
 	public Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input,Guid? tenantId);
 
     Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(Guid customerId,int OrganizationId,int GarageId);
+
+    Task<List<InvoiceDto>> GetInvoiceForCustomer(Guid customerId);
 }

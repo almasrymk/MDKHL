@@ -117,19 +117,11 @@ public class VehiclesAppService:
 		var vehicle = await _repository.FindAsync(id);
 		if (vehicle == null )
 			throw new EntityNotFoundException(typeof(Vehicle), id);
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
             using (_dataFilter.Disable<IMultiTenant>())
 			{
 
-                //await base.DeleteAsync(id);
-                vehicle.Status = Status.Deleted;
-                await CurrentUnitOfWork.SaveChangesAsync();
+                await base.DeleteAsync(id);
             }
-		}
-        //await base.DeleteAsync(id);
-        vehicle.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
    

@@ -3,16 +3,20 @@
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using SmartParking.Packages
 @using System.Globalization
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
 @inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject IPackagesAppService PackagesAppService
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject ICurrentTenant CurrentTenant
+@inject ICurrentUser currentUser
+@inject IOrganizationsAppService OrganizationAppService
 
 <PageTitle>@L["Assign Package"]</PageTitle>
 
@@ -22,49 +26,92 @@
 			<MudText Typo="Typo.h6">@L["Assign Package"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@CustomerPackage.PackageId"
-								   Variant="Variant.Text"
-								   Label="@L["EnglishName"]"
-								   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"]
-								   Clearable="_clearable">
-							@foreach (var package in Packages)
-							{
-								if (package.PackageStatus != SubscriptionStatus.Active)
-									continue;
-								if (CultureInfo.CurrentCulture.Name == "en")
+					@if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+					{
+						<MudItem sm="6" md="6">
+							<MudSelect T="int"
+									   Variant="Variant.Text"
+									   Label=@L["Organizations"]
+									   Placeholder=@L["Choose"]
+									   HelperText=@L["Helper Text"]
+									   Required
+									   @bind-Value="organizationId">
+								<MudSelectItem Value="0"></MudSelectItem>
+								@foreach (var organization in Organizations)
 								{
-								  <MudSelectItem Value="package.Id">@package.EnglishName</MudSelectItem>
+									if (organization.Status != Enums.Status.Active)
+										continue;
 
+
+									if (CultureInfo.CurrentCulture.Name == "en")
+									{
+										<MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+									}
+									else
+									{
+										<MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+									}
 								}
-								else
+							</MudSelect>
+						</MudItem>
+
+
+
+					}
+					@if (organizationId != 0 || CurrentTenant.Id is not null)
+					{
+						<MudItem sm="6" md="6">
+							<MudSelect T="CustomerCategoryStatus"
+									   Label="@L["customer category"]"
+									   Placeholder="@L[ "Choose"]"
+									   HelperText=@L["Helper Text"]
+									   Required="true"
+									   ValueChanged="getPackage">
+
+								@foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
 								{
-								  <MudSelectItem Value="package.Id">@package.ArabicName</MudSelectItem>
+									<MudSelectItem Value="@category">
 
+										@category.ToString()
+									</MudSelectItem>
 								}
-							}
-						</MudSelect>
-					</MudItem>
+							</MudSelect>
+
+						</MudItem>
+					}
 
 
+					@if (Packages.Count > 0)
+					{
+						<MudItem sm="6">
+							<MudSelect @bind-Value="@CustomerPackage.PackageId"
+									   Variant="Variant.Text"
+									   Label="@L["EnglishName"]"
+									   Placeholder=@L["Choose"]
+									   HelperText=@L["Helper Text"]
+									   Clearable="_clearable">
+								@foreach (var package in Packages)
+								{
+									if (package.PackageStatus != SubscriptionStatus.Active)
+										continue;
+									if (CultureInfo.CurrentCulture.Name == "en")
+									{
+										<MudSelectItem Value="package.Id">@package.EnglishName</MudSelectItem>
 
+									}
+									else
+									{
+										<MudSelectItem Value="package.Id">@package.ArabicName</MudSelectItem>
 
+									}
+								}
+							</MudSelect>
+						</MudItem>
+					}
 					
 
-				
-
-
-			
-
-				
-				
-				
 				</MudGrid>
 			</MudForm>
 
@@ -92,16 +139,25 @@
 	public CreateUpdateCustomerPackageDto CustomerPackage = new CreateUpdateCustomerPackageDto();
 	[Parameter]
 	public CustomerDto Customer { get; set; }
+	private int organizationId;
+	private IReadOnlyList<OrganizationDto> Organizations = new List<OrganizationDto>();
+	
 	public List<PackageDto> Packages { get; set; } = new List<PackageDto>();
 	bool _clearable;
 	private MudForm form;
 
+	private async Task getPackage(CustomerCategoryStatus customerCategory)
+	{
+		if (CurrentTenant.Id is null)
+			Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, customerCategory);
+		else
+			Packages = await PackagesAppService.GetAllOrganizationAsync(customerCategory);
+
+	}
 	protected override async Task OnInitializedAsync()
 	{
-		if(CurrentTenant.Id is null)
-			Packages = await PackagesAppService.GetAllMdkhlAsync(Customer.OrganizationId, (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), Customer.CustomerCategory));
-		else
-			Packages = await PackagesAppService.GetAllOrganizationAsync((CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), Customer.CustomerCategory));
+		var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+		Organizations = result.Items;
 
 		await base.OnInitializedAsync();
 	}

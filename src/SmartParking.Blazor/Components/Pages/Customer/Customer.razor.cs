@@ -19,7 +19,10 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 public partial class Customer 
 {
 	private int TotalItem;
-	public int CurrentPage { get; set; } = 1; // Default current page value is 10
+
+	private bool assign = true;
+
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
 	public int RowPerPage { get; set; } = 10; // Default value is 10
 
 	private TableData itemData = new TableData();
@@ -41,11 +44,13 @@ public partial class Customer
     {
 		if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
 		{
-			ViewAdd= false;
+            assign = false;
+            ViewAdd = false;
 
 		}
 		return base.OnInitializedAsync();
     }
+
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>
@@ -171,15 +176,8 @@ public partial class Customer
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NationalId"], Name = "NationalId", IsFilterable = false, PropertyName = "NationalId", IsSortable = false, TypeFilter = TypeFilter.Enum });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = false, PropertyName = "MobileNumber", IsSortable = false, TypeFilter = TypeFilter.Number });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = false, TypeFilter = TypeFilter.Enum });
-		if(currrentTenant.Id == null)
-		{
-            if (CultureInfo.CurrentCulture.DisplayName == "ar")
+		
 
-                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
-            else
-                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
-        }
 		
 		foreach (var item in customers.Items)
 		{
@@ -191,7 +189,6 @@ public partial class Customer
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.Email));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NationalId"], item.NationalId));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MobileNumber"], item.MobileNumber));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.CustomerCategory));
             if (currrentTenant.Id == null)
 			{
                 if (CultureInfo.CurrentCulture.Name == "ar")
@@ -221,20 +218,14 @@ public partial class Customer
 
 	}
 
-	public async Task<IDialogReference> ShowVehiclesForCustomer(RowDef row)
+	public  void ViewCustomer(RowDef row)
 	{
-		var id = Guid.Parse(row.Cells[0].Value);
+		var customerId = Guid.Parse(row.Cells[0].Value);
 
-		var parameters = new DialogParameters
-		{
-			["CustomerId"] = id,
-		};
+        Navigation.NavigateTo($"/customers/view/{customerId}", true);
 
 
-		return await DialogService.ShowAsync<CustomerVehicles>("Simple Dialog", parameters);
-
-
-	}
+    }
 
    public async Task<IDialogReference> AssignPackage(string id)
 	{
@@ -269,27 +260,10 @@ public partial class Customer
 
 	}
 
-	public async Task<IDialogReference> HandleEdit(RowDef row)
+	public  void HandleEdit(RowDef row)
 	{
-        var customerId = Guid.Parse(row.Cells[0].Value);
-        var customerData = await CustomerAppService.GetAsync(customerId);
-		var customerUpdate = new CreateUpdateCustomerDto
-        {
-			ArabicName = customerData.ArabicName,
-			 Email = customerData.Email,
-			 FullName = customerData.FullName,
-			 IdentificationType = customerData.identificationTypes,
-			 MobileNumber= customerData.MobileNumber,
-			 NationalId = customerData.NationalId,
-			 UserName = customerData.UserName,	
-			CustomerCategory = (CustomerCategoryStatus) Enum.Parse(typeof(CustomerCategoryStatus),customerData.CustomerCategory),
-
-		};
-        var parameters = new DialogParameters
-        {
-            ["customerDataDto"] = customerUpdate,
-            ["customerId"] = customerId.ToString()
-        };
-       return await DialogService.ShowAsync<UpdateCustomerDialog>("Update Customer", parameters);
+              var customerId = Guid.Parse(row.Cells[0].Value);
+      
+        Navigation.NavigateTo($"/customers/edit/{customerId}", true);
     }
 }

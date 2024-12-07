@@ -23,6 +23,7 @@ using iText.Layout.Borders;
 using iText.Kernel.Pdf.Colorspace;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using static QRCoder.SvgQRCode;
 
 
 
@@ -31,15 +32,17 @@ namespace SmartParking.PDF;
 public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppService
 {
     private readonly IInvoiceAppService _invoicePdfAppService;
+    private readonly IOrganizationsAppService _organizationPdfAppService;
+    
     private string folderInvoiceImage = "Invoice";
     private string folderPdfs = "PDFs";
     private string imageDirectoryPath = null;
 
-    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService)
+    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService)
     {
         _invoicePdfAppService = invoicePdfAppService;
         imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
-
+        _organizationPdfAppService = organizationPdfAppService;
     }
     [RemoteService(isEnabled:false)]
     public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
@@ -405,6 +408,7 @@ img[style*='width:120px;'] {
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
+        string OrganizationLogo = await _organizationPdfAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
 
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
@@ -420,8 +424,25 @@ img[style*='width:120px;'] {
           AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(20);
-        Image imageMdkhlLogo = new Image(ImageDataFactory
-        .Create(imageDirectoryPdf)).SetHorizontalAlignment(HorizontalAlignment.CENTER).SetWidth(120);
+        Table tableimages = new Table(2).UseAllAvailableWidth(); 
+
+        Image imageMdkhlLogo = new Image(ImageDataFactory.Create(imageDirectoryPdf))
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
+            .SetWidth(120);
+
+        Image OrgLogo = new Image(ImageDataFactory.Create(OrganizationLogo ?? imageDirectoryPdf))
+            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+            .SetWidth(120);
+
+        tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+            .SetBorder(Border.NO_BORDER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT)); 
+
+        tableimages.AddCell(new Cell().Add(OrgLogo)
+            .SetBorder(Border.NO_BORDER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
+            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)); 
 
         Paragraph subheader = new Paragraph(" * **Simplified tax invoice***")
          .SetTextAlignment(TextAlignment.CENTER)
@@ -520,11 +541,6 @@ img[style*='width:120px;'] {
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .Add(new Paragraph("Subscription\nHour").SetFontSize(14).SetBold()));
 
-        table1.AddCell(new Cell(1, 1)
-            .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .Add(new Paragraph("Quota\n" + ((int)invoice.InvoicePrice / invoice.TotalHours) + " Hour SAR/Hour").SetFontSize(14).SetBold()));
 
         table1.AddCell(new Cell(1, 1)
             .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
@@ -555,8 +571,11 @@ img[style*='width:120px;'] {
 
 
 
+
+
+
         document.Add(header);
-        document.Add(imageMdkhlLogo);
+document.Add(tableimages);
         document.Add(subheader);
         document.Add(Vat);
         document.Add(RecieptPayemntDetails);

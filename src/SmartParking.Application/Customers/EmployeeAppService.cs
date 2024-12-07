@@ -72,7 +72,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             await AddUser(input, customer);
             customer.IsEmployee = true;
             var customerAdd = await _repository.InsertAsync(customer, true);
-            await _baseCustomer.AddCustomerPackage(organization.Id, customerAdd.Id);
+            //await _baseCustomer.AddCustomerPackage(organization.Id, customerAdd.Id);
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
         }
         catch (Exception ex)
@@ -107,7 +107,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             await AddUser(input, customer);
             customer.IsEmployee = true;
             var customerAdd = await _repository.InsertAsync(customer, true);
-            await _baseCustomer.AddCustomerPackage(organizationId, customerAdd.Id);
+            //await _baseCustomer.AddCustomerPackage(organizationId, customerAdd.Id);
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
         }
         catch (Exception ex)

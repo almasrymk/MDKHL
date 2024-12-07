@@ -10,6 +10,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Volo.Abp.Validation;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -17,14 +18,12 @@ public partial class UpdateCustomerDialog
 {
     [Parameter]
     public string customerId { get; set; }
-    [Parameter]
-    public CreateUpdateCustomerDto customerDataDto { get; set; }
-    private List<OrganizationDto> Organizations = new List<OrganizationDto>();
+    public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
     public string Picture { get; set; }
     protected async override Task OnInitializedAsync()
     {
-        var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        Organizations = result.Items.ToList();
+        await Fetch();
+        
         if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
         {
             Picture = "images/MDHKL_04.png";
@@ -37,15 +36,29 @@ public partial class UpdateCustomerDialog
         }
     }
 
+    private async Task Fetch()
+    {
+        var customer = await CustomerAppService.GetAsync(Guid.Parse(customerId));
+       
+         customerDataDto = new CreateUpdateCustomerDto
+        {
+            ArabicName = customer.ArabicName,
+            Email = customer.Email,
+            FullName = customer.FullName,
+            IdentificationType = customer.identificationTypes,
+            MobileNumber = customer.MobileNumber,
+            NationalId = customer.NationalId,
+            UserName = customer.UserName,
+            CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customer.CustomerCategory)
+         };
+    }
+
     public async Task SubmitEdit()
     {
         var successedMessage = L["CustomerUpdateSuccessfullyWith"];
         try
         {
-            CustomerDto customer;
-            customerDataDto.Password = "P@ssw0rd";
-            customerDataDto.RepeatPassword = "P@ssw0rd";
-            customer = await CustomerAppService.UpdateAsync(Guid.Parse(customerId), customerDataDto);
+            var customer = await CustomerAppService.UpdateAsync(Guid.Parse(customerId), customerDataDto);
             if (customer != null)
             {
 
@@ -103,5 +116,42 @@ public partial class UpdateCustomerDialog
     {
         Navigation.NavigateTo("/customers", true);
 
+    }
+
+    private async Task<IDialogReference> ViewVehicle()
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+
+
+        return await DialogService.ShowAsync<ViewCustomerVehicleDialog>("view customer vehicle", parameters);
+    }
+    private async Task<IDialogReference> ViewInvoice()
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+
+
+        return await DialogService.ShowAsync<ViewCustomerInvoiceDialog>("view customer invoice", parameters);
+    }
+    private async Task<IDialogReference> ViewPackage()
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+
+
+        return await DialogService.ShowAsync<ViewCustomerPackageDialog>("view customer package", parameters);
     }
 }

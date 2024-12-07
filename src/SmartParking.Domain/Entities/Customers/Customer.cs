@@ -23,6 +23,6 @@ public class Customer : FullAuditedEntity<Guid>, IMultiTenant
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }
     public virtual ICollection<Invoice> Invoices { get; set; }
     public virtual ICollection<Payment> Payments { get; set; }
-    public CustomerCategoryStatus CustomerCategory { get; set; }
     public Guid? TenantId { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; }
 }

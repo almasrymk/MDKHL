@@ -27,5 +27,6 @@ public class CustomerDto
     public int OrganizationId { get; set; }
     public bool isActive { get; set; }
     public string CustomerCategory { get; set; }
+    public int PackageId { get; set; }
 }
 

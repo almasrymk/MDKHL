@@ -235,7 +235,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         using (_dataFilter.Disable<IMultiTenant>())
         {
             organization = await _organizationsRepository.GetAsync(organizationId);
-        }
 
         var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
         var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
@@ -244,7 +243,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         var invoices = await _invoiceRepository.GetListAsync(i => i.OrganizationId == organizationId);
 
         var lastInvoice = invoices
-        .Where(i => i.CreationTime.Year == DateTime.Now.Year)
+        .Where(i => i.CreationTime.Year == DateTime.Now.Year &&i.OrganizationId==organization.Id)
         .OrderByDescending(i => i.InvoiceNumber)
         .FirstOrDefault();
 
@@ -266,6 +265,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
         // Combine all parts to form the final invoice number
         return $"{prefix}{currentYearSuffix}{formattedSequence}";
+        }
     }
 
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
@@ -386,5 +386,15 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
 
         }
+    }
+
+    public async Task<List<InvoiceDto>> GetInvoiceForCustomer(Guid customerId)
+    {
+
+            var query = await _invoiceRepository.GetQueryableAsync();
+            query = query.Where(inv => inv.CustomerId == customerId);
+            var invoice = await AsyncExecuter.ToListAsync(query);
+            var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoice);
+            return invoiceDto;
     }
 }
