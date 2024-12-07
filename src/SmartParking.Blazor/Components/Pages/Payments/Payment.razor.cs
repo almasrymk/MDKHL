@@ -175,22 +175,22 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], item.PaymentCategory));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], item.PaymentMethod));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], item.PaymentStatus));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers.CustomerCategory.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() ?? _localizer["Customer"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Amount"], item.Amount.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Currency"], item.Currency.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers.UserName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.UserName ?? _localizer["Customer"]));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
 
                 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.Customers.OrganizationEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.Customers?.OrganizationEnglishName));
 
             }
             else
             {
 
                 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.Customers.OrganizationEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.Customers?.OrganizationEnglishName));
             }
 
 
