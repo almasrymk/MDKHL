@@ -156,25 +156,25 @@
                                        HelperText=@L["Helper Text"]
                                        Required
                                        Value="@ViewSubscriptionArabicName"
-                                       ValueChanged="OnPackageSelected">
-                                <MudSelectItem Value="PackageSelectValue"></MudSelectItem>
-                                @foreach (var package in packages)
+                                       ValueChanged="OnSubscriptionSelected">
+                                <MudSelectItem Value="SelectedSubscription"></MudSelectItem>
+                                @foreach (var subscription in SubscriptionDtos)
                                 {
-                                    if (package.Status != Enums.SubscriptionStatus.Active)
+                                    if (subscription.Status != Enums.SubscriptionStatus.Active)
                                         continue;
                                     if (CultureInfo.CurrentCulture.Name == "en")
                                     {
-                                        <MudSelectItem Value="package.Id.ToString()">@package.EnglishName</MudSelectItem>
+                                        <MudSelectItem Value="subscription.Id.ToString()">@subscription.EnglishName</MudSelectItem>
                                     }
                                     else
                                     {
-                                        <MudSelectItem Value="package.Id.ToString()">@package.ArabicName</MudSelectItem>
+                                        <MudSelectItem Value="subscription.Id.ToString()">@subscription.ArabicName</MudSelectItem>
 
                                     }
                                 }
                             </MudSelect>
                         </MudItem>
-                        @if (SelectedPackage is not null)
+                        @if (SelectedSubscription is not null)
                         {
 
                             <MudItem sm="4">
