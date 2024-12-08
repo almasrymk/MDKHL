@@ -38,6 +38,9 @@ using SmartParking.Entities.Customers;
 using SmartParking.Cutomers;
 using System;
 using SmartParking.Enums;
+using SmartParking.Lookups.CameraBrands;
+using SmartParking.Lookups.CameraModel;
+using SmartParking.Lookups.CameraMainType;
 
 namespace SmartParking;
 
@@ -107,7 +110,16 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 		CreateMap<CreateUpdateLicenceTypeDto, LicenceType>();
 
 		CreateMap<VehicleBrand, VehicleBrandDto>();
-		CreateMap<CreateUpdateVehicleBrandDto, VehicleBrand>();
+		CreateMap<CreateUpdateVehicleBrandDto, VehicleBrand>();		
+        // camera brand
+        CreateMap<SmartParking.Entities.Lookups.CameraBrand, CameraBrandDto>();
+		CreateMap<CreateUpdateCameraBrandDto, SmartParking.Entities.Lookups.CameraBrand>();        
+        // camera model
+        CreateMap<SmartParking.Entities.Lookups.CameraModel, CameraModelDto>();
+		CreateMap<CreateUpdateCameraModelDto, SmartParking.Entities.Lookups.CameraModel>();        
+        // camera main type
+        CreateMap<SmartParking.Entities.Lookups.CameraMainType, CameraMainTypeDto>();
+		CreateMap<CreateUpdateCameraMainTypeDto, SmartParking.Entities.Lookups.CameraMainType>();
 
 		CreateMap<VehicleModel, VehicleModelDto>()
              .ForMember(dto => dto.VehicleBrandEnglishName, opt => opt.MapFrom(entity => entity.VehiclesBrand.EnglishName))

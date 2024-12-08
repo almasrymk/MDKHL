@@ -11,9 +11,9 @@ namespace SmartParking.Cameras
     public class CreateUpdateCameraDto
     {
         public string Name { get; set; }
-        public CameraModel Model { get; set; }
-        public MainCameraType MainType { get; set; }
-        public CameraBrand BrandName { get; set; }
+        public int ModelId { get; set; }
+        public int MainTypeId { get; set; }
+        public int BrandNameId { get; set; }
         public string DeviceId { get; set; }
         public string CameraIP { get; set; }
         public string MacAddress { get; set; }

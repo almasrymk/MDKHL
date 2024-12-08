@@ -31,15 +31,15 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
             .IsInEnum();
 
 
-        RuleFor(x => x.BrandName)
-            .IsInEnum();
+        RuleFor(x => x.BrandNameId)
+            .NotEmpty();
 
 
-        RuleFor(x => x.Model)
-            .IsInEnum();
+        RuleFor(x => x.ModelId)
+            .NotEmpty();
 
-        RuleFor(x => x.MainType)
-            .IsInEnum();
+        RuleFor(x => x.MainTypeId)
+            .NotEmpty();
           
 
 

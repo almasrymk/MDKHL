@@ -223,12 +223,12 @@ public partial class Camera
 			Name = cameraDto.Name,
             DeviceId = cameraDto.DeviceId,
 			Status = cameraDto.Status,
-			BrandName = cameraDto.BrandName,
+			BrandNameId = cameraDto.Id,
 			CameraIP = cameraDto.CameraIP,
 			GarageId = cameraDto.GarageId,
 			MacAddress = cameraDto.MacAddress,
-			MainType = cameraDto.MainType,
-			Model = cameraDto.Model,
+			MainTypeId = cameraDto.MainType.Id,
+			ModelId = cameraDto.Model.Id,
 			TenantId = cameraDto.TenantId,
 			//Type = cameraDto.Type,
             CameraType=cameraDto.CameraType,
@@ -257,12 +257,12 @@ public partial class Camera
             Name = cameraDto.Name,
             DeviceId = cameraDto.DeviceId,
             Status = cameraDto.Status,
-            BrandName = cameraDto.BrandName,
+            BrandNameId = cameraDto.BrandName.Id,
             CameraIP = cameraDto.CameraIP,
             GarageId = cameraDto.GarageId,
             MacAddress = cameraDto.MacAddress,
-            MainType = cameraDto.MainType,
-            Model = cameraDto.Model,
+            MainTypeId = cameraDto.MainType.Id,
+            ModelId = cameraDto.Model.Id,
             TenantId = cameraDto.TenantId,
             //Type=cameraDto.Type,
            CameraType = cameraDto.CameraType
@@ -288,26 +288,11 @@ public partial class Camera
 
         var cameraDto = await CamerasAppService.GetAsync(id);
 
-		var createUpdateCamera = new CreateUpdateCameraDto
-		{
-			Name = cameraDto.Name,
-            DeviceId = cameraDto.DeviceId,
-			Status = cameraDto.Status,
-			BrandName = cameraDto.BrandName,
-			CameraIP = cameraDto.CameraIP,
-			GarageId = cameraDto.GarageId,
-			MacAddress = cameraDto.MacAddress,
-			MainType = cameraDto.MainType,
-			Model = cameraDto.Model,
-			TenantId = cameraDto.TenantId,
-			CameraType = cameraDto.CameraType,
-
-
-		};
+		
 
 		var parameters = new DialogParameters
         {
-            ["Camera"] = createUpdateCamera,
+            ["Camera"] = cameraDto,
 			["UpdatedId"] = id
 
 		};

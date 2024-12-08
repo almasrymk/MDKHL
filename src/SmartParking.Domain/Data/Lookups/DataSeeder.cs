@@ -29,6 +29,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
     private readonly IRepository<Camera, int> _cameraRepostory;
     private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly IRepository<SubscriptionType, int> _subscriptionTypeRepository;
+    private readonly IRepository<CameraBrand, int> _cameraBrandRepository;
+    private readonly IRepository<CameraModel, int> _cameraModelRepository;
+    private readonly IRepository<CameraMainType, int> _cameraMainTypeRepository;
 
     public DataSeeder(
         IRepository<Country, int> countryRepository,
@@ -41,7 +44,10 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
         IRepository<Garage, int> garageRepostory,
         IRepository<Camera, int> cameraRepostory,
         IRepository<Subscription, int> subscriptionRepository,
-        IRepository<SubscriptionType, int> subscriptionTypeRepository)
+        IRepository<SubscriptionType, int> subscriptionTypeRepository,
+        IRepository<CameraBrand,int> cameraBrandRepository,
+        IRepository<CameraModel,int> cameraModelRepository,
+        IRepository<CameraMainType,int> cameraMainTypeRepository)
 
     {
         _countryRepository = countryRepository;
@@ -55,6 +61,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
         _cameraRepostory = cameraRepostory;
         _subscriptionRepository = subscriptionRepository;
         _subscriptionTypeRepository = subscriptionTypeRepository;
+        this._cameraBrandRepository = cameraBrandRepository;
+        this._cameraModelRepository = cameraModelRepository;
+        this._cameraMainTypeRepository = cameraMainTypeRepository;
     }
 
     public async Task SeedAsync(DataSeedContext context)
@@ -214,15 +223,35 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
 
 
                 var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
+                var cameraBrand = new CameraBrand { ArabicName ="تست" ,EnglishName = "test"};
+                await _cameraBrandRepository.InsertAsync(cameraBrand,autoSave:true);
+                var cameraBrandTest = await _cameraBrandRepository.FirstOrDefaultAsync(_ => _.EnglishName == "test");
 
+                var cameraModel = new CameraModel
+                {
+                    EnglishName = "test",
+                    ArabicName = "تست",
+                    CameraBrand = cameraBrandTest,
+                };
+                await _cameraModelRepository.InsertAsync(cameraModel,autoSave:true);
+                var cameraModelTest = await _cameraModelRepository.FirstOrDefaultAsync(_ => _.EnglishName == "test");                
+                
+                var cameraMainType = new CameraMainType
+                {
+                    EnglishName = "test",
+                    ArabicName = "تست",
+                    CameraBrand = cameraBrandTest,
+                };
+                await _cameraMainTypeRepository.InsertAsync(cameraMainType, autoSave:true);
+                var cameraMainTypeTest = await _cameraMainTypeRepository.FirstOrDefaultAsync(_ => _.EnglishName == "test");
                 var cameras = new List<Camera>{
                 new Camera
                 {
                     GarageId = garageTest.Id,    // Link camera to the found Garage
                     Name = "Entry",         // Provide valid camera name
-                    Model = CameraModel.PanasonicLumix,           // Add the model of the camera
-                    MainType = MainCameraType.Action,         // Add the main type
-                    BrandName = CameraBrand.Panasonic,       // Add the brand name
+                    Model = cameraModelTest,           // Add the model of the camera
+                    MainType = cameraMainTypeTest,         // Add the main type
+                    BrandName = cameraBrandTest,       // Add the brand name
                     DeviceId = "233f1b26-9350-eb14-03e7-78934a049350",             // Add a unique code
                     CameraIP = "192.168.1.10",   // Add camera IP address
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
@@ -236,9 +265,9 @@ internal class DataSeeder : IDataSeedContributor, ITransientDependency
                  {
                      GarageId = garageTest.Id,    // Link camera to the found Garage
                      Name = "Exit",         // Provide valid camera name
-                     Model = CameraModel.PanasonicLumix,           // Add the model of the camera
-                     MainType = MainCameraType.Action,         // Add the main type
-                     BrandName = CameraBrand.Panasonic,
+                     Model = cameraModelTest,           // Add the model of the camera
+                    MainType = cameraMainTypeTest,         // Add the main type
+                    BrandName = cameraBrandTest,       // Add the brand name
                      DeviceId = "df9a5b33-adf7-f454-49dd-d9624605adf7",             // Add a unique code
                      CameraIP = "192.168.1.11",   // Add camera IP address
                      MacAddress = "00:11:22:33:44:55", // Add MAC address

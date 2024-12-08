@@ -58,11 +58,11 @@ public partial class OrganizationEdit
     public string StreetName { get; set; }
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
-    public int PackageId { get; set; }
+    public int SubscriptionId { get; set; }
     public string District { get; set; }
     public string OrganizationPicture { get; set; }
     public string Photo { get; set; }
-    private string PackageSelectValue { get; set; }
+    private string SubscriptionSelectValue { get; set; }
     private Guid orgTenant { get; set; }
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
@@ -70,7 +70,7 @@ public partial class OrganizationEdit
     public int NumberOfCustomers { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public int Parkingslot { get; set; }
-    private SubscriptionDto SelectedPackage = new SubscriptionDto();
+    private SubscriptionDto SelectedSubscription = new SubscriptionDto();
     public string ViewSubscriptionArabicName { get; set; }
     public  int FreeMinutes { get; set; }
     public  int Graceperiod { get; set; }
@@ -82,23 +82,24 @@ public partial class OrganizationEdit
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
-    IList<SubscriptionDto> packages = new List<SubscriptionDto>();
+    IList<SubscriptionDto> SubscriptionDtos = new List<SubscriptionDto>();
 
 
-    private async Task OnPackageSelected(string value)
+    private async Task OnSubscriptionSelected(string value)
     {
-        PackageSelectValue = value;
+        SubscriptionSelectValue = value;
 
-        SelectedPackage = packages.FirstOrDefault(p => p.Id.ToString() == value);
+        SubscriptionId = int.Parse( value);
+        SelectedSubscription = SubscriptionDtos.FirstOrDefault(p => p.Id.ToString() == value);
 
-        if (SelectedPackage != null)
+        if (SelectedSubscription != null)
         {
-            NumbersOfGarages = SelectedPackage.NumbersOfGarages;
-            NumberOfCameras = SelectedPackage.NumberOfCameras;
-            NumberOfUsers = SelectedPackage.NumberOfUsers;
-            NumberOfCustomers = SelectedPackage.NumberOfCustomers;
-            SubscriptionSlotNumber = SelectedPackage.ParkingSlot;
-            Parkingslot = SelectedPackage.ParkingSlot;
+            NumbersOfGarages = SelectedSubscription.NumbersOfGarages;
+            NumberOfCameras = SelectedSubscription.NumberOfCameras;
+            NumberOfUsers = SelectedSubscription.NumberOfUsers;
+            NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
+            SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
+            Parkingslot = SelectedSubscription.ParkingSlot;
         }
         else
         {
@@ -170,6 +171,7 @@ public partial class OrganizationEdit
             Address = BuildingNumber + StreetName + SecondaryNumber + District + PostalCode + CityNameEdit ,
             FreeMinutes= FreeMinutes,
             Graceperiod= Graceperiod,
+            SubscriptionId= SubscriptionId,
         };
 
 
@@ -179,9 +181,9 @@ public partial class OrganizationEdit
 
 
             var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
-            if (PackageId != int.Parse(PackageSelectValue))
+            if (SubscriptionId != int.Parse(SubscriptionSelectValue))
             {
-                await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(PackageSelectValue));
+                await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(SubscriptionSelectValue));
 
             }
             Navigation.NavigateTo("/organizations");
@@ -229,7 +231,7 @@ public partial class OrganizationEdit
 
         var id = int.Parse(Id);
         var organization = await OrganizationAppService.GetAsync(id);
-        SelectedPackage = await SubscriptionAppService.GetAsync(organization.SubscriptionId);
+        SelectedSubscription = await SubscriptionAppService.GetAsync(organization.SubscriptionId);
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
         NumOfCameras = organization.NumOfCameras;
@@ -272,17 +274,17 @@ public partial class OrganizationEdit
         District = organization.District;
         IsClose = organization.IsClose;
         OrganizationPicture = organization.OrganizationPicture;
-        PackageId = organization.PackageId;
+        SubscriptionId = organization.SubscriptionId;
         orgTenant = organization.TenantId;
         FreeMinutes = organization.FreeMinutes;
-        PackageSelectValue=organization.SubscriptionId.ToString();
+        SubscriptionSelectValue = organization.SubscriptionId.ToString();
         ViewSubscriptionArabicName = organization.SubscriptionArabicName;
-        NumbersOfGarages = SelectedPackage.NumbersOfGarages;
-        NumberOfCameras = SelectedPackage.NumberOfCameras;
-        NumberOfUsers = SelectedPackage.NumberOfUsers;
-        NumberOfCustomers = SelectedPackage.NumberOfCustomers;
-        SubscriptionSlotNumber = SelectedPackage.ParkingSlot;
-        Parkingslot = SelectedPackage.ParkingSlot;
+        NumbersOfGarages = SelectedSubscription.NumbersOfGarages;
+        NumberOfCameras = SelectedSubscription.NumberOfCameras;
+        NumberOfUsers = SelectedSubscription.NumberOfUsers;
+        NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
+        SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
+        Parkingslot = SelectedSubscription.ParkingSlot;
         Graceperiod = Graceperiod;
         code = organization.Code;
 
@@ -326,7 +328,7 @@ public partial class OrganizationEdit
         await GetStates();
 
         await GetCities();
-        packages = await SubscriptionAppService.GetAllAsync();
+        SubscriptionDtos = await SubscriptionAppService.GetAllAsync();
 
     }
     private async Task ViewGarages()

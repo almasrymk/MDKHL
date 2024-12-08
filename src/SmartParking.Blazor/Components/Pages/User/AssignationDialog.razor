@@ -48,33 +48,6 @@
 
 						</MudItem>
 					}
-					@if ((userRole != RolesType.Mdkhl.ToString() || userRole != RolesType.MdkhlEmployee.ToString())&&userRole!=null)
-					{
-
-						<MudItem sm="12" md="12">
-							<MudSelect @bind-Value="OrganizationId"
-									   Label="@L["OrganizationName"]"
-									   Placeholder="@L[ "Choose"]"
-									   HelperText=@L["Helper Text"]
-									   Required>
-
-								@foreach (var organization in Organizations)
-								{
-									if (organization.Status != Status.Active)
-										continue;
-
-
-									<MudSelectItem T="int" Value="@organization.Id">
-
-										@organization.EnglishName
-									</MudSelectItem>
-								}
-							</MudSelect>
-
-						</MudItem>
-					}
-
-
 
 
 				</MudGrid>
@@ -104,20 +77,7 @@
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] 
 	public Guid Id { get; set; }
-	private int OrganizationId { get; set; }
 	private string userRole { get; set; }
-	private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-
-
-	protected async override Task OnInitializedAsync()
-	{
-		if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
-		{
-
-			Organizations = await OrganizationAppService.GetAllMobileAsync();
-
-		}
-	}
 
 
 	private async Task SubmitEdit()

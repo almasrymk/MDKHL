@@ -3,6 +3,7 @@
 @using SmartParking.Enums
 @using SmartParking.Garages
 @using SmartParking.Localization
+@using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
@@ -37,23 +38,44 @@
 									  Label="@L["Code"]" />
 					</MudItem>
 
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Model.EnglishName"
+										  For="@(() => Camera.Model.EnglishName)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["Model"]" />
+						</MudItem>
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.BrandName.EnglishName"
+										  For="@(() => Camera.BrandName.EnglishName)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["BrandName"]" />
+						</MudItem>
+					}
+					else
+					{
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Model.ArabicName"
+										  For="@(() => Camera.Model.ArabicName)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["Model"]" />
+						</MudItem>
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.BrandName.ArabicName"
+										  For="@(() => Camera.BrandName.ArabicName)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["BrandName"]" />
+						</MudItem>
+					}
 
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Model"
-									  For="@(() => Camera.Model)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["Model"]" />
-					</MudItem>
 
 					
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.BrandName"
-									  For="@(() => Camera.BrandName)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["BrandName"]" />
-					</MudItem>
+					
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.CameraIP"
 									  For="@(() => Camera.CameraIP)"
@@ -122,7 +144,7 @@
 @code {
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
-	[Parameter] public CreateUpdateCameraDto Camera { get; set; }
+	[Parameter] public CameraDto Camera { get; set; }
 	[Parameter]
 	public int UpdatedId { get; set; }
 	public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
