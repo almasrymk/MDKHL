@@ -184,46 +184,56 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            // Step 1: Validate the user's credentials
-            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+            try
+            {
+                // Step 1: Validate the user's credentials
+                var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
+                if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+                {
+                    return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                    {
+                        ErrorCode = "403",
+                        ErrorMessage = "Invalid credentials."
+                    });
+
+                }
+                if (user.IsActive == false)
+                {
+                    return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                    {
+                        ErrorCode = "400",
+                        ErrorMessage = "Account is In Active"
+                    });
+                }
+                if (!user.PhoneNumberConfirmed)
+                {
+                    return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                    {
+                        ErrorCode = "400",
+                        ErrorMessage = "Verfiy phone number"
+                    });
+                }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+
+                var roles = await _userManager.GetRolesAsync(user);
+                return Result<LoginResultDto>.Success(new LoginResultDto
+                {
+                    AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
+                    Role = roles.FirstOrDefault(),
+                    Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
+                    TenantId = CurrentTenant.Id.ToString()
+                });
+            }catch(Exception ex)
             {
                 return Result<LoginResultDto>.Invalid(new Results.ValidationError
                 {
                     ErrorCode = "403",
-                    ErrorMessage = "Invalid credentials."
-                });
-
-            }
-            if (user.IsActive == false)
-            {
-                return Result<LoginResultDto>.Invalid(new Results.ValidationError
-                {
-                    ErrorCode = "400",
-                    ErrorMessage = "Account is In Active"
+                    ErrorMessage = ex.Message
                 });
             }
-            if(!user.PhoneNumberConfirmed)
-            {
-                return Result<LoginResultDto>.Invalid(new Results.ValidationError
-                {
-                    ErrorCode = "400",
-                    ErrorMessage = "Verfiy phone number"
-                });
             }
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-
-            var roles = await _userManager.GetRolesAsync(user);
-            return Result<LoginResultDto>.Success(new LoginResultDto
-            {
-                AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
-                Role = roles.FirstOrDefault(),
-                Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
-                TenantId = CurrentTenant.Id.ToString()
-            });
-        }
         
 
     }
