@@ -1,16 +1,22 @@
 ﻿@page "/edit-profile"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Localization
+@using System.IO
 @using Volo.Abp.Account
+@using Volo.Abp.Users
 @layout Shared.ProfileLayout
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IUsersAppService UsersAppService
+@inject ICurrentUser CurrentUser
+@inject NavigationManager Navigation
 
 <PageTitle>@L["Edit Profile"]</PageTitle>
 <div class="w-100">
     <MudPaper Class="p-5 d-flex flex-column align-items-center justify-content-center w-100 main-layout-paper" Style="background-color: #F2F2F2;">
         <MudForm Class="d-flex flex-column gap-4" @ref="form" OnValidSubmit="SaveChanges">
             <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
-                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" />
+                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" Style="border-radius:50% ; width:300px;height:280px" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
                     <ActivatorContent>
                         <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
@@ -32,12 +38,13 @@
 
 @code {
     private MudForm form;
-    private string ProfilePictureUrl = "images/profile-avatar.png"; // Default profile picture
+    private string ProfilePictureUrl =  ""; // Default profile picture
     private UpdateProfileDto Profile = new UpdateProfileDto(); // Profile object for binding
 
     // Inject the profile service and snackbar
     [Inject] private IProfileAppService ProfileAppService { get; set; }
     [Inject] private ISnackbar Snackbar { get; set; }
+    private string ImageBase64 { get; set; }
 
     IList<IBrowserFile> _files = new List<IBrowserFile>();
 
@@ -51,14 +58,17 @@
     {
         try
         {
-            var profile = await ProfileAppService.GetAsync();
+            var profile = await UsersAppService.GetAsync(CurrentUser.Id);
+
             Profile.Name = profile.Name;
             Profile.Email = profile.Email;
             Profile.PhoneNumber = profile.PhoneNumber;
             Profile.UserName = profile.UserName;
-            
+
+            ProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "images/profile-avatar.png" : profile.Image;
+
         }
-        
+
         catch (Exception ex)
         {
             Snackbar.Add($"Error loading profile: {ex.Message}", Severity.Error);
@@ -69,12 +79,15 @@
     {
         try
         {
-            
+
             await form.Validate();
 
             if (form.IsValid)
             {
                 await ProfileAppService.UpdateAsync(Profile);
+
+                await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
+                Navigation.Refresh(true);
                 Snackbar.Add("Profile updated successfully!", Severity.Success);
             }
             else
@@ -88,9 +101,13 @@
         }
     }
 
-    private void UploadFiles(IBrowserFile file)
+    private async Task UploadFiles(IBrowserFile file)
     {
-        _files.Add(file);
-        // TODO: upload the files to the server
+        using var stream = file.OpenReadStream(2 * 1024 * 1024); 
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        byte[] imageBytes = memoryStream.ToArray();
+         ImageBase64 = Convert.ToBase64String(imageBytes);
+
     }
 }

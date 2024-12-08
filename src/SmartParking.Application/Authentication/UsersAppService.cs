@@ -15,6 +15,10 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
+using QRCoder;
+using SmartParking.Entities.Invoices;
+using SmartParking.Invoices;
+using System.IO;
 
 namespace SmartParking.Authentication;
 
@@ -251,7 +255,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    public async Task<UserDto> GetAsync(Guid id)
+    public async Task<UserDto> GetAsync(Guid? id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -261,7 +265,28 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 throw new Exception(message: "Not found user");
             }
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            userDto.Image = user.GetProperty<string>("Image");
             return userDto;
+        }
+    }
+
+    public async Task<UserDto> UpdateImageAsync(Guid? id, string Image)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var base64Data = Image.Substring(Image.IndexOf(",") + 1);
+
+            byte[] imageBytes = Convert.FromBase64String(Image);
+            string fileName = $"{Guid.NewGuid().ToString()}{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.{"png"}";
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images/users", fileName);
+            System.IO.File.WriteAllBytes(filePath, imageBytes);
+            var user = await _userRepository.GetAsync(_ => _.Id == id);
+            user.SetProperty("Image", $"images/users/{fileName}");
+            var createdUser = await _userManager.UpdateAsync(user);
+            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            
+            return userDto;
+            
         }
     }
 }

@@ -2,6 +2,7 @@
 @using Abp.Web.Http
 @using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
+@using SmartParking.Authentication
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
 @using System.Globalization
@@ -95,16 +96,17 @@
     public string Picture { get; set; } 
     public string CurrentURI { get; set; } 
 
-
+    @inject IUsersAppService UsersAppService
     private string UserName { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
         UserName = CurrentUser.Name;
+        var user = await UsersAppService.GetAsync(CurrentUser.Id);
         if (currenttenant.Id == null)
         {
             //UserName += " MDKHAL";
-            Picture = "images/MDHKL_04.png";
+            Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
         }
         else
         {
