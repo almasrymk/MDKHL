@@ -72,6 +72,15 @@ public static class SmartParkingEfCoreEntityExtensionMappings
                    propertyBuilder.HasDefaultValue(null);
                }
                );
+
+            ObjectExtensionManager.Instance
+           .MapEfCoreProperty<IdentityUser, string>(
+               "Image",
+               (entityBuilder, propertyBuilder) =>
+               {
+                   propertyBuilder.HasDefaultValue(null);
+               }
+               );
         });
     }
 }

@@ -69,7 +69,8 @@ public interface IUsersAppService:  IApplicationService
     /// </returns>
     Task<UserDto> UpdateAsync(Guid id, UpdateUserDto input);
 
-    Task<UserDto> GetAsync(Guid id);
+    Task<UserDto> GetAsync(Guid? id);
 
     Task<UserDto> AssignRoleToUser(Guid userId,string roleName);
+    Task<UserDto> UpdateImageAsync(Guid? id, string Image);
 }

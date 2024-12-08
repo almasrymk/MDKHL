@@ -143,5 +143,24 @@ public static class SmartParkingModuleExtensionConfigurator
                           
                        });
                    });
+        
+        ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<string>( //property type: string
+                               "Image", //property name
+                               property =>
+                               {
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+                                   //...other configurations for this property
+                               }
+                           );
+
+                          
+                       });
+                   });
     }
 }
