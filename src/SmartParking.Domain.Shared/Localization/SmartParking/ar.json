@@ -497,7 +497,13 @@
     "CustomerInvoice": "المطابقة - العميل",
     "VehichleWasUpdatedSuccessfully": "تم تعديل المركبة بنجاح",
     "EditVehicle": "تعديل مركبة العميل",
-    "Details Of Customer" : "تفاصيل العميل"
+    "Details Of Customer": "تفاصيل العميل",
+    "CameraBrands": "ماركات الكاميرا",
+    "BrandDeletedSuccessfully": "حذف الماركة بنجاح",
+    "CameraBrandCreatedSuccessfully": "اضافة ماركة الكاميرا بنجاح",
+    "Edit CameraBrand": "تعديل ماركة الكاميرا",
+    "CameraBrandUpdatedSuccessfully": "تعديل ماركة الكاميرا بنجاح",
+    "View CameraBrand": "تفاصيل ماركة الكاميرا"
 
   }
 }

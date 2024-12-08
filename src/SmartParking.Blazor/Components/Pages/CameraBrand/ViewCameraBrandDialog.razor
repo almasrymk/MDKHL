@@ -1,5 +1,81 @@
-﻿<h3>ViewCameraBrand</h3>
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.CameraBrands
+@inject ICameraBrandAppService CameraBrandsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+<PageTitle>@L["View CameraBrand"]</PageTitle>
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@CameraBrand.EnglishName</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+
+
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="CameraBrand.ArabicName"
+									  For="@(() => CameraBrand.ArabicName)"
+									  Immediate="true"
+									  Disabled=true
+									  Placeholder="@L["Type Here"]"
+									  Label="@L["ArabicName"]" />
+					</MudItem>
+
+					<MudItem sm="4">
+						<MudTextField @bind-Value="CameraBrand.EnglishName"
+									  For="@(() => CameraBrand.EnglishName)"
+									  Immediate="true"
+									  Disabled=true
+									  Placeholder="@L["Type Here"]"
+									  Label="@L["EnglishName"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		<DialogActions>
+			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
 
 @code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter] public CameraBrandDto CameraBrand { get; set; }
+
+	bool _clearable;
+	private MudForm form;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+
+
+	private void OnCloseViewOnly()
+	{
+		MudDialogAdd.Cancel();
+
+	}
 
 }

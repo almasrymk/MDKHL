@@ -1,1 +1,103 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.CameraBrands
+@using SmartParking.LookupsAppServices
+@inject ICameraBrandAppService CameraBrandsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+<PageTitle>@L["Edit CameraBrand"]</PageTitle>
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Edit"] @CameraBrand.EnglishName</MudText>
+		</TitleContent>
+		<DialogContent>
+
+
+
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="CameraBrand.ArabicName"
+									  For="@(() => CameraBrand.ArabicName)"
+									  Immediate="true"
+									  Required="true"
+									  Label="@L["ArabicName"]" />
+					</MudItem>
+
+					<MudItem sm="4">
+						<MudTextField @bind-Value="CameraBrand.EnglishName"
+									  For="@(() => CameraBrand.EnglishName)"
+									  Immediate="true"
+									  Required="true"
+									  Label="@L["EnglishName"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
+		</DialogActions>
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter]
+	public int Id { get; set; }
+	[Parameter] public CreateUpdateCameraBrandDto CameraBrand { get; set; }
+
+	bool _clearable;
+	private MudForm form;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await base.OnInitializedAsync();
+	}
+
+	private async Task SubmitEdit()
+	{
+		var successedMessage = L["CameraBrandUpdatedSuccessfully"];
+
+		try
+		{
+
+			await CameraBrandsAppService.UpdateAsync(Id, CameraBrand);
+			Snackbar.Add(successedMessage, Severity.Success);
+			MudDialogAdd.Close(DialogResult.Ok(true));
+			await Task.Delay(1000);
+			Navigation.NavigateTo("/cameraBrands", true);
+
+		}
+		catch (Exception e)
+		{
+			Snackbar.Add(e.Message, Severity.Error);
+		}
+	}
+
+	private async Task CancelEdit()
+	{
+		MudDialogAdd.Cancel();
+
+
+	}
+
+
+}

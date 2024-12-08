@@ -2,11 +2,9 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Cities;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
 using SmartParking.Lookups;
-using static MudBlazor.CategoryTypes;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -35,16 +33,10 @@ partial class CameraBrand
     {
         _localizer = localizer;
     }
-    /// <summary>
-    /// filter for cities on the server side using the city columns.
-    /// </summary>
-    /// <param name="columnFilter">The name of column to filter for among city.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
 
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -54,24 +46,18 @@ partial class CameraBrand
             filters = pageInfo.Filters
         };
         // Call the service to perform the search based on the input parameters
-        var citiesDto = await AppService.Filter(input);
+        var brandsDto = await AppService.Filter(input);
 
         // Calculate the total number of pages required to display all results
-        TotalItem = (int)citiesDto.TotalCount;
-        CreateTable(citiesDto);
+        TotalItem = (int)brandsDto.TotalCount;
+        CreateTable(brandsDto);
 
 
     }
 
-    /// <summary>
-    /// Searches for hotels on the server side using the hotel code search term.
-    /// </summary>
-    /// <param name="searchTerm">The term to search for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
+
 
         // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
@@ -86,24 +72,19 @@ partial class CameraBrand
         };
 
         // Call the service to perform the search based on the input parameters
-        var citiesDto = await AppService.Search(input);
+        var brandsDto = await AppService.Search(input);
 
         // Calculate the total number of pages required to display all results
-        TotalItem = (int)citiesDto.TotalCount;
-        CreateTable(citiesDto);
+        TotalItem = (int)brandsDto.TotalCount;
+        CreateTable(brandsDto);
     }
 
-    /// <summary>
-    /// Fetches the table data for the specified page and updates the table with the retrieved data.
-    /// </summary>
-    /// <param name="page">The page number for which to fetch the data.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -112,7 +93,7 @@ partial class CameraBrand
             Sorting = pageInfo.SortColumn
         };
 
-        // Retrieve the list of cities from the server
+        // Retrieve the list of brands from the server
         var camerabrandsDto = await AppService.GetListAsync(input);
         TotalItem = (int)camerabrandsDto.TotalCount;
         CreateTable(camerabrandsDto);
@@ -129,8 +110,8 @@ partial class CameraBrand
         };
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "City Arabic Name", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "City English Name", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "Brand Arabic Name", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "Brand English Name", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         foreach (var item in camerabrands.Items)
@@ -145,11 +126,11 @@ partial class CameraBrand
         itemData = tableData;
     }
 
-    private Task CreateCameraBrand()
+    private Task<IDialogReference> CreateCameraBrand()
     {
 
 
-        return Dialog.ShowAsync<>("Simple Dialog", options);
+        return Dialog.ShowAsync<AddCameraBrandDialog>("Simple Dialog", options);
 
 
     }
@@ -157,25 +138,24 @@ partial class CameraBrand
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var cityDto = await AppService.GetAsync(id);
+        var brandDto = await AppService.GetAsync(id);
 
-        var createUpdateCityDto = new CreateUpdateCityDto
+        var createUpdateBrandDto = new CreateUpdateCameraBrandDto
         {
-            ArabicName = cityDto.ArabicName,
-            EnglishName = cityDto.EnglishName,
-            StateId = cityDto.StateId,
+            ArabicName = brandDto.ArabicName,
+            EnglishName = brandDto.EnglishName
         };
 
 
 
         var parameters = new DialogParameters
         {
-            ["City"] = cityDto,
+            ["CameraBrand"] = createUpdateBrandDto,
             ["Id"] = id
         };
 
 
-        return await Dialog.ShowAsync<EditCityDialog>("Edit City", parameters);
+        return await Dialog.ShowAsync<UpdateCameraBrandDialog>("Edit Brand", parameters);
 
     }
 
@@ -184,21 +164,21 @@ partial class CameraBrand
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var cityDto = await AppService.GetAsync(id);
+        var brandDto = await AppService.GetAsync(id);
 
 
         var parameters = new DialogParameters
         {
-            ["City"] = cityDto,
+            ["CameraBrand"] = brandDto,
         };
 
 
-        return await Dialog.ShowAsync<DetailsCityDialog>("View City", parameters);
+        return await Dialog.ShowAsync<ViewCameraBrandDialog>("View Brand", parameters);
     }
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["CityDeletedSuccessfully"];
+        var successMessage = _localizer["BrandDeletedSuccessfully"];
 
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
@@ -209,7 +189,7 @@ partial class CameraBrand
 
         };
 
-        var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteCity", parameters);
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteBrand", parameters);
         var result = await dialog.Result;
         try
         {
@@ -219,7 +199,7 @@ partial class CameraBrand
                 ShowSnackbar(successMessage, Severity.Error);
                 await Task.Delay(1000);
 
-                Navigation.NavigateTo("/cities", forceLoad: true);
+                Navigation.NavigateTo("/Camerabrands", forceLoad: true);
 
             }
 
@@ -228,16 +208,16 @@ partial class CameraBrand
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete City : {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete camera Brand : {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete camera Brand: {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"Failed to delete camera Brand: {ex.Message} + ", Severity.Error);
         }
 
 

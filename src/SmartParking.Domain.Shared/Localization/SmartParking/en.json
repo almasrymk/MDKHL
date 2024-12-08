@@ -474,6 +474,12 @@
     "ExpiryDate": "Expiry Date",
     "CustomerInvoice": "Customer - Mapping",
     "VehichleWasUpdatedSuccessfully": "Vehichle Was Updated Successfully",
-    "EditVehicle": "Edit Vehicle for Customer"
+    "EditVehicle": "Edit Vehicle for Customer",
+    "CameraBrands": "Camera Brands",
+    "BrandDeletedSuccessfully": "Brand Deleted Successfully",
+    "CameraBrandCreatedSuccessfully": "Camera Brand Created Successfully",
+    "Edit CameraBrand": "Edit Camera Brand",
+    "CameraBrandUpdatedSuccessfully": "Camera Brand Updated Successfully",
+    "View CameraBrand": "View Camera Brand"
   } 
 }

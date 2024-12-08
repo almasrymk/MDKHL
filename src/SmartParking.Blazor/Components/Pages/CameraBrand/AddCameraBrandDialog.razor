@@ -1,1 +1,105 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.CameraBrands
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["New CameraBrand"]</MudText>
+        </TitleContent>
+        <DialogContent>
+
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+
+
+
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="cameraBrandDro.ArabicName"
+                                      For="@(() => cameraBrandDro.ArabicName)"
+                                      Immediate="true"
+                                      Required="true"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["ArabicName"]" />
+                    </MudItem>
+
+                    <MudItem sm="4">
+                        <MudTextField @bind-Value="cameraBrandDro.EnglishName"
+                                      For="@(() => cameraBrandDro.EnglishName)"
+                                      Immediate="true"
+                                      Required="true"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["EnglishName"]" />
+                    </MudItem>
+
+
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+        </DialogActions>
+
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] ICameraBrandAppService CameraBrandsAppService { get; set; } // Assuming you have a service to handle the camera creation
+
+    private MudForm form;
+    private CreateUpdateCameraBrandDto cameraBrandDro = new CreateUpdateCameraBrandDto();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    bool _clearable;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnInitializedAsync();
+    }
+    private async Task Submit()
+    {
+        var successedMessage = L["CameraBrandCreatedSuccessfully"];
+        var errorMessage = L["FillRequriedItems"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        if (form.IsValid)
+        {
+            // Call your service to create the camera
+            try
+            {
+                await CameraBrandsAppService.CreateAsync(cameraBrandDro);
+                Snackbar.Add(successedMessage, Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                Navigation.NavigateTo("/Camerabrands", true);
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add(errorMessage, Severity.Error);
+                return;
+            }
+
+
+        }
+        else
+        {
+            Snackbar.Add(errorMessage, Severity.Error);
+        }
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

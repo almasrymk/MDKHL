@@ -14,9 +14,9 @@ namespace SmartParking.Entities.Cameras;
 public class Camera : FullAuditedEntity<int>, IMultiTenant, IBseEntity
 {
     public string Name { get; set; }
-    public SmartParking.Entities.Lookups.CameraModel Model { get; set; }
-    public SmartParking.Entities.Lookups.CameraMainType MainType { get; set; }
-    public SmartParking.Entities.Lookups.CameraBrand BrandName { get; set; }
+    public virtual SmartParking.Entities.Lookups.CameraModel Model { get; set; }
+    public virtual SmartParking.Entities.Lookups.CameraMainType MainType { get; set; }
+    public virtual SmartParking.Entities.Lookups.CameraBrand BrandName { get; set; }
     public string DeviceId { get; set; }
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }

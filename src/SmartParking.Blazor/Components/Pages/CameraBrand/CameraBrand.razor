@@ -7,3 +7,9 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@page "/Camerabrands"
+
+<PageTitle>@L["CameraBrands"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["CameraBrands"]</MudText>
+
+<SPDataGrid PageName=@L["CameraBrands"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd=" CreateCameraBrand" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
