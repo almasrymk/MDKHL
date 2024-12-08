@@ -61,42 +61,45 @@ public class OtpAppService : ApplicationService, IOtpAppService
     /// <inheritdoc/>
     public async Task<Result<string>> GenerateOtpAsync(string phoneNumber)
     {
-        try
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            if (phoneNumber is null)
+            try
+            {
+                if (phoneNumber is null)
+                {
+                    return Result.Invalid(new Results.ValidationError
+                    {
+                        ErrorMessage = "Phone Number is not valid"
+                    });
+                }
+                var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+                if (user is null)
+                {
+                    return Result.Invalid(new Results.ValidationError
+                    {
+                        ErrorMessage = "user isnot Found"
+                    });
+                }
+
+                var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
+
+                user?.SetProperty("OtpCode", otp);
+
+                user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
+
+                await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
+                // Update the user with OTP in the database
+                await _userRepository.UpdateAsync(user);
+
+                return Result.Success(" رمز التحقق لدخول نظام مدخل هو" + otp);
+            }
+            catch (Exception ex)
             {
                 return Result.Invalid(new Results.ValidationError
                 {
-                    ErrorMessage = "Phone Number is not valid"
+                    ErrorMessage = ex.Message
                 });
             }
-            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-            if (user is null)
-            {
-                return Result.Invalid(new Results.ValidationError
-                {
-                    ErrorMessage = "user isnot Found"
-                });
-            }
-
-            var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
-
-            user?.SetProperty("OtpCode", otp);
-
-            user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
-
-            await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
-            // Update the user with OTP in the database
-            await _userRepository.UpdateAsync(user);
-
-            return Result.Success(" رمز التحقق لدخول نظام مدخل هو" + otp);
-        }
-        catch (Exception ex)
-        {
-            return Result.Invalid(new Results.ValidationError
-            {
-                ErrorMessage = ex.Message
-            });
         }
 
     }
