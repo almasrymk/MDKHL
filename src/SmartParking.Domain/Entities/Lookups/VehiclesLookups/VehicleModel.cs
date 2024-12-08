@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Entities.Lookups.VehiclesLookups
+namespace SmartParking.Entities.Lookups.VehiclesLookups;
+
+public class VehicleModel:BaseEntity
 {
-	public class VehicleModel:BaseEntity
-	{
-		public int VehiclesBrandId { get; set; }
-		public virtual VehicleBrand VehiclesBrand { get; set; }
-	}
+	public int VehiclesBrandId { get; set; }
+	public virtual VehicleBrand VehiclesBrand { get; set; }
 }

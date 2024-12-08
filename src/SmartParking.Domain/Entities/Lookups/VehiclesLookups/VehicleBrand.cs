@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Entities.Lookups.VehiclesLookups
+namespace SmartParking.Entities.Lookups.VehiclesLookups;
+
+public class VehicleBrand:BaseEntity
 {
-	public class VehicleBrand:BaseEntity
-	{
-		public virtual ICollection<VehicleModel> Models { get; set; }
-	}
+	public virtual ICollection<VehicleModel> Models { get; set; }
 }

@@ -97,6 +97,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     public DbSet<Payment> Payments { get; set; }
 
+    public DbSet<CameraModel> CameraModels { get; set; }
+    public DbSet<CameraBrand> CameraBrands { get; set; }
+    public DbSet<CameraMainType> CameraMainTypes { get; set; }
+
 
     #endregion
 
