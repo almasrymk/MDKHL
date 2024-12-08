@@ -5,6 +5,9 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using System.Security.Authentication
+@using SmartParking.Lookups.CameraBrands
+@using SmartParking.Lookups.CameraMainType
+@using SmartParking.Lookups.CameraModel
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.Validation
@@ -42,50 +45,74 @@
 									  Label="@L["Code"]" />
 					</MudItem>
 
-					<MudItem sm="4">
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@Camera.BrandNameId"
+								   Variant="Variant.Text"
+								   Label="@L["CamerBrandName"]"
+								   HelperText=@L["Helper Text"]
+								   Placeholder=@L["Choose"]
+								   Required="true"
+								   Clearable="_clearable">
+							@foreach (var vehicleBrand in CameraBrands)
+							{
+								@if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
+								}
+								else
+								{
+									<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.ArabicName</MudSelectItem>
+								}
 
+							}
+						</MudSelect>
+					</MudItem>
 
-						<MudSelect @bind-Value="Camera.Model"
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@Camera.ModelId"
+								   Variant="Variant.Text"
 								   Label="@L["Model"]"
-								   Placeholder="@L["Choose"]"
-								   Variant="Variant.Text">
-							@foreach (var type in Enum.GetValues<CameraModel>())
+								   HelperText=@L["Helper Text"]
+								   Placeholder=@L["Choose"]
+								   Required="true"
+								   Clearable="_clearable">
+							@foreach (var vehicleBrand in CameraModels)
 							{
-								<MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
-							}
+								@if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
+								}
+								else
+								{
+									<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.ArabicName</MudSelectItem>
+								}
 
+							}
 						</MudSelect>
 					</MudItem>
 
-					<MudItem sm="4">
-
-
-						<MudSelect @bind-Value="Camera.MainType"
+					<MudItem sm="6">
+						<MudSelect @bind-Value="@Camera.MainTypeId"
+								   Variant="Variant.Text"
 								   Label="@L["MainType"]"
-								   Placeholder="@L["Choose"]"
-								   Variant="Variant.Text">
-							@foreach (var type in Enum.GetValues<MainCameraType>())
+								   HelperText=@L["Helper Text"]
+								   Placeholder=@L["Choose"]
+								   Required="true"
+								   Clearable="_clearable">
+							@foreach (var vehicleBrand in CameraMainTypes)
 							{
-								<MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
-							}
+								@if (CultureInfo.CurrentCulture.Name == "en")
+								{
+									<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
+								}
+								else
+								{
+									<MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.ArabicName</MudSelectItem>
+								}
 
+							}
 						</MudSelect>
 					</MudItem>
-					<MudItem sm="4">
-
-
-						<MudSelect @bind-Value="Camera.BrandName"
-								   Label="@L["BrandName"]"
-								   Placeholder="@L["Choose"]"
-								   Variant="Variant.Text">
-							@foreach (var type in Enum.GetValues<CameraBrand>())
-							{
-								<MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
-							}
-
-						</MudSelect>
-					</MudItem>
-
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.CameraIP"
 									  For="@(() => Camera.CameraIP)"
@@ -193,6 +220,9 @@
 </style>
 
 @code {
+	[Inject] ICameraBrandAppService CameraBrandAppService { get; set; }
+	[Inject] ICameraModelAppService CameraModelAppService { get; set; }
+	[Inject] ICameraMainTypeAppService CameraMainTypeAppService { get; set; }
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] public CreateUpdateCameraDto Camera { get; set; }
@@ -203,9 +233,14 @@
 	private MudForm form;
 	private int OrgId { get; set; }
 	private int GarageId { get; set; }
-
+	IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
+	IList<CameraModelDto> CameraModels = new List<CameraModelDto>();
+	IList<CameraMainTypeDto> CameraMainTypes = new List<CameraMainTypeDto>();
 	protected override async Task OnInitializedAsync()
 	{
+		CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
+		CameraModels = await CameraModelAppService.GetAllCameraModelsAsync();
+		CameraMainTypes = await CameraMainTypeAppService.GetAllCameraMainTypesAsync();
 		var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
 			{
 				MaxResultCount = 100,
