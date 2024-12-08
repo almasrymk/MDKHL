@@ -1,0 +1,15 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.CameraModel
+@using Volo.Abp.Application.Dtos
+@inherits AbpCrudPageBase<ICameraModelAppService, CameraModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraModelDto>
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@page "/Cameramodels"
+
+<PageTitle>@L["Cameramodels"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Cameramodels"]</MudText>
+
+<SPDataGrid PageName=@L["Cameramodels"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateCameraModel" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>

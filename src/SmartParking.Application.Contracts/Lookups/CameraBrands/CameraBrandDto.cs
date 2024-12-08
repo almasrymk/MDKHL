@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
+
+namespace SmartParking.Lookups.CameraBrands;
+
+public class CameraBrandDto : FullAuditedEntityDto<int>
+{
+    public string ArabicName { get; set; }
+    public string EnglishName { get; set; }
+}

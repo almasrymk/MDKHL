@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.Results;
+using System;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
@@ -28,17 +29,28 @@ public class AuthenticationsController : ControllerBase
     [IgnoreAntiforgeryToken]
     public async Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input)
     {
-        var tenant = await _authenticationApp.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
-        _currentTenant.Change(tenant?.Id ?? null);
-        if (_user.IsAuthenticated)
+        try
         {
-            return Result<LoginResultDto>.Invalid(new ValidationError
+            var tenant = await _authenticationApp.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
+            _currentTenant.Change(tenant?.Id ?? null);
+            if (_user.IsAuthenticated)
             {
-                ErrorCode = "400",
-                ErrorMessage = "You are already logged in."
+                return Result<LoginResultDto>.Invalid(new ValidationError
+                {
+                    ErrorCode = "400",
+                    ErrorMessage = "You are already logged in."
+                });
+            }
+            return await _authenticationApp.LoginAsync(input);
+        }catch(Exception ex)
+        {
+            return Result<LoginResultDto>.Invalid(new Results.ValidationError
+            {
+                ErrorCode = "403",
+                ErrorMessage = "This user not found",
             });
         }
-        return await _authenticationApp.LoginAsync(input);
+        
     }    
     [HttpPost("userdata")]
     [Authorize]

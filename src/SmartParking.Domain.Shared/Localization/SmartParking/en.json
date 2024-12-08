@@ -474,6 +474,20 @@
     "ExpiryDate": "Expiry Date",
     "CustomerInvoice": "Customer - Mapping",
     "VehichleWasUpdatedSuccessfully": "Vehichle Was Updated Successfully",
-    "EditVehicle": "Edit Vehicle for Customer"
+    "EditVehicle": "Edit Vehicle for Customer",
+    "CameraBrands": "Camera Brands",
+    "BrandDeletedSuccessfully": "Brand Deleted Successfully",
+    "CameraBrandCreatedSuccessfully": "Camera Brand Created Successfully",
+    "Edit CameraBrand": "Edit Camera Brand",
+    "CameraBrandUpdatedSuccessfully": "Camera Brand Updated Successfully",
+    "View CameraBrand": "View Camera Brand",
+    "Cameramodels": "Camera Models",
+    "CameraModelDeletedSuccessfully": "Camera Model Deleted Successfully",
+    "New CameraModel": "New Camera Model",
+    "Edit CameraModel": "Edit Camera Model",
+    "view CameraModel": "View Camera Model",
+    "Cameramaintypes": "Camera MainTypes",
+    "New CameraMainType": "New Camera Main Type",
+    "View CameraMainType": "View Camera Main Type"
   } 
 }
