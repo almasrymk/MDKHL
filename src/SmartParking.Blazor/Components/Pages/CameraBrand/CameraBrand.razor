@@ -1,0 +1,9 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.CameraBrands
+@using Volo.Abp.Application.Dtos
+@inherits AbpCrudPageBase<ICameraBrandAppService, CameraBrandDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraBrandDto>
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
