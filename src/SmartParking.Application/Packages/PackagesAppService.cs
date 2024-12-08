@@ -51,7 +51,8 @@ public class PackagesAppService : CrudAppService<
         {
             var customer = await _customerRepository.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
             var query = await _repository.GetQueryableAsync();
-            var pakages = await query.Where(_ => _.OrganizationId == organizationId  && _.PackageStatus == SubscriptionStatus.Active).ToListAsync();
+            var pakages = await query.Where(_ => _.OrganizationId == organizationId &&
+            _.PackageStatus == SubscriptionStatus.Active && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
             var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if (pakages.Count == 0)
             {
@@ -76,7 +77,7 @@ public class PackagesAppService : CrudAppService<
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PackageType.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PackageType.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         // Get the total count of filtered records
