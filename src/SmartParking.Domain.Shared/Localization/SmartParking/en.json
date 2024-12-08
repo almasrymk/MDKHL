@@ -480,6 +480,14 @@
     "CameraBrandCreatedSuccessfully": "Camera Brand Created Successfully",
     "Edit CameraBrand": "Edit Camera Brand",
     "CameraBrandUpdatedSuccessfully": "Camera Brand Updated Successfully",
-    "View CameraBrand": "View Camera Brand"
+    "View CameraBrand": "View Camera Brand",
+    "Cameramodels": "Camera Models",
+    "CameraModelDeletedSuccessfully": "Camera Model Deleted Successfully",
+    "New CameraModel": "New Camera Model",
+    "Edit CameraModel": "Edit Camera Model",
+    "view CameraModel": "View Camera Model",
+    "Cameramaintypes": "Camera MainTypes",
+    "New CameraMainType": "New Camera Main Type",
+    "View CameraMainType": "View Camera Main Type"
   } 
 }

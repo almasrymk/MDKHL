@@ -8,6 +8,6 @@ namespace SmartParking.Entities.Lookups;
 
 public class CameraMainType :BaseEntity
 {
-    public int CameraMainTypesId { get; set; }
-    public virtual CameraMainType CameraMainTypes { get; set; }
+    public int CameraBrandId { get; set; }
+    public virtual CameraBrand CameraBrand { get; set; }
 }

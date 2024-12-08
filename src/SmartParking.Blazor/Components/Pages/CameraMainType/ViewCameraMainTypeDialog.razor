@@ -1,0 +1,100 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.CameraMainType
+@using System.Globalization
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["view CameraMainType"]</MudText>
+        </TitleContent>
+        <DialogContent>
+
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+
+
+
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="cameraMainType.ArabicName"
+                                      For="@(() => cameraMainType.ArabicName)"
+                                      Immediate="true"
+                                      Required="true"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["ArabicName"]"
+                                      Disabled />
+                    </MudItem>
+
+                    <MudItem sm="4">
+                        <MudTextField @bind-Value="cameraMainType.EnglishName"
+                                      For="@(() => cameraMainType.EnglishName)"
+                                      Immediate="true"
+                                      Required="true"
+                                      Placeholder="@L["Type Here"]"
+                                      Label="@L["EnglishName"]"
+                                      Disabled />
+                    </MudItem>
+
+
+                    @if (CultureInfo.CurrentCulture.Name == "en")
+                    {
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="cameraMainType.CameraBrand.EnglishName"
+                                          For="@(() => cameraMainType.EnglishName)"
+                                          Immediate="true"
+                                          Required="true"
+                                          Placeholder="@L["Type Here"]"
+                                          Label="@L["CamerBrandName"]"
+                                          Disabled />
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="cameraMainType.CameraBrand.ArabicName"
+                                          For="@(() => cameraMainType.ArabicName)"
+                                          Immediate="true"
+                                          Required="true"
+                                          Placeholder="@L["Type Here"]"
+                                          Label="@L["CamerBrandName"]"
+                                          Disabled />
+                        </MudItem>
+                    }
+
+
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+
+        </DialogActions>
+
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] ICameraMainTypeAppService CameraMainTypesAppService { get; set; }
+
+    private MudForm form;
+    [Parameter]
+    public CameraMainTypeDto cameraMainType { get; set; } = new CameraMainTypeDto();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

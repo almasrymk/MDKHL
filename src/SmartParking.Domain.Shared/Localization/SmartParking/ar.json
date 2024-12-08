@@ -503,7 +503,15 @@
     "CameraBrandCreatedSuccessfully": "اضافة ماركة الكاميرا بنجاح",
     "Edit CameraBrand": "تعديل ماركة الكاميرا",
     "CameraBrandUpdatedSuccessfully": "تعديل ماركة الكاميرا بنجاح",
-    "View CameraBrand": "تفاصيل ماركة الكاميرا"
+    "View CameraBrand": "تفاصيل ماركة الكاميرا",
+    "Cameramodels": "موديلات الكاميرا",
+    "CameraModelDeletedSuccessfully": "حذف موديل بنجاح",
+    "New CameraModel": "اضافة موديل جديد",
+    "Edit CameraModel": "تعديل موديل جديد",
+    "view CameraModel": "تفاصيل موديل جديد",
+    "Cameramaintypes": "أنواع الكاميرا الرئيسية",
+    "New CameraMainType": "اضافة أنواع الكاميرا الرئيسية",
+    "View CameraMainType": "تفاصيل أنواع الكاميرا الرئيسية"
 
   }
 }

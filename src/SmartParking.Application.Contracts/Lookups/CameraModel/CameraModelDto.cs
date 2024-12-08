@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Lookups.CameraBrands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,4 +12,5 @@ public class CameraModelDto : FullAuditedEntityDto<int>
 {
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
+    public  CameraBrandDto CameraBrand { get; set; }
 }

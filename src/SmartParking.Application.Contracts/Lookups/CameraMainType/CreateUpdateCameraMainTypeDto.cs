@@ -8,6 +8,7 @@ namespace SmartParking.Lookups.CameraMainType;
 
 public class CreateUpdateCameraMainTypeDto
 {
+    public int CameraBrandId { get; set; }
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
 }
