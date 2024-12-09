@@ -14,7 +14,7 @@ public class CustomerPermissionDefinitionProvider : PermissionDefinitionProvider
     {
         var smartParkingGroup = context.AddGroup(CustomerPermissions.Default, CustomStringLocalizer.L("Permission:Customer"));
 
-        var garagePermission = smartParkingGroup.AddPermission(CustomerPermissions.Default, CustomStringLocalizer.L("Permission:Garage"));
+        var garagePermission = smartParkingGroup.AddPermission(CustomerPermissions.Default, CustomStringLocalizer.L("Permission:Customer"));
         garagePermission.AddChild(CustomerPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         garagePermission.AddChild(CustomerPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         garagePermission.AddChild(CustomerPermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
