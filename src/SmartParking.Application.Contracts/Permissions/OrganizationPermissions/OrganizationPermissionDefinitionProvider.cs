@@ -12,7 +12,7 @@ public class OrganizationPermissionDefinitionProvider : PermissionDefinitionProv
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var smartParkingGroup = context.AddGroup(OrganizationPermissions.GroupName, CustomStringLocalizer.L("Permission:Organization"));
+        var smartParkingGroup = context.AddGroup(OrganizationPermissions.Default, CustomStringLocalizer.L("Permission:Organization"));
 
         var organizationPermission = smartParkingGroup.AddPermission(OrganizationPermissions.Default);
         organizationPermission.AddChild(OrganizationPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));

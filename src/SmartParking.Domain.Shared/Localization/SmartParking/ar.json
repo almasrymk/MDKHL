@@ -521,6 +521,10 @@
     "Permission:Packages": "موديول الباقات",
     "Permission:Organization": "موديول المنشآت",
     "Permission:Subscription": "موديول الإشتراكات"
+    "Permission:Delete": "حذف",
+    "Permission:Garage": "موديول المـواقـف"
+
+
 
   }
 }

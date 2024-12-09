@@ -14,10 +14,11 @@ public class CameraPermissionDefinitionProvider : PermissionDefinitionProvider
     {
         var smartParkingGroup = context.AddGroup(CameraPermissions.Default, CustomStringLocalizer.L("Permission:Camera"));
 
-        var cameraPermission = smartParkingGroup.AddPermission(CameraPermissions.Default);
+        var cameraPermission = smartParkingGroup.AddPermission(CameraPermissions.Default,CustomStringLocalizer.L("Permission:Camera"));
         cameraPermission.AddChild(CameraPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         cameraPermission.AddChild(CameraPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         cameraPermission.AddChild(CameraPermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
     }
 
 }
+
