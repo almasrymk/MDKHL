@@ -495,9 +495,7 @@
     "Permission:Create": "Create",
     "Permission:Edit": "Edit",
     "Permission:Delete": "Delete",
-    "Permission:Garage": "Garage Management"
-
-    "Permission:Delete": "Delete",
+    "Permission:Garage": "Garage Management",
     "Permission:Organization": "Organization Management",
     "Permission:Package": "Package Management",
     "Permission:Subscription": "Subscription Management"
