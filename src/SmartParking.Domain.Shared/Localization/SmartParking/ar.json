@@ -517,7 +517,8 @@
     "Permission:Camera": "موديول الكاميرا",
     "Permission:Create": "اضافة",
     "Permission:Edit": "تعديل",
-    "Permission:Delete": "حذف"
+    "Permission:Delete": "حذف",
+    "Permission:Garage": "موديول المـواقـف"
 
   }
 }
