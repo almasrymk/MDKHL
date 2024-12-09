@@ -42,14 +42,12 @@
 					{
 						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.Model.EnglishName"
-										  For="@(() => Camera.Model.EnglishName)"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["Model"]" />
 						</MudItem>
 						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.BrandName.EnglishName"
-										  For="@(() => Camera.BrandName.EnglishName)"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["BrandName"]" />
@@ -59,14 +57,12 @@
 					{
 						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.Model.ArabicName"
-										  For="@(() => Camera.Model.ArabicName)"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["Model"]" />
 						</MudItem>
 						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.BrandName.ArabicName"
-										  For="@(() => Camera.BrandName.ArabicName)"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["BrandName"]" />
@@ -147,7 +143,6 @@
 	[Parameter] public CameraDto Camera { get; set; }
 	[Parameter]
 	public int UpdatedId { get; set; }
-	public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
 	bool _clearable;
 	private MudForm form;
 
@@ -158,7 +153,6 @@
 				MaxResultCount = 100,
 				SkipCount = (1 - 1) * 100
 			});
-		Garages = result.Items.ToList();
 		await base.OnInitializedAsync();
 	}
 
