@@ -522,9 +522,7 @@
     "Permission:Organization": "موديول المنشآت",
     "Permission:Subscription": "موديول الإشتراكات",
     "Permission:Garage": "موديول المـواقـف",
-    "Permission:Customer": "موديول العملاء"
-    "Permission:Subscription": "موديول الإشتراكات",
-    "Permission:Garage": "موديول المـواقـف",
+    "Permission:Customer": "موديول العملاء",
     "Permission:Package": "موديول الباقات"
 
 
