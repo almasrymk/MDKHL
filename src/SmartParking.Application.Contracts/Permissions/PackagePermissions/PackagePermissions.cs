@@ -8,7 +8,7 @@ namespace SmartParking.Permissions.PackagePermissions;
 
 public class PackagePermissions
 {
-    public const string PropertyName = ".Packages";
+    public const string PropertyName = ".Package";
     public const string GroupName = SmartParkingPermissions.GroupName;
     public const string Default = GroupName + PropertyName;
     public const string Create = Default + SmartParkingPermissions.Create;
