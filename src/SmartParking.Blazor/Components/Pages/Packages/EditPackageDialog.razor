@@ -111,6 +111,7 @@
                           <MudSwitch Label="@L["Published"]"
                                        LabelPosition="LabelPosition.Start"
                                        @bind-Value="Package.Published"
+                                       
                                        Color="MudBlazor.Color.Primary" />
                     </MudItem>
                     
@@ -135,28 +136,7 @@
                                             />
                         </MudItem>
                    }
-                   else
-                   {
-                        <MudItem sm="4" md="4">
-                            <MudTimePicker Variant="Variant.Text"
-                                           Class="w-100"
-                                           @bind-Time="timeSpanFrom"
-                                           Label="@L["Publish From"]"
-                                           ShowToolbar="false"
-                                           
-                                            />
-                        </MudItem>
 
-                        <MudItem sm="4" md="4">
-                            <MudTimePicker Variant="Variant.Text"
-                                           Class="w-100"
-                                           @bind-Time="timeSpanTo"
-                                           Label="@L["Publish To"]"
-                                           ShowToolbar="false"
-                                         
-                                           />
-                        </MudItem>
-                   }
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.OrganizationId"
                                       For="@(() => Package.OrganizationId)"
@@ -165,12 +145,6 @@
                                       Disabled='true'
                                       Label="@L["OrgnizationId"]" />
                     </MudItem>
-
-                   
-                    
-                   
-
-                   
 
                     <MudItem sm="12">
                         <MudTextField @bind-Value="Package.Description"
@@ -232,7 +206,6 @@
     }
     private void OnTimeFromChanged(TimeSpan? value)
     {
-        // Handle null case and update CreateUpdatePackage.PublishFrom
         if (value.HasValue)
         {
             timeSpanFrom = value;
@@ -241,7 +214,6 @@
     }
     private void OnTimeToChanged(TimeSpan? value)
     {
-        // Handle null case and update CreateUpdatePackage.PublishTo
         if (value.HasValue)
         {
             timeSpanTo = value;

@@ -298,7 +298,7 @@ public partial class Camera
 		};
 
 
-        return await Dialog.ShowAsync<ViewCameraDialog>( "",parameters);
+        return await Dialog.ShowAsync<ViewCameraDialog>( "CameraView",parameters);
     }
 
     private async Task OnClickRowDelete(RowDef row)
