@@ -518,6 +518,9 @@
     "Permission:Create": "اضافة",
     "Permission:Edit": "تعديل",
     "Permission:Delete": "حذف",
+    "Permission:Packages": "موديول الباقات",
+    "Permission:Organization": "موديول المنشآت",
+    "Permission:Subscription": "موديول الإشتراكات",
     "Permission:Garage": "موديول المـواقـف",
     "Permission:Customer": "موديول العملاء"
 

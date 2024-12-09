@@ -496,7 +496,11 @@
     "Permission:Edit": "Edit",
     "Permission:Delete": "Delete",
     "Permission:Garage": "Garage Management",
-    "Permission:Customer": "Customer Management"
+    "Permission:Customer": "Customer Management",
+    "Permission:Organization": "Organization Management",
+    "Permission:Package": "Package Management",
+    "Permission:Subscription": "Subscription Management"
+
 
   } 
 }
