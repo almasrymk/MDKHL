@@ -85,10 +85,10 @@
             if (form.IsValid)
             {
                 await ProfileAppService.UpdateAsync(Profile);
-
-                await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
-                Navigation.Refresh(true);
+               
                 Snackbar.Add("Profile updated successfully!", Severity.Success);
+                await Task.Delay(1000);
+                Navigation.Refresh(true);
             }
             else
             {
@@ -108,6 +108,11 @@
         await stream.CopyToAsync(memoryStream);
         byte[] imageBytes = memoryStream.ToArray();
          ImageBase64 = Convert.ToBase64String(imageBytes);
+        await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
+        Snackbar.Add("Profile updated successfully!", Severity.Success);
+        await Task.Delay(1000);
+        Navigation.Refresh(true);
+
 
     }
 }

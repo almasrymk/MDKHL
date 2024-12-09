@@ -4,6 +4,7 @@ public static class SmartParkingPermissions
 {
     public const string GroupName = "SmartParking";
 
-    //Add your own permission names. Example:
-    //public const string MyPermission1 = GroupName + ".MyPermission1";
+    public const string Create = ".Create";
+    public const string Edit = ".Edit";
+    public const string Delete = ".Delete";
 }

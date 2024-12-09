@@ -122,15 +122,10 @@ public class CamerasAppService :
     public override async Task<CameraDto> GetAsync(int id)
     {
 
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
-        {
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 return await base.GetAsync(id);
             }
-        }
-        else
-            return await base.GetAsync(id);
     }
     /// <summary>
     /// methods that deletes camera.

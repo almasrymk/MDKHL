@@ -17,9 +17,9 @@ public class Camera : FullAuditedEntity<int>, IMultiTenant, IBseEntity
     public int ModelId { get; set; }
     public int MainTypeId { get; set; }
     public int BrandNameId { get; set; }
-    public virtual SmartParking.Entities.Lookups.CameraModel Model { get; set; }
-    public virtual SmartParking.Entities.Lookups.CameraMainType MainType { get; set; }
-    public virtual SmartParking.Entities.Lookups.CameraBrand BrandName { get; set; }
+    public virtual CameraModel Model { get; set; }
+    public virtual CameraMainType MainType { get; set; }
+    public virtual CameraBrand BrandName { get; set; }
     public string DeviceId { get; set; }
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }

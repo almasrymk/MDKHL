@@ -8,7 +8,7 @@ public class SmartParkingPermissionDefinitionProvider : PermissionDefinitionProv
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(SmartParkingPermissions.GroupName);
+       // var myGroup = context.AddGroup(SmartParkingPermissions.GroupName);
         //Define your own permissions here. Example:
         //myGroup.AddPermission(SmartParkingPermissions.MyPermission1, L("Permission:MyPermission1"));
     }
