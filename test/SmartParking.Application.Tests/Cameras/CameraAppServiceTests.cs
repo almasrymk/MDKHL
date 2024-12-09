@@ -42,9 +42,9 @@ public abstract class CameraAppServiceTests<TStartupModule> : SmartParkingApplic
             new CreateUpdateCameraDto
             {
                 Name = "Camera1",                  // Valid Name
-                Model = CameraModel.PanasonicLumix,                  // Valid Model
-                MainType = MainCameraType.Action,                // Valid MainType
-                BrandName = CameraBrand.Panasonic,              // Valid BrandName
+                                                   //  Model = CameraModel.PanasonicLumix,                  // Valid Model
+                                                   //MainType = MainCameraType.Action,                // Valid MainType
+                                                   // BrandName = CameraBrand.Panasonic,              // Valid BrandName
                 DeviceId = "C12345",                   // Valid Code
                 CameraIP = "192.168.1.100",        // Valid Camera IP
                 MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address
@@ -69,9 +69,9 @@ public abstract class CameraAppServiceTests<TStartupModule> : SmartParkingApplic
                 new CreateUpdateCameraDto
                 {
                     Name = string.Empty,  // Simulate missing Name
-                    Model = CameraModel.PanasonicLumix,
-                    MainType = MainCameraType.Action,
-                    BrandName = CameraBrand.Panasonic,
+                                          // Model = CameraModel.PanasonicLumix,
+                                          // MainType = MainCameraType.Action,
+                                          //  BrandName = CameraBrand.Panasonic,
                     DeviceId = "12345",
                     CameraIP = "192.168.1.1",
                     MacAddress = "00:1B:44:11:3A:B7",
