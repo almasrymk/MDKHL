@@ -223,7 +223,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
                 throw new Exception("User not found");
