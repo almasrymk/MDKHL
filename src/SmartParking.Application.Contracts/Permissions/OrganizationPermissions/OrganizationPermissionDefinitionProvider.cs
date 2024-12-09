@@ -14,7 +14,7 @@ public class OrganizationPermissionDefinitionProvider : PermissionDefinitionProv
     {
         var smartParkingGroup = context.AddGroup(OrganizationPermissions.Default, CustomStringLocalizer.L("Permission:Organization"));
 
-        var organizationPermission = smartParkingGroup.AddPermission(OrganizationPermissions.Default);
+        var organizationPermission = smartParkingGroup.AddPermission(OrganizationPermissions.Default, CustomStringLocalizer.L("Permission:Organization"));
         organizationPermission.AddChild(OrganizationPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         organizationPermission.AddChild(OrganizationPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         organizationPermission.AddChild(OrganizationPermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));

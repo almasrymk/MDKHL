@@ -14,7 +14,7 @@ public class PackagePermissionDefinitionProvider : PermissionDefinitionProvider
     {
         var smartParkingGroup = context.AddGroup(PackagePermissions.Default, CustomStringLocalizer.L("Permission:Package"));
 
-        var packagesPermission = smartParkingGroup.AddPermission(PackagePermissions.Default);
+        var packagesPermission = smartParkingGroup.AddPermission(PackagePermissions.Default, CustomStringLocalizer.L("Permission:Package"));
         packagesPermission.AddChild(PackagePermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         packagesPermission.AddChild(PackagePermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         packagesPermission.AddChild(PackagePermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
