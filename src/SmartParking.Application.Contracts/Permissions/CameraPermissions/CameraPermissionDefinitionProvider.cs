@@ -12,7 +12,7 @@ public class CameraPermissionDefinitionProvider : PermissionDefinitionProvider
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var smartParkingGroup = context.AddGroup(CameraPermissions.GroupName, CustomStringLocalizer.L("Permission:Camera"));
+        var smartParkingGroup = context.AddGroup(CameraPermissions.Default, CustomStringLocalizer.L("Permission:Camera"));
 
         var cameraPermission = smartParkingGroup.AddPermission(CameraPermissions.Default);
         cameraPermission.AddChild(CameraPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
