@@ -88,7 +88,7 @@ namespace SmartParking.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BrandNameId")
+                    b.Property<int>("BrandNameId")
                         .HasColumnType("integer");
 
                     b.Property<string>("CameraIP")
@@ -136,10 +136,10 @@ namespace SmartParking.Migrations
                     b.Property<string>("MacAddress")
                         .HasColumnType("text");
 
-                    b.Property<int?>("MainTypeId")
+                    b.Property<int>("MainTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ModelId")
+                    b.Property<int>("ModelId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -4297,7 +4297,9 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "BrandName")
                         .WithMany()
-                        .HasForeignKey("BrandNameId");
+                        .HasForeignKey("BrandNameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
@@ -4307,11 +4309,15 @@ namespace SmartParking.Migrations
 
                     b.HasOne("SmartParking.Entities.Lookups.CameraMainType", "MainType")
                         .WithMany()
-                        .HasForeignKey("MainTypeId");
+                        .HasForeignKey("MainTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.CameraModel", "Model")
                         .WithMany()
-                        .HasForeignKey("ModelId");
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("Cameras")
