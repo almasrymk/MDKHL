@@ -511,7 +511,13 @@
     "view CameraModel": "تفاصيل موديل جديد",
     "Cameramaintypes": "أنواع الكاميرا الرئيسية",
     "New CameraMainType": "اضافة أنواع الكاميرا الرئيسية",
-    "View CameraMainType": "تفاصيل أنواع الكاميرا الرئيسية"
+    "View CameraMainType": "تفاصيل أنواع الكاميرا الرئيسية",
+    "Administration": "الإدارة",
+    "Roles": "الادوار",
+    "Permission:Camera": "موديول الكاميرا",
+    "Permission:Create": "اضافة",
+    "Permission:Edit": "تعديل",
+    "Permission:Delete": "حذف"
 
   }
 }

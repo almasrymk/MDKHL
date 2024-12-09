@@ -488,6 +488,12 @@
     "view CameraModel": "View Camera Model",
     "Cameramaintypes": "Camera MainTypes",
     "New CameraMainType": "New Camera Main Type",
-    "View CameraMainType": "View Camera Main Type"
+    "View CameraMainType": "View Camera Main Type",
+    "Administration": "Administration",
+    "Roles": "Roles",
+    "Permission:Camera": "Camera Management",
+    "Permission:Create": "Create",
+    "Permission:Edit": "Edit",
+    "Permission:Delete": "Delete"
   } 
 }
