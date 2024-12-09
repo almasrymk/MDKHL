@@ -518,7 +518,8 @@
     "Permission:Create": "اضافة",
     "Permission:Edit": "تعديل",
     "Permission:Delete": "حذف",
-    "Permission:Garage": "موديول المـواقـف"
+    "Permission:Garage": "موديول المـواقـف",
+    "Permission:Customer": "موديول العملاء"
 
 
 

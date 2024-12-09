@@ -495,7 +495,8 @@
     "Permission:Create": "Create",
     "Permission:Edit": "Edit",
     "Permission:Delete": "Delete",
-    "Permission:Garage": "Garage Management"
+    "Permission:Garage": "Garage Management",
+    "Permission:Customer": "Customer Management"
 
   } 
 }
