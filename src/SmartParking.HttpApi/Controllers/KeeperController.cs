@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Entities.Invoices;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Keepers;
@@ -88,11 +89,11 @@ public class KeeperController : AbpController
         return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId,userId);
     }
     
-    [HttpGet("payInvoice")]
+    [HttpGet("PayAtExitCamera")]
     [Authorize]
     public async Task<Result<PaymentCheckoutDto>> PayInvoice(int InvoiceId)
     {
-        return await _keeperAppService.PayCashAsync(InvoiceId);
+        return await _keeperAppService.CheckoutAsync(InvoiceId);
     }
     
     [HttpGet("GetUnpaidInvoicesForPlateNumber")]
@@ -100,5 +101,14 @@ public class KeeperController : AbpController
     public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoicesForPlateNumber(int OrganizationId , string PlateNumber)
     {
         return await _invoiceAppService.GetUnpaidInvoiceForKeeperInHisOrganization(OrganizationId, PlateNumber);
+    }
+    
+    [HttpGet("PayInvoiceByCustomerRequest")]
+    [Authorize]
+    public async Task<Result<bool>> PayInvoiceByCustomerRequest(int InvoiceId, int PaymentType)
+    {
+        var result= await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId,  PaymentType);
+        return result is not null ? true : false;
+
     }
 }
