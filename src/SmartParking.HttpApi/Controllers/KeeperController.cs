@@ -108,17 +108,18 @@ public class KeeperController : AbpController
     
     [HttpGet("PayInvoiceByCustomerRequest")]
     [Authorize]
-    public async Task<Result<bool>> PayInvoiceByCustomerRequest(int InvoiceId, int PaymentType)
+    public async Task<Result<InvoiceDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType)
     {
-        var result= await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId,  PaymentType);
-        return result is not null ? true : false;
+       return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId,  PaymentType);
 
     }
     [HttpGet("KeeperCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId)
+    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType)
     {
-        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+        var invoice=await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+       return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType);
+
 
     }
 
