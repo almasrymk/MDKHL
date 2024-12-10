@@ -42,7 +42,9 @@ public abstract class CameraAppServiceTests<TStartupModule> : SmartParkingApplic
             new CreateUpdateCameraDto
             {
                 Name = "Camera1",                  // Valid Name
-            // Valid BrandName
+                //Model = CameraModel.PanasonicLumix,                  // Valid Model
+                //MainType = MainCameraType.Action,                // Valid MainType
+                //BrandName = CameraBrand.Panasonic,              // Valid BrandName
                 DeviceId = "C12345",                   // Valid Code
                 CameraIP = "192.168.1.100",        // Valid Camera IP
                 MacAddress = "00:1A:2B:3C:4D:5E",  // Valid MAC Address

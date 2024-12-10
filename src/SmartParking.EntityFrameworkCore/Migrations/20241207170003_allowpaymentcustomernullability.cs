@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SmartParking.Migrations
 {
     /// <inheritdoc />
-    public partial class CustomerIdInPaymentNULLABLE : Migration
+    public partial class allowpaymentcustomernullability : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

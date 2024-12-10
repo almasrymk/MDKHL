@@ -169,7 +169,11 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
             var otp = GenerateRandomOtp(); // call GenerateRandomOtp function   
             user.SetProperty("OtpCode", otp);
-            user.SetProperty("OtpExpirationDate", DateTime.Now.AddSeconds(OtpValiditySecounds));
+            user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
+            var phonenumber = user?.PhoneNumber;
+            await SendSms(phonenumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
+            // Update the user with OTP in the database
+            await _userRepository.UpdateAsync(user);
 
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);

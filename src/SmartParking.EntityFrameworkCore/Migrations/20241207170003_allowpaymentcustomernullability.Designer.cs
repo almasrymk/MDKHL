@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace SmartParking.Migrations
 {
     [DbContext(typeof(SmartParkingDbContext))]
-    [Migration("20241207075022_customerePackage_invoice_enhancements")]
-    partial class customerePackage_invoice_enhancements
+    [Migration("20241207170003_allowpaymentcustomernullability")]
+    partial class allowpaymentcustomernullability
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1863,7 +1863,7 @@ namespace SmartParking.Migrations
                     b.Property<string>("Currency")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CustomerId")
+                    b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("DeleterId")
@@ -4383,9 +4383,7 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customers")
                         .WithMany("Payments")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.Navigation("Customers");
                 });
