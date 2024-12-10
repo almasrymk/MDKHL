@@ -143,7 +143,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             catch (Exception ex)
             {
                 await CreateUnLinkedTransaction(input);
-                _logger.LogDebug($"{DateTime.Now} ====> Get Response false");
+                _logger.LogDebug($"{DateTime.Now} ====> Get Response false | {ex.Message}");
                 return await Task.FromResult(false);
             }
         }
@@ -465,13 +465,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
                 flag = false;
                 EmptyPlateNumber = true;
-
-
-
             }
             else
             {
-
                 //Not Customer
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
                 await SaveTransactionWithInvoice(EntranceTime.Value, exsitCustomer, GarageTransaction, totalHours, price, false);
@@ -479,13 +475,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 MustPay = true;
                 flag = false;
             }
-
         }
         await CloseEntryTransaction(GarageTransaction.PlateNumber);
-
         await CurrentUnitOfWork.SaveChangesAsync();
-
-
         _logger.LogTrace($"{DateTime.Now} ====> Get Response {flag}");
 
         switch (flag, MustPay, EmptyPlateNumber)
