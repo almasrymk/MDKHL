@@ -1032,6 +1032,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
+        invoice.Value.InvoiceType = InvoiceType.Paid;
         return await SaveTransactionWithInvoice(invoice,result.Item1);
     }
     private async Task<(CreateUpdateGarageTransactionDto,DateTime)> InitiateGarageTransaction(int garageTransactionId)
@@ -1060,6 +1061,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
+        invoice.Value.InvoiceType = InvoiceType.Paid;
         return await SaveTransactionWithInvoice(invoice, result.Item1);
     }
     
