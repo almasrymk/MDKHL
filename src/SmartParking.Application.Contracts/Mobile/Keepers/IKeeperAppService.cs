@@ -27,10 +27,10 @@ public interface IKeeperAppService
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId);
 
     /// <summary>
-    /// Retrieves a list of all invoices by organization id asynchronously.
+    /// Retrieves Last invoice by organization id asynchronously.
     /// </summary>
     /// <param name="organizationId">id of specific organization</param>
-    /// <returns>list of InvoiceDto</returns>
+    /// <returns> InvoiceDto</returns>
     Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId);
 
     /// <summary>
