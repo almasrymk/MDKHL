@@ -85,12 +85,11 @@ public partial class OrganizationEdit
     IList<SubscriptionDto> SubscriptionDtos = new List<SubscriptionDto>();
 
 
-    private async Task OnSubscriptionSelected(string value)
+    private async Task OnSubscriptionSelected(int value)
     {
-        SubscriptionSelectValue = value;
 
-        SubscriptionId = int.Parse( value);
-        SelectedSubscription = SubscriptionDtos.FirstOrDefault(p => p.Id.ToString() == value);
+        SubscriptionId =  value;
+        SelectedSubscription = SubscriptionDtos.FirstOrDefault(p => p.Id == value);
 
         if (SelectedSubscription != null)
         {
@@ -172,12 +171,12 @@ public partial class OrganizationEdit
             FreeMinutes= FreeMinutes,
             Graceperiod= Graceperiod,
             SubscriptionId= SubscriptionId,
+            TenantId=orgTenant,
         };
 
 
         try
         {
-            createUpdateOrganiztion.TenantId = orgTenant;
 
 
             var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
