@@ -122,4 +122,13 @@ public class KeeperController : AbpController
 
     }
 
+
+    [HttpGet("KeeperPreCheckout")]
+    [Authorize]
+    public async Task<Result<CreateUpdateInvoiceDto>> KeeperPreCheckoutForTransaction(int transactionId)
+    {
+        return await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
+
+    }
+
 }
