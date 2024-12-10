@@ -43,13 +43,6 @@ public class GarageTransactionController : ControllerBase
 
     }
 
-    [HttpGet("KeeperCheckout")]
-    [Authorize]
-    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId)
-    {
-        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
-
-    }
 
 
 
