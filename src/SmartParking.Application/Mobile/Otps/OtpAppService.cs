@@ -107,45 +107,47 @@ public class OtpAppService : ApplicationService, IOtpAppService
     /// <inheritdoc/>
     public async Task<Result<VerifyOtpDto>> VerifyOtpAsync(string phoneNumber, string otp)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-        if (user is null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return Result.Invalid(new Results.ValidationError
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+            if (user is null)
             {
-                ErrorMessage = "User Not Found"
-            });
-        }
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "User Not Found"
+                });
+            }
 
-        var storedOtp = user?.GetProperty<string>("OtpCode");
+            var storedOtp = user?.GetProperty<string>("OtpCode");
 
-        var otpExpirationDate = user?.GetProperty<DateTime>("OtpExpirationDate");
+            var otpExpirationDate = user?.GetProperty<DateTime>("OtpExpirationDate");
 
-        var currentTime = DateTime.Now;
+            var currentTime = DateTime.Now;
 
-        // Check if the provided OTP matches the stored OTP and if the OTP has not expired
-        if (storedOtp == otp && otpExpirationDate >= currentTime)
-        {
-            // OTP is valid, clear OTP fields
-            user.SetPhoneNumberConfirmed(true);
-            user?.SetProperty("OtpCode", null);
-            user?.SetProperty("OtpExpirationDate", DateTime.Now);
-            await _userRepository.UpdateAsync(user);
-
-            // Return success result with true
-            return Result.Success(
-            new VerifyOtpDto
+            // Check if the provided OTP matches the stored OTP and if the OTP has not expired
+            if (storedOtp == otp && otpExpirationDate >= currentTime)
             {
-                AccessToken = await GenerateTokenAsync(user) ?? null,
-            }, "Verfiy Otp Successfully");
-        }
-        else
-        {
-            return Result.Invalid(new Results.ValidationError
+                // OTP is valid, clear OTP fields
+                user.SetPhoneNumberConfirmed(true);
+                user?.SetProperty("OtpCode", null);
+                user?.SetProperty("OtpExpirationDate", DateTime.Now);
+                await _userRepository.UpdateAsync(user);
+
+                // Return success result with true
+                return Result.Success(
+                new VerifyOtpDto
+                {
+                    AccessToken = await GenerateTokenAsync(user) ?? null,
+                }, "Verfiy Otp Successfully");
+            }
+            else
             {
-                ErrorMessage = "Verfiy Otp Failed"
-            });
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "Verfiy Otp Failed"
+                });
+            }
         }
-        // If OTP is invalid or expired, return false
     }
 
     private string GenerateRandomOtp()
