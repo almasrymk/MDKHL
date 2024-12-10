@@ -63,6 +63,12 @@ public class KeeperController : AbpController
     {
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
     }
+    [HttpGet("lastinvoice")]
+    [Authorize]
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationId([FromQuery] int organizationId)
+    {
+        return await _keeperAppService.GetLastInvoiceByOrganizationIdAsync(organizationId);
+    }
 
     [HttpGet("garageTransactionWithoutPlateNumber")]
     [Authorize]

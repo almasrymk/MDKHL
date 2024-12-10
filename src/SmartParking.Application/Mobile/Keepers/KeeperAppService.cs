@@ -372,4 +372,19 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             return ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
         }
     }
+
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+             var query =  await _invoiceRepository.GetQueryableAsync();
+            query = query.Where(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid);
+            query = query.OrderByDescending(invo => invo.InvoiceTime);
+            var invoice = await AsyncExecuter.FirstOrDefaultAsync(query);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            return invoiceDto;
+
+        }
+    }
 }
