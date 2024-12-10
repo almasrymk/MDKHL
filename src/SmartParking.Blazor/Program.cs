@@ -10,6 +10,7 @@ using Microsoft.JSInterop;
 using Blazorise.Bootstrap5;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
+using SmartParking.Blazor.SignalR;
 
 
 
@@ -43,7 +44,7 @@ public class Program
 
             builder.Services.AddMudServices();
             builder.Services.AddBlazoredLocalStorage();
-
+            builder.Services.AddSignalR();
             await builder.AddApplicationAsync<SmartParkingBlazorModule>();
             //builder.Services.AddBlazorise()
             //                .AddBootstrapProviders()
@@ -53,6 +54,7 @@ public class Program
 
             var app = builder.Build();
             await app.InitializeApplicationAsync();
+            app.MapHub<NotificationHub>("/notification");
             await app.RunAsync();
             return 0;
         }
