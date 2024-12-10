@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
@@ -335,7 +336,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<PaymentCheckoutDto>> PayCashAsync(int invoiceId)
+    public async Task<Result<PaymentCheckoutDto>> CheckoutAsync(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -350,6 +351,25 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 InvoiceId=invoiceId,
             };
             return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+        }
+    }
+    public async Task<Result<PaymentCheckoutDto>> PayCashForCustomerRequestAsync(int invoiceId,int PaymentType)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            var paymentRequest = new PaymentCheckoutRequestDto
+            {
+                PaymentCategory=PaymentCategory.Invoice,
+                PaymentMethod=(PaymentMethod) Enum.Parse(typeof(PaymentMethod), PaymentType.ToString()),
+                Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+                CustomerId=invoice.CustomerId,
+                OrganizationId=invoice.OrganizationId,
+                InvoiceId=invoiceId,
+                PaymentName= PaymentMethod.Cash.ToString(),
+            };
+            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            return result;
         }
     }
 }

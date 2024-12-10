@@ -12,4 +12,6 @@ public class PaymentCheckoutRequestDto
     public decimal Amount { get; set; }
     public int OrganizationId { get; set; }
     public Guid? CustomerId { get; set; }
+    public string? PaymentName { get; set; }
+
 }

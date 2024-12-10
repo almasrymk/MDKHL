@@ -52,5 +52,6 @@ public interface IKeeperAppService
 
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 
-    Task<Result<PaymentCheckoutDto>> PayCashAsync(int invoiceId);
+    Task<Result<PaymentCheckoutDto>> CheckoutAsync(int invoiceId);
+    Task<Result<PaymentCheckoutDto>> PayCashForCustomerRequestAsync(int invoiceId, int PaymentType);
 }
