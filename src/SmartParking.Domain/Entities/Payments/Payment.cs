@@ -23,4 +23,6 @@ public class Payment : FullAuditedEntity<Guid>
     public virtual Customer Customers { get; set; }
     public string QrCodeInvoice { get; set; }
 
+    public string? PaymentName { get; set; }
+
 }
