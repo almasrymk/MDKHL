@@ -24,13 +24,15 @@ public class KeeperController : AbpController
     private readonly IAuthenticationAppService _authenticationAppService;
 	private readonly ICurrentTenant _currentTenant;
 	private readonly ICurrentUser _currentUser;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser,ICurrentTenant currentTenant)
+    private readonly IInvoiceAppService _invoiceAppService;
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
-		_currentTenant = currentTenant;
-	}
+        _currentTenant = currentTenant;
+        _invoiceAppService = invoiceAppService;
+    }
 
     [HttpPost("login")]
     [AllowAnonymous]
@@ -91,5 +93,12 @@ public class KeeperController : AbpController
     public async Task<Result<PaymentCheckoutDto>> PayInvoice(int InvoiceId)
     {
         return await _keeperAppService.PayCashAsync(InvoiceId);
+    }
+    
+    [HttpGet("GetUnpaidInvoicesForPlateNumber")]
+    [Authorize]
+    public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoicesForPlateNumber(int OrganizationId , string PlateNumber)
+    {
+        return await _invoiceAppService.GetUnpaidInvoiceForKeeperInHisOrganization(OrganizationId, PlateNumber);
     }
 }

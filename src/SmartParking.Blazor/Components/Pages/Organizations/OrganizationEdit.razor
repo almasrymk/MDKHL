@@ -150,25 +150,25 @@
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="12">
-                            <MudSelect T="string" Variant="Variant.Text"
+                            <MudSelect T="int" Variant="Variant.Text"
                                        Label=@L["Package"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Required
-                                       Value="@ViewSubscriptionArabicName"
+                                       Value="SubscriptionId"
                                        ValueChanged="OnSubscriptionSelected">
-                                <MudSelectItem Value="SelectedSubscription"></MudSelectItem>
+                                <MudSelectItem Value="SelectedSubscription.Id"></MudSelectItem>
                                 @foreach (var subscription in SubscriptionDtos)
                                 {
                                     if (subscription.Status != Enums.SubscriptionStatus.Active)
                                         continue;
                                     if (CultureInfo.CurrentCulture.Name == "en")
                                     {
-                                        <MudSelectItem Value="subscription.Id.ToString()">@subscription.EnglishName</MudSelectItem>
+                                        <MudSelectItem Value="subscription.Id">@subscription.EnglishName</MudSelectItem>
                                     }
                                     else
                                     {
-                                        <MudSelectItem Value="subscription.Id.ToString()">@subscription.ArabicName</MudSelectItem>
+                                        <MudSelectItem Value="subscription.Id">@subscription.ArabicName</MudSelectItem>
 
                                     }
                                 }

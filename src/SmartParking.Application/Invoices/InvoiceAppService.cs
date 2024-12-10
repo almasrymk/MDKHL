@@ -397,4 +397,18 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoice);
             return invoiceDto;
     }
+
+    public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query=await _invoiceRepository.GetQueryableAsync();
+            query=query.Where(inv=>inv.OrganizationId== OrganizationId && inv.PlateNumber==plateNumber);
+            var invList=await AsyncExecuter.ToListAsync(query);
+            var invDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invList);
+            return Result.Success(invDtos);
+
+        }
+    }
 }
