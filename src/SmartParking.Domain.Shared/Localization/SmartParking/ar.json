@@ -161,7 +161,7 @@
     "Status Deleted": "مـحـذوف",
     "Status InActive": "غير مفعل",
     "Subscriptions": "إشتراكاتي",
-    "Type": "نوع الإشتراك",
+    "Type": "النوع",
     "Type Here": "إكتب هنا",
     "CommercialRegistrationNumber": "السجل التجارى",
     "Update": "تـعديـل",
@@ -522,7 +522,8 @@
     "Permission:Subscription": "موديول الإشتراكات",
     "Permission:Garage": "موديول المـواقـف",
     "Permission:Customer": "موديول العملاء",
-    "Permission:Package": "موديول الباقات"
+    "Permission:Package": "موديول الباقات",
+    "FailedCreateCustomer": "فشل في اضافة عميل"
 
 
 

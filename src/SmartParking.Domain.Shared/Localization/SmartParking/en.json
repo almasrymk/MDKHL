@@ -499,7 +499,8 @@
     "Permission:Garage": "Garage Management",
     "Permission:Organization": "Organization Management",
     "Permission:Package": "Package Management",
-    "Permission:Subscription": "Subscription Management"
+    "Permission:Subscription": "Subscription Management",
+    "FailedCreateCustomer": "Failed Create Customer"
 
 
   } 

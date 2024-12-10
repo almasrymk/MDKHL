@@ -35,13 +35,14 @@ public class GarageTransactionController : ControllerBase
 
     }
 
-    [HttpGet("transactioncheckout")]
+    [HttpGet("CustomerCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> CheckoutForTransaction(int transactionDto)
+    public async Task<Result<InvoiceDto>> CustomerCheckoutForTransaction(int transactionId)
     {
-        return await _garageTransactionEndPointsAppService.CheckoutMobile(transactionDto);
+        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromHisMobile(transactionId);
 
     }
+
 
 
 

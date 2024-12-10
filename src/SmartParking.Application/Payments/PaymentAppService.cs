@@ -340,11 +340,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentCheckoutDto> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
         var paymentCheckoutDto= await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
-       await UpdatePaymentStatusAsync(paymentCheckoutRequest.InvoiceId);
+       await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
         return paymentCheckoutDto;
     }
 
-    private async Task<Result<bool>> UpdatePaymentStatusAsync(int? InvoiceId)
+    private async Task<Result<bool>> UpdateInvoiceStatusAsync(int? InvoiceId)
     {
         using (dataFilter.Disable<IMultiTenant>())
         {

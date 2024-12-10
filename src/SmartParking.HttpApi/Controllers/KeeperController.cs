@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Entities.Invoices;
+using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Keepers;
@@ -25,13 +27,15 @@ public class KeeperController : AbpController
 	private readonly ICurrentTenant _currentTenant;
 	private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService)
+    private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
         _currentTenant = currentTenant;
         _invoiceAppService = invoiceAppService;
+        _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
     }
 
     [HttpPost("login")]
@@ -88,11 +92,11 @@ public class KeeperController : AbpController
         return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId,userId);
     }
     
-    [HttpGet("payInvoice")]
+    [HttpGet("PayAtExitCamera")]
     [Authorize]
     public async Task<Result<PaymentCheckoutDto>> PayInvoice(int InvoiceId)
     {
-        return await _keeperAppService.PayCashAsync(InvoiceId);
+        return await _keeperAppService.CheckoutAsync(InvoiceId);
     }
     
     [HttpGet("GetUnpaidInvoicesForPlateNumber")]
@@ -101,4 +105,21 @@ public class KeeperController : AbpController
     {
         return await _invoiceAppService.GetUnpaidInvoiceForKeeperInHisOrganization(OrganizationId, PlateNumber);
     }
+    
+    [HttpGet("PayInvoiceByCustomerRequest")]
+    [Authorize]
+    public async Task<Result<bool>> PayInvoiceByCustomerRequest(int InvoiceId, int PaymentType)
+    {
+        var result= await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId,  PaymentType);
+        return result is not null ? true : false;
+
+    }
+    [HttpGet("KeeperCheckout")]
+    [Authorize]
+    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId)
+    {
+        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+
+    }
+
 }
