@@ -57,4 +57,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(Guid customerId,int OrganizationId,int GarageId);
 
     Task<List<InvoiceDto>> GetInvoiceForCustomer(Guid customerId);
+    Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber);
+
+    
 }
