@@ -83,6 +83,7 @@ public partial class CustomerRegister
     public async  Task HandleSubmit()
     {
 		var successedMessage = L["CustomerCreatedSuccessfullyWith"];
+        var faildMessage = L["FailedCreateCustomer"];
 		try
         {
             CustomerDto customer;
@@ -119,7 +120,7 @@ public partial class CustomerRegister
             {
                 errors += error;
             }
-            ShowSnackbar(errors, Severity.Error);
+            ShowSnackbar(faildMessage+ errors, Severity.Error);
 
         }
         catch (BusinessException businessException)
@@ -129,13 +130,13 @@ public partial class CustomerRegister
             {
                 errors += error;
             }
-            ShowSnackbar(errors, Severity.Error);
+            ShowSnackbar(faildMessage+ errors, Severity.Error);
 
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(ex.Message, Severity.Error);
+            ShowSnackbar(faildMessage +ex.Message, Severity.Error);
 
         }
 
@@ -188,16 +189,16 @@ public partial class CustomerRegister
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add vehicle: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{validationErrorMessage} {ex.Code} + ", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add vehicle: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{validationErrorMessage} {ex.Message} + ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add vehicle: {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{validationErrorMessage} {ex.Message} + ", Severity.Error);
         }
 
     }
