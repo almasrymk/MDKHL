@@ -21,7 +21,7 @@ public interface IUserAppService : IApplicationService
     /// <param name="phoneNumber">phoneNumber for user</param>
     /// <param name="password">password of user</param>
     /// <returns>UserDataDto</returns>
-    Task<Result<UserDataDto>> UpdateUserAsync(string phoneNumber, string password);
+    Task<Result<UserDataDto>> UpdateUserAsync(string phoneNumber, string password,string email , string image);
 
     /// <summary>
     /// Retrieves the user data for the currently logged-in user.
