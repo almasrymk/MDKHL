@@ -345,7 +345,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
         }
     }
-    public async Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
+    public async Task<Result<PaymentCheckoutDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -361,7 +361,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 PaymentName= PaymentType,
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
-            return ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
+            return result;
         }
     }
 
