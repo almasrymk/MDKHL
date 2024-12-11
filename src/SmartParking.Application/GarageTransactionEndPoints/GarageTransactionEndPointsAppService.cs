@@ -379,7 +379,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<bool> CheckIfPassGraceTime(DateTime Checkout, int GraceMinutes)
     {
-        if ((int)(DateTime.UtcNow - Checkout).TotalMinutes > GraceMinutes)
+        if ((int)(DateTime.Now - Checkout).TotalMinutes > GraceMinutes)
         {
             return true;
         }
@@ -430,7 +430,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
             else if (invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && PassGraceTime)
             {
-                int Hours = (int)(GarageTransaction.AccurateTime.Value - invoice.Value.InvoiceTime.Value).TotalHours + (invoice.Value.InvoiceTime.Value - GarageTransaction.AccurateTime.Value).Minutes > 0 ? 1 : 0;
+                int Hours = (int)(GarageTransaction.AccurateTime.Value - invoice.Value.InvoiceTime.Value).Hours + (GarageTransaction.AccurateTime.Value-invoice.Value.InvoiceTime.Value ).Minutes > 0 ? 1 : 0;
 
                 _logger.LogTrace($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");
 
@@ -1092,7 +1092,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
-        invoice.Value.InvoiceType = InvoiceType.Paid;
         return await SaveTransactionWithInvoice(invoice, result.Item1);
     }
     
