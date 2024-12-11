@@ -374,12 +374,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
     }
 
-    public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(Guid customerId, int OrganizationId, int GarageId)
+    public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _invoiceRepository.GetQueryableAsync();
-            query=query.Where(inv=>inv.CustomerId == customerId && inv.GarageId==GarageId && inv.OrganizationId == OrganizationId);
+            query=query.Where(inv=>inv.PlateNumber == PlateNumber && inv.GarageId==GarageId && inv.OrganizationId == OrganizationId);
             var invoice = await AsyncExecuter.FirstOrDefaultAsync(query);
             var invoiceDto = ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
             return Result.Success(invoiceDto);

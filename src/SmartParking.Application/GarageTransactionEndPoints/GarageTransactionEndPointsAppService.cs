@@ -412,12 +412,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (CheckIfLoggedOutFromMobile)
         {
 
-            var invoice = await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(Guid.Parse(customer), organizationId, GarageTransaction.GarageId);
+            var customerId = customer is not null ? Guid.Parse(customer) : Guid.Empty;
+
+            var invoice = await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(GarageTransaction.PlateNumber, organizationId, GarageTransaction.GarageId);
             await CloseCheckoutMobileTransaction(GarageTransaction.PlateNumber);
 
             _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
             var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, organization.Graceperiod);
-            await CloseEntryTransaction(GarageTransaction.PlateNumber);
             await CloseEntryTransaction(GarageTransaction.PlateNumber);
 
             if (invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && !PassGraceTime)
