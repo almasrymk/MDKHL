@@ -333,6 +333,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            if (CheckIfInvoiceIsPaid(invoice))
+            {
+                return Result.Error("InvoiceIsAlreadyPaid");
+
+            }
+
             var paymentRequest = new PaymentCheckoutRequestDto
             {
                 PaymentCategory=PaymentCategory.Invoice,
@@ -350,23 +356,34 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
-            if (invoice.InvoiceType == InvoiceType.Paid)
+            if (CheckIfInvoiceIsPaid(invoice))
             {
-               return Result.Error("InvoiceIsAlreadyPaid");
+                return Result.Error("InvoiceIsAlreadyPaid");
+
             }
+
             var paymentRequest = new PaymentCheckoutRequestDto
             {
-                PaymentCategory=PaymentCategory.Invoice,
-                PaymentMethod=PaymentMethod.Cash,
-                Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
-                CustomerId=invoice.CustomerId,
-                OrganizationId=invoice.OrganizationId,
-                InvoiceId=invoiceId,
-                PaymentName= PaymentType,
+                PaymentCategory = PaymentCategory.Invoice,
+                PaymentMethod = PaymentMethod.Cash,
+                Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+                CustomerId = invoice.CustomerId,
+                OrganizationId = invoice.OrganizationId,
+                InvoiceId = invoiceId,
+                PaymentName = PaymentType,
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
             return result;
         }
+    }
+
+    private static bool CheckIfInvoiceIsPaid(Invoice invoice)
+    {
+        if (invoice.InvoiceType == InvoiceType.Paid)
+        {
+            return true;
+        }
+        return false;
     }
 
     public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)
