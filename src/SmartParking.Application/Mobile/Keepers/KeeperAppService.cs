@@ -289,6 +289,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         Volo.Abp.Identity.IdentityUser? user;
         List<GarageTransaction> existingTransactions = new List<GarageTransaction>();
+        List<GarageTransaction> entranceTransactions = new List<GarageTransaction>();
+
 
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -302,21 +304,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
 
-            var entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn);
-
-            // Fetch all transactions with IsIn == false (exits)
-            var exitTransactions = await _garageTransactionRepository.GetListAsync(t => !t.IsIn);
-
-            // Filter to keep only entrance transactions that do not have a corresponding exit
-            existingTransactions = entranceTransactions
-                .Where(entrance =>
-                    !exitTransactions.Any(exit =>
-                        exit.PlateNumber == entrance.PlateNumber)) // Exit occurs after entry
-                .ToList();
+             entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn && t.CheckoutMobile==null);
 
         }
 
-        var sortedTransaction = existingTransactions.OrderByDescending(t => t.AccurateTime).ToList();
+        var sortedTransaction = entranceTransactions.OrderByDescending(t => t.AccurateTime).ToList();
 
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
         
@@ -353,7 +345,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
         }
     }
-    public async Task<Result<PaymentCheckoutDto>> PayCashForCustomerRequestAsync(int invoiceId,int PaymentType)
+    public async Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -361,15 +353,31 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             var paymentRequest = new PaymentCheckoutRequestDto
             {
                 PaymentCategory=PaymentCategory.Invoice,
-                PaymentMethod=(PaymentMethod) Enum.Parse(typeof(PaymentMethod), PaymentType.ToString()),
+                PaymentMethod=PaymentMethod.Cash,
                 Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
                 CustomerId=invoice.CustomerId,
                 OrganizationId=invoice.OrganizationId,
                 InvoiceId=invoiceId,
-                PaymentName= PaymentMethod.Cash.ToString(),
+                PaymentName= PaymentType,
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
-            return result;
+            return ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
         }
     }
+
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _invoiceRepository.GetQueryableAsync();
+           
+            var invoice = await AsyncExecuter.FirstOrDefaultAsync(
+                query.Where(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid)
+                .OrderByDescending(invo => invo.InvoiceTime));
+            return ObjectMapper.Map<Invoice, InvoiceDto>(invoice); 
+
+        }
+    }
+
 }

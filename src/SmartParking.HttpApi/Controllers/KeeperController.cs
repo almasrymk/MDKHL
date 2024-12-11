@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using UserDataDto = SmartParking.Mobile.Keepers.UserDataDto;
 
 namespace SmartParking.Controllers;
 
@@ -24,11 +25,12 @@ public class KeeperController : AbpController
 {
     private readonly IKeeperAppService _keeperAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
+    private readonly IUsersAppService _usersAppService;
 	private readonly ICurrentTenant _currentTenant;
 	private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService)
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -36,6 +38,7 @@ public class KeeperController : AbpController
         _currentTenant = currentTenant;
         _invoiceAppService = invoiceAppService;
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
+        _usersAppService = usersAppService;
     }
 
     [HttpPost("login")]
@@ -62,6 +65,12 @@ public class KeeperController : AbpController
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
     {
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
+    }
+    [HttpGet("lastinvoice")]
+    [Authorize]
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationId([FromQuery] int organizationId)
+    {
+        return await _keeperAppService.GetLastInvoiceByOrganizationIdAsync(organizationId);
     }
 
     [HttpGet("garageTransactionWithoutPlateNumber")]
@@ -108,18 +117,42 @@ public class KeeperController : AbpController
     
     [HttpGet("PayInvoiceByCustomerRequest")]
     [Authorize]
-    public async Task<Result<bool>> PayInvoiceByCustomerRequest(int InvoiceId, int PaymentType)
+    public async Task<Result<InvoiceDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType)
     {
-        var result= await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId,  PaymentType);
-        return result is not null ? true : false;
+       return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId,  PaymentType);
 
     }
     [HttpGet("KeeperCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId)
+    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType)
     {
-        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+        var invoice=await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+       return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType);
 
+
+    }
+
+
+    [HttpGet("KeeperPreCheckout")]
+    [Authorize]
+    public async Task<Result<CreateUpdateInvoiceDto>> KeeperPreCheckoutForTransaction(int transactionId)
+    {
+        return await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
+
+    }
+
+    [HttpPost("addprofileimage")]
+    [Authorize]
+    public async Task<Result<UserDataDto>> AddProfileImage(string image)
+    {
+        var result = await _usersAppService.UpdateImageAsync(CurrentUser.Id, image);
+        return Result.Success(new UserDataDto
+        {
+            FullName = result.Name,
+            Email = result.Email,
+            Phone = result.PhoneNumber,
+            Image = result.Image,
+        });
     }
 
 }

@@ -107,6 +107,8 @@ public interface IAuthenticationAppService : IApplicationService
 
     Task<bool> VerifyOtp(string Email, string OTP);
 
+    Task<Guid> GetCurrentCustomerId();
+
 
 
 
