@@ -15,47 +15,13 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Shared.MainLayout)">
             <NotAuthorized>
-               
+                <SmartParking.Blazor.Components.Pages.Login></SmartParking.Blazor.Components.Pages.Login>
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>
 </Router>
 @code {
-    private bool isAuthenticated;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
-        var currentUri = Navigation.ToBaseRelativePath(Navigation.Uri).ToLower();
-
-
-        // Avoid redirect loop if already on the login page
-        if (!isAuthenticated && currentUri != "login")
-        {
-            Navigation.NavigateTo("/login", true);
-        }
-        if (((currenttenant.Id != null || _currentUser.IsInRole(Enums.RolesType.Organization.ToString())) && (currentUri.Contains("organizations") || currentUri == "subscriptions" || currentUri == "subscriptiontypes") || currentUri == "packages") || (_currentUser.IsAuthenticated && currentUri == "login"))
-        {
-
-            Navigation.NavigateTo("/", true);
-
-        }
-        if ((_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin")) )
-        {
-          
-            if (currentUri == "/my-account")
-            {
-                Navigation.NavigateTo("/edit-profile", true);
-
-            }
-            if (currentUri == "/contact-data")
-            {
-                Navigation.NavigateTo("/", true);
-            }
-
-        }
-    }
+   
 
     
 }

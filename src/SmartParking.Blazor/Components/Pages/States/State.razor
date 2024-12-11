@@ -10,7 +10,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
-
+@attribute [Authorize(Roles = "Mdkhl , admin")]
 <PageTitle>@L["States"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["States"]</MudText>
 

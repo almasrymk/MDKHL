@@ -9,7 +9,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-
+@attribute [Authorize]
 <PageTitle>@L["Payments"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Payments"]</MudText>
 
