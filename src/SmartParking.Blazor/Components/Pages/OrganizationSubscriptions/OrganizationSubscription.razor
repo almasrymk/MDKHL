@@ -8,7 +8,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentTenant currentTenant
 
-
+@attribute [Authorize(Roles = "Organization")]
 
 <PageTitle>@L["Organization Subscription"]</PageTitle>
 <div class="d-flex justify-content-between align-items-center my-5 flex-column">

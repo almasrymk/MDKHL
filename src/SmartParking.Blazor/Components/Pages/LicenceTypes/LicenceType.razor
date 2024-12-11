@@ -6,7 +6,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
-
+@attribute [Authorize(Roles = "Mdkhl , admin")]
 @page "/licencetypes"
 
 <PageTitle>@L["LicenceTypes"]</PageTitle>

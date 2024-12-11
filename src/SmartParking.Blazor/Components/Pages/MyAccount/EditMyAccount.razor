@@ -27,6 +27,7 @@
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
+@attribute [Authorize(Roles = "Organization")]
 <PageTitle>@L["EditMyAccount"]</PageTitle>
 <div>
     <MudGrid>
