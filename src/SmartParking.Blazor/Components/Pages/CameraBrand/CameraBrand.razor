@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Lookups.CameraBrands
 @using Volo.Abp.Application.Dtos
@@ -7,6 +8,8 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Mdkhl , admin")]
+
 @page "/Camerabrands"
 
 <PageTitle>@L["CameraBrands"]</PageTitle>

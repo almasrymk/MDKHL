@@ -9,7 +9,7 @@
 @inject ICurrentTenant CurrentTenant
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @page "/subscriptiontypes"
-
+@attribute [Authorize(Roles = "Mdkhl , admin")]
 <PageTitle>@L["SubscriptionType"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["SubscriptionType"]</MudText>
 

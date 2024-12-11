@@ -10,6 +10,7 @@
 @inject IUsersAppService UsersAppService
 @inject ICurrentUser CurrentUser
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 <PageTitle>@L["Edit Profile"]</PageTitle>
 <div class="w-100">
