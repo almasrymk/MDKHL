@@ -328,7 +328,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<PaymentCheckoutDto>> CheckoutAsync(int invoiceId)
+    public async Task<Result<InvoiceDto>> CheckoutAsync(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -348,19 +348,18 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 OrganizationId=invoice.OrganizationId,
                 InvoiceId=invoiceId,
             };
-            return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+
+            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            invoiceDto.QrCodeInvoice = result.QrCodeInvoice;
+            return invoiceDto;
         }
     }
-    public async Task<Result<PaymentCheckoutDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
+    public async Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
-            if (CheckIfInvoiceIsPaid(invoice))
-            {
-                return Result.Error("InvoiceIsAlreadyPaid");
-
-            }
 
             var paymentRequest = new PaymentCheckoutRequestDto
             {
@@ -373,7 +372,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 PaymentName = PaymentType,
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
-            return result;
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            invoiceDto.QrCodeInvoice=result.QrCodeInvoice;
+            return invoiceDto;
         }
     }
 
