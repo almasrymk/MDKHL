@@ -350,6 +350,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            if (invoice.InvoiceType == InvoiceType.Paid)
+            {
+               return Result.Error("InvoiceIsAlreadyPaid");
+            }
             var paymentRequest = new PaymentCheckoutRequestDto
             {
                 PaymentCategory=PaymentCategory.Invoice,
