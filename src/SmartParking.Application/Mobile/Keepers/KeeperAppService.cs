@@ -289,6 +289,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         Volo.Abp.Identity.IdentityUser? user;
         List<GarageTransaction> existingTransactions = new List<GarageTransaction>();
+        List<GarageTransaction> entranceTransactions = new List<GarageTransaction>();
+
 
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -302,11 +304,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
 
-            var entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn && t.CheckoutMobile==null);
+             entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn && t.CheckoutMobile==null);
 
         }
 
-        var sortedTransaction = existingTransactions.OrderByDescending(t => t.AccurateTime).ToList();
+        var sortedTransaction = entranceTransactions.OrderByDescending(t => t.AccurateTime).ToList();
 
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
         
