@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using UserDataDto = SmartParking.Mobile.Keepers.UserDataDto;
 
 namespace SmartParking.Controllers;
 
@@ -24,11 +25,12 @@ public class KeeperController : AbpController
 {
     private readonly IKeeperAppService _keeperAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
+    private readonly IUsersAppService _usersAppService;
 	private readonly ICurrentTenant _currentTenant;
 	private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService)
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -36,6 +38,7 @@ public class KeeperController : AbpController
         _currentTenant = currentTenant;
         _invoiceAppService = invoiceAppService;
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
+        _usersAppService = usersAppService;
     }
 
     [HttpPost("login")]
@@ -136,6 +139,20 @@ public class KeeperController : AbpController
     {
         return await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
 
+    }
+
+    [HttpPost("addprofileimage")]
+    [Authorize]
+    public async Task<Result<UserDataDto>> AddProfileImage(string image)
+    {
+        var result = await _usersAppService.UpdateImageAsync(CurrentUser.Id, image);
+        return Result.Success(new UserDataDto
+        {
+            FullName = result.Name,
+            Email = result.Email,
+            Phone = result.PhoneNumber,
+            Image = result.Image,
+        });
     }
 
 }

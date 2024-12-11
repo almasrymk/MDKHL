@@ -554,7 +554,15 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return false;
     }
 
+    public async Task<Guid> GetCurrentCustomerId()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
+            var customer = await _customerRepository.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
 
-
+    }
 }

@@ -15,14 +15,17 @@ namespace SmartParking.Controllers;
 public class AuthenticationsController : ControllerBase
 {
     private readonly IAuthenticationAppService _authenticationApp;
+    private readonly IUsersAppService _usersAppService;
     private readonly ICurrentUser _user;
     private readonly ICurrentTenant _currentTenant;
 
-    public AuthenticationsController(IAuthenticationAppService authentication,ICurrentUser user, ICurrentTenant currentTenant)
+
+    public AuthenticationsController(IAuthenticationAppService authentication, ICurrentUser user, ICurrentTenant currentTenant, IUsersAppService usersAppService)
     {
         _authenticationApp = authentication;
         _user = user;
         _currentTenant = currentTenant;
+        _usersAppService = usersAppService;
     }
     [HttpPost("login")]
     [AllowAnonymous]
@@ -59,6 +62,21 @@ public class AuthenticationsController : ControllerBase
        
         return await _authenticationApp.UpdateUser(phone,password);
     }
+    [HttpPost("addprofileimage")]
+    [Authorize]
+    public async Task<Result<UserDataDto>> AddProfileImage(string image)
+    {
+        var currentCustomerId=await _authenticationApp.GetCurrentCustomerId();
+        var result = await _usersAppService.UpdateImageAsync(currentCustomerId, image);
+        return Result.Success( new UserDataDto
+        {
+            FullName=result.Name,
+            Email=result.Email,
+            Phone=result.PhoneNumber,
+            Image=result.Image,
+        });
+    }
+
 
     [HttpPost("register")]
     [AllowAnonymous]
