@@ -18,6 +18,8 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public string CustomerEnName { get; set; }
     public bool IsPackage { get; set; }
     public Guid? CustomerId { get; set; }
+    public string EntryTransactionImage { get; set; }
+    public string ExitTransactionImage { get; set; }
 
 
 

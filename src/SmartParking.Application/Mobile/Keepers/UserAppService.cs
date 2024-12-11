@@ -101,7 +101,7 @@ public class UserAppService : ApplicationService, IUserAppService
         Volo.Abp.Identity.IdentityUser? user;
         using (DataFilter.Disable<IMultiTenant>())
         {
-             user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+            user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         }
         if (user is null)
         {
@@ -112,6 +112,19 @@ public class UserAppService : ApplicationService, IUserAppService
         }
         user.SetPhoneNumber(phoneNumber, true);
         // Change password (if you don’t have the current password, use RemovePassword and AddPassword)
+        user= await ChangePassword(password, user);
+
+        return new UserDataDto
+        {
+            FullName = user.UserName,
+            Email = user.Email,
+            Phone = user.PhoneNumber,
+            Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
+        };
+    }
+
+    private async Task<Result<Volo.Abp.Identity.IdentityUser?>> ChangePassword(string password, Volo.Abp.Identity.IdentityUser? user)
+    {
         var removePasswordResult = await _userManager.RemovePasswordAsync(user);
         if (!removePasswordResult.Succeeded)
         {
@@ -129,14 +142,6 @@ public class UserAppService : ApplicationService, IUserAppService
                 ErrorMessage = "failed to set new password"
             });
         }
-
-        return new UserDataDto
-        {
-            FullName = user.UserName,
-            Email = user.Email,
-            Phone = user.PhoneNumber,
-            Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png"
-        };
+        return user;
     }
-
 }

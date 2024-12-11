@@ -29,6 +29,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -334,7 +335,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
           exsitCustomer?.IdentityUser.Name ?? customerEnName,
           exsitCustomer?.ArabicName ?? customerArName,
           IsPackage,
+          GarageTransaction.VehiclePicture,
           exsitCustomer?.Id ?? null
+         
+          
         );
         return invoice;
     }
@@ -347,7 +351,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (totalHours == 0)
         {
 
-        return await GenrateInvoiceNumberAndInitiateInvoice(EntranceTime, customer, GarageTransaction, totalHours, 0, false);
+          return await GenrateInvoiceNumberAndInitiateInvoice(EntranceTime, customer, GarageTransaction, totalHours, 0, false);
 
         }
         var packageDto = await CheckActivePackageForCustomer(customerId, GarageTransaction.OrganizationID);
@@ -410,6 +414,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
             var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, organization.Graceperiod);
+            await CloseEntryTransaction(GarageTransaction.PlateNumber);
+            await CloseEntryTransaction(GarageTransaction.PlateNumber);
+
             if (invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && !PassGraceTime)
             {
 
@@ -532,8 +539,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
     private async Task<CreateUpdateInvoiceDto> CreateInvoice(int GarageId, string GeneratedInvoiceNumber, decimal Price, int OrganizationID
-        , int TotalHours, string PlateNumber, DateTime InvoiceTime, DateTime? EntranceTime, string CustomerEnName, string CustomerArName, bool IsPackage, Guid? customerId = null )
+        , int TotalHours, string PlateNumber, DateTime InvoiceTime, DateTime? EntranceTime, string CustomerEnName, string CustomerArName, bool IsPackage,string ExitTransactionImage , Guid? customerId = null )
     {
+        var entryTransactionImage = await FindEntranceImage(PlateNumber);
         var invoice = new CreateUpdateInvoiceDto
         {
             GarageId = GarageId,
@@ -548,7 +556,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             CustomerEnName = CustomerEnName,
             CustomerArName = CustomerArName,
             CustomerId = customerId,
-            IsPackage = IsPackage
+            IsPackage = IsPackage, 
+            ExitTransactionImage = ExitTransactionImage,
+            EntryTransactionImage = entryTransactionImage
         };
 
         return invoice;
@@ -726,6 +736,23 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     .FirstOrDefault();
 
             return latestTransaction?.AccurateTime;
+        }
+    }
+        private async Task<string> FindEntranceImage(string? plateNumber)
+    {
+        // Get the list of transactions for the provided plate number
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+
+
+            var latestTransaction = query
+                    .Where(gt => (gt.PlateNumber == null || gt.PlateNumber == plateNumber) && gt.CameraType == CameraType.Entry && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime) // or AccurateTime
+                    .FirstOrDefault();
+
+            return latestTransaction?.VehiclePicture;
         }
     }
 

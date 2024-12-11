@@ -61,4 +61,5 @@ public interface IKeeperAppService
 
     Task<Result<PaymentCheckoutDto>> CheckoutAsync(int invoiceId);
     Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType);
+
 }
