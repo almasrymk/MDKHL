@@ -29,6 +29,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -410,6 +411,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
             var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, organization.Graceperiod);
+            await CloseEntryTransaction(GarageTransaction.PlateNumber);
+            await CloseEntryTransaction(GarageTransaction.PlateNumber);
+
             if (invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && !PassGraceTime)
             {
 
