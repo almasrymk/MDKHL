@@ -10,7 +10,7 @@
 @inject ICurrentTenant CurrentTenant
 
 @page "/garagetransactions"
-
+@attribute [Authorize]
 <PageTitle>@L["GarageTransactions"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["GarageTransactions"]</MudText>
 

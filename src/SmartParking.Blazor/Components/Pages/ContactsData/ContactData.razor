@@ -12,7 +12,7 @@
 @inject IDialogService Dialog
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
-@attribute [Authorize(Roles = "Organization")]
+@attribute [Authorize]
 <PageTitle>@L["Contact Data"]</PageTitle>
 
 <SPDataGrid PageName=@L["Organization Contact Data"] Data="@itemData" OnClickRowDelete="DeleteContactData" OnClickRowView="ViewContactData" OnClickRowEdit="UpdateContactData" OnAdd="CreateContactData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnFiltering="HandleFilter" OnSearching="HandleSearch"></SPDataGrid>

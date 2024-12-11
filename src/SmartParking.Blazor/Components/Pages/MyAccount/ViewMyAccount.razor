@@ -27,7 +27,7 @@
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
 
-@attribute [Authorize(Roles = "Organization")]
+@attribute [Authorize]
 <PageTitle>@L["ViewMyAccount"]</PageTitle>
 <div>
     <MudGrid>
