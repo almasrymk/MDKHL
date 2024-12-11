@@ -302,17 +302,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
 
-            var entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn);
-
-            // Fetch all transactions with IsIn == false (exits)
-            var exitTransactions = await _garageTransactionRepository.GetListAsync(t => !t.IsIn);
-
-            // Filter to keep only entrance transactions that do not have a corresponding exit
-            existingTransactions = entranceTransactions
-                .Where(entrance =>
-                    !exitTransactions.Any(exit =>
-                        exit.PlateNumber == entrance.PlateNumber)) // Exit occurs after entry
-                .ToList();
+            var entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn && t.CheckoutMobile==null);
 
         }
 
