@@ -25,13 +25,15 @@ namespace SmartParking.Authentication;
 [Authorize]
 public class UsersAppService : ApplicationService, IUsersAppService
 {
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
 
-    public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
+    public UsersAppService(SignInManager<IdentityUser> signInManager,RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter)
     {
+        _roleManager = roleManager;
         _userManager = userManager;
         _userRepository = userRepository;
         _dataFilter = dataFilter;
@@ -58,7 +60,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
         }
 
-        await _userManager.AddToRolesAsync(user, input.RoleNames);
+        await _userManager.AddToRoleAsync(user, input.RoleNames[0]);
 
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;

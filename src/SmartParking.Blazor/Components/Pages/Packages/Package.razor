@@ -2,15 +2,17 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Packages
 @using SmartParking.Localization
+@using SmartParking.Permissions
+@using SmartParking.Permissions.PackagePermissions
 @using Volo.Abp.MultiTenancy
 @inject IPackagesAppService PackagesAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Authorization
 
-
-@attribute [Authorize]
+@attribute [Authorize(PackagePermissions.Default)]
 <PageTitle>@L["Packages"]</PageTitle>
 
 <MudText Typo="Typo.h5" Class="mb-2">@L["Packages"]</MudText>

@@ -27,7 +27,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectExtending;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Organizations;
@@ -36,6 +35,7 @@ namespace SmartParking.Organizations;
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
+    private readonly IdentityRoleManager _identityRole;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IUsersAppService _usersAppService;
@@ -47,9 +47,10 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     public IDataFilter _softDeleteFilter { get; }
 
-    public OrganizationsAppService(IRepository<Organization, int> repository, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService, ITenantManager tenantManager, IRepository<Tenant, Guid> tenantRepository, IRepository<Garage, int> garageRepository, ICitiesAppService cityAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository, IdentityRoleManager identityRole, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService, ITenantManager tenantManager, IRepository<Tenant, Guid> tenantRepository, IRepository<Garage, int> garageRepository, ICitiesAppService cityAppService) : base(repository)
     {
         _repository = repository;
+        _identityRole = identityRole;
         _usersAppService = usersAppService;
         _customerCategoryAppService = customerCategoryAppService;
         _softDeleteFilter = softDeleteFilter;
@@ -61,6 +62,78 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     }
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
+    {
+        Tenant tenant = await CreateTenat(input);
+        var role = await AddRole(tenant.Id, input.UserName);
+        await CheckCommercial(input);
+        Organization organization = await CreateOrganization(input, tenant);
+        
+        await CurrentUnitOfWork.SaveChangesAsync();
+        await AddUser(input, tenant, organization, role.Name);
+        organization.Code = CodeGenerator(organization.Id);
+        await CurrentUnitOfWork.SaveChangesAsync();
+        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id, CreatedByOrganization = true });
+        return ObjectMapper.Map<Organization, OrganizationDto>(organization);
+
+
+    }
+
+    private async Task<IdentityRole?> AddRole(Guid tenantId,string userName)
+    {
+        var role = new IdentityRole(GuidGenerator.Create(),RolesType.Organization.ToString()+userName, tenantId);
+        role.IsPublic =true;
+       var roleCreate= await _identityRole.CreateAsync(role);
+        await CurrentUnitOfWork.SaveChangesAsync();
+        return role;
+    }
+
+    private async Task AddUser(CreateUpdateOrganiztionDto input, Tenant tenant, Organization organization,string roleName)
+    {
+        UserCreateDto user = new UserCreateDto()
+        {
+            UserName = input.UserName,
+            PhoneNumber = input.PhoneNum,
+            Email = input.ContactMail,
+            Password = "P@ssw0rd",
+            RoleNames = [roleName],
+            Name = input.EnglishName,
+            IsActive = true,
+            UserType = 1,
+            OrganizationId = organization.Id,
+            TenantId = tenant.Id,
+
+        };
+
+        var userCreated = await _usersAppService.CreateAsync(user);
+    }
+
+    private async Task<Organization> CreateOrganization(CreateUpdateOrganiztionDto input, Tenant tenant)
+    {
+        var city = await _cityAppService.GetAsync(input.CityId);
+        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
+
+        bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
+        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
+        organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
+        organization.Address += " , " + input.PostalCode;
+        organization.TenantId = tenant.Id;
+        organization.SubscriptionId = input.SubscriptionId;
+        await _repository.InsertAsync(organization, autoSave: true);
+        return organization;
+    }
+
+    private async Task CheckCommercial(CreateUpdateOrganiztionDto input)
+    {
+        var query = await _repository.GetListAsync(x => x.CommercialRegistrationNumber == input.CommercialRegistrationNumber);
+        Console.WriteLine($"count of Commercial Registration Number {query.Count}");
+        if (query.Count > 0)
+        {
+            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
+
+        }
+    }
+
+    private async Task<Tenant> CreateTenat(CreateUpdateOrganiztionDto input)
     {
         var tenant = await _tenantManager.CreateAsync(input.UserName);
         var input1 = new TenantCreateDto
@@ -74,53 +147,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await _tenantRepository.InsertAsync(tenant);
         tenant.CreatorId = CurrentUser.Id;
         await CurrentUnitOfWork.SaveChangesAsync();
-        var query = await _repository.GetListAsync(x => x.CommercialRegistrationNumber == input.CommercialRegistrationNumber);
-        Console.WriteLine($"count of Commercial Registration Number {query.Count}");
-        if (query.Count > 0)
-        {
-            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
-
-        }
-        var city =await _cityAppService.GetAsync(input.CityId);
-
-
-        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
-
-        bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
-        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
-        organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
-        organization.Address += " , " + input.PostalCode;
-        organization.TenantId = tenant.Id;
-        organization.SubscriptionId=input.SubscriptionId;
-        await _repository.InsertAsync(organization, autoSave: true);
-
-        //await CurrentUnitOfWork.SaveChangesAsync();
-
-
-        UserCreateDto user = new UserCreateDto()
-        {
-            UserName = input.UserName,
-            PhoneNumber = input.PhoneNum,
-            Email = input.ContactMail,
-            Password = "P@ssw0rd",
-            RoleNames = [RolesType.Organization.ToString()],
-            Name = input.EnglishName,
-            IsActive = true,
-            UserType = 1,
-            OrganizationId = organization.Id,
-            TenantId = tenant.Id,
-
-        };
-
-        var userCreated = await _usersAppService.CreateAsync(user);
-        organization.Code = CodeGenerator(organization.Id);
-        await CurrentUnitOfWork.SaveChangesAsync();
-        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id, CreatedByOrganization = true });
-        return ObjectMapper.Map<Organization, OrganizationDto>(organization);
-
-
+        return tenant;
     }
-   
+
     ///<inheritdoc/>
     //[Authorize(Roles = "Mdkhl")]
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
