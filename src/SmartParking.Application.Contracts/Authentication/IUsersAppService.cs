@@ -1,9 +1,11 @@
 ﻿
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Authentication;
 
@@ -73,4 +75,5 @@ public interface IUsersAppService:  IApplicationService
 
     Task<UserDto> AssignRoleToUser(Guid userId,string roleName);
     Task<UserDto> UpdateImageAsync(Guid? id, string Image);
+    Task<UserDto> CreateWithRoleAsync(UserCreateDto input, IdentityRole role);
 }

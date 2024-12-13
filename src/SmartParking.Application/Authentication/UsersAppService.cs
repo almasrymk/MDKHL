@@ -15,28 +15,31 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
+using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using QRCoder;
 using SmartParking.Entities.Invoices;
 using SmartParking.Invoices;
 using System.IO;
+using Volo.Abp.PermissionManagement;
+using static Volo.Abp.Identity.IdentityPermissions;
 
 namespace SmartParking.Authentication;
 
 [Authorize]
 public class UsersAppService : ApplicationService, IUsersAppService
 {
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
+    private readonly IPermissionManager _permissionManager;
 
-    public UsersAppService(SignInManager<IdentityUser> signInManager,RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager
-        , IMyUserRepository userRepository, IDataFilter dataFilter)
+    public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
+        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager  permissionManager)
     {
-        _roleManager = roleManager;
         _userManager = userManager;
         _userRepository = userRepository;
         _dataFilter = dataFilter;
+        _permissionManager = permissionManager;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateAsync(UserCreateDto input)
@@ -46,6 +49,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception(message: "Must be enter Role");
         }
         var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
+        
         await CheckPhoneIsUnique(input.PhoneNumber);
         user.Name = input.UserName;
         user.Surname = input.Surname;
@@ -62,6 +66,31 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         await _userManager.AddToRoleAsync(user, input.RoleNames[0]);
 
+        var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+        return userDto;
+    }
+    
+    public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input,IdentityRole role)
+    {
+        var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
+        
+        await CheckPhoneIsUnique(input.PhoneNumber);
+        user.Name = input.UserName;
+        user.Surname = input.Surname;
+        user.SetProperty("OtpCode", null);
+        user.SetProperty("OtpExpirationDate", DateTime.Now);
+        user.SetProperty("UserTypeId", input.UserType);
+        user.SetProperty("OrganizationId", input.OrganizationId);
+        var createdUser = await _userManager.CreateAsync(user, input.Password);
+        await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
+        if (!createdUser.Succeeded)
+        {
+            throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
+        }
+
+        //await _userManager.AddToRoleAsync(user, input.RoleNames[0]);
+        user.AddRole(role.Id);
+        await _permissionManager.SetAsync("U", user.Id.ToString(), "AbpIdentity.Users.ManagePermissions", true);
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
     }

@@ -1,9 +1,11 @@
 ﻿@page "/package"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Packages
 @using SmartParking.Localization
 @using SmartParking.Permissions
 @using SmartParking.Permissions.PackagePermissions
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @inject IPackagesAppService PackagesAppService
 @inject IDialogService Dialog
@@ -11,11 +13,12 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Organization")]
+@inherits AbpCrudPageBase<IPackagesAppService, PackageDto, int, PagedAndSortedResultRequestDto, CreateUpdatePackageDto>
 
-@attribute [Authorize(PackagePermissions.Default)]
 <PageTitle>@L["Packages"]</PageTitle>
 
 <MudText Typo="Typo.h5" Class="mb-2">@L["Packages"]</MudText>
 
-<SPDataGrid PageName=@L["Packages"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["Packages"] Data="@itemData" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission"  TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 

@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;
+using SmartParking.Permissions.PackagePermissions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,6 +13,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.PermissionManagement;
 
 namespace SmartParking.Blazor.Components.Pages.Packages;
 
@@ -36,7 +38,10 @@ public partial class Package
 	public Package(IStringLocalizer<SmartParkingResource> localizer)
 	{
 		_localizer = localizer;
-	}
+        CreatePolicyName = PackagePermissions.Create;
+        UpdatePolicyName = PackagePermissions.Edit;
+        DeletePolicyName = PackagePermissions.Delete;
+    }
 
 	/// <summary>
 	/// filter for cameras on the server side using the camera columns.

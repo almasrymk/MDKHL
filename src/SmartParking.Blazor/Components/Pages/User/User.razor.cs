@@ -12,11 +12,24 @@ using SmartParking.Authentication;
 using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Garages;
 using SmartParking.OrganizationsGarages;
+using Volo.Abp.PermissionManagement.Blazor.Components;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Volo.Abp.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.Identity.Blazor;
+using Volo.Abp.Identity.Localization;
+using Blazorise;
+using Volo.Abp.MultiTenancy;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using Volo.Abp.TenantManagement;
+using SmartParking.Permissions;
+using SmartParking.Permissions.PackagePermissions;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
 public partial class User
 {
+    protected PermissionManagementModal PermissionManagementModal;
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -24,16 +37,21 @@ public partial class User
     private TableData itemData = new TableData();
 
     public bool ViewAdd { get; set; } = true;
+    protected bool HasManagePermissionsPermission { get; set; } = true;
+    protected const string PermissionProviderName = "U";
 
     private string termSearch;
-    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private readonly ICurrentUser _currentUser;
+    protected string ManagePermissionsPolicyName; 
 
     public User(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
         _localizer = localizer;
         _currentUser = currentUser;
+        
+        ManagePermissionsPolicyName = IdentityPermissions.Users.ManagePermissions;
+    
     }
 
     protected override Task OnInitializedAsync()
@@ -99,6 +117,7 @@ public partial class User
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
+        CurrentTenant.Change(null);
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
         Console.WriteLine(RowPerPage);
@@ -179,6 +198,28 @@ public partial class User
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
+    
+    protected override async Task SetPermissionsAsync()
+    {
+        await base.SetPermissionsAsync();
+        HasManagePermissionsPermission =
+            await AuthorizationService.IsGrantedAsync(PackagePermissions.Default);
+    }
+    
+    public async Task AddPermission(RowDef row)
+    {
+        var tenant = await AuthenticationAppService.GetTenantByNameDtoAsync(row.Cells[1].Value);
+        
+        
+            //await PermissionManager.SetAsync("U", row.Cells[0].Value, "AbpIdentity.Users", true);
+            await PermissionManagementModal.OpenAsync(PermissionProviderName,
+                                row.Cells[0].Value,
+                                tenant.Id,
+                                row.Cells[1].Value);
+        
+
+        
+    }
     public async Task<IDialogReference> AssignRole(string id)
     {
         var Gid = Guid.Parse(id);
@@ -188,6 +229,9 @@ public partial class User
         };
 
         return await DialogService.ShowAsync<AssignationDialog>("Assign Role", parameters);
+
+
+
 
     }
 

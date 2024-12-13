@@ -6,6 +6,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,12 @@ public class PackagesAppService : CrudAppService<
         _customerRepository = customerRepository;
         _dataFilter = dataFilter;
         _organizations = organizations;
+        GetPolicyName = PackagePermissions.Default;
+        GetListPolicyName = PackagePermissions.Default;
+        CreatePolicyName = PackagePermissions.Create;
+        UpdatePolicyName = PackagePermissions.Edit;
+        DeletePolicyName = PackagePermissions.Delete;
+
     }
 
 

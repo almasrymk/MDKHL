@@ -189,7 +189,6 @@
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
 
-
         var name = CurrentUser.UserName;
         if (currenttenant.Id == null)
         {

@@ -2,18 +2,32 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
 @using SmartParking.Localization
+@using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
+@using Volo.Abp.PermissionManagement
 @inject IDialogService DialogService
 @inject IUsersAppService UsersAppService
+@inject IAuthenticationAppService AuthenticationAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 @inject ICurrentTenant currrentTenant
+@inject IPermissionManager PermissionManager
 
+@* @attribute [Authorize(IdentityPermissions.Users.Default)] *@
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.BlazoriseUI.Components.ObjectExtending
+@using Volo.Abp.Identity.Localization
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+
+@inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
 
 
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
-<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd" OnClickRowView="HandleView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" ShowAssign="true" OnClickRowEdit="HandleEdit" OnClickAssign="AssignRole" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd" OnClickRowView="HandleView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" ShowAssign="true" OnClickRowEdit="HandleEdit" OnClickCar="AddPermission" OnClickAssign="AssignRole" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
 
+
+
+<PermissionManagementModal @ref="PermissionManagementModal" />
