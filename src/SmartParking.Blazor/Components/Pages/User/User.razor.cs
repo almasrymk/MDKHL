@@ -176,28 +176,6 @@ public partial class User
         }
         itemData = tableData;
     }
-
-
-
-
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
     
     protected override async Task SetPermissionsAsync()
     {
@@ -208,17 +186,11 @@ public partial class User
     
     public async Task AddPermission(RowDef row)
     {
-        var tenant = await AuthenticationAppService.GetTenantByNameDtoAsync(row.Cells[1].Value);
-        
-        
-            //await PermissionManager.SetAsync("U", row.Cells[0].Value, "AbpIdentity.Users", true);
+        var user = await UsersAppService.GetAsync(Guid.Parse(row.Cells[0].Value));
             await PermissionManagementModal.OpenAsync(PermissionProviderName,
                                 row.Cells[0].Value,
-                                tenant.Id,
+                                user.TenantId,
                                 row.Cells[1].Value);
-        
-
-        
     }
     public async Task<IDialogReference> AssignRole(string id)
     {

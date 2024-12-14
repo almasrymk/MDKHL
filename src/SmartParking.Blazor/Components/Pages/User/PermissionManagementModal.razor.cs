@@ -46,7 +46,7 @@ public partial class PermissionManagementModal
     protected bool _selectAllDisabled;
 
     protected string _permissionGroupSearchText;
-    protected Guid _tenantId;
+    protected Guid? _tenantId;
 
     protected bool GrantAll
     {
@@ -96,7 +96,7 @@ public partial class PermissionManagementModal
         L = localizer;
     }
 
-    public virtual async Task OpenAsync(string providerName, string providerKey, Guid tenantId, string entityDisplayName = null)
+    public virtual async Task OpenAsync(string providerName, string providerKey, Guid? tenantId, string entityDisplayName = null)
     {
         try
         {

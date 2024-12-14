@@ -19,14 +19,10 @@ namespace SmartParking.Blazor.Components.Pages.User;
 public partial class AddUser
 {
     public UserCreateDto userCreate { get; set; }
-    private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     private string userRole { get; set; }
     private string[] Roles = new string[1];
     private MudForm form;
-
-
-    TimeEditMode editMode = new TimeEditMode();
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,51 +36,46 @@ public partial class AddUser
     }
     private async void SubmitCreate()
     {
+        var (orgId, tenantId) = await GetOrganizationDetailsAsync();
+        var successMessage = L["User CreatedSuccessfully"];
+        var errorMessage = L["Can'tCreateUser "];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
+        await AddUserAsync(orgId, tenantId, successMessage, errorMessage, validationErrorMessage);
+    }
+
+    private async Task<(int orgId, Guid? tenantId)> GetOrganizationDetailsAsync()
+    {
         int orgId = 0;
-        Guid? TenantId = null;
+        Guid? tenantId = null;
+
         if (currrentTenant.Id is not null)
         {
             var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
             orgId = org.Id;
-            TenantId = org.TenantId;
+            tenantId = org.TenantId;
         }
-        if(userRole == RolesType.Organization.ToString())
+        else if (userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString())
         {
             var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
             orgId = org.Id;
-            TenantId = org.TenantId;
+            tenantId = org.TenantId;
         }
-        if (userRole == RolesType.Keeper.ToString())
-        {
-            var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
-            orgId = org.Id;
-            TenantId = org.TenantId;
-        }
-        var successedMessage = L["UserCreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateUser"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        await AddUserAsync(orgId, TenantId, successedMessage, errorMessage, validationErrorMessage);
+
+        return (orgId, tenantId);
     }
 
-    private async Task AddUserAsync(int orgId, Guid? TenantId, LocalizedString successedMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
+    private async Task AddUserAsync(int orgId, Guid? tenantId, LocalizedString successMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
     {
         try
         {
-            CheckUser(orgId, TenantId);
+            CheckUser(orgId, tenantId);
+            var role = await UsersAppService.FindRoleByTenantIdAsync(userRole, tenantId);
+            var user = await UsersAppService.CreateWithRoleAsync(userCreate,role);
 
-            var user = await UsersAppService.CreateAsync(userCreate);
-            if (user != null)
-            {
-                ShowSnackbar($"{successedMessage}", Severity.Success);
-                Task.Delay(1000);
-                NavigationManager.NavigateTo("/users", true);
-            }
-            else
-            {
-                ShowSnackbar($"{errorMessage}", Severity.Error);
-
-
-            }
+            ShowSnackbar($"{successMessage}", Severity.Success);
+            await Task.Delay(1000); // Awaiting the delay to ensure it completes before navigation
+            NavigationManager.NavigateTo("/users", true);
         }
         catch (AbpValidationException validationException)
         {
@@ -95,46 +86,40 @@ public partial class AddUser
         }
         catch (BusinessException ex)
         {
-
-            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Message}", Severity.Error);
         }
         catch (Exception ex)
         {
-
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Message}", Severity.Error);
         }
     }
 
-    private void CheckUser(int orgId, Guid? TenantId)
+    private void CheckUser(int orgId, Guid? tenantId)
     {
-        if (userRole == RolesType.Mdkhl.ToString())
-        {
-            userCreate.TenantId = TenantId;
-            userCreate.UserType = 0;
-        }
-        else if (userRole == RolesType.Organization.ToString() )
-        {
-            userCreate.OrganizationId = orgId;
-            userCreate.TenantId = TenantId;
-            userCreate.UserType = 1;
-            userRole = RolesType.Organization.ToString();
-        }
-        else if(userRole == RolesType.Keeper.ToString())
-        {
-            userCreate.OrganizationId = orgId;
-            userCreate.TenantId = TenantId;
-            userCreate.UserType = 4;
-            userRole = RolesType.Keeper.ToString();
-        }
-
         userCreate.Password = "P@ssw0rd";
-        Roles[0] = userRole;
-        userCreate.RoleNames = Roles;
         userCreate.UserName = userCreate.PhoneNumber;
+
+        switch (userRole)
+        {
+            case var role when role == RolesType.Mdkhl.ToString():
+                userCreate.TenantId = tenantId;
+                userCreate.UserType = 0;
+                break;
+            case var role when role == RolesType.Organization.ToString():
+                userCreate.OrganizationId = orgId;
+                userCreate.TenantId = tenantId;
+                userCreate.UserType = 1;
+                break;
+            case var role when role == RolesType.Keeper.ToString():
+                userCreate.OrganizationId = orgId;
+                userCreate.TenantId = tenantId;
+                userCreate.UserType = 4;
+                break;
+        }
     }
 
 
