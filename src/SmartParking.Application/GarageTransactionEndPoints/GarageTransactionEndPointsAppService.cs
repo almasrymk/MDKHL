@@ -317,8 +317,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<InvoiceDto> SaveTransactionWithInvoice(CreateUpdateInvoiceDto invoice, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-        invoice.ExitTransactionImage = garageTransactionDto.VehiclePicture;
-
         var resultedInvoice= await _invoiceAppService.CreateAsync(invoice);
         return resultedInvoice;
     }
@@ -377,9 +375,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return transaction.CheckoutMobile != null ? true : false;
 
     }
-    private async Task<bool> CheckIfPassGraceTime(DateTime Checkout, int GraceMinutes)
+    private async Task<bool> CheckIfPassGraceTime(DateTime CurrentCheckoutTime,DateTime? lastCheckoutTime , int GraceMinutes)
     {
-        if ((int)(DateTime.Now - Checkout).TotalMinutes > GraceMinutes)
+        if ((int)(CurrentCheckoutTime - lastCheckoutTime).Value.TotalMinutes > GraceMinutes)
         {
             return true;
         }
@@ -418,7 +416,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await CloseCheckoutMobileTransaction(GarageTransaction.PlateNumber);
 
             _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
-            var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, organization.Graceperiod);
+            var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, invoice.Value.InvoiceTime, organization.Graceperiod);
             await CloseEntryTransaction(GarageTransaction.PlateNumber);
 
             if (invoice.Value.InvoiceType == InvoiceType.Paid.ToString() && !PassGraceTime)
@@ -742,7 +740,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return latestTransaction?.AccurateTime;
         }
     }
-        private async Task<string> FindEntranceImage(string? plateNumber)
+    private async Task<string> FindEntranceImage(string? plateNumber)
     {
         // Get the list of transactions for the provided plate number
         using (DataFilter.Disable<IMultiTenant>())

@@ -352,6 +352,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
             var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
             invoiceDto.QrCodeInvoice = result.QrCodeInvoice;
+            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
             return invoiceDto;
         }
     }
