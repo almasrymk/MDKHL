@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using SmartParking.Enums;
@@ -6,6 +7,7 @@ using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
+using SmartParking.Permissions.OrganizationPermissions;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
@@ -74,7 +76,7 @@ public partial class OrganizationEdit
     public string ViewSubscriptionArabicName { get; set; }
     public  int FreeMinutes { get; set; }
     public  int Graceperiod { get; set; }
-
+    private bool HasChangeStatusPermission;
 
 
 
@@ -318,6 +320,7 @@ public partial class OrganizationEdit
     }
     protected override async Task OnInitializedAsync()
     {
+        HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(OrganizationPermissions.ChanageStatus);
         await FetchData();
 
         countries = await CountriesAppService.GetCountryLookupAsync();

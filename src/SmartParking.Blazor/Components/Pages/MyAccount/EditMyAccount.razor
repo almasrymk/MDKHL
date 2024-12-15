@@ -27,6 +27,7 @@
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
+@inject IAuthorizationService AuthorizationService
 
 @attribute [Authorize]
 <PageTitle>@L["EditMyAccount"]</PageTitle>
@@ -178,7 +179,7 @@
                        
                       
                         <MudItem sm="4">
-                            <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" Disabled="!HasChangeStatusPermission" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                        
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />

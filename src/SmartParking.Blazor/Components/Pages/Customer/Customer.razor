@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Cutomers
 @using SmartParking.Localization
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @inject IDialogService DialogService
 @inject ICustomerAppService CustomerAppService
@@ -9,11 +10,11 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 @inject ICurrentTenant currrentTenant
-
+@inherits AbpCrudPageBase<ICustomerAppService, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>
 
 @attribute [Authorize]
 <PageTitle>@L["Customers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
 
-<SPDataGrid PageName=@L["Customers"] Data="@itemData" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"    OnClickRowView="ViewCustomer"></SPDataGrid>
+<SPDataGrid PageName=@L["Customers"] Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"    OnClickRowView="ViewCustomer"></SPDataGrid>
 

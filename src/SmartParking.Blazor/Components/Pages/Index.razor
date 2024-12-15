@@ -25,23 +25,23 @@
 <MudGrid>
     @if (currenttenant.Id == null)
     {
-        
-    <MudItem sm="@grid">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_organizationsCount
-                </MudText>
-                <MudText>
-                    @L["Organizations"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/organizations.png" />
-        </MudPaper>
-    </MudItem>
+
+        <MudItem sm="@grid">
+            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+                <div>
+                    <MudText Class="fw-bold" Typo="Typo.h4">
+                        @_organizationsCount
+                    </MudText>
+                    <MudText>
+                        @L["Organizations"]
+                    </MudText>
+                </div>
+                <MudImage Src="images/dashboard/organizations.png" />
+            </MudPaper>
+        </MudItem>
     }        
     <MudItem sm="@grid">
-    
+
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
             <div>
                 <MudText Class="fw-bold" Typo="Typo.h4">
@@ -106,23 +106,23 @@
     <MudItem sm="4">
         @if (currenttenant.Id == null)
         {
-            
-        <MudPaper Class="custom-rounded p-3">
-            <MudSelect T="string"
-                       ValueChanged="ChangeSelect"
-                       Placeholder="@L[ "Choose"]"
-                       AdornmentColor="MudBlazor.Color.Primary"
-                       Class="mb-3" 
-                       Immediate="true"
-                       Value="_pieChartValue"
-            
-            >
-                <MudSelectItem Value="@("OrganizationsCustomers")">Organizations Customers</MudSelectItem>
-                <MudSelectItem Value="@("PackagesOrganizations")">Packages Organizations</MudSelectItem>
-            </MudSelect>
-            <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
-                <MudChart 
+            <MudPaper Class="custom-rounded p-3">
+                <MudSelect T="string"
+                ValueChanged="ChangeSelect"
+                Placeholder="@L[ "Choose"]"
+                AdornmentColor="MudBlazor.Color.Primary"
+                Class="mb-3" 
+                Immediate="true"
+                Value="_pieChartValue"
+
+                >
+                    <MudSelectItem Value="@("OrganizationsCustomers")">Organizations Customers</MudSelectItem>
+                    <MudSelectItem Value="@("PackagesOrganizations")">Packages Organizations</MudSelectItem>
+                </MudSelect>
+                <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
+
+                    <MudChart 
                     ChartType="ChartType.Pie" 
                     InputData="@data" 
                     InputLabels="@labels" 
@@ -130,11 +130,11 @@
                     Height="300px" 
                     ChartOptions="@options"
                     SelectedIndexChanged="handleindexChartChange"
-                    
-                    
-                    
+
+
+
                     />
-          </MudTooltip>
+                </MudTooltip>
             </MudPaper>
 
         }
@@ -144,12 +144,12 @@
                 <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
                     <MudChart ChartType="ChartType.Pie"
-                              InputData="@data"
-                              InputLabels="@labels"
-                              Width="300px"
-                              Height="300px"
-                              ChartOptions="@options"
-                              />
+                    InputData="@data"
+                    InputLabels="@labels"
+                    Width="300px"
+                    Height="300px"
+                    ChartOptions="@options"
+                    />
                 </MudTooltip>
             </MudPaper>
 
@@ -186,11 +186,10 @@
 
     protected async override Task OnInitializedAsync()
     {
-         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
-         _garagesCount = await GarageAppService.GetAllGaragesCount();
+        _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
+        _garagesCount = await GarageAppService.GetAllGaragesCount();
 
-
-
+        var name = CurrentUser.UserName;
         if (currenttenant.Id == null)
         {
             var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();

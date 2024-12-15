@@ -7,6 +7,8 @@ using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
+using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.GaragePermissions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -38,12 +40,17 @@ public partial class Garage
 
     public int ActiveGarages { get; set; }
 
-
+    private bool showOrganizationView => currentUser.IsInRole(Enums.RolesType.Organization.ToString())
+        || currentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString())
+        || currentTenant.Id != null;
 
 
     public Garage(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+        CreatePolicyName = GaragePermissions.Create;
+        UpdatePolicyName = GaragePermissions.Edit;
+        DeletePolicyName = GaragePermissions.Delete;
     }
 
 

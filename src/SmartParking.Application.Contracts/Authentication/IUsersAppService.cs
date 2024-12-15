@@ -1,24 +1,17 @@
 ﻿
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Authentication;
 
 public interface IUsersAppService:  IApplicationService
 {
-    /// <summary>
-    /// Asynchronously creates a new user based on the provided user creation data.
-    /// </summary>
-    /// <param name="input">The data for the new user to be created, encapsulated in a <see cref="UserCreateDto"/> object.</param>
-    /// <returns>A task representing the asynchronous operation, containing the created <see cref="UserDto"/> of the newly created user.</returns>
-    /// <remarks>
-    /// This method creates a new user in the system using the information provided in the <paramref name="input"/> parameter. 
-    /// Upon successful creation, it returns the <see cref="UserDto"/> representing the newly created user, including its ID and other details.
-    /// </remarks>
-    Task<UserDto> CreateAsync(UserCreateDto input);
+ 
     /// <summary>
     /// Asynchronously retrieves a list of users associated with a specific organization ID.
     /// </summary>
@@ -73,4 +66,16 @@ public interface IUsersAppService:  IApplicationService
 
     Task<UserDto> AssignRoleToUser(Guid userId,string roleName);
     Task<UserDto> UpdateImageAsync(Guid? id, string Image);
+
+    /// <summary>
+    /// Asynchronously creates a new user based on the provided user creation data.
+    /// </summary>
+    /// <param name="input">The data for the new user to be created, encapsulated in a <see cref="UserCreateDto"/> object.</param>
+    /// <returns>A task representing the asynchronous operation, containing the created <see cref="UserDto"/> of the newly created user.</returns>
+    /// <remarks>
+    /// This method creates a new user in the system using the information provided in the <paramref name="input"/> parameter. 
+    /// Upon successful creation, it returns the <see cref="UserDto"/> representing the newly created user, including its ID and other details.
+    /// </remarks>
+    Task<UserDto> CreateWithRoleAsync(UserCreateDto input, IdentityRole role);
+    Task<IdentityRole> FindRoleByTenantIdAsync(string roleName,Guid? tenantId);
 }

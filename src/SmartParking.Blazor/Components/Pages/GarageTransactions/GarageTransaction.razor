@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.GarageTransactions
 @using SmartParking.Localization
+@using SmartParking.Permissions.GarageTransactionPermissions
 @using Volo.Abp.MultiTenancy
 @inject IGarageTransactionsAppService GarageTransactionsAppService
 @inject IDialogService Dialog
@@ -10,7 +11,7 @@
 @inject ICurrentTenant CurrentTenant
 
 @page "/garagetransactions"
-@attribute [Authorize]
+@attribute [Authorize(GarageTransactionPermissions.Default)]
 <PageTitle>@L["GarageTransactions"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["GarageTransactions"]</MudText>
 

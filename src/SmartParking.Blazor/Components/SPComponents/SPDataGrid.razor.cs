@@ -24,13 +24,15 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
     [Parameter] public bool ShowFiltering { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickButton { get; set; }
     [Parameter] public bool ShowEdit { get; set; } = true;
+    [Parameter] public bool ShowButton { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
     [Parameter]  public  bool ShowView { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
-    public bool ShowDelete { get; set; } = true;
+    [Parameter]  public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
@@ -110,13 +112,6 @@ public partial class SPDataGrid
         {
             SelectOperator = new KeyValuePair<string, string>(SelectedColumn, FilterValue);
         }
-          //if (SelectedColumn.Contains("Status")  )
-          //SelectOperator = new KeyValuePair<string, string>("Status", FilterValue);
-          //if(SelectedColumn.Contains("CameraType"))
-          //SelectOperator = new KeyValuePair<string, string>("CameraType", FilterValue);
-
-		//if (SelectedColumn.Contains("InvoiceType"))
-		//	SelectOperator = new KeyValuePair<string, string>("InvoiceType", FilterValue);
 
 		if (!SelectOperator.Key.IsNullOrEmpty()  && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
         {

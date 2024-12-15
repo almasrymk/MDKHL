@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.GarageTransactions
 @using SmartParking.Localization
+@using SmartParking.Permissions.UnLinkedTransactionPermissions
 @using Volo.Abp.MultiTenancy
 @inject IUnLinkedTransactionAppService UnLinkedTransactionAppService
 @inject IDialogService Dialog
@@ -9,7 +10,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-
+@attribute [Authorize(UnLinkedTransactionPermission.Default)]
 
 
 <PageTitle>@L["UnLinkedTransaction"]</PageTitle>

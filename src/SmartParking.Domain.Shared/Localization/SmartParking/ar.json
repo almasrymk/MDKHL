@@ -524,7 +524,10 @@
     "Permission:Customer": "موديول العملاء",
     "Permission:Package": "موديول الباقات",
     "FailedCreateCustomer": "فشل في اضافة عميل",
-    "Unauthorized": "غير مُصرَّح به"
+    "Unauthorized": "غير مُصرَّح به",
+    "Permission:ChanageStatus": "تغير الحالة",
+    "Permission:GarageTransaction": "موديول الحركات داخل المـوقـف",
+    "Permission:UnLinkedTransaction": "موديول حركات غير معرفة"
 
 
 

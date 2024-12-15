@@ -501,7 +501,10 @@
     "Permission:Package": "Package Management",
     "Permission:Subscription": "Subscription Management",
     "FailedCreateCustomer": "Failed Create Customer",
-    "Unauthorized": "Unauthorized"
+    "Unauthorized": "Unauthorized",
+    "Permission:ChanageStatus": "Permission:ChanageStatus",
+    "Permission:GarageTransaction": "Permission:GarageTransaction",
+    "Permission:UnLinkedTransaction": "Permission:UnLinkedTransaction"
 
 
   } 

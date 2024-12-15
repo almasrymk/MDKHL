@@ -3,12 +3,12 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Packages;
 
-public class PackageDto
+public class PackageDto : AuditedEntityDto<int>
 {
-    public int Id { get; set; }
     public string ArabicName { get; set; }
 	public string EnglishName { get; set; }
     public PackageType PackageType { get; set; }

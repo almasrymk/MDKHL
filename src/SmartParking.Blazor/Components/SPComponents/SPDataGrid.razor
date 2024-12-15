@@ -167,7 +167,7 @@
                                                        Class="mx-1" />
                                     }
 
-                            @if (OnClickCar.HasDelegate && ShowAssignCar &&!context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
+                                   @if (OnClickCar.HasDelegate && ShowAssignCar &&!context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
                                         <MudIconButton OnClick="@(e => OnClickCar.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CarRental"
@@ -189,6 +189,15 @@
                                     {
                                         <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Delete"
+                                                       Variant="Variant.Filled"
+                                                       Color="MudBlazor.Color.Error"
+                                                       Size="MudBlazor.Size.Small"
+                                                       Class="mx-1" />
+                                    }                                   
+                                    @if (OnClickButton.HasDelegate && ShowButton )
+                                    {
+                                        <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
+                                                       Icon="@Icons.Material.Filled.AdminPanelSettings"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Error"
                                                        Size="MudBlazor.Size.Small"

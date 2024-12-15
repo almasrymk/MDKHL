@@ -9,6 +9,7 @@ using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
+using SmartParking.Permissions.CameraPermissions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,18 +18,11 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Validation;
-using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras;
 
 public partial class Camera
 {
-    private List<CameraDto> cameras=new List<CameraDto>();
-
-    private int currentPage = 1;
-    private int pageSize = 100;
-
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -43,6 +37,9 @@ public partial class Camera
     public Camera(IStringLocalizer<SmartParkingResource> localizer)
     {
        _localizer = localizer;
+        CreatePolicyName = CameraPermissions.Create;
+        UpdatePolicyName = CameraPermissions.Edit;
+        DeletePolicyName = CameraPermissions.Delete;
     }
 
     /// <summary>

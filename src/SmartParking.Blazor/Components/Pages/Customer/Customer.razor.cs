@@ -15,6 +15,8 @@ using SmartParking.Enums;
 using System.Globalization;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
+using SmartParking.Permissions.PackagePermissions;
+using SmartParking.Permissions.CustomerPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -40,6 +42,9 @@ public partial class Customer
 	{
 		_localizer = localizer;
         _currentUser = currentUser;
+        CreatePolicyName = CustomerPermissions.Create;
+        UpdatePolicyName = CustomerPermissions.Edit;
+        DeletePolicyName = CustomerPermissions.Delete;
     }
 
     protected override Task OnInitializedAsync()

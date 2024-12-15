@@ -11,6 +11,10 @@ using SmartParking.Blazor.Components.SPComponents;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
 using System.Globalization;
+using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Permissions.OrganizationPermissions;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -23,12 +27,18 @@ public partial class Organization
     private TableData itemData = new TableData();
 
     private string termSearch;
+    private bool HasChangeStatusPermission;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
     public Organization(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+        CreatePolicyName = OrganizationPermissions.Create;
+        UpdatePolicyName = OrganizationPermissions.Edit;
+        DeletePolicyName = OrganizationPermissions.Delete;
+        
     }
+   
 
     private async Task HandleDelete(RowDef row)
     {

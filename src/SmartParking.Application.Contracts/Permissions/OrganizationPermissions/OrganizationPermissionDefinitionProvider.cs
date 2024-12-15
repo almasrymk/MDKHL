@@ -18,6 +18,7 @@ public class OrganizationPermissionDefinitionProvider : PermissionDefinitionProv
         organizationPermission.AddChild(OrganizationPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         organizationPermission.AddChild(OrganizationPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         organizationPermission.AddChild(OrganizationPermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
+        organizationPermission.AddChild(OrganizationPermissions.ChanageStatus, CustomStringLocalizer.L(CustomStringLocalizer.ChanageStatus));
 
     }
 }

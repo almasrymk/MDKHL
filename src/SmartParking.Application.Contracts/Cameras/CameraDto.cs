@@ -5,12 +5,12 @@ using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraMainType;
 using SmartParking.Lookups.CameraModel;
 using System;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Cameras;
 
-public class CameraDto
+public class CameraDto: AuditedEntityDto<int>
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public CameraModelDto Model { get; set; }
     public CameraMainTypeDto MainType { get; set; }

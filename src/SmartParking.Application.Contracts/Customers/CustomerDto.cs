@@ -1,4 +1,5 @@
-﻿using SmartParking.CustomerPackages;
+﻿
+using SmartParking.CustomerPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Packages;
@@ -8,12 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Cutomers;
 
-public class CustomerDto
+public class CustomerDto:AuditedEntityDto<Guid>
 {
-    public Guid Id { get; set; }
     public string FullName { get; set; }
     public string UserName { get; set; }
     public string ArabicName { get; set; }

@@ -43,4 +43,13 @@ public class MyUserRepository
             return await dbContext.Users.Where(user => user.TenantId == tenantId && EF.Property<int>(user, "UserTypeId")==1).FirstOrDefaultAsync();
         }
     }
+
+    public async Task<IdentityRole?> FindRoleByTenantAsync(string role, Guid? tenantId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var dbContext = await GetDbContextAsync();
+            return await dbContext.Roles.FirstOrDefaultAsync(r => r.Name == role && r.TenantId == tenantId);
+        }
+    }
 }
