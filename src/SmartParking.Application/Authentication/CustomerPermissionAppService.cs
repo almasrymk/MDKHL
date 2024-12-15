@@ -22,7 +22,7 @@ public class CustomerPermissionAppService : PermissionAppService, ITransientDepe
 
         foreach (var permissionDto in input.Permissions)
         {
-            if(permissionDto.IsGranted)
+            if(permissionDto.Name.Contains("SmartParking"))
             await PermissionManager.SetAsync(permissionDto.Name, providerName, providerKey, permissionDto.IsGranted);
         }
     }

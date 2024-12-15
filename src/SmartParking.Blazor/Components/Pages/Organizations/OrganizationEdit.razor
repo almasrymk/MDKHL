@@ -26,6 +26,7 @@
 @inject IDialogService Dialog
 @inject ISubscriptionAppService SubscriptionAppService
 @inject IRegionAppService RegionAppService
+@inject IAuthorizationService AuthorizationService
 <PageTitle>@L["Edit Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -146,7 +147,7 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudSwitch Label=@L["Status Active"] LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label=@L["Status Active"] Disabled="!HasChangeStatusPermission" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="12">

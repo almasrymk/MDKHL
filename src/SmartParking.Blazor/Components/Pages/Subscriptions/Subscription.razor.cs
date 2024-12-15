@@ -15,6 +15,8 @@ using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
 using System.Globalization;
+using SmartParking.Permissions.PackagePermissions;
+using SmartParking.Permissions.SubsctriptionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -34,6 +36,9 @@ public partial class Subscription
     public Subscription(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+        CreatePolicyName = SubscriptionPermissions.Create;
+        UpdatePolicyName = SubscriptionPermissions.Edit;
+        DeletePolicyName = SubscriptionPermissions.Delete;
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -8,6 +9,7 @@ using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
+using SmartParking.Permissions.OrganizationPermissions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -67,6 +69,7 @@ public partial class EditMyAccount
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
     public int? SubscriptionId { get; set; }
+    public bool HasChangeStatusPermission { get; set; }
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -238,6 +241,7 @@ public partial class EditMyAccount
     }
     protected override async Task OnInitializedAsync()
     {
+        HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(OrganizationPermissions.ChanageStatus);
         states = await StateAppService.GetStateLookupAsync();
         regions = await StateAppService.GetRegionLookupAsync();
         countries = await CountriesAppService.GetCountryLookupAsync();

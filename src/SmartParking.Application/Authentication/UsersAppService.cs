@@ -22,6 +22,10 @@ using SmartParking.Invoices;
 using System.IO;
 using Volo.Abp.PermissionManagement;
 using static Volo.Abp.Identity.IdentityPermissions;
+using Abp.MultiTenancy;
+using Volo.Abp.Authorization.Permissions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using System.Configuration.Provider;
 
 namespace SmartParking.Authentication;
 
@@ -32,14 +36,19 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
     private readonly IPermissionManager _permissionManager;
+    private readonly IPermissionGrantRepository _permissionGrantRepository;
+    private readonly IPermissionDefinitionManager _permissionDefinitionManager;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
-        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager  permissionManager)
+        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager  permissionManager, IPermissionGrantRepository permissionGrantRepository
+        , IPermissionDefinitionManager permissionDefinitionManager)
     {
         _userManager = userManager;
         _userRepository = userRepository;
         _dataFilter = dataFilter;
         _permissionManager = permissionManager;
+        _permissionGrantRepository = permissionGrantRepository;
+        _permissionDefinitionManager = permissionDefinitionManager;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, IdentityRole role)
@@ -61,7 +70,6 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
     }
-
     private IdentityUser CreateUser(UserCreateDto input)
     {
         return new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);

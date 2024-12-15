@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Garages;
 
-public class GarageDto
+public class GarageDto:AuditedEntityDto<int>
 {
-    public int Id { get; set; }
     public string Code { get; set; }
     public string NameAr { get; set; }
     public string NameEn { get; set; }

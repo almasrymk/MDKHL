@@ -6,6 +6,9 @@
 @using Enums
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using SmartParking.OrganizationsGarages
+@using SmartParking.Permissions.GaragePermissions
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IDialogService DialogService
@@ -16,32 +19,33 @@
 @inject NavigationManager Navigation
 @inject ICurrentUser currentUser
 @inject ICurrentTenant currentTenant
-@attribute [Authorize]
+@attribute [Authorize(GaragePermissions.Default)]
+@inherits AbpCrudPageBase<IGarageAppService, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>
 <PageTitle>@L["Garages"]</PageTitle>
-
 <div class="d-flex flex-row justify-content-between">
 
 
 <MudText Typo="Typo.h5" Class="mb-2">@L["Garages"]</MudText>
-
-	@if (currentUser.IsInRole(Enums.RolesType.Organization.ToString()) || currentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString()) || currentTenant.Id != null)
-	{
-		
-		<div class="flex-column">
-			<MudText>@L["Total Garage Can be added"] : @MaxiumumNumberOfGarageAllowedToBeAdded </MudText>
-			<MudText>@L["ActiveGarages"] : @ActiveGarages </MudText>
+	<div Class="flex-column">
+		<div class="@(showOrganizationView ? "visible" : "hidden")">
+			<MudText>@L["Total Garage Can be added"] : @MaxiumumNumberOfGarageAllowedToBeAdded</MudText>
+			<MudText>@L["ActiveGarages"] : @ActiveGarages</MudText>
 		</div>
-	}
-	else
-	{
-		<div class="flex-column">
-			<MudText>@L["SumOfParkingSlotsOfActiveGarage"] : @SumOfAllMaximumCapacityforActiveGarages </MudText>
-			<MudText>@L["Active"] : @ActiveGarages </MudText>
+		<div class="@(showOrganizationView ? "hidden" : "visible")">
+			<MudText>@L["SumOfParkingSlotsOfActiveGarage"] : @SumOfAllMaximumCapacityforActiveGarages</MudText>
+			<MudText>@L["Active"] : @ActiveGarages</MudText>
 		</div>
-	
-	}
+	</div>
 </div>
 
 
-<SPDataGrid PageName=@L["Garages"] Data="@itemData" ShowAssign="ViewAssign" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
+<SPDataGrid PageName=@L["Garages"] Data="@itemData" ShowAssign="ViewAssign" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
+<style>
+	.visible {
+		display: block;
+	}
 
+	.hidden {
+		display: none;
+	}
+</style>

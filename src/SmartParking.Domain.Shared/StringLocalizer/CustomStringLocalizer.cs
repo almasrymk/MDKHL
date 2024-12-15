@@ -14,6 +14,7 @@ public static class CustomStringLocalizer
     public const string Add = "Permission:Create";
     public const string Edit = "Permission:Edit";
     public const string Delete = "Permission:Delete";
+    public const string ChanageStatus = "Permission:ChanageStatus";
     public static LocalizableString L(string name)
     {
         return LocalizableString.Create<SmartParkingResource>(name);

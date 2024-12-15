@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Cameras
 @using SmartParking.Localization
+@using SmartParking.Permissions.CameraPermissions
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @inject ICamerasAppService CamerasAppService
@@ -10,7 +11,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-@attribute [Authorize]
+@attribute [Authorize(CameraPermissions.Default)]
 @inherits AbpCrudPageBase<ICamerasAppService, CameraDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraDto>
 
 <PageTitle>@L["Cameras"]</PageTitle>

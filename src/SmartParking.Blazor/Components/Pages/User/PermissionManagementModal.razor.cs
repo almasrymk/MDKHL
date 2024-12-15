@@ -104,13 +104,18 @@ public partial class PermissionManagementModal
                 _providerKey = providerKey;
                 _permissionGroupSearchText = null;
                 _tenantId = tenantId;
-                var result = await PermissionAppService.GetAsync(providerName, providerKey);
+            GetPermissionListResultDto result;
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                 result = await PermissionAppService.GetAsync(providerName, providerKey);
+            }
+               
 
                 _entityDisplayName = entityDisplayName ?? result.EntityDisplayName;
                 _allGroups = result.Groups;
                 _groups = _allGroups.ToList();
-
-                NormalizePermissionGroup();
+            _groups = _allGroups.Where(g => g.Permissions.Any(p => p.Name.Contains("SmartParking"))).ToList();
+            NormalizePermissionGroup();
 
                 await InvokeAsync(_modal.Show);
         }
@@ -166,7 +171,6 @@ public partial class PermissionManagementModal
     {
         try
         {
-
                 var updateDto = new UpdatePermissionsDto
                 {
                     Permissions = _allGroups
@@ -174,7 +178,7 @@ public partial class PermissionManagementModal
                     .Select(p => new UpdatePermissionDto { IsGranted = p.IsGranted, Name = p.Name })
                     .ToArray()
                 };
-
+                 
                 if (!updateDto.Permissions.Any(x => x.IsGranted))
                 {
                     //if (!await Message.Confirm(L["SaveWithoutAnyPermissionsWarningMessage"].Value))
