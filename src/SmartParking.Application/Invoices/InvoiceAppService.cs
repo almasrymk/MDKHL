@@ -283,12 +283,15 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     private async Task<string?> GetQrCodeAsync(Invoice? invoice)
     {
-        var paymentQuery = await _paymentRepository.GetQueryableAsync();
-        string? qrCode = await paymentQuery
-                .Where(p => p.InvoiceId == invoice.Id)
-                .Select(p => p.QrCodeInvoice)
-                .FirstOrDefaultAsync();
-        return qrCode;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var paymentQuery = await _paymentRepository.GetQueryableAsync();
+            string? qrCode = await paymentQuery
+                    .Where(p => p.InvoiceId == invoice.Id)
+                    .Select(p => p.QrCodeInvoice)
+                    .FirstOrDefaultAsync();
+            return qrCode;
+        }
     }
 
     public async Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId)
@@ -307,7 +310,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    private async Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto)
+    [RemoteService(false)]
+
+    public async Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto)
     {
         //var text = Convert.FromBase64String(qrCodedto.QRCode);
         if (qrCodedto.IsNullOrEmpty())
