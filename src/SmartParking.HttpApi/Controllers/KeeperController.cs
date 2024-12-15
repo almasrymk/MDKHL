@@ -103,7 +103,7 @@ public class KeeperController : AbpController
     
     [HttpGet("PayAtExitCamera")]
     [Authorize]
-    public async Task<Result<PaymentCheckoutDto>> PayInvoice(int InvoiceId)
+    public async Task<Result<InvoiceDto>> PayInvoice(int InvoiceId)
     {
         return await _keeperAppService.CheckoutAsync(InvoiceId);
     }
@@ -128,8 +128,6 @@ public class KeeperController : AbpController
     {
         var invoice=await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
        return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType);
-
-
     }
 
 
@@ -138,7 +136,6 @@ public class KeeperController : AbpController
     public async Task<Result<CreateUpdateInvoiceDto>> KeeperPreCheckoutForTransaction(int transactionId)
     {
         return await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
-
     }
 
     [HttpPost("addprofileimage")]

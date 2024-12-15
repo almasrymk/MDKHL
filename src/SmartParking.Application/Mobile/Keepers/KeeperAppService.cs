@@ -42,6 +42,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IMyUserRepository _myUserRepository;
     private readonly IRepository<Tenant,Guid> _tenantRepository;
     private readonly IPaymentAppService _paymentAppService;
+    private readonly IInvoiceAppService _invoiceAppService;
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
@@ -54,7 +55,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IRepository<Organization, int> organizationRepoistory,
          IMyUserRepository myUserRepository,
          IRepository<Tenant, Guid> tenantRepository,
-         IPaymentAppService paymentAppService)
+         IPaymentAppService paymentAppService,
+         IInvoiceAppService invoiceAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -67,6 +69,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _myUserRepository = myUserRepository;
         _tenantRepository = tenantRepository;
         _paymentAppService = paymentAppService;
+        _invoiceAppService = invoiceAppService;
     }
 
     /// <inheritdoc/>
@@ -328,11 +331,17 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<PaymentCheckoutDto>> CheckoutAsync(int invoiceId)
+    public async Task<Result<InvoiceDto>> CheckoutAsync(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            if (CheckIfInvoiceIsPaid(invoice))
+            {
+                return Result.Error("InvoiceIsAlreadyPaid");
+
+            }
+
             var paymentRequest = new PaymentCheckoutRequestDto
             {
                 PaymentCategory=PaymentCategory.Invoice,
@@ -342,7 +351,13 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 OrganizationId=invoice.OrganizationId,
                 InvoiceId=invoiceId,
             };
-            return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+
+            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var image = await _invoiceAppService.GetInvoiceQRCodeForMDKHL(invoiceId);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
+            return invoiceDto;
         }
     }
     public async Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
@@ -350,19 +365,33 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
+
             var paymentRequest = new PaymentCheckoutRequestDto
             {
-                PaymentCategory=PaymentCategory.Invoice,
-                PaymentMethod=PaymentMethod.Cash,
-                Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
-                CustomerId=invoice.CustomerId,
-                OrganizationId=invoice.OrganizationId,
-                InvoiceId=invoiceId,
-                PaymentName= PaymentType,
+                PaymentCategory = PaymentCategory.Invoice,
+                PaymentMethod = PaymentMethod.Cash,
+                Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+                CustomerId = invoice.CustomerId,
+                OrganizationId = invoice.OrganizationId,
+                InvoiceId = invoiceId,
+                PaymentName = PaymentType,
+                
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
-            return ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
+            var image =await _invoiceAppService.GetImage(invoice,result.QrCodeInvoice);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            invoiceDto.QrCodeInvoice = image.Value;
+            return invoiceDto;
         }
+    }
+
+    private static bool CheckIfInvoiceIsPaid(Invoice invoice)
+    {
+        if (invoice.InvoiceType == InvoiceType.Paid)
+        {
+            return true;
+        }
+        return false;
     }
 
     public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)

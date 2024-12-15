@@ -283,12 +283,15 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     private async Task<string?> GetQrCodeAsync(Invoice? invoice)
     {
-        var paymentQuery = await _paymentRepository.GetQueryableAsync();
-        string? qrCode = await paymentQuery
-                .Where(p => p.InvoiceId == invoice.Id)
-                .Select(p => p.QrCodeInvoice)
-                .FirstOrDefaultAsync();
-        return qrCode;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var paymentQuery = await _paymentRepository.GetQueryableAsync();
+            string? qrCode = await paymentQuery
+                    .Where(p => p.InvoiceId == invoice.Id)
+                    .Select(p => p.QrCodeInvoice)
+                    .FirstOrDefaultAsync();
+            return qrCode;
+        }
     }
 
     public async Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId)
@@ -307,7 +310,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    private async Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto)
+    [RemoteService(false)]
+
+    public async Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto)
     {
         //var text = Convert.FromBase64String(qrCodedto.QRCode);
         if (qrCodedto.IsNullOrEmpty())
@@ -374,12 +379,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
     }
 
-    public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(Guid customerId, int OrganizationId, int GarageId)
+    public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _invoiceRepository.GetQueryableAsync();
-            query=query.Where(inv=>inv.CustomerId == customerId && inv.GarageId==GarageId && inv.OrganizationId == OrganizationId);
+            query=query.Where(inv=>inv.PlateNumber == PlateNumber && inv.GarageId==GarageId && inv.OrganizationId == OrganizationId);
             var invoice = await AsyncExecuter.FirstOrDefaultAsync(query);
             var invoiceDto = ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
             return Result.Success(invoiceDto);

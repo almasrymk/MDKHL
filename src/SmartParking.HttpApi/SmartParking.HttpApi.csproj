@@ -17,12 +17,12 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="Volo.Abp.Account.HttpApi" Version="9.0.1" />
-    <PackageReference Include="Volo.Abp.Identity.HttpApi" Version="9.0.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" Version="9.0.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.HttpApi" Version="9.0.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi" Version="9.0.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.HttpApi" Version="9.0.1" />
+    <PackageReference Include="Volo.Abp.Account.HttpApi" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.Identity.HttpApi" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.TenantManagement.HttpApi" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.SettingManagement.HttpApi" Version="9.0.2" />
   </ItemGroup>
 
 </Project>
