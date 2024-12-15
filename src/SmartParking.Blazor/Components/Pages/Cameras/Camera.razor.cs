@@ -9,6 +9,7 @@ using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
+using SmartParking.Permissions.CameraPermissions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -43,6 +44,9 @@ public partial class Camera
     public Camera(IStringLocalizer<SmartParkingResource> localizer)
     {
        _localizer = localizer;
+        CreatePolicyName = CameraPermissions.Create;
+        UpdatePolicyName = CameraPermissions.Edit;
+        DeletePolicyName = CameraPermissions.Delete;
     }
 
     /// <summary>

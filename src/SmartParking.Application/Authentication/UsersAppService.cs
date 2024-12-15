@@ -73,7 +73,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.Surname = input.Surname;
         user.SetProperty("OtpCode", null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
-        user.SetProperty("User TypeId", input.UserType);
+        user.SetProperty("UserTypeId", input.UserType);
         user.SetProperty("OrganizationId", input.OrganizationId);
     }
 
