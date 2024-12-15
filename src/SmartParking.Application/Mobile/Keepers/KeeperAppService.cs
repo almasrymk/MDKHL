@@ -42,6 +42,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IMyUserRepository _myUserRepository;
     private readonly IRepository<Tenant,Guid> _tenantRepository;
     private readonly IPaymentAppService _paymentAppService;
+    private readonly IInvoiceAppService _invoiceAppService;
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
@@ -54,7 +55,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IRepository<Organization, int> organizationRepoistory,
          IMyUserRepository myUserRepository,
          IRepository<Tenant, Guid> tenantRepository,
-         IPaymentAppService paymentAppService)
+         IPaymentAppService paymentAppService,
+         IInvoiceAppService invoiceAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -67,6 +69,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _myUserRepository = myUserRepository;
         _tenantRepository = tenantRepository;
         _paymentAppService = paymentAppService;
+        _invoiceAppService = invoiceAppService;
     }
 
     /// <inheritdoc/>
@@ -350,8 +353,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             };
 
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var image = await _invoiceAppService.GetInvoiceQRCodeForMDKHL(invoiceId);
             var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-            invoiceDto.QrCodeInvoice = result.QrCodeInvoice;
+            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
             return invoiceDto;
         }
     }
@@ -370,10 +375,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 OrganizationId = invoice.OrganizationId,
                 InvoiceId = invoiceId,
                 PaymentName = PaymentType,
+                
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var image =await _invoiceAppService.GetImage(invoice,result.QrCodeInvoice);
             var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-            invoiceDto.QrCodeInvoice=result.QrCodeInvoice;
+            invoiceDto.QrCodeInvoice = image.Value;
             return invoiceDto;
         }
     }

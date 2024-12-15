@@ -87,11 +87,11 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
                 user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
 
-                await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
+                await SendSms(phoneNumber, "رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو " + otp);
                 // Update the user with OTP in the database
                 await _userRepository.UpdateAsync(user);
 
-                return Result.Success(" رمز التحقق لدخول نظام مدخل هو" + otp);
+                return Result.Success("رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو" + otp);
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
             user.SetProperty("OtpCode", otp);
             user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
             var phonenumber = user?.PhoneNumber;
-            await SendSms(phonenumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
+            await SendSms(phonenumber, "رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو" + otp);
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
 
