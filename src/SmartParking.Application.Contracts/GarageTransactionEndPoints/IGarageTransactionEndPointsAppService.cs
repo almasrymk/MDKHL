@@ -15,7 +15,6 @@ namespace SmartParking.GarageTransactionEndPoints;
 public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
-    int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime? PackageExpiryDate);
     Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int garageTransactionId);
     Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromHisMobile(int garageTransactionId);
     Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId);
