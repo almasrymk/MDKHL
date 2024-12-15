@@ -57,7 +57,7 @@ public class AccountsController : ControllerBase
         }
         
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return LocalRedirect("/login");
+        return LocalRedirect("/Account/Login");
         
     }
 
@@ -65,7 +65,7 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult> Logout()
     {
         await _authenticationApp.LogOutAsync();
-        return LocalRedirect("/login");
+        return LocalRedirect("/Account/Login");
     }
 
 

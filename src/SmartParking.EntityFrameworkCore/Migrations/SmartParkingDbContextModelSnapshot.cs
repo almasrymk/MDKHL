@@ -628,6 +628,12 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("EntranceTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("EntryTransactionImage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExitTransactionImage")
+                        .HasColumnType("text");
+
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
 

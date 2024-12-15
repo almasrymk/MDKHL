@@ -343,7 +343,7 @@ public class SmartParkingBlazorModule : AbpModule
 
         app.UseHttpsRedirection();
         app.UseCorrelationId();
-        app.UseStaticFiles();
+        app.MapAbpStaticAssets();
         var supportedCultures = new[]
             {
                 new CultureInfo("ar"),
@@ -361,9 +361,10 @@ public class SmartParkingBlazorModule : AbpModule
             };
         });
         app.UseRouting();
-        app.UseMiddleware<TokenCheckMiddleware>();
+        
         app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints
         app.UseAuthorization();
+        app.UseMiddleware<TokenCheckMiddleware>();
         app.UseAbpOpenIddictValidation();
 
         if (MultiTenancyConsts.IsEnabled)

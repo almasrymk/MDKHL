@@ -3,7 +3,7 @@
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>disable</Nullable>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
@@ -16,45 +16,45 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="Blazorise" Version="1.6.0" />
-    <PackageReference Include="Blazorise.Components" Version="1.6.0" />
-    <PackageReference Include="Blazorise.DataGrid" Version="1.6.0" />
-    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
-    <PackageReference Include="Blazorise.Bootstrap5" Version="1.6.0" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+    <PackageReference Include="Blazorise" Version="1.7.1" />
+    <PackageReference Include="Blazorise.Components" Version="1.7.1" />
+    <PackageReference Include="Blazorise.DataGrid" Version="1.7.1" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
+    <PackageReference Include="Blazorise.Bootstrap5" Version="1.7.1" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-    <PackageReference Include="Microsoft.JSInterop" Version="8.0.7" />
-    <PackageReference Include="MudBlazor" Version="7.6.0" />
-    <PackageReference Include="Npgsql" Version="8.0.6" />
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+    <PackageReference Include="Microsoft.JSInterop" Version="9.0.0" />
+    <PackageReference Include="MudBlazor" Version="7.15.0" />
+    <PackageReference Include="Npgsql" Version="9.0.2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.2" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="3.2.1" />
-    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="3.2.2" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="4.0.3" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="4.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Autofac" Version="8.2.2" />
-    <PackageReference Include="Volo.Abp.Swashbuckle" Version="8.2.2" />
-    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="8.2.2" />
-    <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="8.2.2" />
-    <PackageReference Include="Volo.Abp.Identity.Blazor.Server" Version="8.2.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Blazor.Server" Version="8.2.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="8.2.1" />
+    <PackageReference Include="Volo.Abp.Autofac" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.Swashbuckle" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.Identity.Blazor.Server" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Blazor.Server" Version="9.0.2" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists('./openiddict.pfx')">

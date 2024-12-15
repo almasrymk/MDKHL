@@ -8,7 +8,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @page "/vehiclebrands"
-
+@attribute [Authorize(Roles = "Mdkhl , admin")]
 <PageTitle>@L["VehicleBrands"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["VehicleBrands"]</MudText>
 
