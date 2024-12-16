@@ -114,7 +114,7 @@ public partial class PermissionManagementModal
                 _entityDisplayName = entityDisplayName ?? result.EntityDisplayName;
                 _allGroups = result.Groups;
                 _groups = _allGroups.ToList();
-            _groups = _allGroups.Where(g => g.Permissions.Any(p => p.Name.Contains("SmartParking"))).ToList();
+            _groups = _allGroups.Where(g => g.Permissions.Any(p => p.Name.Contains("SmartParking") || p.Name.Contains("AbpIdentity"))).ToList();
             NormalizePermissionGroup();
 
                 await InvokeAsync(_modal.Show);

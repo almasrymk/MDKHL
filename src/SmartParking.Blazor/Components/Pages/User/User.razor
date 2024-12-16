@@ -17,7 +17,7 @@
 @using Volo.Abp.BlazoriseUI.Components.ObjectExtending
 @using Volo.Abp.Identity.Localization
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-
+@attribute [Authorize(IdentityPermissions.Users.Default)]
 @inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
 
 
