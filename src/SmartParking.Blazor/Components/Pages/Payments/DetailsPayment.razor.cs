@@ -24,4 +24,8 @@ public partial class DetailsPayment
        await FetchPayment();
         
     }
+    private void Back()
+    {
+        Navigation.NavigateTo("/payments");
+    }
 }

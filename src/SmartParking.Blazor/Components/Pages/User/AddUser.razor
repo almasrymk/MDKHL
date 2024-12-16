@@ -49,8 +49,7 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["PhoneNumber"]"/>
                     </MudItem>
-                    @if (currrentTenant.Id is null)
-                    {
+
                         <MudItem sm="6" md="6">
                             <MudSelect @bind-Value="@userRole"
                                        Label="@L["UserRole"]"
@@ -60,19 +59,18 @@
 
                                 @foreach (var role in Enum.GetValues(typeof(RolesType)))
                                 {
-                                    if (role.ToString() == Enums.RolesType.Mdkhl.ToString() || role.ToString() == Enums.RolesType.Organization.ToString() || role.ToString() == Enums.RolesType.Keeper.ToString())
-                                    {
+                              
                                             <MudSelectItem Value="@role.ToString()">
                                                 @role.ToString()
                                             </MudSelectItem>
-                                    }
+                                    
                                 }
                             </MudSelect>
 
                         </MudItem>
-                    }
+                    
 
-            @if (userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString())
+                    @if ((userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString()) && currrentTenant.Id is null)
                     {
 
                         <MudItem sm="6" md="6">

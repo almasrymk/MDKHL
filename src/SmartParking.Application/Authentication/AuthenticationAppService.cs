@@ -263,7 +263,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             {
                 return null;
             }
-            _currentTenant.Change(user.TenantId ?? null);
+
             var role = await _userManager.GetRolesAsync(user);
             if (role.FirstOrDefault() == RolesType.OrganizationEmployee.ToString())
                 return null;
@@ -304,7 +304,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         }
 
-
+        _currentTenant.Change(user.TenantId);
         await _signInManager.SignInAsync(user, isPersistent: false);
 
 

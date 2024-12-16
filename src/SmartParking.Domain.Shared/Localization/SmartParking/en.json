@@ -506,7 +506,9 @@
     "Permission:GarageTransaction": "Permission:GarageTransaction",
     "Permission:UnLinkedTransaction": "Permission:UnLinkedTransaction",
     "Permission:Payment": "Permission:Payment",
-    "Permission:Invoice": "Permission:Mapping"
+    "Permission:Invoice": "Permission:Mapping",
+    "True": "Yes",
+    "False": "No"
 
 
   } 

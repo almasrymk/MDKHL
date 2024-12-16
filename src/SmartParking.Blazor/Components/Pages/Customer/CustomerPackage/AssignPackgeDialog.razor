@@ -20,8 +20,8 @@
 
 <PageTitle>@L["Assign Package"]</PageTitle>
 
-<div class="modal-wrapper w-75">
-	<MudDialog class="mud-modal w-100" MaxWidth="MaxWidth.Medium" FullWidth="true">
+<div class="modal-wrapper w-100">
+	<MudDialog class="mud-modal w-100" Style="min-width:fit-content !important">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["Assign Package"]</MudText>
 		</TitleContent>
@@ -32,12 +32,12 @@
 					{
 						<MudItem sm="12" md="12">
 							<MudSelect T="int"
-									   Variant="Variant.Text"
-									   Label=@L["Organizations"]
-									   Placeholder=@L["Choose"]
-									   HelperText=@L["Helper Text"]
-									   Required
-									   @bind-Value="organizationId">
+							Variant="Variant.Text"
+							Label=@L["Organizations"]
+							Placeholder=@L["Choose"]
+							HelperText=@L["Helper Text"]
+							Required
+							@bind-Value="organizationId">
 								<MudSelectItem Value="0"></MudSelectItem>
 								@foreach (var organization in Organizations)
 								{
@@ -64,11 +64,11 @@
 					{
 						<MudItem sm="12" md="12">
 							<MudSelect T="CustomerCategoryStatus"
-									   Label="@L["customer category"]"
-									   Placeholder="@L[ "Choose"]"
-									   HelperText=@L["Helper Text"]
-									   Required="true"
-									   ValueChanged="getPackage">
+							Label="@L["customer category"]"
+							Placeholder="@L[ "Choose"]"
+							HelperText=@L["Helper Text"]
+							Required="true"
+							ValueChanged="getPackage">
 
 								@foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
 								{
@@ -86,12 +86,13 @@
 					@if (Packages.Count > 0)
 					{
 						<MudItem sm="12">
-							<MudSelect @bind-Value="@CustomerPackage.PackageId"
-									   Variant="Variant.Text"
-									   Label="@L["EnglishName"]"
-									   Placeholder=@L["Choose"]
-									   HelperText=@L["Helper Text"]
-									   Clearable="_clearable">
+							<MudSelect T="int"
+							ValueChanged="PackageValueChanged"
+							Variant="Variant.Text"
+							Label="@L["EnglishName"]"
+							Placeholder=@L["Choose"]
+							HelperText=@L["Helper Text"]
+							Clearable="_clearable">
 								@foreach (var package in Packages)
 								{
 									if (package.PackageStatus != SubscriptionStatus.Active)
@@ -110,13 +111,32 @@
 							</MudSelect>
 						</MudItem>
 					}
-					
+
+
 
 				</MudGrid>
+				<MudTable T="PackageDto" Items="selectedPackageDto" Style="width:fit-content">
+					<HeaderContent>
+						<MudTh>@L["ArabicName"]</MudTh>
+						<MudTh>@L["English Name"]</MudTh>
+						<MudTh>@L["Package Type"]</MudTh>
+						<MudTh>@L["Price"]</MudTh>
+						<MudTh>@L["Publish From"]</MudTh>
+						<MudTh>@L["Publish To"]</MudTh>
+						<MudTh>@L["Duration"]</MudTh>
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd>@context.ArabicName</MudTd>
+						<MudTd>@context.EnglishName</MudTd>
+						<MudTd>@context.PackageTypeEnglishName</MudTd>
+						<MudTd>@context.Price</MudTd>
+						<MudTd>@context.PublishFrom</MudTd>
+						<MudTd>@context.PublishTo</MudTd>
+						<MudTd>@context.DurationOfPackage</MudTd>
+					</RowTemplate>
+				</MudTable>
+
 			</MudForm>
-
-
-
 		</DialogContent>
 		<DialogActions>
 			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
@@ -125,11 +145,12 @@
 
 	</MudDialog>
 
+
 </div>
 
 <style>
 	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	border-radius: 0 20px 0 20px;
 	}
 </style>
 
@@ -141,10 +162,11 @@
 	public CustomerDto Customer { get; set; }
 	private int organizationId;
 	private IReadOnlyList<OrganizationDto> Organizations = new List<OrganizationDto>();
-	
+
 	public List<PackageDto> Packages { get; set; } = new List<PackageDto>();
 	bool _clearable;
 	private MudForm form;
+	public List<PackageDto> selectedPackageDto { get; set; } = new List<PackageDto>();
 
 	private async Task getPackage(CustomerCategoryStatus customerCategory)
 	{
@@ -187,6 +209,16 @@
 
 
 	}
+
+	private async Task PackageValueChanged(int value)
+	{
+		selectedPackageDto.Clear();
+		selectedPackageDto.Add( Packages.Find(x => x.Id == value));
+
+
+	}
+
+
 
 
 }
