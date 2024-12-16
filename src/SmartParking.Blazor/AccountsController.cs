@@ -36,8 +36,8 @@ public class AccountsController : ControllerBase
     public async Task<IActionResult> Login(string username , string password)
     {
         
-        var tenant =await _authenticationApp.GetTenantByNameDtoAsync(username);
-        currentTenant.Change(tenant?.Id??null);
+        //var tenant =await _authenticationApp.GetTenantByNameDtoAsync(username);
+        //currentTenant.Change(tenant?.Id??null);
         LoginInputDto loginInputDto = new LoginInputDto()
         {
             Username = username,

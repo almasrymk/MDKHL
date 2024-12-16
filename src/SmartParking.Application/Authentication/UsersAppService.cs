@@ -26,6 +26,7 @@ using Abp.MultiTenancy;
 using Volo.Abp.Authorization.Permissions;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Configuration.Provider;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace SmartParking.Authentication;
 
@@ -250,12 +251,19 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
             user.Surname = input.Surname;
-            await _userManager.SetEmailAsync(user,input.Email);
-            await _userManager.SetUserNameAsync(user,input.UserName);
+            await _userManager.SetEmailAsync(user, input.Email);
+            await _userManager.SetUserNameAsync(user, input.UserName);
+            await ChangePassword(input, user);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
         }
+    }
+
+    private async Task ChangePassword(UpdateUserDto input, IdentityUser? user)
+    {
+        await _userManager.RemovePasswordAsync(user);
+        await _userManager.AddPasswordAsync(user, input.Password);
     }
 
     public async Task<UserDto> GetAsync(Guid? id)
