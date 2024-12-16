@@ -43,8 +43,7 @@ namespace SmartParking;
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule)
 )]
-[DependsOn(typeof(AbpAspNetCoreSignalRModule))]
-    public class SmartParkingHttpApiHostModule : AbpModule
+public class SmartParkingHttpApiHostModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
@@ -198,7 +197,7 @@ namespace SmartParking;
         }
 
         app.UseCorrelationId();
-        //app.UseStaticFiles();
+        app.UseStaticFiles();
         app.MapAbpStaticAssets();
         app.UseRouting();
         app.UseCors();
