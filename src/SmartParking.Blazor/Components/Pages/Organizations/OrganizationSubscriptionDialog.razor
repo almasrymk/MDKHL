@@ -23,7 +23,10 @@
             <div class="d-flex flex-column gap-1 text-white align-items-center rounded-circle subscription-circle">
                 <div class="price">
                         <MudText Class="fw-bold" Typo="Typo.h2" Color="MudBlazor.Color.Primary"> @L["SAR"]</MudText>
-                        <MudText Class="fw-bold" Typo="Typo.h2" Color="MudBlazor.Color.Primary">@subscription.SubscriptionPrice</MudText>
+                        <div class=" d-flex justify-content-center align-items-center">
+
+                           <MudText Class="fw-bold " Typo="Typo.h2" Color="MudBlazor.Color.Primary">@subscription.SubscriptionPrice</MudText>
+                        </div>
                         @if (CultureInfo.CurrentCulture.Name == "en")
                         {
                             <MudText>@subscription.SubscriptionTypeEn</MudText>

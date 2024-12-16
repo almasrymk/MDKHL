@@ -24,10 +24,7 @@ namespace SmartParking.Blazor.Components.Pages.Invoices;
 
 public partial class DetailsInvoice 
 {
-    // باشمهندس معاذ قال سيبها علشان هو عايز يسلم النهاردة الخميس 5/12 بسرررعة 
-    // الكومنت اهو يا هندسة 
-    //@MoazzHammam
-    // مش انا اللي كنت كات الكود ده 
+  
     public string code;
     [Parameter] 
     public int Id { get; set; }

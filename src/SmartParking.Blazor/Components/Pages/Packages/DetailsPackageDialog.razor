@@ -10,7 +10,7 @@
 <PageTitle>@L["View Package"]</PageTitle>
 
 <div class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+	<MudDialog class="mud-modal" style="min-height:fit-content !important">
 		<TitleContent>
             @if (CultureInfo.CurrentCulture.Name == "en")
             {
@@ -62,6 +62,14 @@
                                          Class="w-100"
                                          Label=@L["PackageDuration"] />
                     </MudItem>
+
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="CustomerCategory"
+                                      For="@(() => CustomerCategory)"
+                                      Immediate="true"
+                                      Disabled=true
+                                      Label=@L["customer category"] />
+                    </MudItem>
                     @if(Package.Published == true)
                     {
                         <MudItem sm="4">
@@ -77,33 +85,18 @@
                                           For="@(() => Package.PublishFrom)"
                                           Immediate="true"
                                           Disabled=true
-                                          Label=@L["PublishFrom"] />
+                                          Label=@L["Publish From"] />
                         </MudItem>
                         <MudItem sm="4" md="4">
                             <MudTextField @bind-Value="Package.PublishTo"
                                           For="@(() => Package.PublishTo)"
                                           Immediate="true"
                                           Disabled=true
-                                          Label=@L["PublishTo"] />
-                        </MudItem>
-                        <MudItem sm="4" md="4">
-                            <MudTextField @bind-Value="Package.OrganizationId"
-                                          For="@(() => Package.OrganizationId)"
-                                          Variant="Variant.Text"
-                                          Class="w-100"
-                                          Disabled='true'
-                                          Label=@L["OrgnizationId"] />
+                                          Label=@L["Publish To"] />
                         </MudItem>
                     }
                     
               
-                    <MudItem sm="4" md="4">
-                        <MudTextField @bind-Value="CustomerCategory"
-                                      For="@(() => CustomerCategory)"
-                                      Immediate="true"
-                                      Disabled=true
-                                      Label=@L["customer category"] />
-                    </MudItem>
 
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.PackageStatus"
