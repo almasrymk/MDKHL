@@ -527,7 +527,9 @@
     "Unauthorized": "غير مُصرَّح به",
     "Permission:ChanageStatus": "تغير الحالة",
     "Permission:GarageTransaction": "موديول الحركات داخل المـوقـف",
-    "Permission:UnLinkedTransaction": "موديول حركات غير معرفة"
+    "Permission:UnLinkedTransaction": "موديول حركات غير معرفة",
+    "True": "نعم",
+    "False": "لا"
 
 
 
