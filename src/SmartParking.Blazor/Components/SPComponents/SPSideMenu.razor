@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Text.Json
 @using SmartParking.Permissions.CameraPermissions
@@ -62,12 +63,12 @@
                 {
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Organization Subscription"]</MudNavLink>
                 }
-                @if( AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result)
+                @if( AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()))
                 {
                     <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 }
 
-                @if(AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()))
                 {
                     <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
                 }
@@ -75,7 +76,7 @@
                 {
                 <MudNavLink Href="/payments" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                 }
-                @if(AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()))
                 {
                 <MudNavLink Href="/garageTransactions" Icon="@Icons.Material.Filled.CompareArrows">@L["GarageTransactions"]</MudNavLink>
                 }
