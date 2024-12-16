@@ -114,7 +114,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     throw new Exception("user already exists");
 
 				}
-
 			}
 			await _baseCustomer.CheckCustomer(input);
 
@@ -152,6 +151,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
             await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
+            customer.IdentityUser.SetPhoneNumberConfirmed(true);
             if (!createdUser.Succeeded)
             {
                 throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);

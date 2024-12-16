@@ -306,4 +306,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         return await _userRepository.FindRoleByTenantAsync(roleName, tenantId);
     }
+    ///<inheritdoc/>
+    public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
+    {
+            var query = await _userRepository.GetQueryableAsync();
+            return await GetPagedResultAsync(query, input);
+    }
 }

@@ -115,12 +115,9 @@ public partial class User
     /// <param name="page">The page number for which to fetch the data.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
-    {
-
-        CurrentTenant.Change(null);
+    { 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -131,7 +128,9 @@ public partial class User
 
         // Retrieve the list of organizations from the server
         PagedResultDto<UserDto> usersDto;
-        
+        if(currrentTenant.Id is not null)
+            usersDto = await UsersAppService.GetListForOrganizationAsync(input);
+        else
             usersDto = await UsersAppService.GetListAsync(input);
         TotalItem = (int)usersDto.TotalCount;
         CreateTable(usersDto);

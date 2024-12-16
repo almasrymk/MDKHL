@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Text.Json
 @using SmartParking.Permissions.CameraPermissions
@@ -10,6 +11,7 @@
 @using SmartParking.Permissions.PackagePermissions
 @using SmartParking.Permissions.PaymentsPermissions
 @using Volo.Abp.Account
+@using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
@@ -33,10 +35,7 @@
                     <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
                     <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["Customers"]</MudNavLink>
 
-                    <MudNavGroup Icon="@Icons.Material.Filled.AdminPanelSettings" Title="@L["Administration"]">
-                        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>
-                        @* <MudNavLink Href="/identity/roles" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink> *@
-                    </MudNavGroup>
+                    
                     <MudNavLink Href="/subscriptions" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
                     <MudNavLink Href="/subscriptiontypes" Icon="@Icons.Material.Filled.Group">@L["SubscriptionTypes"]</MudNavLink>
                     <MudNavLink Href="/unLinkedTransaction" Icon="@Icons.Material.Filled.Garage">@L["UnLinkedTransaction"]</MudNavLink>
@@ -45,6 +44,13 @@
                 {
                     <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>
 
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Users.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
+                {
+                    <MudNavGroup Icon="@Icons.Material.Filled.AdminPanelSettings" Title="@L["Administration"]">
+                        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>
+                        @* <MudNavLink Href="/identity/roles" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink> *@
+                    </MudNavGroup>
                 }
                 @if (AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.Default).Result)
                 {
@@ -62,12 +68,12 @@
                 {
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Organization Subscription"]</MudNavLink>
                 }
-                @if( AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
                 {
                     <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 }
 
-                @if(AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
                 {
                     <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
                 }
@@ -75,7 +81,7 @@
                 {
                 <MudNavLink Href="/payments" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                 }
-                @if(AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
                 {
                 <MudNavLink Href="/garageTransactions" Icon="@Icons.Material.Filled.CompareArrows">@L["GarageTransactions"]</MudNavLink>
                 }
