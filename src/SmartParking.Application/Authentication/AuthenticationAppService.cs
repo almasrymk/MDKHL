@@ -28,6 +28,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 using static QRCoder.PayloadGenerator;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using static Volo.Abp.TenantManagement.TenantManagementPermissions;
 using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
@@ -50,6 +51,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IDataFilter _dataFilter;
+    private readonly ICurrentTenant _currentTenant;
     private readonly IEmailSender _emailSender;
 
     public AuthenticationAppService(
@@ -64,7 +66,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IOptionsMonitor<OpenIddictServerOptions> oidcOptions,
         IRepository<Customer, Guid> CustomerRepository,
         IRepository<Organization, int> organizationRepository,
-        IDataFilter dataFilter
+        IDataFilter dataFilter,
+        ICurrentTenant currentTenant
 ,
         IEmailSender emailSender)
     {
@@ -80,6 +83,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _customerRepository = CustomerRepository;
         _organizationRepository = organizationRepository;
         _dataFilter = dataFilter;
+        _currentTenant = currentTenant;
         _emailSender = emailSender;
     }
     /// <inheritdoc/>
@@ -259,6 +263,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             {
                 return null;
             }
+            _currentTenant.Change(user.TenantId ?? null);
             var role = await _userManager.GetRolesAsync(user);
             if (role.FirstOrDefault() == RolesType.OrganizationEmployee.ToString())
                 return null;
