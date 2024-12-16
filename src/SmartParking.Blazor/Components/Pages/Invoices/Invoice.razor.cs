@@ -144,14 +144,15 @@ public partial class Invoice
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = false, PropertyName = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = true, PropertyName = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyName = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerEnName"], Name = "CustomerEnName", IsFilterable = true, PropertyName = "CustomerEnName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = true, PropertyName = "CustomerEnName", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerArName"], Name = "CustomerArName", IsFilterable = true, PropertyName = "CustomerArName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = true, PropertyName = "CustomerArName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
 
@@ -160,19 +161,21 @@ public partial class Invoice
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceTime"], item.InvoiceTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceNumber"], item.InvoiceNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"],!item.IsPackage?_localizer[$"{item.InvoiceType.ToString()}"]: _localizer[$"Package"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceTime"], item.InvoiceTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber.ToString()));
+
             if (CultureInfo.CurrentCulture.Name == "en")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerEnName"],item.CustomerEnName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"],item.CustomerEnName));
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerArName"], item.CustomerArName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.CustomerArName));
             }
 
 
