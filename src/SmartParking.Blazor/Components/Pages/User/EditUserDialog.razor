@@ -27,6 +27,9 @@
                     </MudItem>
                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required />
+                    </MudItem>                    
+                    <MudItem sm="6">
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Password"]" @bind-Value="updateUserDto.Password" Required />
                     </MudItem>
                 </MudGrid>
             </MudForm>
