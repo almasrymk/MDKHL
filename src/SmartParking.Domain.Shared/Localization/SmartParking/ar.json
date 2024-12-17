@@ -532,7 +532,9 @@
     "Permission:Invoice": "موديول المطابقة",
     "True": "نعم",
     "False": "لا",
-    "Permission:Contact": "موديول بيانات الاتصال "
+    "Permission:Contact": "موديول بيانات الاتصال ",
+    "mdkhl": "مدخل أدمن",
+    "admin": "أدمن منشأة"
 
 
 

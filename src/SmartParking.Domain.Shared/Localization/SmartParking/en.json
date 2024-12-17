@@ -509,7 +509,9 @@
     "Permission:Invoice": "Permission:Mapping",
     "True": "Yes",
     "False": "No",
-    "Permission:Contact": "Permission:Contact"
+    "Permission:Contact": "Permission:Contact",
+    "mdkhl": "Mdkhl",
+    "admin" : "Admin"
 
 
   } 

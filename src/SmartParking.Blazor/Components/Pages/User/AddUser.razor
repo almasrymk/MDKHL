@@ -14,6 +14,7 @@
 @inject NavigationManager NavigationManager
 @inject ICurrentUser currrentUser
 @inject ICurrentTenant currrentTenant
+@inject IRoleAppService RoleAppService
 
 <PageTitle>@L["Add New User"]</PageTitle>
 <div class="modal-wrapper">
@@ -49,32 +50,17 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["PhoneNumber"]"/>
                     </MudItem>
-
-                        <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="@userRole"
-                                       Label="@L["UserRole"]"
-                                       Placeholder="@L[ "Choose"]"
-                                       HelperText=@L["Helper Text"]
-                                       Required>
-
-                                @foreach (var role in Enum.GetValues(typeof(RolesType)))
-                                {
-                              
-                                            <MudSelectItem Value="@role.ToString()">
-                                                @role.ToString()
-                                            </MudSelectItem>
-                                    
-                                }
-                            </MudSelect>
-
-                        </MudItem>
-                    
-
-                    @if ((userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString()) && currrentTenant.Id is null)
+                    <MudItem>
+                <MudRadioGroup Required="false" T="bool"  ValueChanged="IsMdkhlSelect">
+                            <MudRadio Value="true"  Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
+                            <MudRadio Value="false" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
+                        </MudRadioGroup>
+                    </MudItem>
+                    @if (IsOrganization)
                     {
 
                         <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@userCreate.OrganizationId"
+                    <MudSelect ValueChanged="SelectOrganization" T="int"
                                        Label="@L["OrganizationName"]"
                                        Placeholder="@L[ "Choose"]"
                                        HelperText=@L["Helper Text"]
@@ -93,7 +79,27 @@
 
                         </MudItem>
                     }
+                @if (IsSelectOrganization)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect @bind-Value="@roleId"
+                                Label="@L["UserRole"]"
+                                Placeholder="@L[ "Choose"]"
+                                HelperText=@L["Helper Text"]
+                                Required>
 
+                                    @foreach (var role in Roles)
+                                    {
+
+                                    <MudSelectItem Value="@role.Id">
+                                        @role.ToString()
+                                    </MudSelectItem>
+
+                                        }
+                            </MudSelect>
+
+                        </MudItem>
+                    }
             
                     <MudItem sm="9" md="9">
 
