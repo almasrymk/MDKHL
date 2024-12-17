@@ -530,6 +530,9 @@
     "Permission:UnLinkedTransaction": "موديول حركات غير معرفة",
     "Permission:Payment": "موديول الفواتير",
     "Permission:Invoice": "موديول المطابقة",
+    "True": "نعم",
+    "False": "لا"
+    "Permission:Invoice": "موديول المطابقة",
     "Permission:Contact": "موديول بيانات الاتصال "
 
 
