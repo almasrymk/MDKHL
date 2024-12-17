@@ -143,6 +143,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _userRepository.GetQueryableAsync();
+            query = query.Where(user => EF.Property<int>(user, "UserTypeId") != 3);
             return await GetPagedResultAsync(query, input);
         }
     }
@@ -192,6 +193,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     private async Task<PagedResultDto<UserDto>> GetPagedResultAsync(IQueryable<IdentityUser> queryable, PagedResultRequestDto input)
     {
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var users = await AsyncExecuter.ToListAsync(queryable);
