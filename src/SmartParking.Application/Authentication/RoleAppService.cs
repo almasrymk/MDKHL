@@ -124,4 +124,16 @@ public class RoleAppService : ApplicationService, IRoleAppService
         var rolesDto = ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
         return rolesDto;
     }
+
+    public async Task<IdentityRoleDto> GetRoleById(Guid Id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _roleReository.GetQueryableAsync();
+            query = query.Where(x => x.Id == Id);
+           var role= await AsyncExecuter.FirstOrDefaultAsync(query);
+            return ObjectMapper.Map<IdentityRole,IdentityRoleDto>(role);
+        }
+        
+    }
 }

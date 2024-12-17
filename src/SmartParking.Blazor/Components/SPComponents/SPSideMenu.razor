@@ -49,10 +49,10 @@
                 {
                     <MudNavGroup Icon="@Icons.Material.Filled.AdminPanelSettings" Title="@L["Administration"]">
                         <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>
-                        @* <MudNavLink Href="/identity/roles" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink> *@
+                        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink>
                     </MudNavGroup>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.Default).Result && currenttenant.Id is not null)
                 {
                     <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["OrgCustomers"]</MudNavLink>
                 }
