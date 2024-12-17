@@ -1,6 +1,120 @@
-﻿namespace SmartParking.Blazor.Components.Pages.Roles;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
+using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.ContactsData;
+using SmartParking.Localization;
+using SmartParking.Organizations;
+using SmartParking.Permissions.ContactPermissions;
+using static MudBlazor.CategoryTypes;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using Volo.Abp.Identity;
+using Volo.Abp.Application.Dtos;
+
+namespace SmartParking.Blazor.Components.Pages.Roles;
 
 partial class Roles
 {
 
+    private int TotalItem;
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
+    public int RowPerPage { get; set; } = 10; // Default value is 10
+
+    private TableData itemData = new TableData();
+
+    private string termSearch;
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
+
+    public Roles(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
+        CreatePolicyName = IdentityPermissions.Roles.Create;
+        UpdatePolicyName = IdentityPermissions.Roles.Update;
+        DeletePolicyName = IdentityPermissions.Roles.Delete;
+
+
+    }
+    /// <summary>
+    /// Searches for role on the server side using term search.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for among roles.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
+    {
+
+        termSearch = pageInfo.SearchTerm;
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch 
+        };
+
+        var contactInfosDto = await RoleAppService.SearchByTenant(input,CurrentTenant.Id);
+
+        TotalItem = (int)contactInfosDto.TotalCount;
+        CreateTable(contactInfosDto);
+    }
+    /// <summary>
+    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// </summary>
+    /// <param name="page">The page number for which to fetch the data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+    {
+
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+
+        var RolesDto =  await RoleAppService.GetListAndPagedByTenant(input, CurrentTenant.Id);
+
+        
+        TotalItem = (int)RolesDto.TotalCount;
+        CreateTable(RolesDto);
+
+    }
+    
+
+    private void CreateTable(PagedResultDto<IdentityRoleDto> rolesDto)
+    {
+        // Initialize table data to be displayed, setting the table's name and whether to show the header
+        var tableData = new TableData()
+        {
+            Name = "Roles",
+            ShowHeader = true
+        };
+
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+        foreach (var item in rolesDto.Items)
+        {
+            var rowDef = new RowDef();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Name"], item.Name));
+   
+            tableData.Rows.Add(rowDef);
+        }
+        itemData = tableData;
+    }
+    private async Task HandleAdd()
+    {
+        await DialogService.ShowAsync<AddContactDataDialog>("Simple Dialog");
+    }
+    private async Task HandleEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+        await DialogService.ShowAsync<UpdateContactDataDialog>("Simple Dialog");
+    }
 }
