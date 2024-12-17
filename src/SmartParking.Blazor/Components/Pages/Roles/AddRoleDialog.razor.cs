@@ -22,7 +22,7 @@ partial class AddRoleDialog
     private List<OrganizationDto> organizationList = new List<OrganizationDto>();
     bool _clearable;
 
-    bool _addForMdkhl;
+    bool _addForMdkhl = true;
 
     private OrganizationDto _organization { get; set; }
 

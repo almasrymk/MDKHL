@@ -110,11 +110,16 @@ partial class Roles
     }
     private async Task HandleAdd()
     {
-        await DialogService.ShowAsync<AddContactDataDialog>("Simple Dialog");
+        await DialogService.ShowAsync<AddRoleDialog>("Simple Dialog");
     }
     private async Task HandleEdit(RowDef row)
     {
-        var id = int.Parse(row.Cells[0].Value);
-        await DialogService.ShowAsync<UpdateContactDataDialog>("Simple Dialog");
+        var id = Guid.Parse(row.Cells[0].Value);
+        var role = await RoleAppService.GetRoleById(id);
+        var parameters = new DialogParameters
+        {
+            ["RoleDto"] = role
+        };
+        await DialogService.ShowAsync<UpdateRoleDialog>("Simple Dialog" , parameters);
     }
 }
