@@ -66,7 +66,7 @@ partial class Roles
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
-        CurrentPage = pageInfo.PageNumber;
+       CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
 
         var input = new PagedAndSortedResultRequestDto
