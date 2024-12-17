@@ -39,10 +39,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IPermissionManager _permissionManager;
     private readonly IPermissionGrantRepository _permissionGrantRepository;
     private readonly IPermissionDefinitionManager _permissionDefinitionManager;
+    private readonly ICustomRoleReository _roleReository;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager  permissionManager, IPermissionGrantRepository permissionGrantRepository
-        , IPermissionDefinitionManager permissionDefinitionManager)
+        , IPermissionDefinitionManager permissionDefinitionManager,
+        ICustomRoleReository roleReository)
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -50,6 +52,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _permissionManager = permissionManager;
         _permissionGrantRepository = permissionGrantRepository;
         _permissionDefinitionManager = permissionDefinitionManager;
+        _roleReository = roleReository;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, IdentityRole role)
@@ -304,7 +307,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<IdentityRole?> FindRoleByTenantIdAsync(string roleName, Guid? tenantId)
     {
-        return await _userRepository.FindRoleByTenantAsync(roleName, tenantId);
+        return await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
     }
     ///<inheritdoc/>
     public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
