@@ -10,6 +10,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using System.Linq.Dynamic.Core;
 using Volo.Abp.Data;
+using System.Runtime.InteropServices;
 namespace SmartParking.Authentication;
 
 public class RoleAppService : ApplicationService, IRoleAppService
@@ -105,5 +106,22 @@ public class RoleAppService : ApplicationService, IRoleAppService
             return queryable.OrderBy(sortingParts[0] + " descending");
         }
         return queryable.OrderBy(sorting);
+    }
+
+    public async Task<IdentityRoleDto> Create(IdentityRoleCreateDto roleCreateDto, [Optional] Guid? tenantId)
+    {
+        var role = new IdentityRole(GuidGenerator.Create(), roleCreateDto.Name, tenantId);
+        role.IsPublic = true;
+        var roleCreate = await _roleReository.InsertAsync(role, true);
+        var rolesDto = ObjectMapper.Map<IdentityRole, IdentityRoleDto>(roleCreate);
+        return rolesDto;
+    }
+
+    public async Task<IdentityRoleDto> Update(Guid Id, IdentityRoleUpdateDto updateDto)
+    {
+        var role = await _roleReository.GetAsync(Id);
+        role.ChangeName(updateDto.Name);
+        var rolesDto = ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
+        return rolesDto;
     }
 }
