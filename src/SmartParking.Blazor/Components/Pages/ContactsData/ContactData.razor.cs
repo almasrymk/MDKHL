@@ -14,6 +14,8 @@ using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Garages;
 using System.Security.Authentication;
 using Volo.Abp;
+using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Permissions.ContactPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -32,6 +34,11 @@ public partial class ContactData
     public ContactData(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+        CreatePolicyName = ContactPermissions.Create;
+        UpdatePolicyName = ContactPermissions.Edit;
+        DeletePolicyName = ContactPermissions.Delete;
+
+
     }
     /// <summary>
     /// filter for contact data on the server side using the contact data columns.

@@ -1,0 +1,19 @@
+﻿@page "/roles"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ICurrentTenant currrentTenant
+@inject IOrganizationsAppService OrganizationsAppService
+
+
+<PageTitle>@L["Roles"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Roles"]</MudText>
+
+@* <SPDataGrid PageName=@L["Roles"] Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnClickRowView="ViewCustomer" /> *@
+
+

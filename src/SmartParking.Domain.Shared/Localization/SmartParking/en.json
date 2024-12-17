@@ -509,6 +509,8 @@
     "Permission:Invoice": "Permission:Mapping",
     "True": "Yes",
     "False": "No"
+    "Permission:Invoice": "Permission:Mapping",
+    "Permission:Contact": "Permission:Contact"
 
 
   } 
