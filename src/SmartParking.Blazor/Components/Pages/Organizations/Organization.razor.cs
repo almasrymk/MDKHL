@@ -224,7 +224,7 @@ public partial class Organization
 
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumOfGarages"], Name = "NumOfGarages", IsFilterable = true, IsSortable = true, PropertyName = "Subscription.NumbersOfGarages", TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlots"], Name = "ParkingSlots", IsFilterable = true,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlot"], Name = "ParkingSlots", IsFilterable = true,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         foreach (var item in organizations.Items)
@@ -249,7 +249,7 @@ public partial class Organization
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityNameAr));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlots"], item.ParkingSlots.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlot"], item.ParkingSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumOfGarages"], item.NumbersOfGarages.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Num Of Cameras"], item.NumberOfCameras.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
