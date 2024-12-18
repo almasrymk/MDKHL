@@ -91,6 +91,7 @@ public partial class CustomerRegister
             createUpdateCustomerDto.Email = createUpdateCustomerDto.MobileNumber + "@gmail.com";
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
+            createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
             if(CurrentTenant.Id == null)
             {
 				customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);

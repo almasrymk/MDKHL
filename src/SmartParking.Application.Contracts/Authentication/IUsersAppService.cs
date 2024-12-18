@@ -87,6 +87,6 @@ public interface IUsersAppService:  IApplicationService
     /// This method creates a new user in the system using the information provided in the <paramref name="input"/> parameter. 
     /// Upon successful creation, it returns the <see cref="UserDto"/> representing the newly created user, including its ID and other details.
     /// </remarks>
-    Task<UserDto> CreateWithRoleAsync(UserCreateDto input, IdentityRole role);
+    Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId);
     Task<IdentityRole> FindRoleByTenantIdAsync(string roleName,Guid? tenantId);
 }
