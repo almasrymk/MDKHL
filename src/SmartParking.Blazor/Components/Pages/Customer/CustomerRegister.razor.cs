@@ -79,6 +79,19 @@ public partial class CustomerRegister
         else
             packages = await PackagesAppService.GetAllOrganizationAsync(customerCategory);
 
+        if (packages.Count == 0)
+        {
+            ShowSnackbar("There Is No Package for that Customer Category !", Severity.Warning);
+            await Task.Delay(1000);
+            ShowSnackbar("Add Package !", Severity.Warning);
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/package");
+
+
+
+
+        }
+
     }
     public async  Task HandleSubmit()
     {
