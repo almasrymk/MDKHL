@@ -40,7 +40,7 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<PagedResultDto<UserDto>> GetListAsync(PagedResultRequestDto input);    
+    Task<PagedResultDto<UserDto>> GetListMdklAsync(PagedResultRequestDto input);    
     
     /// <summary>
     /// Asynchronously retrieves a paginated list of users based on the provided input.
@@ -59,8 +59,10 @@ public interface IUsersAppService:  IApplicationService
     /// <param name="input">The search criteria, including pagination, sorting, and search filters.</param>
     /// <returns>A <see cref="PagedResultDto{UserDto}"/> containing a list of users matching the search criteria, along with pagination details.</returns>
     Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<UserDto>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
 
     Task<PagedResultDto<UserDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+    Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input);
 
     /// <summary>
     /// Updates an existing user with the specified ID using the provided input data.
