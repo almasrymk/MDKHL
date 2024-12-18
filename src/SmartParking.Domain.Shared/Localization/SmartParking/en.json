@@ -512,7 +512,9 @@
     "Permission:Contact": "Contact Management",
     "mdkhl": "Mdkhl",
     "admin": "Admin",
-    "Permission:MyAccount": "My Account Management"
+    "Permission:MyAccount": "My Account Management",
+    "Permission:Confirm": "Confirm Paying"
+
 
 
   } 
