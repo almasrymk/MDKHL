@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Organizations;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using System.Linq;
-using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -30,9 +28,9 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
-    [Parameter]  public  bool ShowView { get; set; } = true;
+    [Parameter] public bool ShowView { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
-    [Parameter]  public bool ShowDelete { get; set; } = true;
+    [Parameter] public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
@@ -79,7 +77,7 @@ public partial class SPDataGrid
         ["لا يكون فارغـًا"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
-        public async Task ClearItem(string key)
+    public async Task ClearItem(string key)
     {
 
 
@@ -108,12 +106,12 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if(Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number || Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
+        if (Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number || Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
         {
             SelectOperator = new KeyValuePair<string, string>(SelectedColumn, FilterValue);
         }
 
-		if (!SelectOperator.Key.IsNullOrEmpty()  && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
+        if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") || !FilterValue.IsNullOrEmpty()))
         {
             if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
                 IsNot = true;
@@ -130,15 +128,15 @@ public partial class SPDataGrid
             ColumnsFilterApply.Add(DisplayFilter.Name);
 
             ClickFilter = false;
-			SelectedColumn = "";
-			FilterValue = "";
-			SelectOperator = default;
-			IsNot = false;
-			await dataGrid.ReloadServerData();
-            
+            SelectedColumn = "";
+            FilterValue = "";
+            SelectOperator = default;
+            IsNot = false;
+            await dataGrid.ReloadServerData();
+
         }
-           
-      
+
+
     }
     private void OnClickFilter()
     {
@@ -197,9 +195,9 @@ public partial class SPDataGrid
             Items = Data.Rows
         };
     }
-    protected override Task OnParametersSetAsync()
-    {
-        return base.OnParametersSetAsync();
-    }
+    //protected override Task OnParametersSetAsync()
+    //{
+    //    return base.OnParametersSetAsync();
+    //}
 
 }
