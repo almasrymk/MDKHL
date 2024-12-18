@@ -40,10 +40,7 @@
 @code {
     private MudForm form;
     private string ProfilePictureUrl =  ""; // Default profile picture
-    private UpdateProfileDto Profile = new UpdateProfileDto(); // Profile object for binding
-
-    // Inject the profile service and snackbar
-    [Inject] private IProfileAppService ProfileAppService { get; set; }
+    private UpdateUserDto Profile = new UpdateUserDto(); // Profile object for binding
     [Inject] private ISnackbar Snackbar { get; set; }
     private string ImageBase64 { get; set; }
 
@@ -80,12 +77,17 @@
     {
         try
         {
+            
 
             await form.Validate();
 
             if (form.IsValid)
             {
-                await ProfileAppService.UpdateAsync(Profile);
+                await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, Profile);
+                await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
+                Snackbar.Add("Profile updated successfully!", Severity.Success);
+                await Task.Delay(1000);
+                Navigation.Refresh(true);
                
                 Snackbar.Add("Profile updated successfully!", Severity.Success);
                 await Task.Delay(1000);
@@ -109,10 +111,7 @@
         await stream.CopyToAsync(memoryStream);
         byte[] imageBytes = memoryStream.ToArray();
          ImageBase64 = Convert.ToBase64String(imageBytes);
-        await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
-        Snackbar.Add("Profile updated successfully!", Severity.Success);
-        await Task.Delay(1000);
-        Navigation.Refresh(true);
+        
 
 
     }

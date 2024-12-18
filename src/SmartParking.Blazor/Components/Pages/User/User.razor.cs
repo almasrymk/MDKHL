@@ -210,7 +210,8 @@ public partial class User
             UserName = userData.UserName,
             TenantId = userData.TenantId,
             RoleId = userData.RoleId,
-            ConcurrencyStamp = userData.ConcurrencyStamp
+            ConcurrencyStamp = userData.ConcurrencyStamp,
+            IsActive  = userData.IsActive,
         };
         var parameters = new DialogParameters
         {
@@ -229,7 +230,11 @@ public partial class User
             Email = userData.Email,
             Surname = userData.Surname,
             PhoneNumber = userData.PhoneNumber,
-            UserName = userData.UserName
+            UserName = userData.UserName,
+            TenantId = userData.TenantId,
+            RoleId = userData.RoleId,
+            ConcurrencyStamp = userData.ConcurrencyStamp,
+            IsActive = userData.IsActive,
         };
         var parameters = new DialogParameters
         {

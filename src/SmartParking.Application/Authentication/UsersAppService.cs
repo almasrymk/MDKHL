@@ -286,18 +286,34 @@ public class UsersAppService : ApplicationService, IUsersAppService
     }
 
     /// <inheritdoc/>
-    public async Task<UserDto> UpdateAsync(Guid id, UpdateUserDto input)
+    public async Task<UserDto> UpdateAsync(Guid? id, UpdateUserDto input)
     {
         using(_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
             user.Surname = input.Surname;
+            user.SetIsActive(input.IsActive);
             ChangeRole(input, user);
             user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
             await _userManager.SetEmailAsync(user, input.Email);
             await _userManager.SetUserNameAsync(user, input.UserName);
-            //await ChangePassword(input, user);
+            var createdUser = await _userManager.UpdateAsync(user);
+            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            return userDto;
+        }
+    }   
+    
+    public async Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input)
+    {
+        using(_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(id);
+            user.Name = input.Name;
+            user.Surname = input.Surname;
+            user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
+            await _userManager.SetEmailAsync(user, input.Email);
+            await _userManager.SetUserNameAsync(user, input.UserName);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;

@@ -11,11 +11,13 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Authentication;
 using static Volo.Abp.Identity.IdentityPermissions;
 using System.Linq;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class UsersDialog
 {
+    [Inject] ICurrentTenant currrentTenant { get; set; }
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     [Parameter] public int organizationId { get; set; }
@@ -62,17 +64,18 @@ public partial class UsersDialog
             SearchingTerm = termSearch, // The term to use for filtering results
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
-        var pagedList = await UsersAppService.Filter(input);
+        PagedResultDto<UserDto> usersDto;
+        if (currrentTenant.Id is not null)
+            usersDto = await UsersAppService.FilterForOrganizationAsync(input);
+        else
+            usersDto = await UsersAppService.Filter(input);
+        var users = usersDto.Items.ToList();
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)usersDto.TotalCount;
+        CreateTable(users);
 
-		// Calculate the total number of pages required to display all results
-		var usersDto = pagedList.Items.ToList();
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)pagedList.TotalCount;
-		CreateTable(usersDto);
 
-
-	}
+    }
     /// <summary>
     /// Searches for hotels on the server side using the hotel code search term.
     /// </summary>
@@ -95,12 +98,15 @@ public partial class UsersDialog
             SearchingTerm = termSearch // The term to use for filtering results
         };
 
-        // Call the service to perform the search based on the input parameters
-        var pagedList = await UsersAppService.Search(input);
-        var usersDto = pagedList.Items.ToList(); 
+        PagedResultDto<UserDto> usersDto;
+        if (currrentTenant.Id is not null)
+            usersDto = await UsersAppService.SearchForOrganizationAsync(input);
+        else
+            usersDto = await UsersAppService.Search(input);
+         var users = usersDto.Items.ToList(); 
 		// Calculate the total number of pages required to display all results
-		TotalItem = (int)pagedList.TotalCount;
-        CreateTable(usersDto);
+		TotalItem = (int)usersDto.TotalCount;
+        CreateTable(users);
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -112,7 +118,6 @@ public partial class UsersDialog
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -123,7 +128,7 @@ public partial class UsersDialog
 
         // Retrieve the list of organizations from the server
         var userDto = await UsersAppService.GetUserByOrganizationId( organizationId);
-        //TotalItem = (int)garagessDto.TotalCount;
+        TotalItem =userDto.Count;
         CreateTable(userDto);
 
     }
