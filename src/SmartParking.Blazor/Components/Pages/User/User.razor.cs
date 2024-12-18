@@ -191,24 +191,6 @@ public partial class User
                                 user.TenantId,
                                 row.Cells[1].Value);
     }
-    public async Task<IDialogReference> AssignRole(string id)
-    {
-        var Gid = Guid.Parse(id);
-        var parameters = new DialogParameters
-        {
-            ["Id"] = Gid,
-        };
-
-        return await DialogService.ShowAsync<AssignationDialog>("Assign Role", parameters);
-
-
-
-
-    }
-
-
-
-
     public async Task<IDialogReference> HandleEdit(RowDef row)
     {
         var userId = Guid.Parse(row.Cells[0].Value);
@@ -219,7 +201,10 @@ public partial class User
             Email = userData.Email,
             Surname = userData.Surname,
             PhoneNumber = userData.PhoneNumber,
-            UserName = userData.UserName
+            UserName = userData.UserName,
+            TenantId = userData.TenantId,
+            RoleId = userData.RoleId,
+            ConcurrencyStamp = userData.ConcurrencyStamp
         };
         var parameters = new DialogParameters
         {

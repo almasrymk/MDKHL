@@ -60,12 +60,12 @@ public partial class UpdateRoleDialog
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"Failed to add ContactData: {ex.Code} + ", Severity.Error);
+            Snackbar.Add($"Failed to add Role: {ex.Code} + ", Severity.Error);
 
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to add ContactData: {ex.Message} + ", Severity.Error);
+            Snackbar.Add($"Failed to add Role: {ex.Message} + ", Severity.Error);
         }
     }
     protected override Task OnInitializedAsync()

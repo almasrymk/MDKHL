@@ -82,7 +82,7 @@
                 @if (IsSelectOrganization)
                     {
                         <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="@roleId"
+                            <MudSelect @bind-Value="@role"
                                 Label="@L["UserRole"]"
                                 Placeholder="@L[ "Choose"]"
                                 HelperText=@L["Helper Text"]
@@ -91,8 +91,8 @@
                                     @foreach (var role in Roles)
                                     {
 
-                                    <MudSelectItem Value="@role.Id">
-                                        @role.ToString()
+                                    <MudSelectItem Value="@role">
+                                        @role.Name
                                     </MudSelectItem>
 
                                         }

@@ -110,6 +110,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     public async Task<IdentityRoleDto> Create(IdentityRoleCreateDto roleCreateDto, [Optional] Guid? tenantId)
     {
+        await IsFoundRole(roleCreateDto.Name, tenantId);
         var role = new IdentityRole(GuidGenerator.Create(), roleCreateDto.Name, tenantId);
         role.IsPublic = true;
         var roleCreate = await _roleReository.InsertAsync(role, true);
@@ -117,12 +118,29 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return rolesDto;
     }
 
+    private async Task IsFoundRole(string roleName, Guid? tenantId)
+    {
+        var roleFound = await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
+        if (roleFound is not null)
+        {
+            throw new Exception("This role is already found.");
+        }
+    }
+
     public async Task<IdentityRoleDto> Update(Guid Id, IdentityRoleUpdateDto updateDto)
     {
-        var role = await _roleReository.GetAsync(Id);
-        role.ChangeName(updateDto.Name);
-        var rolesDto = ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
-        return rolesDto;
+        try
+        {
+            var role = await _roleReository.GetAsync(Id);
+            await IsFoundRole(updateDto.Name, role.TenantId);
+            role.ChangeName(updateDto.Name);
+            await _roleReository.UpdateAsync(role);
+            var rolesDto = ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
+            return rolesDto;
+        }catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 
     public async Task<IdentityRoleDto> GetRoleById(Guid Id)

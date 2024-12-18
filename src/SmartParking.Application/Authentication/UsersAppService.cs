@@ -27,6 +27,8 @@ using Volo.Abp.Authorization.Permissions;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Configuration.Provider;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Microsoft.Extensions.Options;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Authentication;
 
@@ -37,26 +39,26 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
     private readonly IPermissionManager _permissionManager;
-    private readonly IPermissionGrantRepository _permissionGrantRepository;
     private readonly IPermissionDefinitionManager _permissionDefinitionManager;
     private readonly ICustomRoleReository _roleReository;
+    private readonly IOptions<IdentityOptions> _identityOptions;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager  permissionManager, IPermissionGrantRepository permissionGrantRepository
-        , IPermissionDefinitionManager permissionDefinitionManager,
-        ICustomRoleReository roleReository)
+        , 
+        ICustomRoleReository roleReository,
+        IOptions<IdentityOptions> identityOptions)
     {
         _userManager = userManager;
         _userRepository = userRepository;
         _dataFilter = dataFilter;
-        _permissionManager = permissionManager;
-        _permissionGrantRepository = permissionGrantRepository;
-        _permissionDefinitionManager = permissionDefinitionManager;
         _roleReository = roleReository;
+        this._identityOptions = identityOptions;
     }
     ///<inheritdoc/>
-    public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, IdentityRole role)
+    public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
     {
+        await _identityOptions.SetAsync();
         var user = CreateUser(input);
 
         await CheckPhoneIsUnique(input.PhoneNumber);
@@ -70,7 +72,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
         }
 
-        await AssignRoleAndPermissionsAsync(user, role);
+        await AssignRoleAndPermissionsAsync(user, roleId);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
     }
@@ -81,7 +83,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     private void SetUserProperties(IdentityUser user, UserCreateDto input)
     {
-        user.Name = input.UserName;
+        user.Name = input.Name;
         user.Surname = input.Surname;
         user.SetProperty("OtpCode", null);
         user.SetProperty("OtpExpirationDate", DateTime.Now);
@@ -89,10 +91,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetProperty("OrganizationId", input.OrganizationId);
     }
 
-    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, IdentityRole role)
+    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId)
     {
-        user.AddRole(role.Id);
-        await _permissionManager.SetAsync("U", user.Id.ToString(), "AbpIdentity.Users.ManagePermissions", true);
+        user.AddRole(roleId);
     }
 
     /// <summary>
@@ -256,28 +257,38 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
             user.Surname = input.Surname;
+            ChangeRole(input, user);
+            user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
             await _userManager.SetEmailAsync(user, input.Email);
             await _userManager.SetUserNameAsync(user, input.UserName);
-            await ChangePassword(input, user);
+            //await ChangePassword(input, user);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
         }
     }
 
-    private async Task ChangePassword(UpdateUserDto input, IdentityUser? user)
+    private static void ChangeRole(UpdateUserDto input, IdentityUser? user)
     {
-        await _userManager.RemovePasswordAsync(user);
-        await _userManager.AddPasswordAsync(user, input.Password);
+        user.RemoveRole(user.Roles.First().RoleId);
+        user.AddRole(input.RoleId);
     }
+
+    //private async Task ChangePassword(UpdateUserDto input, IdentityUser? user)
+    //{
+    //    await _userManager.RemovePasswordAsync(user);
+    //    await _userManager.AddPasswordAsync(user, input.Password);
+    //}
 
     public async Task<UserDto> GetAsync(Guid? id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
+            
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userDto.Image = user.GetProperty<string>("Image");
+            userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
             return userDto;
         }
     }

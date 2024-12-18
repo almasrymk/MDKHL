@@ -10,6 +10,8 @@
 @using SmartParking.Permissions.OrganizationPermissions
 @using SmartParking.Permissions.PackagePermissions
 @using SmartParking.Permissions.PaymentsPermissions
+@using SmartParking.Permissions.SubsctriptionPermissions
+@using SmartParking.Permissions.UnLinkedTransactionPermissions
 @using Volo.Abp.Account
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
@@ -30,22 +32,29 @@
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
-                @if(currenttenant.Id == null)
-                {   
-                    <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
+                @if(currenttenant.Id is not null)
+                {
+                    <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>   
+                }                
+               
+                @if (AuthorizationService.IsGrantedAnyAsync(UnLinkedTransactionPermission.Default).Result && currenttenant.Id is null)
+                {
+                    <MudNavLink Href="/unLinkedTransaction" Icon="@Icons.Material.Filled.Garage">@L["UnLinkedTransaction"]</MudNavLink>
+                }    
+                @if (AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.Default).Result && currenttenant.Id is null)
+                {
                     <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["Customers"]</MudNavLink>
-
-                    
+                }                
+                @if (AuthorizationService.IsGrantedAnyAsync(OrganizationPermissions.Default).Result && currenttenant.Id is null)
+                {
+                    <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(SubscriptionPermissions.Default).Result && currenttenant.Id is null)
+                {
                     <MudNavLink Href="/subscriptions" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
                     <MudNavLink Href="/subscriptiontypes" Icon="@Icons.Material.Filled.Group">@L["SubscriptionTypes"]</MudNavLink>
-                    <MudNavLink Href="/unLinkedTransaction" Icon="@Icons.Material.Filled.Garage">@L["UnLinkedTransaction"]</MudNavLink>
-                }                
-                else
-                {
-                    <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>
-
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Users.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
+                @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Users.Default).Result)
                 {
                     <MudNavGroup Icon="@Icons.Material.Filled.AdminPanelSettings" Title="@L["Administration"]">
                         <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>
@@ -56,24 +65,24 @@
                 {
                     <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["OrgCustomers"]</MudNavLink>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(PackagePermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(PackagePermissions.Default).Result && currenttenant.Id is not null)
                 {
                     <MudNavLink Href="/package" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Default).Result && currenttenant.Id is not null)
                 {
                 <MudNavLink Href="/invoices" Icon="@Icons.Material.Filled.Assignment">@L["Invoices"]</MudNavLink>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(OrganizationPermissions.Default).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(SubscriptionPermissions.Default).Result && currenttenant.Id is not null)
                 {
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Organization Subscription"]</MudNavLink>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
+                @if (AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result)
                 {
                     <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 }
 
-                @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
+                @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result )
                 {
                     <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
                 }
@@ -81,7 +90,7 @@
                 {
                 <MudNavLink Href="/payments" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Default).Result || currentuser.IsInRole(RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))
+                @if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Default).Result)
                 {
                 <MudNavLink Href="/garageTransactions" Icon="@Icons.Material.Filled.CompareArrows">@L["GarageTransactions"]</MudNavLink>
                 }

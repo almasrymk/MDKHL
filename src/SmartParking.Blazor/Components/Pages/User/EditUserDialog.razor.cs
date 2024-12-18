@@ -5,23 +5,33 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
+using System.Collections.Generic;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
 partial class EditUserDialog
 {
-        [Parameter]
-        public string userId { get; set; }
-        [Parameter]
-        public UpdateUserDto updateUserDto { get; set; }
+    [Parameter]
+    public string userId { get; set; }
+    [Parameter]
+    public UpdateUserDto updateUserDto { get; set; }
+    private List<IdentityRoleDto> Roles = new List<IdentityRoleDto>();
+    private string roleId;
 
-        public async Task SubmitEdit()
+    protected override async Task OnInitializedAsync()
+    {
+        roleId = updateUserDto.RoleId.ToString();
+        Roles = await RoleAppService.GetListByTenant(updateUserDto.TenantId);
+
+    }
+    public async Task SubmitEdit()
         {
             var successedMessage = L["UserUpdateSuccessfullyWith"];
             try
             {
 
-
+                updateUserDto.RoleId = Guid.Parse(roleId);
                 var userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
                 if (userUpdated != null)
                 {

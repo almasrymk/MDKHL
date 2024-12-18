@@ -17,14 +17,14 @@
 @using Volo.Abp.BlazoriseUI.Components.ObjectExtending
 @using Volo.Abp.Identity.Localization
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-@attribute [Authorize(IdentityPermissions.Users.Default)]
+@attribute [Authorize]
 @inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
 
 
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
-<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd"  OnClickRowView="HandleView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" ShowAssign="false" OnClickRowEdit="HandleEdit" OnClickButton="AddPermission" OnClickAssign="AssignRole" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+<SPDataGrid PageName=@L["Users"] Data="@itemData" OnAdd="HandleAdd"  OnClickRowView="HandleView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" ShowAssign="false" OnClickRowEdit="HandleEdit" OnClickButton="AddPermission" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
 
 
 

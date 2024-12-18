@@ -11,4 +11,5 @@ namespace SmartParking.Authentication;
 public class UserDto:IdentityUserDto
 {
     public string Image { get; set; }
+    public Guid RoleId { get; set; }
 }
