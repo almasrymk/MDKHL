@@ -14,6 +14,7 @@
 @using SmartParking.Organizations
 @using System.Globalization
 @using SmartParking.Packages
+@using SmartParking.Validations
 @using SmartParking.Vehicles
 @using SmartParking.Vehicles.LookUps
 @using Volo.Abp.MultiTenancy
@@ -162,16 +163,16 @@
                     <MudGrid>
 
                         <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
                         </MudItem>
                         <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateArabicNumber" Label="@L["ArPlateNumber"]" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
                         </MudItem>
                         <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateLetter"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateLetter"]" Validation="VehicleValidation.ValidateEnglishLetter" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
                         </MudItem>
                         <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateNumber"]" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateNumber"]" Validation="VehicleValidation.ValidateEnglishNumber" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
                         </MudItem>
                         <MudItem sm="6" md="6">
                             <MudSelect @bind-Value="@createUpdateVehicle.LicenceTypeId"

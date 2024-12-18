@@ -23,6 +23,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
 public partial class AddVehicleDialog
 {
+    private MudForm form;
     public CreateUpdateVehicleDto createUpdateVehicle = new CreateUpdateVehicleDto();
     IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
     IReadOnlyList<LicenceTypeDto> LicenceTypes = new List<LicenceTypeDto>();
@@ -34,6 +35,8 @@ public partial class AddVehicleDialog
 
 	[Parameter]
 	public Guid CustomerId { get; set; }
+
+    
     protected override async Task OnInitializedAsync()
     {
         createUpdateVehicle.BelongToCompany = false;

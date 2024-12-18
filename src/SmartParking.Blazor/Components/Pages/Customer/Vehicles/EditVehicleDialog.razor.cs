@@ -20,6 +20,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
 public partial class EditVehicleDialog
 {
+    private MudForm form;
     [Parameter]
     public int VehicleId { get; set; }
     [Parameter]

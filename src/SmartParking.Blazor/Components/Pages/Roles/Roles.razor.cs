@@ -54,8 +54,6 @@ partial class Roles
     public async Task AddPermission(RowDef row)
     {
         var role = await RoleAppService.GetIdentityRoleById(Guid.Parse(row.Cells[0].Value));
-        //await PermissionManagementModal.OpenAsync(PermissionProviderName,
-        //                        data.As<IdentityRoleDto>().Name);
         await PermissionManagementModal.OpenAsync(PermissionProviderName,
                             role.Name,
                             role.TenantId);

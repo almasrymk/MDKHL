@@ -513,7 +513,11 @@
     "mdkhl": "Mdkhl",
     "admin": "Admin",
     "Permission:MyAccount": "My Account Management",
-    "Permission:Confirm": "Confirm Paying"
+    "Permission:Confirm": "Confirm Paying",
+    "OnlyArabicLettersAllowed": "Only Arabic Letters Allowed",
+    "OnlyArabicNumberAllowed": "Only Arabic Number Allowed",
+    "OnlyEnglishLettersAllowed": "Only English Letters Allowed",
+    "OnlyEnglishNumberAllowed": "Only English Number Allowed"
 
 
 

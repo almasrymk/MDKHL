@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp;
 using SmartParking.Invoices;
+using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -36,7 +37,33 @@ public partial class ViewCustomerInvoiceDialog
     {
         _localizer = localizer;
     }
+    /// <summary>
+    /// filter for cities on the server side using the city columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among city.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    {
+        // Log the search term to the console for debugging purposes
 
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndFilteredResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var invoiceDtos = await InvoiceAppService.Filter(input);
+
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)invoiceDtos.TotalCount;
+        CreateTable(invoiceDtos.Items.ToList());
+
+
+    }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
