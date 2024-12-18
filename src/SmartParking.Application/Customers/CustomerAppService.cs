@@ -536,6 +536,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("No Customer Found");
 
             }
+            await _baseCustomer.CheckCustomer(input);
 
             return await base.UpdateAsync(id, input);
         }
