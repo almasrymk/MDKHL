@@ -11,18 +11,7 @@ namespace SmartParking.Validations;
 
 public static class VehicleValidation 
 {
-    private static IServiceProvider _serviceProvider;
-
-    public static void Configure(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
-    public static string GetLocalizedString(string key)
-    {
-        var localizer = _serviceProvider.GetRequiredService<IStringLocalizer<SmartParkingResource>>();
-        return localizer[key];
-    }
+    
 
     public static string ValidateArabicLetters(string value)
     {
@@ -35,7 +24,7 @@ public static class VehicleValidation
         var arabicLetterPattern = @"^[\u0600-\u06FF]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
-            return GetLocalizedString("OnlyArabicLettersAllowed");
+            return LocalizationHelper.GetLocalizedString("OnlyArabicLettersAllowed");
         }
 
         return null; 
@@ -52,7 +41,7 @@ public static class VehicleValidation
         var arabicLetterPattern = @"^[\u0660-\u0669]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
-            return GetLocalizedString("OnlyArabicNumberAllowed");
+            return LocalizationHelper.GetLocalizedString("OnlyArabicNumberAllowed");
         }
 
         return null; 
@@ -69,7 +58,7 @@ public static class VehicleValidation
         var arabicLetterPattern = @"^[a-zA-Z]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
-            return GetLocalizedString("OnlyEnglishLettersAllowed");
+            return LocalizationHelper.GetLocalizedString("OnlyEnglishLettersAllowed");
         }
 
         return null; 
@@ -86,7 +75,7 @@ public static class VehicleValidation
         var arabicLetterPattern = @"^[0-9]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
-            return GetLocalizedString("OnlyEnglishNumberAllowed");
+            return LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed");
         }
 
         return null; 

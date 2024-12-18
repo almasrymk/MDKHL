@@ -21,6 +21,7 @@ using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.Results;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -257,6 +258,8 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureSwaggerServices(IServiceCollection services)
     {
+        LocalizationHelper.Configure(services.BuildServiceProvider());
+
         services.AddAbpSwaggerGen(
             options =>
             {
