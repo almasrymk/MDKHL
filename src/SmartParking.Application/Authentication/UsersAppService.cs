@@ -160,7 +160,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<PagedResultDto<UserDto>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        IQueryable<IdentityUser> queryable = await FindByUserType();
+        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4);
 
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
@@ -200,7 +200,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        IQueryable<IdentityUser> queryable = await FindByUserType();
+        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4);
         var filterExpression = BuildExpression<IdentityUser>.BuildFilterExpression(input.filters);
 
         if (filterExpression is not null)
@@ -353,14 +353,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
     ///<inheritdoc/>
     public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
     {
-        IQueryable<IdentityUser> query = await FindByUserType();
+        IQueryable<IdentityUser> query = await FindByUserType(1, 4);
         return await GetPagedResultAsync(query, input);
     }
 
-    private async Task<IQueryable<IdentityUser>> FindByUserType()
+    private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)
     {
         var query = await _userRepository.GetQueryableAsync();
-        query = query.Where(user => EF.Property<int>(user, "UserTypeId").IsIn(1, 4));
+        if (userTypes.Any())
+        {
+            query = query.Where(user => userTypes.Contains(EF.Property<int>(user, "UserTypeId")));
+        }
         return query;
     }
 }
