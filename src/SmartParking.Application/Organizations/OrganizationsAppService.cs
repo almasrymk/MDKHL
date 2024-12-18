@@ -36,7 +36,7 @@ namespace SmartParking.Organizations;
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
-    private readonly IIdentityRoleRepository _identityRole;
+    private readonly ICustomRoleReository _identityRole;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IUsersAppService _usersAppService;
@@ -46,7 +46,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     private readonly ITenantManager _tenantManager;
     private readonly IDataFilter _softDeleteFilter;
 
-    public OrganizationsAppService(IRepository<Organization, int> repository, IIdentityRoleRepository identityRole, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService, ITenantManager tenantManager, IRepository<Tenant, Guid> tenantRepository, IRepository<Garage, int> garageRepository, ICitiesAppService cityAppService) : base(repository)
+    public OrganizationsAppService(IRepository<Organization, int> repository, ICustomRoleReository identityRole, ICustomerCategoryAppService customerCategoryAppService, IDataFilter softDeleteFilter, IUsersAppService usersAppService, ISubscriptionAppService subscriptionAppService, ITenantManager tenantManager, IRepository<Tenant, Guid> tenantRepository, IRepository<Garage, int> garageRepository, ICitiesAppService cityAppService) : base(repository)
     {
         _repository = repository;
         _identityRole = identityRole;
@@ -101,7 +101,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         };
 
-        var userCreated = await _usersAppService.CreateWithRoleAsync(user,role);
+        var userCreated = await _usersAppService.CreateWithRoleAsync(user,role.Id);
     }
 
     private async Task<Organization> CreateOrganization(CreateUpdateOrganiztionDto input, Tenant tenant)

@@ -31,7 +31,6 @@ public class UpdateUserDto
     [RegularExpression(@"^(([^<>()\[\]\\.,;:\s@\""]+(\.[^<>()\[\]\\.,;:\s@\""]+)*)|(\"".+\""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$",
        ErrorMessage = "Invalid email format")]
     public string Email { get; set; }
-    [Required]
-    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPasswordLength))]
-    public string Password { get; set; }
+    public Guid RoleId { get; set; }
+    public string ConcurrencyStamp { get; set; }
 }

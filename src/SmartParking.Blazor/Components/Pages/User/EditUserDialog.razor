@@ -5,6 +5,7 @@
 @inject IUsersAppService UsersAppService
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject IRoleAppService RoleAppService
 
 <PageTitle>@L["Update User"]</PageTitle>
 
@@ -16,9 +17,9 @@
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
                 <MudGrid>
-                    <MudItem sm="6">
+@*                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.UserName" Label="@L["UserName"]" Required />
-                    </MudItem>
+                    </MudItem> *@
                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required />
                     </MudItem>
@@ -28,8 +29,26 @@
                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required />
                     </MudItem>                    
-                    <MudItem sm="6">
+@*                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Password"]" @bind-Value="updateUserDto.Password" Required />
+                    </MudItem> *@
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="@roleId"
+                                   Label="@L["UserRole"]"
+                                   Placeholder="@L[ "Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   Required>
+
+                            @foreach (var role in Roles)
+                            {
+
+                                <MudSelectItem Value="@role.Id.ToString()">
+                                    @role.Name
+                                </MudSelectItem>
+
+                            }
+                        </MudSelect>
+
                     </MudItem>
                 </MudGrid>
             </MudForm>

@@ -13,6 +13,8 @@ using Volo.Abp.Validation;
 using SmartParking.Enums;
 using SmartParking.Entities.Organizations;
 using Microsoft.Extensions.Localization;
+using Volo.Abp.Identity;
+using SmartParking.Blazor.Components.Pages.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -20,19 +22,37 @@ public partial class AddUser
 {
     public UserCreateDto userCreate { get; set; }
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-    private string userRole { get; set; }
-    private string[] Roles = new string[1];
+    private List<IdentityRoleDto> Roles = new List<IdentityRoleDto>();
     private MudForm form;
+    private IdentityRoleDto role;
+    private bool IsOrganization { get; set; }
+    private bool IsSelectOrganization { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
         userCreate = new UserCreateDto();
-        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
-        {
+        Roles = await RoleAppService.GetListByTenant(null);
+       await GetOrganizationDetailsAsync();
 
-             Organizations = await OrganizationAppService.GetAllMobileAsync();
-           
+    }
+    private async Task IsMdkhlSelect(bool isOrganization)
+    {
+        IsOrganization = isOrganization;
+        IsSelectOrganization = !isOrganization;
+        if (isOrganization)
+        {
+            Organizations = await OrganizationAppService.GetAllMobileAsync();
         }
+            
+      
+    }    
+    private async Task SelectOrganization(int organizationId)
+    {
+        IsSelectOrganization = true;
+        var orag = await OrganizationAppService.GetAsync(organizationId);
+        userCreate.OrganizationId = organizationId;
+        userCreate.TenantId = orag.TenantId;
+        Roles = await RoleAppService.GetListByTenant(orag.TenantId);
     }
     private async void SubmitCreate()
     {
@@ -41,7 +61,7 @@ public partial class AddUser
         var errorMessage = L["Can'tCreateUser "];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        await AddUserAsync(orgId, tenantId, successMessage, errorMessage, validationErrorMessage);
+        await AddUserAsync(successMessage, errorMessage, validationErrorMessage);
     }
 
     private async Task<(int orgId, Guid? tenantId)> GetOrganizationDetailsAsync()
@@ -55,23 +75,16 @@ public partial class AddUser
             orgId = org.Id;
             tenantId = org.TenantId;
         }
-        else if (userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString())
-        {
-            var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
-            orgId = org.Id;
-            tenantId = org.TenantId;
-        }
 
         return (orgId, tenantId);
     }
 
-    private async Task AddUserAsync(int orgId, Guid? tenantId, LocalizedString successMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
+    private async Task AddUserAsync(LocalizedString successMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
     {
         try
         {
-            CheckUser(orgId, tenantId);
-            var role = await UsersAppService.FindRoleByTenantIdAsync(userRole, tenantId);
-            var user = await UsersAppService.CreateWithRoleAsync(userCreate,role);
+            CheckUser();
+            var user = await UsersAppService.CreateWithRoleAsync(userCreate,role.Id);
 
             ShowSnackbar($"{successMessage}", Severity.Success);
             await Task.Delay(1000); // Awaiting the delay to ensure it completes before navigation
@@ -98,25 +111,17 @@ public partial class AddUser
         }
     }
 
-    private void CheckUser(int orgId, Guid? tenantId)
+    private void CheckUser()
     {
         userCreate.Password = "P@ssw0rd";
         userCreate.UserName = userCreate.PhoneNumber;
 
-        switch (userRole)
+        switch (role)
         {
-            case var role when role == RolesType.Mdkhl.ToString():
-                userCreate.TenantId = tenantId;
-                userCreate.UserType = 0;
-                break;
-            case var role when role == RolesType.Organization.ToString():
-                userCreate.OrganizationId = orgId;
-                userCreate.TenantId = tenantId;
+            case var role when role.Name == RolesType.Organization.ToString():
                 userCreate.UserType = 1;
                 break;
-            case var role when role == RolesType.Keeper.ToString():
-                userCreate.OrganizationId = orgId;
-                userCreate.TenantId = tenantId;
+            case var role when role.Name == RolesType.Keeper.ToString():
                 userCreate.UserType = 4;
                 break;
         }

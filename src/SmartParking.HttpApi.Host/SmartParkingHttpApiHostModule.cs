@@ -43,7 +43,6 @@ namespace SmartParking;
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule)
 )]
-[DependsOn(typeof(AbpAspNetCoreSignalRModule))]
     public class SmartParkingHttpApiHostModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
