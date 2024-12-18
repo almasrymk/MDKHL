@@ -50,12 +50,17 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["PhoneNumber"]"/>
                     </MudItem>
-                    <MudItem>
-                <MudRadioGroup Required="false" T="bool"  ValueChanged="IsMdkhlSelect">
+                    
+                @if (currrentTenant.Id is null)
+                {
+                <MudItem>
+                    <MudRadioGroup Required="false" T="bool"  ValueChanged="IsMdkhlSelect">
                             <MudRadio Value="true"  Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
                             <MudRadio Value="false" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
                         </MudRadioGroup>
-                    </MudItem>
+                </MudItem>
+                }
+                
                     @if (IsOrganization)
                     {
 
