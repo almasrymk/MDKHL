@@ -1,4 +1,5 @@
 ﻿@using Blazorise
+@using MudBlazor
 <Modal @ref="_modal" Closing="@ClosingModal">
     <ModalContent Size="ModalSize.Large" Centered="true">
         <ModalHeader>
@@ -13,7 +14,7 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <span class="input-group-text">
-                                   <Icon Name="IconName.Search"/>
+                                    <MudIcon Icon="@Icons.Material.Filled.Search"/>
                                 </span>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
@@ -97,8 +98,8 @@
             </fieldset>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Blazorise.Color.Danger" Outline Clicked="CloseModal">@L["Cancel"]</Button>
-            <Button Color="Blazorise.Color.Primary" Clicked="SaveAsync">@L["Save"]</Button>
+            <MudButton Color="MudBlazor.Color.Error" Variant="Variant.Filled" OnClick="CloseModal" Class="me-3">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SaveAsync">@L["Save"]</MudButton>
         </ModalFooter>
     </ModalContent>
 </Modal>
