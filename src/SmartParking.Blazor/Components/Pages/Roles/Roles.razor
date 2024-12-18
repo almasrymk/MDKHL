@@ -12,7 +12,7 @@
 @inject ICurrentTenant currrentTenant
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IRoleAppService RoleAppService
-@attribute [Authorize(IdentityPermissions.Roles.Default)]
+@attribute [Authorize]
 @inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
 
 
