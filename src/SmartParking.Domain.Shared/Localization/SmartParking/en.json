@@ -192,6 +192,7 @@
     "CANCEL": "CANCEL",
     "Email": "Email",
     "UserName": "UserName",
+    "UserFullName": "Name",
     "NationalId": "National ID/Iqama",
     "NationalIdLbl": "ID Number",
     "MobileNumber": "Mobile Number",

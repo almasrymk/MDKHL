@@ -1,29 +1,16 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
+using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Localization;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Users;
-using Volo.Abp.Application.Dtos;
-using SmartParking.Authentication;
-using SmartParking.Blazor.Components.Pages.Garages;
-using SmartParking.Garages;
-using SmartParking.OrganizationsGarages;
-using Volo.Abp.PermissionManagement.Blazor.Components;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Volo.Abp.Identity;
-using Microsoft.AspNetCore.Authorization;
-using Volo.Abp.Identity.Blazor;
-using Volo.Abp.Identity.Localization;
-using Blazorise;
-using Volo.Abp.MultiTenancy;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
-using Volo.Abp.TenantManagement;
-using SmartParking.Permissions;
 using SmartParking.Permissions.PackagePermissions;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.Identity;
+using Volo.Abp.Users;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -43,20 +30,20 @@ public partial class User
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private readonly ICurrentUser _currentUser;
-    protected string ManagePermissionsPolicyName; 
+    protected string ManagePermissionsPolicyName;
 
     public User(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
         _localizer = localizer;
         _currentUser = currentUser;
-        
+
         ManagePermissionsPolicyName = IdentityPermissions.Users.ManagePermissions;
-    
+
     }
 
     protected override Task OnInitializedAsync()
     {
-        
+
         return base.OnInitializedAsync();
     }
     /// <summary>
@@ -78,7 +65,7 @@ public partial class User
         if (currrentTenant.Id is not null)
             usersDto = await UsersAppService.FilterForOrganizationAsync(input);
         else
-         usersDto = await UsersAppService.Filter(input);
+            usersDto = await UsersAppService.Filter(input);
 
         TotalItem = (int)usersDto.TotalCount;
         CreateTable(usersDto);
@@ -109,7 +96,7 @@ public partial class User
         if (currrentTenant.Id is not null)
             usersDto = await UsersAppService.SearchForOrganizationAsync(input);
         else
-         usersDto = await UsersAppService.Search(input);
+            usersDto = await UsersAppService.Search(input);
 
         TotalItem = (int)usersDto.TotalCount;
         CreateTable(usersDto);
@@ -121,7 +108,7 @@ public partial class User
     /// <param name="page">The page number for which to fetch the data.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
-    { 
+    {
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
         // Create a request object for paged and sorted data
@@ -134,7 +121,7 @@ public partial class User
 
         // Retrieve the list of organizations from the server
         PagedResultDto<UserDto> usersDto;
-        if(currrentTenant.Id is not null)
+        if (currrentTenant.Id is not null)
             usersDto = await UsersAppService.GetListForOrganizationAsync(input);
         else
             usersDto = await UsersAppService.GetListMdklAsync(input);
@@ -160,42 +147,44 @@ public partial class User
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "Email", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNumber"], Name = "PhoneNumber", IsFilterable = true, PropertyName = "PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         //tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserRole"], Name = "UserRole", IsFilterable = false, PropertyName = "Roles", IsSortable = false, TypeFilter = TypeFilter.Text });
-       
+
 
         foreach (var item in users.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserName"], item.UserName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserFullName"], item.Name));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.Email));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNumber"], item.PhoneNumber));
             //rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserRole"], item.Role));
 
-           
+
 
 
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }
-    
+
     protected override async Task SetPermissionsAsync()
     {
         await base.SetPermissionsAsync();
         HasManagePermissionsPermission =
             await AuthorizationService.IsGrantedAsync(PackagePermissions.Default);
     }
-    
+
     public async Task AddPermission(RowDef row)
     {
         var user = await UsersAppService.GetAsync(Guid.Parse(row.Cells[0].Value));
-            await PermissionManagementModal.OpenAsync(PermissionProviderName,
-                                row.Cells[0].Value,
-                                user.TenantId,
-                                row.Cells[1].Value);
+        await PermissionManagementModal.OpenAsync(PermissionProviderName,
+                            row.Cells[0].Value,
+                            user.TenantId,
+                            row.Cells[1].Value);
     }
     public async Task<IDialogReference> HandleEdit(RowDef row)
     {
@@ -218,7 +207,7 @@ public partial class User
             ["userId"] = userId.ToString()
         };
         return await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters);
-    }   
+    }
     public async Task<IDialogReference> HandleView(RowDef row)
     {
         var userId = Guid.Parse(row.Cells[0].Value);
@@ -236,7 +225,7 @@ public partial class User
             ["userDto"] = userUpdate,
             ["userId"] = userId.ToString()
         };
-        
+
         return await DialogService.ShowAsync<ViewUserDialog>("User View", parameters);
     }
 }
