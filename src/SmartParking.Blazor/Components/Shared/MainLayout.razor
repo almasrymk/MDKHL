@@ -7,6 +7,7 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.MyAccount
 @using Volo.Abp.Localization
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.SettingManagement
@@ -16,6 +17,8 @@
 @inject ICurrentUser CurrentUser
 @inject ICurrentTenant currenttenant
 @inject IOrganizationsAppService OrganizationAppService
+@inject IAuthorizationService AuthorizationService
+
 <MudDialogProvider FullWidth="true"/>
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
@@ -27,7 +30,7 @@
 
         <MudItem Style="width:240px">
             <MudLink Href="#">
-            <Image Source="images/logo/logo.png" />
+                <Image Source="images/logo/logo.png" />
             </MudLink>
         </MudItem>
         <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
@@ -45,7 +48,7 @@
                             <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                         </div>
                     </ActivatorContent>
-   @*                  <ChildContent>
+                    @*                  <ChildContent>
                         <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
                             <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                         </div>
@@ -58,21 +61,24 @@
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
                         <p class="mb-0 fw-bold">@UserName </p>
-
-                        <Link Class="text-white border-bottom text-decoration-none"
-                              href=@(currenttenant.Id != null ? "/view-my-account" : "/edit-profile")>
+                        @if (hasPermission)
+                        {
+                            <a Class="text-white border-bottom text-decoration-none"
+                            href=@("/view-my-account" )>
                             @L["Profile Details"]
-                        </Link>
-                    </div>
+                            </a>
+                        }
+
                     </div>
                 </div>
-            </MudItem>
+            </div>
+        </MudItem>
 
-        </header>
-        <div Class="d-flex me-5 flex-grow-1">
-            <SPSideMenu />
-            <MudPaper Class="p-3 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl w-100 main-layout-paper">
-                @Body
+    </header>
+    <div Class="d-flex me-5 flex-grow-1">
+        <SPSideMenu />
+        <MudPaper Class="p-3 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl w-100 main-layout-paper">
+            @Body
         </MudPaper>
     </div>
     <footer class="text-center text-white my-5">
@@ -82,12 +88,12 @@
 
 <style>
     .bg_w_foto {
-        background: url(images/cities/<?php echo $city_name;
-        ?>) no-repeat center center;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
+    background: url(images/cities/<?php echo $city_name;
+    ?>) no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     }
 </style>
 @code {
@@ -98,6 +104,8 @@
 
     @inject IUsersAppService UsersAppService
     private string UserName { get; set; }
+    private bool hasPermission;
+
 
     protected async override Task OnInitializedAsync()
     {
@@ -114,6 +122,7 @@
             //UserName += " Organization";
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
         }
+        hasPermission = currenttenant.Id != null && AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result;
 
 
          base.OnInitializedAsync();
