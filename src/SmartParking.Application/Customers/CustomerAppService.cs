@@ -116,8 +116,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				}
 			}
 			await _baseCustomer.CheckCustomer(input);
+            var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.MobileNumber);
+            if (!result1)
+            {
+                throw new Exception("Phone Number is used");
 
-			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+            }
+            var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
+            if (!result2)
+            {
+                throw new Exception("National Id is already exist !");
+
+            }
+
+            var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
 			await AddUser(input, customer);
 			var customerAdd = await _repository.InsertAsync(customer, true);
 			await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
@@ -536,7 +548,28 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("No Customer Found");
 
             }
-            await _baseCustomer.CheckCustomer(input);
+            if (customer.IdentificationTypes != input.IdentificationType)
+            {
+                await _baseCustomer.CheckCustomer(input);
+            }
+            if (customer.IdentityUser.PhoneNumber != input.MobileNumber)
+            {
+                var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.MobileNumber);
+                if (!result1)
+                {
+                    throw new Exception("Phone Number is used");
+
+                }
+            }
+            if (customer.NationalId != input.NationalId)
+            {
+                var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
+                if (!result2)
+                {
+                    throw new Exception("National Id is already exist !");
+
+                }
+            }
 
             return await base.UpdateAsync(id, input);
         }

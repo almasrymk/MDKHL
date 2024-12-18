@@ -81,18 +81,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
                 throw new UserFriendlyException("Passport must be from 6 - 9 digits and atmost one character");
             }
         }
-        var result1 = await CheckIfPhoneNumberIsUnique(input.MobileNumber);
-        if (!result1)
-        {
-            throw new Exception("Phone Number is used");
 
-        }
-        var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
-        if (!result2)
-        {
-            throw new Exception("National Id is already exist !");
-
-        }
     }
 
     /// <inheritdoc/>
