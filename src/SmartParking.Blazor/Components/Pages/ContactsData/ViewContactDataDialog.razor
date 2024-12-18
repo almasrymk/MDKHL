@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using static MudBlazor.CategoryTypes
 @inject ISnackbar Snackbar
@@ -8,6 +9,7 @@
 @inject NavigationManager Navigation
 @inject IContactInfoAppService ContactInfoAppService
 @inject ICurrentTenant CurrentTenant
+
 <PageTitle>@L["ViewContactData"]</PageTitle>
 
 <MudItem class="modal-wrapper">
