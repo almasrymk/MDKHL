@@ -288,7 +288,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
             
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userDto.Image = user.GetProperty<string>("Image");
-            userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
+            if(user.Roles.Any()) 
+            {
+                userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
+            }
             return userDto;
         }
     }
