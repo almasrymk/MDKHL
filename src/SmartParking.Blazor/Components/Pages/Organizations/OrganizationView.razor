@@ -113,7 +113,7 @@
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="8">
                             <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                        
@@ -191,14 +191,14 @@
                     @if(OrganizationPicture!=null)
                     {
                         <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                            <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Alt="@L["OrganizationLogo"]" />
+                            <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                         </MudItem>
                     }
                     else
                     {
                         <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
 
-                            <MudImage Src="images/MDHKL_04.png" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />
+                            <MudImage Src="images/MDHKL_04.png" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
 
                         </MudItem>
                     }
@@ -210,11 +210,11 @@
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewGarages">@L["Garages"]</MudLink>
                         </MudPaper>
                     </MudItem>
-              @*       <MudItem sm="6">
+                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark">@L["Subscriptions"]</MudLink>
                         </MudPaper>
-                    </MudItem> *@
+                    </MudItem> 
 
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">

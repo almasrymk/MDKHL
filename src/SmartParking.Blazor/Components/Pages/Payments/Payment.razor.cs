@@ -117,6 +117,12 @@ public partial class Payment
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "CreationTime DESC";
+        else
+            sort = pageInfo.SortColumn;
+
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
         // Create a request object for paged and sorted data
@@ -124,7 +130,7 @@ public partial class Payment
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = sort
         };
 
         // Retrieve the list of payments from the server
@@ -156,20 +162,12 @@ public partial class Payment
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Amount"], Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Currency"], Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customer.IdentityUser.UserName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = false, TypeFilter = TypeFilter.Text });
 
-        if (CultureInfo.CurrentCulture.Name == "en")
-        {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "Customer.Organization.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
-            
-        }
-        else
-        {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = true, PropertyName = "Customer.Organization.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-
-        }
        
         foreach (var item in organizations.Items)
         {
+            
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], item.PaymentCategory));
@@ -179,19 +177,7 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Amount"], item.Amount.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Currency"], item.Currency.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.UserName ?? _localizer["Customer"]));
-            if (CultureInfo.CurrentCulture.Name == "en")
-            {
-
-                
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.Customers?.OrganizationEnglishName));
-
-            }
-            else
-            {
-
-                
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.Customers?.OrganizationEnglishName));
-            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
 
 
 

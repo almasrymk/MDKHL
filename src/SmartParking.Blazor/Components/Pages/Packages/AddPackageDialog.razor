@@ -96,10 +96,11 @@
 
                     </MudItem>
                     <MudItem sm="4">
-                        <MudSwitch Label="@L["Published"]"
-                                   LabelPosition="LabelPosition.Start"
-                                   @bind-Value="createUpdatePackage.Published"
-                                   Color="MudBlazor.Color.Primary" />
+                        <MudSwitch 
+                            Label="@L["Published"]"
+                            LabelPosition="LabelPosition.Start"
+                            @bind-Value="createUpdatePackage.Published"
+                            Color="MudBlazor.Color.Primary" />
                     </MudItem>
                     @if(createUpdatePackage.Published == false)
                     {
@@ -108,6 +109,7 @@
                         <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                                            Class="w-100"
+                                           Required="!createUpdatePackage.Published"
                                            TimeChanged="OnTimeFromChanged"
                                            PickerVariant="PickerVariant.Dialog"
                                            Placeholder=@L["Time Placeholder"]
@@ -117,6 +119,7 @@
                         <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                                            Class="w-100"
+                                           Required="!createUpdatePackage.Published"
                                            PickerVariant="PickerVariant.Dialog"
                                            TimeChanged="OnTimeToChanged"
                                            Placeholder=@L["Time Placeholder"]

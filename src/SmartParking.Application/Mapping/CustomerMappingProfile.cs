@@ -39,6 +39,7 @@ public class CustomerMappingProfile : Profile
             .ForPath(dest => dest.IdentityUser.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForPath(dest => dest.IdentityUser.NormalizedEmail, opt => opt.MapFrom(src => src.Email))
             .ForPath(dest => dest.IdentityUser.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.IdentificationTypes, opt => opt.MapFrom(src => src.IdentificationType))
             .ForPath(dest => dest.IdentityUser.PhoneNumber, opt => opt.MapFrom(src => src.MobileNumber))
             .ForPath(dest => dest.IdentityUser.IsActive, opt => opt.MapFrom(src => src.isActive))
             .ForPath(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId)).ReverseMap();
