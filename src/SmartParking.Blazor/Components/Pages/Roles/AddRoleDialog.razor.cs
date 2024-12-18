@@ -57,9 +57,13 @@ partial class AddRoleDialog
             {
                 Name = input.Name,
             };
-            _organizationTenant = _organization?.TenantId ?? null;
+            if(CurrentTenant.Id is null)
+            {
+              _organizationTenant = _organization?.TenantId ?? null;
 
-            var roleDto = await RoleAppService.Create(createIdentityDto, _organizationTenant);
+            }
+
+            var roleDto = await RoleAppService.Create(createIdentityDto,_organizationTenant);
             if (roleDto != null)
             {
                 Snackbar.Add(successedMessage, Severity.Success);
