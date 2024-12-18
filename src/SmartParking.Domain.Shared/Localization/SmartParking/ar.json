@@ -534,7 +534,9 @@
     "False": "لا",
     "Permission:Contact": "موديول بيانات الاتصال ",
     "mdkhl": "مدخل أدمن",
-    "admin": "أدمن منشأة"
+    "admin": "أدمن منشأة",
+    "Permission:MyAccount": "موديول حساب المنشآة",
+    "Permission:Confirm": "تأكيد الدفع"
 
 
 

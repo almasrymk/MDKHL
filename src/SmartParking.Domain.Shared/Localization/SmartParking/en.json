@@ -502,16 +502,19 @@
     "Permission:Subscription": "Subscription Management",
     "FailedCreateCustomer": "Failed Create Customer",
     "Unauthorized": "Unauthorized",
-    "Permission:ChanageStatus": "Permission:ChanageStatus",
-    "Permission:GarageTransaction": "Permission:GarageTransaction",
-    "Permission:UnLinkedTransaction": "Permission:UnLinkedTransaction",
-    "Permission:Payment": "Permission:Payment",
-    "Permission:Invoice": "Permission:Mapping",
+    "Permission:ChanageStatus": "Chanage Status",
+    "Permission:GarageTransaction": "Garage Transaction Management",
+    "Permission:UnLinkedTransaction": "UnLinkedTransaction Management",
+    "Permission:Payment": "Payment Management",
+    "Permission:Invoice": "Mapping Management",
     "True": "Yes",
     "False": "No",
-    "Permission:Contact": "Permission:Contact",
+    "Permission:Contact": "Contact Management",
     "mdkhl": "Mdkhl",
-    "admin" : "Admin"
+    "admin": "Admin",
+    "Permission:MyAccount": "My Account Management",
+    "Permission:Confirm": "Confirm Paying"
+
 
 
   } 

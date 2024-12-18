@@ -5,6 +5,7 @@
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.Payments
+@using SmartParking.Permissions.InvoicesPermissions
 @using SmartParking.Vehicles
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
@@ -18,6 +19,7 @@
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject IPaymentAppService PaymentAppSerivce
+@inject IAuthorizationService AuthorizationService
 
 <PageTitle>@L["InvoiceDetails"]</PageTitle>
 
@@ -30,16 +32,16 @@
                     <MudGrid>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="InvoiceNumber"
-                                          For="@(() => InvoiceNumber)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["InvoiceNumber"]"
-                                          Disabled />
+                            For="@(() => InvoiceNumber)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["InvoiceNumber"]"
+                            Disabled />
                         </MudItem>
-                        
+
                         <MudItem sm="4">
                             <MudTextField @bind-Value="TotalHours"
-                             For="@(() => TotalHours)"
+                            For="@(() => TotalHours)"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@L["TotalHours"]"
@@ -47,57 +49,57 @@
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="InvoicePrice"
-                                          For="@(() => InvoicePrice)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["InvoicePrice"]"
-                                          Disabled />
+                            For="@(() => InvoicePrice)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["InvoicePrice"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="InvoiceType"
-                                          For="@(() =>InvoiceType)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["InvoiceType"]"
-                                          Disabled />
+                            For="@(() =>InvoiceType)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["InvoiceType"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="OrganizationArabicName"
-                                          For="@(() => OrganizationArabicName)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["OrganizationArabicName"]"
-                                          Disabled />
+                            For="@(() => OrganizationArabicName)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["OrganizationArabicName"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="GarageName"
-                                          For="@(() => GarageName)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["Garage Name"]"
-                                          Disabled />
+                            For="@(() => GarageName)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["Garage Name"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="PlateNumber"
-                                          For="@(() => PlateNumber)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["PlateNumber"]"
-                                          Disabled />
+                            For="@(() => PlateNumber)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["PlateNumber"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField Value="EntranceTime.ToString()"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["EntranceTime"]"
-                                          Disabled />
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["EntranceTime"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField Value="InvoiceTime.ToString()"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["ExitTime"]"
-                                          Disabled />
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["ExitTime"]"
+                            Disabled />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
@@ -136,7 +138,7 @@
                     <MudItem xs="6" Class="text-end">
                         <MudText Typo="Typo.h6">@($"{ Math.Round((InvoicePrice * 0.15m),2)} {L["SAR"]}")</MudText>
                     </MudItem>
-                   
+
                     <MudItem xs="6">
                         <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
                     </MudItem>
@@ -147,14 +149,14 @@
                     </MudItem>
                 </MudGrid>
 
-                <MudGrid Class="mt-4">
-                    <MudItem xs="12" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ?L["Paid"] :L["CONFIRM"])  </MudButton>
-                    </MudItem>
-                    <MudItem xs="12" Class="text-center mt-2">
-                        <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark" OnClick="Back">@L["CANCEL"]</MudButton>
-                    </MudItem>
-                </MudGrid>
+                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result){
+
+                    <MudGrid Class="mt-4">
+                        <MudItem xs="12" Class="text-center">
+                            <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ?L["Paid"] :L["CONFIRM"])  </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                }
 
 
             </MudPaper>

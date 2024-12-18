@@ -1,4 +1,6 @@
-﻿using SmartParking.Permissions.UnLinkedTransactionPermissions;
+﻿using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.MyAccount;
+using SmartParking.Permissions.UnLinkedTransactionPermissions;
 using SmartParking.StringLocalizer;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,8 @@ public class InvoicePermissionDefinitionProvider : PermissionDefinitionProvider
         var smartParkingGroup = context.AddGroup(InvoicePermission.Default, CustomStringLocalizer.L("Permission:Invoice"));
 
         var invoicePermission = smartParkingGroup.AddPermission(InvoicePermission.Default, CustomStringLocalizer.L("Permission:Invoice"));
+        invoicePermission.AddChild(InvoicePermission.Confirm, CustomStringLocalizer.L("Permission:Confirm"));
+
 
 
     }

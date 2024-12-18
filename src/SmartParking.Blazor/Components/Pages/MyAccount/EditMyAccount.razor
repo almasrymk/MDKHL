@@ -10,6 +10,7 @@
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
 @using System.Globalization
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
@@ -30,6 +31,7 @@
 @inject IAuthorizationService AuthorizationService
 
 @attribute [Authorize]
+@inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
 <PageTitle>@L["EditMyAccount"]</PageTitle>
 <div>
     <MudGrid>

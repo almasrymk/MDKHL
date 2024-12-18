@@ -11,4 +11,5 @@ public class InvoicePermission
     public const string PropertyName = ".Invoice";
     public const string GroupName = SmartParkingPermissions.GroupName;
     public const string Default = GroupName + PropertyName;
+    public const string Confirm = Default + ".Confirm";
 }
