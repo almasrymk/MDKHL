@@ -1,34 +1,23 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using SmartParking.Cutomers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
-using IdentityUser = Volo.Abp.Identity.IdentityUser;
-using IdentityRole = Volo.Abp.Identity.IdentityRole;
-using QRCoder;
-using SmartParking.Entities.Invoices;
-using SmartParking.Invoices;
-using System.IO;
 using Volo.Abp.PermissionManagement;
-using static Volo.Abp.Identity.IdentityPermissions;
-using Abp.MultiTenancy;
-using Volo.Abp.Authorization.Permissions;
-using static OpenIddict.Abstractions.OpenIddictConstants;
-using System.Configuration.Provider;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using Microsoft.Extensions.Options;
-using Volo.Abp.Identity;
+using IdentityRole = Volo.Abp.Identity.IdentityRole;
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
 
@@ -44,8 +33,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IOptions<IdentityOptions> _identityOptions;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
-        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager  permissionManager, IPermissionGrantRepository permissionGrantRepository
-        , 
+        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager permissionManager, IPermissionGrantRepository permissionGrantRepository
+        ,
         ICustomRoleReository roleReository,
         IOptions<IdentityOptions> identityOptions)
     {
@@ -146,7 +135,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IQueryable<IdentityUser> query = await FindByUserType();
             return await GetPagedResultAsync(query, input);
         }
-    }    
+    }
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
@@ -168,23 +157,23 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return await GetPagedResultAsync(queryable, input);
         }
     }
-    
+
     public async Task<PagedResultDto<UserDto>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        IQueryable<IdentityUser> queryable = await FindByUserType();
+        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4);
 
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-                queryable = ApplySearchFilter(queryable, input.SearchingTerm);
-            }
+        {
+            queryable = ApplySearchFilter(queryable, input.SearchingTerm);
+        }
 
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                queryable = ApplySorting(queryable, input.Sorting);
-            }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            queryable = ApplySorting(queryable, input.Sorting);
+        }
 
-            return await GetPagedResultAsync(queryable, input);
-        
+        return await GetPagedResultAsync(queryable, input);
+
     }
 
     /// <inheritdoc/>
@@ -208,24 +197,24 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return await GetPagedResultAsync(queryable, input);
         }
     }
-    
+
     public async Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input)
     {
-            IQueryable<IdentityUser> queryable = await FindByUserType();
-            var filterExpression = BuildExpression<IdentityUser>.BuildFilterExpression(input.filters);
+        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4);
+        var filterExpression = BuildExpression<IdentityUser>.BuildFilterExpression(input.filters);
 
-            if (filterExpression is not null)
-            {
-                queryable = queryable.Where(filterExpression);
-            }
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
 
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                queryable = ApplySorting(queryable, input.Sorting);
-            }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            queryable = ApplySorting(queryable, input.Sorting);
+        }
 
-            return await GetPagedResultAsync(queryable, input);
-        
+        return await GetPagedResultAsync(queryable, input);
+
     }
 
     private async Task<PagedResultDto<UserDto>> GetPagedResultAsync(IQueryable<IdentityUser> queryable, PagedResultRequestDto input)
@@ -288,7 +277,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <inheritdoc/>
     public async Task<UserDto> UpdateAsync(Guid? id, UpdateUserDto input)
     {
-        using(_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
@@ -337,10 +326,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            
+
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userDto.Image = user.GetProperty<string>("Image");
-            if(user.Roles.Any()) 
+            if (user.Roles.Any())
             {
                 userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
             }
@@ -353,7 +342,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            var imagePath =  SaveImageAsync(image);
+            var imagePath = SaveImageAsync(image);
             user?.SetProperty("Image", imagePath);
 
             await _userManager.UpdateAsync(user);
@@ -380,14 +369,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
     ///<inheritdoc/>
     public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
     {
-        IQueryable<IdentityUser> query = await FindByUserType();
+        IQueryable<IdentityUser> query = await FindByUserType(1, 4);
         return await GetPagedResultAsync(query, input);
     }
 
-    private async Task<IQueryable<IdentityUser>> FindByUserType()
+    private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)
     {
         var query = await _userRepository.GetQueryableAsync();
-        query = query.Where(user => EF.Property<int>(user, "UserTypeId") != 3);
+        if (userTypes.Any())
+        {
+            query = query.Where(user => userTypes.Contains(EF.Property<int>(user, "UserTypeId")));
+        }
         return query;
     }
 }

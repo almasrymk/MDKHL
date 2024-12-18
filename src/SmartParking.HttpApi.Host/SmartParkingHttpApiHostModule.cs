@@ -197,7 +197,7 @@ namespace SmartParking;
         }
 
         app.UseCorrelationId();
-        //app.UseStaticFiles();
+        app.UseStaticFiles();
         app.MapAbpStaticAssets();
         app.UseRouting();
         app.UseCors();
