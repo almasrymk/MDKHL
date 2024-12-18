@@ -133,7 +133,6 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
             CurrentPage = pageInfo.PageNumber;
 			RowPerPage = pageInfo.RowsPerPage;
-			Console.WriteLine(RowPerPage);
 			// Create a request object for paged and sorted data
 			var input = new PagedAndSortedResultRequestDto
 			{

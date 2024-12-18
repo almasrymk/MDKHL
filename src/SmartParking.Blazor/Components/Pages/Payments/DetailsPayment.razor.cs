@@ -22,6 +22,7 @@ public partial class DetailsPayment
     protected override async Task OnInitializedAsync()
     {
        await FetchPayment();
+        await base.OnInitializedAsync();
         
     }
     private void Back()

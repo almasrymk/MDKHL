@@ -1,6 +1,14 @@
+fieldset .form-check .form-check-input:checked {
+    border-color: #0D5480 !important;
+    background-color: #0D5480 !important;
+}
 
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    background-color: #d9effc !important;
+    color: #0D5480 !important;
+}
 
-button,a[type="button"] {
+button, a[type="button"] {
     border-radius: 0 10px 0 10px !important;
 }
 

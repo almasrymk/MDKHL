@@ -207,7 +207,6 @@ public class GarageTransactionsAppService :
 
         // Map the garages entities to garagesDto objects
         var transactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
-        Console.WriteLine(transactionsDto.Count);
         // Return the paginated result
         return new PagedResultDto<GarageTransactionDto>(
             totalCount,

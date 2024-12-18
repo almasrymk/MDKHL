@@ -78,7 +78,7 @@ public partial class CustomerView
     }
     public void CancelView()
     {
-        Navigation.NavigateTo("/customers", true);
+        Navigation.NavigateTo("/customers", false);
 
     }
 

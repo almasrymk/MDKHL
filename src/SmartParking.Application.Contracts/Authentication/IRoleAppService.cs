@@ -18,4 +18,5 @@ public interface IRoleAppService: IApplicationService
     Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedByTenant(PagedResultRequestDto input,Guid? tenantId);
     Task<PagedResultDto<IdentityRoleDto>> SearchByTenant(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
     Task<IdentityRoleDto> GetRoleById(Guid Id);
+    Task<IdentityRole> GetIdentityRoleById(Guid Id);
 }

@@ -74,8 +74,11 @@ public partial class User
             SearchingTerm = termSearch, // The term to use for filtering results
             filters = pageInfo.Filters
         };
-
-        var usersDto = await UsersAppService.Filter(input);
+        PagedResultDto<UserDto> usersDto;
+        if (currrentTenant.Id is not null)
+            usersDto = await UsersAppService.FilterForOrganizationAsync(input);
+        else
+         usersDto = await UsersAppService.Filter(input);
 
         TotalItem = (int)usersDto.TotalCount;
         CreateTable(usersDto);
@@ -102,8 +105,11 @@ public partial class User
             SearchingTerm = termSearch // The term to use for filtering results
         };
 
-
-        var usersDto = await UsersAppService.Search(input);
+        PagedResultDto<UserDto> usersDto;
+        if (currrentTenant.Id is not null)
+            usersDto = await UsersAppService.SearchForOrganizationAsync(input);
+        else
+         usersDto = await UsersAppService.Search(input);
 
         TotalItem = (int)usersDto.TotalCount;
         CreateTable(usersDto);
@@ -131,7 +137,7 @@ public partial class User
         if(currrentTenant.Id is not null)
             usersDto = await UsersAppService.GetListForOrganizationAsync(input);
         else
-            usersDto = await UsersAppService.GetListAsync(input);
+            usersDto = await UsersAppService.GetListMdklAsync(input);
         TotalItem = (int)usersDto.TotalCount;
         CreateTable(usersDto);
 

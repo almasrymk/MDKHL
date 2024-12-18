@@ -139,22 +139,21 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserDto>> GetListAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserDto>> GetListMdklAsync(PagedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query = await _userRepository.GetQueryableAsync();
-            query = query.Where(user => EF.Property<int>(user, "UserTypeId") != 3);
+            IQueryable<IdentityUser> query = await FindByUserType();
             return await GetPagedResultAsync(query, input);
         }
-    }
+    }    
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var queryable = await _userRepository.GetQueryableAsync();
+            IQueryable<IdentityUser> queryable = await FindByUserType();
 
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
@@ -168,6 +167,24 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
             return await GetPagedResultAsync(queryable, input);
         }
+    }
+    
+    public async Task<PagedResultDto<UserDto>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        IQueryable<IdentityUser> queryable = await FindByUserType();
+
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                queryable = ApplySearchFilter(queryable, input.SearchingTerm);
+            }
+
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                queryable = ApplySorting(queryable, input.Sorting);
+            }
+
+            return await GetPagedResultAsync(queryable, input);
+        
     }
 
     /// <inheritdoc/>
@@ -190,6 +207,25 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
             return await GetPagedResultAsync(queryable, input);
         }
+    }
+    
+    public async Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+            IQueryable<IdentityUser> queryable = await FindByUserType();
+            var filterExpression = BuildExpression<IdentityUser>.BuildFilterExpression(input.filters);
+
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                queryable = ApplySorting(queryable, input.Sorting);
+            }
+
+            return await GetPagedResultAsync(queryable, input);
+        
     }
 
     private async Task<PagedResultDto<UserDto>> GetPagedResultAsync(IQueryable<IdentityUser> queryable, PagedResultRequestDto input)
@@ -328,7 +364,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
     ///<inheritdoc/>
     public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
     {
-            var query = await _userRepository.GetQueryableAsync();
-            return await GetPagedResultAsync(query, input);
+        IQueryable<IdentityUser> query = await FindByUserType();
+        return await GetPagedResultAsync(query, input);
+    }
+
+    private async Task<IQueryable<IdentityUser>> FindByUserType()
+    {
+        var query = await _userRepository.GetQueryableAsync();
+        query = query.Where(user => EF.Property<int>(user, "UserTypeId") != 3);
+        return query;
     }
 }
