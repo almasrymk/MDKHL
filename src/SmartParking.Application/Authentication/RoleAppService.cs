@@ -154,4 +154,15 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
         
     }
+
+    public async Task<IdentityRole?> GetIdentityRoleById(Guid Id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _roleReository.GetQueryableAsync();
+            query = query.Where(x => x.Id == Id);
+            var role = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return role;
+        }
+    }
 }

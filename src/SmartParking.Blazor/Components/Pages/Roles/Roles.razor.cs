@@ -11,11 +11,17 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Identity;
 using Volo.Abp.Application.Dtos;
+using SmartParking.Blazor.Components.Pages.User;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Authentication;
+using SmartParking.Permissions.PackagePermissions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartParking.Blazor.Components.Pages.Roles;
 
 partial class Roles
 {
+    protected PermissionManagementModal PermissionManagementModal;
 
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
@@ -25,15 +31,34 @@ partial class Roles
 
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
+    protected bool HasManagePermissionsPermission { get; set; } = true;
+    protected const string PermissionProviderName = "R";
+    protected string ManagePermissionsPolicyName;
     public Roles(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
         CreatePolicyName = IdentityPermissions.Roles.Create;
         UpdatePolicyName = IdentityPermissions.Roles.Update;
         DeletePolicyName = IdentityPermissions.Roles.Delete;
+        ManagePermissionsPolicyName = IdentityPermissions.Roles.ManagePermissions;
 
+    }
+    protected override async Task SetPermissionsAsync()
+    {
+        await base.SetPermissionsAsync();
 
+        HasManagePermissionsPermission =
+            await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions);
+    }
+
+    public async Task AddPermission(RowDef row)
+    {
+        var role = await RoleAppService.GetIdentityRoleById(Guid.Parse(row.Cells[0].Value));
+        //await PermissionManagementModal.OpenAsync(PermissionProviderName,
+        //                        data.As<IdentityRoleDto>().Name);
+        await PermissionManagementModal.OpenAsync(PermissionProviderName,
+                            role.Name,
+                            role.TenantId);
     }
     /// <summary>
     /// Searches for role on the server side using term search.

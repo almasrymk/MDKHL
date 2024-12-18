@@ -1,6 +1,7 @@
 ﻿@page "/roles"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Pages.User
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using Volo.Abp.Identity
@@ -21,6 +22,7 @@
 <PageTitle>@L["Roles"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Roles"]</MudText>
 
-<SPDataGrid PageName=@L["Roles"] Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnSearching="HandleSearch" /> 
+<SPDataGrid PageName=@L["Roles"] Data="@itemData" ShowAdd="HasCreatePermission" OnClickButton="AddPermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 
 
+<PermissionManagementModal @ref="PermissionManagementModal" />
