@@ -7,6 +7,7 @@
 @using SmartParking.Permissions.GaragePermissions
 @using SmartParking.Permissions.GarageTransactionPermissions
 @using SmartParking.Permissions.InvoicesPermissions
+@using SmartParking.Permissions.MyAccount
 @using SmartParking.Permissions.OrganizationPermissions
 @using SmartParking.Permissions.PackagePermissions
 @using SmartParking.Permissions.PaymentsPermissions
@@ -32,7 +33,7 @@
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
-                @if(currenttenant.Id is not null)
+                @if (AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result)
                 {
                     <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>   
                 }                
