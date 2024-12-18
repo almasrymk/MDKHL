@@ -13,7 +13,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Organization")]
+@attribute [Authorize]
 @inherits AbpCrudPageBase<IPackagesAppService, PackageDto, int, PagedAndSortedResultRequestDto, CreateUpdatePackageDto>
 
 <PageTitle>@L["Packages"]</PageTitle>
