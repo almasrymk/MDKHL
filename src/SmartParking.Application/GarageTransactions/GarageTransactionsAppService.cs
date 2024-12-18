@@ -117,6 +117,20 @@ public class GarageTransactionsAppService :
 
             ); ;
         }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            // Determine if the sorting should be ascending or descending
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+        }
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -150,6 +164,20 @@ public class GarageTransactionsAppService :
                     or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())
 
                 ); ;
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                // Determine if the sorting should be ascending or descending
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
             }
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);

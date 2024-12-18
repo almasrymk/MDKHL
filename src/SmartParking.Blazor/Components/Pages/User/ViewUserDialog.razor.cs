@@ -10,16 +10,19 @@ namespace SmartParking.Blazor.Components.Pages.User;
 
 partial class ViewUserDialog
 {
+    [Inject] IRoleAppService RoleAppService { get; set; }
     [Parameter]
     public string userId { get; set; }
     [Parameter]
     public UserDto userDto { get; set; }
+    private string RoleName { get; set; }
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    await FetchAsync();
-        
-    //}
+    protected override async Task OnInitializedAsync()
+    {
+        var role = await RoleAppService.GetRoleById(userDto.RoleId);
+        RoleName = role.Name;
+
+    }
 
     //public async Task FetchAsync()
     //{

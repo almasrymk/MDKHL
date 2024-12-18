@@ -144,7 +144,7 @@ public partial class Invoice
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = false, PropertyName = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = true, PropertyName = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyName = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+       
         
         if (CultureInfo.CurrentCulture.Name == "en")
         {
@@ -167,7 +167,6 @@ public partial class Invoice
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"],!item.IsPackage?_localizer[$"{item.InvoiceType.ToString()}"]: _localizer[$"Package"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceTime"], item.InvoiceTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber.ToString()));
 
             if (CultureInfo.CurrentCulture.Name == "en")
             {
