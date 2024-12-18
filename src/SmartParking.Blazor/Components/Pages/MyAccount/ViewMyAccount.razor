@@ -91,7 +91,7 @@
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="8">
                             <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
 
@@ -172,7 +172,7 @@
 
 
                     <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="rounded-circle" Style="width:200px;" Alt="@L["OrganizationLogo"]" />
+                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                     </MudItem>
 
                 </MudGrid>
