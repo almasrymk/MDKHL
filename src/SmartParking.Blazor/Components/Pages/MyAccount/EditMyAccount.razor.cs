@@ -9,6 +9,7 @@ using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
+using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.OrganizationPermissions;
 using System;
 using System.Collections.Generic;
@@ -70,12 +71,18 @@ public partial class EditMyAccount
     public int Graceperiod { get; set; }
     public int? SubscriptionId { get; set; }
     public bool HasChangeStatusPermission { get; set; }
-
+    public EditMyAccount()
+    {
+        CreatePolicyName = GaragePermissions.Create;
+        UpdatePolicyName = GaragePermissions.Edit;
+        DeletePolicyName = GaragePermissions.Delete;
+    }
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
+
     private async Task Update()
     {
         var tenant = currenttenant.Id.Value;

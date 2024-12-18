@@ -3,7 +3,6 @@
 @using SmartParking.Localization
 @using System.Text.Json
 @using SmartParking.Permissions.CameraPermissions
-@using SmartParking.Permissions.ContactPermissions
 @using SmartParking.Permissions.CustomerPermissions
 @using SmartParking.Permissions.GaragePermissions
 @using SmartParking.Permissions.GarageTransactionPermissions
@@ -34,7 +33,7 @@
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
             <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
-                @if(currenttenant.Id is not null )
+                @if (AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result)
                 {
                     <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>   
                 }                
@@ -115,7 +114,7 @@
                 }
                 <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
                     <MudNavLink Href="/edit-profile">@L["Profile"]</MudNavLink>
-                    @if (currenttenant.Id != null && AuthorizationService.IsGrantedAnyAsync(ContactPermissions.Default).Result)
+                    @if (currenttenant.Id != null)
                     {
                         <MudNavLink Href="/contact-data">@L["Contact Data"]</MudNavLink>
                     }

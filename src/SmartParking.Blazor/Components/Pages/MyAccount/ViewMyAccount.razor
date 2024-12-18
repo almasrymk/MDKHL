@@ -7,8 +7,10 @@
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
+@using SmartParking.Permissions.MyAccount
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
@@ -27,7 +29,8 @@
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
 
-@attribute [Authorize]
+@attribute [Authorize(MyAccountPermissions.Default)]
+@inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
 <PageTitle>@L["ViewMyAccount"]</PageTitle>
 <div>
     <MudGrid>
@@ -152,7 +155,11 @@
 
                     <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Navigate">@L["Edit"]</MudButton>
+                        @if(HasUpdatePermission)
+                        {
+                            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Navigate">@L["Edit"]</MudButton>
+                        }
+                        
                     </div>
                   
                 </MudForm>

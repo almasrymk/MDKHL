@@ -9,6 +9,8 @@ using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
+using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Permissions.MyAccount;
 
 namespace SmartParking.Blazor.Components.Pages.MyAccount;
 
@@ -63,6 +65,11 @@ public partial class ViewMyAccount
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
+
+    public ViewMyAccount()
+    {
+        UpdatePolicyName = MyAccountPermissions.Edit;
+    }
     private async Task FetchData()
     {
         var tenant = currenttenant.Id;
