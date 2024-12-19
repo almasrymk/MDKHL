@@ -164,7 +164,7 @@ public class CustomerPackagesAppService:
                 PackageId = packageId,
                 CustomerId = customer.Id,
                 OrganizationId = package.OrganizationId,
-                ExpiryDate = DateTime.UtcNow.AddDays(package.DurationOfPackage).Date.AddDays(1).AddTicks(-1),
+                ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).Date.AddDays(1).AddTicks(-1),
                 ActivationDateOfPackage = package.ActivationDate,
                 DectivationDateOfPackage = package.DectivationDate,
                 DescriptionOfPackage = package.Description,
