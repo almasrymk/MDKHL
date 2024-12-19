@@ -73,7 +73,7 @@ public partial class AddUser
         {
             var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
             Roles = await RoleAppService.GetListByTenant(org.TenantId);
-            orgId = org.Id;
+            userCreate.OrganizationId = org.Id;
             tenantId = org.TenantId;
         }
 
