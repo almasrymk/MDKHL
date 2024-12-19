@@ -74,6 +74,7 @@ public interface IUsersAppService:  IApplicationService
     /// The task result contains the updated <see cref="UserDto"/> object.
     /// </returns>
     Task<UserDto> UpdateAsync(Guid? id, UpdateUserDto input);
+    Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input);
     Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input);
 
     Task<UserDto> GetAsync(Guid? id);
@@ -92,4 +93,6 @@ public interface IUsersAppService:  IApplicationService
     /// </remarks>
     Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId);
     Task<IdentityRole> FindRoleByTenantIdAsync(string roleName,Guid? tenantId);
+    Task<UserDto> CheckPhoneIsUnique(string phone);
+    Task<IdentityUser?> IsUserFound(Guid? userId);
 }

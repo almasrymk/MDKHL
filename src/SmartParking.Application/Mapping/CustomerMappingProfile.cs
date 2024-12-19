@@ -21,6 +21,7 @@ public class CustomerMappingProfile : Profile
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.IdentityUser.NormalizedEmail))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.IdentityUser.Email))
             .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.IdentityUser.PhoneNumber))
+            .ForPath(dest => dest.IdentityId, opt => opt.MapFrom(src => src.IdentityUser.Id))
             .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.IdentityUser.UserName))
             .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId))
             .ForMember(dest => dest.identificationTypes, opt => opt.MapFrom(src => src.IdentificationTypes))

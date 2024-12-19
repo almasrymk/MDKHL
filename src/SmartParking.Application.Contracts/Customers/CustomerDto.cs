@@ -29,5 +29,6 @@ public class CustomerDto:AuditedEntityDto<Guid>
     public bool isActive { get; set; }
     public string CustomerCategory { get; set; }
     public int PackageId { get; set; }
+    public Guid IdentityId { get; set; }
 }
 

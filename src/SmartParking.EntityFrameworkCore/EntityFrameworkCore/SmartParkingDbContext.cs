@@ -190,14 +190,14 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public override int SaveChanges()
     {
 
-        ProcessEntities(); // Apply soft delete cascade
+       // ProcessEntities(); // Apply soft delete cascade
         return base.SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
 
-        ProcessEntities();
+       // ProcessEntities();
         return await base.SaveChangesAsync(cancellationToken);
     }
     protected override void OnModelCreating(ModelBuilder builder)

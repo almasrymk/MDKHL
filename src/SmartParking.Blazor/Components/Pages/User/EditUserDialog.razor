@@ -17,9 +17,6 @@
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
                 <MudGrid>
-@*                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.UserName" Label="@L["UserName"]" Required />
-                    </MudItem> *@
                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required />
                     </MudItem>
@@ -28,36 +25,43 @@
                     </MudItem>
                     <MudItem sm="6">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required />
-                    </MudItem>                    
-@*                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Password"]" @bind-Value="updateUserDto.Password" Required />
-                    </MudItem> *@
+                    </MudItem>  
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@roleId"
-                                   Label="@L["UserRole"]"
-                                   Placeholder="@L[ "Choose"]"
-                                   HelperText=@L["Helper Text"]
-                                   Required>
-
-                            @foreach (var role in Roles)
-                            {
-
-                                <MudSelectItem Value="@role.Id.ToString()">
-                                    @role.Name
-                                </MudSelectItem>
-
-                            }
-                        </MudSelect>
-
-                    </MudItem>
-                    <MudItem sm="9" md="9">
-                        <MudRadioGroup @bind-Value="@updateUserDto.IsActive" Class="d-inline-flex align-content-center">
+                        
                             <div class="d-flex flex-row justify-content-between">
-                                <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
-                                <MudRadio Value="false" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                                <MudCheckBox  @bind-Value="@updateUserDto.ISNoRole" Color="MudBlazor.Color.Primary">@L["NoRole"]</MudCheckBox>
                             </div>
-                        </MudRadioGroup>
+                        
                     </MudItem>
+                    @if (!updateUserDto.ISNoRole)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect @bind-Value="@roleId"
+                                       Label="@L["UserRole"]"
+                                       Placeholder="@L[ "Choose"]"
+                                       HelperText=@L["Helper Text"]
+                                       Required>
+
+                                @foreach (var role in Roles)
+                                {
+
+                                    <MudSelectItem Value="@role.Id.ToString()">
+                                        @role.Name
+                                    </MudSelectItem>
+
+                                }
+                            </MudSelect>
+
+                        </MudItem>
+                        <MudItem sm="6" md="6">
+                            <MudRadioGroup @bind-Value="@updateUserDto.IsActive" Class="d-inline-flex align-content-center">
+                                <div class="d-flex flex-row justify-content-between">
+                                    <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                    <MudRadio Value="false" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                                </div>
+                            </MudRadioGroup>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudForm>
         </DialogContent>
