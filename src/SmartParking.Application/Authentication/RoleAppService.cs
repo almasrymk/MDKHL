@@ -11,17 +11,27 @@ using Volo.Abp.MultiTenancy;
 using System.Linq.Dynamic.Core;
 using Volo.Abp.Data;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Identity;
+using SmartParking.Entities.Customers;
 namespace SmartParking.Authentication;
+using IdentityRole = Volo.Abp.Identity.IdentityRole;
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 public class RoleAppService : ApplicationService, IRoleAppService
 {
     private readonly ICustomRoleReository _roleReository;
     private readonly IDataFilter _dataFilter;
+    private readonly IUsersAppService _usersAppService;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public RoleAppService(ICustomRoleReository roleReository,IDataFilter dataFilter)
+
+
+    public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter, IUsersAppService usersAppService, UserManager<IdentityUser> userManager)
     {
         _roleReository = roleReository;
         _dataFilter = dataFilter;
+        _usersAppService = usersAppService;
+        _userManager = userManager;
     }
 
     public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedByTenant(PagedResultRequestDto input,Guid? tenantId)
@@ -164,5 +174,15 @@ public class RoleAppService : ApplicationService, IRoleAppService
             var role = await AsyncExecuter.FirstOrDefaultAsync(query);
             return role;
         }
+    }
+
+    public async Task AssignRole(Guid UserId, Guid RoleId)
+    {
+        var user = await _usersAppService.IsUserFound(UserId);
+        user.SetProperty("TenantId", CurrentTenant.Id);
+        await _userManager.UpdateAsync(user);
+        user.AddRole(RoleId);
+       // user.SetConcurrencyStampIfNotNull(user.SecurityStamp);
+        await  _userManager.UpdateAsync(user);
     }
 }

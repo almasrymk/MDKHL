@@ -50,7 +50,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await _identityOptions.SetAsync();
         var user = CreateUser(input);
 
-        await CheckPhoneIsUnique(input.PhoneNumber);
+        var result = await CheckPhoneIsUnique(input.PhoneNumber);
+        if (result != null) {
+            throw new Exception("User with that phone number already exist");
+        }
         SetUserProperties(user, input);
 
         var creationResult = await _userManager.CreateAsync(user, input.Password);
@@ -91,15 +94,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <param name="phone">The phone number to check for uniqueness.</param>
     /// <returns>The <see cref="IdentityUser"/> associated with the phone number if it exists.</returns>
     /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
-    private async Task<IdentityUser> CheckPhoneIsUnique(string phone)
+    public async Task<UserDto> CheckPhoneIsUnique(string phone)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
 
         if (user != null)
         {
-            throw new Exception("User with this phone number does  exist.");
+            return ObjectMapper.Map<IdentityUser, UserDto>(user);
         }
-        return user;
+        return null;
 
     }
     ///<inheritdoc/>
@@ -262,7 +265,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    private async Task<IdentityUser?> IsUserFound(Guid? userId)
+    public async Task<IdentityUser?> IsUserFound(Guid? userId)
     {
         var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
         if (user == null)
