@@ -123,7 +123,7 @@ public partial class AddUser
         {
             var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
             Roles = await RoleAppService.GetListByTenant(org.TenantId);
-            orgId = org.Id;
+            userCreate.OrganizationId = org.Id;
             tenantId = org.TenantId;
         }
 
@@ -167,14 +167,20 @@ public partial class AddUser
         userCreate.Password = "P@ssw0rd";
         userCreate.UserName = userCreate.PhoneNumber;
 
-        switch (role)
+        switch (role.Name)
         {
-            case var role when role.Name == RolesType.Organization.ToString():
+            case var name when name == RolesType.Organization.ToString():
                 userCreate.UserType = 1;
                 break;
-            case var role when role.Name == RolesType.Keeper.ToString():
+
+            case var name when name == RolesType.Keeper.ToString():
                 userCreate.UserType = 4;
                 break;
+
+            default:
+                userCreate.UserType = 5;
+                break;
+
         }
     }
 

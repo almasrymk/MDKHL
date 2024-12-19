@@ -13,6 +13,7 @@ using Volo.Abp.Data;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Identity;
 using SmartParking.Entities.Customers;
+using SmartParking.Organizations;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -22,16 +23,18 @@ public class RoleAppService : ApplicationService, IRoleAppService
     private readonly ICustomRoleReository _roleReository;
     private readonly IDataFilter _dataFilter;
     private readonly IUsersAppService _usersAppService;
+    private readonly IOrganizationsAppService _organizationAppService;
     private readonly UserManager<IdentityUser> _userManager;
 
 
 
-    public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter, IUsersAppService usersAppService, UserManager<IdentityUser> userManager)
+    public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter, IUsersAppService usersAppService, UserManager<IdentityUser> userManager, IOrganizationsAppService organizationAppService)
     {
         _roleReository = roleReository;
         _dataFilter = dataFilter;
         _usersAppService = usersAppService;
         _userManager = userManager;
+        _organizationAppService = organizationAppService;
     }
 
     public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedByTenant(PagedResultRequestDto input,Guid? tenantId)
@@ -179,10 +182,13 @@ public class RoleAppService : ApplicationService, IRoleAppService
     public async Task AssignRole(Guid UserId, Guid RoleId)
     {
         var user = await _usersAppService.IsUserFound(UserId);
+        var org =await _organizationAppService.GetOrganizationForCurrentTenat();
         user.SetProperty("TenantId", CurrentTenant.Id);
-        await _userManager.UpdateAsync(user);
+        user.SetProperty("OrganizationId", org.Id);
+        user.SetProperty("UserTypeId", 5);
         user.AddRole(RoleId);
-       // user.SetConcurrencyStampIfNotNull(user.SecurityStamp);
-        await  _userManager.UpdateAsync(user);
+        await _userManager.RemovePasswordAsync(user);
+        await _userManager.AddPasswordAsync(user, "P@ssw0rd");
+        await _userManager.UpdateAsync(user);
     }
 }

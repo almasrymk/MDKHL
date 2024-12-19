@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using iText.IO.Image;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -163,7 +164,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<PagedResultDto<UserDto>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4);
+        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4, 5);
 
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
@@ -203,7 +204,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4);
+        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4, 5);
         var filterExpression = BuildExpression<IdentityUser>.BuildFilterExpression(input.filters);
 
         if (filterExpression is not null)
@@ -294,11 +295,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
         }
-    }   
-    
+    }
+
     public async Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input)
     {
-        using(_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
@@ -316,6 +317,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         user.RemoveRole(user.Roles.First().RoleId);
         user.AddRole(input.RoleId);
+    }
+
+    private static void RemoveRole(UpdateUserDto input, IdentityUser? user)
+    {
+        user.RemoveRole(user.Roles.First().RoleId);
     }
 
     //private async Task ChangePassword(UpdateUserDto input, IdentityUser? user)
@@ -372,17 +378,40 @@ public class UsersAppService : ApplicationService, IUsersAppService
     ///<inheritdoc/>
     public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
     {
-        IQueryable<IdentityUser> query = await FindByUserType(1, 4);
+        IQueryable<IdentityUser> query = await FindByUserType(1, 4, 5);
         return await GetPagedResultAsync(query, input);
     }
 
     private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)
     {
         var query = await _userRepository.GetQueryableAsync();
-        if (userTypes.Any())
-        {
-            query = query.Where(user => userTypes.Contains(EF.Property<int>(user, "UserTypeId")));
-        }
+        query = query.Where(_ => _.Roles.Any());
+        //if (userTypes.Any())
+        //{
+        //    query = query.Where(user => userTypes.Contains(EF.Property<int>(user, "UserTypeId")));
+        //}
         return query;
+    }
+
+    public async Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input)
+    {
+        IdentityUser? user = await IsUserFound(id);
+        user.Name = input.Name;
+        user.Surname = input.Surname;
+        user.SetIsActive(input.IsActive);
+        RemoveRole(input, user);
+        user.SetProperty("UserTypeId", 3);
+        user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
+        if (user.Email != input.Email)
+        {
+            await _userManager.SetEmailAsync(user, input.Email);
+        }
+        if (user.UserName != input.UserName)
+        {
+            await _userManager.SetUserNameAsync(user, input.UserName);
+        }
+        var createdUser = await _userManager.UpdateAsync(user);
+        var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+        return userDto;
     }
 }

@@ -3,14 +3,19 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
+using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Permissions.PackagePermissions;
 using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -36,7 +41,9 @@ public partial class User
     {
         _localizer = localizer;
         _currentUser = currentUser;
-
+        CreatePolicyName = IdentityPermissions.Users.Create;
+        UpdatePolicyName = IdentityPermissions.Users.Update;
+        DeletePolicyName = IdentityPermissions.Users.Delete;
         ManagePermissionsPolicyName = IdentityPermissions.Users.ManagePermissions;
 
     }
@@ -232,5 +239,81 @@ public partial class User
         };
 
         return await DialogService.ShowAsync<ViewUserDialog>("User View", parameters);
+    }
+
+    private async Task OnClickRowDelete(RowDef row)
+    {
+        var successMessage = _localizer["UserDeletedSuccessfully"];
+
+        var id = Guid.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+        var userData = await UsersAppService.GetAsync(id);
+        var userUpdate = new UpdateUserDto
+        {
+            Name = userData.Name,
+            Email = userData.Email,
+            Surname = userData.Surname,
+            PhoneNumber = userData.PhoneNumber,
+            UserName = userData.UserName,
+            TenantId = userData.TenantId,
+            RoleId = userData.RoleId,
+            ConcurrencyStamp = userData.ConcurrencyStamp,
+            IsActive = userData.IsActive,
+        };
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteCity", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await UsersAppService.UpdateUserWithNoRoleAsync(id, userUpdate);
+                ShowSnackbar(successMessage, Severity.Error);
+                await Task.Delay(1000);
+
+                Navigation.NavigateTo("/users", forceLoad: true);
+
+            }
+
+
+        }
+        catch (BusinessException ex)
+        {
+
+            ShowSnackbar($"Failed to delete City : {ex.Code} + ", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+        }
+
+
+    }
+    /// <summary>
+    /// Displays a snackbar notification with the specified message and severity.
+    /// </summary>
+    /// <param name="message">The message to display in the snackbar.</param>
+    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
+
+    void ShowSnackbar(string message, Severity severity)
+
+    {
+
+        Snackbar.Clear();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
+
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+
     }
 }
