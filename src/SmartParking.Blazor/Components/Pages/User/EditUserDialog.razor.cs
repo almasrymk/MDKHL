@@ -30,9 +30,17 @@ partial class EditUserDialog
             var successedMessage = L["UserUpdateSuccessfullyWith"];
             try
             {
-
+                UserDto userUpdated = new UserDto();
                 updateUserDto.RoleId = Guid.Parse(roleId);
-                var userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
+                if (updateUserDto.ISNoRole)
+                {
+                userUpdated = await UsersAppService.UpdateUserWithNoRoleAsync(Guid.Parse(userId), updateUserDto);
+                }
+                else
+                {
+                 userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
+                }
+                 
                 if (userUpdated != null)
                 {
 

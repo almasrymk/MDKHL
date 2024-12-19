@@ -117,14 +117,20 @@ public partial class AddUser
         userCreate.Password = "P@ssw0rd";
         userCreate.UserName = userCreate.PhoneNumber;
 
-        switch (role)
+        switch (role.Name)
         {
-            case var role when role.Name == RolesType.Organization.ToString():
+            case var name when name == RolesType.Organization.ToString():
                 userCreate.UserType = 1;
                 break;
-            case var role when role.Name == RolesType.Keeper.ToString():
+
+            case var name when name == RolesType.Keeper.ToString():
                 userCreate.UserType = 4;
                 break;
+
+            default:
+                userCreate.UserType = 5;
+                break;
+
         }
     }
 
