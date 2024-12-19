@@ -77,7 +77,7 @@
     {
         try
         {
-            
+
 
             await form.Validate();
 
@@ -88,7 +88,7 @@
                 Snackbar.Add("Profile updated successfully!", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
-               
+
                 Snackbar.Add("Profile updated successfully!", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
@@ -110,9 +110,9 @@
         using var memoryStream = new MemoryStream();
         await stream.CopyToAsync(memoryStream);
         byte[] imageBytes = memoryStream.ToArray();
-         ImageBase64 = Convert.ToBase64String(imageBytes);
-        
-
-
+        ImageBase64 = Convert.ToBase64String(imageBytes);
+        ProfilePictureUrl =  await UsersAppService.SaveImageAsync(ImageBase64);
+        Console.WriteLine(ProfilePictureUrl);
+        StateHasChanged();
     }
 }

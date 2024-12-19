@@ -359,7 +359,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    private static string SaveImageAsync(string image)
+    public async Task<string> SaveImageAsync(string image)
     {
         var base64Data = image.Substring(image.IndexOf(",") + 1);
         byte[] imageBytes = Convert.FromBase64String(base64Data);
@@ -368,7 +368,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "users", fileName);
 
         System.IO.File.WriteAllBytes(filePath, imageBytes);
-        return $"images/users/{fileName}";
+        return  $"images/users/{fileName}";
     }
 
     public async Task<IdentityRole?> FindRoleByTenantIdAsync(string roleName, Guid? tenantId)
