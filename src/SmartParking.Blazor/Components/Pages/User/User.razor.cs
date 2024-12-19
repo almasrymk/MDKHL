@@ -273,7 +273,7 @@ public partial class User
             if (!result.Canceled)
             {
                 await UsersAppService.UpdateUserWithNoRoleAsync(id, userUpdate);
-                ShowSnackbar(successMessage, Severity.Error);
+                ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/users", forceLoad: true);

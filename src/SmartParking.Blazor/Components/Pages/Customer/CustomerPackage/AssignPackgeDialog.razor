@@ -157,7 +157,7 @@
 @code {
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
-	public CreateUpdateCustomerPackageDto CustomerPackage = new CreateUpdateCustomerPackageDto();
+	public PackageDto CustomerPackage = new PackageDto();
 	[Parameter]
 	public CustomerDto Customer { get; set; }
 	private int organizationId;
@@ -189,7 +189,7 @@
 		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
 		try
 		{
-			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, Customer.Id);
+			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id);
 			if (!assignPackage)
 				throw new Exception("can't assign package for this customer");
 			Snackbar.Add(successedMessage, Severity.Success);
@@ -214,7 +214,7 @@
 	{
 		selectedPackageDto.Clear();
 		selectedPackageDto.Add( Packages.Find(x => x.Id == value));
-
+		CustomerPackage = Packages.Find(x => x.Id == value);
 
 	}
 

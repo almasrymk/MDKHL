@@ -285,7 +285,7 @@ public partial class Package
             if (!result.Canceled)
             {
                 await PackagesAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/package", true);

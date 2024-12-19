@@ -238,7 +238,7 @@ public partial class PlateColor
 			if (!result.Canceled)
             {
                 await PlateColorsAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/platecolors", forceLoad: true);

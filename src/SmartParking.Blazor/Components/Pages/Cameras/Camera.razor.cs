@@ -316,7 +316,7 @@ public partial class Camera
             if (!result.Canceled)
             {
                 await CamerasAppService.DeleteAsync(id);
-                ShowSnackbar($"{L["Camera Deleted Successfully"]} ", Severity.Error);
+                ShowSnackbar($"{L["Camera Deleted Successfully"]} ", Severity.Success);
 
                 await Task.Delay(1000);
 
