@@ -17,6 +17,7 @@ using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Permissions.CustomerPermissions;
+using SmartParking.Blazor.Components.Pages.User;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -221,6 +222,21 @@ public partial class Customer
 
 
 		return await DialogService.ShowAsync<AddVehicleDialog>("Simple Dialog", parameters);
+
+
+	}
+	public async Task<IDialogReference> AssignRole(string row)
+	{
+		var id = Guid.Parse(row);
+		var customer =await CustomerAppService.GetAsync(id);
+
+        var parameters = new DialogParameters
+		{
+			["Id"] = customer.IdentityId,
+		};
+
+
+		return await DialogService.ShowAsync<AssignationDialog>("Simple Dialog", parameters);
 
 
 	}
