@@ -18,6 +18,8 @@ public class CustomIdentityPermissionDefinitionProvider : IdentityPermissionDefi
         //rolesPermission.AddChild(IdentityPermissions.Roles.Update, CustomStringLocalizer.L("Permission:Edit"));
         //rolesPermission.AddChild(IdentityPermissions.Roles.Delete, CustomStringLocalizer.L("Permission:Delete"));
         //rolesPermission.AddChild(IdentityPermissions.Roles.ManagePermissions, CustomStringLocalizer.L("Permission:ChangePermissions"));
+        rolesPermission.AddChild(CustomIdentityPermissions.Roles.ViewPermissions, CustomStringLocalizer.L("Permission:ViewPermissions"));
+
 
         var usersPermission = identityGroup.GetPermissionOrNull(IdentityPermissions.Users.Default);
         usersPermission.DisplayName = CustomStringLocalizer.L("Users");
@@ -26,7 +28,6 @@ public class CustomIdentityPermissionDefinitionProvider : IdentityPermissionDefi
         //editPermission.AddChild(IdentityPermissions.Users.ManageRoles, CustomStringLocalizer.L("Permission:ManageRoles"));
         //usersPermission.AddChild(IdentityPermissions.Users.Delete, CustomStringLocalizer.L("Permission:Delete"));
         //usersPermission.AddChild(IdentityPermissions.Users.ManagePermissions, CustomStringLocalizer.L("Permission:ChangePermissions"));
-        usersPermission.AddChild(CustomIdentityPermissions.Users.ViewPermissions, CustomStringLocalizer.L("Permission:ViewPermissions"));
 
         //identityGroup
         //    .AddPermission(IdentityPermissions.UserLookup.Default, CustomStringLocalizer.L("Permission:UserLookup"))
