@@ -134,8 +134,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Package, PackageDto>()
         .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))
         .ForMember(dest => dest.CustomerCategory, opt => opt.MapFrom(src => src.CustomerCategory.ToString()))
-        .ForMember(d=>d.PackageTypeArabicName,o=>o.MapFrom(s=>s.PackageType.ArabicName))
-        .ForMember(d=>d.PackageTypeEnglishName,o=>o.MapFrom(s=>s.PackageType.EnglishName));
+        .ForMember(d => d.PackageTypeArabicName, o => o.MapFrom(s => s.PackageType.ArabicName))
+        .ForMember(d => d.PackageTypeEnglishName, o => o.MapFrom(s => s.PackageType.EnglishName))
+        .ForMember(d => d.SubscribersInPackages, o => o.MapFrom(s => s.CustomerPackages.Count))
+        .ForMember(d => d.Status, o => o.MapFrom(s => s.Status));
+        
         //.ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization)); // Map PackageType
 
         CreateMap<CreateUpdatePackageDto, Package>();

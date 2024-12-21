@@ -32,4 +32,7 @@ public class PackageDto : AuditedEntityDto<int>
     public SubscriptionStatus PackageStatus { get; set; }
     public string CustomerCategory { get; set; }
     public int DurationOfPackage { get; set; }
+    public  int SubscribersInPackages { get; set; }
+
+    public Status Status { get; set; }
 }
