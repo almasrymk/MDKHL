@@ -148,7 +148,8 @@ public partial class Package
 
 		}
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = false, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Subscribers"], Name = "Subscribers", IsFilterable = false, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "PackageStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
@@ -169,8 +170,9 @@ public partial class Package
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeArName"], item.PackageType.ArabicName));
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], _localizer[$"{item.Published.ToString()}"]));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.PackageStatus.ToString()}"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published? 24 + _localizer[$"Hour"] : _localizer["From"]+$" {item.PublishFrom} " + _localizer["To"] + $" {item.PublishTo} "));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
 			tableData.Rows.Add(rowDef);
@@ -206,6 +208,7 @@ public partial class Package
 			PackageType=packageDto.PackageType,
 			CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory),
 			DurationOfPackage = packageDto.DurationOfPackage,
+			Status = packageDto.Status,
 			
 
         };
@@ -228,6 +231,7 @@ public partial class Package
 	{
         
 		var id = int.Parse(row.Cells[0].Value);
+
 
 		var packageDto = await PackagesAppService.GetAsync(id);
 
@@ -277,6 +281,15 @@ public partial class Package
             ["Name"] = Name,
 
         };
+        var Subscribers = int.Parse(row.Cells[5].Value);
+        if (Subscribers > 0)
+        {
+            ShowSnackbar("Can't delete package It Has Subscribers", MudBlazor.Severity.Warning);
+			return;
+
+        }
+
+
 
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("PackagesDeleteDialog", parameters);
         var result = await dialog.Result;
