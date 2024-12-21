@@ -23,7 +23,7 @@ namespace SmartParking.Blazor.Components.Pages.User;
 public partial class PermissionManagementModal
 {
     [Inject] protected IPermissionAppService PermissionAppService { get; set; }
-    [Inject] protected ICustomerPermissionAppService CustomerPermissionAppService { get; set; }
+    [Inject] protected ICustomPermissionAppService CustomPermissionAppService { get; set; }
     [Inject] protected ICurrentApplicationConfigurationCacheResetService CurrentApplicationConfigurationCacheResetService { get; set; }
 
     [Inject] protected IOptions<AbpLocalizationOptions> LocalizationOptions { get; set; }
@@ -111,7 +111,7 @@ public partial class PermissionManagementModal
             GetPermissionListResultDto result;
             using (DataFilter.Disable<IMultiTenant>())
             {
-                 result = await CustomerPermissionAppService.GetAsync(providerName, providerKey);
+                 result = await CustomPermissionAppService.GetAsync(providerName, providerKey);
             }
                
 
@@ -192,7 +192,7 @@ public partial class PermissionManagementModal
                 }
             using (CurrentTenant.Change(_tenantId))
             {
-                await CustomerPermissionAppService.UpdateAsync(_providerName, _providerKey, updateDto);
+                await CustomPermissionAppService.UpdateAsync(_providerName, _providerKey, updateDto);
             }
                 await CurrentApplicationConfigurationCacheResetService.ResetAsync();
 

@@ -13,9 +13,9 @@ using Volo.Abp.SimpleStateChecking;
 
 namespace SmartParking.Authentication;
 
-public class CustomerPermissionAppService : PermissionAppService, ITransientDependency, ICustomerPermissionAppService
+public class CustomPermissionAppService : PermissionAppService, ITransientDependency, ICustomPermissionAppService
 {
-    public CustomerPermissionAppService(IPermissionManager permissionManager, IPermissionDefinitionManager permissionDefinitionManager, IOptions<PermissionManagementOptions> options, ISimpleStateCheckerManager<PermissionDefinition> simpleStateCheckerManager) : base(permissionManager, permissionDefinitionManager, options, simpleStateCheckerManager)
+    public CustomPermissionAppService(IPermissionManager permissionManager, IPermissionDefinitionManager permissionDefinitionManager, IOptions<PermissionManagementOptions> options, ISimpleStateCheckerManager<PermissionDefinition> simpleStateCheckerManager) : base(permissionManager, permissionDefinitionManager, options, simpleStateCheckerManager)
     {
     }
     public override async Task UpdateAsync(string providerName, string providerKey, UpdatePermissionsDto input)
