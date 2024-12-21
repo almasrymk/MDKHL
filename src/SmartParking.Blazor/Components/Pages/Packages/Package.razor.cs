@@ -170,7 +170,7 @@ public partial class Package
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeArName"], item.PackageType.ArabicName));
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published? 24 + _localizer[$"Hour"] : _localizer["From"]+$" {item.PublishFrom} " + _localizer["To"] + $" {item.PublishTo} "));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " + " + $" {item.PublishTo}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 

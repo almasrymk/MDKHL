@@ -167,6 +167,7 @@ public class PackagesAppService : CrudAppService<
             queryable = queryable.Include(p => p.CustomerPackages);
 
             queryable = queryable.Where(p => p.TenantId == CurrentTenant.Id);
+            queryable = queryable.Where(p => p.Status != Status.Deleted);
 
             if (!string.IsNullOrEmpty(input.Sorting))
             {
