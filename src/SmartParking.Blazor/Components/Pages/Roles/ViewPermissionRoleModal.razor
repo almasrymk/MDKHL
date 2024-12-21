@@ -1,0 +1,105 @@
+﻿@using Blazorise
+@using MudBlazor
+@using Volo.Abp.Identity
+@inject NavigationManager Navigation
+ @inject IAuthorizationService AuthorizationService
+<Modal @ref="_modal" Closing="@ClosingModal">
+    <ModalContent Size="ModalSize.Large" Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["Permissions"] - @_entityDisplayName</ModalTitle>
+            <CloseButton Clicked="CloseModal" />
+        </ModalHeader>
+        <ModalBody MaxHeight="50">
+
+            <Row Class="row d-flex align-items-center mb-2">
+                <Column>
+                    <Field Class="mb-2">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <span class="input-group-text">
+                                    <MudIcon Icon="@Icons.Material.Filled.Search" />
+                                </span>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Text="@_permissionGroupSearchText" TextChanged="OnPermissionGroupSearchTextChangedAsync" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Column>
+            </Row>
+
+            <fieldset class="border rounded-4 p-3">
+                <legend class="px-1 h5 mb-0">@L["PermissionGroup"]</legend>
+
+                @if (_groups != null && _groups.Any())
+                {
+                    <Tabs @key="_groups" TabPosition="TabPosition.Start" Pills="true" SelectedTab="@_selectedTabName" SelectedTabChanged="@OnSelectedTabChangedAsync">
+                        <Items>
+                            @foreach (var group in _groups)
+                            {
+                                @if (group.Permissions.Count(x => x.IsGranted) == 0 )
+                                {
+                                    continue;
+                                }
+
+                                <Tab Name="@GetNormalizedGroupName(group.Name)">
+                                    @if (group.Permissions.Any(x => x.IsGranted))
+                                    {
+                                        <span>
+                                            <b>@group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )</b>
+                                        </span>
+                                    }
+                                    else
+                                    {
+
+                                        <span>
+                                            @group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )
+                                        </span>
+                                    }
+                                </Tab>
+                            }
+                        </Items>
+                        <Content>
+                            @foreach (var group in _groups)
+                            {
+
+                                <TabPanel Name="@GetNormalizedGroupName(group.Name)">
+
+                                    <Field>
+                                        <Check Disabled="true"
+                                               Checked="@(group.Permissions.All(x => x.IsGranted))"
+                                               Cursor="Cursor.Pointer"
+                                               CheckedChanged="@(b => GroupGrantAllChanged(b, group))"
+                                               TValue="bool">
+                                            @L["SelectAllInThisTab"]
+                                        </Check>
+                                    </Field>
+
+                                    <Divider />
+
+                                    @foreach (var permission in group.Permissions)
+                                    {
+                                        <Field Style="@($"margin-inline-start: {GetPermissionDepthOrDefault(permission.Name) * 20}px")">
+                                            <Check Disabled="true"
+                                                   Cursor="Cursor.Pointer"
+                                                   Checked="@permission.IsGranted"
+                                                   CheckedChanged="@(b => PermissionChanged(b, group, permission))"
+                                                   TValue="bool">
+                                                @GetShownName(permission)
+                                            </Check>
+                                        </Field>
+                                    }
+
+                                </TabPanel>
+                            }
+                        </Content>
+                    </Tabs>
+                }
+
+            </fieldset>
+        </ModalBody>
+        <ModalFooter>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="CloseModal" Class="me-3">@L["Cancel"]</MudButton>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
