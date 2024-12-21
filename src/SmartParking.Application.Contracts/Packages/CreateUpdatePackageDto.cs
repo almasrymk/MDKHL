@@ -22,6 +22,7 @@ public class CreateUpdatePackageDto
         public int DurationOfPackage { get; set; }
         public Guid? TenantId { get; set; }
         public DateTime ActivationDate { get; set; }
+        public Status Status { get; set; }
 
 
 }

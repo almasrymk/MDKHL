@@ -9,7 +9,9 @@ using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
+using SmartParking.Permissions.ContactPermissions;
 using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Permissions.MyAccount;
 using SmartParking.Permissions.OrganizationPermissions;
 using System;
 using System.Collections.Generic;
@@ -248,7 +250,7 @@ public partial class EditMyAccount
     }
     protected override async Task OnInitializedAsync()
     {
-        HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(OrganizationPermissions.ChanageStatus);
+        HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(MyAccountPermissions.ChanageStatus);
         states = await StateAppService.GetStateLookupAsync();
         regions = await StateAppService.GetRegionLookupAsync();
         countries = await CountriesAppService.GetCountryLookupAsync();
@@ -313,7 +315,6 @@ public partial class EditMyAccount
         var imageFile = file;
         if (imageFile != null)
         {
-            // Save the image and get the file path
             OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
             StateHasChanged();
         }

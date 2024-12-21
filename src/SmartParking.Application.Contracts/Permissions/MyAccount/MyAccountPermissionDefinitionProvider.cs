@@ -17,5 +17,6 @@ public class MyAccountPermissionDefinitionProvider : PermissionDefinitionProvide
 
         var cameraPermission = smartParkingGroup.AddPermission(MyAccountPermissions.Default, CustomStringLocalizer.L("Permission:MyAccount"));
         cameraPermission.AddChild(MyAccountPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
+        cameraPermission.AddChild(MyAccountPermissions.ChanageStatus, CustomStringLocalizer.L(CustomStringLocalizer.ChanageStatus));
     }
 }

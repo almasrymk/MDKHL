@@ -35,11 +35,29 @@
 <PageTitle>@L["EditMyAccount"]</PageTitle>
 <div>
     <MudGrid>
-        <MudItem sm="8">
+        <MudItem sm="12">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
+                        <MudItem sm="12">
+                            <div class="d-flex justify-content-center align-items-center px-5 position-relative pb-6">
+                                @if (OrganizationPicture != null)
+                                {
+                                    <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
+                                }
+                                else
+                                {
+                                    <MudImage Src="images/MDHKL_04.png" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
+                                }
+                                <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg, .gif, .bmp, .webp" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                                    <ActivatorContent>
+                                        <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </div>
+
+                        </MudItem>
 
                         <MudItem sm="6">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["EnglishName"] />
@@ -244,7 +262,7 @@
 
             </MudPaper>
         </MudItem>
-        <MudItem sm="4">
+   @*      <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
 
                 <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
@@ -256,7 +274,7 @@
                     {
                         <MudImage Src="images/MDHKL_04.png" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                     }
-                    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg, .gif, .bmp, .webp" FilesChanged="OnImageUpload" MaximumFileCount="1">
                         <ActivatorContent>
                             <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
                         </ActivatorContent>
@@ -297,7 +315,7 @@
                 </MudGrid>
             </MudPaper>
         </MudItem>
-
+ *@
     </MudGrid>
 </div>
 

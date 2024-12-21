@@ -34,11 +34,11 @@ partial class EditUserDialog
                 updateUserDto.RoleId = Guid.Parse(roleId);
                 if (updateUserDto.ISNoRole)
                 {
-                userUpdated = await UsersAppService.UpdateUserWithNoRoleAsync(Guid.Parse(userId), updateUserDto);
+                  userUpdated = await UsersAppService.UpdateUserWithNoRoleAsync(Guid.Parse(userId), updateUserDto);
                 }
                 else
                 {
-                 userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
+                  userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
                 }
                  
                 if (userUpdated != null)
