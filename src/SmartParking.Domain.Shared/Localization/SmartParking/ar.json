@@ -544,7 +544,8 @@
     "OnlyEnglishNumberAllowed": "يُسمح فقط باللارقام الانجليزية",
     "UserDeletedSuccessfully": "تم حذف المستخدم بنجاح",
     "Reqiured": "مطلوب",
-    "Permission:AddRoleToCustomer": "إضافة دور للعميل"
+    "Permission:AddRoleToCustomer": "إضافة دور للعميل",
+    "Permission:ViewPermissions": "عـرض الأذونات"
 
 
 

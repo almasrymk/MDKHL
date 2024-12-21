@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Identity;
 using SmartParking.Entities.Customers;
 using SmartParking.Organizations;
+using Microsoft.EntityFrameworkCore;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -43,6 +44,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         {
             var queryable = await _roleReository.GetQueryableAsync();
             queryable = GetQueryByTenat(tenantId, queryable);
+            
             return await GetPagedResultAsync(queryable, input);
         }
     }
@@ -79,6 +81,10 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     private static IQueryable<IdentityRole> GetQueryByTenat(Guid? tenantId, IQueryable<IdentityRole> queryable)
     {
+        if(tenantId == null)
+        {
+            return queryable;
+        }
         queryable = queryable.Where(r => r.TenantId == tenantId);
         return queryable;
     }

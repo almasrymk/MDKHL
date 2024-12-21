@@ -1,6 +1,7 @@
 ﻿@using Blazorise
 @using MudBlazor
 @using Volo.Abp.Identity
+@inject NavigationManager Navigation
  @inject IAuthorizationService AuthorizationService 
 <Modal @ref="_modal" Closing="@ClosingModal">
     <ModalContent Size="ModalSize.Large" Centered="true">
@@ -43,10 +44,11 @@
                         <Items>
                             @foreach (var group in _groups)
                             {
-@*                                 @if (!(AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.ManagePermissions).Result)&&CurrentTenant.Id!=null)
+                                @if (group.Permissions.Count(x => x.IsGranted) == 0 && CurrentTenant.Id is not null)
                                 {
                                     continue;
-                                } *@
+                                }
+
                                 <Tab Name="@GetNormalizedGroupName(group.Name)">
                                     @if (group.Permissions.Any(x => x.IsGranted))
                                     {
@@ -56,9 +58,10 @@
                                     }
                                     else
                                     {
-                                        <span>
-                                            @group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )
-                                        </span>
+                                        
+                                            <span>
+                                                @group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )
+                                            </span>
                                     }
                                 </Tab>
                             }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SmartParking.Entities;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
@@ -129,51 +131,41 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserDto>> GetListMdklAsync(PagedResultRequestDto input)
+    public async Task<List<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IQueryable<IdentityUser> query = await FindByUserType();
-            return await GetPagedResultAsync(query, input);
+            var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount,input.MaxResultCount);
+            return users;
         }
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<List<UserWithRole>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            IQueryable<IdentityUser> queryable = await FindByUserType();
+            //IQueryable<IdentityUser> queryable = await FindByUserType();
 
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-                queryable = ApplySearchFilter(queryable, input.SearchingTerm);
-            }
+            //if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            //{
+            //    queryable = ApplySearchFilter(queryable, input.SearchingTerm);
+            //}
 
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                queryable = ApplySorting(queryable, input.Sorting);
-            }
-
-            return await GetPagedResultAsync(queryable, input);
+            //if (!input.Sorting.IsNullOrEmpty())
+            //{
+            //    queryable = ApplySorting(queryable, input.Sorting);
+            //}
+            var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm);
+            return users;
         }
     }
 
-    public async Task<PagedResultDto<UserDto>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<List<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        IQueryable<IdentityUser> queryable = await FindByUserType(1, 4, 5);
-
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-            queryable = ApplySearchFilter(queryable, input.SearchingTerm);
-        }
-
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            queryable = ApplySorting(queryable, input.Sorting);
-        }
-
-        return await GetPagedResultAsync(queryable, input);
+        var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm);
+        return users;
 
     }
 
@@ -225,7 +217,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var users = await AsyncExecuter.ToListAsync(queryable);
         var usersDto = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
-
+        
         return new PagedResultDto<UserDto>
         {
             TotalCount = totalCount,
@@ -286,8 +278,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
             user.SetIsActive(input.IsActive);
             ChangeRole(input, user);
             user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-            await _userManager.SetEmailAsync(user, input.Email);
-            await _userManager.SetUserNameAsync(user, input.UserName);
+           // await _userManager.SetEmailAsync(user, input.Email);
+           // await _userManager.SetUserNameAsync(user, input.UserName);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
@@ -332,8 +324,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            
             IdentityUser? user = await IsUserFound(id);
-
+            
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userDto.Image = user.GetProperty<string>("Image");
             if (user.Roles.Any())
@@ -374,10 +367,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
         return await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserDto>> GetListForOrganizationAsync(PagedResultRequestDto input)
+    public async Task<List<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input)
     {
-        IQueryable<IdentityUser> query = await FindByUserType(1, 4, 5);
-        return await GetPagedResultAsync(query, input);
+        //IQueryable<IdentityUser> query = await FindByUserType(1, 4, 5);
+        //return await GetPagedResultAsync(query, input);
+        var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount, input.MaxResultCount);
+        return users;
     }
 
     private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)
