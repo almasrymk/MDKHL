@@ -40,40 +40,21 @@
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
 
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Label=@L["ArabicName"] />
-                        </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="6">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Label=@L["EnglishName"] />
                         </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="6">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Label=@L["ArabicName"] />
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
+                        </MudItem>
+                        <MudItem sm="6">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
 
-                        <MudItem sm="4">
-                            <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Code" Label=@L["Code"] />
-                        </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
-
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" @bind-Value="PhoneNum" Label=@L["Contact Phone"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" @bind-Value="WhatsAppNum" Label="@L["Whatsapp Num"]" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" @bind-Value="ContactMail" Label="@L["Contact Email"]" />
-                        </MudItem>
-
-                      
-
-
-                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
-
-
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                         </MudItem>
@@ -94,9 +75,17 @@
                         <MudItem sm="8">
                             <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
-
-
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="PhoneNum" Label=@L["Contact Phone"] />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="WhatsAppNum" Label="@L["Whatsapp Num"]" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="ContactMail" Label="@L["Contact Email"]" />
+                        </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
                         <MudItem sm="4">

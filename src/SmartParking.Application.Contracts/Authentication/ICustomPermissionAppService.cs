@@ -8,7 +8,8 @@ using Volo.Abp.PermissionManagement;
 
 namespace SmartParking.Authentication;
 
-public interface ICustomerPermissionAppService : IPermissionAppService, ITransientDependency
+public interface ICustomPermissionAppService : IPermissionAppService, ITransientDependency
 {
     Task UpdateAsync(string providerName, string providerKey, UpdatePermissionsDto input);
+    Task<GetPermissionListResultDto> GetAsync(string providerName, string providerKey);
 }

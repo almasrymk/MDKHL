@@ -95,4 +95,5 @@ public interface IUsersAppService:  IApplicationService
     Task<IdentityRole> FindRoleByTenantIdAsync(string roleName,Guid? tenantId);
     Task<UserDto> CheckPhoneIsUnique(string phone);
     Task<IdentityUser?> IsUserFound(Guid? userId);
+    Task<string> SaveImageAsync(string image);
 }

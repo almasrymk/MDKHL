@@ -202,7 +202,7 @@ public partial class ContactData
             if (!result.Canceled)
             {
                 await ContactInfoAppService.DeleteAsync(id);
-                ShowSnackbar($"{L["Contact Data Deleted Successfully"]}", Severity.Error);
+                ShowSnackbar($"{L["Contact Data Deleted Successfully"]}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/contact-data", forceLoad: true);

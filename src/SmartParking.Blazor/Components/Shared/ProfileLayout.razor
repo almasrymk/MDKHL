@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Blazor.Components.Ui
 @using SmartParking.Localization
 @using System.Globalization
@@ -10,6 +11,7 @@
 @inject NavigationManager Navigation
 @inherits LayoutComponentBase
 @inject ICurrentTenant currenttenant
+@inject IUsersAppService UsersAppService
 
 @inject IOrganizationsAppService OrganizationAppService
 
@@ -121,19 +123,10 @@
     }
     protected async override Task OnInitializedAsync()
     {
+        var user = await UsersAppService.GetAsync(CurrentUser.Id);
         UserName = CurrentUser.Name;
-        if ((CurrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (CurrentUser.IsInRole("admin")))
-        {
-            UserName = /*Enums.RolesType.Mdkhl.ToString() + " " +*/ UserName;
-            Picture = "images/MDHKL_04.png";
+        Picture = string.IsNullOrWhiteSpace(user.Image) ? "images/MDHKL_04.png" : user.Image;
 
-        }
-        else
-        {
-            UserName = /*Enums.RolesType.Organization.ToString() + " " + */UserName;
-            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
-
-        }
     }
     
     private void ChangeLanguage()

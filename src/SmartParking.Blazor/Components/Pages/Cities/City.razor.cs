@@ -220,7 +220,7 @@ public partial class City
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/cities", forceLoad: true);

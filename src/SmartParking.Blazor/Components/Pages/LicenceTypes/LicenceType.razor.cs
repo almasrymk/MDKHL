@@ -239,7 +239,7 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 				if (!result.Canceled)
                 {
                     await LicenceTypesAppService.DeleteAsync(id);
-                    ShowSnackbar(successMessage, Severity.Error);
+                    ShowSnackbar(successMessage, Severity.Success);
                     await Task.Delay(1000);
 
                     Navigation.NavigateTo("/licencetypes", forceLoad: true);

@@ -168,7 +168,7 @@ public partial class ViewCustomerVehicleDialog
             if (!result.Canceled)
             {
                 await VehiclesAppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.Refresh(true);

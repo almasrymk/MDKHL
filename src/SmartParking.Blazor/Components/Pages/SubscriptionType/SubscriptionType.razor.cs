@@ -226,7 +226,7 @@ public partial class SubscriptionType
             if (!result.Canceled)
             {
                 await SubscriptionTypeAppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/subscriptiontypes", forceLoad: true);

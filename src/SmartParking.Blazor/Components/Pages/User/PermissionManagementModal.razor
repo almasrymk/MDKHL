@@ -1,5 +1,7 @@
 ﻿@using Blazorise
 @using MudBlazor
+@using Volo.Abp.Identity
+ @inject IAuthorizationService AuthorizationService 
 <Modal @ref="_modal" Closing="@ClosingModal">
     <ModalContent Size="ModalSize.Large" Centered="true">
         <ModalHeader>
@@ -31,40 +33,44 @@
                     </Field>
                 </Column>
             </Row>
-            
+
             <fieldset class="border rounded-4 p-3">
                 <legend class="px-1 h5 mb-0">@L["PermissionGroup"]</legend>
-                
-                    @if (_groups != null && _groups.Any())
-                    {
-                        <Tabs @key="_groups" TabPosition="TabPosition.Start" Pills="true" SelectedTab="@_selectedTabName" SelectedTabChanged="@OnSelectedTabChangedAsync">
-                            <Items>
-                                @foreach (var group in _groups)
+
+                @if (_groups != null && _groups.Any())
+                {
+                    <Tabs @key="_groups" TabPosition="TabPosition.Start" Pills="true" SelectedTab="@_selectedTabName" SelectedTabChanged="@OnSelectedTabChangedAsync">
+                        <Items>
+                            @foreach (var group in _groups)
+                            {
+@*                                 @if (!(AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.ManagePermissions).Result)&&CurrentTenant.Id!=null)
                                 {
-                                    <Tab Name="@GetNormalizedGroupName(group.Name)">
-                                        @if (group.Permissions.Any(x => x.IsGranted))
-                                        {
-                                            <span>
-                                                <b>@group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )</b>
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span>
-                                                @group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )
-                                            </span>
-                                        }
-                                    </Tab>
-                                }
-                            </Items>
-                            <Content>
-                                @foreach (var group in _groups)
-                                {
+                                    continue;
+                                } *@
+                                <Tab Name="@GetNormalizedGroupName(group.Name)">
+                                    @if (group.Permissions.Any(x => x.IsGranted))
+                                    {
+                                        <span>
+                                            <b>@group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )</b>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            @group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )
+                                        </span>
+                                    }
+                                </Tab>
+                            }
+                        </Items>
+                        <Content>
+                            @foreach (var group in _groups)
+                            {
+                               
                                     <TabPanel Name="@GetNormalizedGroupName(group.Name)">
                                         
                                         <Field>
-                                            <Check
-                                                Disabled="@(IsPermissionGroupDisabled(group))"
+                                            <Check Disabled="@(IsPermissionGroupDisabled(group))"
                                                 Checked="@(group.Permissions.All(x => x.IsGranted))"
                                                 Cursor="Cursor.Pointer"
                                                 CheckedChanged="@(b => GroupGrantAllChanged(b, group))"
@@ -78,8 +84,7 @@
                                         @foreach (var permission in group.Permissions)
                                         {
                                             <Field Style="@($"margin-inline-start: {GetPermissionDepthOrDefault(permission.Name) * 20}px")">
-                                                <Check
-                                                    Disabled="@(IsDisabledPermission(permission))"
+                                                <Check Disabled="@(IsDisabledPermission(permission))"
                                                     Cursor="Cursor.Pointer"
                                                     Checked="@permission.IsGranted"
                                                     CheckedChanged="@(b => PermissionChanged(b, group, permission))"

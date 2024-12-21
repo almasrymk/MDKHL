@@ -28,14 +28,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
-    private readonly IPermissionManager _permissionManager;
-    private readonly IPermissionDefinitionManager _permissionDefinitionManager;
     private readonly ICustomRoleReository _roleReository;
     private readonly IOptions<IdentityOptions> _identityOptions;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
-        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager permissionManager, IPermissionGrantRepository permissionGrantRepository
-        ,
+        , IMyUserRepository userRepository, IDataFilter dataFilter,
         ICustomRoleReository roleReository,
         IOptions<IdentityOptions> identityOptions)
     {
@@ -62,7 +59,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         if (!creationResult.Succeeded)
         {
-            throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
+             throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
         }
 
         await AssignRoleAndPermissionsAsync(user, roleId);
@@ -307,6 +304,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
             await _userManager.SetEmailAsync(user, input.Email);
             await _userManager.SetUserNameAsync(user, input.UserName);
+            await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);  
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
@@ -351,7 +349,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            var imagePath = SaveImageAsync(image);
+            var imagePath =await SaveImageAsync(image);
             user?.SetProperty("Image", imagePath);
 
             await _userManager.UpdateAsync(user);
@@ -359,7 +357,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    private static string SaveImageAsync(string image)
+    public async Task<string> SaveImageAsync(string image)
     {
         var base64Data = image.Substring(image.IndexOf(",") + 1);
         byte[] imageBytes = Convert.FromBase64String(base64Data);
@@ -368,7 +366,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "users", fileName);
 
         System.IO.File.WriteAllBytes(filePath, imageBytes);
-        return $"images/users/{fileName}";
+        return  $"images/users/{fileName}";
     }
 
     public async Task<IdentityRole?> FindRoleByTenantIdAsync(string roleName, Guid? tenantId)
