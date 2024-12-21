@@ -28,14 +28,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
-    private readonly IPermissionManager _permissionManager;
-    private readonly IPermissionDefinitionManager _permissionDefinitionManager;
     private readonly ICustomRoleReository _roleReository;
     private readonly IOptions<IdentityOptions> _identityOptions;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
-        , IMyUserRepository userRepository, IDataFilter dataFilter, IPermissionManager permissionManager, IPermissionGrantRepository permissionGrantRepository
-        ,
+        , IMyUserRepository userRepository, IDataFilter dataFilter,
         ICustomRoleReository roleReository,
         IOptions<IdentityOptions> identityOptions)
     {
@@ -59,7 +56,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         if (!creationResult.Succeeded)
         {
-            throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
+             throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
         }
 
         await AssignRoleAndPermissionsAsync(user, roleId);
