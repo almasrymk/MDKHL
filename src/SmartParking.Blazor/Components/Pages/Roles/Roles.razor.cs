@@ -21,7 +21,7 @@ namespace SmartParking.Blazor.Components.Pages.Roles;
 
 partial class Roles
 {
-    protected PermissionManagementModal PermissionManagementModal;
+    protected PermissionRolesManagementModal PermissionRolesManagementModal;
 
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
@@ -54,7 +54,7 @@ partial class Roles
     public async Task AddPermission(RowDef row)
     {
         var role = await RoleAppService.GetIdentityRoleById(Guid.Parse(row.Cells[0].Value));
-        await PermissionManagementModal.OpenAsync(PermissionProviderName,
+        await PermissionRolesManagementModal.OpenAsync(PermissionProviderName,
                             role.Name,
                             role.TenantId);
     }
@@ -144,5 +144,16 @@ partial class Roles
             ["RoleDto"] = role
         };
         await DialogService.ShowAsync<UpdateRoleDialog>("Simple Dialog" , parameters);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is Roles roles &&
+               EqualityComparer<PermissionRolesManagementModal>.Default.Equals(PermissionRolesManagementModal, roles.PermissionRolesManagementModal);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(PermissionRolesManagementModal);
     }
 }

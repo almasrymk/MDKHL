@@ -164,6 +164,7 @@ public class PackagesAppService : CrudAppService<
         {
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(p => p.PackageType);
+            queryable = queryable.Include(p => p.CustomerPackages);
 
             queryable = queryable.Where(p => p.TenantId == CurrentTenant.Id);
 

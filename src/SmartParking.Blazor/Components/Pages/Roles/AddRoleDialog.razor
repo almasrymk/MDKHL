@@ -12,6 +12,7 @@
 @inject ICurrentTenant CurrentTenant
 @inject IOrganizationsAppService OrganizationAppService
 @inject ICurrentUser currentuser
+@inject ICurrentTenant CurrentTenant
 
 <PageTitle>@L["AddRole"]</PageTitle>
 
@@ -23,7 +24,8 @@
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
-                    @if ((currentuser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin"))){
+                    @if (CurrentTenant.Id is null)
+                    {
 
                     <MudItem sm="6">
                         <MudSwitch @bind-Value="_addForMdkhl" Label="MDKHL" Color="MudBlazor.Color.Success" />

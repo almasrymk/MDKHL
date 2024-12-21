@@ -248,17 +248,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IdentityUser user;
         using (DataFilter.Disable<IMultiTenant>())
         {
-
-            if (input.Username.Contains("@"))
-            {
-                user = await _userManager.FindByEmailAsync(input.Username);
-
-            }
-            else
-            {
                 user = await _userManager.FindByNameAsync(input.Username);
-
-            }
             if (user == null)
             {
                 return null;

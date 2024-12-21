@@ -12,4 +12,5 @@ public class UserDto:IdentityUserDto
 {
     public string Image { get; set; }
     public Guid RoleId { get; set; }
+    public IdentityRoleDto Role { get; set; }
 }
