@@ -12,4 +12,6 @@ public class MyAccountPermissions
     public const string GroupName = SmartParkingPermissions.GroupName;
     public const string Default = GroupName + PropertyName;
     public const string Edit = Default + SmartParkingPermissions.Edit;
+    public const string ChanageStatus = Default + SmartParkingPermissions.ChanageStatus;
+
 }
