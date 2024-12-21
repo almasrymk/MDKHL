@@ -519,7 +519,10 @@
     "OnlyArabicNumberAllowed": "Only Arabic Number Allowed",
     "OnlyEnglishLettersAllowed": "Only English Letters Allowed",
     "OnlyEnglishNumberAllowed": "Only English Number Allowed",
-    "UserDeletedSuccessfully": "User Deleted Successfully"
+    "UserDeletedSuccessfully": "User Deleted Successfully",
+    "Reqiured": "Reqiured",
+    "Permission:AddRoleToCustomer": "Add Role To Customer"
+
 
 
 

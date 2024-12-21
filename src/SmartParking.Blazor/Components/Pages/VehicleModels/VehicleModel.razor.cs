@@ -237,7 +237,7 @@ public partial class VehicleModel
             if (!result.Canceled)
             {
                 await VehicleModelsAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/vehiclemodels", forceLoad: true);

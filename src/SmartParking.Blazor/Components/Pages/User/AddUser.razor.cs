@@ -15,6 +15,9 @@ using SmartParking.Entities.Organizations;
 using Microsoft.Extensions.Localization;
 using Volo.Abp.Identity;
 using SmartParking.Blazor.Components.Pages.Organizations;
+using FluentValidation;
+using SmartParking.Blazor.Components.DataGrid;
+using Volo.Abp.Users;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -27,7 +30,54 @@ public partial class AddUser
     private IdentityRoleDto role;
     private bool IsOrganization { get; set; }
     private bool IsSelectOrganization { get; set; } = true;
+    private MudTextField<string> textField;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await textField.FocusAsync();
+        }
+    }
+    private async Task HandleBlur()
+    {
+      var user = await UsersAppService.CheckPhoneIsUnique(textField.Value);
+        if (user != null) {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add("That user is Already exists , Click edit button to update", MudBlazor.Severity.Normal, config =>
+            {
+                config.Action = "Edit";
+                config.ActionColor = Color.Primary;
+                config.Onclick = snackbar =>
+                {
+                    HandleEdit(user);
+                    return Task.CompletedTask;
+                };
+            });
+        }
+
+    }
+    public async Task<IDialogReference> HandleEdit(UserDto userData)
+    {
+        var userUpdate = new UpdateUserDto
+        {
+            Name = userData.Name,
+            Email = userData.Email,
+            Surname = userData.Surname,
+            PhoneNumber = userData.PhoneNumber,
+            UserName = userData.UserName,
+            TenantId = userData.TenantId,
+            RoleId = userData.RoleId,
+            ConcurrencyStamp = userData.ConcurrencyStamp,
+            IsActive = userData.IsActive,
+        };
+        var parameters = new DialogParameters
+        {
+            ["updateUserDto"] = userUpdate,
+            ["userId"] = userData.Id.ToString()
+        };
+        return await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters);
+    }
     protected override async Task OnInitializedAsync()
     {
         userCreate = new UserCreateDto();
@@ -87,7 +137,7 @@ public partial class AddUser
             CheckUser();
             var user = await UsersAppService.CreateWithRoleAsync(userCreate,role.Id);
 
-            ShowSnackbar($"{successMessage}", Severity.Success);
+            ShowSnackbar($"{successMessage}", MudBlazor.Severity.Success);
             await Task.Delay(1000); // Awaiting the delay to ensure it completes before navigation
             NavigationManager.NavigateTo("/users", true);
         }
@@ -95,20 +145,20 @@ public partial class AddUser
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", MudBlazor.Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Code}", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Code}", MudBlazor.Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Message}", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Message}", MudBlazor.Severity.Error);
         }
         catch (Exception ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Message}", Severity.Error);
+            ShowSnackbar($"{errorMessage}: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 
@@ -140,7 +190,7 @@ public partial class AddUser
     /// </summary>
     /// <param name="message">The message to display in the snackbar.</param>
     /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
+    void ShowSnackbar(string message, MudBlazor.Severity severity)
     {
         Snackbar.Clear();
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;

@@ -229,7 +229,7 @@ public partial class VehicleBrand
             if (!result.Canceled)
             {
                 await VehicleBrandsAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/vehiclebrands", forceLoad: true);

@@ -21,6 +21,7 @@ public class CreateUpdatePackageDto
         public CustomerCategoryStatus CustomerCategory { get; set; }
         public int DurationOfPackage { get; set; }
         public Guid? TenantId { get; set; }
+        public DateTime ActivationDate { get; set; }
 
 
 }

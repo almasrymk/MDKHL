@@ -93,4 +93,7 @@ public interface IUsersAppService:  IApplicationService
     /// </remarks>
     Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId);
     Task<IdentityRole> FindRoleByTenantIdAsync(string roleName,Guid? tenantId);
+    Task<UserDto> CheckPhoneIsUnique(string phone);
+    Task<IdentityUser?> IsUserFound(Guid? userId);
+    Task<string> SaveImageAsync(string image);
 }

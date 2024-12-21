@@ -111,22 +111,9 @@
     {
         UserName = CurrentUser.Name;
         var user = await UsersAppService.GetAsync(CurrentUser.Id);
-        if (currenttenant.Id == null)
-        {
-            //UserName += " MDKHAL";
-            Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
-        }
-        else
-        {
-
-            //UserName += " Organization";
-            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
-        }
+        Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
         hasPermission = currenttenant.Id != null && AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result;
-
-
-         base.OnInitializedAsync();
-
+        base.OnInitializedAsync();
     }
     protected override void OnParametersSet()
     {

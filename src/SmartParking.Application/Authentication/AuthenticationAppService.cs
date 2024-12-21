@@ -297,7 +297,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             {
                 return null;
             }
-            if (user.IsActive == false)
+            if (user.IsActive == false ||  user.GetProperty<int>("UserTypeId")==3)
             {
                 return null;
             }

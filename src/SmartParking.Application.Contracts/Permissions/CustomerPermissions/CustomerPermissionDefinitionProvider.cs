@@ -18,5 +18,6 @@ public class CustomerPermissionDefinitionProvider : PermissionDefinitionProvider
         garagePermission.AddChild(CustomerPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         garagePermission.AddChild(CustomerPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         garagePermission.AddChild(CustomerPermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
+        garagePermission.AddChild(CustomerPermissions.AddRoleToCustomer, CustomStringLocalizer.L(CustomStringLocalizer.AddRoleToCustomer));
     }
 }

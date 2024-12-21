@@ -542,7 +542,10 @@
     "OnlyArabicNumberAllowed": "يُسمح فقط باللارقام الانجليزية",
     "OnlyEnglishLettersAllowed": "يُسمح فقط بالأحرف الانجليزية",
     "OnlyEnglishNumberAllowed": "يُسمح فقط باللارقام الانجليزية",
-    "UserDeletedSuccessfully": "تم حذف المستخدم بنجاح"
+    "UserDeletedSuccessfully": "تم حذف المستخدم بنجاح",
+    "Reqiured": "مطلوب",
+    "Permission:AddRoleToCustomer": "إضافة دور للعميل"
+
 
 
 

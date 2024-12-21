@@ -190,11 +190,13 @@
     [Parameter] public CreateUpdatePackageDto Package { get; set; }
     [Parameter]
     public int UpdatedId { get; set; }
+    [Parameter]
+    public DateTime? ActivationDate { get; set; }
+
     bool _clearable;
     private MudForm form;
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
-    private DateTime? ActivationDate { get; set; } = DateTime.Now;
     private DateTime? DectivationDate { get; set; } = DateTime.Now;
 
 

@@ -405,7 +405,6 @@ public partial class OrganizationEdit
         var imageFile = file;
         if (imageFile != null)
         {
-            // Save the image and get the file path
             OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
             StateHasChanged();
         }

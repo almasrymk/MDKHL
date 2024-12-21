@@ -4,6 +4,7 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
+@using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject NavigationManager Navigation
@@ -13,41 +14,36 @@
 @inject IUsersAppService UsersAppService
 @inject ICurrentTenant currentTenant
 @inject IOrganizationsAppService OrganizationAppService
+@inject IRoleAppService RolesAppService
 
 <PageTitle>@L["Assign Role"]</PageTitle>
 
 <div class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+	<MudDialog class="mud-modal" Style="min-width:fit-content !important">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["Assign Role"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-					@if (currentTenant.Id is null)
-					{
-						<MudItem sm="12" md="12">
-							<MudSelect @bind-Value="@userRole"
-							Label="@L["UserRole"]"
-							Placeholder="@L[ "Choose"]"
-							HelperText=@L["Helper Text"]
-							Required>
+					<MudItem sm="12" md="12">
+						<MudSelect T="Guid"
+						ValueChanged="ChooseRole"
+						Label="@L["UserRole"]"
+						Placeholder="@L[ "Choose"]"
+						HelperText=@L["Helper Text"]
+						Required>
+							@foreach (var role in identityRoles)
+							{
+								<MudSelectItem Value="role.Id">
+									@role.Name
+								</MudSelectItem>
+							}
 
-								@foreach (var role in Enum.GetValues(typeof(RolesType)))
-								{
+						</MudSelect>
 
-									<MudSelectItem Value="@role.ToString()">
-										@role.ToString()
-									</MudSelectItem>
+					</MudItem>
 
-								}
-							</MudSelect>
-
-						</MudItem>
-					}
 
 
 				</MudGrid>
@@ -58,7 +54,7 @@
 		</DialogContent>
 		<DialogActions>
 			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Assign"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitAssign">@L["Assign"]</MudButton>
 		</DialogActions>
 
 	</MudDialog>
@@ -77,10 +73,17 @@
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] 
 	public Guid Id { get; set; }
-	private string userRole { get; set; }
+	private Guid userRoleId { get; set; }
+	private List<IdentityRoleDto> identityRoles { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		identityRoles = await RolesAppService.GetListByTenant(currentTenant.Id);
+		await base.OnInitializedAsync();
+	}
 
 
-	private async Task SubmitEdit()
+	private async Task SubmitAssign()
 	{
 		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		var successedMessage = L["Role Added to User Successfully"];
@@ -88,9 +91,7 @@
 		try
 		{
 
-
-			var garage = await UsersAppService.AssignRoleToUser(Id, userRole);
-
+			 await RolesAppService.AssignRole(Id, userRoleId);
 			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			Navigation.NavigateTo("/users");
@@ -105,6 +106,10 @@
 	private async Task CancelEdit()
 	{
 		MudDialogAdd.Cancel();
+	}
+	private async Task ChooseRole(Guid Value)
+	{
+		userRoleId = Value;
 	}
 
 

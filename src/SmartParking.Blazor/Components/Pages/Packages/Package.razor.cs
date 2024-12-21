@@ -206,6 +206,7 @@ public partial class Package
 			PackageType=packageDto.PackageType,
 			CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory),
 			DurationOfPackage = packageDto.DurationOfPackage,
+			
 
         };
 
@@ -214,7 +215,8 @@ public partial class Package
 		var parameters = new DialogParameters
 		{
 			["Package"] = createUpdatePackage,
-			["UpdatedId"] = id
+			["UpdatedId"] = id,
+			["ActivationDate"]=packageDto.ActivationDate,
 		};
 
 
@@ -244,7 +246,9 @@ public partial class Package
             PackageStatus = packageDto.PackageStatus,
             PackageType = packageDto.PackageType,
             CustomerCategory = packageDto.CustomerCategory,
-			DurationOfPackage  =  packageDto.DurationOfPackage
+			DurationOfPackage  =  packageDto.DurationOfPackage,
+			ActivationDate=packageDto.ActivationDate,
+			
 
         };
 
@@ -281,7 +285,7 @@ public partial class Package
             if (!result.Canceled)
             {
                 await PackagesAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/package", true);

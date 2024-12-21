@@ -262,7 +262,7 @@ public partial class Subscription
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/subscriptions", forceLoad: true);
