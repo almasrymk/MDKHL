@@ -37,7 +37,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         _organizationsAppService = organizationsAppService;
     }
 
-    public async Task<PagedResultDto<PaymentResponseDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -59,9 +59,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
-            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentResponseDto>>(payments);
+            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
 
-            return new PagedResultDto<PaymentResponseDto>
+            return new PagedResultDto<PaymentDto>
             {
                 TotalCount = totalCount,
                 Items = paymentDtos
@@ -71,7 +71,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
     
 
-    public async Task<PagedResultDto<PaymentResponseDto>> GetListOrganizationAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -95,9 +95,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
-            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentResponseDto>>(payments);
+            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
 
-            return new PagedResultDto<PaymentResponseDto>
+            return new PagedResultDto<PaymentDto>
             {
                 TotalCount = totalCount,
                 Items = paymentDtos
@@ -165,7 +165,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     }
 
-    public async Task<PagedResultDto<PaymentResponseDto>> SearchMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<PaymentDto>> SearchMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -207,16 +207,16 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var payments = await AsyncExecuter.ToListAsync(queryable);
 
             // Map the hotel entities to hotelDto objects
-            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentResponseDto>>(payments);
+            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
             // Return the paginated result
-            return new PagedResultDto<PaymentResponseDto>(
+            return new PagedResultDto<PaymentDto>(
                 totalCount,
                 paymentResponseDtos
             );
         }
     }
 
-    public async Task<PagedResultDto<PaymentResponseDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenat();
         using (_dataFilter.Disable<IMultiTenant>())
@@ -259,9 +259,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var payments = await AsyncExecuter.ToListAsync(queryable);
 
             // Map the hotel entities to hotelDto objects
-            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentResponseDto>>(payments);
+            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
             // Return the paginated result
-            return new PagedResultDto<PaymentResponseDto>(
+            return new PagedResultDto<PaymentDto>(
                 totalCount,
                 paymentResponseDtos
             );

@@ -95,7 +95,7 @@ public partial class Payment
         };
 
         // Call the service to perform the search based on the input parameters
-        PagedResultDto<PaymentResponseDto> pagedResultDto;
+        PagedResultDto<PaymentDto> pagedResultDto;
         if (CurrentTenant.Id == null)
         {
             pagedResultDto = await PaymentWebAppService.SearchMdkhlAsync(input);
@@ -134,7 +134,7 @@ public partial class Payment
         };
 
         // Retrieve the list of payments from the server
-        PagedResultDto<PaymentResponseDto> paymentsDto;
+        PagedResultDto<PaymentDto> paymentsDto;
         if (CurrentTenant.Id == null) 
          paymentsDto = await PaymentWebAppService.GetListMdkhlAsync(input);
         else
@@ -144,7 +144,7 @@ public partial class Payment
 
     }
 
-    private void CreateTable(PagedResultDto<PaymentResponseDto> organizations)
+    private void CreateTable(PagedResultDto<PaymentDto> organizations)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -156,6 +156,7 @@ public partial class Payment
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ID"], Name = "ID", IsFilterable = false, PropertyName = "", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customer.CustomerCategoryStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -170,9 +171,15 @@ public partial class Payment
             
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], item.PaymentCategory));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], item.PaymentCategory.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                _localizer["ID"],
+                item.PaymentCategory == Enums.PaymentCategory.Invoice
+                ?  item.InvoiceId.ToString()
+                :  item.PackageId .ToString()
+            ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], item.PaymentMethod));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], item.PaymentStatus));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], item.PaymentStatus.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() ?? _localizer["Customer"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Amount"], item.Amount.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Currency"], item.Currency.ToString()));
