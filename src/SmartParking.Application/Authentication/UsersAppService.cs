@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SmartParking.Organizations;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
@@ -223,12 +224,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     private async Task<PagedResultDto<UserDto>> GetPagedResultAsync(IQueryable<IdentityUser> queryable, PagedResultRequestDto input)
     {
-
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var users = await AsyncExecuter.ToListAsync(queryable);
         var usersDto = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
-
         return new PagedResultDto<UserDto>
         {
             TotalCount = totalCount,
@@ -242,6 +241,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         return queryable.Where(user =>
             user.UserName.ToLower().Contains(lowerTerm) ||
             user.Email.ToLower().Contains(lowerTerm) ||
+            user.Name.ToLower().Contains(lowerTerm) ||
             user.PhoneNumber.ToLower().Contains(lowerTerm));
     }
 
@@ -287,7 +287,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             user.Name = input.Name;
             user.Surname = input.Surname;
             user.SetIsActive(input.IsActive);
-            ChangeRole(input, user);
+            await ChangeRole(input, user);
             user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
             await _userManager.SetEmailAsync(user, input.Email);
             await _userManager.SetUserNameAsync(user, input.UserName);
@@ -314,10 +314,27 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    private static void ChangeRole(UpdateUserDto input, IdentityUser? user)
+    private  async Task ChangeRole(UpdateUserDto input, IdentityUser? user)
     {
-        user.RemoveRole(user.Roles.First().RoleId);
+        if (user.Roles.Count == 0)
+        {
+            await CustomerToUser(user);
+        }
+        if (user.Roles.Count > 0)
+        {
+            user.RemoveRole(user.Roles.First().RoleId);
+        }
         user.AddRole(input.RoleId);
+    }
+    
+    private async Task CustomerToUser(IdentityUser user)
+    {
+        var orgId =await GetOrganizationIdByTenantAsync(CurrentTenant.Id);
+        user.SetProperty("OrganizationId", orgId);
+        user.SetProperty("UserTypeId", 5);
+        user.SetProperty("TenantId", CurrentTenant.Id);
+
+
     }
 
     private static void RemoveRole(UpdateUserDto input, IdentityUser? user)
@@ -410,7 +427,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         if (user.UserName != input.UserName)
         {
             await _userManager.SetUserNameAsync(user, input.UserName);
+            await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         }
+
         var createdUser = await _userManager.UpdateAsync(user);
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
