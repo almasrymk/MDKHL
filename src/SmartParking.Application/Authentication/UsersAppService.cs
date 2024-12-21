@@ -307,6 +307,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
             await _userManager.SetEmailAsync(user, input.Email);
             await _userManager.SetUserNameAsync(user, input.UserName);
+            await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);  
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
@@ -351,7 +352,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            var imagePath = SaveImageAsync(image);
+            var imagePath =await SaveImageAsync(image);
             user?.SetProperty("Image", imagePath);
 
             await _userManager.UpdateAsync(user);
