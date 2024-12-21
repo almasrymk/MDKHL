@@ -39,6 +39,7 @@ public partial class AddContactDataDialog
                WhatsAppNum = input.WhatsAppNum  
             };
 
+
             var contactdata = await ContactInfoAppService.CreateAsync(createUpdateContactDataDto);
             if (contactdata != null)
             {
@@ -60,6 +61,7 @@ public partial class AddContactDataDialog
             foreach (var validationError in validationException.ValidationErrors)
             {
                 Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                break;
             }
         }
         catch (BusinessException ex)
