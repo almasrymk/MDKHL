@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blazorise;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -10,22 +11,25 @@ using SmartParking.Authentication;
 using SmartParking.Localization;
 using Volo.Abp.AspNetCore.Components.Web.Configuration;
 using Volo.Abp.Data;
+using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.PermissionManagement.Localization;
 using Volo.Abp.TenantManagement;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace SmartParking.Blazor.Components.Pages.User;
 
 public partial class PermissionManagementModal
 {
     [Inject] protected IPermissionAppService PermissionAppService { get; set; }
-    [Inject] protected ICustomerPermissionAppService CustomerPermissionAppService { get; set; }
+    [Inject] protected ICustomPermissionAppService CustomPermissionAppService { get; set; }
     [Inject] protected ICurrentApplicationConfigurationCacheResetService CurrentApplicationConfigurationCacheResetService { get; set; }
 
     [Inject] protected IOptions<AbpLocalizationOptions> LocalizationOptions { get; set; }
     [Inject] protected IDataFilter DataFilter { get; set; }
     [Inject] protected ICurrentTenant CurrentTenant { get; set; }
+
 
     protected Modal _modal;
 
@@ -107,7 +111,7 @@ public partial class PermissionManagementModal
             GetPermissionListResultDto result;
             using (DataFilter.Disable<IMultiTenant>())
             {
-                 result = await PermissionAppService.GetAsync(providerName, providerKey);
+                 result = await CustomPermissionAppService.GetAsync(providerName, providerKey);
             }
                
 
@@ -188,7 +192,7 @@ public partial class PermissionManagementModal
                 }
             using (CurrentTenant.Change(_tenantId))
             {
-                await CustomerPermissionAppService.UpdateAsync(_providerName, _providerKey, updateDto);
+                await CustomPermissionAppService.UpdateAsync(_providerName, _providerKey, updateDto);
             }
                 await CurrentApplicationConfigurationCacheResetService.ResetAsync();
 
@@ -317,8 +321,11 @@ public partial class PermissionManagementModal
         }
     }
 
-    protected bool IsDisabledPermission(PermissionGrantInfoDto permissionGrantInfo)
+    protected  bool IsDisabledPermission(PermissionGrantInfoDto permissionGrantInfo)
     {
+        if (!AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.ManagePermissions).Result)
+            return true;
+       
         return _disabledPermissions.Any(x => x == permissionGrantInfo);
     }
 
