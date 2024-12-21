@@ -24,10 +24,10 @@
                     </ActivatorContent>
                 </MudFileUpload>
             </div>
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="Profile.UserName" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="Profile.Name" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="Profile.Email" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="Profile.PhoneNumber" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="OldProfile.UserName" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="OldProfile.Name" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="OldProfile.PhoneNumber" Required="true" />
 
             <div class="d-flex align-items-center gap-3 mt-4">
                 <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">@L["CHANGE PASSWORD"]</MudButton>
@@ -40,6 +40,8 @@
 @code {
     private MudForm form;
     private string ProfilePictureUrl =  ""; // Default profile picture
+    private string NewProfilePictureUrl =  ""; 
+    private UpdateUserDto OldProfile = new UpdateUserDto(); // Profile object for binding
     private UpdateUserDto Profile = new UpdateUserDto(); // Profile object for binding
     [Inject] private ISnackbar Snackbar { get; set; }
     private string ImageBase64 { get; set; }
@@ -58,12 +60,12 @@
         {
             var profile = await UsersAppService.GetAsync(CurrentUser.Id);
 
-            Profile.Name = profile.Name;
-            Profile.Email = profile.Email;
-            Profile.PhoneNumber = profile.PhoneNumber;
-            Profile.UserName = profile.UserName;
+            OldProfile.Name = Profile.Name = profile.Name;
+            OldProfile.Email = Profile.Email= profile.Email;
+            OldProfile.PhoneNumber = Profile.PhoneNumber= profile.PhoneNumber;
+            OldProfile.UserName = Profile.UserName= profile.UserName;
 
-            ProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "" : profile.Image;
+            ProfilePictureUrl = NewProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "" : profile.Image;
 
         }
 
@@ -83,15 +85,19 @@
 
             if (form.IsValid)
             {
-                await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, Profile);
-                await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
-                Snackbar.Add("Profile updated successfully!", Severity.Success);
-                await Task.Delay(1000);
-                Navigation.Refresh(true);
+                if(IfChanged(OldProfile,Profile)){
+                    await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, OldProfile);
 
-                Snackbar.Add("Profile updated successfully!", Severity.Success);
-                await Task.Delay(1000);
-                Navigation.Refresh(true);
+                    Snackbar.Add("Profile updated successfully!", Severity.Success);
+                    await Task.Delay(1000);
+                    Navigation.Refresh(true);
+                }
+                if (NewProfilePictureUrl != ProfilePictureUrl){
+                    await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
+                    Snackbar.Add("Profile updated successfully!", Severity.Success);
+                    await Task.Delay(1000);
+                    Navigation.Refresh(true);
+                }
             }
             else
             {
@@ -112,7 +118,13 @@
         byte[] imageBytes = memoryStream.ToArray();
         ImageBase64 = Convert.ToBase64String(imageBytes);
         ProfilePictureUrl =  await UsersAppService.SaveImageAsync(ImageBase64);
-        Console.WriteLine(ProfilePictureUrl);
         StateHasChanged();
+    }
+    private bool IfChanged(UpdateUserDto OldProfile, UpdateUserDto NewProfile)
+    {
+        if (OldProfile.UserName != Profile.UserName || OldProfile.Email != Profile.Email || OldProfile.PhoneNumber != Profile.PhoneNumber || OldProfile.Name != Profile.Name){
+            return true;
+        }
+        return false;
     }
 }

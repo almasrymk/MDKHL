@@ -152,7 +152,7 @@
 
                 @if (Data.Columns.Last().DisplayName == header.DisplayName)
                 {
-                    @if ( OnClickRowView.HasDelegate || OnClickCar.HasDelegate || OnClickRowEdit.HasDelegate || OnClickRowDelete.HasDelegate || OnClickAssign.HasDelegate )
+                    @if ((OnClickRowView.HasDelegate && ShowView) || (OnClickCar.HasDelegate && ShowAssignCar) || (OnClickRowEdit.HasDelegate&&ShowEdit) || (OnClickRowDelete.HasDelegate&&ShowDelete) || (OnClickAssign.HasDelegate&&ShowAssign))
                     {
                         <TemplateColumn Title="@L["Actions"]" CellClass="d-flex justify-content-start align-items-center">
                             <CellTemplate>
