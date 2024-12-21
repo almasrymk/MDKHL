@@ -10,9 +10,9 @@ public static class CustomIdentityPermissions
 {
     public const string GroupName = "AbpIdentity";
 
-    public static class Users
+    public static class Roles
     {
-        public const string Default = GroupName + ".Users";
+        public const string Default = GroupName + ".Roles";
         
         public const string ViewPermissions = Default + ".ViewPermissions";
     }
