@@ -168,7 +168,25 @@
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                 <MudGrid Class="mt-3">
 
-                    <MudItem sm="6">
+                    <MudItem sm="12" >
+                        
+                    @if(OrganizationPicture!=null)
+                    {
+                        <MudItem sm="12" class="d-flex flex-column align-content-center gap-4 p-5 mb-3">
+                            <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem sm="12" class="d-flex flex-column align-content-center gap-4 p-5 mb-3">
+
+                            <MudImage Src="images/MDHKL_04.png" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
+
+                        </MudItem>
+                    }
+                        <MudItem sm="12">
+
+
                         <Label>@L["Status"]</Label>
                         <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
                             @if (Status == 1)
@@ -187,21 +205,10 @@
                             }
 
                         </Div>
+                        </MudItem>
+
                     </MudItem>
-                    @if(OrganizationPicture!=null)
-                    {
-                        <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                            <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
-                        </MudItem>
-                    }
-                    else
-                    {
-                        <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
 
-                            <MudImage Src="images/MDHKL_04.png" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
-
-                        </MudItem>
-                    }
 
                 </MudGrid>
                 <MudGrid Class="mt-3">

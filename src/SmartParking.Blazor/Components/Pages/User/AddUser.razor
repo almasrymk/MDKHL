@@ -74,7 +74,7 @@
                                        Placeholder="@L[ "Choose"]"
                                        HelperText=@L["Helper Text"]
                                        Required>
-
+                        <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var organization in Organizations)
                                 {
                                    if (organization.Status != Status.Active)

@@ -24,7 +24,7 @@
         </TitleContent>
         <DialogContent>
 
-            <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form" Model="createUpdatePackage"  >
+            <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper"  Model="createUpdatePackage"  >
                 <MudGrid>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="createUpdatePackage.ArabicName"
@@ -73,7 +73,7 @@
 
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
-
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var type in packageTypes)
                             {
                                 <MudSelectItem T="int" Value="@type.Id">
@@ -83,16 +83,15 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
+                        <MudSelect @bind-Value="CustomerCategory"
                         Label="@L["customer category"]"
                         Placeholder="@L[ "Choose"]"
                         HelperText=@L["Helper Text"]
                         RequiredError=@L["Required"]
                         Required>
-
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
-                                <MudSelectItem Value="@category">
+                                <MudSelectItem Value="@category.ToString()">
 
                                     @category.ToString()
                                 </MudSelectItem>
@@ -103,9 +102,9 @@
                     <MudItem sm="4">
                         <MudSwitch 
                         T="bool"
+                        @bind-Value="createUpdatePackage.Published"
                         Label="@L["Published"]"
                         LabelPosition="LabelPosition.Start"
-                        Value="createUpdatePackage.Published"
                         Color="MudBlazor.Color.Primary" />
                     </MudItem>
                     @if(createUpdatePackage.Published == false)
@@ -183,7 +182,7 @@
     private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
-
+    private string CustomerCategory { get; set; }
     protected override async Task OnInitializedAsync()
     {
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
@@ -218,19 +217,27 @@
             createUpdatePackage.PublishTo = new TimeOnly(0,0,0);
         }
     }
+    private void CheckPublish(bool publish){
+        if (createUpdatePackage.Published)
+        {
+            createUpdatePackage.PublishFrom = new TimeOnly(0, 0, 0);
+            createUpdatePackage.PublishTo = new TimeOnly(0, 0, 0);
+        }
+    }
     private async Task Submit()
     {
+        createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
         var currentTenant = CurrentTenant.Id;
         createUpdatePackage.OrganizationId =await organizationAppService.GetOrganizationIdByTenant(currentTenant);
         var successedMessage = L["PackageCreatedSuccessfully"];
         var errorMessage = L["FillRequriedItems"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
+
+        // Call your service to create the package
+        try
         {
-            // Call your service to create the package
-            try
-            {
-                createUpdatePackage.TenantId = CurrentTenant.Id;
+            CheckPublish(createUpdatePackage.Published);
+            createUpdatePackage.TenantId = CurrentTenant.Id;
                 createUpdatePackage.ActivationDate = DateTime.Now;
                 await PackagesAppService.CreateAsync(createUpdatePackage);
                 Snackbar.Add(successedMessage, Severity.Success);
@@ -252,11 +259,8 @@
             }
 
 
-        }
-        else
-        {
-            Snackbar.Add(validationErrorMessage, Severity.Error);
-        }
+        
+
     }
     private void Cancel()
     {

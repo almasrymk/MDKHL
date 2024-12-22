@@ -319,7 +319,7 @@
     "NumberOfHours": "عدد الساعات",
     "ExceededTime": "تجاوزت الوقت",
     "NumberOfHoursExceeded": "تم تجاوز عدد الساعات",
-    "FullDayExceeded": " هل تم تجاوز اليوم الكامل",
+    "FullDayExceeded": " ساعات اليوم الكامل",
     "FullDay": "يوم كامل",
     "Customer Categories": "فئـات العمـلاء",
     "No Subscription for organization": "لا تـوجـد إشـتراكات لتلك المنشـآة",
@@ -332,7 +332,7 @@
     "OrganiztionCreatedSuccessfully": "تم إضــافة منظمة بنجاح",
     "Can'tCreateOrganiztion": "لا يمكن إضــافة منظمة",
     "FullDayPrice": "سعر اليوم الكامل",
-    "IsClose": "مغلق؟",
+    "IsClose": "يتم الغلق؟",
     "ClosingHoursStart": "موعد بداية ساعات الغلق",
     "ClosingHoursEnd": "موعد نهاية ساعات الغلق",
     "GarageCreatedSuccessfully": "تم إضــافة مـوقـف بنجاح",
@@ -549,8 +549,8 @@
     "From": "من",
     "To": "إلى",
     "Subscribers": "المشتركيين",
-    "Permission:AddRoleToCustomer": "إضافة دور للعميل",
-    "Permission:ViewPermissions": "عـرض الأذونات"
+    "Permission:ViewPermissions": "عـرض الأذونات",
+    "PlateLetter": "حروف اللوحة"
 
 
 
