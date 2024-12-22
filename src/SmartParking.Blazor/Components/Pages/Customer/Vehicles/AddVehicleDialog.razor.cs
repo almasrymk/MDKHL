@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
@@ -104,6 +105,47 @@ public partial class AddVehicleDialog
 		}
 
 	}
+
+    private void HandleKeyUp(FocusEventArgs e)
+    {
+        
+         createUpdateVehicle.ArPlateNumber = MapToArabicNumerals(createUpdateVehicle.ArPlateNumber);
+        
+    }
+
+    private string MapToArabicNumerals(string englishNumber)
+    {
+        if (englishNumber == "")
+        {
+            return "";
+        }
+         var englishToArabicMap = new Dictionary<char, string>
+         {
+            { '0', "٠" },
+            { '1', "١" },
+            { '2', "٢" },
+            { '3', "٣" },
+            { '4', "٤" },
+            { '5', "٥" },
+            { '6', "٦" },
+            { '7', "٧" },
+            { '8', "٨" },
+            { '9', "٩" }
+        };
+        string arabicNUmbers = "";
+        foreach(var character in englishNumber) 
+        {
+
+            if(character < '0' || character > '9')
+            {
+                ShowSnackbar("Only Numbers are accepted",Severity.Error);
+                createUpdateVehicle.ArPlateNumber = "";
+                return "";
+            }
+            arabicNUmbers+= englishToArabicMap[character] ;
+        }
+        return arabicNUmbers;
+    }
 
     private async Task CancelCreate()
     {

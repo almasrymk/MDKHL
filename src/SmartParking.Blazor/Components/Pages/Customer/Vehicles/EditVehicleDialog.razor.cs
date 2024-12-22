@@ -15,6 +15,7 @@ using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -96,6 +97,47 @@ public partial class EditVehicleDialog
             ShowSnackbar($"Failed to edit vehicle: {ex.Message} + ", Severity.Error);
         }
 
+    }
+
+    private void HandleKeyUp(FocusEventArgs e)
+    {
+
+        Vehicle.ArPlateNumber = MapToArabicNumerals(Vehicle.ArPlateNumber);
+
+    }
+
+    private string MapToArabicNumerals(string englishNumber)
+    {
+        if (englishNumber == "")
+        {
+            return "";
+        }
+        var englishToArabicMap = new Dictionary<char, string>
+         {
+            { '0', "٠" },
+            { '1', "١" },
+            { '2', "٢" },
+            { '3', "٣" },
+            { '4', "٤" },
+            { '5', "٥" },
+            { '6', "٦" },
+            { '7', "٧" },
+            { '8', "٨" },
+            { '9', "٩" }
+        };
+        string arabicNUmbers = "";
+        foreach (var character in englishNumber)
+        {
+
+            if (character < '0' || character > '9')
+            {
+                ShowSnackbar("Only Numbers are accepted", Severity.Error);
+                Vehicle.ArPlateNumber = "";
+                return "";
+            }
+            arabicNUmbers += englishToArabicMap[character];
+        }
+        return arabicNUmbers;
     }
 
     private void CancelEdit()
