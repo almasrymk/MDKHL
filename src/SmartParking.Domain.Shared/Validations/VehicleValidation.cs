@@ -46,7 +46,22 @@ public static class VehicleValidation
 
         return null; 
     }
-    
+    public static string ValidateLetters(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return null;
+        }
+
+        // Pattern to validate only letters (Arabic or English)
+        var letterPattern = @"^[a-zA-Z\u0600-\u06FF]+$"; // a-zA-Z for English letters, \u0600-\u06FF for Arabic letters
+        if (!System.Text.RegularExpressions.Regex.IsMatch(value, letterPattern))
+        {
+            return LocalizationHelper.GetLocalizedString("OnlyLettersAllowed");
+        }
+
+        return null;
+    }
     public static string ValidateEnglishLetter(string value)
     {
         if (string.IsNullOrEmpty(value))
