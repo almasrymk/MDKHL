@@ -8,6 +8,7 @@ using Volo.Abp.MultiTenancy;
 using System;
 using Volo.Abp.Users;
 using SmartParking.Enums;
+using MudBlazor;
 
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
@@ -18,7 +19,6 @@ public class AccountsController : ControllerBase
     private readonly ITenantAppService _tenantAppService;
     private readonly ICurrentTenant currentTenant;
     private readonly ICurrentUser _currentuser;
-
     public AccountsController(
         IAuthenticationAppService authenticationApp,
         ITenantAppService tenantAppService,
@@ -46,8 +46,9 @@ public class AccountsController : ControllerBase
        var userLogin= await _authenticationApp.LoginForWebAsync(loginInputDto);
 
         if (_currentuser.IsInRole(RolesType.Customer.ToString())) {
-
-           return await Logout();
+           // _snackbar.Add("Invalid credentials.", Severity.Error);
+            //await Task.Delay(1000);
+            return await Logout();
         
         }
         if (userLogin is not null)
@@ -55,9 +56,10 @@ public class AccountsController : ControllerBase
             return LocalRedirect("/");
             
         }
-        
+        //_snackbar.Add("Invalid credentials.", Severity.Error);
+        //await Task.Delay(1000);
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return LocalRedirect("/Account/Login");
+        return LocalRedirect("/Account/Login/?errorMessage=Invalid credentials.");
         
     }
 
@@ -65,7 +67,7 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult> Logout()
     {
         await _authenticationApp.LogOutAsync();
-        return LocalRedirect("/Account/Login");
+        return LocalRedirect($"/Account/Login");
     }
 
 

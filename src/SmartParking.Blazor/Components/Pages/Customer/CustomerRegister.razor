@@ -65,7 +65,7 @@
                                 </MudRadioGroup>
                             </MudItem>
                         </MudItem>
-                        @if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+                        @if (CurrentTenant.Id is null)
                         {
                             <MudItem sm="6" md="6">
                                 <MudSelect T="int"
@@ -76,7 +76,7 @@
                                 Required
                                 ReadOnly="showVehicle"
                                 @bind-Value="createUpdateCustomerDto.OrganizationId">
-                                    <MudSelectItem Value="0"></MudSelectItem>
+                                    <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var organization in Organizations)
                                     {
                                         if (organization.Status != Enums.Status.Active)
@@ -101,17 +101,16 @@
                         @if (createUpdateCustomerDto.OrganizationId != 0 || CurrentTenant.Id is not null)
                         {
                             <MudItem sm="6" md="6">
-                                <MudSelect T="CustomerCategoryStatus"
+                                <MudSelect T="string"
                                 Label="@L["customer category"]"
                                 Placeholder=@L["Choose"]
                                 HelperText=@L["Helper Text"]
                                 Required="true"
                                 ReadOnly="showVehicle"
                                 ValueChanged="getPackage">
-
                                     @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                                     {
-                                        <MudSelectItem Value="@category">
+                                        <MudSelectItem Value="@category.ToString()">
 
                                             @category.ToString()
                                         </MudSelectItem>

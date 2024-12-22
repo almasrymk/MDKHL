@@ -9,7 +9,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentTenant CurrentTenant
 @inject IAuthenticationAppService authentication
-
+@inject ISnackbar Snackbar
 
 <PageTitle>@L["Sign In"]</PageTitle>
 
@@ -30,8 +30,19 @@
 @code {
     private MudForm form;
     private LoginModel loginModel = new LoginModel();
-    
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? errorMessage { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        if(!errorMessage.IsNullOrEmpty())
+        {
+            Snackbar.Add(errorMessage, Severity.Error);
+        }
+        return base.OnInitializedAsync();
+
+    }
     private async void HandleLogin()
     {
 

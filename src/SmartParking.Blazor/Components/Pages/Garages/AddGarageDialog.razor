@@ -18,7 +18,7 @@
 <PageTitle>@L["Add New Garage"]</PageTitle>
 <div class="modal-wrapper">
 
-    <MudDialog Class="mud-modal" Style="min-width:fit-content !important">
+    <MudDialog Class="mud-modal" >
         <TitleContent>
             <MudText Typo="Typo.h6">@L["Add New Garage"]</MudText>
         </TitleContent>
@@ -54,7 +54,7 @@
                                        HelperText=@L["Helper Text"]
                                        Required
                                        @bind-Value="createUpdateGarage.OrganizationId">
-                                <MudSelectItem Value="0"></MudSelectItem>
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var organization in Organizations)
                                 {
                                     if (organization.Status != Enums.Status.Active)

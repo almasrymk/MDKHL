@@ -30,10 +30,11 @@
                 <MudGrid>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="Vehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Label="@L["PlateLetter"]" @bind-Value="Vehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateArabicNumber" Label="@L["ArPlateNumber"]" @bind-Value="Vehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateArabicNumber" OnBlur="HandleKeyUp"
+                                      Label="@L["PlateNumber"]" @bind-Value="Vehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateEnglishLetter" Label="@L["EnPlateLetter"]" @bind-Value="Vehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
