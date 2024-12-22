@@ -97,13 +97,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
     public async Task<UserDto> CheckPhoneIsUnique(string phone)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
-
-        if (user != null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return ObjectMapper.Map<IdentityUser, UserDto>(user);
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phone);
+
+            if (user != null)
+            {
+                return ObjectMapper.Map<IdentityUser, UserDto>(user);
+            }
+            return null;
         }
-        return null;
 
     }
     ///<inheritdoc/>
@@ -132,18 +135,23 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
     ///<inheritdoc/>
-    public async Task<List<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IQueryable<IdentityUser> query = await FindByUserType();
             var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount,input.MaxResultCount);
-            return users;
+            
+            return new PagedResultDto<UserWithRole>
+            {
+                Items = users.Queryable.ToList(),
+                TotalCount = users.PageSize
+            };
         }
     }
 
     /// <inheritdoc/>
-    public async Task<List<UserWithRole>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -159,14 +167,18 @@ public class UsersAppService : ApplicationService, IUsersAppService
             //    queryable = ApplySorting(queryable, input.Sorting);
             //}
             var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm);
-            return users;
+            return new PagedResultDto<UserWithRole>
+            {
+                Items = users.Queryable.ToList(),
+                TotalCount = users.PageSize
+            };
         }
     }
 
-    public async Task<List<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm);
-        return users;
+        return new PagedResultDto<UserWithRole> { Items = users.Queryable.ToList(), TotalCount = users.PageSize };
 
     }
 
@@ -385,12 +397,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
         return await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
     }
     ///<inheritdoc/>
-    public async Task<List<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input)
     {
         //IQueryable<IdentityUser> query = await FindByUserType(1, 4, 5);
         //return await GetPagedResultAsync(query, input);
         var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount, input.MaxResultCount);
-        return users;
+        return new PagedResultDto<UserWithRole>
+        {
+            Items = users.Queryable.ToList(),
+            TotalCount = users.PageSize
+        };
     }
 
     private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)

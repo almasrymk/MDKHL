@@ -134,22 +134,26 @@ public class VehiclesAppService:
     public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
     {
         
-        await Task.Yield(); 
+        await Task.Yield();
 
-        var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
+        // Regex to capture groups of Arabic/English letters and numbers
+        var matches = Regex.Matches(plate, @"[\d]+|[\p{L}]+");
 
-        string letters, numbers;
+        string letters = "";
+        string numbers = "";
 
-        if (match.Success)
+        foreach (Match match in matches)
         {
-            letters = match.Groups["letters"].Value;
-            numbers = match.Groups["numbers"].Value;
+            if (Regex.IsMatch(match.Value, @"^[\p{L}]+$")) // Letters
+            {
+                letters += match.Value; // Append letters
+            }
+            else if (Regex.IsMatch(match.Value, @"^\d+$")) // Numbers
+            {
+                numbers += match.Value; // Append numbers
+            }
         }
-        else
-        {
-            letters = "";
-            numbers = plate;
-        }
+
 
         return (numbers, letters);
     }

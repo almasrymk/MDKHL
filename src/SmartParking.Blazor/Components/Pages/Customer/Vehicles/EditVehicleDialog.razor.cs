@@ -16,6 +16,8 @@ using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text;
+using System.Globalization;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -33,10 +35,21 @@ public partial class EditVehicleDialog
     bool _clearable;
     [CascadingParameter]
     private MudDialogInstance MudDialogAdd { get; set; }
-
+    private string plateLetters = "";
+    private string plateNumbers = "";
 
     protected override async Task OnInitializedAsync()
     {
+        if(CultureInfo.CurrentCulture.Name == "ar")
+        {
+            plateLetters = Vehicle.ArPlateLetters;
+            plateNumbers = Vehicle.ArPlateNumber;
+        }
+        else
+        {
+            plateLetters = Vehicle.EnPlateLetters;
+            plateNumbers = Vehicle.EnPlateNumber;
+        }
         var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
         plateColors = resultplate;
 
@@ -98,13 +111,100 @@ public partial class EditVehicleDialog
         }
 
     }
+    private void HandleKeyUpLetters(FocusEventArgs e)
+    {
+        if (plateLetters == "")
+            return;
+        if (plateLetters.All(c => c >= '\u0600' && c <= '\u06FF'))
+        {
+            Vehicle.ArPlateLetters = plateLetters;
+            Vehicle.EnPlateLetters = MapArabicToEnglish(plateLetters);
+            if (Vehicle.EnPlateLetters == "")
+            {
+                plateLetters = "";
+                Vehicle.ArPlateLetters = "";
+            }
+        }
+        else if (plateLetters.All(c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+        {
+            Vehicle.EnPlateLetters = plateLetters.ToUpper();
+            Vehicle.ArPlateLetters = MapEnglishToArabic(plateLetters);
+            if (Vehicle.ArPlateLetters == "")
+            {
+                plateLetters = "";
+                Vehicle.EnPlateLetters = "";
+            }
+        }
+        else
+        {
+            ShowSnackbar("Letters can't be mixed", Severity.Error);
+        }
+
+    }
+
+    private string MapArabicToEnglish(string arabicText)
+    {
+        var ArabicToEnglishMap = new Dictionary<char, char>
+{
+    {'أ', 'A'}, {'ب', 'B'}, {'د', 'D'}, {'ح', 'J'}, {'ر', 'R'}, {'س', 'S'}, {'ص', 'X'}, {'ط', 'T'},
+    {'ع', 'E'}, {'ق', 'G'}, {'ك', 'K'}, {'ل', 'L'}, {'ن', 'N'}, {'م', 'Z'}, {'ه', 'H'}, {'و', 'U'}, {'ي', 'V'}
+};
+
+
+        StringBuilder result = new StringBuilder();
+        foreach (var charInArabic in arabicText)
+        {
+            if (ArabicToEnglishMap.ContainsKey(charInArabic))
+            {
+                result.Append(ArabicToEnglishMap[charInArabic]);
+            }
+            else
+            {
+                ShowSnackbar("Invalid PlateLetter", Severity.Error);
+                return "";
+            }
+        }
+        return result.ToString();
+    }
+
+    private string MapEnglishToArabic(string englishText)
+    {
+        var EnglishToArabicMap = new Dictionary<char, char>
+      {
+          {'A', 'أ'}, {'B', 'ب'}, {'D', 'د'},{'J', 'ح'},{'R', 'ر'}, {'S', 'س'},{'X', 'ص'},{'T', 'ط'},
+          {'E', 'ع'}, {'G', 'ق'},{'K', 'ك'}, {'L', 'ل'},{'N', 'ن'},{'Z', 'م'},{'H', 'ه'},{'U', 'و'},{'V', 'ي'}
+      };
+        englishText = englishText.ToUpper();
+        StringBuilder result = new StringBuilder();
+        foreach (var charInEnglish in englishText)
+        {
+            if (EnglishToArabicMap.ContainsKey(charInEnglish))
+            {
+                result.Append(EnglishToArabicMap[charInEnglish]);
+            }
+            else
+            {
+                ShowSnackbar("Invalid PlateLetter", Severity.Error);
+                return "";
+            }
+        }
+        return result.ToString();
+    }
+
 
     private void HandleKeyUp(FocusEventArgs e)
     {
-
-        Vehicle.ArPlateNumber = MapToArabicNumerals(Vehicle.ArPlateNumber);
+        Vehicle.EnPlateNumber = plateNumbers;
+        Vehicle.ArPlateNumber = MapToArabicNumerals(plateNumbers);
 
     }
+
+    //private void HandleKeyUp(FocusEventArgs e)
+    //{
+
+    //    Vehicle.ArPlateNumber = MapToArabicNumerals(Vehicle.ArPlateNumber);
+
+    //}
 
     private string MapToArabicNumerals(string englishNumber)
     {
