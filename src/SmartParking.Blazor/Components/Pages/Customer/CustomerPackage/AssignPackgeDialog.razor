@@ -160,6 +160,7 @@
 	public PackageDto CustomerPackage = new PackageDto();
 	[Parameter]
 	public CustomerDto Customer { get; set; }
+	public CustomerCategoryStatus Customercategory { get; set; }
 	private int organizationId;
 	private IReadOnlyList<OrganizationDto> Organizations = new List<OrganizationDto>();
 
@@ -170,6 +171,7 @@
 
 	private async Task getPackage(CustomerCategoryStatus customerCategory)
 	{
+		Customercategory = customerCategory;
 		if (CurrentTenant.Id is null)
 			Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, customerCategory);
 		else
@@ -187,6 +189,11 @@
 	private async Task SubmitEdit()
 	{
 		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
+		if(CustomerPackage.CustomerCategory!=Customercategory.ToString()){
+			Snackbar.Add("Package and Chosen Customer Category aren't the Same Type", Severity.Error);
+			return;
+
+		}
 		try
 		{
 			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id);

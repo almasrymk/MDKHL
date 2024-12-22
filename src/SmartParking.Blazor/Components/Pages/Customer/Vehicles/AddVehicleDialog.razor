@@ -127,7 +127,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate" Disabled="@(form == null || !form.IsValid)">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>
