@@ -43,10 +43,12 @@ public partial class CustomerRegister
         {
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items.ToList();
-        if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
+        if (CurrentTenant.Id is null)
             {
-                Picture = "images/MDHKL_04.png";
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenat();
 
+                Picture = "images/MDHKL_04.png";
+            createUpdateCustomerDto.OrganizationId = organization.Id;
             }
             else
             {
@@ -71,13 +73,13 @@ public partial class CustomerRegister
         var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId);
         VehicleModels = resultVehicleModel.Value;
     }
-    private async Task getPackage(CustomerCategoryStatus customerCategory)
+    private async Task getPackage(string customerCategory)
     {
-        
+        var CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customerCategory);
         if (CurrentTenant.Id is null )
-            packages = await PackagesAppService.GetAllMdkhlAsync(createUpdateCustomerDto.OrganizationId,  customerCategory);
+            packages = await PackagesAppService.GetAllMdkhlAsync(createUpdateCustomerDto.OrganizationId, CustomerCategory);
         else
-            packages = await PackagesAppService.GetAllOrganizationAsync(customerCategory);
+            packages = await PackagesAppService.GetAllOrganizationAsync(CustomerCategory);
 
         if (packages.Count == 0)
         {

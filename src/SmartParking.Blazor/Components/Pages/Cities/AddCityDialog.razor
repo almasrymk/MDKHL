@@ -48,6 +48,7 @@
                                    Placeholder="@L["Choose"]"
                                    Clearable="true"
                                    @bind-Value="input.StateId">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var state in states)
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")

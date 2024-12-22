@@ -50,8 +50,8 @@
                                        Placeholder="@L["Choose"]"
                                        Clearable="true"
                                        @bind-Value="input.SubscriptionTypeId">
-                               
 
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var subscription in subscriptions)
                                 {
                                     @if (subscription.Status != Status.Active)

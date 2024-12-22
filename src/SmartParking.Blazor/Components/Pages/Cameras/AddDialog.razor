@@ -52,6 +52,7 @@
                                    Placeholder=@L["Choose"]
                                    Required="true"
                                    Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehicleBrand in CameraBrands)
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")
@@ -75,6 +76,7 @@
                                    Placeholder=@L["Choose"]
                                    Required="true"
                                    Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehicleBrand in CameraModels)
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")
@@ -98,6 +100,7 @@
                                    Placeholder=@L["Choose"]
                                    Required="true"
                                    Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehicleBrand in CameraMainTypes)
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")
@@ -144,6 +147,7 @@
                                            Label="@L["EnGarageName"]"
                                            Placeholder="Choose"
                                            Required>
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var garage in Garages)
                                 {
                                     if (garage.Status != Enums.Status.Active)
@@ -161,6 +165,7 @@
                                        Label="@L["ArGarageName"]"
                                        Placeholder=@L["Choose"]
                                        Required>
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var garage in Garages)
                                 {
                                     if (garage.Status != Enums.Status.Active)

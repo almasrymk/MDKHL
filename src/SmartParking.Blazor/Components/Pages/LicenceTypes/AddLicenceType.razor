@@ -26,6 +26,7 @@
                                    HelperText=@L["Helper Text"]
                                    Required="true"
                                            Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var platecolor in plateColors)
                                     {
                                         @if (CultureInfo.CurrentCulture.Name == "en")

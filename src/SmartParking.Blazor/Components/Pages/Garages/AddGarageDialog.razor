@@ -54,7 +54,7 @@
                                        HelperText=@L["Helper Text"]
                                        Required
                                        @bind-Value="createUpdateGarage.OrganizationId">
-                                <MudSelectItem Value="0"></MudSelectItem>
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var organization in Organizations)
                                 {
                                     if (organization.Status != Enums.Status.Active)

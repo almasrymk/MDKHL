@@ -41,7 +41,7 @@
                                        HelperText=@L["Helper Text"]
                                        Required
                                        ValueChanged="OrganizationValueChanged">
-                                <MudSelectItem Value="0"></MudSelectItem>
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var organization in organizationList)
                                 {
                                     if (organization.Status != Enums.Status.Active)
