@@ -30,19 +30,15 @@
                 <MudGrid>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" 
-                                      InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateLetters" 
+                                      InputType="InputType.Text" Immediate="true" Label="@L["PlateLetter"]" OnBlur="HandleKeyUpLetters" @bind-Value="plateLetters" Placeholder="@L["Type Here"]" />
                     </MudItem> 
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Immediate="true" OnBlur="HandleKeyUp" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
-                    </MudItem> 
-                    <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" InputType="InputType.Text" Label="@L["EnPlateLetter"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishNumber" Immediate="true" OnBlur="HandleKeyUp" InputType="InputType.Text" Label="@L["PlateNumber"]" @bind-Value="plateNumbers" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishNumber" InputType="InputType.Text" Label="@L["EnPlateNumber"]" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
+
+
                         <MudSelect @bind-Value="@createUpdateVehicle.LicenceTypeId"
                                    Variant="Variant.Text"
                                    Label="@L["LicenceType"]"
