@@ -41,7 +41,7 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<List<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input);
 
     /// <summary>
     /// Asynchronously retrieves a paginated list of users based on the provided input.
@@ -52,14 +52,14 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<List<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input);
     /// <summary>
     /// Searches for a paged and sorted list of users based on the specified input parameters.
     /// </summary>
     /// <param name="input">The search criteria, including pagination, sorting, and search filters.</param>
     /// <returns>A <see cref="PagedResultDto{UserDto}"/> containing a list of users matching the search criteria, along with pagination details.</returns>
-    Task<List<UserWithRole>> Search(PagedAndSortedAndSearchResultRequestDto input);
-    Task<List<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
 
     Task<PagedResultDto<UserDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
     Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Polly;
+using Polly.Caching;
 using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
 using SmartParking.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -47,7 +49,7 @@ public class MyUserRepository
         }
     }
 
-    public async Task<List<UserWithRole>> FindUserWithRoleAsync(int skipCount,int maxResultCount)
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount,int maxResultCount)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -60,14 +62,19 @@ public class MyUserRepository
                          Role = role
                         
                     };
+        var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
         var result = query.ToList();
 
-        return result;
+        return new PagedResult<UserWithRole>
+        {
+            PageSize = total,
+            Queryable = query,  
+        };
         
 
     }
-    public async Task<List<UserWithRole>> SearchUserWithRoleAsync(int skipCount,int maxResultCount,string term)
+    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount,int maxResultCount,string term)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -85,13 +92,17 @@ public class MyUserRepository
                         User = user,
                         Role = role,
                     };
-        
+        var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
         var result = query.ToList();
 
 
-        return result;
-        
+        return new PagedResult<UserWithRole>
+        {
+            PageSize = total,
+            Queryable = query,
+        };
+
 
     }
 }

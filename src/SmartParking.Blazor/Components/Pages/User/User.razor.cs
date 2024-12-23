@@ -100,14 +100,14 @@ public partial class User
             SearchingTerm = termSearch // The term to use for filtering results
         };
 
-        List<UserWithRole> usersDto;
+        PagedResultDto<UserWithRole> usersDto;
         if (currrentTenant.Id is not null)
             usersDto = await UsersAppService.SearchForOrganizationAsync(input);
         else
             usersDto = await UsersAppService.Search(input);
 
-        TotalItem = (int)usersDto.Count;
-        CreateTable(usersDto);
+        TotalItem = (int)usersDto.TotalCount;
+        CreateTable(usersDto.Items);
 
     }
     /// <summary>
@@ -128,13 +128,13 @@ public partial class User
         };
 
         // Retrieve the list of organizations from the server
-        List<UserWithRole> usersDto;
+        PagedResultDto<UserWithRole> usersDto;
         if (currrentTenant.Id is not null)
             usersDto = await UsersAppService.GetListForOrganizationAsync(input);
         else
             usersDto = await UsersAppService.GetListMdklAsync(input);
-        TotalItem = (int)usersDto.Count;
-        CreateTable(usersDto);
+        TotalItem = (int)usersDto.TotalCount;
+        CreateTable(usersDto.Items);
 
     }
 
@@ -143,7 +143,7 @@ public partial class User
         Navigation.NavigateTo("/add-user", true);
     }
 
-    private void CreateTable(List<UserWithRole> users)
+    private void CreateTable(IReadOnlyList<UserWithRole> users)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()

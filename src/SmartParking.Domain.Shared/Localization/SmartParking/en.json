@@ -526,8 +526,8 @@
     "From": "From",
     "To": "To",
     "Subscribers": "Subscribers",
-    "Permission:AddRoleToCustomer": "Add Role To Customer",
-    "Permission:ViewPermissions": "View Permissions"
+    "Permission:ViewPermissions": "View Permissions",
+    "NotValidYear": "Not Valid Year"
 
 
 

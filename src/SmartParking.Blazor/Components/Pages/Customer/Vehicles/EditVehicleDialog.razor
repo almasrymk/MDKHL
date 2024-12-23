@@ -28,19 +28,12 @@
 
             <MudForm Model="Vehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
-
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Label="@L["PlateLetter"]" @bind-Value="Vehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateLetters"
+                                      InputType="InputType.Text" Immediate="true" Label="@L["PlateLetter"]" OnBlur="HandleKeyUpLetters" @bind-Value="plateLetters" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateArabicNumber" OnBlur="HandleKeyUp"
-                                      Label="@L["PlateNumber"]" @bind-Value="Vehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateEnglishLetter" Label="@L["EnPlateLetter"]" @bind-Value="Vehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTextField T="string" InputType="InputType.Text" Validation="VehicleValidation.ValidateEnglishNumber" Label="@L["EnPlateNumber"]" @bind-Value="Vehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" Immediate="true" OnBlur="HandleKeyUp" InputType="InputType.Text" Label="@L["PlateNumber"]" @bind-Value="plateNumbers" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@Vehicle.LicenceTypeId"
@@ -112,7 +105,7 @@
                     </MudItem>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField Required="true" T="string" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="Vehicle.ModelYear" Placeholder="@L["Type Here"]" />
+                        <MudTextField Required="true" T="string" Validation="VehicleValidation.ValidateYear" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="Vehicle.ModelYear" Placeholder="@L["Type Here"]" />
                     </MudItem>
 
                     <MudItem sm="6" md="6">
