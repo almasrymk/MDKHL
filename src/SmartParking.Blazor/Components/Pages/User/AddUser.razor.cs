@@ -106,7 +106,7 @@ public partial class AddUser
     }
     private async void SubmitCreate()
     {
-        var (orgId, tenantId) = await GetOrganizationDetailsAsync();
+        
         var successMessage = L["User CreatedSuccessfully"];
         var errorMessage = L["Can'tCreateUser "];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
@@ -124,7 +124,7 @@ public partial class AddUser
             var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
             Roles = await RoleAppService.GetListByTenant(org.TenantId);
             userCreate.OrganizationId = org.Id;
-            tenantId = org.TenantId;
+            userCreate.TenantId = org.TenantId;
         }
 
         return (orgId, tenantId);
@@ -134,6 +134,7 @@ public partial class AddUser
     {
         try
         {
+            await GetOrganizationDetailsAsync();
             CheckUser();
             var user = await UsersAppService.CreateWithRoleAsync(userCreate,role.Id);
 

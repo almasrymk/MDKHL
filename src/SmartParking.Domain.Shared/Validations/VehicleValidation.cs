@@ -11,7 +11,15 @@ namespace SmartParking.Validations;
 
 public static class VehicleValidation 
 {
-    
+
+    public static string ValidateYear(string year)
+    {
+        if (int.Parse(year) > DateTime.Now.Year)
+        {
+            return LocalizationHelper.GetLocalizedString("NotValidYear");
+        }
+        return null;
+    }
 
     public static string ValidateArabicLetters(string value)
     {
@@ -79,7 +87,7 @@ public static class VehicleValidation
         return null; 
     }
     
-    public static string ValidateEnglishNumber(string value)
+    public static string ValidateNumber(string value)
     {
         if (string.IsNullOrEmpty(value))
         {
@@ -87,12 +95,14 @@ public static class VehicleValidation
         }
 
        
-        var arabicLetterPattern = @"^[0-9]+$";
+        var arabicLetterPattern = @"^[0-9\u0660-\u0669]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
-            return LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed");
+            return LocalizationHelper.GetLocalizedString("OnlyNumberAllowed");
         }
 
         return null; 
     }
+
+
 }

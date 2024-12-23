@@ -28,7 +28,7 @@
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-					@if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+					@if (CurrentTenant.Id is null)
 					{
 						<MudItem sm="12" md="12">
 							<MudSelect T="int"
@@ -38,7 +38,7 @@
 							HelperText=@L["Helper Text"]
 							Required
 							@bind-Value="organizationId">
-								<MudSelectItem Value="0"></MudSelectItem>
+								<MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 								@foreach (var organization in Organizations)
 								{
 									if (organization.Status != Enums.Status.Active)
@@ -63,7 +63,7 @@
 					@if (organizationId != 0 || CurrentTenant.Id is not null)
 					{
 						<MudItem sm="12" md="12">
-							<MudSelect T="CustomerCategoryStatus"
+							<MudSelect T="string"
 							Label="@L["customer category"]"
 							Placeholder="@L[ "Choose"]"
 							HelperText=@L["Helper Text"]
@@ -72,7 +72,7 @@
 
 								@foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
 								{
-									<MudSelectItem Value="@category">
+									<MudSelectItem Value="@category.ToString()">
 
 										@category.ToString()
 									</MudSelectItem>
@@ -169,13 +169,13 @@
 	private MudForm form;
 	public List<PackageDto> selectedPackageDto { get; set; } = new List<PackageDto>();
 
-	private async Task getPackage(CustomerCategoryStatus customerCategory)
+	private async Task getPackage(string customerCategory)
 	{
-		Customercategory = customerCategory;
+		Customercategory = (CustomerCategoryStatus) Enum.Parse(typeof(CustomerCategoryStatus),customerCategory);
 		if (CurrentTenant.Id is null)
-			Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, customerCategory);
+			Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, Customercategory);
 		else
-			Packages = await PackagesAppService.GetAllOrganizationAsync(customerCategory);
+			Packages = await PackagesAppService.GetAllOrganizationAsync(Customercategory);
 
 	}
 	protected override async Task OnInitializedAsync()
