@@ -256,7 +256,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
 
@@ -379,7 +380,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     {
         using(DataFilter.Disable<IMultiTenant>())
         {
-            return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(org => org.TenantId == CurrentTenant.Id);
+            var org = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return org.Id;
 
         }
     }

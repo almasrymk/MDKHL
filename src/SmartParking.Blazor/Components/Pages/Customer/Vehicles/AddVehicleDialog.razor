@@ -28,14 +28,20 @@
 
             <MudForm Model="createUpdateVehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
-
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateLetters" 
-                                      InputType="InputType.Text" Immediate="true" Label="@L["PlateLetter"]" OnBlur="HandleKeyUpLetters" @bind-Value="plateLetters" Placeholder="@L["Type Here"]" />
-                    </MudItem> 
-                    <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" Immediate="true" OnBlur="HandleKeyUp" InputType="InputType.Text" Label="@L["PlateNumber"]" @bind-Value="plateNumbers" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateletters"]" OnBlur="HandleKeyUpLettersArabic" @bind-Value="createUpdateVehicle.ArPlateLetters" MaxLength="3" Required Placeholder="@L["Type Here"]" />
                     </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="createUpdateVehicle.ArPlateNumber" MaxLength="4" Required Placeholder="@L["Type Here"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish" InputType="InputType.Text" Label="@L["EnPlateLetters"]" @bind-Value="createUpdateVehicle.EnPlateLetters" MaxLength="3" Required Placeholder="@L["Type Here"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true" Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish" @bind-Value="createUpdateVehicle.EnPlateNumber" MaxLength="4" Required Placeholder="@L["Type Here"]" />
+                    </MudItem>
+
+
 
                     <MudItem sm="6" md="6">
 
