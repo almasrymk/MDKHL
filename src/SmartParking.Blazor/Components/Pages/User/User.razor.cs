@@ -223,6 +223,8 @@ public partial class User
             RoleId = userData.RoleId,
             ConcurrencyStamp = userData.ConcurrencyStamp,
             IsActive  = userData.IsActive,
+            NationalId = userData.NationalId,
+            IdentificationTypes = userData.IdentificationTypes,
         };
         var parameters = new DialogParameters
         {
@@ -246,6 +248,8 @@ public partial class User
             RoleId = userData.RoleId,
             ConcurrencyStamp = userData.ConcurrencyStamp,
             IsActive = userData.IsActive,
+            IdentificationTypes= userData.IdentificationTypes,
+            NationalId= userData.NationalId,
         };
         var parameters = new DialogParameters
         {
@@ -274,6 +278,8 @@ public partial class User
             RoleId = userData.RoleId,
             ConcurrencyStamp = userData.ConcurrencyStamp,
             IsActive = userData.IsActive,
+            NationalId = userData.NationalId,
+            IdentificationTypes = userData.IdentificationTypes,
         };
         var parameters = new DialogParameters
         {
