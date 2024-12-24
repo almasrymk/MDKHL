@@ -10,6 +10,7 @@ using SmartParking.Lookups.VehicleModel;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Validations;
 using SmartParking.Vehicles;
 using SmartParking.Vehicles.LookUps;
 using System;
@@ -216,126 +217,55 @@ public partial class CustomerRegister
 
     }
 
-    private void HandleKeyUpLetters(FocusEventArgs e)
+    private void HandleKeyUpLettersArabic(FocusEventArgs e)
     {
-        if (plateLetters == "")
-            return;
-        if (plateLetters.All(c => c >= '\u0600' && c <= '\u06FF'))
+        HandleKeyUpLetters(createUpdateVehicle.ArPlateLetters);
+
+    }
+    private void HandleKeyUpLettersEnglish(FocusEventArgs e)
+    {
+        HandleKeyUpLetters(createUpdateVehicle.EnPlateLetters);
+
+
+    }
+    private void HandleKeyUpLetters(string e)
+    {
+        try
         {
-            createUpdateVehicle.ArPlateLetters = plateLetters;
-            createUpdateVehicle.EnPlateLetters = MapArabicToEnglish(plateLetters);
-            if (createUpdateVehicle.EnPlateLetters == "")
-            {
-                plateLetters = "";
-                createUpdateVehicle.ArPlateLetters = "";
-            }
+            (createUpdateVehicle.EnPlateLetters, createUpdateVehicle.ArPlateLetters) = VehicleValidation.HandleKeyUpLetters(e);
         }
-        else if (plateLetters.All(c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+        catch (Exception ex)
         {
-            createUpdateVehicle.EnPlateLetters = plateLetters.ToUpper();
-            createUpdateVehicle.ArPlateLetters = MapEnglishToArabic(plateLetters);
-            if (createUpdateVehicle.ArPlateLetters == "")
-            {
-                plateLetters = "";
-                createUpdateVehicle.EnPlateLetters = "";
-            }
-        }
-        else
-        {
-            ShowSnackbar("Letters can't be mixed", Severity.Error);
+            createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
+            ShowSnackbar(ex.Message, Severity.Error);
         }
 
     }
-
-    private string MapArabicToEnglish(string arabicText)
+    private void HandleKeyUpArabic(FocusEventArgs e)
     {
-        var ArabicToEnglishMap = new Dictionary<char, char>
-{
-    {'أ', 'A'}, {'ب', 'B'}, {'د', 'D'}, {'ح', 'J'}, {'ر', 'R'}, {'س', 'S'}, {'ص', 'X'}, {'ط', 'T'},
-    {'ع', 'E'}, {'ق', 'G'}, {'ك', 'K'}, {'ل', 'L'}, {'ن', 'N'}, {'م', 'Z'}, {'ه', 'H'}, {'و', 'U'}, {'ي', 'V'}
-};
+        HandleKeyUp(createUpdateVehicle.ArPlateNumber);
 
-
-        StringBuilder result = new StringBuilder();
-        foreach (var charInArabic in arabicText)
-        {
-            if (ArabicToEnglishMap.ContainsKey(charInArabic))
-            {
-                result.Append(ArabicToEnglishMap[charInArabic]);
-            }
-            else
-            {
-                ShowSnackbar("Invalid PlateLetter", Severity.Error);
-                return "";
-            }
-        }
-        return result.ToString();
     }
-
-    private string MapEnglishToArabic(string englishText)
+    private void HandleKeyUpEnglish(FocusEventArgs e)
     {
-        var EnglishToArabicMap = new Dictionary<char, char>
-      {
-          {'A', 'أ'}, {'B', 'ب'}, {'D', 'د'},{'J', 'ح'},{'R', 'ر'}, {'S', 'س'},{'X', 'ص'},{'T', 'ط'},
-          {'E', 'ع'}, {'G', 'ق'},{'K', 'ك'}, {'L', 'ل'},{'N', 'ن'},{'Z', 'م'},{'H', 'ه'},{'U', 'و'},{'V', 'ي'}
-      };
-        englishText = englishText.ToUpper();
-        StringBuilder result = new StringBuilder();
-        foreach (var charInEnglish in englishText)
-        {
-            if (EnglishToArabicMap.ContainsKey(charInEnglish))
-            {
-                result.Append(EnglishToArabicMap[charInEnglish]);
-            }
-            else
-            {
-                ShowSnackbar("Invalid PlateLetter", Severity.Error);
-                return "";
-            }
-        }
-        return result.ToString();
-    }
+        HandleKeyUp(createUpdateVehicle.EnPlateNumber);
 
-
-    private void HandleKeyUp(FocusEventArgs e)
-    {
-        createUpdateVehicle.EnPlateNumber = plateNumbers;
-        createUpdateVehicle.ArPlateNumber = MapToArabicNumerals(plateNumbers);
 
     }
 
-    private string MapToArabicNumerals(string englishNumber)
+    private void HandleKeyUp(string PlateNumber)
     {
-        if (englishNumber == "")
+        try
         {
-            return "";
+            (createUpdateVehicle.EnPlateNumber, createUpdateVehicle.ArPlateNumber) = VehicleValidation.HandleKeyUp(PlateNumber);
         }
-        var englishToArabicMap = new Dictionary<char, string>
-         {
-            { '0', "٠" },
-            { '1', "١" },
-            { '2', "٢" },
-            { '3', "٣" },
-            { '4', "٤" },
-            { '5', "٥" },
-            { '6', "٦" },
-            { '7', "٧" },
-            { '8', "٨" },
-            { '9', "٩" }
-        };
-        string arabicNUmbers = "";
-        foreach (var character in englishNumber)
+        catch (Exception ex)
         {
+            createUpdateVehicle.EnPlateNumber = createUpdateVehicle.ArPlateNumber = "";
+            ShowSnackbar(ex.Message, Severity.Error);
+        }
 
-            if (character < '0' || character > '9')
-            {
-                ShowSnackbar("Only Numbers are accepted", Severity.Error);
-                createUpdateVehicle.ArPlateNumber = "";
-                return "";
-            }
-            arabicNUmbers += englishToArabicMap[character];
-        }
-        return arabicNUmbers;
+
     }
 
 }

@@ -176,6 +176,7 @@ public class CustomerPackagesAppService:
 				CustomerCategory = package.CustomerCategory,
 				PackageArabicName = package.ArabicName,
 				PackageEnglishName = package.EnglishName,
+                TenantId=package.TenantId
                 
 			};
             var assignPackage = await _repository.InsertAsync(customerPackage, true);
