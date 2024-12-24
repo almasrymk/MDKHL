@@ -16,6 +16,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Organizations;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Uow;
+using Volo.Abp;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -193,21 +194,25 @@ public class RoleAppService : ApplicationService, IRoleAppService
     public async Task AssignRole(Guid UserId, Guid RoleId)
     {
         IdentityUser user;
-       
-             user = await _myUserRepository.FindUserAsNoTracking(UserId);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            user = await _myUserRepository.GetAsync(UserId);
+        }
+            
+
+        ObjectHelper.TrySetProperty(
+           user,
+           x => x.TenantId,
+           () => CurrentTenant.Id
+       );
         
-        
-        //var userUpdate = new IdentityUser(user.Id, user.UserName, user.Email, CurrentTenant.Id);
-        //user = userUpdate;
         var org =await _organizationAppService.GetOrganizationForCurrentTenat();
-        //user.SetProperty("TenantId", CurrentTenant.Id);
         user.SetProperty("OrganizationId", org.Id);
         user.AddRole(RoleId);
         
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
         await _userManager.UpdateAsync(user);
-        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
     public async Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId)

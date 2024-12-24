@@ -23,17 +23,14 @@ public class UserCreateDto
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxSurnameLength))]
     public string Surname { get; set; }
 
+
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPhoneNumberLength))]
     public string PhoneNumber { get; set; }
 
     public bool IsActive { get; set; }
 
-    public bool LockoutEnabled { get; set; }
-
-    [CanBeNull]
-    public string[] RoleNames { get; set; }
     [Required]
-    [DynamicStringLength(typeof(IdentityUserConsts), "MaxPasswordLength", null)]
+    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPasswordLength))]
     public string Password { get; set; }
     [Required]
     public int UserType { get; set; }
