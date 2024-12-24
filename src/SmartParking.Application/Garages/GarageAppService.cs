@@ -298,9 +298,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+				or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
+				or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
                 
 			);
         }
@@ -351,9 +350,12 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                     or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
 			        or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
 				    or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				    or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+				    or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
 
-				);
+
+
+                );
 			}
             if (!input.Sorting.IsNullOrEmpty())
             {
@@ -499,7 +501,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async override Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (_currentTenant.Id==null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
