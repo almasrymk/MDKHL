@@ -256,7 +256,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
 
