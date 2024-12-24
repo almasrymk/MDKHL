@@ -56,7 +56,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception("User with that phone number already exist");
         }
         SetUserProperties(user, input);
-
+        
         var creationResult = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
 
@@ -270,14 +270,18 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<IdentityUser?> IsUserFound(Guid? userId)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
-        if (user == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("User not found");
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
 
+            }
+
+            return user;
         }
-
-        return user;
+       
     }
 
     /// <inheritdoc/>

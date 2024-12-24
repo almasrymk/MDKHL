@@ -93,8 +93,8 @@ public partial class AddUser
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
         }
-            
-      
+        Roles = await RoleAppService.GetListByTenant(null);
+
     }    
     private async Task SelectOrganization(int organizationId)
     {

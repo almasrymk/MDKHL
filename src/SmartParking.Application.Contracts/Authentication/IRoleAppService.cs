@@ -20,4 +20,5 @@ public interface IRoleAppService: IApplicationService
     Task<IdentityRoleDto> GetRoleById(Guid Id);
     Task<IdentityRole> GetIdentityRoleById(Guid Id);
     Task AssignRole(Guid UserId, Guid RoleId);
+    Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId);
 }
