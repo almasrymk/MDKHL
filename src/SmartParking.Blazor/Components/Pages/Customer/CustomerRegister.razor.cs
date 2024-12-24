@@ -107,24 +107,13 @@ public partial class CustomerRegister
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
-            if(CurrentTenant.Id == null)
-            {
+
 				customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
-			}
-            else
-            {
-				customer = await CustomerAppService.CreateAsync(createUpdateCustomerDto);
-			}
             if (customer != null)
             {
                 CustomerId = customer.Id;
                 ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}" ,Severity.Success);
                 showVehicle = true;
-                //await Task.Delay(1000);
-                //Navigation.NavigateTo("/customers",true);
-
-
-
             }
 
 

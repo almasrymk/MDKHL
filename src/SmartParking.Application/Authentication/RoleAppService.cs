@@ -197,4 +197,12 @@ public class RoleAppService : ApplicationService, IRoleAppService
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
         await _userManager.UpdateAsync(user);
     }
+
+    public async Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId)
+    {
+        var query = await _roleReository.GetQueryableAsync();
+        query = query.Where(r => r.Name == RoleName && r.TenantId == TenantId);
+        var role = await query.FirstOrDefaultAsync();
+        return role;
+    }
 }

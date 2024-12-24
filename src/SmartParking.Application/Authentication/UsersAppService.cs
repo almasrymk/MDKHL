@@ -56,7 +56,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception("User with that phone number already exist");
         }
         SetUserProperties(user, input);
-
+        
         var creationResult = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
 

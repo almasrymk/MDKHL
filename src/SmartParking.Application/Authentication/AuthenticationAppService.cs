@@ -26,10 +26,6 @@ using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
-using static QRCoder.PayloadGenerator;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
-using static Volo.Abp.TenantManagement.TenantManagementPermissions;
-using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -246,48 +242,23 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
     {
         IdentityUser user;
+
         using (DataFilter.Disable<IMultiTenant>())
         {
-                user = await _userManager.FindByNameAsync(input.Username);
+            user = await _userRepository.FirstOrDefaultAsync(_ => _.UserName == input.Username || _.PhoneNumber == input.Username);
+
+            user = await CheckOrganization(user);
             if (user == null)
             {
                 return null;
             }
-
-            var role = await _userManager.GetRolesAsync(user);
-            if (role.FirstOrDefault() == RolesType.OrganizationEmployee.ToString())
-                return null;
-
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                var organizationId = user.GetProperty<int>("OrganizationId");
-                if (organizationId != 0)
-                {
-                    var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-                    if (organization == null)
-                    {
-                        return null;
-
-                    }
-                    if (organization != null)
-                    {
-
-
-                        if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
-                        {
-                            return null;
-
-                        }
-                    }
-                }
-
-            }
-
-            if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+            user = await CheckRole(user);
+            if (user == null)
             {
                 return null;
             }
-            if (user.IsActive == false ||  user.GetProperty<int>("UserTypeId")==3)
+            user = await CheckPassword(input, user);
+            if (user == null)
             {
                 return null;
             }
@@ -300,6 +271,57 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         return user;
     }
+
+    private async Task<IdentityUser> CheckPassword(LoginInputDto input, IdentityUser user)
+    {
+        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+        {
+            return null;
+        }
+        if (user.IsActive == false)
+        {
+            return null;
+        }
+        return user;
+    }
+
+    private async Task<IdentityUser> CheckRole(IdentityUser user)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("Customer") && roles.Count == 1)
+            return null;
+        return user;
+    }
+
+    private async Task<IdentityUser> CheckOrganization(IdentityUser user)
+    {
+        var organizationId = user.GetProperty<int>("OrganizationId");
+
+        if (organizationId != 0)
+        {
+            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+
+            if (organization == null)
+            {
+                return null;
+
+            }
+            if (organization != null)
+            {
+
+
+                if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
+                {
+                    return null;
+
+                }
+            }
+
+
+        }
+        return user;
+    }
+
     /// <inheritdoc/>
     public async Task<Result<RegisterResultDto>> RegisterAsync(RegisterInputDto input)
     {
