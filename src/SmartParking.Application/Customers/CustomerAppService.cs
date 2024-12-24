@@ -7,32 +7,22 @@ using SmartParking.Entities.Customers;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using System.Linq;
-using Volo.Abp.ObjectMapping;
-using Volo.Abp.Identity;
 using Microsoft.AspNetCore.Identity;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using Volo.Abp.Data;
-using Abp.ObjectComparators.BooleanComparators;
-using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Vehicles;
 using SmartParking.Entities.Organizations;
-using SmartParking.Garages;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
-using Nito.AsyncEx;
-using SmartParking.Enums;
 using SmartParking.Organizations;
 using Microsoft.AspNetCore.Authorization;
 using Abp.Domain.Entities;
-using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
-using System.Text.RegularExpressions;
-using Castle.Core.Resource;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using SmartParking.CustomerPackages;
+using SmartParking.Authentication;
+using SmartParking.Enums;
 
 namespace SmartParking.Customers;
 [Authorize]
@@ -47,11 +37,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     private readonly IBaseCustomerAppService _baseCustomer;
 	private readonly ICustomerPackagesAppService _packagesAppService;
+    private readonly IUsersAppService _usersAppService;
+    private readonly IRoleAppService _roleAppService;
 
-	public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
+    public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
         IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager,
         IRepository<CustomerPackage, int> customerPackageRepository,
-        IBaseCustomerAppService baseCustomer , ICustomerPackagesAppService packagesAppService) : base(repository)
+        IBaseCustomerAppService baseCustomer , ICustomerPackagesAppService packagesAppService,
+        IUsersAppService usersAppService, IRoleAppService roleAppService) : base(repository)
     {
         _repository = repository;
         _repositoryVehicle = repositoryVehicle;
@@ -62,7 +55,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _customerPackageRepository = customerPackageRepository;
         _baseCustomer = baseCustomer;
 		_packagesAppService = packagesAppService;
-	}
+        _usersAppService = usersAppService;
+        _roleAppService = roleAppService;
+    }
   
 
     /// <inheritdoc/>
@@ -130,7 +125,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             }
 
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
-			await AddUser(input, customer);
+			var userCreated = await AddUser(input, customer);
+            customer.IdentityUserId = userCreated.Id;
 			var customerAdd = await _repository.InsertAsync(customer, true);
 			await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
 			return ObjectMapper.Map<Customer, CustomerDto>(customer);
@@ -149,27 +145,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <param name="input">The DTO containing customer details for user creation.</param>
 	/// <param name="customer">The customer entity to associate with the new user.</param>
 	/// <returns>A task representing the asynchronous operation.</returns>
-	private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
+	private async Task<UserDto> AddUser(CreateUpdateCustomerDto input, Customer customer)
 	{
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            customer.IdentityUser.Surname = input.FullName;
-            customer.IdentityUser.SetProperty("OtpCode", null);
-            customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
-            customer.IdentityUser.SetProperty("UserTypeId", 3);
-            customer.IdentityUser.SetProperty("TenantId", null);
-            customer.TenantId = null;
-            customer.IdentityUser.Name = input.FullName;
-
-            var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-            await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
-            customer.IdentityUser.SetPhoneNumberConfirmed(true);
-            if (!createdUser.Succeeded)
-            {
-                throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
-            }
-
-			var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
+            var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
+            userMap.TenantId = null;
+            var role = await _roleAppService.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
+            var user = await _usersAppService.CreateWithRoleAsync(userMap,role.Id);
+            return user;
 		}
 	}
 
@@ -187,7 +171,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
+			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -328,6 +312,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower())||
                     or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
                 );
 

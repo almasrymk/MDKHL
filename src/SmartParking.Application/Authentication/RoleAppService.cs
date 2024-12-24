@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using SmartParking.Entities.Customers;
 using SmartParking.Organizations;
 using Microsoft.EntityFrameworkCore;
+using Volo.Abp.Uow;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -25,17 +26,21 @@ public class RoleAppService : ApplicationService, IRoleAppService
     private readonly IDataFilter _dataFilter;
     private readonly IUsersAppService _usersAppService;
     private readonly IOrganizationsAppService _organizationAppService;
+    private readonly IMyUserRepository _myUserRepository;
     private readonly UserManager<IdentityUser> _userManager;
 
 
 
-    public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter, IUsersAppService usersAppService, UserManager<IdentityUser> userManager, IOrganizationsAppService organizationAppService)
+    public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter,
+        IUsersAppService usersAppService, UserManager<IdentityUser> userManager,
+        IOrganizationsAppService organizationAppService,IMyUserRepository myUserRepository)
     {
         _roleReository = roleReository;
         _dataFilter = dataFilter;
         _usersAppService = usersAppService;
         _userManager = userManager;
         _organizationAppService = organizationAppService;
+        _myUserRepository = myUserRepository;
     }
 
     public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedByTenant(PagedResultRequestDto input,Guid? tenantId)
@@ -187,14 +192,29 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     public async Task AssignRole(Guid UserId, Guid RoleId)
     {
-        var user = await _usersAppService.IsUserFound(UserId);
+        IdentityUser user;
+       
+             user = await _myUserRepository.FindUserAsNoTracking(UserId);
+        
+        
+        //var userUpdate = new IdentityUser(user.Id, user.UserName, user.Email, CurrentTenant.Id);
+        //user = userUpdate;
         var org =await _organizationAppService.GetOrganizationForCurrentTenat();
-        user.SetProperty("TenantId", CurrentTenant.Id);
+        //user.SetProperty("TenantId", CurrentTenant.Id);
         user.SetProperty("OrganizationId", org.Id);
-        user.SetProperty("UserTypeId", 5);
         user.AddRole(RoleId);
+        
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
         await _userManager.UpdateAsync(user);
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId)
+    {
+        var query = await _roleReository.GetQueryableAsync();
+        query = query.Where(r => r.Name == RoleName && r.TenantId == TenantId);
+        var role = await query.FirstOrDefaultAsync();
+        return role;
     }
 }

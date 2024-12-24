@@ -152,7 +152,7 @@ public partial class Subscription
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyName = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 
 

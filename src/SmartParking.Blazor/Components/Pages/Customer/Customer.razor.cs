@@ -50,7 +50,7 @@ public partial class Customer
 
     protected override Task OnInitializedAsync()
     {
-		if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+		if (currrentTenant.Id is null)
 		{
             assign = false;
             ViewAdd = false;
@@ -101,8 +101,6 @@ public partial class Customer
 	/// <returns>Returns a task that represents the asynchronous operation.</returns>
 	private async Task HandleSearch(PageChangeEventArgs pageInfo)
 	{
-		// Log the search term to the console for debugging purposes
-		Console.WriteLine(pageInfo.SearchTerm);
 
 		// Update the term used for searching with the provided search term
 		termSearch = pageInfo.SearchTerm;

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Identity;
@@ -23,10 +24,13 @@ public class MyUserRepository
     : EfCoreRepository<SmartParkingDbContext, IdentityUser, Guid>,
       IMyUserRepository
 {
+    private readonly IDataFilter _dataFilter;
+
     public MyUserRepository(
-        IDbContextProvider<SmartParkingDbContext> dbContextProvider)
+        IDbContextProvider<SmartParkingDbContext> dbContextProvider,IDataFilter dataFilter)
         : base(dbContextProvider)
     {
+        this._dataFilter = dataFilter;
     }
 
     public async Task<List<IdentityUser>> FindByOrganizationAsync(int organizationId)
@@ -104,5 +108,25 @@ public class MyUserRepository
         };
 
 
+    }
+
+    public async Task<IdentityUser> FindUserAsNoTracking(Guid userId)
+    {
+        var dbContext = await GetDbContextAsync();
+        IdentityUser? user;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+             user = await dbContext.Users
+                              .AsNoTracking()
+                             .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+       
+        var userUpdate = new IdentityUser(user.Id, user.UserName, user.Email, CurrentTenant.Id);
+        dbContext.Users.Attach(userUpdate);
+       // dbContext.Entry(userUpdate).State = EntityState.Modified;
+
+       
+        await dbContext.SaveChangesAsync();
+        return userUpdate;
     }
 }

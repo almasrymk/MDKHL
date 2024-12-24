@@ -25,10 +25,10 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return null; 
+            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
         }
 
-       
+
         var arabicLetterPattern = @"^[\u0600-\u06FF]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
@@ -42,10 +42,10 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return null; 
+            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
         }
 
-       
+
         var arabicLetterPattern = @"^[\u0660-\u0669]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
@@ -58,7 +58,7 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return null;
+            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
         }
 
         // Pattern to validate only letters (Arabic or English)
@@ -74,10 +74,10 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return null; 
+            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
         }
 
-       
+
         var arabicLetterPattern = @"^[a-zA-Z]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
@@ -142,8 +142,8 @@ public static class VehicleValidation
     {
         var ArabicToEnglishMap = new Dictionary<char, char>
 {
-    {'أ', 'A'}, {'ب', 'B'}, {'د', 'D'}, {'ح', 'J'}, {'ر', 'R'}, {'س', 'S'}, {'ص', 'X'}, {'ط', 'T'},
-    {'ع', 'E'}, {'ق', 'G'}, {'ك', 'K'}, {'ل', 'L'}, {'ن', 'N'}, {'م', 'Z'}, {'ه', 'H'}, {'و', 'U'}, {'ي', 'V'}
+    {'ا', 'A'}, {'ب', 'B'}, {'د', 'D'}, {'ح', 'J'}, {'ر', 'R'}, {'س', 'S'}, {'ص', 'X'}, {'ط', 'T'},
+    {'ع', 'E'}, {'ق', 'G'}, {'ك', 'K'}, {'ل', 'L'}, {'ن', 'N'}, {'م', 'Z'}, {'ه', 'H'}, {'و', 'U'}, {'ى', 'V'}
 };
 
 
@@ -166,8 +166,8 @@ public static class VehicleValidation
     {
         var EnglishToArabicMap = new Dictionary<char, char>
       {
-          {'A', 'أ'}, {'B', 'ب'}, {'D', 'د'},{'J', 'ح'},{'R', 'ر'}, {'S', 'س'},{'X', 'ص'},{'T', 'ط'},
-          {'E', 'ع'}, {'G', 'ق'},{'K', 'ك'}, {'L', 'ل'},{'N', 'ن'},{'Z', 'م'},{'H', 'ه'},{'U', 'و'},{'V', 'ي'}
+          {'A', 'ا'}, {'B', 'ب'}, {'D', 'د'},{'J', 'ح'},{'R', 'ر'}, {'S', 'س'},{'X', 'ص'},{'T', 'ط'},
+          {'E', 'ع'}, {'G', 'ق'},{'K', 'ك'}, {'L', 'ل'},{'N', 'ن'},{'Z', 'م'},{'H', 'ه'},{'U', 'و'},{'V', 'ى'}
       };
         englishText = englishText.ToUpper();
         StringBuilder result = new StringBuilder();
