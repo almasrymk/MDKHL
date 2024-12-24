@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,11 +28,15 @@ public class UpdateUserDto
 
     public bool IsActive { get; set; }
     public Guid? TenantId { get; set; }
-    [Required]
+    
     [RegularExpression(@"^(([^<>()\[\]\\.,;:\s@\""]+(\.[^<>()\[\]\\.,;:\s@\""]+)*)|(\"".+\""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$",
        ErrorMessage = "Invalid email format")]
     public string Email { get; set; }
     public Guid RoleId { get; set; }
     public string ConcurrencyStamp { get; set; }
     public bool ISNoRole { get; set; }
+    [Required]
+    public IdentificationTypes IdentificationTypes { get; set; }
+    [Required]
+    public string NationalId { get; set; }
 }
