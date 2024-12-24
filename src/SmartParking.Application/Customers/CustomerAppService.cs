@@ -149,22 +149,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	{
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            //         customer.IdentityUser.Surname = input.FullName;
-            //         customer.IdentityUser.SetProperty("OtpCode", null);
-            //         customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
-            //         customer.IdentityUser.SetProperty("UserTypeId", 3);
-            //         customer.IdentityUser.SetProperty("TenantId", null);
-            //         customer.TenantId = null;
-            //         customer.IdentityUser.Name = input.FullName;
-
-            //         var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-            //         await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
-            //         customer.IdentityUser.SetPhoneNumberConfirmed(true);
-            //         if (!createdUser.Succeeded)
-            //         {
-            //             throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
-            //         }
-            //var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.Customer.ToString()]);
             var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
             userMap.TenantId = null;
             var role = await _roleAppService.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
