@@ -193,7 +193,7 @@
     "Email": "Email",
     "UserName": "UserName",
     "UserFullName": "Name",
-    "NationalId": "National ID/Iqama",
+    "NationalId": "ID/Passport",
     "NationalIdLbl": "ID Number",
     "MobileNumber": "Mobile Number",
     "ModelYear": "Model Year",
@@ -515,10 +515,10 @@
     "admin": "Admin",
     "Permission:MyAccount": "My Account Management",
     "Permission:Confirm": "Confirm Paying",
-    "OnlyArabicLettersAllowed": "Only Arabic Letters Allowed",
-    "OnlyArabicNumberAllowed": "Only Arabic Number Allowed",
-    "OnlyEnglishLettersAllowed": "Only English Letters Allowed",
-    "OnlyEnglishNumberAllowed": "Only English Number Allowed",
+    "OnlyArabicLettersAllowed": "Only Arabic Letters Allowed With No Spaces",
+    "OnlyArabicNumberAllowed": "Only Arabic Number Allowed With No Spaces",
+    "OnlyEnglishLettersAllowed": "Only English Letters Allowed With No Spaces",
+    "OnlyEnglishNumberAllowed": "Only English Number Allowed With No Spaces",
     "UserDeletedSuccessfully": "User Deleted Successfully",
     "Reqiured": "Reqiured",
     "Permission:AddRoleToCustomer": "Add Role To Customer",
@@ -527,7 +527,9 @@
     "To": "To",
     "Subscribers": "Subscribers",
     "Permission:ViewPermissions": "View Permissions",
-    "NotValidYear": "Not Valid Year"
+    "NotValidYear": "Not Valid Year",
+    "NationalIdSwitch": "National ID/Iqama"
+
 
 
 
