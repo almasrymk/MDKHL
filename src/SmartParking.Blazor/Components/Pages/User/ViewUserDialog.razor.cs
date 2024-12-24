@@ -23,11 +23,6 @@ partial class ViewUserDialog
         RoleName = role.Name;
 
     }
-
-    //public async Task FetchAsync()
-    //{
-    //  userDto = await UsersAppService.GetAsync(Guid.Parse(userId));
-    //}
     public void CancelEdit()
     {
         Navigation.NavigateTo("/users", true);
