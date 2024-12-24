@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Emit;
 using Volo.Abp.Identity;
@@ -156,6 +157,61 @@ public static class SmartParkingModuleExtensionConfigurator
                                    property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
 
                                    //...other configurations for this property
+                               }
+                           );
+
+                          
+                       });
+                   });ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<string>( //property type: string
+                               "Image", //property name
+                               property =>
+                               {
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+                                   //...other configurations for this property
+                               }
+                           );
+
+                          
+                       });
+                   });
+        
+        ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<IdentificationTypes>( //property type: string
+                               "IdentificationTypes", //property name
+                               property =>
+                               {
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+          
+                               }
+                           );
+
+                          
+                       });
+                   });
+        
+        ObjectExtensionManager.Instance.Modules()
+                   .ConfigureIdentity(identity =>
+                   {
+                       identity.ConfigureUser(user =>
+                       {
+                           user.AddOrUpdateProperty<string>( //property type: string
+                               "NationalId", //property name
+                               property =>
+                               {
+                                   property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+
+          
                                }
                            );
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.Enums;
 using System;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
@@ -76,6 +77,24 @@ public static class SmartParkingEfCoreEntityExtensionMappings
             ObjectExtensionManager.Instance
            .MapEfCoreProperty<IdentityUser, string>(
                "Image",
+               (entityBuilder, propertyBuilder) =>
+               {
+                   propertyBuilder.HasDefaultValue(null);
+               }
+               );
+            
+            ObjectExtensionManager.Instance
+           .MapEfCoreProperty<IdentityUser, IdentificationTypes>(
+               "IdentificationTypes",
+               (entityBuilder, propertyBuilder) =>
+               {
+                   propertyBuilder.HasDefaultValue(null);
+               }
+               );
+            
+            ObjectExtensionManager.Instance
+           .MapEfCoreProperty<IdentityUser, string>(
+               "NationalId",
                (entityBuilder, propertyBuilder) =>
                {
                    propertyBuilder.HasDefaultValue(null);
