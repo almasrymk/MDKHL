@@ -328,6 +328,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower())||
                     or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
                 );
 
