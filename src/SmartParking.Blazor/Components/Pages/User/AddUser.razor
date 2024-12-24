@@ -38,7 +38,7 @@
                     <MudTextField @bind-Value="userCreate.Email"
                               For="@(() => userCreate.Email)"
                                       Variant="Variant.Text"
-                                      Required
+                                      
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
                               Label="@L["Email"]" />
@@ -54,7 +54,21 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["PhoneNumber"]"/>
                     </MudItem>
-                    
+
+            <MudItem sm="6">
+                <MudTextField T="string" Placeholder="@L["Type Here"]" 
+                              Label="@L["NationalId"]" @bind-Value="userCreate.NationalId" />
+            </MudItem>
+            <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                <MudItem Class="d-flex flex-row justify-content-between">
+                    <MudRadioGroup @bind-Value="@userCreate.IdentificationTypes" 
+                                   Class="d-inline-flex align-content-center">
+                        <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                        <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            </MudItem>
+
                 @if (currrentTenant.Id is null)
                 {
                 <MudItem>

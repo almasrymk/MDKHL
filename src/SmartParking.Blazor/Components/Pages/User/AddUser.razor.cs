@@ -70,6 +70,8 @@ public partial class AddUser
             RoleId = userData.RoleId,
             ConcurrencyStamp = userData.ConcurrencyStamp,
             IsActive = userData.IsActive,
+            NationalId = userData.NationalId,
+            IdentificationTypes = userData.IdentificationTypes
         };
         var parameters = new DialogParameters
         {
