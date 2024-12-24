@@ -10,11 +10,13 @@ using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Permissions.PackagePermissions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using static MudBlazor.CategoryTypes;
 
@@ -159,7 +161,8 @@ public partial class User
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "Email", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNumber"], Name = "PhoneNumber", IsFilterable = true, PropertyName = "PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserRole"], Name = "UserRole", IsFilterable = false, PropertyName = "Roles", IsSortable = false, TypeFilter = TypeFilter.Text });
-
+        if(currrentTenant.Id is null)
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "Organization", IsSortable = false, TypeFilter = TypeFilter.Text });
 
         foreach (var item in users)
         {
@@ -170,6 +173,17 @@ public partial class User
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.User.Email));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNumber"], item.User.PhoneNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserRole"], item.Role.Name));
+            
+            switch (currrentTenant?.Id is null, CultureInfo.CurrentCulture.Name)
+            {
+                case (true, "ar"):
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationArabicName));
+                    break;
+
+                case (true, "en"):
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationEnglishName));
+                    break;
+            }
 
 
 

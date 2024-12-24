@@ -140,7 +140,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IQueryable<IdentityUser> query = await FindByUserType();
-            var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount,input.MaxResultCount);
+            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount,input.MaxResultCount);
             
             return new PagedResultDto<UserWithRole>
             {
@@ -166,7 +166,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             //{
             //    queryable = ApplySorting(queryable, input.Sorting);
             //}
-            var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm);
+            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm);
             return new PagedResultDto<UserWithRole>
             {
                 Items = users.Queryable.ToList(),
