@@ -134,20 +134,22 @@ public partial class SubscriptionType
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
        
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
         if(CultureInfo.CurrentCulture.Name == "ar")
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyName = "TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         else
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyName = "TypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
 		foreach (var item in subscriptionType.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 			if (CultureInfo.CurrentCulture.Name == "ar")
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.TypeAr));
             else
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.TypeEn));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
+
 
 			tableData.Rows.Add(rowDef);
         }
