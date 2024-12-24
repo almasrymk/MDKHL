@@ -22,6 +22,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
+using SmartParking.Enums;
 
 namespace SmartParking.Authentication;
 
@@ -71,7 +72,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     }
     private IdentityUser CreateUser(UserCreateDto input)
     {
-        return new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
+        return ObjectMapper.Map<UserCreateDto, IdentityUser>(input);
     }
 
     private void SetUserProperties(IdentityUser user, UserCreateDto input)
@@ -82,6 +83,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetProperty("OtpExpirationDate", DateTime.Now);
         user.SetProperty("UserTypeId", input.UserType);
         user.SetProperty("OrganizationId", input.OrganizationId);
+        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
+        user.SetProperty("NationalId", input.NationalId);
     }
 
     private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId)
@@ -293,10 +296,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
             user.Name = input.Name;
             user.Surname = input.Surname;
             user.SetIsActive(input.IsActive);
+            user.SetProperty("IdentificationTypes", input.IdentificationTypes);
+            user.SetProperty("NationalId", input.NationalId);
             await ChangeRole(input, user);
             user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-           // await _userManager.SetEmailAsync(user, input.Email);
-           // await _userManager.SetUserNameAsync(user, input.UserName);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
@@ -363,6 +366,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
             
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userDto.Image = user.GetProperty<string>("Image");
+            userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
+            userDto.NationalId = user.GetProperty<string>("NationalId");
             if (user.Roles.Any())
             {
                 userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
