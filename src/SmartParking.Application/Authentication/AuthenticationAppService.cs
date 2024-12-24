@@ -413,18 +413,13 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         if (user == null)
         {
             throw new Exception("user isn't exist");
-
         }
-
-       var user1= await _userManager.RemovePasswordAsync(user);
-
-
+        var user1= await _userManager.RemovePasswordAsync(user);
         var password = await _userManager.AddPasswordAsync(user, NewPassword);
-
         if (password.Succeeded)
         {
+            await _userManager.UpdateAsync(user);
             return true;
-
         }
         else
         {

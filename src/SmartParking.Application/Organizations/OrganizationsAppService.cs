@@ -379,7 +379,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     {
         using(DataFilter.Disable<IMultiTenant>())
         {
-            return await _usersAppService.GetOrganizationIdByTenantAsync(tenantId);
+
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(org => org.TenantId == CurrentTenant.Id);
+            var org = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return org.Id;
 
         }
     }
