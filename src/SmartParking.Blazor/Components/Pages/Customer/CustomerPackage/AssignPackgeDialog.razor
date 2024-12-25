@@ -95,7 +95,7 @@
 							Clearable="_clearable">
 								@foreach (var package in Packages)
 								{
-									if (package.PackageStatus != SubscriptionStatus.Active)
+									if (package.PackageStatus != SubscriptionStatus.Active && package.Status!=Status.Active)
 										continue;
 									if (CultureInfo.CurrentCulture.Name == "en")
 									{
