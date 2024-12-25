@@ -43,4 +43,6 @@ public class UserCreateDto
     public IdentificationTypes IdentificationTypes { get; set; }
     [Required]
     public string NationalId { get; set; }
+
+    public bool IsCustomer { get; set; }
 }

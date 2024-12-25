@@ -39,4 +39,5 @@ public class UpdateUserDto
     public IdentificationTypes IdentificationTypes { get; set; }
     [Required]
     public string NationalId { get; set; }
+    public bool IsCustomer { get; set; }
 }

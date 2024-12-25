@@ -16,4 +16,5 @@ public class UserDto:IdentityUserDto
     public IdentityRoleDto Role { get; set; }
     public IdentificationTypes IdentificationTypes { get; set; }
     public string NationalId { get; set; }
+    public bool IsCustomer { get; set; }
 }
