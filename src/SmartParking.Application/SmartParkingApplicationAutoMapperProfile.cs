@@ -129,7 +129,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 			.ForMember(dto => dto.ModelYear, opt => opt.MapFrom(entity => entity.Year));
 
 		CreateMap<Vehicle, VehicleDto>();
-		CreateMap<CreateUpdateVehicleDto, Vehicle>();
+        CreateMap<CreateUpdateVehicleDto, Vehicle>()
+            .ForMember(dest => dest.ArPlateNumber, src => src.MapFrom(f => f.FullArPlate))
+            .ForMember(dest => dest.EnPlateNumber, src => src.MapFrom(f => f.FullEnPlate));
 
         CreateMap<Package, PackageDto>()
         .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))
@@ -139,8 +141,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.SubscribersInPackages, o => o.MapFrom(s => s.CustomerPackages.Count))
         .ForMember(d => d.Status, o => o.MapFrom(s => s.Status));
         
-        //.ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization)); // Map PackageType
-
         CreateMap<CreateUpdatePackageDto, Package>();
            
 

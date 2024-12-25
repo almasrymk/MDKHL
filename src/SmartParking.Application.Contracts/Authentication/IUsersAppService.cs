@@ -97,4 +97,5 @@ public interface IUsersAppService:  IApplicationService
     Task<IdentityUser?> IsUserFound(Guid? userId);
     Task<string> SaveImageAsync(string image);
     Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
+    Task RemoveRoleMdkhl(Guid UserId, Guid RoleId);
 }
