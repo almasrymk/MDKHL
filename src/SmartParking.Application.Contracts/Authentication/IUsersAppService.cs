@@ -96,4 +96,5 @@ public interface IUsersAppService:  IApplicationService
     Task<UserDto> CheckPhoneIsUnique(string phone);
     Task<IdentityUser?> IsUserFound(Guid? userId);
     Task<string> SaveImageAsync(string image);
+    Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
 }

@@ -470,4 +470,13 @@ public class UsersAppService : ApplicationService, IUsersAppService
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
     }
+
+    public  async Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            return await _userRepository.GetUserWithRolesForMdkhlAsync(userId);
+        }
+    }
 }
