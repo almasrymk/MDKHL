@@ -25,7 +25,7 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
+            return null;
         }
 
 
@@ -42,7 +42,7 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
+            return null;
         }
 
 
@@ -58,7 +58,7 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
+            return null;
         }
 
         // Pattern to validate only letters (Arabic or English)
@@ -74,7 +74,7 @@ public static class VehicleValidation
     {
         if (string.IsNullOrEmpty(value))
         {
-            return LocalizationHelper.GetLocalizedString("Can'tBeEmpty");
+            return null;
         }
 
 
