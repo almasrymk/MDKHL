@@ -14,15 +14,13 @@ public partial class DetailsPayment
     private string Amount { get; set; }
     private async Task FetchPayment()
     {
-        Guid id = Guid.Parse(Id);
-        Payment = await PaymentWebAppService.GetMdkhlAsync(id);
+        Payment = await PaymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
         CreationTime = Payment.CreationTime.ToString();
         Amount = Payment.Amount.ToString();
     }
     protected override async Task OnInitializedAsync()
     {
        await FetchPayment();
-        await base.OnInitializedAsync();
         
     }
     private void Back()

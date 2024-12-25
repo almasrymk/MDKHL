@@ -195,6 +195,6 @@ public partial class Payment
     private async Task HandleView(RowDef rowDef)
     {
         var id = rowDef.Cells[0].Value;
-        Navigation.NavigateTo("/payments/view/" +id, true);
+        Navigation.NavigateTo($"/payments/view/{id}" , true);
     }
 }

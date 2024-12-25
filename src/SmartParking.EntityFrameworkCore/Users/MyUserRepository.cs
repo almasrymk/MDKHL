@@ -175,6 +175,35 @@ public class MyUserRepository
 
 
     }
+    
+    public async Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from user in dbContext.Users
+                    where user.Id == userId
+                    from roleId in user.Roles.Select(r => r.RoleId) // Get RoleIds for the user
+                    join role in dbContext.Roles // Join with Roles table
+                    on roleId equals role.Id // Match RoleId
+                    join organization in dbContext.Organizations
+                 on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                    from o in org.DefaultIfEmpty()
+                   
+                    select new UserRolesForMdkhl
+                    {
+                        OrganizationName = o.EnglishName,
+                        RoleId = role.Id,
+                        RoleName = role.Name,
+                        TenantId = o.TenantId
+                    };
+        
+        var result = query.ToList();
+
+
+        return result;
+
+
+    }
 
    
 }

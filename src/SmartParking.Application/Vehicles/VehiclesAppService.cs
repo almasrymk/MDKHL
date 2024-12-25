@@ -51,9 +51,9 @@ public class VehiclesAppService:
 
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 
-        input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-        input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-        if(!VehicleValidation.CheckPlateNumberCriteria(input.ArPlateNumber, input.EnPlateNumber))
+        //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+        //input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+        if(!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
         {
             input.ArPlateNumber = input.EnPlateNumber=null;
             throw new InvalidOperationException("Plate Numbers are Missing");
@@ -71,12 +71,7 @@ public class VehiclesAppService:
             throw new InvalidOperationException("licence type not found");
 
         }
-        var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.ArPlateNumber || x.EnPlateNumber == input.EnPlateNumber);
         input.PlateColorId = licenceType.PlateColorId;
-        if (existingPlatNumber != null)
-        {
-            throw new InvalidOperationException("PlatNumber already exists");
-        }
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -91,7 +86,7 @@ public class VehiclesAppService:
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var existVehicle = await _repository.FirstOrDefaultAsync(_ => (_.ArPlateNumber == input.ArPlateNumber || _.EnPlateNumber == input.EnPlateNumber));
+            var existVehicle = await _repository.FirstOrDefaultAsync(_ => (_.ArPlateNumber == input.FullArPlate || _.EnPlateNumber == input.FullEnPlate));
             if (existVehicle is not null)
             {
                 throw new InvalidOperationException("this vehicle is exist");
@@ -115,9 +110,9 @@ public class VehiclesAppService:
 	{
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-            input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-            if (!VehicleValidation.CheckPlateNumberCriteria(input.ArPlateNumber, input.EnPlateNumber))
+            //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+           // input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+            if (!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
             {
                 input.ArPlateNumber = input.EnPlateNumber = null;
                 throw new InvalidOperationException("Plate Numbers are Missing");
@@ -129,9 +124,9 @@ public class VehiclesAppService:
                 throw new InvalidOperationException("licence type not found");
 
             }
-            var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.ArPlateNumber && x.EnPlateNumber == input.EnPlateNumber);
+            var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.FullArPlate && x.EnPlateNumber == input.FullEnPlate);
             input.PlateColorId = licenceType.PlateColorId;
-            if (existingPlatNumber != null && existingPlatNumber.LicenceTypeId == input.LicenceTypeId && existingPlatNumber.PlateColorId == input.PlateColorId && existingPlatNumber.VehicleBrandId == input.VehicleBrandId && existingPlatNumber.BelongToCompany == input.BelongToCompany && existingPlatNumber.CompanyName == input.CompanyName)
+            if (existingPlatNumber != null&& existingPlatNumber.Id != id && existingPlatNumber.LicenceTypeId == input.LicenceTypeId && existingPlatNumber.PlateColorId == input.PlateColorId && existingPlatNumber.VehicleBrandId == input.VehicleBrandId && existingPlatNumber.BelongToCompany == input.BelongToCompany && existingPlatNumber.CompanyName == input.CompanyName)
             {
                 throw new InvalidOperationException("PlatNumber already exists");
             }
