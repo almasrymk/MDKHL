@@ -318,7 +318,7 @@
     "AdditionalHourPrice": "سعر الساعة الإضافية",
     "NumberOfHours": "عدد الساعات",
     "ExceededTime": "تجاوزت الوقت",
-    "NumberOfHoursExceeded": "تم تجاوز عدد الساعات",
+    "NumberOfHoursExceeded": "ساعات اليوم الكامل",
     "FullDayExceeded": " ساعات اليوم الكامل",
     "FullDay": "يوم كامل",
     "Customer Categories": "فئـات العمـلاء",

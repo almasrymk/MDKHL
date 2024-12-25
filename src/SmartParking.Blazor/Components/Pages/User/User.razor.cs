@@ -232,7 +232,11 @@ public partial class User
             ["updateUserDto"] = userUpdate,
             ["userId"] = userId.ToString()
         };
-        return await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters);
+        return currrentTenant.Id switch
+        {
+            (not null) => await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters),
+            (null) => await DialogService.ShowAsync<MDKHLEditUserDialog>("User Edit", parameters),
+        };
     }
     public async Task<IDialogReference> HandleView(RowDef row)
     {
@@ -294,7 +298,16 @@ public partial class User
         {
             if (!result.Canceled)
             {
-                await UsersAppService.UpdateUserWithNoRoleAsync(id, userUpdate);
+
+                if (currrentTenant.Id != null)
+                {
+                    await UsersAppService.UpdateUserWithNoRoleAsync(id, userUpdate);
+                }
+                else
+                {
+                    await UsersAppService.RemoveRoleMdkhl(id, userUpdate.RoleId);
+                }
+                
                 ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 

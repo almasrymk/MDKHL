@@ -1044,6 +1044,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1224,6 +1227,9 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("EnglishName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Image")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
