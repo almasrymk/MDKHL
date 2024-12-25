@@ -29,13 +29,13 @@
             <MudForm Model="Vehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateletters"]" OnBlur="HandleKeyUpLettersArabic"  @bind-Value="Vehicle.ArPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateletter"]" OnBlur="HandleKeyUpLettersArabic"  @bind-Value="Vehicle.ArPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic" InputType="InputType.Text" Label="@L["ArPlateNumber"]"  @bind-Value="Vehicle.ArPlateNumber" MaxLength="4" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish" InputType="InputType.Text" Label="@L["EnPlateLetters"]"  @bind-Value="Vehicle.EnPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish" InputType="InputType.Text" Label="@L["EnPlateLetter"]"  @bind-Value="Vehicle.EnPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true" Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish"  @bind-Value="Vehicle.EnPlateNumber" MaxLength="4" Placeholder="@L["Type Here"]" />
