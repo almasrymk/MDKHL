@@ -23,4 +23,7 @@ public class CreateUpdateCustomerDto
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public int OrganizationId { get; set; }
     public int PackageId { get; set; }
+    public bool IsUser { get; set; }
+    public Guid RoleId { get; set; }
+    public Guid? TenantId { get; set; }
 }

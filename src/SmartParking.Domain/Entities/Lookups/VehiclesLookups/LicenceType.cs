@@ -10,5 +10,6 @@ namespace SmartParking.Entities.Lookups.VehiclesLookups
 	{
         public int PlateColorId { get; set; }
         public virtual PlateColor PlateColor { get; set; }
+        public string Image { get; set; }
     }
 }

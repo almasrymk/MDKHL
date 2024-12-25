@@ -126,9 +126,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new Exception("National Id is already exist !");
 
             }
+            if (input.IsUser)
+            {
 
+            }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
-			var userCreated = await AddUser(input, customer);
+            UserDto userCreated;
+            if (input.IsUser)
+                userCreated = await AddUser(input);
+            else
+             userCreated = await AddUser(input, customer);
             customer.IdentityUserId = userCreated.Id;
 			var customerAdd = await _repository.InsertAsync(customer, true);
 			await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
@@ -158,7 +165,19 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var user = await _usersAppService.CreateWithRoleAsync(userMap,role.Id);
             return user;
 		}
-	}
+	}		
+    
+    private async Task<UserDto> AddUser(CreateUpdateCustomerDto input)
+	{
+        
+            var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
+            userMap.TenantId = input.TenantId;
+            userMap.IsCustomer = true;
+            var user = await _usersAppService.CreateWithRoleAsync(userMap,input.RoleId);
+            return user;
+	}	
+    
+
 
 
 	
