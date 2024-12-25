@@ -81,7 +81,6 @@ public partial class AddVehicleDialog
                 
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
-
             }
 
 
