@@ -23,6 +23,7 @@ partial class EditUserDialog
     {
         roleId = updateUserDto.RoleId.ToString();
         Roles = await RoleAppService.GetListByTenant(updateUserDto.TenantId);
+        await base.OnInitializedAsync();
 
     }
     public async Task SubmitEdit()

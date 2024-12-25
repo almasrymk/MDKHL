@@ -10,7 +10,7 @@
 <PageTitle>@L["Update User"]</PageTitle>
 
 <div class="modal-wrapper">
-    <MudDialog class="mud-modal" Style="min-width:fit-content !important">
+    <MudDialog class="mud-modal" >
         <TitleContent>
             <MudText Typo="Typo.h6">@L["Update User"]</MudText>
         </TitleContent>
@@ -56,10 +56,10 @@
                                        Placeholder="@L[ "Choose"]"
                                        HelperText=@L["Helper Text"]
                                        Required>
+                            <MudSelectItem Value="@("Choose")" Disabled="true">@L["Choose"]</MudSelectItem>
 
                                 @foreach (var role in Roles)
                                 {
-
                                     <MudSelectItem Value="@role.Id.ToString()">
                                         @role.Name
                                     </MudSelectItem>
@@ -68,13 +68,15 @@
                             </MudSelect>
 
                         </MudItem>
-                        <MudItem sm="6" md="6">
-                            <MudRadioGroup @bind-Value="@updateUserDto.IsActive" Class="d-inline-flex align-content-center">
-                                <div class="d-flex flex-row justify-content-between">
-                                    <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
-                                    <MudRadio Value="false" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                                </div>
-                            </MudRadioGroup>
+                        <MudItem sm="12" md="12" >
+                            <div class="d-flex align-items-center justify-content-center">
+                                <MudRadioGroup @bind-Value="@updateUserDto.IsActive" Class="d-inline-flex align-content-center ">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                        <MudRadio Value="false" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                                    </div>
+                                </MudRadioGroup>
+                            </div>
                         </MudItem>
                     }
                 </MudGrid>
