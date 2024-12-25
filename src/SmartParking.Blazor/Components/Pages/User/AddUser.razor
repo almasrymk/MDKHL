@@ -8,6 +8,7 @@
 @inject IUsersAppService UsersAppService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using Volo.Abp.Data
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
@@ -71,13 +72,16 @@
 
                 @if (currrentTenant.Id is null)
                 {
-                <MudItem>
+                <MudItem sm="6">
                     <MudRadioGroup Required="false" T="bool"  ValueChanged="IsMdkhlSelect">
                             <MudRadio Value="true"  Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
                             <MudRadio Value="false" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
                         </MudRadioGroup>
                 </MudItem>
                 }
+                <MudItem sm="6">
+                <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
+                </MudItem>
                 
                     @if (IsOrganization)
                     {

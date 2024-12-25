@@ -225,6 +225,7 @@ public partial class User
             IsActive  = userData.IsActive,
             NationalId = userData.NationalId,
             IdentificationTypes = userData.IdentificationTypes,
+            IsCustomer = userData.IsCustomer
         };
         var parameters = new DialogParameters
         {

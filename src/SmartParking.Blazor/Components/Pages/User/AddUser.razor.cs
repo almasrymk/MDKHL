@@ -18,6 +18,7 @@ using SmartParking.Blazor.Components.Pages.Organizations;
 using FluentValidation;
 using SmartParking.Blazor.Components.DataGrid;
 using Volo.Abp.Users;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -31,7 +32,6 @@ public partial class AddUser
     private bool IsOrganization { get; set; }
     private bool IsSelectOrganization { get; set; } = true;
     private MudTextField<string> textField;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
