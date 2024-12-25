@@ -19,6 +19,7 @@ public interface IMyUserRepository : IRepository<IdentityUser, Guid>
     Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount, int maxResultCount, string term);
     Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount, int maxResultCount);
     Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string term);
+    Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
 
 
 }
