@@ -23,6 +23,7 @@ using Volo.Abp.PermissionManagement;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using SmartParking.Enums;
+using SmartParking.Utilities;
 
 namespace SmartParking.Authentication;
 
@@ -34,17 +35,20 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IDataFilter _dataFilter;
     private readonly ICustomRoleReository _roleReository;
     private readonly IOptions<IdentityOptions> _identityOptions;
+    private readonly IAuthenticationUtility _authenticationUtility;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
         ICustomRoleReository roleReository,
-        IOptions<IdentityOptions> identityOptions)
+        IOptions<IdentityOptions> identityOptions,
+        IAuthenticationUtility authenticationUtility)
     {
         _userManager = userManager;
         _userRepository = userRepository;
         _dataFilter = dataFilter;
         _roleReository = roleReository;
-        this._identityOptions = identityOptions;
+        _identityOptions = identityOptions;
+        _authenticationUtility = authenticationUtility;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
@@ -66,7 +70,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
              throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
         }
 
-        await AssignRoleAndPermissionsAsync(user, roleId);
+        await AssignRoleAndPermissionsAsync(user, roleId,input.IsCustomer);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
     }
@@ -89,6 +93,20 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId)
     {
+        user.AddRole(roleId);
+    }    
+    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId,bool isCustomer)
+    {
+        if (isCustomer)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                
+               await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+            }
+                
+
+        }
         user.AddRole(roleId);
     }
 

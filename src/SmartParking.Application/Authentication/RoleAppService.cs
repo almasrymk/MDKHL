@@ -25,7 +25,6 @@ public class RoleAppService : ApplicationService, IRoleAppService
 {
     private readonly ICustomRoleReository _roleReository;
     private readonly IDataFilter _dataFilter;
-    private readonly IUsersAppService _usersAppService;
     private readonly IOrganizationsAppService _organizationAppService;
     private readonly IMyUserRepository _myUserRepository;
     private readonly UserManager<IdentityUser> _userManager;
@@ -33,12 +32,11 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
 
     public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter,
-        IUsersAppService usersAppService, UserManager<IdentityUser> userManager,
+         UserManager<IdentityUser> userManager,
         IOrganizationsAppService organizationAppService,IMyUserRepository myUserRepository)
     {
         _roleReository = roleReository;
         _dataFilter = dataFilter;
-        _usersAppService = usersAppService;
         _userManager = userManager;
         _organizationAppService = organizationAppService;
         _myUserRepository = myUserRepository;
@@ -213,13 +211,5 @@ public class RoleAppService : ApplicationService, IRoleAppService
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
         await _userManager.UpdateAsync(user);
-    }
-
-    public async Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId)
-    {
-        var query = await _roleReository.GetQueryableAsync();
-        query = query.Where(r => r.Name == RoleName && r.TenantId == TenantId);
-        var role = await query.FirstOrDefaultAsync();
-        return role;
     }
 }
