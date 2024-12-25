@@ -176,23 +176,5 @@ public class MyUserRepository
 
     }
 
-    public async Task<IdentityUser> FindUserAsNoTracking(Guid userId)
-    {
-        var dbContext = await GetDbContextAsync();
-        IdentityUser? user;
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-             user = await dbContext.Users
-                              .AsNoTracking()
-                             .FirstOrDefaultAsync(u => u.Id == userId);
-        }
-       
-        var userUpdate = new IdentityUser(user.Id, user.UserName, user.Email, CurrentTenant.Id);
-        dbContext.Users.Attach(userUpdate);
-       // dbContext.Entry(userUpdate).State = EntityState.Modified;
-
-       
-        await dbContext.SaveChangesAsync();
-        return userUpdate;
-    }
+   
 }
