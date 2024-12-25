@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -127,6 +128,7 @@ public class SmartParkingBlazorModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+       
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
 
@@ -167,6 +169,11 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
     {
+        context.Services.Configure<IdentityOptions>(options =>
+        {
+            options.User.RequireUniqueEmail = false;
+
+        });
 
         context.Services.ConfigureApplicationCookie(options =>
         {

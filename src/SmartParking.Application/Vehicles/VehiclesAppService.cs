@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,8 +53,13 @@ public class VehiclesAppService:
 
         input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
         input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+        if(!VehicleValidation.CheckPlateNumberCriteria(input.ArPlateNumber, input.EnPlateNumber))
+        {
+            input.ArPlateNumber = input.EnPlateNumber=null;
+            throw new InvalidOperationException("Plate Numbers are Missing");
+        }
         await CheckVehicleIfFound(input);
-        // LicenceType is plate type is found 
+
         LicenceType licenceType;
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -81,7 +87,6 @@ public class VehiclesAppService:
         else
             return await base.CreateAsync(input);
     }
-
     private async Task CheckVehicleIfFound(CreateUpdateVehicleDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -112,7 +117,11 @@ public class VehiclesAppService:
         {
             input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
             input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-            
+            if (!VehicleValidation.CheckPlateNumberCriteria(input.ArPlateNumber, input.EnPlateNumber))
+            {
+                input.ArPlateNumber = input.EnPlateNumber = null;
+                throw new InvalidOperationException("Plate Numbers are Missing");
+            }
             var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
 
             if (licenceType == null)
