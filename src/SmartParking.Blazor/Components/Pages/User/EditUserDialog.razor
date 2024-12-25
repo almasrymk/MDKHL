@@ -10,36 +10,37 @@
 <PageTitle>@L["Update User"]</PageTitle>
 
 <div class="modal-wrapper">
-    <MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+    <MudDialog class="mud-modal" Style="min-width:fit-content !important">
         <TitleContent>
             <MudText Typo="Typo.h6">@L["Update User"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
                 <MudGrid>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Email" Label="@L["Email"]" Required />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" ReadOnly="true" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required />
-                    </MudItem>  
-                    <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]"
-                                      Label="@L["NationalId"]" @bind-Value="updateUserDto.NationalId" />
                     </MudItem>
 
                     <MudItem sm="6" Class="d-inline-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@updateUserDto.IdentificationTypes"
                                            Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                                <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalIdSwitch"]</MudRadio>
                                 <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
                             </MudRadioGroup>
                         </MudItem>
                     </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField T="string" Placeholder="@L["Type Here"]"
+                                      Label="@L["NationalId"]" @bind-Value="updateUserDto.NationalId" />
+                    </MudItem>
+
                     <MudItem sm="6" md="6">
                         
                             <div class="d-flex flex-row justify-content-between">
