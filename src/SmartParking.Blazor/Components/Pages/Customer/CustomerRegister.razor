@@ -133,7 +133,7 @@
                                     <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var package in packages)
                                     {
-                                        @if (package.Status != Status.Active)
+                                        @if (package.Status != Status.Active && package.PackageStatus!=SubscriptionStatus.Active)
                                             continue;
 
                                         @if (CultureInfo.CurrentCulture.Name == "ar")
