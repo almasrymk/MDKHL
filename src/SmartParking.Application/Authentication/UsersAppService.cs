@@ -76,7 +76,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     }
     private IdentityUser CreateUser(UserCreateDto input)
     {
-        return ObjectMapper.Map<UserCreateDto, IdentityUser>(input);
+        return new IdentityUser(GuidGenerator.Create(),input.UserName,input.Email,input.TenantId);
     }
 
     private void SetUserProperties(IdentityUser user, UserCreateDto input)

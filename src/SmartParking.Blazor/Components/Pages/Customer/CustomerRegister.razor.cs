@@ -87,8 +87,6 @@ public partial class CustomerRegister
             ShowSnackbar("There Is No Package for that Customer Category !", Severity.Warning);
             await Task.Delay(1000);
             ShowSnackbar("Add Package !", Severity.Warning);
-            await Task.Delay(1000);
-            Navigation.NavigateTo("/package");
 
 
 
