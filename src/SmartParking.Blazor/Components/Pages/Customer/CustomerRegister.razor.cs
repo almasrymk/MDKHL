@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using SmartParking.Cutomers;
 using SmartParking.DefaultPackages;
@@ -21,6 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using Volo.Abp.Validation;
@@ -42,8 +44,22 @@ public partial class CustomerRegister
 
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     IList<PackageDto> packages = new List<PackageDto>();
+    IList<IdentityRoleDto> Roles = new List<IdentityRoleDto>();
     private string plateLetters = "";
     private string plateNumbers = "";
+    private string RoleId = "";
+
+    private async void CheckIsUser(bool isUser)
+    {
+
+        if (isUser && createUpdateCustomerDto.OrganizationId > 0)
+        {
+            createUpdateCustomerDto.IsUser = isUser;
+            var organization = await OrganizationAppService.GetAsync(createUpdateCustomerDto.OrganizationId);
+            Roles = await RoleAppService.GetListByTenant(organization.TenantId);
+        }
+            
+    }
     protected async override Task OnInitializedAsync()
         {
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
@@ -52,8 +68,9 @@ public partial class CustomerRegister
             {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenat();
 
-               
+            Roles = await RoleAppService.GetListByTenant(CurrentTenant.Id);   
             createUpdateCustomerDto.OrganizationId = organization.Id;
+            createUpdateCustomerDto.TenantId = CurrentTenant.Id;
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
         }
         Picture = "images/MDHKL_04.png";
@@ -100,6 +117,7 @@ public partial class CustomerRegister
         var faildMessage = L["FailedCreateCustomer"];
 		try
         {
+            await CreateUser();
             CustomerDto customer;
 
             createUpdateCustomerDto.Email = createUpdateCustomerDto.MobileNumber + "@gmail.com";
@@ -107,11 +125,11 @@ public partial class CustomerRegister
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
 
-				customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
+            customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
             if (customer != null)
             {
                 CustomerId = customer.Id;
-                ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}" ,Severity.Success);
+                ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}", Severity.Success);
                 showVehicle = true;
             }
 
@@ -145,7 +163,17 @@ public partial class CustomerRegister
         }
 
     }
-   
+
+    private async Task CreateUser()
+    {
+        if (createUpdateCustomerDto.IsUser)
+        {
+            var organization = await OrganizationAppService.GetAsync(createUpdateCustomerDto.OrganizationId);
+            createUpdateCustomerDto.TenantId = organization.TenantId;
+            createUpdateCustomerDto.RoleId = Guid.Parse(RoleId);
+        }
+    }
+
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.
     /// </summary>
