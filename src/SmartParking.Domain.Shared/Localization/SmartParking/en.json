@@ -528,7 +528,9 @@
     "Subscribers": "Subscribers",
     "Permission:ViewPermissions": "View Permissions",
     "NotValidYear": "Not Valid Year",
-    "NationalIdSwitch": "National ID/Iqama"
+    "NationalIdSwitch": "National ID/Iqama",
+    "ISCustomer": "Add Customer",
+    "ISUser": "Add User"
 
 
 

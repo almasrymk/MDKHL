@@ -54,7 +54,7 @@
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            Label="@L["NationalIdLbl"]" @bind-Value="createUpdateCustomerDto.NationalId" Required />
+                            Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required />
                         </MudItem>
                         <MudItem sm="6" Class="d-inline-flex justify-content-center">
                             <MudItem Class="d-flex flex-row justify-content-between">
@@ -133,7 +133,7 @@
                                     <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var package in packages)
                                     {
-                                        @if (package.Status != Status.Active)
+                                        @if (package.Status != Status.Active && package.PackageStatus!=SubscriptionStatus.Active)
                                             continue;
 
                                         @if (CultureInfo.CurrentCulture.Name == "ar")
@@ -176,16 +176,16 @@
                     <MudGrid>
 
                             <MudItem sm="6" md="6">
-                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateletters"]" Required MaxLength="3" OnBlur="HandleKeyUpLettersArabic" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateletters"]"  MaxLength="3" OnBlur="HandleKeyUpLettersArabic" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
                             </MudItem>
                             <MudItem sm="6" md="6">
-                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic" Required InputType="InputType.Text" Label="@L["ArPlateNumber"]" MaxLength="4" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic"  InputType="InputType.Text" Label="@L["ArPlateNumber"]" MaxLength="4" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
                             </MudItem>
                             <MudItem sm="6" md="6">
-                                <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish" Required InputType="InputType.Text" MaxLength="3" Label="@L["EnPlateLetters"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish"  InputType="InputType.Text" MaxLength="3" Label="@L["EnPlateLetters"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
                             </MudItem>
                             <MudItem sm="6" md="6">
-                                <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true" Required Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish" MaxLength="4" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true"  Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish" MaxLength="4" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
                             </MudItem>
 
 

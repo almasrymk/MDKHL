@@ -551,7 +551,9 @@
     "Subscribers": "المشتركيين",
     "Permission:ViewPermissions": "عـرض الأذونات",
     "PlateLetter": "حروف اللوحة",
-    "NotValidYear": "ليست سنة صالحة"
+    "NotValidYear": "ليست سنة صالحة",
+    "ISCustomer": "انشاء عميل",
+    "ISUser": "انشاء مستخدم"
 
 
 

@@ -23,6 +23,7 @@ using Abp.Domain.Entities;
 using SmartParking.CustomerPackages;
 using SmartParking.Authentication;
 using SmartParking.Enums;
+using SmartParking.Utilities;
 
 namespace SmartParking.Customers;
 [Authorize]
@@ -39,12 +40,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	private readonly ICustomerPackagesAppService _packagesAppService;
     private readonly IUsersAppService _usersAppService;
     private readonly IRoleAppService _roleAppService;
+    private readonly IAuthenticationUtility _authenticationUtility;
 
     public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
         IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager,
         IRepository<CustomerPackage, int> customerPackageRepository,
         IBaseCustomerAppService baseCustomer , ICustomerPackagesAppService packagesAppService,
-        IUsersAppService usersAppService, IRoleAppService roleAppService) : base(repository)
+        IUsersAppService usersAppService, IRoleAppService roleAppService, IAuthenticationUtility authenticationUtility) : base(repository)
     {
         _repository = repository;
         _repositoryVehicle = repositoryVehicle;
@@ -57,6 +59,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		_packagesAppService = packagesAppService;
         _usersAppService = usersAppService;
         _roleAppService = roleAppService;
+        _authenticationUtility = authenticationUtility;
     }
   
 
@@ -151,7 +154,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
             userMap.TenantId = null;
-            var role = await _roleAppService.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
+            var role = await _authenticationUtility.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
             var user = await _usersAppService.CreateWithRoleAsync(userMap,role.Id);
             return user;
 		}

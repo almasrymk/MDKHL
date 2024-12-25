@@ -57,13 +57,44 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => r.RoleId) // Get RoleIds for the user
-                    join role in dbContext.Roles // Join with Roles table
-                        on roleId equals role.Id // Match RoleId
+                    from roleId in user.Roles.Select(r => r.RoleId) 
+                    join role in dbContext.Roles 
+                        on roleId equals role.Id
+        
                     select new UserWithRole
                     {
                          User = user,
                          Role = role
+                        
+                    };
+        var total = query.Count();
+        query = query.Skip(skipCount).Take(maxResultCount);
+        var result = query.ToList();
+
+        return new PagedResult<UserWithRole>
+        {
+            PageSize = total,
+            Queryable = query,  
+        };
+        
+
+    } 
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount,int maxResultCount)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query = from user in dbContext.Users
+                    from roleId in user.Roles.Select(r => r.RoleId) 
+                    join role in dbContext.Roles 
+                        on roleId equals role.Id
+                    join organization in dbContext.Organizations 
+                     on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                    from o in org.DefaultIfEmpty() 
+                    select new UserWithRole
+                    {
+                         User = user,
+                         Role = role,
+                         OrganizationEnglishName = o.EnglishName,
+                         OrganizationArabicName = o.ArabicName
                         
                     };
         var total = query.Count();
@@ -109,24 +140,41 @@ public class MyUserRepository
 
 
     }
-
-    public async Task<IdentityUser> FindUserAsNoTracking(Guid userId)
+    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount,int maxResultCount,string term)
     {
         var dbContext = await GetDbContextAsync();
-        IdentityUser? user;
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-             user = await dbContext.Users
-                              .AsNoTracking()
-                             .FirstOrDefaultAsync(u => u.Id == userId);
-        }
-       
-        var userUpdate = new IdentityUser(user.Id, user.UserName, user.Email, CurrentTenant.Id);
-        dbContext.Users.Attach(userUpdate);
-       // dbContext.Entry(userUpdate).State = EntityState.Modified;
+        var query = from user in dbContext.Users
+                    from roleId in user.Roles.Select(r => r.RoleId) // Get RoleIds for the user
+                    join role in dbContext.Roles // Join with Roles table
+                        on roleId equals role.Id // Match RoleId
+                    join organization in dbContext.Organizations
+                 on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                    from o in org.DefaultIfEmpty()
+                    where user.Name.ToLower().Contains(term.ToLower())
+                    || role.Name.ToLower().Contains(term.ToLower())
+                    || user.PhoneNumber.ToLower().Contains(term.ToLower())
+                    || user.UserName.ToLower().Contains(term.ToLower())
+                    || user.Email.ToLower().Contains(term.ToLower())
+                    || o.ArabicName.ToLower().Contains(term.ToLower())
+                    || o.EnglishName.ToLower().Contains(term.ToLower())
+                    select new UserWithRole
+                    {
+                        User = user,
+                        Role = role,
+                    };
+        var total = query.Count();
+        query = query.Skip(skipCount).Take(maxResultCount);
+        var result = query.ToList();
 
-       
-        await dbContext.SaveChangesAsync();
-        return userUpdate;
+
+        return new PagedResult<UserWithRole>
+        {
+            PageSize = total,
+            Queryable = query,
+        };
+
+
     }
+
+   
 }
