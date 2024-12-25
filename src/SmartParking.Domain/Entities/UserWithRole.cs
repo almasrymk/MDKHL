@@ -12,4 +12,6 @@ public class UserWithRole
 {
     public IdentityUser User { get; set; }
     public IdentityRole Role { get; set; }
+    public string OrganizationEnglishName { get; set; }
+    public string OrganizationArabicName { get; set; }
 }

@@ -3275,6 +3275,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
 
+                    b.Property<int>("IdentificationTypes")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
@@ -3318,6 +3321,9 @@ namespace SmartParking.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("Name");
+
+                    b.Property<string>("NationalId")
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .IsRequired()

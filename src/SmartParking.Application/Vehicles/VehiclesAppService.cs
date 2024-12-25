@@ -52,8 +52,13 @@ public class VehiclesAppService:
 
         input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
         input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+        if(!CheckPlateNumberCriteria(input.ArPlateNumber, input.EnPlateNumber))
+        {
+            input.ArPlateNumber = input.EnPlateNumber=null;
+            throw new InvalidOperationException("Plate Numbers are Missing");
+        }
         await CheckVehicleIfFound(input);
-        // LicenceType is plate type is found 
+
         LicenceType licenceType;
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -80,6 +85,26 @@ public class VehiclesAppService:
         }
         else
             return await base.CreateAsync(input);
+    }
+
+    private bool CheckPlateNumberCriteria(string ArabicPlateNumber , string EnglishPlateNumber)
+    {
+        string arabicLetterPattern = @"[\u0600-\u06FF]"; 
+        string arabicDigitPattern = @"[\u0660-\u0669]"; 
+
+        string englishLetterPattern = @"[A-Za-z]";  
+        string englishDigitPattern = @"[0-9]";      
+
+        bool isArabicPlateValid = !string.IsNullOrWhiteSpace(ArabicPlateNumber) &&
+                                  System.Text.RegularExpressions.Regex.IsMatch(ArabicPlateNumber, arabicLetterPattern) &&
+                                  System.Text.RegularExpressions.Regex.IsMatch(ArabicPlateNumber, arabicDigitPattern);
+
+        bool isEnglishPlateValid = !string.IsNullOrWhiteSpace(EnglishPlateNumber) &&
+                                   System.Text.RegularExpressions.Regex.IsMatch(EnglishPlateNumber, englishLetterPattern) &&
+                                   System.Text.RegularExpressions.Regex.IsMatch(EnglishPlateNumber, englishDigitPattern);
+
+        return isArabicPlateValid && isEnglishPlateValid;
+
     }
 
     private async Task CheckVehicleIfFound(CreateUpdateVehicleDto input)
@@ -112,7 +137,11 @@ public class VehiclesAppService:
         {
             input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
             input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-            
+            if (!CheckPlateNumberCriteria(input.ArPlateNumber, input.EnPlateNumber))
+            {
+                input.ArPlateNumber = input.EnPlateNumber = null;
+                throw new InvalidOperationException("Plate Numbers are Missing");
+            }
             var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
 
             if (licenceType == null)
