@@ -41,12 +41,32 @@
                     <MudGrid>
 
                         <MudItem sm="12">
-                            <div class="d-flex justify-content-center align-items-center px-5 mb-2">
+                            <div class="d-flex justify-content-center align-items-center px-5 mb-2 flex-column">
                                 <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
                                     <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                                 </MudItem>
                             </div>
 
+                            <MudItem sm="12">
+                                <Label>@L["Status"]</Label>
+                                <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;width:25%")>
+                                    @if (Status == 1)
+                                    {
+                                        <MudText>@L["Active"]</MudText>
+                                    }
+                                    else if (Status == 2)
+                                    {
+                                        <MudText>@L["InActive"]</MudText>
+
+                                    }
+                                    else
+                                    {
+                                        <MudText>@L["Deleted"]</MudText>
+
+                                    }
+
+                                </Div>
+                            </MudItem>
                         </MudItem>
 
                         <MudItem sm="6">
@@ -129,27 +149,7 @@
 
                             </MudTextField>
                         </MudItem>
-                        <MudItem sm="4">
-                            <Label>@L["Status"]</Label>
-                            <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
-                                @if (Status == 1)
-                                {
-                                    <MudText>@L["Active"]</MudText>
-                                }
-                                else if (Status == 2)
-                                {
-                                    <MudText>@L["InActive"]</MudText>
-
-                                }
-                                else
-                                {
-                                    <MudText>@L["Deleted"]</MudText>
-
-                                }
-
-                            </Div>
-                        </MudItem>
-                    </MudGrid>
+                        </MudGrid>
 
                     <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>

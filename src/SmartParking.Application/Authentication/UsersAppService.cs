@@ -24,6 +24,7 @@ using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using SmartParking.Enums;
 using SmartParking.Utilities;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.Authentication;
 
@@ -367,6 +368,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private static void RemoveRole(UpdateUserDto input, IdentityUser? user)
     {
         user.RemoveRole(user.Roles.First().RoleId);
+    }
+    
+    public async Task RemoveRoleMdkhl(Guid UserId , Guid RoleId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(UserId);
+
+            user.RemoveRole(RoleId);
+            await _userManager.UpdateAsync(user);
+        }
     }
 
     //private async Task ChangePassword(UpdateUserDto input, IdentityUser? user)
