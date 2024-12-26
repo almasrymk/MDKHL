@@ -250,7 +250,7 @@
     "Confirm New Password": "Confirm New Password",
     "Show Password": "Show Password",
     "Sign In": "Sign In",
-    "Email Address /  User Name": "Email Address /  User Name",
+    "Mobile/User Name": "Mobile /  User Name",
     "Forget Your Password Don't worry ..": "Forget Your Password Don't worry ..",
     "Click here to reset": "Click here to reset",
     "EditMyAccount": "Edit My Account",
@@ -539,7 +539,12 @@
     "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new",
     "InvalidValidation": "Invalid Value",
     "DuplicateValidation": "Already Exist",
-    "ModelPicture": "Model Picture"
+    "ModelPicture": "Model Picture",
+    "ExpiryDateValidation": "Can't be less than today",
+    "WhatsAppValidation": "Please enter a valid Saudi phone number. The number should start with 05 followed by a digit between 3 and 8 and then 7 digits, or start with +966 followed by a digit between 3 and 8 and then 8 digits.",
+    "EmailValidation": "Enter Valid Email",
+    "PhoneValidation": "Phone number must start with '01', contain only numbers, and be exactly 10 digits long.",
+    "StreetValidation": "Must start with 3 to 20 English or Arabic letters, spaces are allowed, and the total length must not exceed 20 characters."
 
 
 
