@@ -539,6 +539,7 @@
     "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new",
     "InvalidValidation": "Invalid Value",
     "DuplicateValidation": "Already Exist",
+    "Picture": "Picture"
     "ModelPicture": "Model Picture",
     "ExpiryDateValidation": "Can't be less than today",
     "WhatsAppValidation": "Please enter a valid Saudi phone number. The number should start with 05 followed by a digit between 3 and 8 and then 7 digits, or start with +966 followed by a digit between 3 and 8 and then 8 digits.",

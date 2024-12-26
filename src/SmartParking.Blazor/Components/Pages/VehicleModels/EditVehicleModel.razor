@@ -73,7 +73,7 @@
 
 						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
 
-							<MudImage Src="@ModelPicture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["ModelPicture"]" />
+							<MudImage Src="@ModelPicture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["Picture"]" />
 							<MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
 								<ActivatorContent>
 									<MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
@@ -85,7 +85,7 @@
 				</MudGrid>
 			</MudForm>
 
-			
+
 
 
 		</DialogContent>
@@ -115,6 +115,7 @@
 	[Parameter]
 	public int UpdatedId { get; set; }
 	bool _clearable;
+	bool IsPictureChanged;
 	private MudForm form;
 	IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
 	private string ModelPicture { get; set; }
@@ -126,6 +127,7 @@
 		{
 			// Save the image and get the file path
 			ModelPicture = await ImageHelper.GetImageBase64Async(imageFile);
+			IsPictureChanged = true;
 			StateHasChanged();
 		}
 	}
@@ -148,6 +150,7 @@
 
 		try
 		{
+			if (IsPictureChanged)
 			VehicleModel.Image = await FileHelper.SaveImageFromBase64Async(ModelPicture, PathHelper.ModelFolder);
 			await VehicleModelsAppService.UpdateAsync(UpdatedId, VehicleModel);
 			Snackbar.Add(successedMessage, Severity.Success);
