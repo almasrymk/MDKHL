@@ -110,7 +110,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-                    throw new Exception(LocalizationHelper.GetLocalizedString("User") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
                 }
 			}
@@ -118,13 +118,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
             if (!result2)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("NationId") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
@@ -140,7 +140,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 		catch (Exception ex)
 		{
-            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") +" "+ LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) +" "+ LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED));
+            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED)+" "+ LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +LocalizationHelper.GetLocalizedString("Customer") );
             
 		}
 	}

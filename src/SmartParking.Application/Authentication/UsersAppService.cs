@@ -26,6 +26,7 @@ using SmartParking.Enums;
 using SmartParking.Utilities;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using SmartParking.Localization;
+using Volo.Abp;
 
 namespace SmartParking.Authentication;
 
@@ -310,6 +311,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
             user.Surname = input.Surname;
+            
+            ObjectHelper.TrySetProperty(
+                    user,
+                    x => x.Email,
+                    () => input.Email
+                );
             user.SetIsActive(input.IsActive);
             user.SetProperty("IdentificationTypes", input.IdentificationTypes);
             user.SetProperty("NationalId", input.NationalId);

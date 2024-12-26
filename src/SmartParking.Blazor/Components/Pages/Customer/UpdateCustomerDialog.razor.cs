@@ -13,6 +13,7 @@ using Volo.Abp.Validation;
 using SmartParking.Enums;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -57,14 +58,13 @@ public partial class UpdateCustomerDialog
 
     public async Task SubmitEdit()
     {
-        var successedMessage = L["CustomerUpdateSuccessfullyWith"];
+        
         try
         {
             var customer = await CustomerAppService.UpdateAsync(Guid.Parse(customerId), customerDataDto);
             if (customer != null)
             {
-
-                ShowSnackbar($" {successedMessage} {customerDataDto.FullName}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{customerDataDto.FullName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/customers",true);
 
@@ -80,38 +80,22 @@ public partial class UpdateCustomerDialog
             foreach (var error in abpValidationException.ValidationErrors)
             {
                 errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
             }
-            ShowSnackbar(errors, Severity.Error);
 
         }
         catch (BusinessException businessException)
         {
-            string errors = string.Empty;
-            foreach (var error in businessException.Message)
-            {
-                errors += error;
-            }
-            ShowSnackbar(errors, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Code}", Severity.Error);
 
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 
         }
 
-    }
-
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
 
     public void CancelEdit()

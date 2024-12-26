@@ -52,6 +52,11 @@
                         <MudItem sm="4">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
                             InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required />
+                        </MudItem>                        
+                        
+                        <MudItem sm="4">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
+                            InputType="InputType.Email" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
                         </MudItem>
 
                         <MudItem sm="6" Class="d-inline-flex justify-content-center">

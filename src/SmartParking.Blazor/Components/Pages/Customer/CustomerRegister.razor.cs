@@ -114,14 +114,11 @@ public partial class CustomerRegister
     }
     public async  Task HandleSubmit()
     {
-		var successedMessage = L["CustomerCreatedSuccessfullyWith"];
-        var faildMessage = L["FailedCreateCustomer"];
+		
 		try
         {
             await CreateUser();
             CustomerDto customer;
-
-            createUpdateCustomerDto.Email = createUpdateCustomerDto.PhoneNumber + "@gmail.com";
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;

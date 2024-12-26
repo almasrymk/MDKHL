@@ -51,7 +51,8 @@
                     @if (!updateUserDto.ISNoRole)
                     {
                         <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="@roleId"
+                            <MudSelect T="string"
+                                       ValueChanged="ChangeRole"
                                        Label="@L["UserRole"]"
                                        Placeholder="@L[ "Choose"]"
                                        HelperText=@L["Helper Text"]
