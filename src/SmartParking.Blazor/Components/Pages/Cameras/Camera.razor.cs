@@ -3,6 +3,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Customer;
 using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
 using SmartParking.Garages;
@@ -302,7 +303,6 @@ public partial class Camera
     {
         var id = int.Parse(row.Cells[0].Value);
         var Name = _localizer["Camera with Mac Address : "] + row.Cells[2].Value;
-
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
@@ -316,53 +316,23 @@ public partial class Camera
             if (!result.Canceled)
             {
                 await CamerasAppService.DeleteAsync(id);
-                ShowSnackbar($"{L["Camera Deleted Successfully"]} ", Severity.Success);
-
+                SnackBar.ShowSnackbar(Snackbar, $"{Name} {L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
                 await Task.Delay(1000);
-
                 Navigation.NavigateTo("/cameras", forceLoad: true);
-
             }
-
-
         }
         catch (BusinessException ex)
         {
-
-            ShowSnackbar($"Failed to delete camera: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delet camera: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-
-            ShowSnackbar($"Failed to delete camera: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
     }
-	/// <summary>
-
-	/// Displays a snackbar notification with the specified message and severity.
-
-	/// </summary>
-
-	/// <param name="message">The message to display in the snackbar.</param>
-
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-	void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled );
-
-    }
-
-
-  
-
-
 }
