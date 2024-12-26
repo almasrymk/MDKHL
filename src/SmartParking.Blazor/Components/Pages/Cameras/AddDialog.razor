@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
 @using SmartParking.Enums
 @using SmartParking.Garages
@@ -268,15 +269,15 @@
         var DuplicateCameraIP = L["DuplicateCameraIP"];
         if (form.IsValid)
         {
-            // Call your service to create the camera
             try
             {
                 var garage = Garages.Find(x => x.Id == cameraDto.GarageId);
                 cameraDto.TenantId = garage.TenantId;
                 cameraDto.OrganizationId = garage.OrganizationId;
-                await CamerasAppService.CreateAsync(cameraDto);
+                var createdCameraDto=await CamerasAppService.CreateAsync(cameraDto);
                 MudDialog.Close(DialogResult.Ok(true));
-                Snackbar.Add($"{successedMessage}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{createdCameraDto.Name} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/cameras", forceLoad: true);
 
@@ -286,42 +287,29 @@
             {
                 foreach (var validationError in validationException.ValidationErrors)
                 {
-                    ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
                 }
             }
             catch (BusinessException ex)
             {
 
-                ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
             }
             catch (AuthenticationException ex)
             {
-                ShowSnackbar($"{errorMessage} : : {ex.Message} + ", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
             }
             catch (Exception ex)
             {
 
-                ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
             }
-        }
-        /// <summary>
-        /// Displays a snackbar notification with the specified message and severity.
-        /// </summary>
-        /// <param name="message">The message to display in the snackbar.</param>
-        /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-        void ShowSnackbar(string message, Severity severity)
-        {
-            Snackbar.Clear();
-            Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-        }
-         
-            
-            
-        }
-        
-        private void Cancel()
-        {
-            MudDialog.Cancel();
-        }
+        }   
     }
+        
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    
 }
