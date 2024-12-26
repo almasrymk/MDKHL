@@ -179,7 +179,7 @@ public static class VehicleValidation
             }
             else
             {
-                throw new Exception("Invalid PlateLetter");
+                throw new Exception(LocalizationHelper.GetLocalizedString()+' '+LocalizationHelper.GetLocalizedString());
 
             }
         }
@@ -203,7 +203,7 @@ public static class VehicleValidation
         }
         else
         {
-            throw new Exception("Letters can't be mixed");
+            throw new Exception(LocalizationHelper.GetLocalizedString("MixedInvalid"));
         }
         return(EnglishNumbers, ArabicNumbers);
 

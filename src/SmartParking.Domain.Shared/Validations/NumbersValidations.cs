@@ -11,13 +11,25 @@ public static class NumbersValidations
 {
 
 
-    public static string validateNumber(int value)
+    public static string validateNumber0to9999(int value)
     {
         if (value < 0 || value > 9999)
             return LocalizationHelper.GetLocalizedString("InvalidValidation");
-        return null; // No error
+        return null;
     }
-    
+    public static string ValidateNumber11111to99999(int value)
+    {
+        if (value < 11111 || value > 99999)
+            return LocalizationHelper.GetLocalizedString("InvalidValidation");
+        return null;
+    }
+      public static string ValidateNumber1111to9999(int value)
+    {
+        if (value < 1111 || value > 9999)
+            return LocalizationHelper.GetLocalizedString("InvalidValidation");
+        return null;
+    }
+
 
     public static void DistributeRemainingCapacity(ref int MaxSlotsForEmployess ,ref int MaxSlotsForCustomers, ref int MaxSlotsForFree , int MaxCapacity)
     {
