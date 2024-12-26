@@ -545,6 +545,7 @@
     "EmailValidation": "Enter Valid Email",
     "PhoneValidation": "Phone number must start with '01', contain only numbers, and be exactly 10 digits long.",
     "StreetValidation": "Must start with 3 to 20 English or Arabic letters, spaces are allowed, and the total length must not exceed 20 characters.",
+    "StreetValidation": "Must start with 3 to 20 English or Arabic letters, spaces are allowed, and the total length must not exceed 20 characters.",
     "WrongPassword": "Password Not Valid",
     "NotFoundValidation": "Not Found",
     "User": "User",

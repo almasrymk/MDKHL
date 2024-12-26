@@ -31,19 +31,18 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x => x.EnglishName)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
-        
+
 
         RuleFor(x => x.WhatsAppNum)
-			.NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"))
-			.WithMessage("please add valid whats app number");
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
 
-		RuleFor(x => x.ContactMail)
+		RuleFor(x => x.Email)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(@"^(?!.*\.\.)(?!.*\.$)(?=.{1,254}$)(?=.{1,64}@.{1,255}$)[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.(com|net|org|edu|gov|mil|int|co|info|biz|us|eu|uk|ca|jp|cn|in|au|za|tv|me|mobi|name)$")
-            .WithMessage(LocalizationHelper.GetLocalizedString("WhaValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmailValidation"));
 
-        RuleFor(x => x.PhoneNum)
+        RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(@"^01\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
 

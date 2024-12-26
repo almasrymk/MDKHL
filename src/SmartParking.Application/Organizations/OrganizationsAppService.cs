@@ -90,8 +90,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         UserCreateDto user = new UserCreateDto()
         {
             UserName = input.UserName,
-            PhoneNumber = input.PhoneNum,
-            Email = input.ContactMail,
+            PhoneNumber = input.PhoneNumber,
+            Email = input.Email,
             Password = "P@ssw0rd",
             Name = input.EnglishName,
             IsActive = true,
@@ -141,7 +141,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var input1 = new TenantCreateDto
         {
             Name = input.UserName,
-            AdminEmailAddress = input.ContactMail,
+            AdminEmailAddress = input.Email,
             AdminPassword = "P@ssw0rd",
         };
         input1.MapExtraPropertiesTo(tenant);
