@@ -3,8 +3,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.Vehicles;
 using SmartParking.Garages;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
@@ -66,8 +68,7 @@ public partial class AddVehicleDialog
     }
     private async void SubmitCreate()
     {
-        var successedMessage = L["VehichleWasCreatedSuccessfullyAndAddedToCustomer"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
@@ -75,8 +76,7 @@ public partial class AddVehicleDialog
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
-
-                ShowSnackbar(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
                 
                 await Task.Delay(1000);
@@ -86,28 +86,27 @@ public partial class AddVehicleDialog
 
         }
         catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-			ShowSnackbar($"Failed to add vehicle: {ex.Code} + ", Severity.Error);
-		}
-		catch (AuthenticationException ex)
-		{
-			ShowSnackbar($"Failed to add vehicle: {ex.Message} + ", Severity.Error);
-		}
-		catch (Exception ex)
-		{
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-			ShowSnackbar($"Failed to add vehicle: {ex.Message} + ", Severity.Error);
-		}
-
-	}
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+    }
 
 
     private void HandleKeyUpLettersArabic(FocusEventArgs e)
@@ -130,7 +129,7 @@ public partial class AddVehicleDialog
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
 
     }
@@ -155,7 +154,7 @@ public partial class AddVehicleDialog
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateNumber = createUpdateVehicle.ArPlateNumber = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
 
 
@@ -167,17 +166,7 @@ public partial class AddVehicleDialog
         MudDialogAdd.Cancel();
 
     }
-	/// <summary>
-	/// Displays a snackbar notification with the specified message and severity.
-	/// </summary>
-	/// <param name="message">The message to display in the snackbar.</param>
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-	void ShowSnackbar(string message, Severity severity)
-	{
-		Snackbar.Clear();
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-	}
+
 
 
 }

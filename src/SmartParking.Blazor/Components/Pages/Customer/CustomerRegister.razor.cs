@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
 using SmartParking.DefaultPackages;
 using SmartParking.Enums;
@@ -203,8 +204,8 @@ public partial class CustomerRegister
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
 
-                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/customers", true);
 
@@ -216,24 +217,23 @@ public partial class CustomerRegister
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{validationErrorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{validationErrorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{validationErrorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-
     }
 
     private void CancelCreate()
@@ -263,7 +263,7 @@ public partial class CustomerRegister
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar,ex.Message, Severity.Error);
         }
 
     }
@@ -288,7 +288,7 @@ public partial class CustomerRegister
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateNumber = createUpdateVehicle.ArPlateNumber = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
 
 

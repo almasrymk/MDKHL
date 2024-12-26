@@ -551,7 +551,10 @@
     "User": "User",
     "NationIdValidation": "Nation Id must be 10 digits",
     "PassportValidation": "Passport must be from 6 - 9 digits and atmost one character",
-    "Customer": "Customer"
+    "Customer": "Customer",
+    "Vehicle": "Vehicle",
+    "RangeValidation": "Must be within"
+
 
 
 

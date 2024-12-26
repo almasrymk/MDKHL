@@ -448,9 +448,9 @@
     "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
     "customer category": "الفئة",
     "ArPlateNumber": "رقم اللوحة بالعربية",
-    "ArPlateLetter": "حروف اللوحة بالعربية",
+    "ArPlateLetters": "حروف اللوحة بالعربية",
     "EnPlateNumber": "رقم اللوحة بالانجليزية",
-    "EnPlateLetter": "حروف اللوحة بالانجليزية",
+    "EnPlateLetters": "حروف اللوحة بالانجليزية",
     "ParkingSlot": "أماكن الوقوف",
     "TransactionType": "نوع الحركة",
     "Payments": "الفواتير",
@@ -576,7 +576,9 @@
     "User": "المستخدم",
     "NationIdValidation": "أرقام الهوية / الإقامة يجب ان تكون عشرة أرقام",
     "PassportValidation": "جواز السفر يجب ان يحتوي علي أرقام من 6 ال 9 و حرف واحد",
-    "Customer": "العميل"
+    "Customer": "العميل",
+    "Vehicle": "مركبة",
+    "RangeValidation": "يجب ان يكون عدده",
 
 
 
