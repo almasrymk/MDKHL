@@ -336,8 +336,6 @@
     "ClosingHoursStart": "موعد بداية ساعات الغلق",
     "ClosingHoursEnd": "موعد نهاية ساعات الغلق",
     "Garage assigned to organization Successfully": "تم تعيين مـوقـف لمنظمة بنجاح",
-    "Camera created successfully": "تم إضــافة كاميرا بنجاح",
-    "Can'tCreate Camera": "لا يمكن إضــافة كاميرا",
     "DuplicateCameraIP": "يوجد تكرار في CamerIP",
     "Camera assigned to garage Successfully": "تم تعيين كاميرا لمـوقـف بنجاح",
     "Can't assign camera to garage": "فشل في تعيين كاميرا لموقـف",
@@ -566,7 +564,8 @@
     "LessThan9999Validation": "القيمة تساوي 9999 أوأقل.",
     "SummationValidation": "خطأ في مجموع",
     "UpgradeSubscriptionValidation": "اشتراكك الحالي لا يسمح بالإضافة",
-    "InvalidValidation": "قيمة غير صحيحة"
+    "InvalidValidation": "قيمة غير صحيحة",
+    "DuplicateValidation": "موجود من قبل"
 
 
 
