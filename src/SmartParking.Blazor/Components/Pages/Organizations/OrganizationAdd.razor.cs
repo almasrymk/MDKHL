@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
@@ -8,6 +9,7 @@ using SmartParking.Lookups.State;
 using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -193,7 +195,7 @@ public partial class OrganizationAdd
             BuildingNumber = BuildingNumber,
             PostalCode = PostalCode,
             SecondaryNumber = SecondaryNumber,
-            OrganizationPicture = OrganizationPicture,
+            OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder),
             FreeMinutes = FreeMinutes,
             Address = NewAddress,
             Graceperiod = Graceperiod,
@@ -252,7 +254,7 @@ public partial class OrganizationAdd
         if (imageFile != null)
         {
             // Save the image and get the file path
-            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
             StateHasChanged();
         }
     }
