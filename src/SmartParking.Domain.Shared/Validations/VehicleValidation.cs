@@ -54,22 +54,7 @@ public static class VehicleValidation
 
         return null; 
     }
-    public static string ValidateLetters(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return null;
-        }
-
-        // Pattern to validate only letters (Arabic or English)
-        var letterPattern = @"^[a-zA-Z\u0600-\u06FF]+$"; // a-zA-Z for English letters, \u0600-\u06FF for Arabic letters
-        if (!System.Text.RegularExpressions.Regex.IsMatch(value, letterPattern))
-        {
-            return LocalizationHelper.GetLocalizedString("OnlyLettersAllowed");
-        }
-
-        return null;
-    }
+ 
     public static string ValidateEnglishLetter(string value)
     {
         if (string.IsNullOrEmpty(value))
@@ -98,7 +83,7 @@ public static class VehicleValidation
         var arabicLetterPattern = @"^[0-9\u0660-\u0669]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
-            return LocalizationHelper.GetLocalizedString("OnlyNumberAllowed");
+            return LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed");
         }
 
         return null; 
@@ -131,7 +116,7 @@ public static class VehicleValidation
         }
         else
         {
-           throw new Exception ("Letters can't be mixed");
+           throw new Exception (LocalizationHelper.GetLocalizedString("MixedInvalid"));
         }
         return (EnPlateLetters, ArPlateLetters);
 
@@ -156,7 +141,7 @@ public static class VehicleValidation
             }
             else
             {
-                throw new Exception("Invalid PlateLetter");
+                throw new Exception(LocalizationHelper.GetLocalizedString("NotFoundValidation") + ' ' + LocalizationHelper.GetLocalizedString("PlateLetter") + ' ' + charInArabic);
             }
         }
         return result.ToString();
@@ -179,7 +164,7 @@ public static class VehicleValidation
             }
             else
             {
-                throw new Exception("Invalid PlateLetter");
+                throw new Exception(LocalizationHelper.GetLocalizedString("NotFoundValidation") +' '+LocalizationHelper.GetLocalizedString("PlateLetter") +' ' + charInEnglish);
 
             }
         }
@@ -203,7 +188,7 @@ public static class VehicleValidation
         }
         else
         {
-            throw new Exception("Letters can't be mixed");
+            throw new Exception(LocalizationHelper.GetLocalizedString("MixedInvalid"));
         }
         return(EnglishNumbers, ArabicNumbers);
 
