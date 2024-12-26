@@ -220,7 +220,7 @@ public static class VehicleValidation
 
             if (character < '0' || character > '9')
             {
-                throw new Exception("Only Numbers are accepted");
+                throw new Exception(LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed"));
 
             }
             arabicNUmbers += englishToArabicMap[character];
@@ -253,7 +253,7 @@ public static class VehicleValidation
 
                if (character < '٠' || character > '٩')
                {
-                   throw new Exception("Only Numbers are accepted");
+                   throw new Exception(LocalizationHelper.GetLocalizedString("OnlyArabicNumberAllowed"));
 
                }
                englishNUmbers += arabicToEnglishMap[character];
