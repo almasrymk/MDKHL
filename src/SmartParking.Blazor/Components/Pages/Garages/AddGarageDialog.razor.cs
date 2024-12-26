@@ -61,8 +61,6 @@ public partial class AddGarageDialog
             else
             {
                 SnackBar.ShowSnackbar(Snackbar,$"{garage.NameEn} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}", Severity.Error);
-
-
             }
         }
         catch (AbpValidationException validationException)
