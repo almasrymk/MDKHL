@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Localization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,8 @@ public static class NumbersValidations
 
     public static string validateNumber(int value)
     {
-        if (value < 0)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
-
+        if (value < 0 || value > 9999)
+            return LocalizationHelper.GetLocalizedString("InvalidValidation");
         return null; // No error
     }
     
