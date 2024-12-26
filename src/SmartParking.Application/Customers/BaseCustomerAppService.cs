@@ -85,7 +85,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
         var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
         if (!result2)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("NationId") +LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("NationId") +" "+LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
         }
     }

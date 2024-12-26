@@ -48,7 +48,7 @@ public partial class UpdateCustomerDialog
             Email = customer.Email,
             FullName = customer.FullName,
             IdentificationType = customer.identificationTypes,
-            MobileNumber = customer.MobileNumber,
+            PhoneNumber = customer.MobileNumber,
             NationalId = customer.NationalId,
             UserName = customer.UserName,
             CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customer.CustomerCategory)

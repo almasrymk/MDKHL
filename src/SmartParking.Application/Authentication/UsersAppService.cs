@@ -60,17 +60,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null) {
-            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
         
         var creationResult = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
-
-        if (!creationResult.Succeeded)
-        {
-             throw new Exception(LocalizationHelper.GetLocalizedString("User")+ LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS)+LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED));
-        }
 
         await AssignRoleAndPermissionsAsync(user, roleId,input.IsCustomer);
 
@@ -298,7 +293,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
 

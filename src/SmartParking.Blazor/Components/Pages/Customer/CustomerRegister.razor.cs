@@ -121,17 +121,17 @@ public partial class CustomerRegister
             await CreateUser();
             CustomerDto customer;
 
-            createUpdateCustomerDto.Email = createUpdateCustomerDto.MobileNumber + "@gmail.com";
+            createUpdateCustomerDto.Email = createUpdateCustomerDto.PhoneNumber + "@gmail.com";
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
-            createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+            createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
 
             customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
             if (customer != null)
             {
                 CustomerId = customer.Id;
                 SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCustomerDto.FullName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-                //ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}", Severity.Success);
+                
                 showVehicle = true;
             }
 
