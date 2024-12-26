@@ -25,6 +25,8 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using SmartParking.Enums;
 using SmartParking.Utilities;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using SmartParking.Localization;
+using Volo.Abp;
 
 namespace SmartParking.Authentication;
 
@@ -59,17 +61,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null) {
-            throw new Exception("User with that phone number already exist");
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
         
         var creationResult = await _userManager.CreateAsync(user, input.Password);
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
-
-        if (!creationResult.Succeeded)
-        {
-             throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
-        }
 
         await AssignRoleAndPermissionsAsync(user, roleId,input.IsCustomer);
 
@@ -297,7 +294,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
-                throw new Exception("User not found");
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
 
@@ -314,6 +311,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IdentityUser? user = await IsUserFound(id);
             user.Name = input.Name;
             user.Surname = input.Surname;
+            
+            ObjectHelper.TrySetProperty(
+                    user,
+                    x => x.Email,
+                    () => input.Email
+                );
             user.SetIsActive(input.IsActive);
             user.SetProperty("IdentificationTypes", input.IdentificationTypes);
             user.SetProperty("NationalId", input.NationalId);
@@ -411,24 +414,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            var imagePath =await SaveImageAsync(image);
+            var imagePath =await FileHelper.SaveImageFromBase64Async(image, PathHelper.UserFolder);
             user?.SetProperty("Image", imagePath);
 
             await _userManager.UpdateAsync(user);
             return ObjectMapper.Map<IdentityUser, UserDto>(user);
         }
-    }
-
-    public async Task<string> SaveImageAsync(string image)
-    {
-        var base64Data = image.Substring(image.IndexOf(",") + 1);
-        byte[] imageBytes = Convert.FromBase64String(base64Data);
-
-        string fileName = $"{Guid.NewGuid()}{DateTime.Now:yyyyMMddHHmmssfff}.png";
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "users", fileName);
-
-        System.IO.File.WriteAllBytes(filePath, imageBytes);
-        return  $"images/users/{fileName}";
     }
 
     public async Task<IdentityRole?> FindRoleByTenantIdAsync(string roleName, Guid? tenantId)

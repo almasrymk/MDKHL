@@ -369,7 +369,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         customer.TenantId = null;
         customer.IdentityUser.Name = input.FullName;
         var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-        await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
+        await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.PhoneNumber);
         if (!createdUser.Succeeded)
         {
             throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);

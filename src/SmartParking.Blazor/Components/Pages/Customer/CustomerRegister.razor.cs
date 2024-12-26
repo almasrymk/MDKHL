@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
 using SmartParking.DefaultPackages;
 using SmartParking.Enums;
@@ -113,23 +114,21 @@ public partial class CustomerRegister
     }
     public async  Task HandleSubmit()
     {
-		var successedMessage = L["CustomerCreatedSuccessfullyWith"];
-        var faildMessage = L["FailedCreateCustomer"];
+		
 		try
         {
             await CreateUser();
             CustomerDto customer;
-
-            createUpdateCustomerDto.Email = createUpdateCustomerDto.MobileNumber + "@gmail.com";
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
-            createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+            createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
 
             customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
             if (customer != null)
             {
                 CustomerId = customer.Id;
-                ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCustomerDto.FullName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                
                 showVehicle = true;
             }
 
@@ -141,24 +140,19 @@ public partial class CustomerRegister
             foreach (var error in abpValidationException.ValidationErrors)
             {
                 errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
             }
-            ShowSnackbar(faildMessage+ errors, Severity.Error);
-
+            
         }
         catch (BusinessException businessException)
         {
-            string errors = string.Empty;
-            foreach (var error in businessException.Message)
-            {
-                errors += error;
-            }
-            ShowSnackbar(faildMessage+ errors, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Code}", Severity.Error);
 
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(faildMessage +ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 
         }
 
@@ -203,8 +197,8 @@ public partial class CustomerRegister
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
 
-                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/customers", true);
 
@@ -216,24 +210,23 @@ public partial class CustomerRegister
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{validationErrorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{validationErrorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{validationErrorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-
     }
 
     private void CancelCreate()
@@ -263,7 +256,7 @@ public partial class CustomerRegister
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar,ex.Message, Severity.Error);
         }
 
     }
@@ -288,7 +281,7 @@ public partial class CustomerRegister
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateNumber = createUpdateVehicle.ArPlateNumber = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
 
 

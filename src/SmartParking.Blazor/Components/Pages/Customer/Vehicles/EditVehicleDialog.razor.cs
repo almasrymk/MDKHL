@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Components.Web;
 using System.Text;
 using System.Globalization;
 using SmartParking.Validations;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -69,8 +70,7 @@ public partial class EditVehicleDialog
     }
     private async void SubmitEdit()
     {
-        var successedMessage = L["VehichleWasUpdatedSuccessfully"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+  
         try
         {
             Vehicle.CustomerId = Vehicle.CustomerId;
@@ -79,7 +79,7 @@ public partial class EditVehicleDialog
             if (vehichle != null)
             {
 
-                ShowSnackbar(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
 
                 await Task.Delay(1000);
@@ -93,22 +93,22 @@ public partial class EditVehicleDialog
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to edit vehicle: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to edit vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to edit vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
     }
@@ -132,7 +132,7 @@ public partial class EditVehicleDialog
         catch (Exception ex)
         {
             Vehicle.EnPlateLetters = Vehicle.ArPlateLetters = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
 
     }
@@ -158,7 +158,7 @@ public partial class EditVehicleDialog
         catch (Exception ex)
         {
             Vehicle.EnPlateNumber = Vehicle.ArPlateNumber = "";
-            ShowSnackbar(ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
 
 
@@ -170,10 +170,5 @@ public partial class EditVehicleDialog
         MudDialogAdd.Cancel();
 
     }
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
+
 }

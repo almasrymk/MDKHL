@@ -4,6 +4,7 @@ using MudBlazor;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SmartParking.Blazor.Components.Pages.Organizations;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
@@ -13,6 +14,7 @@ using SmartParking.Permissions.ContactPermissions;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.MyAccount;
 using SmartParking.Permissions.OrganizationPermissions;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,6 +75,7 @@ public partial class EditMyAccount
     public int Graceperiod { get; set; }
     public int? SubscriptionId { get; set; }
     public bool HasChangeStatusPermission { get; set; }
+    public bool IsPictureChanged { get; set; }
     public EditMyAccount()
     {
         CreatePolicyName = GaragePermissions.Create;
@@ -110,11 +113,11 @@ public partial class EditMyAccount
             CityId = int.Parse(CitySelectValue),
             RegionId = int.Parse(RegionSelectValue),
             StateId = int.Parse(StateSelectValue),
-            ContactMail = ContactMail,
+            Email = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
-            PhoneNum = PhoneNum,
+            PhoneNumber = PhoneNum,
             WhatsAppNum = WhatsAppNum,
             FirstHourPrice = FirstHourPrice,
             SecondHourPrice = SecondHourPrice,
@@ -131,54 +134,42 @@ public partial class EditMyAccount
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-            OrganizationPicture = OrganizationPicture,
             TenantId = tenant,
             FreeMinutes = FreeMinutes,
             Graceperiod = Graceperiod,
             SubscriptionId = SubscriptionId,
+            OrganizationPicture = OrganizationPicture
         };
-
 
         try
         {
-
-
+            if (IsPictureChanged)
+                createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
             await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {createUpdateOrganiztion.ArabicName}", Severity.Success);
 
-            ShowSnackbar("Update Orgainzation Successfully", Severity.Success);
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"Validation failed: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to add organization: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-    }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
     private void Cancel()
     {
@@ -315,92 +306,11 @@ public partial class EditMyAccount
         var imageFile = file;
         if (imageFile != null)
         {
-            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
+            IsPictureChanged = true;
             StateHasChanged();
         }
     }
-    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
-    {
-        // Ensure directory structure
-        var imageDirectoryPath = CreateImageDirectory();
 
-        // Generate a unique file name with the original file extension
-        string fileName = $"{Code}{Path.GetExtension(imageFile.Name)}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-        // Set the maximum dimensions
-        int maxWidth = 179;  // Maximum width
-        int maxHeight = 96; // Maximum height
-
-        // Delete the existing file if it exists
-        if (File.Exists(fullPath))
-        {
-            File.Delete(fullPath);
-        }
-
-        try
-        {
-            // Open the uploaded image file as a stream with a larger size limit
-            using (var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024))
-            using (var image = await Image.LoadAsync(stream)) // Asynchronously load the image
-            {
-                // Resize the image if it exceeds the maximum dimensions
-                image.Mutate(x => x.Resize(new ResizeOptions
-                {
-                    Mode = ResizeMode.Max, // Maintains aspect ratio
-                    Size = new Size(maxWidth, maxHeight)
-                }));
-
-                // Save the resized image to the specified path asynchronously
-                await image.SaveAsync(fullPath);
-            }
-
-            // Return the relative path for storing in the database
-            return $"images/OrganizationImages/{fileName}";
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error processing image: {ex.Message}");
-            throw;
-        }
-    }
-    private string CreateImageDirectory()
-    {
-        // Define the path where the image will be saved
-        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images/OrganizationImages");
-
-        // Ensure the directory exists
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-            Directory.CreateDirectory(imageDirectoryPath);
-        }
-        return imageDirectoryPath;
-    }
-    private string ValidateSecondaryNumber(int value)
-    {
-        if (value < 1111)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidatePostalCode(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidateBuildingNumber(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
+ 
 }

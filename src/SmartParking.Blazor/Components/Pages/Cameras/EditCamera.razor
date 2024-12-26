@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
 @using SmartParking.Enums
 @using SmartParking.Garages
@@ -19,7 +20,7 @@
 <PageTitle>@L["Edit Camera"]</PageTitle>
 
 <div class="modal-wrapper">
-	<MudDialog class="mud-modal" Style="min-width:fit-content !important">
+	<MudDialog class="mud-modal">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["Edit"] @Camera.Name</MudText>
 		</TitleContent>
@@ -254,9 +255,7 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["Camera Updated Successfully"];
-		var errorMessage = L["Can't Update Camera"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
 		try
 		{
 			if (Camera.GarageId != GarageId)
@@ -268,7 +267,7 @@
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
 			MudDialogAdd.Close(DialogResult.Ok(true));
-			Snackbar.Add($"{successedMessage}", Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Camera.Name}", Severity.Success);
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/cameras", forceLoad: true);
 
@@ -278,33 +277,22 @@
 		{
 			foreach (var validationError in validationException.ValidationErrors)
 			{
-				ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
 			}
 		}
 		catch (BusinessException ex)
 		{
 
-			ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {ex.Message}" , Severity.Error);
 		}
 		catch (AuthenticationException ex)
 		{
-			ShowSnackbar($"{errorMessage} : : {ex.Message} + ", Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {ex.Message}", Severity.Error);
 		}
 		catch (Exception ex)
 		{
-
-			ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {ex.Message}", Severity.Error);
 		}
-	}
-	/// <summary>
-	/// Displays a snackbar notification with the specified message and severity.
-	/// </summary>
-	/// <param name="message">The message to display in the snackbar.</param>
-	/// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-	void ShowSnackbar(string message, Severity severity)
-	{
-		Snackbar.Clear();
-		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 	}
 
 	private async Task CancelEdit()

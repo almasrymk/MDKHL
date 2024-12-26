@@ -40,11 +40,11 @@ public class CustomerMappingProfile : Profile
         // Map RegisterCustomerDto -> CustomerDto (reverse mapping)
         CreateMap<CreateUpdateCustomerDto, CustomerDto>()
             .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
-            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.MobileNumber))
+            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForPath(dest => dest.ArabicName, opt => opt.MapFrom(src => src.ArabicName))
-            .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.MobileNumber))
+            .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForPath(dest => dest.isActive, opt => opt.MapFrom(src => src.isActive))
             .ForPath(dest => dest.identificationTypes, opt => opt.MapFrom(src => src.IdentificationType))
             .ForPath(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId)).ReverseMap();

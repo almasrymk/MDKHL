@@ -5,6 +5,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +55,7 @@ public class CamerasAppService :
 
     public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (CurrentTenant.Id==null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -75,9 +76,12 @@ public class CamerasAppService :
             var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
             if (subscription == null)
             {
-                throw new Exception("No subscription for organization");
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
             }
             var existingCamera = await _repository.GetAsync(id);
+            if (await CheckIPUnique(input.CameraIP) == 1 && existingCamera.Id != id) {
+                throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            }
             if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
             {
                 var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
@@ -148,8 +152,7 @@ public class CamerasAppService :
 
             if (result == true)
             {
-            camera.Status = Status.Deleted;
-
+               camera.Status = Status.Deleted;
             }
             else
             {
@@ -183,10 +186,7 @@ public class CamerasAppService :
 
             if (await CheckIPUnique(input.CameraIP) == 1)
             {
-                throw new UserFriendlyException("The Camera IP is already in use.")
-                {
-                    Code = "DuplicateCameraIP"
-                };
+                throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP")+' '+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             var numberOfCamerasForOrganization = await GetNumbersOfCamerasRelatedToGarage(input.GarageId);
 
@@ -218,7 +218,7 @@ public class CamerasAppService :
 
         if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
         {
-            throw new Exception("Upgrade subscription to add cameras to organization.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
         }
 
@@ -233,16 +233,13 @@ public class CamerasAppService :
     /// <returns>1 if IP Exists</returns>
     private async Task<int> CheckIPUnique(string cameraIP)
     {
-        // Use FirstOrDefaultAsync to find the camera by IP
         var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
 
-        // If a camera is found, return 1 (or any positive number to indicate it's not unique)
         if (camera != null)
         {
             return 1; // CameraIP exists
         }
 
-        // Return 0 if the CameraIP is unique (not found)
         return -1;
     }
     /// <summary>

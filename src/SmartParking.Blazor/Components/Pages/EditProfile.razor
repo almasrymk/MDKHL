@@ -1,10 +1,14 @@
 ﻿@page "/edit-profile"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using System.IO
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Account
 @using Volo.Abp.Users
+@using Volo.Abp.Validation
 @layout Shared.ProfileLayout
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IUsersAppService UsersAppService
@@ -28,6 +32,13 @@
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="OldProfile.Name" Required="true" />
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" Required="true" />
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="OldProfile.PhoneNumber" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["NationalId"] @bind-Value="OldProfile.NationalId" Required="true" />
+             <MudRadioGroup @bind-Value="@OldProfile.IdentificationTypes"
+                            Class="d-inline-flex align-content-center">
+                 <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                 <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+             </MudRadioGroup>
+
 
             <div class="d-flex align-items-center gap-3 mt-4">
                 <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">@L["CHANGE PASSWORD"]</MudButton>
@@ -64,6 +75,7 @@
             OldProfile.Email = Profile.Email= profile.Email;
             OldProfile.PhoneNumber = Profile.PhoneNumber= profile.PhoneNumber;
             OldProfile.UserName = Profile.UserName= profile.UserName;
+            OldProfile.NationalId = profile.NationalId = profile.NationalId;
 
             ProfilePictureUrl = NewProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "" : profile.Image;
 
@@ -85,44 +97,60 @@
 
             if (form.IsValid)
             {
+                bool updated = false;
                 if(IfChanged(OldProfile,Profile)){
                     await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, OldProfile);
+                    updated = true;
 
-                    Snackbar.Add("Profile updated successfully!", Severity.Success);
-                    await Task.Delay(1000);
-                    Navigation.Refresh(true);
                 }
                 if (NewProfilePictureUrl != ProfilePictureUrl){
-                    await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
-                    Snackbar.Add("Profile updated successfully!", Severity.Success);
-                    await Task.Delay(1000);
-                    Navigation.Refresh(true);
+                    await UsersAppService.UpdateImageAsync(CurrentUser.Id, ProfilePictureUrl);
+                    updated = true;
+      
+                }
+                if(updated){
+
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Profile"]}", Severity.Success);
+                await Task.Delay(1000);
+                Navigation.Refresh(true);
                 }
             }
             else
             {
-                Snackbar.Add("Form validation failed. Please check the fields.", Severity.Warning);
+                Snackbar.Add(L[AlertMessages.AlertMessages.VAlIDATION_ERROR], Severity.Warning);
             }
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error updating profile: {ex.Message}", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
 
     private async Task UploadFiles(IBrowserFile file)
     {
-        using var stream = file.OpenReadStream(2 * 1024 * 1024); 
-        using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-        byte[] imageBytes = memoryStream.ToArray();
-        ImageBase64 = Convert.ToBase64String(imageBytes);
-        ProfilePictureUrl =  await UsersAppService.SaveImageAsync(ImageBase64);
+        ProfilePictureUrl = await ImageHelper.GetImageBase64Async(file);
         StateHasChanged();
     }
     private bool IfChanged(UpdateUserDto OldProfile, UpdateUserDto NewProfile)
     {
-        if (OldProfile.UserName != Profile.UserName || OldProfile.Email != Profile.Email || OldProfile.PhoneNumber != Profile.PhoneNumber || OldProfile.Name != Profile.Name){
+        if (OldProfile != Profile){
             return true;
         }
         return false;
