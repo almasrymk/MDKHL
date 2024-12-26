@@ -540,7 +540,8 @@
     "GreaterZeroValidtion": "Must be greater than 0",
     "LessThan9999Validation": "Must be less than or equal 9999.",
     "SummationValidation": "Check Summation of",
-    "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new"
+    "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new",
+    "InvalidValidation": "Invalid Value"
 
 
 
