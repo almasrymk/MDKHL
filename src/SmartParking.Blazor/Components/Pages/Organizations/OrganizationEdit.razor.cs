@@ -150,11 +150,11 @@ public partial class OrganizationEdit
             CityId = int.Parse(CitySelectValue),
             RegionId = int.Parse(RegionSelectValue),
             StateId = int.Parse(StateSelectValue),
-            ContactMail = ContactMail,
+            Email = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
-            PhoneNum = PhoneNum,
+            PhoneNumber = PhoneNum,
             WhatsAppNum = WhatsAppNum,
             FirstHourPrice = FirstHourPrice,
             SecondHourPrice = SecondHourPrice,
@@ -192,40 +192,30 @@ public partial class OrganizationEdit
 
             }
             Navigation.NavigateTo("/organizations");
-            ShowSnackbar(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {createUpdateOrganiztion.ArabicName}", Severity.Success);
+
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-    }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
     private void Cancel()
     {
@@ -414,63 +404,5 @@ public partial class OrganizationEdit
             StateHasChanged();
         }
     }
-    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
-    {
-        // Ensure directory structure
-        var imageDirectoryPath = CreateImageDirectory();
-
-        // Generate a unique file name with the original file extension
-        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-        // Save the image to the specified path
-        using (var fileStream = new FileStream(fullPath, FileMode.Create))
-        {
-            // Copy the image data from the IBrowserFile stream to the file stream
-            await imageFile.OpenReadStream().CopyToAsync(fileStream);
-        }
-
-        // Return the relative path for storing in the database
-        return $"/OrganizationImages/{fileName}";
-    }
-    private string CreateImageDirectory()
-    {
-        // Define the path where the image will be saved
-        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
-
-        // Ensure the directory exists
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-            Directory.CreateDirectory(imageDirectoryPath);
-        }
-        return imageDirectoryPath;
-    }
-    private string ValidateSecondaryNumber(int value)
-    {
-        if (value < 1111)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidatePostalCode(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidateBuildingNumber(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-
+ 
 }

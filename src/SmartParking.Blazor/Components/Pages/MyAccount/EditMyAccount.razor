@@ -10,6 +10,7 @@
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
 @using System.Globalization
+@using SmartParking.Validations
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
@@ -77,14 +78,14 @@
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidateBuildingNumber))" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField Required="true" Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Validation="@(new Func<int, string>(ValidateSecondaryNumber))"
+                            <MudNumericField Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber1111to9999))"
                                              Required="true" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
                         </MudItem>
 
@@ -92,7 +93,7 @@
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Validation="@(new Func<int, string>(ValidatePostalCode))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                            <MudNumericField Required="true" Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber11111to99999))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
                         <MudItem sm="8">
                             <MudTextField Disabled T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
