@@ -4,6 +4,7 @@ using MudBlazor;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SmartParking.Blazor.Components.Pages.Organizations;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
@@ -13,6 +14,7 @@ using SmartParking.Permissions.ContactPermissions;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.MyAccount;
 using SmartParking.Permissions.OrganizationPermissions;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -131,7 +133,7 @@ public partial class EditMyAccount
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-            OrganizationPicture = OrganizationPicture,
+            OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder),
             TenantId = tenant,
             FreeMinutes = FreeMinutes,
             Graceperiod = Graceperiod,
@@ -315,7 +317,7 @@ public partial class EditMyAccount
         var imageFile = file;
         if (imageFile != null)
         {
-            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
             StateHasChanged();
         }
     }
