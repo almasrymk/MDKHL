@@ -11,6 +11,7 @@ namespace SmartParking.Lookups.VehicleModel
 		public string ArabicName { get; set; }
 		public string EnglishName { get; set; }
 		public int VehiclesBrandId { get; set; }
+        public string Image { get; set; }
 
-	}
+    }
 }

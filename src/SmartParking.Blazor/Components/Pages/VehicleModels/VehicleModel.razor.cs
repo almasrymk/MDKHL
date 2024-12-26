@@ -174,7 +174,8 @@ public partial class VehicleModel
 		{
 			ArabicName = vehicleModelDto.ArabicName,
 			EnglishName = vehicleModelDto.EnglishName,
-			VehiclesBrandId = vehicleModelDto.VehiclesBrandId
+			VehiclesBrandId = vehicleModelDto.VehiclesBrandId,
+			Image = vehicleModelDto.Image,
 
 		};
 
@@ -203,6 +204,7 @@ public partial class VehicleModel
 			ArabicName = vehicleModelDto.ArabicName,
 			EnglishName = vehicleModelDto.EnglishName,
 			VehiclesBrandId = vehicleModelDto.VehiclesBrandId,
+			Image = vehicleModelDto.Image
 
 		};
 

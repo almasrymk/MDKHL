@@ -538,9 +538,8 @@
     "SummationValidation": "Check Summation of",
     "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new",
     "InvalidValidation": "Invalid Value",
-    "DuplicateValidation": "Already Exist"
-
-
+    "DuplicateValidation": "Already Exist",
+    "ModelPicture": "Model Picture"
 
 
 

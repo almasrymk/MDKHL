@@ -411,24 +411,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            var imagePath =await SaveImageAsync(image);
+            var imagePath =await FileHelper.SaveImageFromBase64Async(image, PathHelper.UserFolder);
             user?.SetProperty("Image", imagePath);
 
             await _userManager.UpdateAsync(user);
             return ObjectMapper.Map<IdentityUser, UserDto>(user);
         }
-    }
-
-    public async Task<string> SaveImageAsync(string image)
-    {
-        var base64Data = image.Substring(image.IndexOf(",") + 1);
-        byte[] imageBytes = Convert.FromBase64String(base64Data);
-
-        string fileName = $"{Guid.NewGuid()}{DateTime.Now:yyyyMMddHHmmssfff}.png";
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "users", fileName);
-
-        System.IO.File.WriteAllBytes(filePath, imageBytes);
-        return  $"images/users/{fileName}";
     }
 
     public async Task<IdentityRole?> FindRoleByTenantIdAsync(string roleName, Guid? tenantId)

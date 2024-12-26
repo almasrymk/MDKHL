@@ -1,8 +1,10 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
 @using SmartParking.Lookups.VehicleModel
 @using System.Globalization
+@using SmartParking.Utilities
 @using Volo.Abp.Application.Dtos
 
 @inject IVehicleModelsAppService VehicleModelsAppService
@@ -31,11 +33,11 @@
 				<MudGrid>
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@VehicleModel.VehiclesBrandId"
-								   Variant="Variant.Text"
-								   Label="@L["VehiclesBrand Name"]"
-								   Placeholder="Choose"
-								   Required="true"
-								   Clearable="_clearable">
+						Variant="Variant.Text"
+						Label="@L["VehiclesBrand Name"]"
+						Placeholder="Choose"
+						Required="true"
+						Clearable="_clearable">
 							@foreach (var vehicleBrand in VehicleBrands)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -54,21 +56,36 @@
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="VehicleModel.ArabicName"
-									  For="@(() => VehicleModel.ArabicName)"
-									  Immediate="true"
-									  Label="@L["ArabicName"]" />
+						For="@(() => VehicleModel.ArabicName)"
+						Immediate="true"
+						Label="@L["ArabicName"]" />
 					</MudItem>
 
 					<MudItem sm="4">
 						<MudTextField @bind-Value="VehicleModel.EnglishName"
-									  For="@(() => VehicleModel.EnglishName)"
-									  Immediate="true"
-									  Required="true"
-									  Label="@L["EnglishName"]" />
+						For="@(() => VehicleModel.EnglishName)"
+						Immediate="true"
+						Required="true"
+						Label="@L["EnglishName"]" />
+					</MudItem>
+
+					<MudItem sm="6">
+
+						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+							<MudImage Src="@ModelPicture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["ModelPicture"]" />
+							<MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+								<ActivatorContent>
+									<MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
+								</ActivatorContent>
+							</MudFileUpload>
+						</div>
+
 					</MudItem>
 				</MudGrid>
 			</MudForm>
 
+			
 
 
 		</DialogContent>
@@ -86,7 +103,7 @@
 
 <style>
 	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	border-radius: 0 20px 0 20px;
 	}
 </style>
 
@@ -100,8 +117,18 @@
 	bool _clearable;
 	private MudForm form;
 	IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
+	private string ModelPicture { get; set; }
 
-
+	private async Task OnImageUpload(IBrowserFile file)
+	{
+		var imageFile = file;
+		if (imageFile != null)
+		{
+			// Save the image and get the file path
+			ModelPicture = await ImageHelper.GetImageBase64Async(imageFile);
+			StateHasChanged();
+		}
+	}
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await VehiclesBrandsAppService.GetListAsync(new PagedAndSortedResultRequestDto
@@ -110,6 +137,7 @@
 				SkipCount = (1 - 1) * 100
 			});
 		VehicleBrands = result.Items.ToList();
+		ModelPicture = VehicleModel.Image;
 		await base.OnInitializedAsync();
 	}
 
@@ -120,7 +148,7 @@
 
 		try
 		{
-
+			VehicleModel.Image = await FileHelper.SaveImageFromBase64Async(ModelPicture, PathHelper.ModelFolder);
 			await VehicleModelsAppService.UpdateAsync(UpdatedId, VehicleModel);
 			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));

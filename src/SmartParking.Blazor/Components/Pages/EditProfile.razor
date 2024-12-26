@@ -1,6 +1,7 @@
 ﻿@page "/edit-profile"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using System.IO
 @using Volo.Abp.Account
@@ -93,7 +94,7 @@
                     Navigation.Refresh(true);
                 }
                 if (NewProfilePictureUrl != ProfilePictureUrl){
-                    await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
+                    await UsersAppService.UpdateImageAsync(CurrentUser.Id, ProfilePictureUrl);
                     Snackbar.Add("Profile updated successfully!", Severity.Success);
                     await Task.Delay(1000);
                     Navigation.Refresh(true);
@@ -112,12 +113,15 @@
 
     private async Task UploadFiles(IBrowserFile file)
     {
-        using var stream = file.OpenReadStream(2 * 1024 * 1024); 
-        using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-        byte[] imageBytes = memoryStream.ToArray();
-        ImageBase64 = Convert.ToBase64String(imageBytes);
-        ProfilePictureUrl =  await UsersAppService.SaveImageAsync(ImageBase64);
+        
+
+        ProfilePictureUrl = await ImageHelper.GetImageBase64Async(file);
+        // using var stream = file.OpenReadStream(2 * 1024 * 1024); 
+        // using var memoryStream = new MemoryStream();
+        // await stream.CopyToAsync(memoryStream);
+        // byte[] imageBytes = memoryStream.ToArray();
+        // ImageBase64 = Convert.ToBase64String(imageBytes);
+        // ProfilePictureUrl =  await UsersAppService.SaveImageAsync(ImageBase64);
         StateHasChanged();
     }
     private bool IfChanged(UpdateUserDto OldProfile, UpdateUserDto NewProfile)
