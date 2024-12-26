@@ -6,9 +6,11 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
+@using SmartParking.Validations
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject ICurrentUser currrentUser
+@inject ICurrentTenant currrentTenant
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IOrganizationsAppService OrganizationAppService
 @inject NavigationManager Navigation
@@ -42,7 +44,7 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["ArGarageName"]" />
                     </MudItem>
-                    @if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+                    @if (currrentTenant.Id == null)
                     {
                         <MudItem sm="6" md="6">
                             <MudSelect T="int"
@@ -89,7 +91,7 @@
                                          Variant="Variant.Text"
                                          Value="@Garage.MaxCapacity"
                                          Class="w-100"
-                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         Validation="@(new Func<int, string>(NumbersValidations.validateNumber))"
                                          HideSpinButtons="true"
                                          T="int"
                                          Placeholder="@L["Type Here"]"
@@ -101,7 +103,7 @@
                                          Class="w-100"
                                          T="int"
                                         
-                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         Validation="@(new Func<int, string>(NumbersValidations.validateNumber))"
                                          HideSpinButtons="true"
                                          Value="Garage.MaxSlotsForCustomers"
                                          Placeholder="@L["Type Here"]"
@@ -112,7 +114,7 @@
                         <MudNumericField Value="Garage.MaxSlotsForEmployess"
                                          Variant="Variant.Text"
                                          Class="w-100"
-                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         Validation="@(new Func<int, string>(NumbersValidations.validateNumber))"
                                          HideSpinButtons="true"
                                          T="int"
                                          Placeholder="@L["Type Here"]"
@@ -124,7 +126,7 @@
                         <MudNumericField Value="Garage.MaxSlotsForFree"
                                          Variant="Variant.Text"
                                          Class="w-100"
-                                         Validation="@(new Func<int, string>(validateNumber))"
+                                         Validation="@(new Func<int, string>(NumbersValidations.validateNumber))"
                                          HideSpinButtons="true"
                                          T="int"
                                          Placeholder="@L["Type Here"]"

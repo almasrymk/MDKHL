@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Entities.Organizations;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,15 +39,13 @@ public partial class UpdateGarageDialog
 
     private async Task SubmitEdit()
     {
-        var successedMessage = L["Garage Updated Successfully"];
-        var errorMessage = L["Failed to update garage"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+
         try
         {
             Garage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
 
             await GarageAppService.UpdateAsync(UpdatedId, Garage);
-            ShowSnackbar($"{successedMessage}", Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Garage.NameEn}", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
             Navigation.NavigateTo("/garages", true);
@@ -55,22 +56,22 @@ public partial class UpdateGarageDialog
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
     }
 
@@ -80,190 +81,43 @@ public partial class UpdateGarageDialog
 
 
     }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-    private string validateNumber(int value)
-    {
-        if (value < 0)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
 
-        return null; // No error
-    }
+
     private void HandleMaxCapacityChange(int maxCapacity)
     {
         Garage.MaxCapacity = maxCapacity;
-
-        // Reset all slots to zero to start fresh
-        SetSlotsZero();
+        Garage.MaxSlotsForEmployess = 0;
+        Garage.MaxSlotsForCustomers = 0;
+        Garage.MaxSlotsForFree = 0;
     }
 
     private void HandleEmployeeSlotsChange(int maxSlotsForEmployees)
     {
         Garage.MaxSlotsForEmployess = maxSlotsForEmployees;
-        DistributeRemainingCapacity();
+        Disrtibute();
     }
 
     private void HandleCustomerSlotsChange(int maxSlotsForCustomers)
     {
         Garage.MaxSlotsForCustomers = maxSlotsForCustomers;
-        DistributeRemainingCapacity();
+        Disrtibute();
     }
 
     private void HandleFreeSlotsChange(int maxSlotsForFree)
     {
         Garage.MaxSlotsForFree = maxSlotsForFree;
-        DistributeRemainingCapacity();
+        Disrtibute();
     }
 
-    private void DistributeRemainingCapacity()
+    private void Disrtibute()
     {
-        int totalAllocated = Garage.MaxSlotsForEmployess
-                           + Garage.MaxSlotsForCustomers
-                           + Garage.MaxSlotsForFree;
-
-        int remainingCapacity = Garage.MaxCapacity - totalAllocated;
-
-
-        if (remainingCapacity < 0)
-        {
-            // If total slots exceed MaxCapacity, reset to prevent overflow
-
-            SetSlotsZero();
-        }
-        else
-        {
-
-            // Distribute remaining slots dynamically
-            if (Garage.MaxSlotsForEmployess > 0)
-            {
-                if (Garage.MaxSlotsForCustomers > 0)
-                {
-                    if (Garage.MaxSlotsForFree > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            // If total slots exceed MaxCapacity, reset to prevent overflow
-
-                            SetSlotsZero();
-                        }
-                    }
-                    else
-                    {
-                        Garage.MaxSlotsForFree = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForCustomers;
-
-                    }
-
-                }
-                else if (Garage.MaxSlotsForFree > 0)
-                {
-                    if (Garage.MaxSlotsForCustomers > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            SetSlotsZero();
-                        }
-
-                    }
-                    else
-                    {
-
-                        Garage.MaxSlotsForCustomers = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForFree;
-                    }
-
-                }
-            }
-            else if (Garage.MaxSlotsForCustomers > 0)
-            {
-                if (Garage.MaxSlotsForFree > 0)
-                {
-                    if (Garage.MaxSlotsForEmployess > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-
-                            SetSlotsZero();
-                        }
-
-                    }
-                    else
-                    {
-
-                        Garage.MaxSlotsForEmployess = Garage.MaxCapacity - Garage.MaxSlotsForCustomers - Garage.MaxSlotsForFree;
-                    }
-                }
-                else if (Garage.MaxSlotsForEmployess > 0)
-                {
-                    if (Garage.MaxSlotsForFree > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-
-                            SetSlotsZero();
-                        }
-
-                    }
-                    else
-                    {
-                        Garage.MaxSlotsForFree = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForCustomers;
-
-                    }
-
-                }
-            }
-            else if (Garage.MaxSlotsForFree > 0)
-            {
-                if (Garage.MaxSlotsForEmployess > 0)
-                {
-                    if (Garage.MaxSlotsForCustomers > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-
-                            SetSlotsZero();
-                        }
-
-                    }
-                    else
-                    {
-                        Garage.MaxSlotsForCustomers = Garage.MaxCapacity - Garage.MaxSlotsForEmployess - Garage.MaxSlotsForFree;
-
-                    }
-                }
-                else if (Garage.MaxSlotsForCustomers > 0)
-                {
-                    if (Garage.MaxSlotsForEmployess > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            SetSlotsZero();
-                        }
-
-                    }
-                    else
-                    {
-
-                        Garage.MaxSlotsForEmployess = Garage.MaxCapacity - Garage.MaxSlotsForFree - Garage.MaxSlotsForCustomers;
-                    }
-
-                }
-            }
-        }
+        int MaxSlotsForEmployess = Garage.MaxSlotsForEmployess;
+        int MaxSlotsForCustomers = Garage.MaxSlotsForCustomers;
+        int MaxSlotsForFree = Garage.MaxSlotsForFree;
+        NumbersValidations.DistributeRemainingCapacity(ref MaxSlotsForEmployess, ref MaxSlotsForCustomers, ref MaxSlotsForFree, Garage.MaxCapacity);
+        Garage.MaxSlotsForEmployess = MaxSlotsForEmployess;
+        Garage.MaxSlotsForFree = MaxSlotsForFree;
+        Garage.MaxSlotsForCustomers = MaxSlotsForCustomers;
     }
 
-    private void SetSlotsZero()
-    {
-        Garage.MaxSlotsForEmployess = 0;
-        Garage.MaxSlotsForCustomers = 0;
-        Garage.MaxSlotsForFree = 0;
-    }
 }

@@ -5,6 +5,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +55,7 @@ public class CamerasAppService :
 
     public override async Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (CurrentTenant.Id==null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -75,7 +76,7 @@ public class CamerasAppService :
             var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
             if (subscription == null)
             {
-                throw new Exception("No subscription for organization");
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
             }
             var existingCamera = await _repository.GetAsync(id);
             if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
@@ -183,10 +184,7 @@ public class CamerasAppService :
 
             if (await CheckIPUnique(input.CameraIP) == 1)
             {
-                throw new UserFriendlyException("The Camera IP is already in use.")
-                {
-                    Code = "DuplicateCameraIP"
-                };
+                throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP")+' '+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             var numberOfCamerasForOrganization = await GetNumbersOfCamerasRelatedToGarage(input.GarageId);
 
@@ -218,7 +216,7 @@ public class CamerasAppService :
 
         if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
         {
-            throw new Exception("Upgrade subscription to add cameras to organization.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
         }
 
