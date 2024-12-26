@@ -79,6 +79,7 @@ public partial class OrganizationEdit
     public  int FreeMinutes { get; set; }
     public  int Graceperiod { get; set; }
     private bool HasChangeStatusPermission;
+    private bool IsPictureChanged;
 
 
 
@@ -170,7 +171,7 @@ public partial class OrganizationEdit
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-            OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder),
+            OrganizationPicture = OrganizationPicture,
             Address = BuildingNumber + StreetName + SecondaryNumber + District + PostalCode + CityNameEdit ,
             FreeMinutes= FreeMinutes,
             Graceperiod= Graceperiod,
@@ -182,7 +183,8 @@ public partial class OrganizationEdit
         try
         {
 
-
+            if (IsPictureChanged)
+                createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
             var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
             if (SubscriptionId != int.Parse(SubscriptionSelectValue))
             {
@@ -408,6 +410,7 @@ public partial class OrganizationEdit
         if (imageFile != null)
         {
             OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
+            IsPictureChanged = true;
             StateHasChanged();
         }
     }

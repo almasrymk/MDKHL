@@ -75,6 +75,7 @@ public partial class EditMyAccount
     public int Graceperiod { get; set; }
     public int? SubscriptionId { get; set; }
     public bool HasChangeStatusPermission { get; set; }
+    public bool IsPictureChanged { get; set; }
     public EditMyAccount()
     {
         CreatePolicyName = GaragePermissions.Create;
@@ -133,18 +134,18 @@ public partial class EditMyAccount
             SecondaryNumber = SecondaryNumber,
             PostalCode = PostalCode,
             District = District,
-            OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder),
             TenantId = tenant,
             FreeMinutes = FreeMinutes,
             Graceperiod = Graceperiod,
             SubscriptionId = SubscriptionId,
+            OrganizationPicture = OrganizationPicture
         };
 
 
         try
         {
-
-
+            if (IsPictureChanged)
+                createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
             await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
 
             ShowSnackbar("Update Orgainzation Successfully", Severity.Success);
@@ -318,6 +319,7 @@ public partial class EditMyAccount
         if (imageFile != null)
         {
             OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
+            IsPictureChanged = true;
             StateHasChanged();
         }
     }
