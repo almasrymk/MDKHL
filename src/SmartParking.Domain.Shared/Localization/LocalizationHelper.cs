@@ -20,6 +20,6 @@ public static class LocalizationHelper
     public static string GetLocalizedString(string key)
     {
         var localizer = _serviceProvider.GetRequiredService<IStringLocalizer<SmartParkingResource>>();
-        return localizer[key];
+        return localizer[key] ??"";
     }
 }

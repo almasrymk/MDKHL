@@ -45,9 +45,6 @@
                                 <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
                                     <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                                 </MudItem>
-                            </div>
-
-                            <MudItem sm="12">
                                 <Label>@L["Status"]</Label>
                                 <Div Style=@($"background-color: {(Status==1 ? "#b8efb0" : "#f20707")};border:none;color:{(Status==1 ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;width:25%")>
                                     @if (Status == 1)
@@ -66,7 +63,7 @@
                                     }
 
                                 </Div>
-                            </MudItem>
+                            </div>
                         </MudItem>
 
                         <MudItem sm="6">

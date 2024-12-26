@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,24 +14,22 @@ namespace SmartParking.Authentication;
 
 public class UserCreateDto
 {
-    [Required]
-    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxUserNameLength))]
     public string UserName { get; set; }
 
-    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxNameLength))]
+    
     public string Name { get; set; }
 
-    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxSurnameLength))]
+    
     public string Surname { get; set; }
 
 
-    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPhoneNumberLength))]
+    
     public string PhoneNumber { get; set; }
 
     public bool IsActive { get; set; }
 
     [Required]
-    [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPasswordLength))]
+    
     public string Password { get; set; }
     [Required]
     public int UserType { get; set; }

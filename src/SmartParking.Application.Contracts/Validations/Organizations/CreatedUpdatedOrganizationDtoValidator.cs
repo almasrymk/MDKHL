@@ -1,6 +1,7 @@
 ﻿using Castle.Core.Internal;
 using FluentValidation;
 using Newtonsoft.Json.Linq;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
@@ -14,39 +15,40 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 {
     public CreatedUpdatedOrganizationDtoValidator()
     {
-        RuleFor(x=>x.CommercialRegistrationNumber)
-            .Length(10)
-            .NotEmpty();
+        RuleFor(x => x.CommercialRegistrationNumber)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Length(10);
 
         RuleFor(x => x.ArabicName)
-        .NotEmpty()
-        .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$")
-        .WithMessage("The Arabic name should only contain Arabic letters, digits, punctuation marks, and spaces.");
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+        .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
+
 
         RuleFor(x => x.CRExpiryDate)
-            .NotEmpty()
-            .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
-            .WithMessage("The expiry date cannot be earlier than today.");
-
-        
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+        .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage(LocalizationHelper.GetLocalizedString("ExpiryDateValidation"));
 
         RuleFor(x => x.EnglishName)
-            .NotEmpty()
-            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$");
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
 
-		RuleFor(x => x.WhatsAppNum)
-			.NotEmpty()
-			.Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$")
-			.WithMessage("please add valid whats app number");
-		RuleFor(x => x.ContactMail).NotEmpty().Matches(@"^(?!.*\.\.)(?!.*\.$)(?=.{1,254}$)(?=.{1,64}@.{1,255}$)[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.(com|net|org|edu|gov|mil|int|co|info|biz|us|eu|uk|ca|jp|cn|in|au|za|tv|me|mobi|name)$");
-        RuleFor(x => x.PhoneNum)
-            .NotEmpty()
-            .Matches(@"^01\d{8}$")
-            .WithMessage("Phone Number must start with '01', contain only numbers, and be exactly 10 digits long.");
+
+        RuleFor(x => x.WhatsAppNum)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
+
+		RuleFor(x => x.Email)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^(?!.*\.\.)(?!.*\.$)(?=.{1,254}$)(?=.{1,64}@.{1,255}$)[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.(com|net|org|edu|gov|mil|int|co|info|biz|us|eu|uk|ca|jp|cn|in|au|za|tv|me|mobi|name)$")
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmailValidation"));
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^01\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
 
         RuleFor(x => x.SubscriptionId)
-            .Must(id => id == null || id > 0)
-            .WithMessage("SubscriptionId must be a positive number if provided.");
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
 
         RuleFor(x=>x.FirstHourPrice)
             .GreaterThanOrEqualTo(0);
@@ -61,7 +63,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.FullDayPrice)
-          .NotEmpty()
+          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
           .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.NumberOfHours)
@@ -84,16 +86,14 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
 
         RuleFor(x=>x.District)
-            .NotEmpty()
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
-            .MaximumLength(20)
-            .WithMessage("District must start with 3 to 20 English or Arabic letters, and the total length must not exceed 25 characters.");
+           .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
 
         RuleFor(x => x.StreetName)
-           .NotEmpty()
-           .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$") 
-           .MaximumLength(20)
-           .WithMessage("Street Name must start with 3 to 20 English or Arabic letters, spaces are allowed, and the total length must not exceed 20 characters.");
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+           .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
+           .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
 
 
 

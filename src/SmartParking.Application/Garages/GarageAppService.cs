@@ -6,6 +6,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
@@ -88,7 +89,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             throw new EntityNotFoundException(typeof(Organization), organizationId);
 
         if (organization.Status != Enums.Status.Active)
-            throw new Exception("Can't add garage to inactive organization.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("InActive")+ LocalizationHelper.GetLocalizedString("Organization"));
 
         return organization;
     }
@@ -98,7 +99,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     {
         if (input.MaxCapacity != input.MaxSlotsForCustomers + input.MaxSlotsForEmployess + input.MaxSlotsForFree)
         {
-            throw new Exception("Summation of slots is greater than maximum capacity !!");
+            throw new Exception(LocalizationHelper.GetLocalizedString("SummationValidation") +' '+ LocalizationHelper.GetLocalizedString("MaxCapacity"));
         }
     }
     [RemoteService(isEnabled: false)]
@@ -112,7 +113,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             if (subscription == null || subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1 ||
                 organization.UsedSlots + input.MaxCapacity > subscription.ParkingSlot || input.MaxCapacity > subscription.ParkingSlot)
             {
-                throw new Exception($"Upgrade subscription to add garage to organization valid slots less than {subscription?.ParkingSlot} ");
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
             }
 
             return subscription;
@@ -127,7 +128,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         
          if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
          {
-             throw new Exception("Upgrade subscription to add cameras to organization.");
+             throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
          }
 
@@ -165,7 +166,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     {
         if (input == 99)
         {
-            throw new BusinessException("Can't add more garages for that organization");
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
         }
         string Code = "-G-";
         if (input < 9)
@@ -700,15 +701,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 		if (NewOrganization.Subscription.NumberOfCameras < NewOrganization.ActiveCameras + totalActive)
 		{
-			throw new Exception("UPGRADE subscription to add cameras to organization.");
+			throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 		}
 		NewOrganization.ActiveCameras += totalActive;
 		if (NewOrganization.Subscription.NumbersOfGarages < NewOrganization.ActiveGarages + 1)
 		{
-			throw new Exception("UPGRADE subscription to add garage to organization.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
-		}
-		NewOrganization.ActiveGarages++;
+        }
+        NewOrganization.ActiveGarages++;
 		NewGarage.OrganizationId = NewOrganization.Id;
         NewGarage.TenantId = TenantId;
 		await CurrentUnitOfWork.SaveChangesAsync();
@@ -774,18 +775,18 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 var org = await query.FirstOrDefaultAsync(x => x.Id == garage.OrganizationId);
 
                 if (org == null || org.Subscription == null) {
-                    throw new Exception("Organization must have subscription.");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
                 }
 
                 if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
                 {
-                    throw new Exception("UPGRADE subscription to add cameras to organization.");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
                 }
                 org.ActiveCameras += NumOfActiveCamera;
                 if (org.Subscription.NumbersOfGarages < org.ActiveGarages + 1)
                 {
-                    throw new Exception("UPGRADE subscription to add garage to organization.");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
                 }
                 if (NumOfActiveCamera > 0)

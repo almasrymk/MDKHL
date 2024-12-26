@@ -1,8 +1,10 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Lookups.PlateColor
 @using System.Globalization
+@using SmartParking.Utilities
 @using Volo.Abp.Application.Dtos
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -59,7 +61,18 @@
                                       Placeholder=@L["Type Here"]
                                       Label="@L["EnglishName"]" />
                             </MudItem>
+                    <MudItem sm="6">
 
+                        <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+                            <MudImage Src="@Picture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["Picture"]" />
+                            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                                <ActivatorContent>
+                                    <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
+                                </ActivatorContent>
+                            </MudFileUpload>
+                        </div>
+                    </MudItem>
 
                         </MudGrid>
                     </MudForm>
@@ -91,7 +104,7 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
-
+    private string Picture { get; set; }
     protected override async Task OnInitializedAsync()
     {
         var result = await PlateColorsAppService.GetListAsync(new PagedAndSortedResultRequestDto
@@ -102,15 +115,24 @@
         plateColors = result.Items.ToList();
         await base.OnInitializedAsync();
     }
+    private async Task OnImageUpload(IBrowserFile file)
+    {
+        var imageFile = file;
+        if (imageFile != null)
+        {
+            // Save the image and get the file path
+            Picture = await ImageHelper.GetImageBase64Async(imageFile);
+            StateHasChanged();
+        }
+    }
     private async Task Submit()
     {
         var successedMessage = L["LicenceTypeCreatedSuccessfully"];
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
+        
             try
             {
+            licenceTypeDto.Image = await FileHelper.SaveImageFromBase64Async(Picture, PathHelper.LicenceTypeFolder);
                 await LicenceTypesAppService.CreateAsync(licenceTypeDto);
             }
             catch (Exception e)
@@ -122,11 +144,6 @@
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
             Navigation.NavigateTo("/licenceTypes", true);
-        }
-        else
-        {
-            Snackbar.Add(validationErrorMessage, Severity.Error);
-        }
     }
     private void Cancel()
     {

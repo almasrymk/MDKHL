@@ -1,7 +1,9 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Lookups.PlateColor
+@using SmartParking.Utilities
 @using SmartParking.Vehicles.LookUps
 @using System.Globalization
 @using Volo.Abp.Application.Dtos
@@ -34,18 +36,18 @@
 				<MudGrid>
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@LicenceType.PlateColorId"
-								   Variant="Variant.Text"
-								   Label="@L["PlateColor Name"]"
-								   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"]
-								   Required="true"
-								   Clearable="_clearable">
+						Variant="Variant.Text"
+						Label="@L["PlateColor Name"]"
+						Placeholder=@L["Choose"]
+						HelperText=@L["Helper Text"]
+						Required="true"
+						Clearable="_clearable">
 							@foreach (var platecolor in plateColors)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
 								{
 									<MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
-									
+
 								}
 								else
 								{
@@ -57,19 +59,32 @@
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="LicenceType.ArabicName"
-									  For="@(() => LicenceType.ArabicName)"
-									  Immediate="true"
-									  Placeholder=@L["Type Here"]
-									  Label="@L["ArabicName"]" />
+						For="@(() => LicenceType.ArabicName)"
+						Immediate="true"
+						Placeholder=@L["Type Here"]
+						Label="@L["ArabicName"]" />
 					</MudItem>
 
 					<MudItem sm="4">
 						<MudTextField @bind-Value="LicenceType.EnglishName"
-									  For="@(() => LicenceType.EnglishName)"
-									  Immediate="true"
-									  Required="true"
-									  Placeholder=@L["Type Here"]
-									  Label="@L["EnglishName"]" />
+						For="@(() => LicenceType.EnglishName)"
+						Immediate="true"
+						Required="true"
+						Placeholder=@L["Type Here"]
+						Label="@L["EnglishName"]" />
+					</MudItem>
+					<MudItem sm="6">
+
+						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+							<MudImage Src="@Picture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["ModelPicture"]" />
+							<MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+								<ActivatorContent>
+									<MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
+								</ActivatorContent>
+							</MudFileUpload>
+						</div>
+
 					</MudItem>
 				</MudGrid>
 			</MudForm>
@@ -90,7 +105,7 @@
 
 <style>
 	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	border-radius: 0 20px 0 20px;
 	}
 </style>
 
@@ -102,9 +117,22 @@
 	[Parameter]
 	public int UpdatedId { get; set; }
 	bool _clearable;
+	bool IsPictureChanged;
 	private MudForm form;
 	IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
+	private string Picture { get; set; }
 
+	private async Task OnImageUpload(IBrowserFile file)
+	{
+		var imageFile = file;
+		if (imageFile != null)
+		{
+			// Save the image and get the file path
+			Picture = await ImageHelper.GetImageBase64Async(imageFile);
+			IsPictureChanged = true;
+			StateHasChanged();
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -114,6 +142,8 @@
 				SkipCount = (1 - 1) * 100
 			});
 		plateColors = result.Items.ToList();
+		Picture = LicenceType.Image;
+		
 		await base.OnInitializedAsync();
 	}
 
@@ -123,7 +153,8 @@
 		
 		try
 		{
-
+			if (IsPictureChanged)
+				LicenceType.Image = await FileHelper.SaveImageFromBase64Async(Picture, PathHelper.LicenceTypeFolder);
 			await LicenceTypesAppService.UpdateAsync(UpdatedId, LicenceType);
 			Snackbar.Add(successedMessage, Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));

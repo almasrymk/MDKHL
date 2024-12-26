@@ -43,7 +43,7 @@ public partial class EmployeeRegister
         {
             CustomerDto customer;
 
-            createUpdateCustomerDto.UserName = createUpdateCustomerDto.MobileNumber;
+            createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
             if (CurrentTenant.Id == null)
             {
                 customer = await EmployeeAppService.CreateMdkhlAsync(createUpdateCustomerDto,OrganizationId);

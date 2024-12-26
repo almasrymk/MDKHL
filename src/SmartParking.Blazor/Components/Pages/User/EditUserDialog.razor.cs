@@ -17,14 +17,17 @@ partial class EditUserDialog
     [Parameter]
     public UpdateUserDto updateUserDto { get; set; }
     private List<IdentityRoleDto> Roles = new List<IdentityRoleDto>();
-    private string roleId;
 
     protected override async Task OnInitializedAsync()
     {
-        roleId = updateUserDto.RoleId.ToString();
         Roles = await RoleAppService.GetListByTenant(updateUserDto.TenantId);
         await base.OnInitializedAsync();
+        
 
+    }
+    private void ChangeRole(string roleId)
+    {
+        updateUserDto.RoleId = Guid.Parse(roleId);
     }
     public async Task SubmitEdit()
         {
@@ -32,7 +35,7 @@ partial class EditUserDialog
             try
             {
                 UserDto userUpdated = new UserDto();
-                updateUserDto.RoleId = Guid.Parse(roleId);
+               
                 if (updateUserDto.ISNoRole)
                 {
                   userUpdated = await UsersAppService.UpdateUserWithNoRoleAsync(Guid.Parse(userId), updateUserDto);

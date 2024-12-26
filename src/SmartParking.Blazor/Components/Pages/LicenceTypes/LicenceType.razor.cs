@@ -176,7 +176,8 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 			{
 				ArabicName = licenceTypeDto.ArabicName,
 				EnglishName = licenceTypeDto.EnglishName,
-				PlateColorId=licenceTypeDto.PlateColorId
+				PlateColorId=licenceTypeDto.PlateColorId,
+				Image = licenceTypeDto.Image
 
 			};
 
@@ -205,8 +206,9 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 				ArabicName = licenceTypeDto.ArabicName,
 				EnglishName = licenceTypeDto.EnglishName,
 				PlateColorId = licenceTypeDto.PlateColorId,
+                Image = licenceTypeDto.Image
 
-			};
+            };
 
 			var parameters = new DialogParameters
 			{
