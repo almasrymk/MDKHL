@@ -11,4 +11,5 @@ public static class PathHelper
     public const string OrganizationFolder = "OrganizationImages";
     public const string UserFolder = "images/users";
     public const string ModelFolder = "images/models";
+    public const string LicenceTypeFolder = "images/licenceType";
 }
