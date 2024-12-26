@@ -25,6 +25,7 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using SmartParking.Enums;
 using SmartParking.Utilities;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using SmartParking.Localization;
 
 namespace SmartParking.Authentication;
 
@@ -59,7 +60,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null) {
-            throw new Exception("User with that phone number already exist");
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
         
@@ -68,7 +69,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         if (!creationResult.Succeeded)
         {
-             throw new Exception(creationResult.Errors.FirstOrDefault()?.Description ?? "User  creation failed.");
+             throw new Exception(LocalizationHelper.GetLocalizedString("User")+ LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS)+LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED));
         }
 
         await AssignRoleAndPermissionsAsync(user, roleId,input.IsCustomer);
@@ -297,7 +298,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
-                throw new Exception("User not found");
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
 

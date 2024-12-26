@@ -24,6 +24,7 @@ using SmartParking.CustomerPackages;
 using SmartParking.Authentication;
 using SmartParking.Enums;
 using SmartParking.Utilities;
+using SmartParking.Localization;
 
 namespace SmartParking.Customers;
 [Authorize]
@@ -75,7 +76,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName); 
 				if (user != null)
 				{
-                    throw new Exception("user already exists");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("User") +LocalizationHelper.GetLocalizedString("NotFoundValidation"));
                 }
 
             }
@@ -109,25 +110,21 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-                    throw new Exception("user already exists");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("User") + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
-				}
+                }
 			}
 			await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.MobileNumber);
             if (!result1)
             {
-                throw new Exception("Phone Number is used");
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
             if (!result2)
             {
-                throw new Exception("National Id is already exist !");
-
-            }
-            if (input.IsUser)
-            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("NationId") + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
@@ -143,8 +140,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 		catch (Exception ex)
 		{
-
-			throw new UserFriendlyException("Registration failed: " + ex.Message);
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED));
+            
 		}
 	}
 
@@ -554,7 +551,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             if (customer == null)
             {
-                throw new Exception("No Customer Found");
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
             if (customer.IdentificationTypes != input.IdentificationType || customer.NationalId != input.NationalId)
@@ -566,7 +563,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.MobileNumber);
                 if (!result1)
                 {
-                    throw new Exception("Phone Number is used");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
                 }
             }
@@ -584,7 +581,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var customer = await _repository.FindAsync(x => x.Id == id);
         if (customer == null)
         {
-            throw new Exception("There is no customer related to that id");
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         await base.DeleteAsync(id);
 

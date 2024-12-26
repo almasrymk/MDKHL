@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
 using SmartParking.DefaultPackages;
 using SmartParking.Enums;
@@ -129,7 +130,8 @@ public partial class CustomerRegister
             if (customer != null)
             {
                 CustomerId = customer.Id;
-                ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCustomerDto.FullName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                //ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}", Severity.Success);
                 showVehicle = true;
             }
 
@@ -141,24 +143,19 @@ public partial class CustomerRegister
             foreach (var error in abpValidationException.ValidationErrors)
             {
                 errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
             }
-            ShowSnackbar(faildMessage+ errors, Severity.Error);
-
+            
         }
         catch (BusinessException businessException)
         {
-            string errors = string.Empty;
-            foreach (var error in businessException.Message)
-            {
-                errors += error;
-            }
-            ShowSnackbar(faildMessage+ errors, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Code}", Severity.Error);
 
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar(faildMessage +ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 
         }
 
