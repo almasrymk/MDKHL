@@ -79,6 +79,9 @@ public class CamerasAppService :
                 throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
             }
             var existingCamera = await _repository.GetAsync(id);
+            if (await CheckIPUnique(input.CameraIP) == 1 && existingCamera.Id != id) {
+                throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            }
             if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
             {
                 var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
@@ -149,8 +152,7 @@ public class CamerasAppService :
 
             if (result == true)
             {
-            camera.Status = Status.Deleted;
-
+               camera.Status = Status.Deleted;
             }
             else
             {
@@ -231,16 +233,13 @@ public class CamerasAppService :
     /// <returns>1 if IP Exists</returns>
     private async Task<int> CheckIPUnique(string cameraIP)
     {
-        // Use FirstOrDefaultAsync to find the camera by IP
         var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
 
-        // If a camera is found, return 1 (or any positive number to indicate it's not unique)
         if (camera != null)
         {
             return 1; // CameraIP exists
         }
 
-        // Return 0 if the CameraIP is unique (not found)
         return -1;
     }
     /// <summary>
