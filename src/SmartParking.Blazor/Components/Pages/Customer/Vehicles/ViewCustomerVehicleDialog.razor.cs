@@ -17,6 +17,7 @@ using Volo.Abp;
 using Volo.Abp.MultiTenancy;
 using SmartParking.Entities.Vehicles;
 using System.Text.RegularExpressions;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -150,7 +151,6 @@ public partial class ViewCustomerVehicleDialog
     }
     private async Task HandleDelete(RowDef row)
     {
-        var successMessage = _localizer["VehicleDeletedSuccessfully"];
 
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
@@ -168,7 +168,9 @@ public partial class ViewCustomerVehicleDialog
             if (!result.Canceled)
             {
                 await VehiclesAppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
+                    LocalizationHelper.GetLocalizedString("Vehicle"), Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.Refresh(true);
@@ -180,34 +182,18 @@ public partial class ViewCustomerVehicleDialog
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete vehicle : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
     }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
 
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
 }
