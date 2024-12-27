@@ -27,7 +27,7 @@ public partial class UpdateCustomerDialog
     {
         await Fetch();
         
-        if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
+        if (CurrentTenant.Id is null)
         {
             Picture = "images/MDHKL_04.png";
 
@@ -64,12 +64,11 @@ public partial class UpdateCustomerDialog
             var customer = await CustomerAppService.UpdateAsync(Guid.Parse(customerId), customerDataDto);
             if (customer != null)
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{customerDataDto.FullName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}" +" "+
+                    $"{L[AlertMessages.AlertMessages.UPDATE]} " +" "+
+                     $"{customerDataDto.FullName} ", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/customers",true);
-
-
-
             }
 
 
@@ -86,13 +85,13 @@ public partial class UpdateCustomerDialog
         }
         catch (BusinessException businessException)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Code}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]}: {businessException.Message}", Severity.Error);
 
         }
         catch (Exception ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]}: {ex.Message} ", Severity.Error);
 
         }
 

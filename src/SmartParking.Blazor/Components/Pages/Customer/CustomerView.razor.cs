@@ -33,7 +33,7 @@ public partial class CustomerView
     {
         await Fetch();
 
-        if ((currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())) || (currentUser.IsInRole("admin")))
+        if (CurrentTenant.Id is null)
         {
             Picture = "images/MDHKL_04.png";
 
@@ -60,21 +60,6 @@ public partial class CustomerView
             UserName = customer.UserName,
             CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customer.CustomerCategory)
         };
-    }
-
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
     }
     public void CancelView()
     {
