@@ -26,7 +26,7 @@ public class UpdateUserDto
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPhoneNumberLength))]
     public string PhoneNumber { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
     public Guid? TenantId { get; set; }
     
     [RegularExpression(@"^(([^<>()\[\]\\.,;:\s@\""]+(\.[^<>()\[\]\\.,;:\s@\""]+)*)|(\"".+\""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$",

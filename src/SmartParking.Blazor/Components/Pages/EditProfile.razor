@@ -76,6 +76,9 @@
             OldProfile.PhoneNumber = Profile.PhoneNumber= profile.PhoneNumber;
             OldProfile.UserName = Profile.UserName= profile.UserName;
             OldProfile.NationalId = profile.NationalId = profile.NationalId;
+            OldProfile.IdentificationTypes = profile.IdentificationTypes;
+            OldProfile.ConcurrencyStamp = profile.ConcurrencyStamp;
+
 
             ProfilePictureUrl = NewProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "" : profile.Image;
 

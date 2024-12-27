@@ -329,10 +329,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            await UpdateUserProperties(user, input);
+            
 
             await ChangeRole(input, user);
-
+            await UpdateUserProperties(user, input);
             var updatedUser = await _userManager.UpdateAsync(user);
             if (!updatedUser.Succeeded)
             {
@@ -358,7 +358,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetIsActive(input.IsActive);
         user.SetProperty("IdentificationTypes", input.IdentificationTypes);
         user.SetProperty("NationalId", input.NationalId);
-        await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
+        ObjectHelper.TrySetProperty(
+            user,
+            x => x.PhoneNumber,
+            () => input.PhoneNumber
+            );
         user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
     }
     
@@ -368,8 +372,13 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
+
+            ObjectHelper.TrySetProperty(
+            user,
+            x => x.UserName,
+            () => input.UserName
+             );
             await UpdateUserProperties(user, input);
-            await _userManager.SetUserNameAsync(user, input.UserName);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
@@ -488,16 +497,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         IdentityUser? user = await IsUserFound(id);
 
-        await UpdateUserProperties(user, input);
+        
         RemoveRole(input, user);
-        user.SetProperty("UserTypeId", 3);
+        user?.SetProperty("UserTypeId", 3);
         
         if (user.UserName != input.UserName)
         {
             await _userManager.SetUserNameAsync(user, input.UserName);
             await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         }
-
+        await UpdateUserProperties(user, input);
         var createdUser = await _userManager.UpdateAsync(user);
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
