@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Enums
@@ -188,9 +189,11 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
+		
 		if(CustomerPackage.CustomerCategory!=Customercategory.ToString()){
-			Snackbar.Add("Package and Chosen Customer Category aren't the Same Type", Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Package")} , " +
+			$"{LocalizationHelper.GetLocalizedString("customer category")} "+
+			$"{LocalizationHelper.GetLocalizedString("NotSameType")} ", Severity.Error);
 			return;
 
 		}
@@ -198,15 +201,21 @@
 		{
 			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id);
 			if (!assignPackage)
-				throw new Exception("can't assign package for this customer");
-			Snackbar.Add(successedMessage, Severity.Success);
+				throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " "+
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+				LocalizationHelper.GetLocalizedString("Package") + " ");
+
+			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+			LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD)+" "+
+			LocalizationHelper.GetLocalizedString("Package"),Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/customers", forceLoad: true);
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+			
 		}
 	}
 
