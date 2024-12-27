@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Globalization
@@ -85,21 +86,23 @@
 
 	private async Task SubmitAssign()
 	{
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-		var successedMessage = L["Role Added to User Successfully"];
-
+	
 		try
 		{
 
 			 await RolesAppService.AssignRole(Id, userRoleId);
-			Snackbar.Add($"{successedMessage}", Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+				LocalizationHelper.GetLocalizedString("Role"), Severity.Success);
+
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			Navigation.NavigateTo("/users");
 
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			Snackbar.Add($"{validationErrorMessage}: {e.Message}", Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 		}
 	}
 

@@ -7,18 +7,12 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp;
 using SmartParking.Authentication;
-using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Volo.Abp.Validation;
 using SmartParking.Enums;
-using SmartParking.Entities.Organizations;
-using Microsoft.Extensions.Localization;
 using Volo.Abp.Identity;
-using SmartParking.Blazor.Components.Pages.Organizations;
-using FluentValidation;
-using SmartParking.Blazor.Components.DataGrid;
-using Volo.Abp.Users;
-using Volo.Abp.MultiTenancy;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -44,16 +38,19 @@ public partial class AddUser
       var user = await UsersAppService.CheckPhoneIsUnique(textField.Value);
         if (user != null) {
             Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-            Snackbar.Add("That user is Already exists , Click edit button to update", MudBlazor.Severity.Normal, config =>
-            {
-                config.Action = "Edit";
-                config.ActionColor = Color.Primary;
-                config.Onclick = snackbar =>
-                {
-                    HandleEdit(user);
-                    return Task.CompletedTask;
-                };
-            });
+
+            Snackbar.Add(LocalizationHelper.GetLocalizedString("User") + " " +
+                LocalizationHelper.GetLocalizedString("DuplicateValidation") + " , " +
+                LocalizationHelper.GetLocalizedString("MessageEdit"), MudBlazor.Severity.Normal, config =>
+                    {
+                        config.Action = LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE);
+                        config.ActionColor = Color.Primary;
+                        config.Onclick = snackbar =>
+                        {
+                            HandleEdit(user);
+                            return Task.CompletedTask;
+                        };
+                    });
         }
 
     }
@@ -109,11 +106,8 @@ public partial class AddUser
     private async void SubmitCreate()
     {
         
-        var successMessage = L["User CreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateUser "];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
-        await AddUserAsync(successMessage, errorMessage, validationErrorMessage);
+        await AddUserAsync();
     }
 
     private async Task<(int orgId, Guid? tenantId)> GetOrganizationDetailsAsync()
@@ -132,7 +126,7 @@ public partial class AddUser
         return (orgId, tenantId);
     }
 
-    private async Task AddUserAsync(LocalizedString successMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
+    private async Task AddUserAsync()
     {
         try
         {
@@ -140,7 +134,9 @@ public partial class AddUser
             CheckUser();
             var user = await UsersAppService.CreateWithRoleAsync(userCreate,role.Id);
 
-            ShowSnackbar($"{successMessage}", MudBlazor.Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+            LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+            LocalizationHelper.GetLocalizedString("User"), Severity.Success);
             await Task.Delay(1000); // Awaiting the delay to ensure it completes before navigation
             NavigationManager.NavigateTo("/users", true);
         }
@@ -148,20 +144,22 @@ public partial class AddUser
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", MudBlazor.Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Code}", MudBlazor.Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Message}", MudBlazor.Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            ShowSnackbar($"{errorMessage}: {ex.Message}", MudBlazor.Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
 
@@ -186,20 +184,6 @@ public partial class AddUser
 
         }
     }
-
-
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, MudBlazor.Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-
 
 
 
