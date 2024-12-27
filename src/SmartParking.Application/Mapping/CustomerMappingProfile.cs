@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SmartParking.Authentication;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Mapping;
 
@@ -14,6 +16,16 @@ public class CustomerMappingProfile : Profile
 {
     public CustomerMappingProfile()
     {
+        CreateMap<CreateUpdateCustomerDto,UpdateUserDto>()
+            .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.FullName))
+            .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.UserName))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))           
+            .ForPath(dest => dest.Surname, opt => opt.MapFrom(src => src.ArabicName))            
+            .ForPath(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId))            
+            .ForPath(dest => dest.IdentificationTypes, opt => opt.MapFrom(src => src.IdentificationType))            
+            .ReverseMap();
         // Map Customer -> CustomerDto
         CreateMap<Customer, CustomerDto>()
             .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.IdentityUser.Name))
