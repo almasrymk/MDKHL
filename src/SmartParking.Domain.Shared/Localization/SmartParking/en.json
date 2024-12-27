@@ -553,7 +553,11 @@
     "PassportValidation": "Passport must be from 6 - 9 digits and atmost one character",
     "Customer": "Customer",
     "Vehicle": "Vehicle",
-    "RangeValidation": "Must be within"
+    "RangeValidation": "Must be within",
+    "assigned": "assigned",
+    "NotSameType": "Not The Same Type",
+    "MessageEdit": "Do you want to edit ?",
+    "Role": "Role"
 
 
 
