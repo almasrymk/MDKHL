@@ -41,7 +41,7 @@
                     <MudItem sm="6">
                         <MudSelect @bind-Value="@cameraMainType.CameraBrandId"
                         Variant="Variant.Text"
-                        Label="@L["CamerBrandName"]"
+                        Label="@L["BrandName"]"
                         HelperText=@L["Helper Text"]
                         Placeholder=@L["Choose"]
                         Required="true"
@@ -107,7 +107,7 @@
             try
             {
                 await CameraMainTypesAppService.CreateAsync(cameraMainType);
-                SnackBar.ShowSnackbar(Snackbar, $"{cameraMainType.ArabicName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {cameraMainType.ArabicName} ", Severity.Success);
                 await Task.Delay(1000);
                 MudDialog.Close(DialogResult.Ok(true));
                 Navigation.NavigateTo("/Cameramaintypes", true);
@@ -116,7 +116,7 @@
             catch (Exception ex)
             {
 
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {cameraMainType.ArabicName} ", Severity.Error);
             }
 
 
