@@ -9,6 +9,8 @@ using Volo.Abp;
 using SmartParking.SubscriptionTypes;
 using System.Linq;
 using Volo.Abp.Validation;
+using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
@@ -25,12 +27,7 @@ public partial class AddSubscriptionTypeDialog
 	private async Task Submit()
 	{
 
-		var successedMessage = L["SubscriptionTypeCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateSubscriptionType"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-
-		// Call your service to create the packageType
+	
 		try
 		{
 
@@ -38,37 +35,35 @@ public partial class AddSubscriptionTypeDialog
 			var subscriptionTypes = await SubscriptionTypeAppService.CreateAsync(input);
 			if (subscriptionTypes != null)
 			{
-				Snackbar.Add(successedMessage, Severity.Success);
-				MudDialog.Close(DialogResult.Ok(true));
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {input.TypeAr}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/subscriptiontypes", true);
 			}
 
 			else
 			{
-				Snackbar.Add(errorMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {input.TypeAr}", Severity.Error);
 
-			}
+            }
 		}
-		catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
-			Snackbar.Add($"Failed to add package type: {ex.Code} + ", Severity.Error);
+        catch (BusinessException ex)
+        {
 
-		}
-		catch (Exception ex)
-		{
-			Snackbar.Add($"Failed to package type {ex.Message} + ", Severity.Error);
-		}
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
 
 
-	}
+    }
 	private void Cancel()
 	{
 		MudDialog.Cancel();

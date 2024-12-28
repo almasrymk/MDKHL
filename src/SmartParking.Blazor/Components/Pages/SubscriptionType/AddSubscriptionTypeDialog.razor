@@ -26,7 +26,8 @@
                                       Variant="Variant.Text"
                                       InputType="InputType.Text"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["TypeEn"] />
+                                      Label=@L["TypeEn"] 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="input.TypeAr"
@@ -36,7 +37,8 @@
                                       Variant="Variant.Text"
                                       InputType="InputType.Text"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["TypeAr"] />
+                                      Label=@L["TypeAr"] 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="9" md="9">
@@ -56,7 +58,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 
