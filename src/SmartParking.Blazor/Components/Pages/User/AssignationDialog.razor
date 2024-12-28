@@ -28,7 +28,7 @@
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 					<MudItem sm="12" md="12">
-						<MudSelect T="Guid"
+						<MudSelect T="string"
 						ValueChanged="ChooseRole"
 						Label="@L["UserRole"]"
 						Placeholder="@L[ "Choose"]"
@@ -36,7 +36,7 @@
 						Required>
 							@foreach (var role in identityRoles)
 							{
-								<MudSelectItem Value="role.Id">
+								<MudSelectItem Value="role.Id.ToString()">
 									@role.Name
 								</MudSelectItem>
 							}
@@ -110,9 +110,9 @@
 	{
 		MudDialogAdd.Cancel();
 	}
-	private async Task ChooseRole(Guid Value)
+	private async Task ChooseRole(string Value)
 	{
-		userRoleId = Value;
+		userRoleId = Guid.Parse(Value);
 	}
 
 
