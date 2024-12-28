@@ -583,7 +583,8 @@
     "NotSameType": "ليس من النوع نفسه",
     "MessageEdit": "هل تريد التعديل ؟ ",
     "Role": "الدور",
-    "InvalidCredentials": "بيانات الدخول غير صحيحة"
+    "InvalidCredentials": "بيانات الدخول غير صحيحة",
+    "TryAgainException": "خطأ برجاء المحاولة مره اخرى"
 
 
 
