@@ -21,7 +21,7 @@
     <MudPaper Class="p-5 d-flex flex-column align-items-center justify-content-center w-100 main-layout-paper" Style="background-color: #F2F2F2;">
         <MudForm Class="d-flex flex-column gap-4" @ref="form" OnValidSubmit="SaveChanges">
             <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
-                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" Style="border-radius:50% ; width:300px;height:280px" />
+                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" Class="bg_w_foto " Width="200" Height="200" />
                 <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg, .gif, .bmp, .webp" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
                     <ActivatorContent>
                         <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
@@ -47,6 +47,16 @@
         </MudForm>
     </MudPaper>
 </div>
+<style>
+    .bg_w_foto {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>
 
 @code {
     private MudForm form;
