@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Garages
 @using SmartParking.Localization
 @using SmartParking.Organizations
@@ -93,9 +94,7 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["Garage assigned to organization Successfully"];
-		//var errorMessage = L["Can't Assign Garage"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		
 		try
 		{
 
@@ -104,14 +103,14 @@
 			var garage=await GaragesAppService.UpdateAsync(UpdatedId, Garage);
 			Console.WriteLine(garage.Code);
 			var output = await GaragesAppService.ChangeTenantForCamerasRelatedToGarage(garage.Id,tenantId);
-			Snackbar.Add($"{successedMessage}", Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ASSIGN]} ", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			Navigation.NavigateTo("/garages");
 
 		}
 		catch (Exception e)
 		{
-			Snackbar.Add($"{validationErrorMessage}: {e.Message}", Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ASSIGN]}", Severity.Error);
 		}
 	}
 

@@ -1,4 +1,5 @@
-﻿@using SmartParking.Enums
+﻿@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Enums
 @using SmartParking.Lookups
 @using SmartParking.Packages
 @using SmartParking.Organizations
@@ -33,7 +34,7 @@
                         Class="w-100"
                         Placeholder=@L["Type Here"]
                         Required="true"
-                        RequiredError=@L["Reqired"]
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Label=@L["ArabicName"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
@@ -41,7 +42,7 @@
                         For="@(() => createUpdatePackage.EnglishName)"
                         Variant="Variant.Text"
                         Required="true"
-                        RequiredError=@L["Required"]
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Placeholder=@L["Type Here"]
                         Label=@L["EnglishName"] />
@@ -53,7 +54,7 @@
                         Min="1"
                         HideSpinButtons="true"
                         Required="true"
-                        RequiredError=@L["Required"]
+                                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Label=@L["Price"] />
                     </MudItem>
@@ -64,7 +65,7 @@
                         Min="1"
                         HideSpinButtons="true"
                         Required="true"
-                        RequiredError=@L["Required"]
+                                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Label=@L["PackageDuration"] />
                     </MudItem>
@@ -87,7 +88,7 @@
                         Label="@L["customer category"]"
                         Placeholder="@L[ "Choose"]"
                         HelperText=@L["Helper Text"]
-                        RequiredError=@L["Required"]
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Required>
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
@@ -114,7 +115,8 @@
                         <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                             Class="w-100"
-                            Required="!createUpdatePackage.Published" RequiredError=@L["Reqired"]
+                            Required="!createUpdatePackage.Published" 
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                             TimeChanged="OnTimeFromChanged"
                             PickerVariant="PickerVariant.Dialog"
                             Placeholder=@L["Time Placeholder"]
@@ -126,7 +128,7 @@
                             Class="w-100"
                             Required="!createUpdatePackage.Published"
                             PickerVariant="PickerVariant.Dialog"
-                            RequiredError=@L["Reqired"]
+                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                             TimeChanged="OnTimeToChanged"
                             Placeholder=@L["Time Placeholder"]
                             Label="@L["Publish To"]" />
@@ -141,7 +143,7 @@
                         Variant="Variant.Outlined"
                         Class="w-100"
                         Required="true"
-                        RequiredError=@L["Required"]
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Lines="5"
                         Placeholder=@L["Type Here"]
                         Label="@L["Description"]" />
@@ -229,34 +231,29 @@
         createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
         var currentTenant = CurrentTenant.Id;
         createUpdatePackage.OrganizationId =await organizationAppService.GetOrganizationIdByTenant(currentTenant);
-        var successedMessage = L["PackageCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-        // Call your service to create the package
+        
         try
         {
             CheckPublish(createUpdatePackage.Published);
             createUpdatePackage.TenantId = CurrentTenant.Id;
                 createUpdatePackage.ActivationDate = DateTime.Now;
                 await PackagesAppService.CreateAsync(createUpdatePackage);
-                Snackbar.Add(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 NavigationManager.NavigateTo("/package", true);
             }
-            catch (AbpValidationException ex)
-            {
-                foreach (var validationError in ex.ValidationErrors)
-                {
-                    Snackbar.Add($"{validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
-                }
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+        }
+       
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
 
 
         

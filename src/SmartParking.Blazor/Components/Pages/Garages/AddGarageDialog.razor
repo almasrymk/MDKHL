@@ -34,7 +34,8 @@
                                               Required
                                               Class="w-100"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["EnGarageName"]" />
+                                              Label="@L["EnGarageName"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                             </MudItem>
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="createUpdateGarage.NameAr"
@@ -43,7 +44,8 @@
                                               Required
                                               Class="w-100"
                                               Placeholder="@L["Type Here"]"
-                                              Label="@L["ArGarageName"]" />
+                                              Label="@L["ArGarageName"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                             </MudItem>
                     @if (currrentTenant.Id==null)
                     {
@@ -54,6 +56,7 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Required
+                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                        @bind-Value="createUpdateGarage.OrganizationId">
                                 <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var organization in Organizations)
@@ -146,7 +149,8 @@
                                                Variant="Variant.Text"
                                                Class="w-100"
                                                Placeholder="@L["Type Here"]"
-                                               Label="@L["Closing Hours"]" />
+                                               Label="@L["Closing Hours"]"
+                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                             </MudItem>
                     
 
@@ -171,7 +175,7 @@
         <DialogActions>
 
                     <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
-                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="SubmitCreate">@L["Add"]</MudButton>
+                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="SubmitCreate">@L["Add"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

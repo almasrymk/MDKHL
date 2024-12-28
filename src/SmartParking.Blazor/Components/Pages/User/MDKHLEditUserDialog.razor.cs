@@ -18,6 +18,8 @@ using SmartParking.Localization;
 using SmartParking.Blazor.Components.SPComponents;
 using static MudBlazor.CategoryTypes;
 using System.Security.Authentication;
+using System.Linq;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -60,13 +62,15 @@ public partial class MDKHLEditUserDialog
             }
             else
             {
-                userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
+                userUpdated = await UsersAppService.UpdateUserWithRoleChangeAsync(Guid.Parse(userId), updateUserDto);
             }
 
             if (userUpdated != null)
             {
 
-                ShowSnackbar($" {successedMessage} {userUpdated.Name}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                   LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE) + " " +
+                   LocalizationHelper.GetLocalizedString("User") + " " + userUpdated.Name, Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/users", true);
 
@@ -76,30 +80,26 @@ public partial class MDKHLEditUserDialog
 
 
         }
-        catch (AbpValidationException abpValidationException)
+        catch (AbpValidationException validationException)
         {
-            string errors = string.Empty;
-            foreach (var error in abpValidationException.ValidationErrors)
+            foreach (var validationError in validationException.ValidationErrors)
             {
-                errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
-            ShowSnackbar(errors, Severity.Error);
-
         }
-        catch (BusinessException businessException)
+        catch (BusinessException ex)
         {
-            string errors = string.Empty;
-            foreach (var error in businessException.Message)
-            {
-                errors += error;
-            }
-            ShowSnackbar(errors, Severity.Error);
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            ShowSnackbar(ex.Message, Severity.Error);
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
     }
@@ -126,16 +126,6 @@ public partial class MDKHLEditUserDialog
     }
 
 
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         Roles = await UsersAppService.GetUserWithRolesForMdkhlAsync(Guid.Parse(userId));
@@ -143,7 +133,7 @@ public partial class MDKHLEditUserDialog
     }
     private async Task HandleDelete(RowDef row)
     {
-        var successMessage = _localizer["RoleDeletedSuccessfully"];
+        
 
         var id = Guid.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
@@ -161,7 +151,9 @@ public partial class MDKHLEditUserDialog
             if (!result.Canceled)
             {
                 await UsersAppService.RemoveRoleMdkhl(Guid.Parse(userId), id);
-                ShowSnackbar(successMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+               LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
+               LocalizationHelper.GetLocalizedString("Role"), Severity.Success);
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
 
@@ -169,19 +161,26 @@ public partial class MDKHLEditUserDialog
 
 
         }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to Role: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to Role: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to Role: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
     }

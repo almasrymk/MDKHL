@@ -111,9 +111,10 @@
                                           InputType="InputType.Text"
                                           Required="true" />
                         </MudItem>
-                    
 
-                    <MudItem sm="6">
+                        <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
+
+                    <MudItem sm="8">
                         <MudTextField @bind-Value="subscription.NumberOfUsers"
                                           For="@(() => subscription.NumberOfUsers)"
                                       Immediate="true"
@@ -125,7 +126,7 @@
                     </MudItem>
 
                   
-                    <MudItem sm="6">
+                    <MudItem sm="8">
                         <MudTextField @bind-Value="subscription.NumberOfCameras"
                                       For="@(() => subscription.NumberOfCameras)"
                                       Immediate="true"
@@ -135,7 +136,7 @@
                                       Label="@L["NumberOfCameras"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="8">
                         <MudTextField @bind-Value="subscription.NumbersOfGarages"
                                       For="@(() => subscription.NumbersOfGarages)"
                                       Immediate="true"
@@ -145,14 +146,14 @@
                                       Label="@L["NumbersOfGarages"]"
                                       Required="true" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="8">
                         <MudTextField @bind-Value="subscription.NumberOfCustomers"
                                       For="@(() => subscription.NumberOfCustomers)"
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder="@L["Type Here"]"
                                       InputType="InputType.Number"
-                                          Label="@L["NumberOfCustomers"]"
+                                       Label="@L["NumberOfCustomers"]"
                                       Required="true" />
                     </MudItem>
                         @if(subscription.Status == SubscriptionStatus.Active)

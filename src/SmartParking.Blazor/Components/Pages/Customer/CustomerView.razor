@@ -29,20 +29,18 @@
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
 
-                        <MudItem sm="6">
+                        <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.FullName" Label="@L["EnglishName"]" Required />
                         </MudItem>
-                        <MudItem sm="6">
+                        <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.ArabicName" Label="@L["ArabicName"]" Required />
                         </MudItem>
-                        <MudItem sm="6">
-                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.Email" Label="@L["Email"]" Required />
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.UserName" Label="@L["UserName"]" Required />
-                        </MudItem>
-                        <MudItem sm="6">
+
+                        <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="customerDataDto.PhoneNumber" Required />
+                        </MudItem>
+                        <MudItem sm="8">
+                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.Email" Label="@L["Email"]" Required />
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="customerDataDto.NationalId" Required />

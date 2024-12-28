@@ -82,22 +82,14 @@ public class PackagesAppService : CrudAppService<
                 or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PackageType.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PackageType.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
-        // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of camera entities
         var packages = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to cameraDto objects
         var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-        // Return the paginated result
         return new PagedResultDto<PackageDto>(
             totalCount,
             packagesDto

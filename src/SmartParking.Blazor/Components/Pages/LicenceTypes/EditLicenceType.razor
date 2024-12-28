@@ -41,6 +41,7 @@
 						Placeholder=@L["Choose"]
 						HelperText=@L["Helper Text"]
 						Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 						Clearable="_clearable">
 							@foreach (var platecolor in plateColors)
 							{
@@ -62,16 +63,19 @@
 						For="@(() => LicenceType.ArabicName)"
 						Immediate="true"
 						Placeholder=@L["Type Here"]
-						Label="@L["ArabicName"]" />
+						Label="@L["ArabicName"]" 
+						Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="LicenceType.EnglishName"
 						For="@(() => LicenceType.EnglishName)"
 						Immediate="true"
 						Required="true"
 						Placeholder=@L["Type Here"]
-						Label="@L["EnglishName"]" />
+						Label="@L["EnglishName"]"
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6">
 
@@ -149,21 +153,22 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["LicenceTypeUpdatedSuccessfully"];
 		
 		try
 		{
 			if (IsPictureChanged)
 				LicenceType.Image = await FileHelper.SaveImageFromBase64Async(Picture, PathHelper.LicenceTypeFolder);
 			await LicenceTypesAppService.UpdateAsync(UpdatedId, LicenceType);
-			Snackbar.Add(successedMessage, Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {LicenceType.ArabicName}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/licenceTypes", forceLoad: true);
 		}
-		catch (Exception e)
+		
+		catch (Exception ex)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
 		}
 	}
 

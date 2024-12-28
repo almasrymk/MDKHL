@@ -237,7 +237,7 @@
                                 <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfCustomers" />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Parking"] @bind-Value="NumberOfCustomers" />
+                                <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["ParkingSlot"] @bind-Value="ParkingSlot" />
                             </MudItem>
                             <MudItem sm="4">
                                 <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["SubscriptionSlotNumber"] @bind-Value="SubscriptionSlotNumber" />
@@ -252,10 +252,10 @@
 
 
                         <MudItem sm="4">
-                            <MudNumericField T="decimal"   RequiredError="@L["This field is required."]" @bind-Value="FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            <MudNumericField T="decimal" RequiredError="@L["This field is required."]" @bind-Value="FirstHourPrice"  HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField  @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                            <MudNumericField @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]"/>
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField  @bind-Value="ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />

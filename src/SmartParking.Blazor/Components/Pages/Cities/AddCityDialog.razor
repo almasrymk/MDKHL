@@ -30,7 +30,9 @@
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Label="@L["ArabicName"]"
-                                      Placeholder="@L["ُType Here"]" />
+                                      Placeholder="@L["Type Here"]" 
+                                      Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="6">
@@ -39,7 +41,9 @@
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Label="@L["EnglishName"]"
-                                      Placeholder="@L["Type Here"]" />
+                                      Placeholder="@L["Type Here"]" 
+                                      Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                   
                     <MudItem sm="6">
@@ -47,6 +51,8 @@
                                    Label="@L["State"]"
                                    Placeholder="@L["Choose"]"
                                    Clearable="true"
+                                   Required
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                    @bind-Value="input.StateId">
                             <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var state in states)
@@ -70,7 +76,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(form == null || !form.IsValid)" >@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit" >@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>
 

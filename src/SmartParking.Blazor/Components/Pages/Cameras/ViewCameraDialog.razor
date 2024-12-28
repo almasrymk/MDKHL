@@ -40,31 +40,31 @@
 					@if (CultureInfo.CurrentCulture.Name == "en")
 					{
 						<MudItem sm="6" md="6">
-							<MudTextField @bind-Value="Camera.Model.EnglishName"
-										  Immediate="true"
-										  Disabled=true
-										  Label="@L["Model"]" />
-						</MudItem>
-						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.BrandName.EnglishName"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["BrandName"]" />
 						</MudItem>
-					}
-					else
-					{
 						<MudItem sm="6" md="6">
-							<MudTextField @bind-Value="Camera.Model.ArabicName"
+							<MudTextField @bind-Value="Camera.Model.EnglishName"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["Model"]" />
 						</MudItem>
+					}
+					else
+					{
 						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.BrandName.ArabicName"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["BrandName"]" />
+						</MudItem>
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Model.ArabicName"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["Model"]" />
 						</MudItem>
 					}
 

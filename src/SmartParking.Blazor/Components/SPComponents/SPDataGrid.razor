@@ -27,6 +27,14 @@
                         <div Class="ms-2">
                             <MudIconButton OnClick="OnClickFilter" Icon="@Icons.Material.Filled.FilterAlt" Class="cursor-pointer"></MudIconButton>
                         </div>
+                        @if (ClickFilter)
+                        {
+                            <MudItem xl="2" Class="d-flex align-center gap-2">
+                                <MudButton Class="clear-btn" Variant="Variant.Outlined" OnClick="CloseFilter">@L["Cancel"]</MudButton>
+                                <MudButton Class="apply-filter-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
+
+                            </MudItem>
+                        }
                     }
                     
                     <MudItem>
@@ -115,11 +123,7 @@
                             </MudItem>
 
                             <!--Buttons Filter Button -->
-                            <MudItem xl="2" Class="d-flex align-center gap-2">
-                                <MudButton Class="clear-btn" Variant="Variant.Outlined" OnClick="CloseFilter">@L["Cancel"]</MudButton>
-                                <MudButton Class="apply-filter-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
-
-                            </MudItem>
+                
                         </MudGrid>
                     }
                 </div>

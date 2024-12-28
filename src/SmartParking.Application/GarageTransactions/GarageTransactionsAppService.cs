@@ -113,9 +113,10 @@ public class GarageTransactionsAppService :
             queryable = queryable.Where(or =>
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())
-
-            ); ;
+                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            ); 
         }
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -161,9 +162,10 @@ public class GarageTransactionsAppService :
                 queryable = queryable.Where(or =>
                     or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                    or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())
-
-                ); ;
+                    or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                    or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                ); 
             }
             if (!input.Sorting.IsNullOrEmpty())
             {

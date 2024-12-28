@@ -17,25 +17,16 @@
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="userDto">
                 <MudGrid>
                     <MudItem sm="6">
-                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.UserName" Label="@L["UserName"]"  />
-                    </MudItem>
-                    <MudItem sm="6">
                         <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.Name" Label="@L["Name"]" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.Email" Label="@L["Email"]" />
                     </MudItem>
-                    <MudItem sm="6">
+                    <MudItem sm="4">
                         <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="userDto.PhoneNumber" />
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Role"]" @bind-Value="RoleName" />
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudTextField ReadOnly T="string" Placeholder="@L["Type Here"]"
-                                      Label="@L["NationalId"]" @bind-Value="userDto.NationalId" />
-                    </MudItem>
-                    <MudItem sm="6" Class="d-inline-flex justify-content-center">
+
+                    <MudItem sm="4" Class="d-inline-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@userDto.IdentificationTypes" Class="d-inline-flex align-content-center">
                                 @if (userDto.IdentificationTypes == Enums.IdentificationTypes.NationalID)
@@ -47,9 +38,16 @@
                                     <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
                                 }
 
-
                             </MudRadioGroup>
                         </MudItem>
+                    </MudItem>
+
+                    <MudItem sm="4">
+                        <MudTextField ReadOnly T="string" Placeholder="@L["Type Here"]"
+                                      Label="@L["NationalId"]" @bind-Value="userDto.NationalId" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Role"]" @bind-Value="RoleName" />
                     </MudItem>
                     <MudItem sm="4">
                         <Label>@L["Status"]</Label>

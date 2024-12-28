@@ -73,7 +73,7 @@ public interface IUsersAppService:  IApplicationService
     /// A task that represents the asynchronous operation.
     /// The task result contains the updated <see cref="UserDto"/> object.
     /// </returns>
-    Task<UserDto> UpdateAsync(Guid? id, UpdateUserDto input);
+    Task<UserDto> UpdateUserWithRoleChangeAsync(Guid? id, UpdateUserDto input);
     Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input);
     Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input);
 
@@ -97,4 +97,5 @@ public interface IUsersAppService:  IApplicationService
     Task<IdentityUser?> IsUserFound(Guid? userId);
     Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
     Task RemoveRoleMdkhl(Guid UserId, Guid RoleId);
+    Task<UserDto> UpdateUserWithoutRoleChangeAsync(Guid? id, UpdateUserDto input);
 }

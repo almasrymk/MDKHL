@@ -36,7 +36,9 @@
 									  For="@(() => city.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["ArabicName"]" />
+									  Label="@L["ArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6" >
@@ -44,7 +46,9 @@
 									  For="@(() => city.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["EnglishName"]" />
+									  Label="@L["EnglishName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6">
@@ -52,7 +56,10 @@
 								   Label="@L["State"]"
 								   Placeholder="@L["Choose"]"
 								   Clearable="true"
+								   Required
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 								   @bind-Value="city.StateId">
+							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 							@foreach (var state in states)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")

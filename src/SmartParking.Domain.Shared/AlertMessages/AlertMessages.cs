@@ -16,5 +16,6 @@ public static class AlertMessages
     public const string SUCCESS = "SUCCESS";
     public const string FAILED = "FAILED";
     public const string VAlIDATION_ERROR = "VaildtionError";
+    public const string ASSIGN = "assigned";
 
 }

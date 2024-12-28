@@ -17,6 +17,7 @@ using SmartParking.Organizations;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Uow;
 using Volo.Abp;
+using SmartParking.Localization;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -146,7 +147,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         var roleFound = await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
         if (roleFound is not null)
         {
-            throw new Exception("This role is already found.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("Role")+' '+LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
     }
 

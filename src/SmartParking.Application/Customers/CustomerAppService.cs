@@ -7,7 +7,6 @@ using SmartParking.Entities.Customers;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
 using Volo.Abp.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -25,7 +24,8 @@ using SmartParking.Authentication;
 using SmartParking.Enums;
 using SmartParking.Utilities;
 using SmartParking.Localization;
-
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
+using Microsoft.AspNetCore.Identity;
 namespace SmartParking.Customers;
 [Authorize]
 public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService
@@ -34,67 +34,60 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private readonly IRepository<Vehicle, int> _repositoryVehicle;
     private IOrganizationsAppService _organizationAppService;
     private IDataFilter _dataFilter;
-    private readonly ICurrentUser _currentUser;
-    private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
-    private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
+    private readonly UserManager<IdentityUser> _userManager;
     private readonly IBaseCustomerAppService _baseCustomer;
 	private readonly ICustomerPackagesAppService _packagesAppService;
     private readonly IUsersAppService _usersAppService;
-    private readonly IRoleAppService _roleAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
 
-    public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter, ICurrentUser currentUser,
-        IOrganizationsAppService organizationAppService, UserManager<Volo.Abp.Identity.IdentityUser> userManager,
-        IRepository<CustomerPackage, int> customerPackageRepository,
+    public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter,
+        IOrganizationsAppService organizationAppService, UserManager<IdentityUser> userManager,
         IBaseCustomerAppService baseCustomer , ICustomerPackagesAppService packagesAppService,
-        IUsersAppService usersAppService, IRoleAppService roleAppService, IAuthenticationUtility authenticationUtility) : base(repository)
+        IUsersAppService usersAppService, IAuthenticationUtility authenticationUtility) : base(repository)
     {
         _repository = repository;
         _repositoryVehicle = repositoryVehicle;
         _dataFilter = dataFilter;
-        _currentUser = currentUser;
         _organizationAppService = organizationAppService;
         _userManager = userManager;
-        _customerPackageRepository = customerPackageRepository;
         _baseCustomer = baseCustomer;
 		_packagesAppService = packagesAppService;
         _usersAppService = usersAppService;
-        _roleAppService = roleAppService;
         _authenticationUtility = authenticationUtility;
     }
   
 
     /// <inheritdoc/>
-    public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
-    {
-        try
-		{
-			var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
-			using (_dataFilter.Disable<IMultiTenant>())
+  //  public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
+  //  {
+  //      try
+		//{
+		//	var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+		//	using (_dataFilter.Disable<IMultiTenant>())
                 
-			{
-				var user = await _userManager.FindByNameAsync(input.UserName); 
-				if (user != null)
-				{
-                    throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " +LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-                }
+		//	{
+		//		var user = await _userManager.FindByNameAsync(input.UserName); 
+		//		if (user != null)
+		//		{
+  //                  throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " +LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+  //              }
 
-            }
-			await _baseCustomer.CheckCustomer(input);
+  //          }
+		//	await _baseCustomer.CheckCustomer(input);
 
-			var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
-			await AddUser(input, customer);
-			var customerAdd = await _repository.InsertAsync(customer, true);
-            await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
+		//	var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+		//	await AddUser(input, customer);
+		//	var customerAdd = await _repository.InsertAsync(customer, true);
+  //          await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
 			
-			return ObjectMapper.Map<Customer, CustomerDto>(customer);
-		}
-		catch (Exception ex)
-        {
+		//	return ObjectMapper.Map<Customer, CustomerDto>(customer);
+		//}
+		//catch (Exception ex)
+  //      {
 
-            throw new UserFriendlyException("Registration failed: " + ex.Message);
-        }
-    }
+  //          throw new UserFriendlyException("Registration failed: " + ex.Message);
+  //      }
+  //  }
 
 	
 
@@ -110,7 +103,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				var user = await _userManager.FindByNameAsync(input.UserName);
 				if (user != null)
 				{
-                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ 
+                        LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
                 }
 			}
@@ -118,13 +112,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
             if (!result2)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") +" "+ 
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
@@ -140,7 +136,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 		}
 		catch (Exception ex)
 		{
-            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED)+" "+ LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +LocalizationHelper.GetLocalizedString("Customer") );
+            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED)+" "+ 
+                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                LocalizationHelper.GetLocalizedString("Customer") );
             
 		}
 	}
@@ -466,7 +464,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var customer = await GetAsync(customerId);
             if (customer == null)
             {
-                throw new Exception("No Customer Found");
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
+                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
 
             var query = await _repositoryVehicle.GetQueryableAsync();
@@ -486,7 +485,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var org = await _organizationAppService.GetAsync(organizationId);
         if (org == null)
         {
-            throw new EntityNotFoundException(typeof(Organization), organizationId);
+            throw new EntityNotFoundException(LocalizationHelper.GetLocalizedString("Organization") + " " +
+                      LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
         }
         using (_dataFilter.Disable<IMultiTenant>())
@@ -548,10 +548,11 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var customer = await _repository.FirstOrDefaultAsync(c => c.Id == id);
-
+     
             if (customer == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") +" " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + 
+                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
             if (customer.IdentificationTypes != input.IdentificationType || customer.NationalId != input.NationalId)
@@ -563,17 +564,24 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
                 if (!result1)
                 {
-                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " + 
+                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
                 }
             }
-
-
+            await UpdateUser(input,customer.IdentityUserId);
             return await base.UpdateAsync(id, input);
         }
-        
+
 
     }
+
+    private async Task UpdateUser(CreateUpdateCustomerDto input,Guid userId)
+    {
+        var user = ObjectMapper.Map<CreateUpdateCustomerDto, UpdateUserDto>(input);
+        await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId,user);
+    }
+
     /// <inheritdoc/>
 
     public override async Task DeleteAsync(Guid id)
@@ -581,7 +589,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var customer = await _repository.FindAsync(x => x.Id == id);
         if (customer == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") +" "+
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         await base.DeleteAsync(id);
 
