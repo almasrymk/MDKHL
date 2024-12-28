@@ -9,8 +9,8 @@ using Volo.Abp;
 using Abp.Runtime.Validation;
 using System.Linq;
 using SmartParking.SubscriptionTypes;
-using System.Security.Authentication;
 using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
@@ -28,6 +28,7 @@ public partial class EditSubscriptionTypeDialog
 	private async Task Save()
 	{
 
+		
 		try
 		{
 			// Create the input object for update
@@ -42,33 +43,33 @@ public partial class EditSubscriptionTypeDialog
 			var subscriptionTypes = await SubscriptionTypeAppService.UpdateAsync(UpdatedId, input);
 			if (subscriptionTypes != null)
 			{
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.TypeAr}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/subscriptiontypes", true);
 			}
-		}
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+
+			else
+			{
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.TypeAr}", Severity.Error);
+
             }
-        }
+		}
         catch (BusinessException ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
+
     }
 
 

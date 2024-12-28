@@ -15,6 +15,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using SmartParking.SubscriptionTypes;
 using System.Globalization;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
@@ -208,10 +209,7 @@ public partial class SubscriptionType
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["PackageTypeDeletedSuccessfully"];
-        var errorMessage = L["Can'tDeletePackageType"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
+      
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
 
@@ -228,7 +226,7 @@ public partial class SubscriptionType
             if (!result.Canceled)
             {
                 await SubscriptionTypeAppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/subscriptiontypes", forceLoad: true);
@@ -240,36 +238,19 @@ public partial class SubscriptionType
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
-
     }
 
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
 }

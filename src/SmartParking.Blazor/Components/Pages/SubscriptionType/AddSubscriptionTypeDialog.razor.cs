@@ -41,7 +41,6 @@ public partial class AddSubscriptionTypeDialog
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/subscriptiontypes", true);
 			}
-
 		}
         catch (AbpValidationException validationException)
         {
@@ -64,6 +63,7 @@ public partial class AddSubscriptionTypeDialog
 
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
+
     }
 	private void Cancel()
 	{

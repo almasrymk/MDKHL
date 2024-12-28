@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
 @inject IDialogService DialogService
@@ -22,7 +23,8 @@
                                               Immediate="true"
                                               Required="true"
                                       Placeholder="@L["Type Here"]"
-                                              Label="@L["ArabicName"]" />
+                                              Label="@L["ArabicName"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                             </MudItem>
 
                             <MudItem sm="4">
@@ -31,7 +33,8 @@
                                               Immediate="true"
                                               Required="true"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["EnglishName"]" />
+                                      Label="@L["EnglishName"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                             </MudItem>
 
 
@@ -41,7 +44,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
 
@@ -72,31 +75,23 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["VehicleBrandCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
+       
             try
             {
                 await VehicleBrandsAppService.CreateAsync(vehicleBrandDro);
-                Snackbar.Add(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {vehicleBrandDro.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 Navigation.NavigateTo("/vehicleBrands", true);
             }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
-
-
-        }
-        else
+      
+        catch (Exception ex)
         {
-            Snackbar.Add(errorMessage, Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
+
+
+      
     }
     private void Cancel()
     {
