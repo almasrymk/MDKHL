@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Enums;
 using SmartParking.Localization;
+using SmartParking.Lookups;
 using SmartParking.Packages;
 using SmartParking.Permissions.PackagePermissions;
 using System;
@@ -259,9 +261,7 @@ public partial class Package
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
-        var successedMessage = L["PackageDeletedSuccessfully"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-		var errorMessage = L["FillRequriedItems"];
+        
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
 
@@ -287,7 +287,7 @@ public partial class Package
             if (!result.Canceled)
             {
                 await PackagesAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/package", true);
@@ -299,16 +299,16 @@ public partial class Package
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Package : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Package : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
