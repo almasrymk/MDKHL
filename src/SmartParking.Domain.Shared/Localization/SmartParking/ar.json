@@ -586,8 +586,7 @@
     "InvalidCredentials": "بيانات الدخول غير صحيحة",
     "Camera": "الكاميرا",
     "TryAgainException": "خطأ برجاء المحاولة مره اخرى",
-    "ModelName": "الموديل"
-    "TryAgainException": "خطأ برجاء المحاولة مره اخرى",
+    "ModelName": "الموديل",
     "ModelArabicName": "موديل المركبة بالعربي",
     "ModelEnglishName": " موديل المركبة بالإنجليزي",
     "TypeEn": "نوع الإشتراك بالانجليزي"

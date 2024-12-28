@@ -560,7 +560,6 @@
     "Role": "Role",
     "InvalidCredentials": "Invalid Login Credentials",
     "Camera": "Camera",
-    "TryAgainException": "Failed Please Try Again"
     "TryAgainException": "Failed Please Try Again",
     "ModelArabicName": "Model Arabic Name",
     "ModelEnglishName": "Model English Name",
