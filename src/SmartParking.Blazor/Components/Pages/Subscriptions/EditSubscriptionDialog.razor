@@ -35,7 +35,8 @@
                                           Variant="Variant.Text"
                                           Label="@L["EnglishName"]"
                                           InputType="InputType.Text"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
 
@@ -46,7 +47,8 @@
                                       Variant="Variant.Text"
                                       Label="@L["ArabicName"]"
                                       InputType="InputType.Text"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     
@@ -80,7 +82,8 @@
                                       Immediate="true"
                                       Label="@L["SubscriptionPrice"]"
                                       InputType="InputType.Number"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                         <MudItem sm="6">
                             <MudTextField @bind-Value="subscription.ParkingSlot"
@@ -90,7 +93,8 @@
                                           Placeholder="@L["Type Here"]"
                                           InputType="InputType.Number"
                                           Label="@L["ParkingSlot"]"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField @bind-Value="subscription.SubscriptionSlotNumber"
@@ -100,7 +104,8 @@
                                           Placeholder="@L["Type Here"]"
                                           InputType="InputType.Number"
                                           Label="@L["SubscriptionSlotNumber"]"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="12">
                             <MudTextField @bind-Value="subscription.SubscriptionDescription"
@@ -109,7 +114,8 @@
                                           Variant="Variant.Text"
                                           Label="@L["SubscriptionDescription"]"
                                           InputType="InputType.Text"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
@@ -122,7 +128,8 @@
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumberOfUsers"]"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                   
@@ -134,7 +141,8 @@
                                       InputType="InputType.Number"
                                       Placeholder=@L["Type Here"]
                                       Label="@L["NumberOfCameras"]"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="8">
                         <MudTextField @bind-Value="subscription.NumbersOfGarages"
@@ -144,7 +152,8 @@
                                       Placeholder=@L["Type Here"]
                                       InputType="InputType.Number"
                                       Label="@L["NumbersOfGarages"]"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="8">
                         <MudTextField @bind-Value="subscription.NumberOfCustomers"
@@ -154,7 +163,8 @@
                                       Placeholder="@L["Type Here"]"
                                       InputType="InputType.Number"
                                        Label="@L["NumberOfCustomers"]"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                         @if(subscription.Status == SubscriptionStatus.Active)
                         {

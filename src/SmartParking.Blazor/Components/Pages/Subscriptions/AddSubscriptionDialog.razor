@@ -31,7 +31,8 @@
                                           Placeholder=@L["Type Here"]
                                           Label="@L["EnglishName"]"
                                           InputType="InputType.Text"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                    </MudItem>
                     <MudItem sm="6"
                              Class="pt-0">
@@ -42,7 +43,8 @@
                                           Placeholder=@L["Type Here"]
                                           Label="@L["ArabicName"]"
                                       InputType="InputType.Text"
-                                      Required="true" />
+                                      Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                         <MudItem sm="6">
                             <MudSelect Variant="Variant.Text"
@@ -76,7 +78,8 @@
                                           Placeholder=@L["Type Here"]
                                           Label="@L["SubscriptionPrice"]"
                                           InputType="InputType.Number"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
                             <MudNumericField T="int"
@@ -88,7 +91,8 @@
                                              Min="0"
                                              Disabled="maximumNumberOfParkingSlots"
                                              Required="maximumNumberOfParkingSlots"
-                                             Label="@L["ParkingSlot"]" />
+                                             Label="@L["ParkingSlot"]" 
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField @bind-Value="input.SubscriptionSlotNumber"
@@ -98,7 +102,8 @@
                                           Placeholder=@L["Type Here"]
                                           InputType="InputType.Number"
                                           Label="@L["SubscriptionSlotNumber"]"
-                                          Required="true" />
+                                          Required="true" 
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="input.SubscriptionDescription"
@@ -108,7 +113,8 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["SubscriptionDescription"]"
                                       InputType="InputType.Text"
-                                      Required="true" />
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                      
@@ -123,7 +129,8 @@
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfCustomers"
-                                             Required="maximumNumberOfCustomers" />
+                                             Required="maximumNumberOfCustomers" 
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
                             <MudSwitch Label="@L["UnlimitedCustomers"]"
@@ -145,7 +152,8 @@
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfCameras"
-                                             Required="maximumNumberOfCameras" />
+                                             Required="maximumNumberOfCameras" 
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 
                         </MudItem>
 
@@ -170,7 +178,8 @@
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfGarages"
-                                             Required="maximumNumberOfGarages" />
+                                             Required="maximumNumberOfGarages" 
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
 
                         <MudItem sm="6">
@@ -191,7 +200,8 @@
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfUsers"
-                                             Required="maximumNumberOfUsers" />
+                                             Required="maximumNumberOfUsers" 
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
 
                         <MudItem sm="6">
@@ -247,7 +257,7 @@
 
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["SaveAsDraft"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="Submit">@L["SaveAsDraft"]</MudButton>
         </DialogActions>
 
     </MudDialog>
