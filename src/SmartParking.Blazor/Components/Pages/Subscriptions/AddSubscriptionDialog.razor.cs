@@ -11,6 +11,7 @@ using System.Linq;
 using SmartParking.Lookups;
 using SmartParking.Blazor.Components.Shared;
 using System.Security.Authentication;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -54,7 +55,7 @@ public partial class AddSubscriptionDialog
 
     private async Task Submit()
     {
-        
+        // Call your service to create the subscription
         try
         {
             input.NumbersOfGarages = BoundNumberOfGarages;
@@ -72,8 +73,9 @@ public partial class AddSubscriptionDialog
 
             if (subscription != null)
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {input.ArabicName}", Severity.Success);
-
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                           LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                           LocalizationHelper.GetLocalizedString("SubscriptionType"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/subscriptions", true);
@@ -85,19 +87,30 @@ public partial class AddSubscriptionDialog
 
             }
         }
-        catch (BusinessException ex)
+        catch (AbpValidationException abpValidationException)
         {
+            string errors = string.Empty;
+            foreach (var error in abpValidationException.ValidationErrors)
+            {
+                errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
+            }
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
         }
+        catch (BusinessException businessException)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Message}", Severity.Error);
+
+        }
+      
         catch (AuthenticationException ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
 
     }
