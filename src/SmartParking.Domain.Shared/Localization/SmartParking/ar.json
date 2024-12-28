@@ -29,7 +29,7 @@
     "Can'tUpdateRegion": "لا يمكن تعديل المنطقة",
     "Can'tUpdateState": "لا يمكن تعديل المحافظة",
     "Categories": "تصنيفاتى",
-    "Choose": "يختار",
+    "Choose": "اختار",
     "Choose your date": "إختر تاريخك",
     "Cities": "المدن",
     "CitiesDetails": "تفاصيل المدن,",
@@ -320,7 +320,7 @@
     "ExceededTime": "تجاوزت الوقت",
     "NumberOfHoursExceeded": "ساعات اليوم الكامل",
     "FullDayExceeded": " ساعات اليوم الكامل",
-    "FullDay": "يوم كامل",
+    "FullDay": "سعر اليوم الكامل",
     "Customer Categories": "فئـات العمـلاء",
     "No Subscription for organization": "لا تـوجـد إشـتراكات لتلك المنشـآة",
     "Deletion Process": "إستـكمال عملـية الحـذف",
@@ -422,7 +422,7 @@
     "NewSubscriptionType": "إضافة نوع إشتراك جديد",
     "Return": "عودة",
     "Assign Package": "إضافة باقة",
-    "TypeAr": "نوع الإشتراك",
+    "TypeAr": "نوع الإشتراك بالعربية",
     "UnLinkedTransaction": "حركات غير معرفة",
     "DeviceId": "كود الكاميرا",
     "UnLinkedTransactionDeletedSuccessfully": " تم حذف حركات غير معرفة بنجاح",
@@ -451,7 +451,7 @@
     "ArPlateLetters": "حروف اللوحة بالعربية",
     "EnPlateNumber": "رقم اللوحة بالانجليزية",
     "EnPlateLetters": "حروف اللوحة بالانجليزية",
-    "ParkingSlot": "أماكن الوقوف",
+    "ParkingSlot": "الأماكن",
     "TransactionType": "نوع الحركة",
     "Payments": "الفواتير",
     "PackageName": "اسم الباقة",
@@ -583,9 +583,12 @@
     "NotSameType": "ليس من النوع نفسه",
     "MessageEdit": "هل تريد التعديل ؟ ",
     "Role": "الدور",
-    "InvalidCredentials": "بيانات الدخول غير صحيحة"
+    "InvalidCredentials": "بيانات الدخول غير صحيحة",
     "Camera": "الكاميرا",
-    "TryAgainException": "خطأ برجاء المحاولة مره اخرى"
+    "TryAgainException": "خطأ برجاء المحاولة مره اخرى",
+    "ModelArabicName": "موديل المركبة بالعربي",
+    "ModelEnglishName": " موديل المركبة بالإنجليزي",
+    "TypeEn": "نوع الإشتراك بالانجليزي"
 
 
 
