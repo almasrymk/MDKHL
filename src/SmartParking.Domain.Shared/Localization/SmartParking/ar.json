@@ -458,8 +458,8 @@
     "Currency": "العملة",
     "Amount": "المجموع",
     "PaymentCategory": "فئة الدفع",
-    "PaymentMethod": "طريقة الدفع",
-    "PaymentStatus": "حالة الدفع",
+    "PaymentMethod": "الطريقة",
+    "PaymentStatus": "الحالة",
     "CustomerName": "اسم العميل",
     "RegionName": "المنطقة",
     "NumOfGarages": "المـواقـف",
@@ -583,6 +583,7 @@
     "NotSameType": "ليس من النوع نفسه",
     "MessageEdit": "هل تريد التعديل ؟ ",
     "Role": "الدور",
+    "InvalidCredentials": "بيانات الدخول غير صحيحة"
     "Camera": "الكاميرا"
 
 

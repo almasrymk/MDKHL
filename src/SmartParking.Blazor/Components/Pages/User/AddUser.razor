@@ -45,7 +45,7 @@
                               Label="@L["Email"]" />
                     </MudItem>
                           
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="4" md="4">
                     <MudTextField @ref="textField"
                                    @bind-Value="userCreate.PhoneNumber"
                                    For="@(() => userCreate.PhoneNumber)"
@@ -55,20 +55,23 @@
                                       Placeholder="@L["Type Here"]"
                                       Label="@L["PhoneNumber"]"/>
                     </MudItem>
-
-            <MudItem sm="6">
-                <MudTextField T="string" Placeholder="@L["Type Here"]" 
-                              Label="@L["NationalId"]" @bind-Value="userCreate.NationalId" />
-            </MudItem>
-            <MudItem sm="6" Class="d-inline-flex justify-content-center">
+            <MudItem sm="4" Class="d-inline-flex justify-content-center">
                 <MudItem Class="d-flex flex-row justify-content-between">
-                    <MudRadioGroup @bind-Value="@userCreate.IdentificationTypes" 
+                    <MudRadioGroup @bind-Value="@userCreate.IdentificationTypes"
                                    Class="d-inline-flex align-content-center">
                         <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
                         <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
                     </MudRadioGroup>
                 </MudItem>
             </MudItem>
+
+            <MudItem sm="4">
+                <MudTextField T="string" Placeholder="@L["Type Here"]" 
+                              Label="@L["NationalId"]" @bind-Value="userCreate.NationalId" />
+            </MudItem>
+            <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
+            
 
                 @if (currrentTenant.Id is null)
                 {

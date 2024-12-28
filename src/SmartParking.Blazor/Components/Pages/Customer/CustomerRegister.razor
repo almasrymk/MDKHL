@@ -54,7 +54,7 @@
                             InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required />
                         </MudItem>                        
                         
-                        <MudItem sm="4">
+                        <MudItem sm="8">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
                             InputType="InputType.Email" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
                         </MudItem>
@@ -72,6 +72,9 @@
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
                             Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required />
                         </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
                         @if (CurrentTenant.Id is null)
                         {
                             <MudItem sm="4" md="4">

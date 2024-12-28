@@ -33,16 +33,6 @@ public partial class GarageDialog
     {
         _localizer = localizer;
     }
-
-    private Task CreateGarage()
-    {
-       
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = organizationId
-        };
-        return Dialog.ShowAsync<AddGarageDialogInOrganization>("AddGarageDialogInOrganization", parameters);
-    }
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>
@@ -77,8 +67,6 @@ public partial class GarageDialog
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
 
         // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
@@ -109,7 +97,6 @@ public partial class GarageDialog
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -147,7 +134,7 @@ public partial class GarageDialog
 
         }
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlot"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         foreach (var item in garages.Items)
         {
@@ -163,7 +150,7 @@ public partial class GarageDialog
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArGarageName"], item.NameAr));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlot"], item.MaxCapacity.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
 
 
