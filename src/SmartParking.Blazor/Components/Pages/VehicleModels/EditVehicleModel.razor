@@ -37,6 +37,7 @@
 						Label="@L["VehiclesBrand Name"]"
 						Placeholder="Choose"
 						Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 						Clearable="_clearable">
 							@foreach (var vehicleBrand in VehicleBrands)
 							{
@@ -58,15 +59,18 @@
 						<MudTextField @bind-Value="VehicleModel.ArabicName"
 						For="@(() => VehicleModel.ArabicName)"
 						Immediate="true"
-						Label="@L["ArabicName"]" />
+									  Label="@L["ModelArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="VehicleModel.EnglishName"
 						For="@(() => VehicleModel.EnglishName)"
 						Immediate="true"
 						Required="true"
-						Label="@L["EnglishName"]" />
+									  Label="@L["ModelEnglishName"]" 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6">
@@ -145,7 +149,6 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["VehicleModelUpdatedSuccessfully"];
 		
 
 		try
@@ -153,15 +156,18 @@
 			if (IsPictureChanged)
 			VehicleModel.Image = await FileHelper.SaveImageFromBase64Async(ModelPicture, PathHelper.ModelFolder);
 			await VehicleModelsAppService.UpdateAsync(UpdatedId, VehicleModel);
-			Snackbar.Add(successedMessage, Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {VehicleModel.ArabicName} ", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/vehicleModels", true);
 		}
-		catch (Exception e)
+		
+		catch (Exception ex)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
 		}
+
 	}
 
 	private async Task CancelEdit()

@@ -28,6 +28,7 @@
                         HelperText=@L["Helper Text"]
                         Placeholder=@L["Choose"]
                         Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Clearable="_clearable">
                             <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehicleBrand in VehicleBrands)
@@ -50,17 +51,19 @@
                         For="@(() => vehicleModelDto.ArabicName)"
                         Immediate="true"
                         Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Placeholder=@L["Type Here"]
-                        Label="@L["ArabicName"]" />
+                                      Label="@L["ModelArabicName"]" />
                     </MudItem>
 
-                    <MudItem sm="4">
+                    <MudItem sm="6">
                         <MudTextField @bind-Value="vehicleModelDto.EnglishName"
                         For="@(() => vehicleModelDto.EnglishName)"
                         Immediate="true"
                         Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Placeholder=@L["Type Here"]
-                        Label="@L["EnglishName"]" />
+                                      Label="@L["ModelEnglishName"]" />
                     </MudItem>
 
                     <MudItem sm="6">
@@ -135,25 +138,24 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["VehicleModelCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
+      
         
             try
             {
                 vehicleModelDto.Image = await FileHelper.SaveImageFromBase64Async(ModelPicture, PathHelper.ModelFolder);
                 await VehicleModelsAppService.CreateAsync(vehicleModelDto);
-                Snackbar.Add(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {vehicleModelDto.ArabicName} ", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/vehicleModels", true);
             }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
+        
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+
 
 
  
