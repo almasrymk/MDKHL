@@ -71,16 +71,12 @@ public partial class Package
 
 	}
 	/// <summary>
-	/// Searches for cameras on the server side using the cameras code search term.
+	/// Searches for packages on the server side using the packages search term.
 	/// </summary>
-	/// <param name="searchTerm">The term to search for among cameras.</param>
+	/// <param name="searchTerm">The term to search for among packages.</param>
 	/// <returns>Returns a task that represents the asynchronous operation.</returns>
 	private async Task HandleSearch(PageChangeEventArgs pageInfo)
 	{
-		// Log the search term to the console for debugging purposes
-		Console.WriteLine(pageInfo.SearchTerm);
-
-		// Update the term used for searching with the provided search term
 		termSearch = pageInfo.SearchTerm;
 
 		// Create a new search input object with pagination, sorting, and search term parameters
@@ -139,16 +135,13 @@ public partial class Package
 		if (CultureInfo.CurrentCulture.Name == "en")
 		{
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeEnName"], Name = "PackageTypeEnName", IsFilterable = true, PropertyName = "PackageType.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		}
 		else
 		{
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageTypeArName"], Name = "PackageTypeArName", IsFilterable = true, PropertyName = "PackageType.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-
 		}
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = false, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Subscribers"], Name = "Subscribers", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "PackageStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
@@ -159,15 +152,11 @@ public partial class Package
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
 			if (CultureInfo.CurrentCulture.Name == "en")
 			{
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeEnName"], item.PackageType.EnglishName));
-				
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));	
 			}
 			else
 			{
-
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
-				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageTypeArName"], item.PackageType.ArabicName));
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " + " + $" {item.PublishTo}"));
