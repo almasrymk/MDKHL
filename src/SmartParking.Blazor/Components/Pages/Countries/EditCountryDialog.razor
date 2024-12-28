@@ -31,7 +31,9 @@
 									  For="@(() => country.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-								      Label="@L["ArabicName"]" />
+								      Label="@L["ArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
@@ -39,20 +41,26 @@
 									  For="@(() => country.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									 Label="@L["EnglishName"]" />
+									 Label="@L["EnglishName"]" 
+									 Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="country.ArabicCapital"
 									  For="@(() => country.ArabicCapital)"
 									  Immediate="true"
-									  Label="@L["Arabic Capital"]" />
+									  Label="@L["Arabic Capital"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="country.EnglishCapital"
 									  For="@(() => country.EnglishCapital)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["English Capital"]" />
+									  Label="@L["English Capital"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 				</MudGrid>
