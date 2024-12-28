@@ -82,7 +82,7 @@
 		{
 
 			await CameraBrandsAppService.UpdateAsync(Id, CameraBrand);
-			SnackBar.ShowSnackbar(Snackbar, $"{CameraBrand.ArabicName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {CameraBrand.ArabicName} ", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/cameraBrands", true);
@@ -91,7 +91,7 @@
 		catch (Exception ex)
 		{
 
-			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} {CameraBrand.ArabicName} ", Severity.Error);
 		}
 	}
 

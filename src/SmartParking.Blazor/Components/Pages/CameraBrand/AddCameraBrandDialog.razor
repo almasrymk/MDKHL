@@ -79,7 +79,7 @@
         try
         {
             await CameraBrandsAppService.CreateAsync(cameraBrandDro);
-            SnackBar.ShowSnackbar(Snackbar, $"{cameraBrandDro.ArabicName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {cameraBrandDro.ArabicName} ", Severity.Success);
 
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
@@ -88,7 +88,7 @@
         catch (Exception ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {cameraBrandDro.ArabicName} ", Severity.Error);
         }
 
 
