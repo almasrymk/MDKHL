@@ -16,6 +16,8 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Lookups;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.VehicleBrands;
 
@@ -209,10 +211,7 @@ public partial class VehicleBrand
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
-		var successedMessage = L["VehicleBrandDeletedSuccessfully"];
-		var errorMessage = L["Can'tDeleteVehicleBrand"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
+		
 		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
@@ -229,7 +228,7 @@ public partial class VehicleBrand
             if (!result.Canceled)
             {
                 await VehicleBrandsAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/vehiclebrands", forceLoad: true);
@@ -241,35 +240,19 @@ public partial class VehicleBrand
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
     }
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-	{
-
-		Snackbar.Clear();
-		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-	}
+   
 }
