@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
 @inject IVehicleBrandsAppService VehicleBrandsAppService
@@ -23,7 +24,8 @@
 									  For="@(() => VehicleBrand.ArabicName)"
 									  Immediate="true"
 									  Required="true"
-									  Label="@L["ArabicName"]" />
+									  Label="@L["ArabicName"]" 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="4">
@@ -31,7 +33,8 @@
 									  For="@(() => VehicleBrand.EnglishName)"
 									  Immediate="true"
 									  Required="true"
-									  Label="@L["EnglishName"]" />
+									  Label="@L["EnglishName"]" 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 				</MudGrid>
 			</MudForm>
@@ -72,21 +75,22 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["VehicleBrandUpdatedSuccessfully"];
-
+		
 		try
 		{
 
 			await VehicleBrandsAppService.UpdateAsync(UpdatedId, VehicleBrand);
-			Snackbar.Add(successedMessage, Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {VehicleBrand.ArabicName}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/vehicleBrands", true);
 
 		}
-		catch (Exception e)
+		
+		catch (Exception ex)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
 		}
 	}
 

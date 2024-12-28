@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
@@ -35,12 +37,7 @@ public partial class AddStateDialog
     }
     private async Task Submit()
     {
-		var successedMessage = L["StateCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateState"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-
-		// Call your service to create the state
+	
 		try
 		{
 			CreateUpdateStateDto createUpdateStateDto = new CreateUpdateStateDto()
@@ -54,35 +51,33 @@ public partial class AddStateDialog
 			var states = await StateAppService.CreateAsync(createUpdateStateDto);
 			if (states != null)
 			{
-				Snackbar.Add(successedMessage, Severity.Success);
-				MudDialog.Close(DialogResult.Ok(true));
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {states.EnglishName}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/states", true);
 			}
-
-			else
-			{
-				Snackbar.Add(errorMessage, Severity.Error);
-
-			}
 		}
-		catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
-			Snackbar.Add($"{errorMessage} {ex.Code}", Severity.Error);
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-		}
-		catch (Exception ex)
-		{
-			Snackbar.Add($"{errorMessage} {ex.Message}", Severity.Error);
-		}
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+        }
     }
     private void Cancel()
     {

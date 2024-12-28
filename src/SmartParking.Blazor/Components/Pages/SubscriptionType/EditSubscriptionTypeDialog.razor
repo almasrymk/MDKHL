@@ -30,7 +30,8 @@
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Placeholder=@L["Type Here"]
-									  Label=@L["TypeEn"] />
+									  Label=@L["TypeEn"] 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscriptionType.TypeAr"
@@ -38,7 +39,8 @@
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Placeholder=@L["Type Here"]
-									  Label=@L["TypeAr"] />
+									  Label=@L["TypeAr"] 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 

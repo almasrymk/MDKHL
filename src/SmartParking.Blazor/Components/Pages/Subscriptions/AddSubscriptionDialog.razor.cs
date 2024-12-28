@@ -8,6 +8,10 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Lookups;
+using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -51,11 +55,6 @@ public partial class AddSubscriptionDialog
 
     private async Task Submit()
     {
-        var successedMessage = L["SubscriptionCreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateSubscription"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        var failedError = L["FailedToAddSubscription :"];
-
         // Call your service to create the subscription
         try
         {
@@ -74,8 +73,9 @@ public partial class AddSubscriptionDialog
 
             if (subscription != null)
             {
-                Snackbar.Add(successedMessage, Severity.Success);
-
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                           LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                           LocalizationHelper.GetLocalizedString("SubscriptionType"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/subscriptions", true);
@@ -83,25 +83,34 @@ public partial class AddSubscriptionDialog
 
             else
             {
-                Snackbar.Add(errorMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {input.ArabicName}", Severity.Error);
 
             }
         }
-        catch (AbpValidationException validationException)
+        catch (AbpValidationException abpValidationException)
         {
-            foreach (var validationError in validationException.ValidationErrors)
+            string errors = string.Empty;
+            foreach (var error in abpValidationException.ValidationErrors)
             {
-                Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
             }
-        }
-        catch (BusinessException ex)
-        {
-            Snackbar.Add($"{failedError} {ex.Code} + ", Severity.Error);
 
+        }
+        catch (BusinessException businessException)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Message}", Severity.Error);
+
+        }
+      
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"{failedError} {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
 
     }
