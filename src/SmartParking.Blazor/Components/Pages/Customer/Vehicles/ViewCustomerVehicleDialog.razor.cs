@@ -78,11 +78,19 @@ public partial class ViewCustomerVehicleDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         if(CultureInfo.CurrentCulture.Name == "ar")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArPlateNumber"], Name = "ArPlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "ArPlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["LicenceType"], Name = "LicenceType", IsFilterable = false, PropertyName = "LicenceType.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["BrandName"], Name = "BrandName", IsFilterable = false, PropertyName = "VehicleBrand.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelName"], Name = "ModelName", IsFilterable = false, PropertyName = "VehicleModel.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnPlateNumber"], Name = "EnPlateNumber", IsFilterable = false, PropertyName = "EnPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "EnPlateNumber", IsFilterable = false, PropertyName = "EnPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["LicenceType"], Name = "LicenceType", IsFilterable = false, PropertyName = "LicenceType.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["BrandName"], Name = "BrandName", IsFilterable = false, PropertyName = "VehicleBrand.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelName"], Name = "ModelName", IsFilterable = false, PropertyName = "VehicleModel.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelYear"], Name = "ModelYear", IsFilterable = false, PropertyName = "ModelYear", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CompanyName"], Name = "CompanyName", IsFilterable = false, PropertyName = "CompanyName", IsSortable = false, TypeFilter = TypeFilter.Text });
@@ -90,8 +98,22 @@ public partial class ViewCustomerVehicleDialog
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArPlateNumber"], item.ArPlateNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnPlateNumber"], item.EnPlateNumber));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.ArPlateNumber));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["LicenceType"], item.LicenceArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["BrandName"], item.BrandArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelName"], item.ModelArabicName));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.EnPlateNumber));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["LicenceType"], item.LicenceEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["BrandName"], item.BrandEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelName"], item.ModelEnglishName));
+            }
+
+
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelYear"], item.ModelYear));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CompanyName"], item.CompanyName));
 

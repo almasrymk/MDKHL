@@ -77,7 +77,7 @@ public partial class CustomerView
         };
 
 
-        return await DialogService.ShowAsync<ViewCustomerVehicleDialog>("view customer vehicle", parameters);
+        return await DialogService.ShowAsync<ViewCustomerVehicleDialog>("view customer vehicle", parameters );
     }  
     private async Task<IDialogReference> ViewInvoice()
     {
@@ -99,7 +99,6 @@ public partial class CustomerView
         {
             ["CustomerId"] = customerId,
         };
-
 
         return await DialogService.ShowAsync<ViewCustomerPackageDialog>("view customer package", parameters);
     }

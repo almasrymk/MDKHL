@@ -41,6 +41,7 @@ using SmartParking.Enums;
 using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraModel;
 using SmartParking.Lookups.CameraMainType;
+using Microsoft.Build.Framework;
 
 namespace SmartParking;
 
@@ -128,7 +129,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateVehicleMobileDto, Vehicle>()
 			.ForMember(dto => dto.ModelYear, opt => opt.MapFrom(entity => entity.Year));
 
-		CreateMap<Vehicle, VehicleDto>();
+        CreateMap<Vehicle, VehicleDto>()
+            .ForMember(des => des.BrandEnglishName, src => src.MapFrom(f => f.VehicleBrand.EnglishName))
+            .ForMember(des => des.ModelEnglishName, src => src.MapFrom(f => f.VehicleModel.EnglishName))
+            .ForMember(des => des.LicenceEnglishName, src => src.MapFrom(f => f.LicenceType.EnglishName))
+            .ForMember(des => des.BrandArabicName, src => src.MapFrom(f => f.VehicleBrand.ArabicName))
+            .ForMember(des => des.ModelArabicName, src => src.MapFrom(f => f.VehicleModel.ArabicName))
+            .ForMember(des => des.LicenceArabicName, src => src.MapFrom(f => f.LicenceType.ArabicName));
         CreateMap<CreateUpdateVehicleDto, Vehicle>()
             .ForMember(dest => dest.ArPlateNumber, src => src.MapFrom(f => f.FullArPlate))
             .ForMember(dest => dest.EnPlateNumber, src => src.MapFrom(f => f.FullEnPlate));
