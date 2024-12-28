@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
 @using SmartParking.Garages
 @using SmartParking.Localization
@@ -108,21 +109,21 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["Camera assigned to garage Successfully"];
-		var errorMessage = L["Can't assign camera to garage"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		
 		try
 		{
 			Camera.TenantId = Garages.Find(x=>x.Id==Camera.GarageId).TenantId;
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);
 
-			Snackbar.Add($"{successedMessage}", Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ASSIGN]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 
 		}
-		catch (Exception e)
+		
+		catch (Exception ex)
 		{
-			Snackbar.Add(errorMessage, Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ASSIGN]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 		}
 	}
 

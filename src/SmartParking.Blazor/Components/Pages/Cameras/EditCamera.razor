@@ -37,13 +37,17 @@
 						<MudTextField @bind-Value="Camera.Name"
 									  For="@(() => Camera.Name)"
 									  Immediate="true"
-									  Label="@L["Name"]" />
+									  Label="@L["Name"]"
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.DeviceId"
 									  Immediate="true"
-									  Label="@L["Code"]" />
+									  Label="@L["Code"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6">
@@ -53,7 +57,9 @@
 								   HelperText=@L["Helper Text"]
 								   Placeholder=@L["Choose"]
 								   Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 								   Clearable="_clearable">
+							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 							@foreach (var vehicleBrand in CameraBrands)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -76,7 +82,9 @@
 								   HelperText=@L["Helper Text"]
 								   Placeholder=@L["Choose"]
 								   Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 								   Clearable="_clearable">
+							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 							@foreach (var vehicleBrand in CameraModels)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -99,7 +107,9 @@
 								   HelperText=@L["Helper Text"]
 								   Placeholder=@L["Choose"]
 								   Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 								   Clearable="_clearable">
+							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 							@foreach (var vehicleBrand in CameraMainTypes)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -118,13 +128,17 @@
 						<MudTextField @bind-Value="Camera.CameraIP"
 									  For="@(() => Camera.CameraIP)"
 									  Immediate="true"
-									  Label="@L["CameraIP"]" />
+									  Label="@L["CameraIP"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.MacAddress"
 									  For="@(() => Camera.MacAddress)"
 									  Immediate="true"
-									  Label="@L["MacAddress"]" />
+									  Label="@L["MacAddress"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 				
 					@if (CultureInfo.CurrentCulture.Name == "en")
