@@ -27,6 +27,9 @@ using SmartParking.Utilities;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using SmartParking.Localization;
 using Volo.Abp;
+using SmartParking.Entities.Customers;
+using SmartParking.Customers;
+using Castle.Core.Resource;
 
 namespace SmartParking.Authentication;
 
@@ -39,12 +42,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly ICustomRoleReository _roleReository;
     private readonly IOptions<IdentityOptions> _identityOptions;
     private readonly IAuthenticationUtility _authenticationUtility;
+    private readonly IBaseCustomerAppService _baseCustomer;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
         ICustomRoleReository roleReository,
         IOptions<IdentityOptions> identityOptions,
-        IAuthenticationUtility authenticationUtility)
+        IAuthenticationUtility authenticationUtility,
+        IBaseCustomerAppService baseCustomer
+        )
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -52,6 +58,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _roleReository = roleReository;
         _identityOptions = identityOptions;
         _authenticationUtility = authenticationUtility;
+        _baseCustomer = baseCustomer;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
@@ -59,13 +66,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await _identityOptions.SetAsync();
         var user = CreateUser(input);
 
+        
+
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null) {
             throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
                 LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
-        
+        await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
+        await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
         var creationResult = await _userManager.CreateAsync(user, input.Password);
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
@@ -347,6 +357,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     }
     private async Task UpdateUserProperties(IdentityUser user, UpdateUserDto input)
     {
+        await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
+        await CheckUpdatePhoneNumber(user, input);
         user.Name = input.Name;
         user.Surname = input.Surname;
 
@@ -365,8 +377,32 @@ public class UsersAppService : ApplicationService, IUsersAppService
             );
         user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
     }
-    
-    
+
+    private async Task CheckUpdatePhoneNumber(IdentityUser user, UpdateUserDto input)
+    {
+        if (user.PhoneNumber != input.PhoneNumber)
+        {
+            var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
+            if (!result1)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+
+            }
+        }
+    }
+
+    private async Task CheckNationalIdValid(IdentityUser user, IdentificationTypes identification, string nationalId)
+    {
+        var IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
+        var NationalId = user.GetProperty<string>("NationalId");
+        if (IdentificationTypes != identification || NationalId != nationalId)
+        {
+            await _authenticationUtility.CheckNationalId(identification, nationalId);
+            await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);
+        }
+    }
+
     public async Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
