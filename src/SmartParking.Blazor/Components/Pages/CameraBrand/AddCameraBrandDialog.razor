@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.CameraBrands
 @inject IDialogService DialogService
@@ -18,20 +19,22 @@
 
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="cameraBrandDro.ArabicName"
-                                      For="@(() => cameraBrandDro.ArabicName)"
-                                      Immediate="true"
-                                      Required="true"
-                                      Placeholder="@L["Type Here"]"
-                                      Label="@L["ArabicName"]" />
+                        For="@(() => cameraBrandDro.ArabicName)"
+                        Immediate="true"
+                        Required="true"
+                        Placeholder="@L["Type Here"]"
+                        Label="@L["ArabicName"]"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="4">
                         <MudTextField @bind-Value="cameraBrandDro.EnglishName"
-                                      For="@(() => cameraBrandDro.EnglishName)"
-                                      Immediate="true"
-                                      Required="true"
-                                      Placeholder="@L["Type Here"]"
-                                      Label="@L["EnglishName"]" />
+                        For="@(() => cameraBrandDro.EnglishName)"
+                        Immediate="true"
+                        Required="true"
+                        Placeholder="@L["Type Here"]"
+                        Label="@L["EnglishName"]" 
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
 
@@ -41,7 +44,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
 
@@ -51,7 +54,7 @@
 
 <style>
     .mud-modal {
-        border-radius: 0 20px 0 20px;
+    border-radius: 0 20px 0 20px;
     }
 </style>
 
@@ -72,31 +75,23 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["CameraBrandCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
+
+        try
         {
-            // Call your service to create the camera
-            try
-            {
-                await CameraBrandsAppService.CreateAsync(cameraBrandDro);
-                Snackbar.Add(successedMessage, Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                Navigation.NavigateTo("/Camerabrands", true);
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
+            await CameraBrandsAppService.CreateAsync(cameraBrandDro);
+            SnackBar.ShowSnackbar(Snackbar, $"{cameraBrandDro.ArabicName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+
+            MudDialog.Close(DialogResult.Ok(true));
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/Camerabrands", true);
+         }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
 
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
     }
     private void Cancel()
     {
