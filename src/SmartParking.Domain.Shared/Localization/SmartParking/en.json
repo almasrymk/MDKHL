@@ -558,8 +558,9 @@
     "NotSameType": "Not The Same Type",
     "MessageEdit": "Do you want to edit ?",
     "Role": "Role",
-    "InvalidCredentials": "Invalid Login Credentials",
-    "Camera": "Camera"
+    "InvalidCredentials": "Invalid Login Credentials"
+    "Camera": "Camera",
+    "TryAgainException": "Failed Please Try Again"
 
 
 

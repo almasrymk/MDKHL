@@ -189,7 +189,10 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
 
             queryable = queryable.Where(or =>
                 or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.SubscriptionPrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.SubscriptionType.TypeAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.SubscriptionType.TypeEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                  or.SubscriptionDescription.ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
