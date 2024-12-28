@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using Volo.Abp.MultiTenancy
 @inject IStringLocalizer<SmartParkingResource> L
@@ -38,7 +39,7 @@
     {
         if(!errorMessage.IsNullOrEmpty())
         {
-            Snackbar.Add(errorMessage, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, L["InvalidCredentials"], Severity.Error);
         }
         return base.OnInitializedAsync();
 
