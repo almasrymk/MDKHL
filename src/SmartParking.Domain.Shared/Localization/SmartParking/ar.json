@@ -227,7 +227,7 @@
     "InvoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "Can'tCreateInvoice": "لا يمكن إنشاء مطابقة",
     "OrganizationArabicName": " إسم المنشأة",
-    "ArGarageName": "إسم الموقف بالعربية",
+    "ArGarageName": "إسم الموقف",
     "InvoiceDetails": "تفاصيل المطابقة",
     "Print": "طباعة",
     "ChoosePaymentMethod": "إختر طريقة الدفع",
@@ -400,7 +400,7 @@
     "SaveAsDraft": "حفظ كمسودة",
     "NumberOfUsers": "عدد موظفي المنشأة",
     "Address": "العنوان",
-    "EnGarageName": "إسم الموقف بالإنجليزيه",
+    "EnGarageName": "إسم الموقف",
     "BuidlingNumber": "رقم المبنى",
     "StreetName": "الشارع",
     "SecondaryNumber": "الرقم الثانوي",
@@ -583,12 +583,9 @@
     "NotSameType": "ليس من النوع نفسه",
     "MessageEdit": "هل تريد التعديل ؟ ",
     "Role": "الدور",
-    "InvalidCredentials": "بيانات الدخول غير صحيحة"
+    "InvalidCredentials": "بيانات الدخول غير صحيحة",
     "Camera": "الكاميرا",
     "TryAgainException": "خطأ برجاء المحاولة مره اخرى"
-
-
-
 
   }
 }

@@ -123,19 +123,19 @@ public partial class GarageDialog
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = false, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnGarageName"], Name = "EnGarageName", IsFilterable = true, PropertyName = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "NameEn", IsSortable = false, TypeFilter = TypeFilter.Text });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "ArGarageName", IsFilterable = true, PropertyName = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "NameAr", IsSortable = false, TypeFilter = TypeFilter.Text });
 
         }
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlot"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();
@@ -143,15 +143,15 @@ public partial class GarageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnGarageName"], item.NameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.NameEn));
             }
             else
             {
 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArGarageName"], item.NameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.NameAr));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlot"], item.MaxCapacity.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[item.Status.ToString()]));
 
 
             tableData.Rows.Add(rowDef);
