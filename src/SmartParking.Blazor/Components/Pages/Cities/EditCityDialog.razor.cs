@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups;
 using SmartParking.Lookups.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
@@ -36,9 +38,6 @@ public partial class EditCityDialog
 
     private async Task Save()
     {
-        var successedMessage = L["CityUpdatedSuccessfully"];
-        var errorMessage = L["Can'tUpdateCity"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
             // Create the input object for update
@@ -55,7 +54,7 @@ public partial class EditCityDialog
             var cities = await CitiesAppService.UpdateAsync(city.Id, input);
             if (cities != null)
             {
-                Snackbar.Add(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName} ", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/cities", forceLoad: true);
@@ -63,30 +62,29 @@ public partial class EditCityDialog
 
             else
             {
-                Snackbar.Add(errorMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName} ", Severity.Error);
 
-            }
-        }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"{errorMessage} {ex.Code} + ", Severity.Error);
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"{errorMessage} {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
-        
+
+
     }
 
-	private void Cancel()
+    private void Cancel()
 	{
 		MudDialog.Cancel();
 	}
