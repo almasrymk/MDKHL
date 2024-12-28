@@ -28,11 +28,11 @@
                     </ActivatorContent>
                 </MudFileUpload>
             </div>
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="OldProfile.UserName" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="OldProfile.Name" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="OldProfile.PhoneNumber" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["NationalId"] @bind-Value="OldProfile.NationalId" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="OldProfile.UserName" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="OldProfile.Name" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="OldProfile.PhoneNumber" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["NationalId"] @bind-Value="OldProfile.NationalId" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
              <MudRadioGroup @bind-Value="@OldProfile.IdentificationTypes"
                             Class="d-inline-flex align-content-center">
                  <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
@@ -77,8 +77,7 @@
 
     private async Task GetProfile()
     {
-        try
-        {
+
             var profile = await UsersAppService.GetAsync(CurrentUser.Id);
 
             OldProfile.Name = Profile.Name = profile.Name;
@@ -92,12 +91,7 @@
 
             ProfilePictureUrl = NewProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "" : profile.Image;
 
-        }
-
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading profile: {ex.Message}", Severity.Error);
-        }
+       
     }
 
     private async Task SaveChanges()
@@ -106,10 +100,7 @@
         {
 
 
-            await form.Validate();
-
-            if (form.IsValid)
-            {
+           
                 bool updated = false;
                 if(IfChanged(OldProfile,Profile)){
                     await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, OldProfile);
@@ -127,11 +118,7 @@
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
                 }
-            }
-            else
-            {
-                Snackbar.Add(L[AlertMessages.AlertMessages.VAlIDATION_ERROR], Severity.Warning);
-            }
+            
         }
         catch (AbpValidationException validationException)
         {
