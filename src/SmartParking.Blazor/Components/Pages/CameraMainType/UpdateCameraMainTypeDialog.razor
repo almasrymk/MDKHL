@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.CameraBrands
 @using SmartParking.Lookups.CameraMainType
@@ -24,7 +25,8 @@
                                       Immediate="true"
                                       Required="true"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["ArabicName"]" />
+                                      Label="@L["ArabicName"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="4">
@@ -33,15 +35,17 @@
                                       Immediate="true"
                                       Required="true"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["EnglishName"]" />
+                                      Label="@L["EnglishName"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudSelect @bind-Value="@cameraMainType.CameraBrandId"
                                    Variant="Variant.Text"
-                                   Label="@L["CamerBrandName"]"
+                                   Label="@L["BrandName"]"
                                    HelperText=@L["Helper Text"]
                                    Placeholder=@L["Choose"]
                                    Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                    Clearable="_clearable">
                             @foreach (var vehicleBrand in CameraBrands)
                             {
@@ -64,7 +68,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
 
@@ -100,31 +104,22 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["CameraMainTypeCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
+       
+        try
         {
-            // Call your service to create the camera
-            try
-            {
-                await CameraMainTypesAppService.UpdateAsync(Id, cameraMainType);
-                Snackbar.Add(successedMessage, Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                Navigation.NavigateTo("/Cameramaintypes", true);
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
+            await CameraMainTypesAppService.UpdateAsync(Id, cameraMainType);
+            SnackBar.ShowSnackbar(Snackbar, $"{cameraMainType.ArabicName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            Navigation.NavigateTo("/Cameramaintypes", true);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
 
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
+
     }
     private void Cancel()
     {

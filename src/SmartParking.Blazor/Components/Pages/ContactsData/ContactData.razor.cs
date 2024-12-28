@@ -16,6 +16,7 @@ using System.Security.Authentication;
 using Volo.Abp;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.ContactPermissions;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -202,7 +203,8 @@ public partial class ContactData
             if (!result.Canceled)
             {
                 await ContactInfoAppService.DeleteAsync(id);
-                ShowSnackbar($"{L["Contact Data Deleted Successfully"]}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {Name}", Severity.Success);
+
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/contact-data", forceLoad: true);
@@ -211,33 +213,26 @@ public partial class ContactData
 
 
         }
+       
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Contact Data : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Contact Data : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete Contact Data : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
 
-       
-      
-    }
-    void ShowSnackbar(string message, Severity severity)
 
-    {
 
-        Snackbar.Clear();
 
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
+    
 }

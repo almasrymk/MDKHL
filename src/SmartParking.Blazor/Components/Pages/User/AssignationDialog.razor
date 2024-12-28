@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Globalization
@@ -27,7 +28,7 @@
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 					<MudItem sm="12" md="12">
-						<MudSelect T="Guid"
+						<MudSelect T="string"
 						ValueChanged="ChooseRole"
 						Label="@L["UserRole"]"
 						Placeholder="@L[ "Choose"]"
@@ -35,7 +36,7 @@
 						Required>
 							@foreach (var role in identityRoles)
 							{
-								<MudSelectItem Value="role.Id">
+								<MudSelectItem Value="role.Id.ToString()">
 									@role.Name
 								</MudSelectItem>
 							}
@@ -85,21 +86,23 @@
 
 	private async Task SubmitAssign()
 	{
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-		var successedMessage = L["Role Added to User Successfully"];
-
+	
 		try
 		{
 
 			 await RolesAppService.AssignRole(Id, userRoleId);
-			Snackbar.Add($"{successedMessage}", Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+				LocalizationHelper.GetLocalizedString("Role"), Severity.Success);
+
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			Navigation.NavigateTo("/users");
 
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			Snackbar.Add($"{validationErrorMessage}: {e.Message}", Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 		}
 	}
 
@@ -107,9 +110,9 @@
 	{
 		MudDialogAdd.Cancel();
 	}
-	private async Task ChooseRole(Guid Value)
+	private async Task ChooseRole(string Value)
 	{
-		userRoleId = Value;
+		userRoleId = Guid.Parse(Value);
 	}
 
 

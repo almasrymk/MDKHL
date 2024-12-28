@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Entities;
 using SmartParking.Localization;
@@ -292,7 +293,7 @@ public partial class User
 
         };
 
-        var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteCity", parameters);
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>("Delete user", parameters);
         var result = await dialog.Result;
         try
         {
@@ -307,8 +308,10 @@ public partial class User
                 {
                     await UsersAppService.RemoveRoleMdkhl(id, userUpdate.RoleId);
                 }
-                
-                ShowSnackbar(successMessage, Severity.Success);
+
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
+                    LocalizationHelper.GetLocalizedString("User") + " " + userData.Name, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/users", forceLoad: true);
@@ -317,38 +320,23 @@ public partial class User
 
 
         }
+       
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete City : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
 
     }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
+    
 }

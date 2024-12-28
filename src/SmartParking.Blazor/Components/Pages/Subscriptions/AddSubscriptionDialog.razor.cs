@@ -69,7 +69,7 @@ public partial class AddSubscriptionDialog
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
             input.Status = Enums.SubscriptionStatus.Draft;
-            input.CreationTime = creationTime;
+            input.CreationTime = DateTime.Now;
             var subscription = await SubscriptionAppService.CreateAsync(input);
 
             if (subscription != null)

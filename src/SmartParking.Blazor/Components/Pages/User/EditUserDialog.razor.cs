@@ -7,6 +7,10 @@ using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Collections.Generic;
 using Volo.Abp.Identity;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
+using System.Linq;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -31,7 +35,7 @@ partial class EditUserDialog
     }
     public async Task SubmitEdit()
         {
-            var successedMessage = L["UserUpdateSuccessfullyWith"];
+            
             try
             {
                 UserDto userUpdated = new UserDto();
@@ -42,14 +46,16 @@ partial class EditUserDialog
                 }
                 else
                 {
-                  userUpdated = await UsersAppService.UpdateAsync(Guid.Parse(userId), updateUserDto);
+                  userUpdated = await UsersAppService.UpdateUserWithRoleChangeAsync(Guid.Parse(userId), updateUserDto);
                 }
                  
                 if (userUpdated != null)
                 {
 
-                    ShowSnackbar($" {successedMessage} {userUpdated.Name}", Severity.Success);
-                    await Task.Delay(1000);
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE) + " " +
+                LocalizationHelper.GetLocalizedString("User") +" " +userUpdated.Name, Severity.Success);
+                await Task.Delay(1000);
                     Navigation.NavigateTo("/users", true);
 
 
@@ -58,45 +64,30 @@ partial class EditUserDialog
 
 
             }
-            catch (AbpValidationException abpValidationException)
+            catch (AbpValidationException validationException)
             {
-                string errors = string.Empty;
-                foreach (var error in abpValidationException.ValidationErrors)
+                foreach (var validationError in validationException.ValidationErrors)
                 {
-                    errors += error;
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
                 }
-                ShowSnackbar(errors, Severity.Error);
-
             }
-            catch (BusinessException businessException)
+            catch (BusinessException ex)
             {
-                string errors = string.Empty;
-                foreach (var error in businessException.Message)
-                {
-                    errors += error;
-                }
-                ShowSnackbar(errors, Severity.Error);
 
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+            }
+            catch (AuthenticationException ex)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
             }
             catch (Exception ex)
             {
 
-                ShowSnackbar(ex.Message, Severity.Error);
-
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
             }
 
-        }
+    }
 
-        /// <summary>
-        /// Displays a snackbar notification with the specified message and severity.
-        /// </summary>
-        /// <param name="message">The message to display in the snackbar.</param>
-        /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-        void ShowSnackbar(string message, Severity severity)
-        {
-            Snackbar.Clear();
-            Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-        }
 
         public void CancelEdit()
         {

@@ -6,6 +6,8 @@ using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -22,9 +24,7 @@ public partial class UpdateContactDataDialog
 
     private async Task Submit()
     {
-        var successedMessage = L["EditDataEditdSuccessfully"];
-        var errorMessage = L["Can'tEditContactData"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        
 
 
         // Call your service to edit the ContactData
@@ -43,7 +43,7 @@ public partial class UpdateContactDataDialog
             var contactdata = await ContactInfoAppService.UpdateAsync(contactDataId, editUpdateContactDataDto);
             if (contactdata != null)
             {
-                Snackbar.Add(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {editUpdateContactDataDto.Name}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/contact-data", forceLoad: true);
@@ -52,25 +52,23 @@ public partial class UpdateContactDataDialog
 
             else
             {
-                Snackbar.Add(errorMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} {editUpdateContactDataDto.Name}", Severity.Error);
 
-            }
-        }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"Failed to add ContactData: {ex.Code} + ", Severity.Error);
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to add ContactData: {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
     }
     protected override Task OnInitializedAsync()

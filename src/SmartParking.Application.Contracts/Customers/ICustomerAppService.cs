@@ -24,7 +24,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <param name="input">Customer create dto</param>
     /// <returns>A dto for created customer</returns>
     /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
-    Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);    
+    //Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);    
 
     /// <summary>
     /// Method  to add customer for Mdkhl Admin to database
@@ -106,5 +106,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <returns>Count of Customers</returns>
     Task<int> GetCountCustomersCountForOrganization(Guid ?CurrentTenantId);
+
+    Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input);
 
 }

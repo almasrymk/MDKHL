@@ -27,7 +27,8 @@
                                    Placeholder=@L["Choose"]
                                    HelperText=@L["Helper Text"]
                                    Required="true"
-                                           Clearable="_clearable">
+                                           Clearable="_clearable"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
                             <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var platecolor in plateColors)
                                     {
@@ -49,6 +50,7 @@
                                               For="@(() => licenceTypeDto.ArabicName)"
                                               Immediate="true"
                                               Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                       Placeholder=@L["Type Here"]
                                               Label="@L["ArabicName"]" />
                             </MudItem>
@@ -58,6 +60,7 @@
                                               For="@(() => licenceTypeDto.EnglishName)"
                                               Immediate="true"
                                               Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                       Placeholder=@L["Type Here"]
                                       Label="@L["EnglishName"]" />
                             </MudItem>
@@ -80,7 +83,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
     </MudDialog>
@@ -127,23 +130,23 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["LicenceTypeCreatedSuccessfully"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        
-            try
-            {
-            licenceTypeDto.Image = await FileHelper.SaveImageFromBase64Async(Picture, PathHelper.LicenceTypeFolder);
-                await LicenceTypesAppService.CreateAsync(licenceTypeDto);
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add(validationErrorMessage, Severity.Error);
-                return;
-            }
-            Snackbar.Add(successedMessage, Severity.Success);
+      
+        try
+        {
+        licenceTypeDto.Image = await FileHelper.SaveImageFromBase64Async(Picture, PathHelper.LicenceTypeFolder);
+            await LicenceTypesAppService.CreateAsync(licenceTypeDto);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {licenceTypeDto.ArabicName}", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
             Navigation.NavigateTo("/licenceTypes", true);
+        }
+        
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+           
     }
     private void Cancel()
     {

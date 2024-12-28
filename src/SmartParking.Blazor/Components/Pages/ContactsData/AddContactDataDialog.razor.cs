@@ -6,6 +6,8 @@ using Volo.Abp;
 using SmartParking.Organizations;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -21,12 +23,7 @@ public partial class AddContactDataDialog
 
     private async Task Submit()
     {
-        var successedMessage = L["ContactDataCreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateContactData"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-
-        // Call your service to create the ContactData
+       
         try
         {
             ContactInfoCreateUpdateDto createUpdateContactDataDto = new ContactInfoCreateUpdateDto()
@@ -43,7 +40,7 @@ public partial class AddContactDataDialog
             var contactdata = await ContactInfoAppService.CreateAsync(createUpdateContactDataDto);
             if (contactdata != null)
             {
-                Snackbar.Add(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdateContactDataDto.Name} ", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/contact-data", forceLoad: true);
@@ -52,27 +49,25 @@ public partial class AddContactDataDialog
 
             else
             {
-                Snackbar.Add(errorMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {createUpdateContactDataDto.Name} ", Severity.Error);
 
-            }
-        }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-                break;
             }
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"Failed to add ContactData: {ex.Code} + ", Severity.Error);
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to add ContactData: {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
+
     }
     private void Cancel()
     {

@@ -1,8 +1,10 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Packages
 @using System.Globalization
+@using Volo.Abp
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
 @inject IPackagesAppService PackagesAppService
@@ -37,14 +39,18 @@
                                       For="@(() => Package.ArabicName)"
                                       Variant="Variant.Text"
                                       Class="w-100"
-                                      Label="@L["ArabicName"]" />
+                                      Label="@L["ArabicName"]" 
+                                      Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Package.EnglishName"
                                       For="@(() => Package.EnglishName)"
                                       Variant="Variant.Text"
                                       Class="w-100"
-                                      Label="@L["EnglishName"]" />
+                                      Label="@L["EnglishName"]" 
+                                      Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Package.Price"
@@ -62,7 +68,8 @@
                                          HideSpinButtons="true"
                                          Required
                                          Class="w-100"
-                                         Label=@L["PackageDuration"] />
+                                         Label=@L["PackageDuration"] 
+                                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                    
                     <MudItem sm="6" md="6">
@@ -70,7 +77,8 @@
                                    Label="@L["customer category"]"
                                    Placeholder="@L[ "Choose"]"
                                    HelperText=@L["Helper Text"]
-                                   Required>
+                                   Required
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
 
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
@@ -133,7 +141,6 @@
                                             />
                         </MudItem>
                    }
-
                     <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Package.OrganizationId"
                                       For="@(() => Package.OrganizationId)"
@@ -221,28 +228,27 @@
     }
     private async Task SubmitEdit()
     {
-        var successedMessage = L["PackageUpdatedSuccessfully"];
-
+       
         try
         {
             Package.TenantId = CurrentTenant.Id;
             await PackagesAppService.UpdateAsync(UpdatedId, Package);
-            Snackbar.Add(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.ArabicName}", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
             Navigation.NavigateTo("/package", true);
         }
-        catch (AbpValidationException ex)
+        catch (BusinessException ex)
         {
-            foreach (var validationError in ex.ValidationErrors)
-            {
-                Snackbar.Add($"{validationError.MemberNames.First()}: {validationError.ErrorMessage}", Severity.Error);
-            }
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message}", Severity.Error);
         }
-        catch (Exception e)
-		{
-			Snackbar.Add(e.Message, Severity.Error);
-		}
+       
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
 	}
 
 	private async Task CancelEdit()

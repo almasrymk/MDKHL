@@ -10,6 +10,7 @@ using OpenIddict.Server;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -97,20 +98,19 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         if (user == null)
         {
-            throw new ValidationException("User with this phone number does Not exist.");
+            throw new ValidationException(LocalizationHelper.GetLocalizedString("User")+" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         user.SetPhoneNumber(phone, true);
-        // Change password (if you don’t have the current password, use RemovePassword and AddPassword)
         var removePasswordResult = await _userManager.RemovePasswordAsync(user);
         if (!removePasswordResult.Succeeded)
         {
-            throw new ValidationException("Failed to remove current password.");
+            throw new ValidationException(LocalizationHelper.GetLocalizedString("TryAgainException"));
         }
 
         var addPasswordResult = await _userManager.AddPasswordAsync(user, password);
         if (!addPasswordResult.Succeeded)
         {
-            throw new ValidationException("Failed to set new password. Enter validate password");
+            throw new ValidationException(LocalizationHelper.GetLocalizedString("TryAgainException"));
         }
 
         return new UserDataDto
@@ -147,9 +147,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
 			if (user != null)
 			{
-				throw new ValidationException("User with this phone number does exist.");
-			}
-			return user;
+                throw new ValidationException(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return user;
 		}
             
     }

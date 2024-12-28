@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.CameraBrands
 @using System.Globalization
@@ -20,29 +21,32 @@
 
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="cameraMainType.ArabicName"
-                                      For="@(() => cameraMainType.ArabicName)"
-                                      Immediate="true"
-                                      Required="true"
-                                      Placeholder="@L["Type Here"]"
-                                      Label="@L["ArabicName"]" />
+                        For="@(() => cameraMainType.ArabicName)"
+                        Immediate="true"
+                        Required="true"
+                        Placeholder="@L["Type Here"]"
+                        Label="@L["ArabicName"]"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="4">
                         <MudTextField @bind-Value="cameraMainType.EnglishName"
-                                      For="@(() => cameraMainType.EnglishName)"
-                                      Immediate="true"
-                                      Required="true"
-                                      Placeholder="@L["Type Here"]"
-                                      Label="@L["EnglishName"]" />
+                        For="@(() => cameraMainType.EnglishName)"
+                        Immediate="true"
+                        Required="true"
+                        Placeholder="@L["Type Here"]"
+                        Label="@L["EnglishName"]"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudSelect @bind-Value="@cameraMainType.CameraBrandId"
-                                   Variant="Variant.Text"
-                                   Label="@L["CamerBrandName"]"
-                                   HelperText=@L["Helper Text"]
-                                   Placeholder=@L["Choose"]
-                                   Required="true"
-                                   Clearable="_clearable">
+                        Variant="Variant.Text"
+                        Label="@L["BrandName"]"
+                        HelperText=@L["Helper Text"]
+                        Placeholder=@L["Choose"]
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Clearable="_clearable">
                             <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehicleBrand in CameraBrands)
                             {
@@ -65,7 +69,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
 
@@ -75,7 +79,7 @@
 
 <style>
     .mud-modal {
-        border-radius: 0 20px 0 20px;
+    border-radius: 0 20px 0 20px;
     }
 </style>
 
@@ -98,31 +102,26 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["CameraMainTypeCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
+
+       
             try
             {
                 await CameraMainTypesAppService.CreateAsync(cameraMainType);
-                Snackbar.Add(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {cameraMainType.ArabicName} ", Severity.Success);
+                await Task.Delay(1000);
                 MudDialog.Close(DialogResult.Ok(true));
                 Navigation.NavigateTo("/Cameramaintypes", true);
             }
-            catch (Exception e)
+            
+            catch (Exception ex)
             {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {cameraMainType.ArabicName} ", Severity.Error);
             }
 
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
+
+        
     }
     private void Cancel()
     {

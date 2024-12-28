@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
 using SmartParking.DefaultPackages;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
@@ -102,10 +103,12 @@ public partial class CustomerRegister
 
         if (packages.Count == 0)
         {
-            ShowSnackbar("There Is No Package for that Customer Category !", Severity.Warning);
+            SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("NotFoundValidation")}: " +
+                $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Error);
             await Task.Delay(1000);
             ShowSnackbar("Add Package !", Severity.Warning);
-
+            SnackBar.ShowSnackbar(Snackbar,$"{L[AlertMessages.AlertMessages.ADD]} " +
+                $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Success);
 
 
 
@@ -146,7 +149,7 @@ public partial class CustomerRegister
         }
         catch (BusinessException businessException)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Code}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Message}", Severity.Error);
 
         }
         catch (Exception ex)
@@ -188,8 +191,6 @@ public partial class CustomerRegister
 
     private async void SubmitCreate()
     {
-        var successedMessage = L["VehichleWasCreatedSuccessfullyAndAddedToCustomer"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;

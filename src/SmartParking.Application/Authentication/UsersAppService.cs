@@ -27,6 +27,9 @@ using SmartParking.Utilities;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using SmartParking.Localization;
 using Volo.Abp;
+using SmartParking.Entities.Customers;
+using SmartParking.Customers;
+using Castle.Core.Resource;
 
 namespace SmartParking.Authentication;
 
@@ -39,12 +42,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly ICustomRoleReository _roleReository;
     private readonly IOptions<IdentityOptions> _identityOptions;
     private readonly IAuthenticationUtility _authenticationUtility;
+    private readonly IBaseCustomerAppService _baseCustomer;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
         ICustomRoleReository roleReository,
         IOptions<IdentityOptions> identityOptions,
-        IAuthenticationUtility authenticationUtility)
+        IAuthenticationUtility authenticationUtility,
+        IBaseCustomerAppService baseCustomer
+        )
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -52,6 +58,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _roleReository = roleReository;
         _identityOptions = identityOptions;
         _authenticationUtility = authenticationUtility;
+        _baseCustomer = baseCustomer;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
@@ -59,13 +66,18 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await _identityOptions.SetAsync();
         var user = CreateUser(input);
 
+        
+
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null) {
-            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
-        
+        await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
+        await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
         var creationResult = await _userManager.CreateAsync(user, input.Password);
+
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
 
         await AssignRoleAndPermissionsAsync(user, roleId,input.IsCustomer);
@@ -294,7 +306,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
 
@@ -302,29 +315,91 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
        
     }
-
-    /// <inheritdoc/>
-    public async Task<UserDto> UpdateAsync(Guid? id, UpdateUserDto input)
+    public async Task<UserDto> UpdateUserWithoutRoleChangeAsync(Guid? id, UpdateUserDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            user.Name = input.Name;
-            user.Surname = input.Surname;
-            
-            ObjectHelper.TrySetProperty(
-                    user,
-                    x => x.Email,
-                    () => input.Email
-                );
-            user.SetIsActive(input.IsActive);
-            user.SetProperty("IdentificationTypes", input.IdentificationTypes);
-            user.SetProperty("NationalId", input.NationalId);
-            await ChangeRole(input, user);
-            user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-            var createdUser = await _userManager.UpdateAsync(user);
+            await UpdateUserProperties(user, input);
+            var updatedUser = await _userManager.UpdateAsync(user);
+            if (!updatedUser.Succeeded)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE) + " " +
+                     LocalizationHelper.GetLocalizedString("User"));
+            }
+
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
+        }
+    }
+    /// <inheritdoc/>
+    public async Task<UserDto> UpdateUserWithRoleChangeAsync(Guid? id, UpdateUserDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(id);
+            
+
+            await ChangeRole(input, user);
+            await UpdateUserProperties(user, input);
+            var updatedUser = await _userManager.UpdateAsync(user);
+            if (!updatedUser.Succeeded)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE)+" "+
+                    LocalizationHelper.GetLocalizedString("User"));
+            }
+
+            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            return userDto;
+        }
+    }
+    private async Task UpdateUserProperties(IdentityUser user, UpdateUserDto input)
+    {
+        await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
+        await CheckUpdatePhoneNumber(user, input);
+        user.Name = input.Name;
+        user.Surname = input.Surname;
+
+        ObjectHelper.TrySetProperty(
+            user,
+            x => x.Email,
+            () => input.Email
+        );
+        user.SetIsActive(input.IsActive);
+        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
+        user.SetProperty("NationalId", input.NationalId);
+        ObjectHelper.TrySetProperty(
+            user,
+            x => x.PhoneNumber,
+            () => input.PhoneNumber
+            );
+        user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
+    }
+
+    private async Task CheckUpdatePhoneNumber(IdentityUser user, UpdateUserDto input)
+    {
+        if (user.PhoneNumber != input.PhoneNumber)
+        {
+            var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
+            if (!result1)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+
+            }
+        }
+    }
+
+    private async Task CheckNationalIdValid(IdentityUser user, IdentificationTypes identification, string nationalId)
+    {
+        var IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
+        var NationalId = user.GetProperty<string>("NationalId");
+        if (IdentificationTypes != identification || NationalId != nationalId)
+        {
+            await _authenticationUtility.CheckNationalId(identification, nationalId);
+            await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);
         }
     }
 
@@ -333,12 +408,13 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            user.Name = input.Name;
-            user.Surname = input.Surname;
-            user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-            await _userManager.SetEmailAsync(user, input.Email);
-            await _userManager.SetUserNameAsync(user, input.UserName);
-            await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);  
+
+            ObjectHelper.TrySetProperty(
+            user,
+            x => x.UserName,
+            () => input.UserName
+             );
+            await UpdateUserProperties(user, input);
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
@@ -362,8 +438,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         var orgId =await GetOrganizationIdByTenantAsync(CurrentTenant.Id);
         user.SetProperty("OrganizationId", orgId);
-        user.SetProperty("UserTypeId", 5);
-        user.SetProperty("TenantId", CurrentTenant.Id);
+        ObjectHelper.TrySetProperty(
+                   user,
+                   x => x.TenantId,
+                   () => CurrentTenant.Id
+               );
 
 
     }
@@ -453,22 +532,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
     public async Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input)
     {
         IdentityUser? user = await IsUserFound(id);
-        user.Name = input.Name;
-        user.Surname = input.Surname;
-        user.SetIsActive(input.IsActive);
+
+        
         RemoveRole(input, user);
-        user.SetProperty("UserTypeId", 3);
-        user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-        if (user.Email != input.Email)
-        {
-            await _userManager.SetEmailAsync(user, input.Email);
-        }
+        user?.SetProperty("UserTypeId", 3);
+        
         if (user.UserName != input.UserName)
         {
             await _userManager.SetUserNameAsync(user, input.UserName);
             await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         }
-
+        await UpdateUserProperties(user, input);
         var createdUser = await _userManager.UpdateAsync(user);
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
