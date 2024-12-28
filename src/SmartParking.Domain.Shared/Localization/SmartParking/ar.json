@@ -585,7 +585,8 @@
     "Role": "الدور",
     "InvalidCredentials": "بيانات الدخول غير صحيحة",
     "Camera": "الكاميرا",
-    "TryAgainException": "خطأ برجاء المحاولة مره اخرى"
+    "TryAgainException": "خطأ برجاء المحاولة مره اخرى",
+    "ModelName": "الموديل"
 
   }
 }
