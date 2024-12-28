@@ -9,6 +9,8 @@ using Volo.Abp;
 using Abp.Runtime.Validation;
 using System.Linq;
 using SmartParking.SubscriptionTypes;
+using System.Security.Authentication;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
@@ -26,9 +28,6 @@ public partial class EditSubscriptionTypeDialog
 	private async Task Save()
 	{
 
-		var successedMessage = L["SubscriptionTypeUpdatedSuccessfully"];
-		var errorMessage = L["Can'tUpdateSubscriptionType"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
 		{
 			// Create the input object for update
@@ -43,36 +42,34 @@ public partial class EditSubscriptionTypeDialog
 			var subscriptionTypes = await SubscriptionTypeAppService.UpdateAsync(UpdatedId, input);
 			if (subscriptionTypes != null)
 			{
-				Snackbar.Add(successedMessage, Severity.Success);
-				MudDialog.Close(DialogResult.Ok(true));
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/subscriptiontypes", true);
 			}
-
-			else
-			{
-				Snackbar.Add(errorMessage, Severity.Error);
-
-			}
 		}
-		catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
-			Snackbar.Add($"Failed to update subscription type: {ex.Code} + ", Severity.Error);
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-		}
-		catch (Exception ex)
-		{
-			Snackbar.Add($"Failed to subscription type: {ex.Message} + ", Severity.Error);
-		}
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-	}
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+    }
 
 
 	private void Cancel()

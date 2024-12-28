@@ -8,6 +8,9 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -51,11 +54,6 @@ public partial class AddSubscriptionDialog
 
     private async Task Submit()
     {
-        var successedMessage = L["SubscriptionCreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateSubscription"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        var failedError = L["FailedToAddSubscription :"];
-
         // Call your service to create the subscription
         try
         {
@@ -74,34 +72,34 @@ public partial class AddSubscriptionDialog
 
             if (subscription != null)
             {
-                Snackbar.Add(successedMessage, Severity.Success);
-
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                           LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                           LocalizationHelper.GetLocalizedString("SubscriptionType"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/subscriptions", true);
-            }
-
-            else
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-
             }
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
-            Snackbar.Add($"{failedError} {ex.Code} + ", Severity.Error);
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"{failedError} {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
 
     }
