@@ -136,26 +136,6 @@
                                          Label="@L["Max Slots For Free"]"
                                          ValueChanged="HandleFreeSlotsChange" />
                     </MudItem>
-
-
-
-                    <MudItem sm="6" md="6">
-                        <MudTimePicker @bind-Time="_time"
-                                       @bind-Value="_time"
-                                       Required
-                                       AmPm="true"
-                                       PickerVariant="PickerVariant.Dialog"
-                                       TimeFormat="h:mm tt"
-                                       Variant="Variant.Text"
-                                       Class="w-100"
-                                       Placeholder="@L["Type Here"]"
-                                       Label="@L["Closing Hours"]" 
-                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                    </MudItem>
-
-
-
-
                     <MudItem sm="9" md="9">
 
 
