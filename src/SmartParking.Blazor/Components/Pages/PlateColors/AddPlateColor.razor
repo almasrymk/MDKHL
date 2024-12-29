@@ -1,9 +1,11 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Lookups.PlateColor
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -90,6 +92,13 @@
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/plateColors", true);
+            }
+            catch (AbpValidationException validationException)
+            {
+                foreach (var validationError in validationException.ValidationErrors)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+                }
             }
             catch (Exception e)
             {

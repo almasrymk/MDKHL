@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Garages;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
@@ -179,7 +181,13 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
                 queryable = queryable.Where(or =>
                     or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
-                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                    or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) 
                     
                 // full date-time or includes hour
                 );

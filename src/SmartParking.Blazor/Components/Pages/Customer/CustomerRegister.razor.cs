@@ -105,12 +105,6 @@ public partial class CustomerRegister
             SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("NotFoundValidation")}: " +
                 $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Error);
             await Task.Delay(1000);
-            ShowSnackbar("Add Package !", Severity.Warning);
-            SnackBar.ShowSnackbar(Snackbar,$"{L[AlertMessages.AlertMessages.ADD]} " +
-                $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Success);
-
-
-
         }
 
     }
@@ -129,7 +123,7 @@ public partial class CustomerRegister
             if (customer != null)
             {
                 CustomerId = customer.Id;
-                SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCustomerDto.FullName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
                 
                 showVehicle = true;
             }

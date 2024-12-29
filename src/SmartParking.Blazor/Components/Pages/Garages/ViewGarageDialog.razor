@@ -97,17 +97,6 @@
                                       Immediate="true"
                                       Label="@L["Max Slots For Free"]" />
                             </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.ClosingHours"
-                                              For="@(() => Garage.ClosingHours)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                      ReadOnly="true"
-                                      Immediate="true"
-                                              Placeholder="@L["Type Here"]"
-                                              Label="@L["Closing Hours"]"
-                                               />
-                            </MudItem>
                     <MudItem sm="6" md="6">
                         <Label>@L["Status"]</Label>
                         <Div Style=@($"background-color: {(Garage.Status.ToString()=="Active" ? "#b8efb0" : "#f20707")};border:none;color:{(Garage.Status.ToString()=="Active" ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
