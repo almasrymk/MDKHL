@@ -71,7 +71,7 @@ public partial class EditSubscriptionDialog
 
             if (subscriptions != null)
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {subscriptions.EnglishName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/subscriptions", true);
