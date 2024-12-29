@@ -408,7 +408,8 @@ img[style*='width:120px;'] {
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
-        string OrganizationLogo = await _organizationPdfAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
+        string OrganizationLogo = "wwwroot";
+        OrganizationLogo+=await _organizationPdfAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
 
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
