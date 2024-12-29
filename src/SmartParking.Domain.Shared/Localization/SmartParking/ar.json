@@ -589,7 +589,13 @@
     "ModelName": "الموديل",
     "ModelArabicName": "موديل المركبة بالعربي",
     "ModelEnglishName": " موديل المركبة بالإنجليزي",
-    "TypeEn": "نوع الإشتراك بالانجليزي"
+    "TypeEn": "نوع الإشتراك بالانجليزي",
+    "CustomersParking": "مشغول",
+    "CustomersEmptyParking": "متاح",
+    "Parking": "عدد أماكن الركن",
+    "EmptyParking": "عدد أماكن الركن المتاحة",
+    "Visitors": "الزوار"
+    
 
 
 

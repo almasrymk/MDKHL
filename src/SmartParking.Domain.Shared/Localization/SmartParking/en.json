@@ -563,7 +563,14 @@
     "TryAgainException": "Failed Please Try Again",
     "ModelArabicName": "Model Arabic Name",
     "ModelEnglishName": "Model English Name",
-    "TypeAr": "Arabic Subscription Type"
+    "TypeAr": "Arabic Subscription Type",
+    "CustomersParking": "Parking Lot",
+    "CustomersEmptyParking": "Parking Empty Lot",
+    "Parking": "Parking Lot",
+    "EmptyParking": "Parking Empty Lot",
+    "Visitors": "Visitors"
+    
+
 
 
 
