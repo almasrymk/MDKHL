@@ -18,16 +18,16 @@
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
                 <MudGrid>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Email" Label="@L["Email"]" Required />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Email" Label="@L["Email"]" />
                     </MudItem>
-                    <MudItem sm="8">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" ReadOnly="true" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required />
+                    <MudItem sm="6">
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" ReadOnly="true" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
-                    <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                    <MudItem sm="6" Class="d-inline-flex">
                         <MudItem Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@updateUserDto.IdentificationTypes"
                                            Class="d-inline-flex align-content-center">
@@ -40,8 +40,7 @@
                         <MudTextField T="string" Placeholder="@L["Type Here"]"
                                       Label="@L["NationalId"]" @bind-Value="updateUserDto.NationalId" />
                     </MudItem>
-                    <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
-
+                   
 
                     <MudItem sm="6" md="6">
                         
@@ -72,7 +71,7 @@
 
                         </MudItem>
                         <MudItem sm="12" md="12" >
-                            <div class="d-flex align-items-center justify-content-center">
+                            <div class="d-flex align-items-center">
                                 <MudRadioGroup @bind-Value="@updateUserDto.IsActive" Class="d-inline-flex align-content-center ">
                                     <div class="d-flex flex-row justify-content-between">
                                         <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>

@@ -33,19 +33,19 @@
                                       Required
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["Name"]" />
+                                      Label="@L["Name"]"
+                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                     <MudTextField @bind-Value="userCreate.Email"
                               For="@(() => userCreate.Email)"
                                       Variant="Variant.Text"
-                                      
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
                               Label="@L["Email"]" />
                     </MudItem>
                           
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                     <MudTextField @ref="textField"
                                    @bind-Value="userCreate.PhoneNumber"
                                    For="@(() => userCreate.PhoneNumber)"
@@ -53,9 +53,11 @@
                                       Class="w-100"
                                       OnBlur="HandleBlur"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["PhoneNumber"]"/>
+                                      Label="@L["PhoneNumber"]"
+                                      Required
+                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
-            <MudItem sm="4" Class="d-inline-flex justify-content-center">
+            <MudItem sm="6" Class="d-inline-flex">
                 <MudItem Class="d-flex flex-row justify-content-between">
                     <MudRadioGroup @bind-Value="@userCreate.IdentificationTypes"
                                    Class="d-inline-flex align-content-center">
@@ -65,12 +67,10 @@
                 </MudItem>
             </MudItem>
 
-            <MudItem sm="4">
+            <MudItem sm="6">
                 <MudTextField T="string" Placeholder="@L["Type Here"]" 
                               Label="@L["NationalId"]" @bind-Value="userCreate.NationalId" />
             </MudItem>
-            <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
-
             
 
                 @if (currrentTenant.Id is null)
@@ -131,7 +131,7 @@
                         </MudItem>
                     }
             
-                    <MudItem sm="9" md="9">
+                    <MudItem sm="6" md="6">
 
 
                         <MudRadioGroup @bind-Value="@userCreate.IsActive" Class="d-inline-flex align-content-center">
@@ -147,7 +147,7 @@
 
                     <div class="d-flex justify-content-between ">
                       
-                <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="SubmitCreate">@L["Create"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitCreate">@L["Create"]</MudButton>
                     </div>
                 </MudItem>
             </MudForm>
