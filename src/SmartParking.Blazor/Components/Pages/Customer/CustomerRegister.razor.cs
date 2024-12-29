@@ -124,7 +124,7 @@ public partial class CustomerRegister
             if (customer != null)
             {
                 CustomerId = customer.Id;
-                SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCustomerDto.FullName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
                 
                 showVehicle = true;
             }
