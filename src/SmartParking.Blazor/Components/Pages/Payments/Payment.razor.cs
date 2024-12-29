@@ -32,46 +32,9 @@ public partial class Payment
         _localizer = localizer;
     }
 
-   
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-
-    /// <summary>
-    /// filter for hotels on the server side using the hotel columns.
-    /// </summary>
-    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    //private async Task HandleFilter(PageChangeEventArgs pageInfo)
-    //{
-    //    // Log the search term to the console for debugging purposes
-
-    //    // Create a new search input object with pagination, sorting, and search term parameters
-    //    var input = new PagedAndSortedAndFilteredResultRequestDto
-    //    {
-    //        MaxResultCount = pageInfo.RowsPerPage,
-    //        SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-    //        Sorting = pageInfo.SortColumn,
-    //        SearchingTerm = termSearch, // The term to use for filtering results
-    //        filters = pageInfo.Filters
-    //    };
-    //    // Call the service to perform the search based on the input parameters
-    //    var organizationsDto = await OrganizationsAppService.Filter(input);
-
-    //    // Calculate the total number of pages required to display all results
-    //    TotalItem = (int)organizationsDto.TotalCount;
-    //    CreateTable(organizationsDto);
+    
 
 
-    //}
     /// <summary>
     /// Searches for hotels on the server side using the hotel code search term.
     /// </summary>
@@ -158,12 +121,12 @@ public partial class Payment
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ID"], Name = "ID", IsFilterable = false, PropertyName = "", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customer.CustomerCategoryStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Amount"], Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Currency"], Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customer.IdentityUser.UserName", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
        
         foreach (var item in organizations.Items)
@@ -179,12 +142,12 @@ public partial class Payment
                 :  item.PackageId .ToString()
             ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], item.PaymentMethod));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], item.PaymentStatus.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() ?? _localizer["Customer"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Amount"], item.Amount.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Currency"], item.Currency.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.UserName ?? _localizer["Customer"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], item.PaymentStatus.ToString()));
 
 
 
