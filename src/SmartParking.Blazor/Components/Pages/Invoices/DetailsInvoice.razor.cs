@@ -100,8 +100,6 @@ public partial class DetailsInvoice
         CustomerId = invoice.CustomerId;
         IsPaid= invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
 
-
-
     }
     private void Back()
     {
