@@ -9,6 +9,10 @@ using Volo.Abp.Application.Dtos;
 using Microsoft.AspNetCore.Components;
 using SmartParking.Cutomers;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Garages;
+using SmartParking.OrganizationsGarages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -171,5 +175,10 @@ public partial class CustomerDialog
 		}
 		itemData = tableData;
 	}
+    public void HandleEdit(RowDef row)
+    {
+        var customerId = Guid.Parse(row.Cells[0].Value);
 
+        Navigation.NavigateTo($"/customers/edit/{customerId}", true);
+    }
 }

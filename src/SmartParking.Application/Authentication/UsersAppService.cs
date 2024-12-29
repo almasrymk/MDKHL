@@ -30,6 +30,7 @@ using Volo.Abp;
 using SmartParking.Entities.Customers;
 using SmartParking.Customers;
 using Castle.Core.Resource;
+using SmartParking.Cutomers;
 
 namespace SmartParking.Authentication;
 
@@ -43,13 +44,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IOptions<IdentityOptions> _identityOptions;
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IBaseCustomerAppService _baseCustomer;
+    private readonly IRepository<Customer, Guid> _customerRepository;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
         ICustomRoleReository roleReository,
         IOptions<IdentityOptions> identityOptions,
         IAuthenticationUtility authenticationUtility,
-        IBaseCustomerAppService baseCustomer
+        IBaseCustomerAppService baseCustomer,
+        IRepository<Customer, Guid> customerRepository
         )
     {
         _userManager = userManager;
@@ -59,6 +62,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _identityOptions = identityOptions;
         _authenticationUtility = authenticationUtility;
         _baseCustomer = baseCustomer;
+        _customerRepository = customerRepository;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
@@ -80,7 +84,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
 
-        await AssignRoleAndPermissionsAsync(user, roleId,input.IsCustomer);
+        await AssignRoleAndPermissionsAsync(user, roleId,input);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
     }
@@ -101,18 +105,44 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetProperty("NationalId", input.NationalId);
     }
 
+    private async Task AddCustomer(IdentificationTypes identificationTypes, string NationalId,string ArabicName,Guid userId)
+    {
+        try
+        {
+            var customer = new Customer
+            {
+                IdentityUserId = userId,
+                IdentificationTypes = identificationTypes,
+                NationalId = NationalId,
+                ArabicName = ArabicName,
+                TenantId = null,
+
+            };
+
+            await _customerRepository.InsertAsync(customer, true);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                LocalizationHelper.GetLocalizedString("Customer"));
+
+        }
+
+    }
     private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId)
     {
         user.AddRole(roleId);
     }    
-    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId,bool isCustomer)
+    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId,UserCreateDto input)
     {
-        if (isCustomer)
+        if (input.IsCustomer)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                
+                await AddCustomer(input.IdentificationTypes,input.NationalId,input.Surname,user.Id);
                await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+                
             }
                 
 

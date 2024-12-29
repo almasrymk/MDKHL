@@ -31,6 +31,6 @@ public interface IAnalysisAppService : IApplicationService
     /// </returns>
     Task<AnalysisNamesCountDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber);
 
-
+    Task<GetNumberOfParkingAndEmptyParkingDto> GetNumberOfParkingSlotsAndEmptySolts(int organizationId);
 
 }

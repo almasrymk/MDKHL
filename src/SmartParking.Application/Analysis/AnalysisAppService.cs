@@ -17,17 +17,20 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 {
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Organization, int> _orgRepo;
-    private readonly IRepository<Customer, Guid> _custeRepo;
+    private readonly IRepository<Customer, Guid> _custeRepo; 
     private readonly IDataFilter _datafilter;
+    private readonly IRepository<Garage, int> _garageRepository;
 
-    public AnalysisAppService(IRepository<Customer, Guid> custeRepo, IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo, IDataFilter datafilter)
+    public AnalysisAppService(IRepository<Customer, Guid> custeRepo,
+        IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
+        IDataFilter datafilter,IRepository<Garage,int> GarageRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
         _invoiceRepo = invoiceRepo;
         _datafilter = datafilter;
+        _garageRepository = GarageRepository;
     }
-
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
     {
@@ -85,5 +88,30 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             organizationCustomersDto.Count.Add(result.Count);
             return organizationCustomersDto;
         }
+    }
+
+    public async Task<GetNumberOfParkingAndEmptyParkingDto> GetNumberOfParkingSlotsAndEmptySolts(int organizationId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _garageRepository.GetQueryableAsync();
+            query = query
+                .Where(_ => _.OrganizationId == organizationId);
+            // Calculate sums
+            var result = new GetNumberOfParkingAndEmptyParkingDto
+            {
+                NumberOfParking = query.Sum(g => g.CurrnetCapicity), 
+                NumberOfEmptyParking = query.Sum(g => g.MaxCapacity - g.CurrnetCapicity) ,
+                NumberOfCustomerEmptyParking = query.Sum(c => c.MaxSlotsForCustomers - c.CurrnetCapacityForCustomers),
+                NumberOfCustomerParking = query.Sum(c => c.CurrnetCapacityForCustomers),
+                NumberOfEmployeeEmptyParking = query.Sum(c => c.MaxSlotsForEmployess - c.CurrnetCapacityEmployees),
+                NumberOfEmployeeParking = query.Sum(c => c.CurrnetCapacityEmployees),
+                NumberOfVisitorParking = query.Sum(c => c.CurrnetCapacityForFree),
+                NumberOfVisitorEmptyParking = query.Sum(c => c.MaxSlotsForFree - c.CurrnetCapacityForFree),
+            };
+
+            return result;
+        }
+       
     }
 }

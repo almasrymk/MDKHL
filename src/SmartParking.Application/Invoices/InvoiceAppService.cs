@@ -109,7 +109,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     [Authorize]
     public override async Task<InvoiceDto> GetAsync(int id)
     {
-        if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
+        if (CurrentTenant.Id==null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -270,7 +270,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
-        string? token = await _invoiceUtility.GetTokenAsync();
         var invoice = await _invoiceRepository.GetAsync(invoiceId);
         if (invoice is null)
         {
@@ -298,7 +297,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            string? token = await _invoiceUtility.GetTokenAsync();
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
             if (invoice is null)
             {

@@ -1,13 +1,22 @@
 ﻿@page "/payments/view/{Id}"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Invoices
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Payments
+@using Volo.Abp.MultiTenancy
 @inject IPaymentWebAppService PaymentWebAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+@inject IInvoiceAppService InvoiceAppService
+@inject IDialogService DialogService
+@inject CurrentTenant currentTenant
+
+
 <PageTitle>@L["View Payment"]</PageTitle>
 <div>
+    <MudText Typo="Typo.h6" Class="fw-bold">@L["View Payment"]</MudText>
+
     <MudForm  Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
         <MudGrid>
             @if (Payment.Customers is not null)
@@ -83,14 +92,19 @@
                     }
 
                 }             
+        </MudGrid>
 
-                
-                
-            
-                </MudGrid>
 
         <MudItem class="d-flex justify-content-between mt-5">
             <MudButton OnClick="@Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
+            @if (currentTenant is not null && Payment.Invoice is not null)
+            {
+            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@ViewInvoiceDetails">@L["Print"]</MudButton>
+            }
+
+
         </MudItem>
+
+      
         </MudForm>
 </div>

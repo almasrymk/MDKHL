@@ -31,9 +31,14 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
             .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
             .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
 
-        RuleFor(x => x.Password).Matches(x=>x.RepeatPassword).WithMessage(LocalizationHelper.GetLocalizedString("WrongPassword"));
+        RuleFor(x => x.Password)
+            .Matches(x=>x.RepeatPassword)
+            .WithMessage(LocalizationHelper.GetLocalizedString("WrongPassword"));
         RuleFor(x => x.RepeatPassword).Matches(x=>x.Password).WithMessage("Repeat Password" + LocalizationHelper.GetLocalizedString("WrongPassword"));
-        RuleFor(x => x.PhoneNumber).NotEmpty().Matches(@"^\d{10,15}$").WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty()
+            .Matches(@"^(05\d{8}|\+966\d{8})$")  
+            .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         RuleFor(x => x.isActive)
             .Must(value => value == true || value == false)
             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));

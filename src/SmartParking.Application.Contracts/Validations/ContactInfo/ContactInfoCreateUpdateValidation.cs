@@ -26,7 +26,7 @@ public class ContactInfoCreateUpdateValidation : AbstractValidator<ContactInfoCr
 
         RuleFor(x => x.PhoneNum)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^01\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
+           .Matches(@"^05\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
 
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
