@@ -53,10 +53,9 @@ public partial class CustomerRegister
 
     private async void CheckIsUser(bool isUser)
     {
-
+        createUpdateCustomerDto.IsUser = isUser;
         if (isUser && createUpdateCustomerDto.OrganizationId > 0)
         {
-            createUpdateCustomerDto.IsUser = isUser;
             var organization = await OrganizationAppService.GetAsync(createUpdateCustomerDto.OrganizationId);
             Roles = await RoleAppService.GetListByTenant(organization.TenantId);
         }
