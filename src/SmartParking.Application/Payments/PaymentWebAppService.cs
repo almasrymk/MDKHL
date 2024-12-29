@@ -126,22 +126,20 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         int? packageId = payment.PackageId ;
         if (packageId == null)
-            return null;
-        else
-            return await _packagesAppService.GetAsync(packageId ?? 0);
+            return null; 
+       return await _packagesAppService.GetAsync(packageId ?? 0);
     }
 
     private async Task<InvoiceDto> CheckInvoice(Payment payment)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            int? invoiceId = payment.InvoiceId;
+            int?invoiceId = payment.InvoiceId;
             if (invoiceId == null)
                 return null;
-                
-            var invoice = await _invoiceAppService.GetListAsync();
-            // ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-            return null;
+
+            var invoiceEntity=  await _invoiceAppService.GetAsync(invoiceId??0);
+            return ObjectMapper.Map<Invoice, InvoiceDto>(invoiceEntity);
         }
         
     }

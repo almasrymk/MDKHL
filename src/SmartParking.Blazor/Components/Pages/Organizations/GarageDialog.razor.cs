@@ -10,6 +10,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Blazor.Components.Pages.Garages;
 using System.Globalization;
+using SmartParking.OrganizationsGarages;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -81,7 +82,7 @@ public partial class GarageDialog
         };
 
         // Call the service to perform the search based on the input parameters
-        var garagessDto = await GarageAppService.Search(input);
+     var garagessDto = await GarageAppService.Search(input);
 
         // Calculate the total number of pages required to display all results
         TotalItem = (int)garagessDto.TotalCount;
@@ -157,5 +158,37 @@ public partial class GarageDialog
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var garageDto = await GarageAppService.GetAsync(id);
+
+        var createUpdateGarage = new CreateUpdateGarageDto
+        {
+            NameEn = garageDto.NameEn,
+            NameAr = garageDto.NameAr,
+            Code = garageDto.Code,
+            Status = garageDto.Status,
+            MaxCapacity = garageDto.MaxCapacity,
+            ClosingHours = garageDto.ClosingHours,
+            OrganizationId = garageDto.OrganizationId,
+            MaxSlotsForCustomers = garageDto.MaxSlotsForCustomers,
+            MaxSlotsForEmployess = garageDto.MaxSlotsForEmployess,
+            MaxSlotsForFree = garageDto.MaxSlotsForFree,
+        };
+
+
+
+        var parameters = new DialogParameters
+        {
+            ["Garage"] = createUpdateGarage,
+            ["UpdatedId"] = id
+        };
+
+
+        return await Dialog.ShowAsync<UpdateGarageDialog>("Edit Garage", parameters);
+
     }
 }

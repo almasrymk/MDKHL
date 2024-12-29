@@ -327,7 +327,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         // Map the hotel entities to hotelDto objects
         var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
-        Console.WriteLine(garagesDto.Count);
         // Return the paginated result
         return new PagedResultDto<GarageDto>(
             totalCount,
@@ -353,9 +352,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 				    or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
 				    or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
-
-
-
                 );
 			}
             if (!input.Sorting.IsNullOrEmpty())
@@ -748,7 +744,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task<GarageDto> GetAsync(int id)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (CurrentTenant.Id==null)
         {
 
             using (DataFilter.Disable<IMultiTenant>())

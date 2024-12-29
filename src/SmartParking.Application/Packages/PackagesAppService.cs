@@ -73,6 +73,8 @@ public class PackagesAppService : CrudAppService<
     {
         // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
+        queryable = queryable.Where(p => p.Status != Status.Deleted);
+
         // Apply search filtering
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {

@@ -42,9 +42,10 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
             .Matches(@"^(?!.*\.\.)(?!.*\.$)(?=.{1,254}$)(?=.{1,64}@.{1,255}$)[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.(com|net|org|edu|gov|mil|int|co|info|biz|us|eu|uk|ca|jp|cn|in|au|za|tv|me|mobi|name)$")
             .WithMessage(LocalizationHelper.GetLocalizedString("EmailValidation"));
 
+
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^01\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
+            .Matches(@"^0\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("OrganizationPhoneValidation"));
 
         RuleFor(x => x.SubscriptionId)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
