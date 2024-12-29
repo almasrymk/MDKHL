@@ -37,11 +37,7 @@ public partial class EditSubscriptionDialog
     private async Task Save()
     {
 
-        var successedMessage = L["SubscriptionUpdatedSuccessfully"];
-        var errorMessage = L["Can'tUpdateSubscription"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        var failedError = L["FailedToUpdateSubscription :"];
-
+       
         try
         {
 
@@ -85,15 +81,12 @@ public partial class EditSubscriptionDialog
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
-        catch (BusinessException ex)
-        {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
-        }
         catch (AuthenticationException ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
+        
         catch (Exception ex)
         {
 

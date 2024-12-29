@@ -8,9 +8,10 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Lookups;
 using SmartParking.Blazor.Components.Shared;
-using SmartParking.Localization;
 using System.Security.Authentication;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -79,19 +80,29 @@ public partial class AddSubscriptionDialog
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/subscriptions", true);
             }
-        }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
+
+            else
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {input.ArabicName}", Severity.Error);
+
             }
         }
-        catch (BusinessException ex)
+        catch (AbpValidationException abpValidationException)
         {
+            string errors = string.Empty;
+            foreach (var error in abpValidationException.ValidationErrors)
+            {
+                errors += error;
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
+            }
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
+        catch (BusinessException businessException)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Message}", Severity.Error);
+
+        }
+      
         catch (AuthenticationException ex)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);

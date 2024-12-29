@@ -15,60 +15,59 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.PermissionManagement;
 
 namespace SmartParking.Blazor.Components.Pages.Packages;
 
 public partial class Package
 {
-	private List<PackageDto> packages = new List<PackageDto>();
+    private List<PackageDto> packages = new List<PackageDto>();
 
-	private int currentPage = 1;
-	private int pageSize = 100;
+    private int currentPage = 1;
+    private int pageSize = 100;
 
-	private int TotalItem;
-	public int CurrentPage { get; set; } = 1; // Default current page value is 10
-	public int RowPerPage { get; set; } = 10; // Default value is 10
+    private int TotalItem;
+    public int CurrentPage { get; set; } = 1; // Default current page value is 10
+    public int RowPerPage { get; set; } = 10; // Default value is 10
 
-	private TableData itemData = new TableData();
+    private TableData itemData = new TableData();
 
-	private string termSearch;
+    private string termSearch;
 
-	private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
-	private readonly IStringLocalizer<SmartParkingResource> _localizer;
+    private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+    private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
-	public Package(IStringLocalizer<SmartParkingResource> localizer)
-	{
-		_localizer = localizer;
+    public Package(IStringLocalizer<SmartParkingResource> localizer)
+    {
+        _localizer = localizer;
         CreatePolicyName = PackagePermissions.Create;
         UpdatePolicyName = PackagePermissions.Edit;
         DeletePolicyName = PackagePermissions.Delete;
     }
 
-	/// <summary>
-	/// filter for cameras on the server side using the camera columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among cameras.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
-	{
-		// Log the search term to the console for debugging purposes
+    /// <summary>
+    /// filter for cameras on the server side using the camera columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among cameras.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    {
+        // Log the search term to the console for debugging purposes
 
-		// Create a new search input object with pagination, sorting, and search term parameters
-		var input = new PagedAndSortedAndFilteredResultRequestDto
-		{
-			MaxResultCount = pageInfo.RowsPerPage,
-			SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-			Sorting = pageInfo.SortColumn,
-			SearchingTerm = termSearch, // The term to use for filtering results
-			filters = pageInfo.Filters
-		};
-		// Call the service to perform the search based on the input parameters
-		var packagesDto = await PackagesAppService.Filter(input);
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndFilteredResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch, // The term to use for filtering results
+            filters = pageInfo.Filters
+        };
+        // Call the service to perform the search based on the input parameters
+        var packagesDto = await PackagesAppService.Filter(input);
 
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)packagesDto.TotalCount;
-		CreateTable(packagesDto);
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)packagesDto.TotalCount;
+        CreateTable(packagesDto);
 
 
 	}
@@ -81,61 +80,61 @@ public partial class Package
 	{
 		termSearch = pageInfo.SearchTerm;
 
-		// Create a new search input object with pagination, sorting, and search term parameters
-		var input = new PagedAndSortedAndSearchResultRequestDto
-		{
-			MaxResultCount = pageInfo.RowsPerPage,
-			SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-			Sorting = pageInfo.SortColumn,
-			SearchingTerm = termSearch // The term to use for filtering results
-		};
+        // Create a new search input object with pagination, sorting, and search term parameters
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
+        };
 
-		// Call the service to perform the search based on the input parameters
-		var packagesDto = await PackagesAppService.Search(input);
+        // Call the service to perform the search based on the input parameters
+        var packagesDto = await PackagesAppService.Search(input);
 
-		// Calculate the total number of pages required to display all results
-		TotalItem = (int)packagesDto.TotalCount;
-		CreateTable(packagesDto);
-	}
-	/// <summary>
-	/// Fetches the table data for the specified page and updates the table with the retrieved data.
-	/// </summary>
-	/// <param name="page">The page number for which to fetch the data.</param>
-	/// <returns>A task that represents the asynchronous operation.</returns>
-	private async Task FetchTableData(PageChangeEventArgs pageInfo)
-	{
+        // Calculate the total number of pages required to display all results
+        TotalItem = (int)packagesDto.TotalCount;
+        CreateTable(packagesDto);
+    }
+    /// <summary>
+    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// </summary>
+    /// <param name="page">The page number for which to fetch the data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+    {
 
-		CurrentPage = pageInfo.PageNumber;
-		RowPerPage = pageInfo.RowsPerPage;
-		Console.WriteLine(RowPerPage);
-		// Create a request object for paged and sorted data
-		var input = new PagedAndSortedResultRequestDto
-		{
-			MaxResultCount = pageInfo.RowsPerPage,
-			SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-			Sorting = pageInfo.SortColumn
-		};
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        Console.WriteLine(RowPerPage);
+        // Create a request object for paged and sorted data
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
 
-		// Retrieve the list of organizations from the server
-		var packagesDto = await PackagesAppService.GetListAsync(input);
-		TotalItem = (int)packagesDto.TotalCount;
-		CreateTable(packagesDto);
+        // Retrieve the list of organizations from the server
+        var packagesDto = await PackagesAppService.GetListAsync(input);
+        TotalItem = (int)packagesDto.TotalCount;
+        CreateTable(packagesDto);
 
-	}
+    }
 
-	private void CreateTable(PagedResultDto<PackageDto> packages)
-	{
-		// Initialize table data to be displayed, setting the table's name and whether to show the header
-		var tableData = new TableData()
-		{
-			Name = "Packages",
-			ShowHeader = true
-		};
+    private void CreateTable(PagedResultDto<PackageDto> packages)
+    {
+        // Initialize table data to be displayed, setting the table's name and whether to show the header
+        var tableData = new TableData()
+        {
+            Name = "Packages",
+            ShowHeader = true
+        };
 
 
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		if (CultureInfo.CurrentCulture.Name == "en")
-		{
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		}
 		else
@@ -161,79 +160,79 @@ public partial class Package
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
 			}
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " + " + $" {item.PublishTo}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published ? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
-			tableData.Rows.Add(rowDef);
-		}
-		itemData = tableData;
-	}
+            tableData.Rows.Add(rowDef);
+        }
+        itemData = tableData;
+    }
 
-	private Task OpenDialogAsync(DialogOptions options)//Add Package
-	{
-		return Dialog.ShowAsync<AddPackageDialog>("Add Package", options);
-	}
+    private Task OpenDialogAsync(DialogOptions options)//Add Package
+    {
+        return Dialog.ShowAsync<AddPackageDialog>("Add Package", options);
+    }
 
-	private async Task<IDialogReference> OnClickRowEdit(RowDef row)
-	{
-       
-		var id = int.Parse(row.Cells[0].Value);
-		
-		var packageDto = await PackagesAppService.GetAsync(id);
-       
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+
+        var id = int.Parse(row.Cells[0].Value);
+
+        var packageDto = await PackagesAppService.GetAsync(id);
+
 
         var createUpdatePackage = new CreateUpdatePackageDto
         {
-			ArabicName=packageDto.ArabicName,
-			PackageTypeId=packageDto.PackageTypeId,
-			Description=packageDto.Description,
-			EnglishName = packageDto.EnglishName,
+            ArabicName = packageDto.ArabicName,
+            PackageTypeId = packageDto.PackageTypeId,
+            Description = packageDto.Description,
+            EnglishName = packageDto.EnglishName,
             OrganizationId = packageDto.OrganizationId,
-			Price = packageDto.Price,
-			Published = packageDto.Published,
-			PublishFrom = packageDto.PublishFrom,
-			PublishTo = packageDto.PublishTo,
-			PackageStatus = packageDto.PackageStatus,
-			PackageType=packageDto.PackageType,
-			CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory),
-			DurationOfPackage = packageDto.DurationOfPackage,
-			Status = packageDto.Status,
-			
+            Price = packageDto.Price,
+            Published = packageDto.Published,
+            PublishFrom = packageDto.PublishFrom,
+            PublishTo = packageDto.PublishTo,
+            PackageStatus = packageDto.PackageStatus,
+            PackageType = packageDto.PackageType,
+            CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory),
+            DurationOfPackage = packageDto.DurationOfPackage,
+            Status = packageDto.Status,
+
 
         };
 
 
 
-		var parameters = new DialogParameters
-		{
-			["Package"] = createUpdatePackage,
-			["UpdatedId"] = id,
-			["ActivationDate"]=packageDto.ActivationDate,
-		};
+        var parameters = new DialogParameters
+        {
+            ["Package"] = createUpdatePackage,
+            ["UpdatedId"] = id,
+            ["ActivationDate"] = packageDto.ActivationDate,
+        };
 
 
-		return await Dialog.ShowAsync<EditPackageDialog>("Edit Package", parameters);
+        return await Dialog.ShowAsync<EditPackageDialog>("Edit Package", parameters);
 
-	}
+    }
 
-	private async Task<IDialogReference> OnClickRowView(RowDef row)
-	{
-        
-		var id = int.Parse(row.Cells[0].Value);
+    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    {
+
+        var id = int.Parse(row.Cells[0].Value);
 
 
-		var packageDto = await PackagesAppService.GetAsync(id);
+        var packageDto = await PackagesAppService.GetAsync(id);
 
-		var package = new PackageDto
+        var package = new PackageDto
         {
 
             ArabicName = packageDto.ArabicName,
             PackageTypeId = packageDto.PackageTypeId,
             Description = packageDto.Description,
             EnglishName = packageDto.EnglishName,
-			OrganizationId = packageDto.OrganizationId,
+            OrganizationId = packageDto.OrganizationId,
             Price = packageDto.Price,
             Published = packageDto.Published,
             PublishFrom = packageDto.PublishFrom,
@@ -241,23 +240,23 @@ public partial class Package
             PackageStatus = packageDto.PackageStatus,
             PackageType = packageDto.PackageType,
             CustomerCategory = packageDto.CustomerCategory,
-			DurationOfPackage  =  packageDto.DurationOfPackage,
-			ActivationDate=packageDto.ActivationDate,
-			
+            DurationOfPackage = packageDto.DurationOfPackage,
+            ActivationDate = packageDto.ActivationDate,
+
 
         };
 
-		var parameters = new DialogParameters
-		{
-			["Package"] = package,
-			["CustomerCategory"] = packageDto.CustomerCategory.ToString(),
-			["UpdatedId"] = id
+        var parameters = new DialogParameters
+        {
+            ["Package"] = package,
+            ["CustomerCategory"] = packageDto.CustomerCategory.ToString(),
+            ["UpdatedId"] = id
 
-		};
+        };
 
 
-		return await Dialog.ShowAsync<DetailsPackageDialog>("View Package", parameters);
-	}
+        return await Dialog.ShowAsync<DetailsPackageDialog>("View Package", parameters);
+    }
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
@@ -274,7 +273,7 @@ public partial class Package
         if (Subscribers > 0)
         {
             ShowSnackbar("Can't delete package It Has Subscribers", MudBlazor.Severity.Warning);
-			return;
+            return;
 
         }
 
@@ -326,12 +325,12 @@ public partial class Package
 
     void ShowSnackbar(string message, Severity severity)
 
-	{
+    {
 
-		Snackbar.Clear();
-		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+        Snackbar.Clear();
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
-	}
+    }
 
 
 }
