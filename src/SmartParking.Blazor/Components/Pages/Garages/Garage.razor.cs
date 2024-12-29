@@ -180,7 +180,6 @@ public partial class Garage
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-        Console.WriteLine(pageInfo.SortColumn);
         // Retrieve the list of organizations from the server
         var garagessDto = await GarageAppService.GetListAsync(input);
         TotalItem = (int)garagessDto.TotalCount;
