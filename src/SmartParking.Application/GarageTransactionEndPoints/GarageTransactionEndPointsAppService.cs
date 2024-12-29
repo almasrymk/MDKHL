@@ -237,20 +237,23 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (customer == CustomerCategoryStatus.Customer)
         {
             garage.CurrnetCapacityForCustomers--;
+            
             flag = true;
 
         }
         else if (customer == CustomerCategoryStatus.Employee)
         {
             garage.CurrnetCapacityEmployees--;
+           
             flag = true;
         }
         else
         {
             garage.CurrnetCapacityForFree--;
+            
             flag = true;
         }
-
+        garage.CurrnetCapicity--;
         return await Task.FromResult(flag);
 
     }
@@ -287,7 +290,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             }
 
         }
-
+        if(flag)
+          garage.CurrnetCapicity++;
         return await Task.FromResult(flag);
 
     }
