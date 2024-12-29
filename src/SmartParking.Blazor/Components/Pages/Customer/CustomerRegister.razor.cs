@@ -106,12 +106,6 @@ public partial class CustomerRegister
             SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("NotFoundValidation")}: " +
                 $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Error);
             await Task.Delay(1000);
-            ShowSnackbar("Add Package !", Severity.Warning);
-            SnackBar.ShowSnackbar(Snackbar,$"{L[AlertMessages.AlertMessages.ADD]} " +
-                $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Success);
-
-
-
         }
 
     }
