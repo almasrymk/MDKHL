@@ -39,27 +39,30 @@
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <h3 Color="fw-bold">@L["Register"]</h3>
                 <MudForm Class="flex-grow-1 mt-4" >
-                    <MudGrid>
+                    <MudGrid Class="mb-5">
 
-                        <MudItem sm="4">
+                        <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            @bind-Value="createUpdateCustomerDto.FullName" Label="@L["EnglishName"]" Required />
+                            @bind-Value="createUpdateCustomerDto.FullName" Label="@L["EnglishName"]" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem> 
-                        <MudItem sm="4">
+                        <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            @bind-Value="createUpdateCustomerDto.ArabicName" Label="@L["ArabicName"]" Required />
+                            @bind-Value="createUpdateCustomerDto.ArabicName" Label="@L["ArabicName"]" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
-                        <MudItem sm="4">
+                        <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required />
+                            InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>                        
                         
-                        <MudItem sm="8">
+                        <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
                             InputType="InputType.Email" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
                         </MudItem>
 
-                        <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                        <MudItem sm="6" Class="d-inline-flex">
                             <MudItem Class="d-flex flex-row justify-content-between">
                                 <MudRadioGroup @bind-Value="@createUpdateCustomerDto.IdentificationType" Required="false" ReadOnly="showVehicle"
                                                Class="d-inline-flex align-content-center">
@@ -70,14 +73,13 @@
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required />
+                            Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
-
-                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
                         @if (CurrentTenant.Id is null)
                         {
-                            <MudItem sm="4" md="4">
+                            <MudItem sm="6" md="6">
                                 <MudSelect T="int"
                                 Variant="Variant.Text"
                                 Label=@L["Organizations"]
@@ -110,7 +112,7 @@
                         }
                         @if (createUpdateCustomerDto.OrganizationId != 0 || CurrentTenant.Id is not null)
                         {
-                            <MudItem sm="4" md="4">
+                            <MudItem sm="6" md="6">
                                 <MudSelect T="string"
                                 Label="@L["customer category"]"
                                 Placeholder=@L["Choose"]
@@ -133,7 +135,7 @@
 
                         @if (packages.Count >0)
                         {
-                            <MudItem sm="4" md="4">
+                            <MudItem sm="6" md="6">
                                 <MudSelect @bind-Value="createUpdateCustomerDto.PackageId"
                                 Label="@L["Package"]"
                                 Placeholder="@L[ "Choose"]"
@@ -164,7 +166,7 @@
 
                             </MudItem>
                         }
-                        <MudItem sm="12">
+                        <MudItem sm="6">
                             <MudCheckBox T="bool" ValueChanged="(Action<bool>)CheckIsUser" Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
                         </MudItem>
                         @if (createUpdateCustomerDto.IsUser && createUpdateCustomerDto.OrganizationId > 0)
@@ -293,7 +295,7 @@
                         </MudItem>
 
                         <MudItem sm="6" md="6">
-                            <MudTextField Required="true" T="string" Validation="VehicleValidation.ValidateYear" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
+                                <MudTextField Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"  T="string" Validation="VehicleValidation.ValidateYear" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
                         </MudItem>
 
                         <MudItem sm="6" md="6">
