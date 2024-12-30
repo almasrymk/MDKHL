@@ -168,7 +168,8 @@ public static class VehicleValidation
 
             }
         }
-        return result.ToString();
+        var resultText = result.ToString();
+        return new string(resultText.ToCharArray().Reverse().ToArray());
     }
 
     public static (string,string) HandleKeyUp(string e)
