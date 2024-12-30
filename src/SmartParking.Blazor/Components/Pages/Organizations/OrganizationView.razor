@@ -9,6 +9,7 @@
 @using SmartParking.Lookups.State
 @using SmartParking.Organizations
 @using System.Globalization
+@using SmartParking.Subscriptions
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
 @layout Shared.ProfileLayout
@@ -19,6 +20,7 @@
 @inject NavigationManager Navigation
 @inject IDialogService Dialog
 @inject ICurrentUser currentuser
+@inject ISubscriptionAppService SunscriptionAppService
 <PageTitle>@L["View Organization"]</PageTitle>
 <div>
     <MudGrid>
@@ -219,17 +221,22 @@
                     </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewSubscription">@L["Subscriptions"]</MudLink>
+                        </MudPaper>
+                    </MudItem>
+    
+                    <MudItem sm="12">
+                        <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCustomers">@L["Customers"]</MudLink>
 
                         </MudPaper>
                     </MudItem>
-
                     @* <MudItem sm="6">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>
                         </MudPaper>
                     </MudItem> 
-                    <MudItem sm="6">
+                    <MudItem sm="12">
                         <MudPaper class="text-center p-2">
                             <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewContact">@L["Contact Data"]</MudLink>
                         </MudPaper>
