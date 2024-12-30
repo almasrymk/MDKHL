@@ -569,8 +569,11 @@
     "CustomersEmptyParking": "Parking Empty Lot",
     "Parking": "Parking Lot",
     "EmptyParking": "Parking Empty Lot",
-    "Visitors": "Visitors"
-    
+    "Visitors": "Visitors",
+    "MustBeGreaterThan": "Must be greater than",
+    "MustBeSmallerThan": "Must be smaller than"
+
+
 
 
 
