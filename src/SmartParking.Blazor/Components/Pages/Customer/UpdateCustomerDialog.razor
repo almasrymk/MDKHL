@@ -61,12 +61,8 @@
             </MudPaper>
         </MudItem>
         <MudItem sm="4">    
-            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <MudText>@L["My Profile"]</MudText>
-                    <MudLink Underline="Underline.Always" Href="/edit-profile">@L["Edit Profile"]</MudLink>
-                </div>
-                <div class="d-flex flex-column align-content-center gap-4 p-5">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column align-items-center justify-content-between" Style="background-color: #F2F2F2;">
+                <div class="d-flex flex-column align-content-center mt-5">
                     <MudImage Src="@Picture" Class="bg_w_foto " Width="200" Height="200" />
                     <div class="d-flex flex-column align-items-center">
                         <MudText Class="fw-bold">@currentUser.Name</MudText>
@@ -76,7 +72,7 @@
                 <MudGrid Class="mt-3">
                     @if (CurrentTenant.Id is not null)
                     {
-                        <MudItem sm="6">
+                        <MudItem sm="12">
                             <MudPaper class="text-center p-2">
                                 <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewInvoice">@L["Invoices"]</MudLink>
                             </MudPaper>
