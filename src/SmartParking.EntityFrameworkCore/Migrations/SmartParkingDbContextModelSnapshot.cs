@@ -2114,6 +2114,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("PaymentName")
                         .HasColumnType("text");
 
+                    b.Property<string>("PaymentNumber")
+                        .HasColumnType("text");
+
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
 
