@@ -25,4 +25,6 @@ public class Payment : FullAuditedEntity<Guid>
 
     public string? PaymentName { get; set; }
 
+    public string PaymentNumber { get; set; }
+
 }

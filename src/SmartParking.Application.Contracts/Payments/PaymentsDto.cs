@@ -21,6 +21,7 @@ public class PaymentDto
     public decimal Amount { get; set; }
     public string Currency { get; set; }
     public string CreationTime { get; set; }
+    public string PaymentNumber { get; set; }
 
 
 
