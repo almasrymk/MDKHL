@@ -224,7 +224,8 @@
     </MudItem>
     <MudItem sm="8">
         <MudPaper Class="custom-rounded">
-            <MudChart Class="px-3 py-3" ChartType="ChartType.StackedBar" CanHideSeries="true" InputData="@inputData" InputLabels="@inputLabels" XAxisLabels="@inputLabels" Width="100%"></MudChart>
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series"  @bind-SelectedIndex="index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+            
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -232,7 +233,7 @@
 
 @code {
 
-
+   
     ChartOptions options = new ChartOptions();
     AnalysisNamesCountDto value = new AnalysisNamesCountDto();
     public EventCallback<string> SelectValueChanged { get; set; }
@@ -246,34 +247,23 @@
     string[] labels = { "Parking", "EmptyParking" };
     string msg;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
+    public string[] XAxisLabels = { " " };
+    private int index = -1; 
+
+    public List<ChartSeries> Series = new List<ChartSeries>();
 
     private string[] inputLabels { get; set; } = { " " };
     private double[] inputData { get; set; } = { 0 };
     protected async override Task OnInitializedAsync()
     {
+        
         // Fetch the data from backend
         var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyAsync();
-        inputLabels = dataForSeries.Days;
-        inputData = dataForSeries.Item2;
-        // // Prepare X-axis labels (day names from the dictionary keys)
-        // XAxisLabels = dailyCollection.Keys.Select(day => day.Substring(0, 3)).ToArray(); // "Mon", "Tue", etc.
-
-        // // Prepare the series data
-        // var collectedMoneyData = dailyCollection.Values.Select(v => v[0]).ToArray(); // Access the first element in each array
-        // var dailyCollectionList = dailyCollection.ToList();                                                              // Bind to chart series
-        // for (int i = 0; i < dailyCollectionList.Count; i++)
-        // {
-        //     var item = dailyCollectionList[i];
-        //     dataForSeries = item.Value;
-        //     Series.Add(
-        //            new ChartSeries
-        //                {
-        //                    Data = item.Value,
-        //                    Name = item.Key
-        //                }
-        //     );
-        //     XAxisLabels[i] = item.Key;
-        // }
+        XAxisLabels = dataForSeries.Days; 
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = "Collected Money", Data =  dataForSeries.TotalAmounts}
+        };
 
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
@@ -282,8 +272,7 @@
         if (currenttenant.Id == null)
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
-            var organization = Organizations.FirstOrDefault();
-            var total = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organization.Id);
+            var total = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(Organizations.FirstOrDefault().Id);
             ShowData(total.NumberOfParking, total.NumberOfEmptyParking);
             grid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
@@ -301,7 +290,7 @@
         string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
         options.ChartPalette = colors;
         options.ShowLegend = true;
-        options.LineStrokeWidth = 10;
+        options.LineStrokeWidth = 20;
 
 
         //   return await base.OnInitializedAsync();
