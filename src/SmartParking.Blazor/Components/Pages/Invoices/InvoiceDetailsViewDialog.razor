@@ -74,6 +74,7 @@
     [Parameter] public string CommercialRegisteration { get; set; }
     [Parameter] public int ID { get; set; }
     [Parameter] public string OrganizationAddress { get; set; }
+    [Parameter] public string Code { get; set; }
     public string imagepath { get; set; }
     public string OrganizationPicture { get; set; }
     public decimal price { get; set; }
@@ -85,13 +86,13 @@
         if(Invoice is not null ){
             price = Invoice.InvoicePrice;
             title = "Invoice";
-            description = Invoice.InvoiceNumber;
+            description = Code;
         }
         else{
 
             price = Package.Price;
             title = "Package";
-            description = Package.EnglishName;
+            description = Code;
         }
 
         if (currentTenant.Id == null)
