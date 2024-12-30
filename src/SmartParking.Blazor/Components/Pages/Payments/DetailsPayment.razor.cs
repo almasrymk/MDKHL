@@ -39,6 +39,7 @@ public partial class DetailsPayment
             ["Package"]= Payment.Package is not null ? Payment.Package : null,
             ["CommercialRegisteration"] = Payment.Organization.CommercialRegistrationNumber,
             ["OrganizationAddress"] = Payment.Organization.Address,
+            ["Code"] = Payment.PaymentNumber??"",
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 
