@@ -322,10 +322,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<CreateUpdateInvoiceDto> GenrateInvoiceNumberAndInitiateInvoice(DateTime EntranceTime, Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction, int TotalHours, decimal price, bool IsPackage)
     {
-        string generatedInvoiceNumber = await _invoiceAppService.GenerateInvoiceNumberAsync(GarageTransaction.OrganizationID);
         var invoice = await CreateInvoice(
           GarageTransaction.GarageId,
-          generatedInvoiceNumber,
+          "",
           price,
           GarageTransaction.OrganizationID,
           TotalHours,
