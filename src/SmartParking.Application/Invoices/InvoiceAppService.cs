@@ -290,7 +290,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             {
                 Directory.CreateDirectory(imageDirectoryPath);
             }
-            string fileName = $"{invoice.InvoiceNumber}.{"png"}";
+            string fileName = $"{Guid.NewGuid()}{DateTime.Now:yyyyMMddHHmmssfff}.png";
             string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
 
