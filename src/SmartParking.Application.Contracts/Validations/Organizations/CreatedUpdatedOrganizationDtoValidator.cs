@@ -45,7 +45,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^0\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("OrganizationPhoneValidation"));
+            .Matches(@"^01\d{8}$").WithMessage(LocalizationHelper.GetLocalizedString("OrganizationPhoneValidation"));
 
         RuleFor(x => x.SubscriptionId)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
