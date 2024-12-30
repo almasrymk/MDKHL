@@ -30,14 +30,6 @@
                 <MudText Typo="Typo.h6" Class="fw-bold">@L["InvoiceDetails"]</MudText>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="InvoiceNumber"
-                            For="@(() => InvoiceNumber)"
-                            Immediate="true"
-                            Variant="Variant.Text"
-                            Label="@L["InvoiceNumber"]"
-                            Disabled />
-                        </MudItem>
 
                         <MudItem sm="4">
                             <MudTextField @bind-Value="TotalHours"
