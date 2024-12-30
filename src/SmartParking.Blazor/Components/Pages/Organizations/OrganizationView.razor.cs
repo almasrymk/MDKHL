@@ -3,6 +3,7 @@ using MudBlazor;
 using System.Threading.Tasks;
 using System;
 using System.Globalization;
+using SmartParking.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -123,6 +124,36 @@ public partial class OrganizationView
     private void Back()
     {
         Navigation.NavigateTo("/organizations");
+    }
+    private async Task ViewCategories()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
+    }
+    private async Task ViewSubscription()
+    {
+        var id = int.Parse(Id);
+        var org = await OrganizationsAppService.GetAsync(id);
+        var subscription = new SubscriptionDto();
+        if (org.SubscriptionId != 0)
+        {
+            subscription = await SunscriptionAppService.GetAsync(org.SubscriptionId);
+
+        }
+        else
+        {
+            subscription = null;
+        }
+
+        var parameters = new DialogParameters
+        {
+            ["subscription"] = subscription
+        };
+        await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
     }
 
 
