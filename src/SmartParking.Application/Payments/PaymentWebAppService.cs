@@ -58,6 +58,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 }
 
             }
+            query = query.OrderByDescending(x => x.Id);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
@@ -94,6 +95,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 }
 
             }
+            query=query.OrderByDescending(x=>x.Id);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
@@ -185,7 +187,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
+
                     
                 // full date-time or includes hour
                 );
@@ -204,6 +208,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 }
 
             }
+            queryable=queryable.OrderByDescending(x=>x.Id);
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
