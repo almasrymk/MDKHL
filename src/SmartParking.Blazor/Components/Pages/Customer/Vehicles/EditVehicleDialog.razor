@@ -110,7 +110,7 @@
                     </MudItem>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField Required="true" T="string" Validation="VehicleValidation.ValidateYear" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="Vehicle.ModelYear" Placeholder="@L["Type Here"]" />
+                        <MudTextField Required="true" T="string" Validation="VehicleValidation.ValidateYear" MaxLength="4" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="Vehicle.ModelYear" Placeholder="@L["Type Here"]" />
                     </MudItem>
 
                     <MudItem sm="6" md="6">

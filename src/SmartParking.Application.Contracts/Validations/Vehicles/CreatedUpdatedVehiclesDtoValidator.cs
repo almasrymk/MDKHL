@@ -28,8 +28,8 @@ public class CreatedUpdatedVehiclesDtoValidator:AbstractValidator<CreateUpdateVe
 
 			RuleFor(x => x.ModelYear)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Must(modelYear => int.TryParse(modelYear,out int year) && year >= 1980)
-			.WithMessage("The Model Year must be greater than or equal  1980.");
+            .Must(modelYear => int.TryParse(modelYear,out int year) && year >= 1980 && year <=2099)
+			.WithMessage(LocalizationHelper.GetLocalizedString("MustBeGreaterThan")+' '+1980+ ' '+ LocalizationHelper.GetLocalizedString("MustBeSmallerThan")+' '+2099);
 
             RuleFor(x => x.ArPlateLetters)
             .NotNull().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
@@ -49,8 +49,8 @@ public class CreatedUpdatedVehiclesDtoValidator:AbstractValidator<CreateUpdateVe
              .NotNull().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
              .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
              .Matches(@"^[0-9\u0660-\u0669\s]+$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyArabicNumberAllowed"))
-            .Length(1, 4).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " 1-4")
-            .When(x => !string.IsNullOrWhiteSpace(x.ArPlateNumber)).WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));  
+             .Length(1, 4).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " 1-4")
+             .When(x => !string.IsNullOrWhiteSpace(x.ArPlateNumber)).WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));  
 
 
         RuleFor(x => x.EnPlateNumber)

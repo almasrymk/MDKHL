@@ -223,7 +223,7 @@
     "Invoices": "المطابقات",
     "AddInvoices": "إضافة مطابقة",
     "Vehicles": "المركبات",
-    "TotalHours": "عدد الساعات",
+    "TotalHours": "المدة",
     "InvoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "Can'tCreateInvoice": "لا يمكن إنشاء مطابقة",
     "OrganizationArabicName": " إسم المنشأة",
@@ -375,7 +375,7 @@
     "Package": "باقة",
     "Will Be Generated Automatically": "سيتم إنشاءه تلقائيًا",
     "Assign": "تخصيص ",
-    "CreationTime": "تاريخ الإنشاء",
+    "CreationTime": "الوقت / التاريخ",
     "Creator": "الإنشاء بواسطة",
     "AddContactData": "إنشاء بيانات الاتصال",
     "NewContactData": " بيانات الإتصال جديد",
@@ -416,7 +416,7 @@
     "FullName must be at least 10 characters long.": " يجب أن يكون طول الإسم بالإنجليزية علي الاقل عشرة أحرف",
     "Should Not be empty": "لا يجب أن يكون فارغا",
     "PackageTypeArName": "نوع الباقه",
-    "NotCustomer": "ليس عميل",
+    "NotCustomer": "غير معرف",
     "CustomerArName": "إسم العميل بالعربية",
     "AddSubscriptionTypes": "إضافة نوع إشتراك",
     "NewSubscriptionType": "إضافة نوع إشتراك جديد",
@@ -572,7 +572,7 @@
     "Organization": "منشآة",
     "MixedInvalid": "لا يمكن الجمع بين العربي و الإنجليزي",
     "WrongPassword": "خطأ في كلمة السر",
-    "NotFoundValidation": "غير موجود",
+    "NotFoundValidation": "غير موجود ",
     "User": "المستخدم",
     "NationIdValidation": "أرقام الهوية / الإقامة يجب ان تكون عشرة أرقام",
     "PassportValidation": "جواز السفر يجب ان يحتوي علي أرقام من 6 ال 9 و حرف واحد",
@@ -595,7 +595,10 @@
     "CustomersEmptyParking": "متاح",
     "Parking": "عدد أماكن الركن",
     "EmptyParking": "عدد أماكن الركن المتاحة",
-    "Visitors": "الزوار"
+    "Visitors": "الزوار",
+    "MustBeGreaterThan": "يجب أن يكون أكبر من",
+    "MustBeSmallerThan": "يجب أن يكون اصغر من",
+
     
 
 

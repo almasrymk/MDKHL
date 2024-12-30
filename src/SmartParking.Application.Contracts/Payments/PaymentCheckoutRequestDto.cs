@@ -13,5 +13,7 @@ public class PaymentCheckoutRequestDto
     public int OrganizationId { get; set; }
     public Guid? CustomerId { get; set; }
     public string? PaymentName { get; set; }
+    public string PaymentNumber { get; set; }
+
 
 }

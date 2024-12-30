@@ -25,8 +25,6 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
-using Volo.Abp.MultiTenancy;
-using Volo.Abp.Users;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
@@ -103,7 +101,7 @@ public partial class CustomerRegister
         if (packages.Count == 0)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("NotFoundValidation")}: " +
-                $"{LocalizationHelper.GetLocalizedString("Package")}", Severity.Error);
+                $"{LocalizationHelper.GetLocalizedString("Package")}" +" "+ $"{@L["To"]}" + " " + $"{@L["customer category"]}" , Severity.Error);
             await Task.Delay(1000);
         }
 

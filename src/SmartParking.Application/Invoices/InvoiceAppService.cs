@@ -62,10 +62,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             }
         }
         input.TenantId = organization.TenantId;
-        if (input.InvoiceNumber is null)
-        {
-            input.InvoiceNumber = await GenerateInvoiceNumberAsync(input.OrganizationId);
-        }
 
         if (CurrentUser.IsInRole(RolesType.Mdkhl.ToString()) || CurrentUser.IsInRole("admin"))
         {
@@ -133,15 +129,17 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
 
             queryable = queryable.Where(or =>
-                or.InvoiceNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Id.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CustomerArName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) |
+                or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
             // full date-time or includes hour
             );
 
         }
+
         if (!input.Sorting.IsNullOrEmpty())
         {
             if (input.Sorting.Contains("DESC"))
@@ -155,6 +153,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             }
 
         }
+        queryable = queryable.OrderByDescending(x=>x.Id);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -227,46 +226,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         await base.DeleteAsync(id);
     }
 
-    [RemoteService(IsEnabled = false)]
-
-    public async Task<string> GenerateInvoiceNumberAsync(int organizationId)
-    {
-        Organization organization = null;
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            organization = await _organizationsRepository.GetAsync(organizationId);
-
-        var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
-        var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
-
-        // Fetch the last invoice for the current year and organization
-        var invoices = await _invoiceRepository.GetListAsync(i => i.OrganizationId == organizationId);
-
-        var lastInvoice = invoices
-        .Where(i => i.CreationTime.Year == DateTime.Now.Year &&i.OrganizationId==organization.Id)
-        .OrderByDescending(i => i.InvoiceNumber)
-        .FirstOrDefault();
-
-
-        int nextInvoiceSequence = 1;
-
-        if (lastInvoice != null)
-        {
-            // Extract the last 3 digits of the previous invoice number (e.g., "ABC23-001")
-            var lastSequenceString = lastInvoice.InvoiceNumber[^5..];
-            if (int.TryParse(lastSequenceString, out int lastSequence))
-            {
-                nextInvoiceSequence = lastSequence + 1;
-            }
-        }
-
-        // Format the sequence as a three-digit number with leading zeros
-        var formattedSequence = nextInvoiceSequence.ToString().PadLeft(5, '0');
-
-        // Combine all parts to form the final invoice number
-        return $"{prefix}{currentYearSuffix}{formattedSequence}";
-        }
-    }
+ 
 
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
@@ -330,7 +290,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             {
                 Directory.CreateDirectory(imageDirectoryPath);
             }
-            string fileName = $"{invoice.InvoiceNumber}.{"png"}";
+            string fileName = $"{Guid.NewGuid()}{DateTime.Now:yyyyMMddHHmmssfff}.png";
             string fullPath = Path.Combine(imageDirectoryPath, fileName);
 
 

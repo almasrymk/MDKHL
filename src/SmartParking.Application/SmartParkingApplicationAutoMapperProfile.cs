@@ -157,6 +157,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName))
             .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
+            .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();
             
 
