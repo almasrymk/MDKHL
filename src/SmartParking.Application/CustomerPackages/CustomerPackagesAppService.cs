@@ -10,6 +10,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
@@ -26,6 +27,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+
 
 namespace SmartParking.CustomerPackages;
 //[Authorize]
@@ -149,16 +151,11 @@ public class CustomerPackagesAppService:
         {
             var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerId);
             if(customer == null)
-                return false;
-            var package = await _packageRepository.GetAsync(p => p.Id == packageId);
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            var package = await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
 
             if (package == null)
-                return false;
-            var customerPackageIsExist = await _repository.FirstOrDefaultAsync(p => p.PackageId == packageId && p.OrganizationId == package.OrganizationId && p.CustomerId == customer.Id);
-            if (customerPackageIsExist is not null)
-            {
-                return false;
-            }
+                throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             var customerPackage = new CustomerPackage
             {
                 PackageId = packageId,

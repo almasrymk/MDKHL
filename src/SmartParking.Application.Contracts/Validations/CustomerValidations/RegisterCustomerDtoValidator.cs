@@ -31,6 +31,9 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
             .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
             .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
 
+       RuleFor(x => x.NationalId)
+         .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
         RuleFor(x => x.Password)
             .Matches(x=>x.RepeatPassword)
             .WithMessage(LocalizationHelper.GetLocalizedString("WrongPassword"));

@@ -264,7 +264,7 @@ public partial class Camera
             TenantId = cameraDto.TenantId,
             //Type=cameraDto.Type,
            CameraType = cameraDto.CameraType
-
+           
         };
 
 

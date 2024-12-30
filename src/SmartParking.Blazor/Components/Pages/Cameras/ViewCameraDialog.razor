@@ -87,11 +87,11 @@
 					</MudItem>
 
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.GarageId"
-									  For="@(() => Camera.GarageId)"
+						<MudTextField @bind-Value="Camera.Garage.Code"
+									  For="@(() => Camera.Garage.Code)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["GarageId"]" />
+									  Label="@L["Garage"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.CameraType"

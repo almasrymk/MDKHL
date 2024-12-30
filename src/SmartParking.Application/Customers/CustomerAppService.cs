@@ -94,10 +94,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <inheritdoc/>
 	public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
 	{
-		try
-		{
-			
-
+		
 			using (_dataFilter.Disable<IMultiTenant>())
 			{
 				var user = await _userManager.FindByNameAsync(input.UserName);
@@ -133,14 +130,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 			var customerAdd = await _repository.InsertAsync(customer, true);
 			await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
 			return ObjectMapper.Map<Customer, CustomerDto>(customer);
-		}
-		catch (Exception ex)
-		{
-            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED)+" "+ 
-                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
-                LocalizationHelper.GetLocalizedString("Customer") );
-            
-		}
+		
+
 	}
 
 
