@@ -2,6 +2,7 @@
 @page "/"
 @page "/dashboard"
 @using Microsoft.Extensions.Localization
+@using MudBlazor.Components.Chart.Models
 @using SmartParking.Analysis
 @using SmartParking.Cutomers
 @using SmartParking.Enums
@@ -105,7 +106,7 @@
                 <MudImage Src="images/dashboard/car.png" />
             </MudPaper>
         </MudItem>  
-        
+
         <MudItem sm="4">
             <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
                 <div>
@@ -222,8 +223,8 @@
         }
     </MudItem>
     <MudItem sm="8">
-        <MudPaper Class="custom-rounded p-3">
-            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="_barIndex" XAxisLabels="@XAxisLabels" Width="100%"></MudChart>
+        <MudPaper Class="custom-rounded">
+            <MudChart Class="px-3 py-3" ChartType="ChartType.StackedBar" CanHideSeries="true" InputData="@inputData" InputLabels="@inputLabels" XAxisLabels="@inputLabels" Width="100%"></MudChart>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -235,22 +236,45 @@
     ChartOptions options = new ChartOptions();
     AnalysisNamesCountDto value = new AnalysisNamesCountDto();
     public EventCallback<string> SelectValueChanged { get; set; }
-
-
-
     private int _organizationsCount;
     private int _garagesCount;
     private int _customersCount;
     private int grid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
     double[] data= { 20,77};
-    private int _index = -1;
+
     string[] labels = { "Parking", "EmptyParking" };
     string msg;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
 
+    private string[] inputLabels { get; set; } = { " " };
+    private double[] inputData { get; set; } = { 0 };
     protected async override Task OnInitializedAsync()
     {
+        // Fetch the data from backend
+        var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyAsync();
+        inputLabels = dataForSeries.Days;
+        inputData = dataForSeries.Item2;
+        // // Prepare X-axis labels (day names from the dictionary keys)
+        // XAxisLabels = dailyCollection.Keys.Select(day => day.Substring(0, 3)).ToArray(); // "Mon", "Tue", etc.
+
+        // // Prepare the series data
+        // var collectedMoneyData = dailyCollection.Values.Select(v => v[0]).ToArray(); // Access the first element in each array
+        // var dailyCollectionList = dailyCollection.ToList();                                                              // Bind to chart series
+        // for (int i = 0; i < dailyCollectionList.Count; i++)
+        // {
+        //     var item = dailyCollectionList[i];
+        //     dataForSeries = item.Value;
+        //     Series.Add(
+        //            new ChartSeries
+        //                {
+        //                    Data = item.Value,
+        //                    Name = item.Key
+        //                }
+        //     );
+        //     XAxisLabels[i] = item.Key;
+        // }
+
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
 
@@ -298,11 +322,5 @@
         ShowData(getNumberOfParking.NumberOfParking, getNumberOfParking.NumberOfEmptyParking);
 
     }
-    private int _barIndex = -1;
-    public List<ChartSeries> Series = new List<ChartSeries>()
-    {
-        new ChartSeries() {  Data = new double[] { 40, 20, 25, 27, 46, 60, 48 } },
-        new ChartSeries() {  Data = new double[] { 19, 24, 35, 13, 28, 15, 13 } },
-    };
-    public string[] XAxisLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+    
 }

@@ -2,6 +2,7 @@
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,16 +21,19 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IRepository<Customer, Guid> _custeRepo; 
     private readonly IDataFilter _datafilter;
     private readonly IRepository<Garage, int> _garageRepository;
+    private readonly IRepository<Payment, Guid> _paymentRepository;
 
     public AnalysisAppService(IRepository<Customer, Guid> custeRepo,
         IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
-        IDataFilter datafilter,IRepository<Garage,int> GarageRepository)
+        IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
+        IRepository<Payment,Guid> paymentRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
         _invoiceRepo = invoiceRepo;
         _datafilter = datafilter;
         _garageRepository = GarageRepository;
+        _paymentRepository = paymentRepository;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -113,5 +117,70 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             return result;
         }
        
+    }
+
+
+    public async Task<(string[] Days , double[] )> CalculateWeeklyCollectedMoneyAsync()
+    {
+
+        DateTime now = DateTime.Now;
+        DateTime oneWeekAgo = now.AddDays(-7);
+        var query = await _paymentRepository.GetQueryableAsync();
+
+        var allDays = Enumerable.Range(0, 7)
+                        .Select(i => oneWeekAgo.AddDays(i).Date)
+                        .ToList();
+
+        query = query.Where(_ => _.CreationTime >= oneWeekAgo.Date && _.CreationTime <= now.Date);
+
+        var result = await query
+       .GroupBy(payment => payment.CreationTime.Date)
+       .Select(group => new
+       {
+           Day = group.Key, 
+           TotalAmount = group.Sum(payment => payment.Amount) 
+       })
+       .ToListAsync();
+        var mergedResults = allDays.GroupJoin(
+                result,
+                day => day,
+                r => r.Day,
+                (day, matchingResults) => new
+                {
+                    Day = day.DayOfWeek.ToString(), // Get day of the week name
+                    TotalAmount = matchingResults.Any()
+                        ? (double)matchingResults.Sum(r => r.TotalAmount) // Convert decimal to double
+                        : 0.0 // Default to 0 if no data for the day
+                }
+            ).ToList();
+
+        // Prepare the result as two arrays
+        string[] days = mergedResults.Select(r => r.Day).ToArray();
+        double[] totalAmounts = mergedResults.Select(r => r.TotalAmount).ToArray();
+
+
+        //var dailyCollection = new Dictionary<string[], double[]>();
+
+
+        //var daysOfWeek = Enumerable.Range(0, 7)
+        //    .Select(i => oneWeekAgo.AddDays(i))
+        //    .ToArray();
+
+        //foreach (var day in daysOfWeek)
+        //{
+        //    var dayName = day.ToString("dddd"); 
+        //    var dayData = result.FirstOrDefault(r => r.Day == day.Date);
+        //    double collectedAmount = dayData != null ? Convert.ToDouble(dayData.TotalAmount) : 0;
+
+        //    dailyCollection[dayName] = new double[] { collectedAmount };
+        //}
+
+        //return dailyCollection;
+        // Prepare the result as two arrays
+        //string[] days = result.Select(r => r.Day.ToString("dddd")).ToArray();
+        //double[] totalAmounts = result.Select(r => (double)r.TotalAmount).ToArray();
+
+        // Return the tuple
+        return (days, totalAmounts);
     }
 }
