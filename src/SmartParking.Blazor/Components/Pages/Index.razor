@@ -2,6 +2,7 @@
 @page "/"
 @page "/dashboard"
 @using Microsoft.Extensions.Localization
+@using MudBlazor.Components.Chart.Models
 @using SmartParking.Analysis
 @using SmartParking.Cutomers
 @using SmartParking.Enums
@@ -88,7 +89,7 @@
                 <MudImage Src="images/dashboard/car.png" />
             </MudPaper>
 
-        </MudItem>  
+        </MudItem>
         <MudItem sm="4">
             <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
                 <div>
@@ -104,8 +105,8 @@
                 </div>
                 <MudImage Src="images/dashboard/car.png" />
             </MudPaper>
-        </MudItem>  
-        
+        </MudItem>
+
         <MudItem sm="4">
             <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
                 <div>
@@ -123,6 +124,23 @@
             </MudPaper>
         </MudItem>
     }
+    <MudItem sm="12">
+        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <MudText Class="fw-bold" Typo="Typo.h6">
+                    @L["CollectedMoneyToday"]
+                </MudText>
+                <MudText>
+                    @L["Day"] @Day
+                </MudText>
+                <MudText>
+                    @L["Collected"] @collectedMoneyToday
+                </MudText>
+            </div>
+            @*  <MudImage Src="images/dashboard/car.png" /> *@
+        </MudPaper>
+    </MudItem>
+
     <MudItem sm="6">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
             <MudImage Src="images/dashboard/car.png" />
@@ -159,7 +177,7 @@
             <Image Source="images/dashboard/discount.png" Fluid Class="w-100" />
         </MudPaper>
     </MudItem>
-    <MudItem sm="4">
+    <MudItem sm="6">
         @if (currenttenant.Id == null)
         {
 
@@ -221,11 +239,13 @@
 
         }
     </MudItem>
-    <MudItem sm="8">
-        <MudPaper Class="custom-rounded p-3">
-            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="_barIndex" XAxisLabels="@XAxisLabels" Width="100%"></MudChart>
+    <MudItem sm="12">
+        <MudPaper Class="custom-rounded">
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+
         </MudPaper>
     </MudItem>
+
 </MudGrid>
 
 
@@ -235,22 +255,31 @@
     ChartOptions options = new ChartOptions();
     AnalysisNamesCountDto value = new AnalysisNamesCountDto();
     public EventCallback<string> SelectValueChanged { get; set; }
-
-
-
     private int _organizationsCount;
     private int _garagesCount;
     private int _customersCount;
     private int grid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
     double[] data= { 20,77};
-    private int _index = -1;
+
     string[] labels = { "Parking", "EmptyParking" };
     string msg;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
+    public string[] XAxisLabels = { " " };
+    private int index = -1; 
 
+    public List<ChartSeries> Series = new List<ChartSeries>();
+
+    private string[] inputLabels { get; set; } = { " " };
+    private double[] inputData { get; set; } = { 0 };
+    private string? Day = default;
+    private double? collectedMoneyToday = default;
     protected async override Task OnInitializedAsync()
     {
+
+        // Fetch the data from backend
+
+
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
 
@@ -263,6 +292,13 @@
             ShowData(total.NumberOfParking, total.NumberOfEmptyParking);
             grid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
+
+            var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyMdkhlAsync();
+            showDataGraph(dataForSeries.Days, dataForSeries.TotalAmounts);
+
+            var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
+            Day = dataForToday.Day;
+            collectedMoneyToday = dataForToday.totalAmounts;
         }
         else
         {
@@ -271,13 +307,18 @@
 
             grid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
+            var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
+            showDataGraph(dataForSeries.Days, dataForSeries.TotalAmounts);
 
+            var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
+            Day = dataForToday.Day;
+            collectedMoneyToday = dataForToday.totalAmounts;
         }
 
         string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
         options.ChartPalette = colors;
         options.ShowLegend = true;
-        options.LineStrokeWidth = 10;
+        options.LineStrokeWidth = 20;
 
 
         //   return await base.OnInitializedAsync();
@@ -298,11 +339,14 @@
         ShowData(getNumberOfParking.NumberOfParking, getNumberOfParking.NumberOfEmptyParking);
 
     }
-    private int _barIndex = -1;
-    public List<ChartSeries> Series = new List<ChartSeries>()
+
+    private void showDataGraph(string[] days, double[] totalAmounts)
     {
-        new ChartSeries() {  Data = new double[] { 40, 20, 25, 27, 46, 60, 48 } },
-        new ChartSeries() {  Data = new double[] { 19, 24, 35, 13, 28, 15, 13 } },
-    };
-    public string[] XAxisLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+        XAxisLabels = days;
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("CollectedMoney"), Data =  totalAmounts}
+        };
+    }
+    
 }
