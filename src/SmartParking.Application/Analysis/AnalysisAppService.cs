@@ -244,10 +244,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         var finalResult = new FinalResult
         {
 
-            DayOfWeek = result.CreationTime.ToString("dddd", culture),
+            DayOfWeek = result?.CreationTime.ToString("dddd", culture),
             TotalAmount = query.Sum(payment => (double)payment.Amount)
         };
-        return (finalResult?.DayOfWeek.ToString(), finalResult?.TotalAmount);
+        return (finalResult?.DayOfWeek?.ToString(), finalResult?.TotalAmount);
     }
 
     public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId)
