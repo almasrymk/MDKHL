@@ -87,7 +87,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _unLinkedTransactionRepository = unLinkedTransactionRepository;
         _paymentAppService = paymentAppService;
         customerEnName = "unknown";
-        customerArName = _localizer["NotCustomer"];
+        customerArName = "غير معرف";
         _calculationsEndPointAppService = calculationsEndPointAppService;
     }
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)

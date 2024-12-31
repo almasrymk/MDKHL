@@ -10,7 +10,9 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public decimal InvoicePrice { get; set; }
     public string InvoiceType { get; set; }
     public string OrganizationArabicName { get; set; }
-    public string GarageName { get; set; }
+    public string OrganizationEnglishName { get; set; }
+    public string GarageArabicName { get; set; }
+    public string GarageEnglishName { get; set; }
     public string PlateNumber { get; set; }
     public DateTime? InvoiceTime { get; set; }
     public DateTime? EntranceTime { get; set; }

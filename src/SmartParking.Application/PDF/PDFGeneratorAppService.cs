@@ -87,7 +87,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
                         <h4>Hotel Name:</h4><p>{invoice.OrganizationArabicName}</p>
                     </div>
                     <div class=""col-md-6 d-flex flex-column"">
-                        <h4>Cashier No.:</h4><p>{invoice.GarageName}</p>
+                        <h4>Cashier No.:</h4><p>{invoice.GarageArabicName}</p>
                     </div>
                     <div class=""col-md-6 d-flex flex-column align-items-center"">
                         <h4>Hotel Address:</h4>
@@ -494,7 +494,7 @@ img[style*='width:120px;'] {
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
             .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.GarageName}")));
+            .Add(new Paragraph($"{invoice.GarageEnglishName}")));
 
         table.AddCell(new Cell(1, 1)
              .SetBorder(Border.NO_BORDER)
