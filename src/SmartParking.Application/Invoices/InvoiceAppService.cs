@@ -134,7 +134,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CustomerArName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) |
-                or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.InvoiceType.ToString().ToLower().StartsWith(input.SearchingTerm.ToLower()) 
             // full date-time or includes hour
             );
 
