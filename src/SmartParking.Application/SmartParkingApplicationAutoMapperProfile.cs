@@ -153,8 +153,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<Invoice, InvoiceDto>()
-            .ForMember(d => d.GarageName, o => o.MapFrom(s => s.Garage.NameEn))
+            .ForMember(d => d.GarageEnglishName, o => o.MapFrom(s => s.Garage.NameEn))
+            .ForMember(d => d.GarageArabicName, o => o.MapFrom(s => s.Garage.NameAr))
             .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName))
+            .ForMember(d => d.OrganizationEnglishName, o => o.MapFrom(s => s.Organization.EnglishName))
             .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
             .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))

@@ -123,7 +123,16 @@ public partial class ViewCustomerInvoiceDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], item.InvoiceType));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.GarageName));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.GarageArabicName));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.GarageEnglishName));
+
+
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceTime"], item.InvoiceTime.ToString()));
 

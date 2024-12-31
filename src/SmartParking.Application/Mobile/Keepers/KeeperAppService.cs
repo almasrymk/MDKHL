@@ -344,7 +344,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
             var paymentRequest = new PaymentCheckoutRequestDto
             {
-                PaymentCategory=PaymentCategory.Invoice,
+                PaymentCategory=PaymentCategory.PaymentParking,
                 PaymentMethod=PaymentMethod.Cash,
                 Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
                 CustomerId=invoice.CustomerId,
@@ -368,7 +368,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
             var paymentRequest = new PaymentCheckoutRequestDto
             {
-                PaymentCategory = PaymentCategory.Invoice,
+                PaymentCategory = PaymentCategory.PaymentParking,
                 PaymentMethod = PaymentMethod.Cash,
                 Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
                 CustomerId = invoice.CustomerId,

@@ -181,13 +181,14 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
                 queryable = queryable.Where(or =>
                     or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
-                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  ||
                     or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
                     
@@ -242,7 +243,15 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
                 queryable = queryable.Where(or =>
                     or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower())
+                    or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower())
 
                 // full date-time or includes hour
                 );

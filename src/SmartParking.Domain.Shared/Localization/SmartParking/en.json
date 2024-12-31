@@ -397,7 +397,7 @@
     "OrganizationLogo": "Organization Logo",
     "Should Not be empty.": "Should Not be empty.",
     "PackageTypeArabicName": "PackageTypeArabicName",
-    "NotCustomer": "Un Known",
+    "NotCustomer": "unknown",
     "CustomerEnName": "Customer En Name",
     "AddSubscriptionTypes": "Add Subscription Type",
     "NewSubscriptionType": "New Subscription Type",
@@ -425,7 +425,7 @@
     "SumOfParkingSlotsOfActiveGarage": "Sum Of Parking Slots Of Active Garage",
     "Total Garage Can be added": "Total Garage Can be added",
     "ActiveGarages": "Active Garages",
-    "customer category": "Category",
+    "customer category": "Customer Category",
     "ArPlateNumber": "ArPlateNumber",
     "ArPlateLetter": "ArPlateLetter",
     "EnPlateNumber": "EnPlateNumber",
@@ -571,7 +571,14 @@
     "EmptyParking": "Parking Empty Lot",
     "Visitors": "Visitors",
     "MustBeGreaterThan": "Must be greater than",
-    "MustBeSmallerThan": "Must be smaller than"
+    "MustBeSmallerThan": "Must be smaller than",
+    "PaymentParking": "Parking",
+    "Cash": "Cash",
+    "Pending": "Pending",
+    "Success": "Success",
+    "Cancelled": "Cancelled",
+    "InvoiceId": "Mapping Number",
+    "Employee": "Employee"
 
 
 

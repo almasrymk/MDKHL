@@ -409,14 +409,15 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     public async Task<Result> SetNewPassword(ChangePasswordInputDto input)
     {
 
-        var email = CurrentUser.Email;
-
-        var user = await _userManager.FindByEmailAsync(email);
+        var username = CurrentUser.UserName;
+        var user = await _userManager.FindByNameAsync(username);
 
         await _userManager.RemovePasswordAsync(user);
         var password = await _userManager.AddPasswordAsync(user, input.NewPassword);
+        user.SetConcurrencyStampIfNotNull(user.ConcurrencyStamp);
+        var Newuser = await _userManager.UpdateAsync(user);
 
-        if (password.Succeeded)
+        if (Newuser.Succeeded)
         {
             return Result.SuccessWithMessage("Set New Password Successfully");
 

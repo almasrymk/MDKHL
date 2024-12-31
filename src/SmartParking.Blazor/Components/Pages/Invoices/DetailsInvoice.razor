@@ -7,6 +7,7 @@
 @using SmartParking.Payments
 @using SmartParking.Permissions.InvoicesPermissions
 @using SmartParking.Vehicles
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IInvoiceAppService InvoiceAppService
@@ -25,7 +26,7 @@
 
 <MudItem>
     <MudGrid>
-        <MudItem sm="8">
+        <MudItem sm="7">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <MudText Typo="Typo.h6" Class="fw-bold">@L["InvoiceDetails"]</MudText>
                 <MudForm Class="flex-grow-1 mt-4">
@@ -48,29 +49,50 @@
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField @bind-Value="InvoiceType"
-                            For="@(() =>InvoiceType)"
+                            <MudTextField @bind-Value="LocalizedInvoiceType"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@L["InvoiceType"]"
                             Disabled />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="OrganizationArabicName"
-                            For="@(() => OrganizationArabicName)"
-                            Immediate="true"
-                            Variant="Variant.Text"
-                            Label="@L["OrganizationArabicName"]"
-                            Disabled />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="GarageName"
-                            For="@(() => GarageName)"
-                            Immediate="true"
-                            Variant="Variant.Text"
-                            Label="@L["Garage Name"]"
-                            Disabled />
-                        </MudItem>
+
+                          @if (CultureInfo.CurrentCulture.Name == "ar")
+                          {
+                            <MudItem sm="4">
+
+                                <MudTextField @bind-Value="OrganizationArabicName"
+                                Immediate="true"
+                                Variant="Variant.Text"
+                                Label="@L["OrganizationName"]"
+                                Disabled />
+                                </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="GarageArabicName"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["Garage Name"]"
+                                              Disabled />
+                            </MudItem>
+                          }else{
+
+                            <MudItem sm="4">
+
+                                <MudTextField @bind-Value="OrganizationEnglishName"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["OrganizationName"]"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="GarageEnglishName"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["Garage Name"]"
+                                              Disabled />
+                            </MudItem>
+                          }
+                        
+                        
                         <MudItem sm="4">
                             <MudTextField @bind-Value="PlateNumber"
                             For="@(() => PlateNumber)"
@@ -107,7 +129,7 @@
             </MudPaper>
         </MudItem>
 
-        <MudItem sm="4">
+        <MudItem sm="5">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
                 <MudItem>
 

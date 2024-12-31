@@ -237,7 +237,7 @@
     "Apply": "تطبق",
     "Summary": "ملخص",
     "DueValue": "القيمة المستحقة",
-    "VAT": "ضريبة القيمة المضافة",
+    "VAT": "القيمة المضافة",
     "Total": "المجموع",
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء",
@@ -300,7 +300,7 @@
     "Cars": "مركـبات",
     "Update Garage": "تحـديـث بيـانـات مـوقـف",
     "Vehicle Image": "صـورة المـركبـة",
-    "SAR": "ريـال سـعودي",
+    "SAR": "ريال سعودي",
     "Time Placeholder": "إختـار الـوقـت",
     "Organization Garages": "مواقـف المنشأة",
     "Organization Customers": "عمـلاء المنشأة",
@@ -446,7 +446,7 @@
     "Total Garage Can be added": "عدد المواقف المتاح تفعيلها",
     "ActiveGarages": "عدد المواقف المفعلة",
     "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
-    "customer category": "الفئة",
+    "customer category": "فئة العميل",
     "ArPlateNumber": "رقم اللوحة بالعربية",
     "ArPlateLetters": "حروف اللوحة بالعربية",
     "EnPlateNumber": "رقم اللوحة بالانجليزية",
@@ -598,8 +598,15 @@
     "Visitors": "الزوار",
     "MustBeGreaterThan": "يجب أن يكون أكبر من",
     "MustBeSmallerThan": "يجب أن يكون اصغر من",
+    "PaymentParking": "فاتورة",
+    "Cash": "نقدي",
+    "Pending": "",
+    "Success": "مكتملة",
+    "Cancelled": "ملغاه",
+    "InvoiceId": "رقم المطابقة",
+    "Employee": "موظف"
 
-    
+
 
 
 

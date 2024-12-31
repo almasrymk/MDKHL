@@ -30,9 +30,11 @@ public partial class DetailsInvoice
     public int Id { get; set; }
     public string InvoiceNumber { get; set; }
     public string OrganizationArabicName { get; set; }
+    public string OrganizationEnglishName { get; set; }
     public string InvoiceType { get; set; }
 
-    public string GarageName { get; set; }
+    public string GarageEnglishName { get; set; }
+    public string GarageArabicName { get; set; }
     public string PlateNumber { get; set; }
     public int TotalHours { get; set; }
     public decimal InvoicePrice { get; set; }
@@ -47,6 +49,8 @@ public partial class DetailsInvoice
     public Guid? CustomerId { get; set; }
 
     public bool IsPaid { get; set; }
+    private string LocalizedInvoiceType { get; set; }
+
 
 
 
@@ -91,7 +95,9 @@ public partial class DetailsInvoice
         InvoicePrice = invoice.InvoicePrice;
         InvoiceType = invoice.InvoiceType.ToString();
         OrganizationArabicName = invoice.OrganizationArabicName;
-        GarageName = invoice.GarageName;
+        OrganizationEnglishName = invoice.OrganizationEnglishName;
+        GarageEnglishName = invoice.GarageEnglishName;
+        GarageArabicName = invoice.GarageArabicName;
         PlateNumber = invoice.PlateNumber;
         InvoiceTime = invoice.InvoiceTime;
         EntranceTime = invoice.EntranceTime;
@@ -99,6 +105,8 @@ public partial class DetailsInvoice
         ExitTime = invoice.InvoiceTime;
         CustomerId = invoice.CustomerId;
         IsPaid= invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
+        LocalizedInvoiceType = L[invoice.InvoiceType];
+
 
     }
     private void Back()
@@ -110,7 +118,7 @@ public partial class DetailsInvoice
         var paymentChekout = new PaymentCheckoutRequestDto
         {
             OrganizationId=OrganizationId,
-            PaymentCategory=PaymentCategory.Invoice,
+            PaymentCategory=PaymentCategory.PaymentParking,
             InvoiceId= Id,
             PaymentMethod=PaymentMethod.Cash,
             Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
@@ -133,8 +141,10 @@ public partial class DetailsInvoice
             TotalHours = TotalHours,
             InvoicePrice = InvoicePrice,
             InvoiceTime = InvoiceTime,
-            GarageName = GarageName,
+            GarageEnglishName = GarageEnglishName,
+            GarageArabicName = GarageArabicName,
             OrganizationArabicName = OrganizationArabicName,
+            OrganizationEnglishName=OrganizationEnglishName,
             PlateNumber = PlateNumber,
             EntranceTime = EntranceTime,
             CustomerArName=CustomerName,
