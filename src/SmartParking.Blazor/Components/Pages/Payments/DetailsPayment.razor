@@ -13,9 +13,9 @@
 @inject CurrentTenant currentTenant
 
 
-<PageTitle>@L["View Payment"]</PageTitle>
+<PageTitle>@L["View Details"]</PageTitle>
 <div>
-    <MudText Typo="Typo.h6" Class="fw-bold">@L["View Payment"]</MudText>
+    <MudText Typo="Typo.h6" Class="fw-bold">@L["View Details"]</MudText>
 
     <MudForm  Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
         <MudGrid>
@@ -37,12 +37,16 @@
                 }
 
             }
-                <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.PaymentCategory" Label=@L["PaymentCategory"] />
-                </MudItem>
+            <MudItem sm="4">
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.PaymentNumber " Label=@L["Code"] />
+            </MudItem>
+
+            <MudItem sm="4">
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentCategory" Label=@L["PaymentCategory"] />
+            </MudItem>
 
                 <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.PaymentMethod" Label=@L["PaymentMethod"] />
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentMethod" Label=@L["PaymentMethod"] />
                 </MudItem>
 
                 <MudItem sm="4">
@@ -54,20 +58,18 @@
             </MudItem>
 
             <MudItem sm="4">
-                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.Currency" Label=@L["Currency"] />
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["Currency"] @bind-Value="LocalizedPaymentCurrency" />
             </MudItem>
             <MudItem sm="4">
-                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.PaymentStatus" Label=@L["PaymentStatus"] />
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["PaymentStatus"] @bind-Value="LocalizedPaymentStatus"/>
             </MudItem>
 
 
                @if (Payment.Invoice is not null)
                    {
+                               
                        <MudItem sm="4">
-                           <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.PaymentNumber " Label=@L["Code"] />
-                       </MudItem>                    
-                       <MudItem sm="4">
-                           <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.Invoice.InvoiceType " Label=@L["InvoiceType"] />
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentInvoiceType " Label=@L["InvoiceType"] />
                        </MudItem>
                 <MudItem sm="4">
                     <MudTextField @bind-Value="Payment.Invoice.PlateNumber"
@@ -88,6 +90,13 @@
                                   Immediate="true"
                                   Variant="Variant.Text"
                                   Label="@L["ExitTime"]"
+                                  ReadOnly="true" />
+                </MudItem> 
+                <MudItem sm="4">
+                    <MudTextField Value="Payment.Invoice.Id"
+                                  Immediate="true"
+                                  Variant="Variant.Text"
+                                  Label="@L["InvoiceId"]"
                                   ReadOnly="true" />
                 </MudItem>
 

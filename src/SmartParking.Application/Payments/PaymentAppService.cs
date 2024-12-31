@@ -249,7 +249,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
                 if (payment != null)
                 {
-                    if (payment.PaymentCategory == PaymentCategory.Invoice)
+                    if (payment.PaymentCategory == PaymentCategory.PaymentParking)
                     {
 
                         var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);

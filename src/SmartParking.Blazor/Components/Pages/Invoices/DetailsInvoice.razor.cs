@@ -110,7 +110,7 @@ public partial class DetailsInvoice
         var paymentChekout = new PaymentCheckoutRequestDto
         {
             OrganizationId=OrganizationId,
-            PaymentCategory=PaymentCategory.Invoice,
+            PaymentCategory=PaymentCategory.PaymentParking,
             InvoiceId= Id,
             PaymentMethod=PaymentMethod.Cash,
             Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),

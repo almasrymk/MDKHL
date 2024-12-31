@@ -16,11 +16,23 @@ public partial class DetailsPayment
     private PaymentGetResponseDto Payment {  get; set; } = new PaymentGetResponseDto();
     private string CreationTime { get; set; }
     private string Amount { get; set; }
+    private string LocalizedPaymentCategory{ get; set; }
+    private string LocalizedPaymentMethod{ get; set; }
+    private string LocalizedPaymentStatus{ get; set; }
+    private string LocalizedPaymentCurrency{ get; set; }
+    private string LocalizedPaymentInvoiceType{ get; set; }
+    
     private async Task FetchPayment()
     {
         Payment = await PaymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
         CreationTime = Payment.CreationTime.ToString();
         Amount = Payment.Amount.ToString();
+        LocalizedPaymentCategory= L[Payment.PaymentCategory];
+        LocalizedPaymentMethod=L[Payment.PaymentMethod];
+        LocalizedPaymentStatus=L[Payment.PaymentStatus];
+        LocalizedPaymentCurrency = L[Payment.Currency];
+        LocalizedPaymentInvoiceType = L[Payment.Invoice.InvoiceType];
+
     }
     protected override async Task OnInitializedAsync()
     {

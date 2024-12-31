@@ -86,7 +86,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _localizer = localizer;
         _unLinkedTransactionRepository = unLinkedTransactionRepository;
         _paymentAppService = paymentAppService;
-        customerEnName = _localizer["NotCustomer"];
+        customerEnName = "unknown";
         customerArName = _localizer["NotCustomer"];
         _calculationsEndPointAppService = calculationsEndPointAppService;
     }

@@ -8,6 +8,6 @@ namespace SmartParking.Enums;
 
 public enum PaymentCategory
 {
-    Invoice,
+    PaymentParking,
     Package 
 }

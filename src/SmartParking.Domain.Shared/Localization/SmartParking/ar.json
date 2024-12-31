@@ -446,7 +446,7 @@
     "Total Garage Can be added": "عدد المواقف المتاح تفعيلها",
     "ActiveGarages": "عدد المواقف المفعلة",
     "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
-    "customer category": "الفئة",
+    "customer category": "فئة العميل",
     "ArPlateNumber": "رقم اللوحة بالعربية",
     "ArPlateLetters": "حروف اللوحة بالعربية",
     "EnPlateNumber": "رقم اللوحة بالانجليزية",
@@ -598,8 +598,15 @@
     "Visitors": "الزوار",
     "MustBeGreaterThan": "يجب أن يكون أكبر من",
     "MustBeSmallerThan": "يجب أن يكون اصغر من",
+    "PaymentParking": "فاتورة",
+    "Cash": "نقدي",
+    "Pending": "",
+    "Success": "مكتملة",
+    "Cancelled": "ملغاه",
+    "InvoiceId": "رقم المطابقة",
+    "Employee": "موظف"
 
-    
+
 
 
 
