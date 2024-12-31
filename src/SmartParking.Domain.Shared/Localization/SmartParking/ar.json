@@ -604,7 +604,7 @@
     "MustBeSmallerThan": "يجب أن يكون اصغر من",
     "PaymentParking": "فاتورة",
     "Cash": "نقدي",
-    "Pending": "",
+    "Pending": "معلقة",
     "Success": "مكتملة",
     "Cancelled": "ملغاه",
     "InvoiceId": "رقم المطابقة",
