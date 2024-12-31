@@ -569,8 +569,12 @@
     "CustomersEmptyParking": "Parking Empty Lot",
     "Parking": "Parking Lot",
     "EmptyParking": "Parking Empty Lot",
-    "Visitors": "Visitors"
-    
+    "Visitors": "Visitors",
+    "CollectedMoney": "Collected Money",
+    "CollectedMoneyToday": "Collected Money Today",
+    "Collected": "Collected",
+    "Day": "Day"
+
 
 
 
