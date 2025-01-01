@@ -217,12 +217,12 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         {
             throw new BusinessException("Leaving date can't be befor entrance date");
         }
-        if (packageDto.Package.Published)
+        if (packageDto.publishedOfPackage.Value)
         {
             return 0;
         }
-        DateTime packageStart = entranceTime.Value.Date.AddHours(packageDto.Package.PublishFrom.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
-        DateTime packageEnd = entranceTime.Value.Date.AddHours(packageDto.Package.PublishTo.Hour).AddMinutes(packageDto.Package.PublishTo.Minute);
+        DateTime packageStart = entranceTime.Value.Date.AddHours(packageDto.PublishFromOfPackage.Value.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
+        DateTime packageEnd = entranceTime.Value.Date.AddHours(packageDto.PublishToOfPackage.Value.Hour).AddMinutes(packageDto.Package.PublishTo.Minute);
 
         double extraHours = 0;
 
