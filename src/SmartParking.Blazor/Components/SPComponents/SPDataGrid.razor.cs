@@ -20,7 +20,7 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
     [Parameter] public bool ShowSearching { get; set; } = true;
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
-    [Parameter] public bool ShowFiltering { get; set; } = true;
+    [Parameter] public bool ShowFiltering { get; set; } = false;
     [Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
     [Parameter] public EventCallback<RowDef> OnClickButton { get; set; }
     [Parameter] public bool ShowEdit { get; set; } = true;
