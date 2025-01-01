@@ -214,6 +214,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.UserName, s => s.MapFrom(o => o.UserName))
             .ForMember(d => d.Name, s => s.MapFrom(o => o.FullName))
             .ForMember(d => d.Surname, s => s.MapFrom(o => o.ArabicName))
+            .ForMember(d => d.IdentificationTypes, s => s.MapFrom(o => o.IdentificationType))
+            .ForMember(d => d.NationalId, s => s.MapFrom(o => o.NationalId))
+            
             .ForMember(d => d.PhoneNumber, s => s.MapFrom(o => o.PhoneNumber)).ReverseMap();
         CreateMap < UserCreateDto, IdentityUser >()
              .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))
