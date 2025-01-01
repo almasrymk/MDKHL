@@ -76,7 +76,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
         }
         else if (input.IdentificationType == IdentificationTypes.Passport)
         {
-            var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
+            var passportPattern = new Regex(@"^(?=(?:\d*[a-zA-Z]){1}\d*$)[a-zA-Z0-9]{6,9}$");
             if (!passportPattern.IsMatch(input.NationalId))
             {
                 throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PassportValidation"));
