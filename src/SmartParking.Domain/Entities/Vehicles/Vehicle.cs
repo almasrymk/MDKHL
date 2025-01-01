@@ -11,7 +11,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Vehicles
 {
-    public class Vehicle : FullAuditedEntity<int>, IMultiTenant,IBseEntity
+    public class Vehicle : FullAuditedEntity<int>, IMultiTenant,IBaseEntity
 	{
         public int Id { get; set; }
         public Guid CustomerId { get; set; }

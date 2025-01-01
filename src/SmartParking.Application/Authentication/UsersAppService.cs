@@ -69,9 +69,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         await _identityOptions.SetAsync();
         var user = CreateUser(input);
-
-        
-
+        await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null) {
             throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 

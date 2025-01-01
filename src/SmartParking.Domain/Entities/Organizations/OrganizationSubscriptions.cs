@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities.Organizations;
 
-public class OrganizationSubscriptions: IBseEntity
+public class OrganizationSubscriptions: IBaseEntity
 {
     public int Id { get; set; }
     public int OrganizationId { get; set; }
