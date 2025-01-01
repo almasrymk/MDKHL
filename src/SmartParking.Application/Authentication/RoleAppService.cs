@@ -59,7 +59,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _roleReository.GetQueryableAsync();
-            queryable = GetQueryByTenat(tenantId, queryable);
+            queryable = GetQueryListByTenat(tenantId, queryable);
             return await MapRoles(queryable); ;
         }
     }
@@ -88,8 +88,16 @@ public class RoleAppService : ApplicationService, IRoleAppService
     {
         if(tenantId == null)
         {
+            
             return queryable;
         }
+        queryable = queryable.Where(r => r.TenantId == tenantId);
+        return queryable;
+    }
+
+    
+    private static IQueryable<IdentityRole> GetQueryListByTenat(Guid? tenantId, IQueryable<IdentityRole> queryable)
+    {
         queryable = queryable.Where(r => r.TenantId == tenantId);
         return queryable;
     }
