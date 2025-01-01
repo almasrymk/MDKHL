@@ -5,6 +5,7 @@
 @using SmartParking.Organizations
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using SmartParking.Validations
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
@@ -219,13 +220,7 @@
             createUpdatePackage.PublishTo = new TimeOnly(0,0,0);
         }
     }
-    private void CheckPublish(bool publish){
-        if (createUpdatePackage.Published)
-        {
-            createUpdatePackage.PublishFrom = new TimeOnly(0, 0, 0);
-            createUpdatePackage.PublishTo = new TimeOnly(0, 0, 0);
-        }
-    }
+
     private async Task Submit()
     {
         createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
@@ -234,8 +229,9 @@
         
         try
         {
-            CheckPublish(createUpdatePackage.Published);
-            createUpdatePackage.TenantId = CurrentTenant.Id;
+            createUpdatePackage.Published = PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
+
+                createUpdatePackage.TenantId = CurrentTenant.Id;
                 createUpdatePackage.ActivationDate = DateTime.Now;
                 await PackagesAppService.CreateAsync(createUpdatePackage);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);

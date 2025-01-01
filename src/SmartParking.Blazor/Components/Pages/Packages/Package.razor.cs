@@ -199,6 +199,8 @@ public partial class Package
             CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory),
             DurationOfPackage = packageDto.DurationOfPackage,
             Status = packageDto.Status,
+            ActivationDate = packageDto.ActivationDate,
+            DeactivationDate = packageDto.ActivationDate,
 
 
         };
@@ -209,7 +211,6 @@ public partial class Package
         {
             ["Package"] = createUpdatePackage,
             ["UpdatedId"] = id,
-            ["ActivationDate"] = packageDto.ActivationDate,
         };
 
 
@@ -242,6 +243,10 @@ public partial class Package
             CustomerCategory = packageDto.CustomerCategory,
             DurationOfPackage = packageDto.DurationOfPackage,
             ActivationDate = packageDto.ActivationDate,
+            Status = packageDto.Status,
+            DectivationDate = packageDto.DectivationDate,
+            ActivedBy=packageDto.ActivedBy,
+            DeactivatedBy=packageDto.DeactivatedBy,
 
 
         };
