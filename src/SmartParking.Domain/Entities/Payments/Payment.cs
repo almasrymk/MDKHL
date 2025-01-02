@@ -1,4 +1,5 @@
 ﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -26,5 +27,7 @@ public class Payment : FullAuditedEntity<Guid>
     public string? PaymentName { get; set; }
 
     public string PaymentNumber { get; set; }
+
+    public virtual Invoice? Invoice { get; set; }
 
 }

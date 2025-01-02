@@ -42,6 +42,7 @@ using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraModel;
 using SmartParking.Lookups.CameraMainType;
 using Microsoft.Build.Framework;
+using SmartParking.Localization;
 
 namespace SmartParking;
 
@@ -164,6 +165,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             
 
         CreateMap<Payment, PaymentDto>()
+           .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.InvoiceId.HasValue?src.Invoice.PlateNumber:LocalizationHelper.GetLocalizedString("Package")))
+
+
         .ReverseMap();
 
         CreateMap<Customer, CustomerDto>()
@@ -266,7 +270,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Organization, double>()
        .ConvertUsing(org => org.Customers.Count);
 
-
-	}
+    }
 }
 

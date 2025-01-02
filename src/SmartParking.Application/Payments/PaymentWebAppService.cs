@@ -251,7 +251,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower())
+                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    (or.InvoiceId !=null && or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()))
 
                 // full date-time or includes hour
                 );
@@ -270,6 +271,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 }
 
             }
+            queryable = queryable.OrderByDescending(x => x.Id);
+
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
