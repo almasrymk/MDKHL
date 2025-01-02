@@ -136,6 +136,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(des => des.LicenceEnglishName, src => src.MapFrom(f => f.LicenceType.EnglishName))
             .ForMember(des => des.BrandArabicName, src => src.MapFrom(f => f.VehicleBrand.ArabicName))
             .ForMember(des => des.ModelArabicName, src => src.MapFrom(f => f.VehicleModel.ArabicName))
+            .ForMember(des => des.ModelImage, src => src.MapFrom(f => f.VehicleModel.Image))
             .ForMember(des => des.LicenceArabicName, src => src.MapFrom(f => f.LicenceType.ArabicName));
         CreateMap<CreateUpdateVehicleDto, Vehicle>()
             .ForMember(dest => dest.ArPlateNumber, src => src.MapFrom(f => f.FullArPlate))
