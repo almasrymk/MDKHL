@@ -98,4 +98,7 @@ public interface IUsersAppService:  IApplicationService
     Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
     Task RemoveRoleMdkhl(Guid UserId, Guid RoleId);
     Task<UserDto> UpdateUserWithoutRoleChangeAsync(Guid? id, UpdateUserDto input);
+
+    Task<IdentityUser> AddAndValidateUserAsync(UserCreateDto input);
+    Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input);
 }

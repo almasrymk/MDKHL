@@ -209,6 +209,15 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<IdentityUser, UserDto>();
 
+        CreateMap<RegisterInputDto, UserCreateDto>()
+            .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))
+            .ForMember(d => d.UserName, s => s.MapFrom(o => o.PhoneNumber))
+            .ForMember(d => d.Name, s => s.MapFrom(o => o.Name))
+            .ForMember(d => d.Surname, s => s.MapFrom(o => o.Name))
+            .ForMember(d => d.IdentificationTypes, s => s.MapFrom(o => o.IdentificationTypes))
+            .ForMember(d => d.Password, s => s.MapFrom(o => o.Password))
+            .ForMember(d => d.NationalId, s => s.MapFrom(o => o.NationalId)).ReverseMap();
+
         CreateMap<CreateUpdateCustomerDto, UserCreateDto>()
             .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))
             .ForMember(d => d.UserName, s => s.MapFrom(o => o.UserName))
