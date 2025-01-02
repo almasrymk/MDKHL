@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations;
 
-public class GarageCategories : IBseEntity
+public class GarageCategories : IBaseEntity
 {
     public int Id { get; set; }
 

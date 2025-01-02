@@ -9,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Organizations;
 
-public class CustomerOrganization:FullAuditedEntity<int> , IBseEntity
+public class CustomerOrganization:FullAuditedEntity<int> , IBaseEntity
 {
     public int OrganizationId { get; set; }
     public virtual Organization Organizations { get; set; }

@@ -191,6 +191,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         {
             var queryable = await _vehicleRepository.GetQueryableAsync();
             queryable = queryable.Where(_ => _.Customer.IdentityUser.Id == CurrentUser.Id);
+            queryable = queryable.OrderBy(v => v.Id);
             var vehicles = await AsyncExecuter.ToListAsync(queryable);
             var vehiclesDto = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
             return vehiclesDto;

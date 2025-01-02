@@ -42,6 +42,7 @@ using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraModel;
 using SmartParking.Lookups.CameraMainType;
 using Microsoft.Build.Framework;
+using SmartParking.Localization;
 
 namespace SmartParking;
 
@@ -164,6 +165,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             
 
         CreateMap<Payment, PaymentDto>()
+           .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.InvoiceId.HasValue?src.Invoice.PlateNumber:LocalizationHelper.GetLocalizedString("Package")))
+
+
         .ReverseMap();
 
         CreateMap<Customer, CustomerDto>()
@@ -209,11 +213,23 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<IdentityUser, UserDto>();
 
+        CreateMap<RegisterInputDto, UserCreateDto>()
+            .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))
+            .ForMember(d => d.UserName, s => s.MapFrom(o => o.PhoneNumber))
+            .ForMember(d => d.Name, s => s.MapFrom(o => o.Name))
+            .ForMember(d => d.Surname, s => s.MapFrom(o => o.Name))
+            .ForMember(d => d.IdentificationTypes, s => s.MapFrom(o => o.IdentificationTypes))
+            .ForMember(d => d.Password, s => s.MapFrom(o => o.Password))
+            .ForMember(d => d.NationalId, s => s.MapFrom(o => o.NationalId)).ReverseMap();
+
         CreateMap<CreateUpdateCustomerDto, UserCreateDto>()
             .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))
             .ForMember(d => d.UserName, s => s.MapFrom(o => o.UserName))
             .ForMember(d => d.Name, s => s.MapFrom(o => o.FullName))
             .ForMember(d => d.Surname, s => s.MapFrom(o => o.ArabicName))
+            .ForMember(d => d.IdentificationTypes, s => s.MapFrom(o => o.IdentificationType))
+            .ForMember(d => d.NationalId, s => s.MapFrom(o => o.NationalId))
+            
             .ForMember(d => d.PhoneNumber, s => s.MapFrom(o => o.PhoneNumber)).ReverseMap();
         CreateMap < UserCreateDto, IdentityUser >()
              .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))
@@ -254,7 +270,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Organization, double>()
        .ConvertUsing(org => org.Customers.Count);
 
-
-	}
+    }
 }
 

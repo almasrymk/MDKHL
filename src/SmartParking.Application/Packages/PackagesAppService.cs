@@ -59,7 +59,7 @@ public class PackagesAppService : CrudAppService<
             var customer = await _customerRepository.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
             var query = await _repository.GetQueryableAsync();
             var pakages = await query.Where(_ => _.OrganizationId == organizationId &&
-            _.PackageStatus == SubscriptionStatus.Active && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
+            _.Status == Status.Active && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
             var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if (pakages.Count == 0)
             {
@@ -196,7 +196,7 @@ public class PackagesAppService : CrudAppService<
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(p => p.PackageType);
-            queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory);
+            queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory && x.Status==Status.Active);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             var packages = await AsyncExecuter.ToListAsync(queryable);
             var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
@@ -222,5 +222,17 @@ public class PackagesAppService : CrudAppService<
         var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
 
         return packagesDto;
+    }
+
+    public override async Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
+    {
+        var packageDto = await _repository.GetAsync(id);
+        if (packageDto.Status == Status.Active && input.Status==Status.Inactive) {
+            input.DeactivationDate=DateTime.Now;
+        }else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
+        {
+            input.ActivationDate = DateTime.Now;
+        }
+        return await base.UpdateAsync(id, input);
     }
 }

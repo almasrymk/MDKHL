@@ -31,6 +31,7 @@ using System.Threading;
 using System;
 using System.Linq.Dynamic.Core;
 using SmartParking.Entities.Payments;
+using SmartParking.Configurations;
 
 
 namespace SmartParking.EntityFrameworkCore;
@@ -134,7 +135,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     private void HandleDependent(EntityEntry entry)
     {
         // Mark as deleted and update state to prevent hard delete
-        if (entry.Entity is IBseEntity baseEntity)
+        if (entry.Entity is IBaseEntity baseEntity)
         {
             baseEntity.Status = Enums.Status.Deleted;
             entry.State = EntityState.Modified;
@@ -144,12 +145,12 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     private void ProcessEntities()
     {
         // Iterate over entries marked as Deleted
-       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is IBseEntity).ToList();
+       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is IBaseEntity).ToList();
         for (var k=0;k< entryList.Count;k++ )
         {
             
             var entry = entryList[k];
-            if (entry.Entity is IBseEntity baseEntity)
+            if (entry.Entity is IBaseEntity baseEntity)
                 if(baseEntity.Status == Enums.Status.Deleted )
                 {
                     // Soft delete the entity itself
@@ -212,11 +213,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
-        builder.Entity<Tenant>(b =>
-        {
-            // Apply a global query filter to the Tenant entity
-            b.HasQueryFilter(t => !t.IsDeleted); // Example filter for soft deletion
-        });
+        builder.ConfigureEntities();
         builder.ApplyConfigurationsFromAssembly(typeof(SmartParkingDbContext).Assembly);
         /* Configure your own tables/entities inside here */
 

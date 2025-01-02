@@ -39,6 +39,7 @@ namespace SmartParking.GarageTransactionEndPoints;
 public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
+    private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
     private readonly IRepository<Camera, int> _cameraRepository;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly ILogger<GarageTransactionEndPointsAppService> _logger;
@@ -69,7 +70,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         IInvoiceAppService invoiceAppService,
         IDataFilter dataFilter, ICurrentUser currentUser,
        IStringLocalizer<SmartParkingResource> localizer,
-       IRepository<UnLinkedTransaction> unLinkedTransactionRepository, IPaymentAppService paymentAppService, ICalculationsEndPointsAppService calculationsEndPointAppService)
+       IRepository<UnLinkedTransaction> unLinkedTransactionRepository, IPaymentAppService paymentAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _cameraRepository = cameraRepository;
@@ -89,6 +90,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         customerEnName = "unknown";
         customerArName = "غير معرف";
         _calculationsEndPointAppService = calculationsEndPointAppService;
+        _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
     }
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
@@ -192,8 +194,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task CreateUnLinkedTransaction(CreateUpdateGarageTransactionEndPointDto input)
     {
-        var unLinkedTransaction = ObjectMapper.Map<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>(input);
-        await _unLinkedTransactionRepository.InsertAsync(unLinkedTransaction, true);
+        await _unlinkedGarageTransactionsAppService.CreateAsync(input);
     }
     private async Task<Garage> GetGarage(int id)
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Entities;
 
-public interface IBseEntity
+public interface IBaseEntity
 {
     public Status Status { get; set; } 
 }

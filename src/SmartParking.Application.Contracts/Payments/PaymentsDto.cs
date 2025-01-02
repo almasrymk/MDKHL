@@ -22,6 +22,7 @@ public class PaymentDto
     public string Currency { get; set; }
     public string CreationTime { get; set; }
     public string PaymentNumber { get; set; }
+    public string PlateNumber { get; set; }
 
 
 

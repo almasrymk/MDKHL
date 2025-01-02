@@ -6,7 +6,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities
 {
-    public class BaseEntity : FullAuditedEntity<int>, IMultiTenant, IBseEntity
+    public class BaseEntity : FullAuditedEntity<int>, IMultiTenant, IBaseEntity
     {
         public string ArabicName { get; set; }
         public string EnglishName { get; set; }
