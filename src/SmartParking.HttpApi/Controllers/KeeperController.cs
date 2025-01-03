@@ -45,17 +45,28 @@ public class KeeperController : AbpController
 
     public async Task<Result<LoginResponseDto>> Login(LoginRequestDto input)
     {
-        var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
-        _currentTenant.Change(tenant?.Id ?? null);
-        if (_currentUser.IsAuthenticated)
+        try
         {
-            return Result<LoginResponseDto>.Invalid(new ValidationError
+            var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
+            _currentTenant.Change(tenant?.Id ?? null);
+            if (_currentUser.IsAuthenticated)
             {
-                ErrorCode = "400",
-                ErrorMessage = "You are already logged in."
+                return Result<LoginResponseDto>.Invalid(new ValidationError
+                {
+                    ErrorCode = "400",
+                    ErrorMessage = "You are already logged in."
+                });
+            }
+            return await _keeperAppService.LoginAsync(input);
+        }
+        catch
+        {
+            return Result<LoginResponseDto>.Invalid(new Results.ValidationError
+            {
+                ErrorCode = "403",
+                ErrorMessage = "This user not found",
             });
         }
-        return await _keeperAppService.LoginAsync(input);
     }
 
     [HttpGet("invoice")]
