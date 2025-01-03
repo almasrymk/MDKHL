@@ -582,7 +582,8 @@
     "Success": "Success",
     "Cancelled": "Cancelled",
     "InvoiceId": "Mapping Number",
-    "Employee": "Employee"
+    "Employee": "Employee",
+    "NotAllowed": "Not Allowed"
 
 
 
