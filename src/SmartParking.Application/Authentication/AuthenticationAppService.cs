@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
@@ -17,10 +18,12 @@ using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Mail;
 using System.Security.Authentication;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -234,6 +237,24 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         
 
     }
+    [RemoteService(IsEnabled = false)]
+    public async Task<string> GenerateToken(string userId)
+    {
+        await Task.Yield();
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var secretKeyBytes = Encoding.UTF8.GetBytes("6eb044cb72029502b56bb72f9dff6dfac055ff6e5e2ce088969c83e9f35e2504");
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[] { new Claim("userId", userId) }),
+            Expires = DateTime.UtcNow.AddMinutes(5),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(secretKeyBytes),
+                SecurityAlgorithms.HmacSha256Signature
+            )
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
     /// <inheritdoc/>
     [RemoteService(IsEnabled = false)]
     public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
@@ -241,82 +262,59 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IdentityUser user;
 
         using (DataFilter.Disable<IMultiTenant>())
-        {
-            user = await _userRepository.FirstOrDefaultAsync(_ => _.UserName == input.Username || _.PhoneNumber == input.Username);
+        { 
+            user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == input.Username || u.PhoneNumber == input.Username);
+            if (user == null)
+              throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
 
-            user = await CheckOrganization(user);
-            if (user == null)
-            {
-                return null;
-            }
-            user = await CheckRole(user);
-            if (user == null)
-            {
-                return null;
-            }
-            user = await CheckPassword(input, user);
-            if (user == null)
-            {
-                return null;
-            }
+             await CheckOrganization(user);
+            
+            await CheckRole(user);
+            
+            await CheckPassword(input, user);
+            
 
         }
 
-        _currentTenant.Change(user.TenantId);
-        await _signInManager.SignInAsync(user, isPersistent: false);
-
-
+        
         return user;
     }
+    
 
-    private async Task<IdentityUser> CheckPassword(LoginInputDto input, IdentityUser user)
+    private async Task CheckPassword(LoginInputDto input, IdentityUser user)
     {
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
-        {
-            return null;
-        }
+            throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
         if (user.IsActive == false)
-        {
-            return null;
-        }
-        return user;
+         throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
+        return;
     }
 
-    private async Task<IdentityUser> CheckRole(IdentityUser user)
+    private async Task CheckRole(IdentityUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
         if (roles.Contains("Customer") && roles.Count == 1)
-            return null;
-        return user;
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
+        return;
     }
 
-    private async Task<IdentityUser> CheckOrganization(IdentityUser user)
+    private async Task CheckOrganization(IdentityUser user)
     {
         var organizationId = user.GetProperty<int>("OrganizationId");
 
-        if (organizationId != 0)
+        if (organizationId == 0) return;
+
+        var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+
+        if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
         {
-            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-
-            if (organization == null)
-            {
-                return null;
-
-            }
-            if (organization != null)
-            {
-
-
-                if (organization.Status.ToString() == Enums.Status.Inactive.ToString() || organization.Status.ToString() == Enums.Status.Deleted.ToString())
-                {
-                    return null;
-
-                }
-            }
-
-
+            throw new Exception(LocalizationHelper.GetLocalizedString(
+                (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
+                LocalizationHelper.GetLocalizedString("InActive") + " , " +
+                LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
         }
-        return user;
+
+        return;
     }
 
     /// <inheritdoc/>
@@ -419,7 +417,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNum);
             var query = await _tenantRepository.GetQueryableAsync();
-            query = query.Where(t => t.Name == user.UserName);
+            query = query.Where(t => t.Id == user.TenantId);
             var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
             return tenant;
         }
@@ -532,5 +530,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return customerId;
         }
 
+    }
+
+    public async Task<IdentityUser?> IsUserFoundAsync(string Id) 
+    { 
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await _userManager.FindByIdAsync(Id);
+        }
+        
     }
 }
