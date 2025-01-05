@@ -23,7 +23,7 @@ public static class FileHelper
         File.WriteAllBytes(filePath, imageBytes);
         return $"/{folderName}/{fileName}";
     }
-    private static string CreateImageDirectory(string folderName)
+    public static string CreateImageDirectory(string folderName)
     {
         string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderName);
         if (!Directory.Exists(imageDirectoryPath))
