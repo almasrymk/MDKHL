@@ -5,11 +5,13 @@
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using System.Globalization
+@using SmartParking.PDF
 @using Volo.Abp.Application.Dtos
 @using MudBlazor
 @inject IOrganizationsAppService OrganizationsAppService
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IGenerateFilesAppService GenerateFilesAppService
 <div>
     <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" SortMode="SortMode.Single" Filterable="true"
                  >
@@ -58,6 +60,22 @@
                         }
                     </MudItem>
                     <MudSpacer />
+                   @*  @if (OnAdd.HasDelegate && ShowAdd)
+                    { *@
+                        <MudItem>
+                            <MudMenu Class="me-3" Label="@L["Export"]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                                <MudMenuItem OnClick="ExportToPDF">@L["PDF"]</MudMenuItem>
+                                <MudMenuItem OnClick="ExportToCSV">@L["CSV"]</MudMenuItem>
+                                <MudMenuItem OnClick="ExportToExcel">@L["Excel"]</MudMenuItem>
+                            </MudMenu>
+                        </MudItem>
+                  
+                   @*  <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="ExportToExcel">
+                            @L["Export"]
+                            <MudIcon Icon="@Icons.Material.Filled.ImportExport" Size="MudBlazor.Size.Small" Class="ms-1" />
+                        </MudButton> *@
+                    @* }                    *@
+                    
                     @if (OnAdd.HasDelegate && ShowAdd)
                     {
                         <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(()=>OnAdd.InvokeAsync())">

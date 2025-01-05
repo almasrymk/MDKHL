@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace SmartParking.Blazor.Components.DataGrid;
+
+namespace SmartParking.DataTable;
 
 public class TableData
 {
@@ -32,3 +34,4 @@ public class ColumnDef
     public string PropertyName { get; set; }
     public TypeFilter TypeFilter { get; set; }
 }
+
