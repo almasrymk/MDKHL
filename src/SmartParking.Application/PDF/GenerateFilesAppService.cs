@@ -22,12 +22,10 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
         await Task.Yield();
-        // Set EPPlus license context
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
         using (ExcelPackage package = new ExcelPackage())
         {
-            // Create a new worksheet
             ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sheet1");
             System.Data.DataTable table = new System.Data.DataTable();
             foreach (var columns in Data.Columns)
@@ -61,9 +59,6 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
 
     public async Task ExportToPdf(TableData Data, string fileName)
     {
-        try
-        {
-
 
             await Task.Yield();
             FileInfo file = new FileInfo(fileName);
@@ -128,15 +123,6 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                     doc.Close();
                 }
             }
-
-
-            Console.WriteLine("PDF created successfully!");
-        }
-        catch (Exception ex)
-        {
-
-            Console.WriteLine($"Error creating PDF: {ex.Message}");
-        }
 
     }
 }
