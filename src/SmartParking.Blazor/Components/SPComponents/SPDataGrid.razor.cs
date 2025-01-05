@@ -16,6 +16,7 @@ using MudBlazor;
 using OfficeOpenXml;
 using Polly;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using SmartParking.Utilities;
 
@@ -217,29 +218,61 @@ public partial class SPDataGrid
     }
     private async Task ExportToExcel()
     {
-        
-        var folderName= FileHelper.CreateImageDirectory("Folders/Excel");
-        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+        try
+        {
+            var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
 
-        await GenerateFilesAppService.ExportToExcel(Data, file);
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+        
 
     }
 
     private async Task ExportToCSV()
     {
-        
-        var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
-        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
+        try
+        {
+            var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
 
-        await GenerateFilesAppService.ExportToExcel(Data, file);
-       
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
     }   
     
     private async Task ExportToPDF()
     {
-        var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
-        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
-        await GenerateFilesAppService.ExportToPdf(Data, file);
+        try
+        {
+            var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
+            await GenerateFilesAppService.ExportToPdf(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+        }
+        catch 
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+       
        
     }
    

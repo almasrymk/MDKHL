@@ -12,6 +12,7 @@
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IGenerateFilesAppService GenerateFilesAppService
+@inject ISnackbar Snackbar
 <div>
     <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" SortMode="SortMode.Single" Filterable="true"
                  >
