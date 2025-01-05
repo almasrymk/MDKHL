@@ -50,7 +50,7 @@ public class InvoiceUtility : IInvoiceUtility
         var qR = new
         {
             sellerName = organization.EnglishName,
-            vatRegistration = organization.CommercialRegistrationNumber,
+            vatRegistration = organization.TaxIdentificationNumber,
             timeStamp = DateTime.Now.ToString("MM-dd-yyyy"),
             invoiceAmount = amount.ToString(),
             vatAmount = (amount * 0.15M).ToString()
