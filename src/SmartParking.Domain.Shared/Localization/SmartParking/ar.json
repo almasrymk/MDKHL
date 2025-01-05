@@ -610,7 +610,8 @@
     "InvoiceId": "رقم المطابقة",
     "Employee": "موظف",
     "NotAllowed": "غير مسموح",
-    "AssignRole": " تخصيص وظيفة"
+    "AssignRole": " تخصيص وظيفة",
+    "TaxNumber": "الرقم الضريبي"
 
 
 

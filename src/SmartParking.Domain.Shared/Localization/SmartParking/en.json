@@ -584,7 +584,8 @@
     "InvoiceId": "Mapping Number",
     "Employee": "Employee",
     "NotAllowed": "Not Allowed",
-    "AssignRole": "Assign Role"
+    "AssignRole": "Assign Role",
+    "TaxNumber": "Tax Number"
 
 
 
