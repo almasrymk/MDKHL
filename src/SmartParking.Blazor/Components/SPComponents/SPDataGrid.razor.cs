@@ -12,6 +12,7 @@ using iText.Layout.Font;
 using iText.Layout.Properties;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
 using OfficeOpenXml;
 using Polly;
@@ -227,6 +228,9 @@ public partial class SPDataGrid
 
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/Excel/{Data.Name}.xlsx");
         }
         catch
         {
@@ -248,14 +252,22 @@ public partial class SPDataGrid
 
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
         }
         catch
         {
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
         }
-    }   
-    
+    }
+
+    private async Task OpenNewBlank(string url)
+    {
+       
+            await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
     private async Task ExportToPDF()
     {
         try
@@ -266,6 +278,8 @@ public partial class SPDataGrid
 
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
         }
         catch 
         {
