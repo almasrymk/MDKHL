@@ -16,18 +16,8 @@ using MudBlazor;
 using OfficeOpenXml;
 using Polly;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.DataTable;
 using SmartParking.Localization;
-using SmartParking.Migrations;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml;
+using SmartParking.Utilities;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -47,6 +37,7 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<RowDef> OnClickButton { get; set; }
     [Parameter] public bool ShowEdit { get; set; } = true;
     [Parameter] public bool ShowButton { get; set; } = true;
+    [Parameter] public bool ShowExport { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
@@ -226,26 +217,19 @@ public partial class SPDataGrid
     }
     private async Task ExportToExcel()
     {
-        CheckPathFound("Excel");
-        string file = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Folders/Excel", $"{Data.Name}.xlsx");
+        
+        var folderName= FileHelper.CreateImageDirectory("Folders/Excel");
+        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
 
         await GenerateFilesAppService.ExportToExcel(Data, file);
 
     }
 
-    private static void CheckPathFound(string folderName)
-    {
-        string folder = System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Folders/{folderName}");
-        if (!Directory.Exists(folder))
-        {
-            Directory.CreateDirectory(folder);
-        }
-    }
-
     private async Task ExportToCSV()
     {
-        CheckPathFound("Csv");
-        string file = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Folders/Csv", $"{Data.Name}.csv");
+        
+        var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
+        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
 
         await GenerateFilesAppService.ExportToExcel(Data, file);
        
@@ -253,9 +237,8 @@ public partial class SPDataGrid
     
     private async Task ExportToPDF()
     {
-        CheckPathFound("PDF");
-        string file = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Folders/PDF", $"{Data.Name}.pdf");
-
+        var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
+        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
         await GenerateFilesAppService.ExportToPdf(Data, file);
        
     }

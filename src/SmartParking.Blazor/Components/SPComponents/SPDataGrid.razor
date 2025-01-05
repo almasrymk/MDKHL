@@ -60,8 +60,8 @@
                         }
                     </MudItem>
                     <MudSpacer />
-                   @*  @if (OnAdd.HasDelegate && ShowAdd)
-                    { *@
+                    @if (ShowExport)
+                    {
                         <MudItem>
                             <MudMenu Class="me-3" Label="@L["Export"]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                                 <MudMenuItem OnClick="ExportToPDF">@L["PDF"]</MudMenuItem>
@@ -69,12 +69,8 @@
                                 <MudMenuItem OnClick="ExportToExcel">@L["Excel"]</MudMenuItem>
                             </MudMenu>
                         </MudItem>
-                  
-                   @*  <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="ExportToExcel">
-                            @L["Export"]
-                            <MudIcon Icon="@Icons.Material.Filled.ImportExport" Size="MudBlazor.Size.Small" Class="ms-1" />
-                        </MudButton> *@
-                    @* }                    *@
+                
+                    }                   
                     
                     @if (OnAdd.HasDelegate && ShowAdd)
                     {
