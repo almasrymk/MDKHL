@@ -14,6 +14,7 @@ using SmartParking.Invoices;
 using SmartParking.Payments;
 using SmartParking.Repositories;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IRepository<Tenant,Guid> _tenantRepository;
     private readonly IPaymentAppService _paymentAppService;
     private readonly IInvoiceAppService _invoiceAppService;
+    private readonly IAuthenticationUtility _authenticationUtility;
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
@@ -56,7 +58,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IMyUserRepository myUserRepository,
          IRepository<Tenant, Guid> tenantRepository,
          IPaymentAppService paymentAppService,
-         IInvoiceAppService invoiceAppService)
+         IInvoiceAppService invoiceAppService,
+         IAuthenticationUtility authenticationUtility)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -70,6 +73,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _tenantRepository = tenantRepository;
         _paymentAppService = paymentAppService;
         _invoiceAppService = invoiceAppService;
+        this._authenticationUtility = authenticationUtility;
     }
 
     /// <inheritdoc/>
@@ -207,7 +211,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
         using (DataFilter.Disable<IMultiTenant>())
         {
-            // Step 1: Validate the user's credentials
             var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, input.Password))
@@ -238,7 +241,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
-                AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
+                AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
                 Role = roles.FirstOrDefault(),
                 Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
                 TenantId = tenantId,
@@ -247,45 +250,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
             });
         }
-    }
-
-    /// <summary>
-    /// Generates a JWT token for the specified user.
-    /// </summary>
-    /// <param name="user">The user for whom the token will be generated.</param>
-    /// <returns>A string representing the generated JWT token.</returns>
-    private async Task<string> GenerateTokenAsync(Volo.Abp.Identity.IdentityUser user)
-    {
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var claims = new List<Claim>()
-        {
-            new Claim("userId", user.Id.ToString()),
-            new Claim("given_name", user.UserName),
-            new Claim("email", user.Email),
-            new Claim("role", string.Join(",", roles)),
-            new Claim("tenantid", user.TenantId?.ToString() ?? ""),
-            new Claim("scope", "address email phone roles profile offline_access SmartParking") //replace Qa with yours
-
-        };
-        var options = _openIddictOptions.CurrentValue;
-        var descriptor = new SecurityTokenDescriptor
-        {
-            Audience = "SmartParking", // replace with yours,
-            EncryptingCredentials = options.DisableAccessTokenEncryption
-                ? null
-                : options.EncryptionCredentials.First(),
-            Expires = null,
-            Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
-            IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", // replace with yours,
-            SigningCredentials = options.SigningCredentials.First(),
-            TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
-        };
-
-        var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
-
-        return accessToken;
     }
 
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId,Guid userId)

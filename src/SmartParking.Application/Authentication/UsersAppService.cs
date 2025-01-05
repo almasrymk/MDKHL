@@ -67,12 +67,23 @@ public class UsersAppService : ApplicationService, IUsersAppService
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
     {
+        IdentityUser user = await AddAndValidateUserAsync(input);
+
+        await AssignRoleAndPermissionsAsync(user, roleId, input);
+
+        return ObjectMapper.Map<IdentityUser, UserDto>(user);
+    }
+
+    [AllowAnonymous]
+    public async Task<IdentityUser> AddAndValidateUserAsync (UserCreateDto input)
+    {
         await _identityOptions.SetAsync();
         var user = CreateUser(input);
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
-        if (result != null) {
-            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+        if (result != null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                 LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
@@ -81,11 +92,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         var creationResult = await _userManager.CreateAsync(user, input.Password);
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
-
-        await AssignRoleAndPermissionsAsync(user, roleId,input);
-
-        return ObjectMapper.Map<IdentityUser, UserDto>(user);
+        return user;
     }
+
     private IdentityUser CreateUser(UserCreateDto input)
     {
         return new IdentityUser(GuidGenerator.Create(),input.UserName,input.Email,input.TenantId);
@@ -138,14 +147,19 @@ public class UsersAppService : ApplicationService, IUsersAppService
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                await AddCustomer(input.IdentificationTypes,input.NationalId,input.Surname,user.Id);
-               await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
-                
+                await CreateCustomerWithRoleAsync(user, input);
+
             }
-                
+
 
         }
         user.AddRole(roleId);
+    }
+    [AllowAnonymous]
+    public async Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input)
+    {
+        await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
+        await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
     }
 
     /// <summary>

@@ -1,15 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using SmartParking.Configurations;
 using SmartParking.Entities;
 using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
-using SmartParking.Entities.Invoices;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading;
+using System.Threading.Tasks;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -23,15 +31,6 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using SmartParking.Entities.Subscriptions;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
-using System.Linq.Dynamic.Core;
-using SmartParking.Entities.Payments;
-using SmartParking.Configurations;
 
 
 namespace SmartParking.EntityFrameworkCore;
@@ -62,7 +61,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     //Identity
 
-    
+
     public DbSet<IdentityUser> Users { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<IdentityClaimType> ClaimTypes { get; set; }
@@ -83,7 +82,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Package> Packages { get; set; }
     public DbSet<OrganizationSubscriptions> OrganizationSubscriptions { get; set; }
     public DbSet<GarageCategories> GarageCategories { get; set; }
-   // public DbSet<Subscription> Subscriptions { get; set; }
+    // public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
@@ -114,14 +113,14 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Region> Regions { get; set; }
     public DbSet<State> States { get; set; }
-	public DbSet<VehicleModel> VehicleModels { get; set; }
-	public DbSet<VehicleBrand> VehicleBrands { get; set; }
-	public DbSet<LicenceType> LicenceTypes { get; set; }
-	public DbSet<PlateColor> PlateColors { get; set; }
+    public DbSet<VehicleModel> VehicleModels { get; set; }
+    public DbSet<VehicleBrand> VehicleBrands { get; set; }
+    public DbSet<LicenceType> LicenceTypes { get; set; }
+    public DbSet<PlateColor> PlateColors { get; set; }
 
 
 
-	[NotMapped]
+    [NotMapped]
     DbSet<Volo.Abp.TenantManagement.TenantConnectionString> ITenantManagementDbContext.TenantConnectionStrings { get; }
 
     #endregion
@@ -130,75 +129,81 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     {
 
     }
-
-
     private void HandleDependent(EntityEntry entry)
     {
-        // Mark as deleted and update state to prevent hard delete
         if (entry.Entity is IBaseEntity baseEntity)
         {
             baseEntity.Status = Enums.Status.Deleted;
             entry.State = EntityState.Modified;
         }
     }
-
     private void ProcessEntities()
     {
-        // Iterate over entries marked as Deleted
-       var entryList = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified && e.Entity is IBaseEntity).ToList();
-        for (var k=0;k< entryList.Count;k++ )
+        var modifiedEntities = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Modified && e.Entity is IBaseEntity)
+            .ToList();
+
+        for (int i = 0; i < modifiedEntities.Count; i++)
         {
-            
-            var entry = entryList[k];
-            if (entry.Entity is IBaseEntity baseEntity)
-                if(baseEntity.Status == Enums.Status.Deleted )
-                {
-                    // Soft delete the entity itself
-                    HandleDependent(entry);
+            var entry = modifiedEntities[i];
+            if (entry.Entity is not IBaseEntity baseEntity) continue;
 
-                    // Cascade soft delete to related entities by navigating properties
-                    var navigationEntry = entry.Navigations.ToList();
-                    for (int j=0;j< navigationEntry.Count;j++)
-                    {
+            var statusProperty = entry.Property(nameof(baseEntity.Status));
+            if (!statusProperty.IsModified || (Enums.Status)statusProperty.CurrentValue != Enums.Status.Deleted) continue;
 
-                        // Explicitly load if it's not already loaded
-                        if (!navigationEntry[j].IsLoaded)
-                        {
-                            navigationEntry[j].Load();
-                        }
-                        // Skip if there’s no current value
-                        if (navigationEntry[j].CurrentValue == null) continue;
-                        if (navigationEntry[j].CurrentValue  is Organization) continue;
-
-                        // Check if the navigation is a collection or single reference
-                        if (navigationEntry[j].Metadata.IsCollection)
-                        {
-                            // Handle collection navigation (e.g., one-to-many)
-                            var collectionEntry = (CollectionEntry)navigationEntry[j];
-                            // Copy the collection to avoid modification issues
-                            var dependentEntities = collectionEntry.CurrentValue.Cast<object>().ToList();
-                            for (int i = 0; i < dependentEntities.Count; i++) 
-                            {
-                                HandleDependent(Entry(dependentEntities[i]));
-                            }
-                        }
-                    }
-                }
+            LoadNavigations(entry);
+            //HandleDependent(entry);
         }
-           
     }
+
+    private void LoadNavigations(EntityEntry entry)
+    {
+        var navigations = entry.Navigations.ToList();
+
+        for (int i = 0; i < navigations.Count; i++)
+        {
+            var navigation = navigations[i];
+            if (navigation.IsLoaded) continue;
+
+            navigation.Load();
+
+            if (navigation.CurrentValue == null) continue;
+
+            if (navigation.CurrentValue is Organization) continue;
+
+            if (navigation.Metadata.IsCollection)
+            {
+                HandleCollectionNavigation(navigation);
+            }
+        }
+    }
+
+    private void HandleCollectionNavigation(NavigationEntry navigation)
+    {
+        var collectionEntry = (CollectionEntry)navigation;
+        var dependentEntities = collectionEntry.CurrentValue.Cast<object>().ToList();
+
+        for (int i = 0; i < dependentEntities.Count; i++)
+        {
+            HandleDependent(Entry(dependentEntities[i]));
+        }
+    }
+
+
+
+
 
     public override int SaveChanges()
     {
 
-       // ProcessEntities(); // Apply soft delete cascade
+        //ProcessEntities(); // Apply soft delete cascade
         return base.SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
 
-       // ProcessEntities();
+        //ProcessEntities();
         return await base.SaveChangesAsync(cancellationToken);
     }
     protected override void OnModelCreating(ModelBuilder builder)
@@ -217,22 +222,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
         builder.ApplyConfigurationsFromAssembly(typeof(SmartParkingDbContext).Assembly);
         /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(SmartParkingConsts.DbTablePrefix + "YourEntities", SmartParkingConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
-        //builder.Entity<Customer>()
-        //     .HasMany(c => c.Organizations).WithMany(o => o.Customers)
-        //     .UsingEntity<CustomerOrganization>(
-        //    co =>
-        //    {
-        //        co.ToTable("CustomerOrganizations");
-        //        co.Property(t => t.CustomerId).HasColumnName("CustomerId");
-        //        co.Property(t => t.OrganizationId).HasColumnName("OrganizationId");
-        //    }
-        //    )
-        //    ;      
+
     }
 }

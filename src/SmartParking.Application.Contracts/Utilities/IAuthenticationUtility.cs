@@ -15,4 +15,11 @@ public interface IAuthenticationUtility : ITransientDependency
     Task CheckNationalId(IdentificationTypes identification,string NationalId);
     Task CheckIfNationalIDIsUnique( string NationalId);
     Task CheckPhoneNumberIsValid(string phoneNumber);
+    Task<IdentityUser> CheckPhoneISFound(string phone);
+    /// <summary>
+    /// Generates a JWT token for the specified user.
+    /// </summary>
+    /// <param name="user">The user for whom the token will be generated.</param>
+    /// <returns>A string representing the generated JWT token.</returns>
+    Task<string> GenerateTokenAsync(IdentityUser user);
 }

@@ -6,6 +6,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using SmartParking.Mobile.Otps;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
     private readonly TaqnyatSmsOptionsDto options;
     private readonly HttpClient httpClient;
     private readonly IDataFilter _dataFilter;
+    private readonly SignInManager<Volo.Abp.Identity.IdentityUser> _signInManager;
+    private readonly IAuthenticationUtility _authenticationUtility;
     private readonly Random _random;
 
     public OtpAppService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
@@ -44,7 +47,9 @@ public class OtpAppService : ApplicationService, IOtpAppService
         IHttpContextAccessor httpContext,
         IOptions<TaqnyatSmsOptionsDto> options,
         HttpClient httpClient,
-        IDataFilter dataFilter)
+        IDataFilter dataFilter,
+        SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
+        IAuthenticationUtility authenticationUtility)
     {
         _random = new Random();
         _userRepository = userRepository;
@@ -53,7 +58,9 @@ public class OtpAppService : ApplicationService, IOtpAppService
         _httpContext = httpContext;
         this.options = options.Value;
         this.httpClient = httpClient;
-        this._dataFilter = dataFilter;
+        _dataFilter = dataFilter;
+        _signInManager = signInManager;
+        _authenticationUtility = authenticationUtility;
     }
 
     /// <inheritdoc/>
@@ -216,11 +223,11 @@ public class OtpAppService : ApplicationService, IOtpAppService
                 user?.SetProperty("OtpCode", null);
                 user?.SetProperty("OtpExpirationDate", DateTime.Now);
                 await _userRepository.UpdateAsync(user);
-
+                
                 return Result.Success(
                 new VerifyOtpDto
                 {
-                    AccessToken = await GenerateTokenAsync(user) ?? null,
+                    AccessToken =  await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
                 }, "Verfiy Otp Successfully");
             }
             else
@@ -232,45 +239,6 @@ public class OtpAppService : ApplicationService, IOtpAppService
             }
         }
 
-    }
-
-    /// <summary>
-    /// Generates a JWT token for the specified user.
-    /// </summary>
-    /// <param name="user">The user for whom the token will be generated.</param>
-    /// <returns>A string representing the generated JWT token.</returns>
-    private async Task<string> GenerateTokenAsync(Volo.Abp.Identity.IdentityUser user)
-    {
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var claims = new List<Claim>()
-        {
-            new Claim("userId", user.Id.ToString()),
-            new Claim("given_name", user.UserName),
-            new Claim("email", user.Email),
-            new Claim("role", string.Join(",", roles)),
-            new Claim("tenantid", user.TenantId?.ToString() ?? ""),
-            new Claim("scope", "address email phone roles profile offline_access SmartParking") //replace Qa with yours
-
-        };
-        var options = _openIddictOptions.CurrentValue;
-        var descriptor = new SecurityTokenDescriptor
-        {
-            Audience = "SmartParking", // replace with yours,
-            EncryptingCredentials = options.DisableAccessTokenEncryption
-                ? null
-                : options.EncryptionCredentials.First(),
-            Expires = null,
-            Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
-            IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", // replace with yours,
-            SigningCredentials = options.SigningCredentials.First(),
-            TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
-        };
-
-        var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
-
-        return accessToken;
     }
 
     /// <summary>

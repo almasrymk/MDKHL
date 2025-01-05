@@ -599,7 +599,7 @@
     "CollectedMoney": "النقدية المحصلة",
     "CollectedMoneyToday": "المبالغ المحصلة",
     "Collected": "المحصلة",
-    "Day" : "اليوم",
+    "Day": "اليوم",
     "MustBeGreaterThan": "يجب أن يكون أكبر من",
     "MustBeSmallerThan": "يجب أن يكون اصغر من",
     "PaymentParking": "فاتورة",
@@ -609,6 +609,7 @@
     "Cancelled": "ملغاه",
     "InvoiceId": "رقم المطابقة",
     "Employee": "موظف",
+    "NotAllowed": "غير مسموح"
 
 
 
