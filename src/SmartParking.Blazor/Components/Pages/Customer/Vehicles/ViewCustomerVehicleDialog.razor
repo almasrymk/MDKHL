@@ -18,11 +18,11 @@
             <MudText Class="fw-bold">@L["CustomerVehicle"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["CustomerVehicle"] Data="@itemData" OnClickRowEdit="HandleEdit" ShowEdit="ShowEdit" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
+            <SPDataGrid PageName=@L["CustomerVehicle"] Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" ShowEdit="ShowEdit" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
         </DialogContent>
         <DialogActions>
 
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

@@ -12,7 +12,7 @@
 <div class="modal-wrapper">
     <MudDialog class="mud-modal" >
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Update User"]</MudText>
+            <MudText Typo="Typo.h6">@L["Edit"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
@@ -24,7 +24,7 @@
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Email" Label="@L["Email"]" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" ReadOnly="true" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" ReadOnly="true" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" />
                     </MudItem>
 
                     <MudItem sm="6" Class="d-inline-flex">
@@ -49,6 +49,11 @@
                             </div>
                         
                     </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField T="string"  Disabled
+                                      Label="@L["Role"]" @bind-Value="UserRole" />
+                    </MudItem>
+
                     @if (!updateUserDto.ISNoRole)
                     {
                         <MudItem sm="6" md="6">

@@ -188,11 +188,11 @@ public class VehiclesAppService:
 
 	public override async Task DeleteAsync(int id)
 	{
-		var vehicle = await _repository.FindAsync(id);
-		if (vehicle == null )
-			throw new EntityNotFoundException(typeof(Vehicle), id);
             using (_dataFilter.Disable<IMultiTenant>())
 			{
+		        var vehicle = await _repository.FindAsync(id);
+		        if (vehicle == null )
+		        	throw new EntityNotFoundException(typeof(Vehicle), id);
 
                 await base.DeleteAsync(id);
             }

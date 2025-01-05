@@ -82,10 +82,14 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.ParkingSlots, opt => opt.MapFrom(src => src.Subscription.ParkingSlot))
             .ForMember(dest => dest.NumbersOfGarages, opt => opt.MapFrom(src => src.Subscription.NumbersOfGarages))
             .ForMember(dest => dest.FreeMinutes, opt => opt.MapFrom(src => src.FreeMinutes))
+            .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxIdentificationNumber))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName)).ReverseMap();
-        CreateMap<CreateUpdateOrganiztionDto, Organization>().ReverseMap();
-        CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>().ReverseMap();
-
+        CreateMap<CreateUpdateOrganiztionDto, Organization>()
+            .ForMember(dest => dest.TaxIdentificationNumber, opt => opt.MapFrom(src => src.TaxNumber))
+            .ReverseMap();
+        CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>()
+             .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxNumber))
+            .ReverseMap();
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();

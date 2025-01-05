@@ -53,4 +53,6 @@ public class Organization : BaseEntity
     public int UsedSlots { get; set; }
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
+
+    public string TaxIdentificationNumber { get; set; }
 }

@@ -597,7 +597,7 @@
     "EmptyParking": "عدد أماكن الركن المتاحة",
     "Visitors": "الزوار",
     "CollectedMoney": "النقدية المحصلة",
-    "CollectedMoneyToday": "النقدية المحصلة اليوم",
+    "CollectedMoneyToday": "المبالغ المحصلة",
     "Collected": "المحصلة",
     "Day": "اليوم",
     "MustBeGreaterThan": "يجب أن يكون أكبر من",
@@ -609,7 +609,9 @@
     "Cancelled": "ملغاه",
     "InvoiceId": "رقم المطابقة",
     "Employee": "موظف",
-    "NotAllowed": "غير مسموح"
+    "NotAllowed": "غير مسموح",
+    "AssignRole": " تخصيص وظيفة",
+    "TaxNumber": "الرقم الضريبي"
 
 
 

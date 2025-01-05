@@ -73,11 +73,14 @@
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Label=@L["ArabicName"] />
                         </MudItem>
 
-                        <MudItem sm="6">
+                        <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
-                        <MudItem sm="6">
+                        <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
+                        </MudItem> 
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="TaxIdentificationNumber" Placeholder=@L["Type Here"] Label=@L["TaxNumber"] />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />

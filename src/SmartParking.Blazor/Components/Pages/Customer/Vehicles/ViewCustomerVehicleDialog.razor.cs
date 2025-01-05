@@ -60,7 +60,7 @@ public partial class ViewCustomerVehicleDialog
        
 
            var vehicleDto = await CustomerAppService.GetVehiclesRelatedToSpecificCustomerMdkhl(Guid.Parse(CustomerId));
-       
+        TotalItem = vehicleDto.Count;
         
         CreateTable(vehicleDto);
 
@@ -79,7 +79,7 @@ public partial class ViewCustomerVehicleDialog
         if(CultureInfo.CurrentCulture.Name == "ar")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "ArPlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["LicenceType"], Name = "LicenceType", IsFilterable = false, PropertyName = "LicenceType.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["LicenceType"], Name = "LicenceType", IsFilterable = false, PropertyName = "LicenceType.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["BrandName"], Name = "BrandName", IsFilterable = false, PropertyName = "VehicleBrand.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelName"], Name = "ModelName", IsFilterable = false, PropertyName = "VehicleModel.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
 
@@ -175,7 +175,7 @@ public partial class ViewCustomerVehicleDialog
     {
 
         var id = int.Parse(row.Cells[0].Value);
-        var Name = row.Cells[2].Value;
+        var Name = row.Cells[1].Value;
 
         var parameters = new DialogParameters
         {
