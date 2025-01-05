@@ -588,6 +588,10 @@
     "TaxNumber": "Tax Number",
     "Add NEW": "Add New",
     "Details": "Details",
+    "Export": "Export",
+    "PDF": "PDF",
+    "Excel": "Excel",
+    "CSV": "CSV"
 
 
 

@@ -612,7 +612,11 @@
     "NotAllowed": "غير مسموح",
     "AssignRole": " تخصيص وظيفة",
     "TaxNumber": "الرقم الضريبي",
-    "Details": "تفاصيل"
+    "Details": "تفاصيل",
+    "Export": "تصدير",
+    "PDF": " بي دي إف",
+    "Excel": "إكسل",
+    "CSV": "ملف CSV"
 
 
 
