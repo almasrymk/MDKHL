@@ -46,6 +46,9 @@ public class CreateUpdateOrganiztionDto
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
 
+    public string TaxNumber { get; set; }
+
+
 
 
 }
