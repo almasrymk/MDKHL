@@ -1,12 +1,33 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Humanizer.Localisation;
+using iText.Html2pdf;
+using iText.IO.Font;
+using iText.Kernel.Font;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Annot;
+using iText.Kernel.Pdf.Canvas;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Font;
+using iText.Layout.Properties;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using OfficeOpenXml;
+using Polly;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.DataTable;
 using SmartParking.Localization;
+using SmartParking.Migrations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -14,6 +35,7 @@ public partial class SPDataGrid
 {
     [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
+     public IList<RowDef> Rows { get; set; } = new List<RowDef>();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public bool ShowAdd { get; set; } = true;
@@ -36,10 +58,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowAssign { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
-    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
-    {
-        _stringLocalizer = stringLocalizer;
-    }
+
 
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
@@ -77,6 +96,16 @@ public partial class SPDataGrid
         ["لا يكون فارغـًا"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Rows = Data.Rows;
+        return base.OnInitializedAsync();
+    }
+    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
+    {
+        _stringLocalizer = stringLocalizer;
+    }
     public async Task ClearItem(string key)
     {
 
@@ -195,9 +224,41 @@ public partial class SPDataGrid
             Items = Data.Rows
         };
     }
-    //protected override Task OnParametersSetAsync()
-    //{
-    //    return base.OnParametersSetAsync();
-    //}
+    private async Task ExportToExcel()
+    {
+        CheckPathFound("Excel");
+        string file = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Folders/Excel", $"{Data.Name}.xlsx");
 
+        await GenerateFilesAppService.ExportToExcel(Data, file);
+
+    }
+
+    private static void CheckPathFound(string folderName)
+    {
+        string folder = System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/Folders/{folderName}");
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+    }
+
+    private async Task ExportToCSV()
+    {
+        CheckPathFound("Csv");
+        string file = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Folders/Csv", $"{Data.Name}.csv");
+
+        await GenerateFilesAppService.ExportToExcel(Data, file);
+       
+    }   
+    
+    private async Task ExportToPDF()
+    {
+        CheckPathFound("PDF");
+        string file = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Folders/PDF", $"{Data.Name}.pdf");
+
+        await GenerateFilesAppService.ExportToPdf(Data, file);
+       
+    }
+   
 }
+
