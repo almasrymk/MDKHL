@@ -585,7 +585,9 @@
     "Employee": "Employee",
     "NotAllowed": "Not Allowed",
     "AssignRole": "Assign Role",
-    "TaxNumber": "Tax Number"
+    "TaxNumber": "Tax Number",
+    "Add NEW": "Add New",
+    "Details": "Details",
 
 
 

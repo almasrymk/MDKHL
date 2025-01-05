@@ -8,6 +8,7 @@
 @using System.Globalization
 @using SmartParking.Organizations
 @using SmartParking.Permissions.MyAccount
+@using SmartParking.StringLocalizer
 @using Volo.Abp.Localization
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.SettingManagement
@@ -129,34 +130,8 @@
 
     private string GetTitleForCurrentUri()
     {
-        // Customize titles based on the current URI
-        return CurrentURI switch
-        {
-            "dashboard" => L["Dashboard"],
-            "organizations" => L["Organizations"],
-            "garages" => L["Garages"],
-            "cameras" => @L["Cameras"],
-            "cities" => @L["Cities"],
-            "contact-data" => @L["Contact Data"],
-            "countries" => @L["Countries"],
-            "customers" => @L["Customers"],
-            "garageTransactions" => @L["GarageTransactions"],
-            "invoices" => @L["Invoices"],
-            "licencetypes" => @L["LicenceTypes"],
-            "subscription" => @L["Organization Subscription"],
-            "packages" => @L["Packages"],
-            "packagetypes" => @L["PackageTypes"],
-            "platecolors" => @L["PlateColors"],
-            "regions" => @L["Regions"],
-            "states" => @L["States"],
-            "subscriptions" => @L["Subscriptions"],
-            "subscriptiontypes" => @L["SubscriptionType"],
-            "vehiclebrands" => @L["VehicleBrands"],
-            "vehiclemodels" => @L["VehicleModel"],
-            "profile" => @L["Profile"],
-            "customers/register" => @L["Customers"] + "/" + @L["Add NEW"],
-            _ => L["Dashboard"] // Default title if no match found
-        };
+        return BreadCrumbsRoutes.GetCueerntURLRoute(CurrentURI);
+
     }
     private void ChangeLanguage()
     {

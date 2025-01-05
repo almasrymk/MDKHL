@@ -176,16 +176,7 @@ public partial class EditMyAccount
     }
     private void Cancel()
     {
-        if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
-        {
-
-            Navigation.NavigateTo("/organizations");
-        }
-        else
-        {
             Navigation.NavigateTo("/view-my-account");
-
-        }
     }
     private async Task FetchData()
     {
