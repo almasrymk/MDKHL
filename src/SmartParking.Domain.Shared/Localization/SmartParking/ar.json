@@ -609,7 +609,8 @@
     "Cancelled": "ملغاه",
     "InvoiceId": "رقم المطابقة",
     "Employee": "موظف",
-    "NotAllowed": "غير مسموح"
+    "NotAllowed": "غير مسموح",
+    "AssignRole": " تخصيص وظيفة"
 
 
 

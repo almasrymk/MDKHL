@@ -274,7 +274,7 @@ public partial class Package
             ["Name"] = Name,
 
         };
-        var Subscribers = int.Parse(row.Cells[5].Value);
+        var Subscribers = int.Parse(row.Cells[4].Value);
         if (Subscribers > 0)
         {
             ShowSnackbar("Can't delete package It Has Subscribers", MudBlazor.Severity.Warning);

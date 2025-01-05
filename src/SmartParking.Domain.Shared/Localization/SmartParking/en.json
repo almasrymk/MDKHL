@@ -583,7 +583,8 @@
     "Cancelled": "Cancelled",
     "InvoiceId": "Mapping Number",
     "Employee": "Employee",
-    "NotAllowed": "Not Allowed"
+    "NotAllowed": "Not Allowed",
+    "AssignRole": "Assign Role"
 
 
 

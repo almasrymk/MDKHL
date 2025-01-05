@@ -138,12 +138,10 @@
                         Variant="Variant.Outlined"
                         Class="w-100"
                         Lines="5"
-                        Disabled='true'
                         Label="@L["Description"]" />
 
                     </MudItem>
                     <MudItem sm="12" md="12" Class="d-flex justify-content-between">
-
                         <MudRadioGroup @bind-Value="@Package.Status" Class="d-flex">
                             <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                             <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
@@ -156,8 +154,13 @@
 
         </DialogContent>
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
+            <MudItem sm="12">
+
+            	<div class="d-flex justify-content-between align-items-center">
+                    <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
+                </div>
+            </MudItem>
         </DialogActions>
 
     </MudDialog>
