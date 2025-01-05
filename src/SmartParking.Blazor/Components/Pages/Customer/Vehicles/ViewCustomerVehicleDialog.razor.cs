@@ -60,7 +60,7 @@ public partial class ViewCustomerVehicleDialog
        
 
            var vehicleDto = await CustomerAppService.GetVehiclesRelatedToSpecificCustomerMdkhl(Guid.Parse(CustomerId));
-       
+        TotalItem = vehicleDto.Count;
         
         CreateTable(vehicleDto);
 
