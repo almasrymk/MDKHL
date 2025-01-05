@@ -1752,6 +1752,9 @@ namespace SmartParking.Migrations
                     b.Property<int?>("SubscriptionId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("TaxIdentificationNumber")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -2126,6 +2129,8 @@ namespace SmartParking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("InvoiceId");
 
                     b.ToTable("Payments");
                 });
@@ -4592,7 +4597,13 @@ namespace SmartParking.Migrations
                         .WithMany("Payments")
                         .HasForeignKey("CustomerId");
 
+                    b.HasOne("SmartParking.Entities.Invoices.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId");
+
                     b.Navigation("Customers");
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
