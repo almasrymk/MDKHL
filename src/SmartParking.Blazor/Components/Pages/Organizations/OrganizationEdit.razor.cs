@@ -78,6 +78,8 @@ public partial class OrganizationEdit
     public string ViewSubscriptionArabicName { get; set; }
     public  int FreeMinutes { get; set; }
     public  int Graceperiod { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+
     private bool HasChangeStatusPermission;
     private bool IsPictureChanged;
 
@@ -177,6 +179,7 @@ public partial class OrganizationEdit
             Graceperiod= Graceperiod,
             SubscriptionId= SubscriptionId,
             TenantId=orgTenant,
+            TaxNumber= TaxIdentificationNumber,
         };
 
 
@@ -282,6 +285,7 @@ public partial class OrganizationEdit
         Parkingslot = SelectedSubscription.ParkingSlot;
         Graceperiod = Graceperiod;
         code = organization.Code;
+        TaxIdentificationNumber= organization.TaxNumber;
 
     }
     private async Task GetRegions()
