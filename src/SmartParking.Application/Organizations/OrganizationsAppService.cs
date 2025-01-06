@@ -390,7 +390,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     }
     [RemoteService(isEnabled: false)]
     ///<inheritdoc/>
-    public async Task<Organization> GetOrganizationForCurrentTenat()
+    public async Task<Organization> GetOrganizationForCurrentTenatAsync()
     {
         using (DataFilter.Disable<IMultiTenant>())
         {

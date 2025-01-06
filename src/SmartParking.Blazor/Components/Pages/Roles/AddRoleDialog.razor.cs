@@ -35,7 +35,7 @@ partial class AddRoleDialog
             organizationList=result.Value.ToList();
         }
         else{
-            var org =await OrganizationAppService.GetOrganizationForCurrentTenat();
+            var org =await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             _organizationTenant = org.TenantId;
         }
     }

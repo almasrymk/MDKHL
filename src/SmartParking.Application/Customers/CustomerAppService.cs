@@ -172,7 +172,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <inheritdoc/>
 	public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-		 var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+		 var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
@@ -255,7 +255,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
 
         using (_dataFilter.Disable<IMultiTenant>())
         {

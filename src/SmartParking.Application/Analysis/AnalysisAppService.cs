@@ -9,6 +9,7 @@ using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
+using SmartParking.Organizations;
 using SmartParking.PDF;
 using SmartParking.Repositories;
 using SmartParking.Results;
@@ -34,6 +35,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IRepository<Payment, Guid> _paymentRepository;
     private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
     private readonly IPaymentAnalysisRepository _paymentAnalysisRepository;
+    private readonly IOrganizationsAppService _organizationsAppService;
 
     private class PaymentGroup
     {
@@ -53,7 +55,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
         IRepository<Payment,Guid> paymentRepository,
         IGarageTransactionAnalysisRepository garageTransactionAnalysis,
-        IPaymentAnalysisRepository paymentAnalysisRepository)
+        IPaymentAnalysisRepository paymentAnalysisRepository,
+        IOrganizationsAppService organizationsAppService)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -63,6 +66,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _paymentRepository = paymentRepository;
         _garageTransactionAnalysis = garageTransactionAnalysis;
         _paymentAnalysisRepository = paymentAnalysisRepository;
+        _organizationsAppService = organizationsAppService;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -294,18 +298,17 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
     {
-        var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis();
+        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+        var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(organization.Id);
         var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
         return dataTable;
     }
 
     public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
     {
-        using (_datafilter.Disable<IMultiTenant>())
-        {
-            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis();
+            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(null);
             var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
             return dataTable;
-        }
+        
     }
 }

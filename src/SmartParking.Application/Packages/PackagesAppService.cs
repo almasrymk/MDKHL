@@ -209,7 +209,7 @@ public class PackagesAppService : CrudAppService<
     ///<inheritdoc/>
     public async Task<List<PackageDto>> GetAllOrganizationAsync(CustomerCategoryStatus customerCategory)
     {
-        var organization = await _organizations.GetOrganizationForCurrentTenat();
+        var organization = await _organizations.GetOrganizationForCurrentTenatAsync();
         var queryable = await _repository.GetQueryableAsync();
         queryable = queryable.Include(p => p.PackageType);
         queryable = queryable.Where(x => x.CustomerCategory == customerCategory && x.OrganizationId == organization.Id);

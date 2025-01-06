@@ -344,7 +344,7 @@
         }
         else
         {
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await ChangeSelect(organization.Id);
 
             grid = 6;

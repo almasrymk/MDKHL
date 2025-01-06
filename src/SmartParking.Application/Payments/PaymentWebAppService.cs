@@ -78,7 +78,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var organization = await _organizationsAppService.GetOrganizationForCurrentTenat();
+            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
             var query = await _paymentRepository.GetQueryableAsync();
             query = query.Include(x => x.Customers);
             query = query.Where(x => x.OrganizationId == organization.Id);
@@ -230,7 +230,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     public async Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var organization = await _organizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             // Get the IQueryable<garage> from the repository

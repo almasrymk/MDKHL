@@ -284,7 +284,7 @@ public partial class EditMyAccount
     }
     private async Task ViewSubscription()
     {
-        var Org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+        var Org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
         int? subsId = Org.SubscriptionId;
 
         var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId ?? 0);

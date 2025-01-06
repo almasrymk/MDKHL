@@ -115,7 +115,7 @@ public partial class ContactData
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         // Retrieve the list of organizations from the server
         var contactDto = await ContactInfoAppService.GetContactInfoByOrganization(input, organization.Id);
         TotalItem = (int)contactDto.TotalCount;
@@ -155,7 +155,7 @@ public partial class ContactData
     }
     private async Task CreateContactData()
     {
-        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         var parameters = new DialogParameters
         {
             ["organizationId"] = organization.Id
@@ -166,7 +166,7 @@ public partial class ContactData
     {
         var id = int.Parse(row.Cells[0].Value);
         var contactData = await ContactInfoAppService.GetAsync(id);
-        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         var parameters = new DialogParameters
         {
             ["organizationId"] = organization.Id,

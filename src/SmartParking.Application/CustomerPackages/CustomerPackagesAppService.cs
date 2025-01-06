@@ -229,7 +229,7 @@ public class CustomerPackagesAppService:
 
     public async Task<List<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId)
     {
-        var org = await _organizationsApp.GetOrganizationForCurrentTenat();
+        var org = await _organizationsApp.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
