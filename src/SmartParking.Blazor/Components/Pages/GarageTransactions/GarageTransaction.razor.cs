@@ -211,33 +211,12 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 		private async Task<IDialogReference> OnClickRowView(RowDef row)
 		{
-           
-            Console.WriteLine("View Button");
-
 			var id = int.Parse(row.Cells[0].Value);
-			Console.WriteLine(id);
-
 			var garageTransactionDto = await GarageTransactionsAppService.GetAsync(id);
-
-			var createUpdateGarageTransaction = new CreateUpdateGarageTransactionDto
-            {
-				AccurateTime=garageTransactionDto.AccurateTime,
-				SnapTime=garageTransactionDto.SnapTime,
-				PlateNumber=garageTransactionDto.PlateNumber,
-				VehiclePicture=garageTransactionDto.VehiclePicture,
-				//Type=garageTransactionDto.Type,
-				CameraType=garageTransactionDto.CameraType,
-				CameraId=garageTransactionDto.CameraId,
-				GarageId=garageTransactionDto.GarageId,
-				OrganizationID=garageTransactionDto.OrganizationID,
-				CustomerCategory=garageTransactionDto.CustomerCategory
-			};
-
 			var parameters = new DialogParameters
 			{
-				["GarageTransaction"] = createUpdateGarageTransaction,
+				["GarageTransaction"] = garageTransactionDto,
 			};
-
 
 			return await Dialog.ShowAsync<ViewGarageTransaction>("View GarageTransaction", parameters);
 		}

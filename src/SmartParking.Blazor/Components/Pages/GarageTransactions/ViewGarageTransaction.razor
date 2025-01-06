@@ -1,5 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
+@using SmartParking.GarageTransactionEndPoints
 @using SmartParking.GarageTransactions
 @using SmartParking.Garages
 @using SmartParking.Localization
@@ -11,15 +13,15 @@
 @inject IGarageAppService GaragesAppService
 @inject IOrganizationsAppService OrganizationsAppService
 @inject ICamerasAppService CamerasAppService
+@inject IGarageTransactionEndPointsAppService GarageTransactionAppService
+@inject NavigationManager Navigation
+
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@GarageTransaction.PlateNumber</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 
@@ -40,14 +42,14 @@
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField
-						Value="GarageTransaction.SnapTime.Value.ToString()"
+						Value="GarageTransaction.SnapTime.ToString()"
 						Immediate="true"
 						Disabled=true
 						Label="@L["SnapTime"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField 
-						Value="GarageTransaction.AccurateTime.Value.ToString()"
+						Value="GarageTransaction.AccurateTime.ToString()"
 						Immediate="true"
 						Disabled=true
 						Label="@L["AccurateTime"]" />
@@ -102,7 +104,14 @@
 
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+			<div class="d-flex align-items-center justify-content-between">
+
+				<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+				@if (GarageTransaction.IsIn){
+					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="Checkout"> @L["Checkout"]</MudButton>
+
+				}
+			</div>
 		</DialogActions>
 
 
@@ -137,7 +146,7 @@
 @code {
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
-	[Parameter] public CreateUpdateGarageTransactionDto GarageTransaction { get; set; }
+	[Parameter] public GarageTransactionDto GarageTransaction { get; set; }
 	string cameraCode = "";
 	string OrgName="";
 	string GarageName = "";
@@ -180,14 +189,18 @@
 		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
 		cameraCode = Camera.DeviceId;
 		CustomerCategory = GarageTransaction.CustomerCategory.ToString();
-		Console.WriteLine(GarageTransaction.AccurateTime.Value.ToString());
 		await base.OnInitializedAsync();
-
-
-
 	}
 
+	private async void Checkout(){
+		var result = await GarageTransactionAppService.CustomerCheckoutFromKeeperMobile(GarageTransaction.Id);
+		if(result.IsSuccess){
+			SnackBar.ShowSnackbar(Snackbar, $"{L["Done"]} , {L["Submit"]} {L["Invoice"]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+			await Task.Delay(1000);
+			Navigation.NavigateTo($"/invoices/details/{result.Value.Id}");
+		}
 
+	}
 
 	private void OnCloseViewOnly()
 	{
