@@ -16,30 +16,11 @@ namespace SmartParking.Migrations
                 type: "text",
                 nullable: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_InvoiceId",
-                table: "Payments",
-                column: "InvoiceId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Payments_Invoices_InvoiceId",
-                table: "Payments",
-                column: "InvoiceId",
-                principalTable: "Invoices",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Payments_Invoices_InvoiceId",
-                table: "Payments");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Payments_InvoiceId",
-                table: "Payments");
-
             migrationBuilder.DropColumn(
                 name: "TaxIdentificationNumber",
                 table: "Organizations");
