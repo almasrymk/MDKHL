@@ -3,6 +3,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Repositories;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IDataFilter _datafilter;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Payment, Guid> _paymentRepository;
+    private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
+
     private class PaymentGroup
     {
         public DateTime Date { get; set; }
@@ -40,7 +43,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     public AnalysisAppService(IRepository<Customer, Guid> custeRepo,
         IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
         IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
-        IRepository<Payment,Guid> paymentRepository)
+        IRepository<Payment,Guid> paymentRepository,
+        IGarageTransactionAnalysisRepository garageTransactionAnalysis)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -48,6 +52,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _datafilter = datafilter;
         _garageRepository = GarageRepository;
         _paymentRepository = paymentRepository;
+        _garageTransactionAnalysis = garageTransactionAnalysis;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -127,7 +132,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 NumberOfVisitorParking = query.Sum(c => c.CurrnetCapacityForFree),
                 NumberOfVisitorEmptyParking = query.Sum(c => c.MaxSlotsForFree - c.CurrnetCapacityForFree),
             };
-
+            var Ayn = await _garageTransactionAnalysis.GetGarageTransactionsCustomerAnalysis();
             return result;
         }
        
