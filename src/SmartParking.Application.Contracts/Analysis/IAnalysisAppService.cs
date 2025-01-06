@@ -52,4 +52,14 @@ public interface IAnalysisAppService : IApplicationService
     /// <param name="category"></param>
     /// <returns> datatable of garage transaction</returns>
     Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category);
+    /// <summary>
+    /// Get report of payment collected money daily and monthly for organization
+    /// </summary>
+    /// <returns> datatable of payment collected money daily and monthly </returns>
+    Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+    /// <summary>
+    /// Get report of payment collected money daily and monthly for mdkhl
+    /// </summary>
+    /// <returns> datatable of payment collected money daily and monthly </returns>
+    Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
 }

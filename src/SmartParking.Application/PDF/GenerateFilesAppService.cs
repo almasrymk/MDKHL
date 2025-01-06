@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using SmartParking.DataTable;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -35,17 +36,16 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
 
                 table.Columns.Add(columns.DisplayName, typeof(string));
             }
-            int rowIndex = 1;
-            int colIndex = 1;
+
             foreach (var row in Data.Rows)
             {
-                colIndex = 1;
+                var dataRow = table.NewRow();
                 foreach (var cell in row.Cells)
                 {
                     if (cell.Key == "Id") continue;
-                    worksheet.Cells[rowIndex, colIndex++].Value = cell.Value;
+                    dataRow[cell.Key] = cell.Value; 
                 }
-                rowIndex++;
+                table.Rows.Add(dataRow);
             }
 
             worksheet.Cells["A1"].LoadFromDataTable(table, true);

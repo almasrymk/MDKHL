@@ -86,8 +86,8 @@
                 <div>
 
                     <MudItem Class="d-flex align-items-center">
-                        
-                          
+
+
                         <MudText Class="fw-bold" Typo="Typo.h6">
                             @L["Customers"]
                         </MudText>
@@ -100,7 +100,7 @@
                         @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfCustomerEmptyParking
                     </MudText>
                 </div>
-               
+
                 <MudItem >
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
                         <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))">@L["Excel"]</MudMenuItem>
@@ -116,8 +116,8 @@
 
                     <MudItem Class="d-flex align-items-center">
                         <MudText Class="fw-bold" Typo="Typo.h6">
-                             @L["Employees"]
-                         </MudText>
+                            @L["Employees"]
+                        </MudText>
                     </MudItem>
 
                     <MudText >
@@ -127,7 +127,7 @@
                         @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfEmployeeEmptyParking
                     </MudText>
                 </div>
-              
+
                 <MudItem>
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
                         <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))">@L["Excel"]</MudMenuItem>
@@ -142,9 +142,9 @@
 
                 <div>
                     <MudItem Class=" d-flex align-items-center">
-                    <MudText Class="fw-bold" Typo="Typo.h6">
-                        @L["Visitors"]
-                    </MudText>
+                        <MudText Class="fw-bold" Typo="Typo.h6">
+                            @L["Visitors"]
+                        </MudText>
                     </MudItem>
                     <MudText >
                         @L["CustomersParking"] @getNumberOfParking.NumberOfVisitorParking
@@ -280,7 +280,7 @@
         <MudPaper Class="custom-rounded">
             <MudItem Class="d-flex align-items-start justify-content-end m-3 pt-5">
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                    <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))">@L["Excel"]</MudMenuItem>
+                    <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
                 </MudMenu>
             </MudItem>
             <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
@@ -391,32 +391,62 @@
         };
     }
 
-    
+
+    private async Task ExportData (TableData data )
+    {
+        var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+
+        string file = System.IO.Path.Combine(folderName, $"{data.Name}.xlsx");
+
+        await GenerateFilesAppService.ExportToExcel(data, file);
+
+        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+        await Task.Delay(1000);
+        await OpenNewBlank($"Folders/Excel/{data.Name}.xlsx");
+    }
 
     private async Task ExportToExcel(CustomerCategoryStatus category)
     {
         try
         {
-            var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+
             TableData data;
             if(currenttenant.Id == null)
             {
-                 data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category);
+                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category);
             }
             else
             {
                 data = await AnalysisAppService.ReortGarageTransactionOrganizationAsync(category);
             }
-            
-            string file = System.IO.Path.Combine(folderName, $"{data.Name}.xlsx");
 
-            await GenerateFilesAppService.ExportToExcel(data, file);
+            await ExportData(data);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
 
-            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
-            await Task.Delay(1000);
-            await OpenNewBlank($"Folders/Excel/{data.Name}.xlsx");
+    }
+    
+    private async Task ExportPaymentAnalysisToExcel()
+    {
+        try
+        {
+            TableData data;
+            if(currenttenant.Id == null)
+            {
+                 data = await AnalysisAppService.ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+            }
+            else
+            {
+                data = await AnalysisAppService.ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+            }
+            await ExportData(data);
         }
         catch
         {

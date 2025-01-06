@@ -7,6 +7,7 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.PDF;
 using SmartParking.Repositories;
@@ -32,7 +33,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Payment, Guid> _paymentRepository;
     private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
-    private readonly IGenerateFilesAppService _generateFilesAppService;
+    private readonly IPaymentAnalysisRepository _paymentAnalysisRepository;
 
     private class PaymentGroup
     {
@@ -52,7 +53,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
         IRepository<Payment,Guid> paymentRepository,
         IGarageTransactionAnalysisRepository garageTransactionAnalysis,
-        IGenerateFilesAppService generateFilesAppService)
+        IPaymentAnalysisRepository paymentAnalysisRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -61,7 +62,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _garageRepository = GarageRepository;
         _paymentRepository = paymentRepository;
         _garageTransactionAnalysis = garageTransactionAnalysis;
-        _generateFilesAppService = generateFilesAppService;
+        _paymentAnalysisRepository = paymentAnalysisRepository;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -276,7 +277,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category);
-            var dataTable = CreateDataTableForGarageTransaction(result);
+            var dataTable = CreateTableHelper.CreateDataTableForGarageTransaction(result);
             return dataTable;
         }
         
@@ -285,41 +286,26 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     public async Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category)
     {
         var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category);
-        var dataTable = CreateDataTableForGarageTransaction(result);
+        var dataTable = CreateTableHelper.CreateDataTableForGarageTransaction(result);
         return dataTable;
     }
 
-    private TableData CreateDataTableForGarageTransaction(List<GarageTransactionAnalysis> data)
+   
+
+    public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
-        var tableData = new TableData()
+        var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis();
+        var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
+        return dataTable;
+    }
+
+    public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
+    {
+        using (_datafilter.Disable<IMultiTenant>())
         {
-            Name = "GarageTransactionAnalysis",
-            ShowHeader = true
-        };
-
-
-        
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType",TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text });
-      
-
-        foreach (var item in data)
-        {
-            var rowDef = new RowDef();
-           
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CameraType"), item.CameraType));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), item.PlateNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
-
-
-            tableData.Rows.Add(rowDef);
+            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis();
+            var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
+            return dataTable;
         }
-       return tableData;
     }
 }

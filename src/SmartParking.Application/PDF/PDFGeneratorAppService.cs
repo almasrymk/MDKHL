@@ -24,6 +24,7 @@ using iText.Kernel.Pdf.Colorspace;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using static QRCoder.SvgQRCode;
+using System.Drawing;
 
 
 
@@ -417,7 +418,8 @@ img[style*='width:120px;'] {
         Document document = new Document(pdf);
 
         Style styleBold = new Style();
-        styleBold.SetBold();
+        //TODO: set font weight
+        //styleBold.
 
         Style Center = new Style();
 
@@ -425,13 +427,13 @@ img[style*='width:120px;'] {
           AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(20);
-        Table tableimages = new Table(2).UseAllAvailableWidth(); 
+        Table tableimages = new Table(2).UseAllAvailableWidth();
 
-        Image imageMdkhlLogo = new Image(ImageDataFactory.Create(imageDirectoryPdf))
+        iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
             .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
             .SetWidth(120);
 
-        Image OrgLogo = new Image(ImageDataFactory.Create(OrganizationLogo ?? imageDirectoryPdf))
+        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(OrganizationLogo ?? imageDirectoryPdf))
             .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
             .SetWidth(120);
 
