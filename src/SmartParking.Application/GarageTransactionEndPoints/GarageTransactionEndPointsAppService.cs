@@ -384,13 +384,18 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         bool flag = false;
         var EntranceTime = await FindEntranceTime(GarageTransaction.PlateNumber);
-        if (EntranceTime is null)
+        if (EntranceTime is null || EntranceTime>GarageTransaction.AccurateTime)
         {
             GarageTransaction.IsIn = false;
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
-            _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null ");
+            _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
             _logger.LogError($"{DateTime.Now} ====> Get Response false");
+            if(EntranceTime > GarageTransaction.AccurateTime)
+            {
+                _logger.LogError($"{DateTime.Now} ====>  Entrance Time is graeter exit time  ");
+                _logger.LogError($"{DateTime.Now} ====> Get Response false");
+            }
 
             return await Task.FromResult(false);
 
