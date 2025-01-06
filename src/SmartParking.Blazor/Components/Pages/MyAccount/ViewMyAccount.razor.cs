@@ -141,6 +141,7 @@ public partial class ViewMyAccount
         Code = organization.Code;
         Address = organization.Address;
         FreeMinutes = organization.FreeMinutes;
+        TaxIdentificationNumber = organization.TaxNumber;
 
 
     }
