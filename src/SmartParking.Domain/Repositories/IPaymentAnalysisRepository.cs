@@ -12,5 +12,5 @@ namespace SmartParking.Repositories;
 
 public interface IPaymentAnalysisRepository : IRepository<Payment, Guid>
 {
-    Task<List<PaymentAnalysis>> GetPaymentCollectedMoneyDailyAndMonthlyAnalysis();
+    Task<List<PaymentAnalysis>> GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(int? organizationId);
 }

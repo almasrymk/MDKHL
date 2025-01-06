@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
@@ -30,28 +31,37 @@ public class PaymentAnalysisRepository
     }
 
    
-    public async Task<List<PaymentAnalysis>> GetPaymentCollectedMoneyDailyAndMonthlyAnalysis()
+    public async Task<List<PaymentAnalysis>> GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(int? organizationId)
     {
         var dbContext = await GetDbContextAsync();
-
         var query = from p in dbContext.Payments
+                    where p.OrganizationId == null || p.OrganizationId == organizationId
+                    from user in dbContext.Users
+                    where p.CreatorId == user.Id
+                    from roleId in user.Roles.Select(r => r.RoleId) 
+                    join role in dbContext.Roles 
+                        on roleId equals role.Id 
+                    where role.Name == RolesType.Keeper.ToString() 
                     group p by new
                     {
                         p.CreatorId,
-                        Day = p.CreationTime.Date,
+                        Day = DateTime.Now.Date,
                         Month = new { p.CreationTime.Year, p.CreationTime.Month }
                     } into g
-                    let user = dbContext.Users.Where(u => u.Id == g.Key.CreatorId).Select(u => u.Name).FirstOrDefault()
                     select new PaymentAnalysis
                     {
-                        KeeperName = user,
-                        AmountDaily = g.Where(x => x.CreationTime.DayOfYear == DateTime.Now.DayOfYear).Sum(x => (double)x.Amount),
-                        AmountMonthly = g.Where(x => x.CreationTime.Year == g.Key.Month.Year &&
-                                                     x.CreationTime.Month == g.Key.Month.Month).Sum(x => (double)x.Amount),
+                        KeeperName = dbContext.Users.Where(u => u.Id == g.Key.CreatorId)
+                                          .Select(u => u.Name)
+                                          .FirstOrDefault(),
+                        AmountDaily = g.Where(x => g.Key.Day.DayOfYear == DateTime.Now.DayOfYear).Sum(x => (double)x.Amount),
+                        AmountMonthly = g.Where(x => g.Key.Month.Year == DateTime.Now.Year &&
+                                                      g.Key.Month.Month == DateTime.Now.Month).Sum(x => (double)x.Amount),
                         Day = g.Key.Day.ToString("yyyy-MM-dd"),
                         Month = $"{g.Key.Month.Year}-{g.Key.Month.Month:D2}"
                     };
 
         return await query.ToListAsync();
     }
+
+
 }
