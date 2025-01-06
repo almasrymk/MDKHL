@@ -35,12 +35,12 @@ public class GarageTransactionAnalysisRepository
         this._dataFilter = dataFilter;
     }
 
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsCustomerAnalysis()
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysis(CustomerCategoryStatus category)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
-                    where garageTransaction.CustomerCategory == CustomerCategoryStatus.Customer
+                    where garageTransaction.CustomerCategory == category
                     join vehicle in dbContext.Vehicles
                         on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
                         into vehicleJoin1
@@ -49,18 +49,14 @@ public class GarageTransactionAnalysisRepository
                         on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
                         into vehicleJoin2
                     from v2 in vehicleJoin2.DefaultIfEmpty()
-                    join customer in dbContext.Customers
-                on v1 != null ? v1.CustomerId : (v2 != null ? v2.CustomerId : Guid.Empty) equals customer.Id
-                       into customerJoin
-                    from c in customerJoin.DefaultIfEmpty()
+                    
                     select new GarageTransactionAnalysis
                     {
                        PlateNumber = garageTransaction.PlateNumber,
                        AccurateTime = garageTransaction.AccurateTime,
                        CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
-                       OrganizationName = garageTransaction.Organization.EnglishName,
-                       UserName = c.ArabicName == null ? "unknown" : c.ArabicName
+                       OrganizationName = garageTransaction.Organization.EnglishName
                     };
         return await query.ToListAsync();
     }
