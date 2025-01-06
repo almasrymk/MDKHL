@@ -1,4 +1,6 @@
 ﻿using Abp.Application.Services;
+using SmartParking.DataTable;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,4 +39,17 @@ public interface IAnalysisAppService : IApplicationService
     Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync();
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId);
+
+    /// <summary>
+    /// Get report of garage transaction for mdkhl
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns> datatable of garage transaction</returns>
+    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category);
+    /// <summary>
+    /// Get report of garage transaction for organization
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns> datatable of garage transaction</returns>
+    Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category);
 }

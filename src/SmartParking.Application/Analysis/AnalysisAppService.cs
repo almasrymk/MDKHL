@@ -1,8 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Castle.Core.Resource;
+using Microsoft.EntityFrameworkCore;
+using SmartParking.DataTable;
+using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Enums;
+using SmartParking.Localization;
+using SmartParking.PDF;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using System;
@@ -26,6 +32,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Payment, Guid> _paymentRepository;
     private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
+    private readonly IGenerateFilesAppService _generateFilesAppService;
 
     private class PaymentGroup
     {
@@ -44,7 +51,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
         IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
         IRepository<Payment,Guid> paymentRepository,
-        IGarageTransactionAnalysisRepository garageTransactionAnalysis)
+        IGarageTransactionAnalysisRepository garageTransactionAnalysis,
+        IGenerateFilesAppService generateFilesAppService)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -53,6 +61,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _garageRepository = GarageRepository;
         _paymentRepository = paymentRepository;
         _garageTransactionAnalysis = garageTransactionAnalysis;
+        _generateFilesAppService = generateFilesAppService;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -132,7 +141,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 NumberOfVisitorParking = query.Sum(c => c.CurrnetCapacityForFree),
                 NumberOfVisitorEmptyParking = query.Sum(c => c.MaxSlotsForFree - c.CurrnetCapacityForFree),
             };
-            var Ayn = await _garageTransactionAnalysis.GetGarageTransactionsCustomerAnalysis();
+            
             return result;
         }
        
@@ -260,5 +269,57 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         var query = await _paymentRepository.GetQueryableAsync();
         query = query.Where(_ => _.OrganizationId == organizationId);
         return await GetCollectMoneyToday(query);
+    }
+
+    public async Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category);
+            var dataTable = CreateDataTableForGarageTransaction(result);
+            return dataTable;
+        }
+        
+    }    
+    
+    public async Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category)
+    {
+        var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category);
+        var dataTable = CreateDataTableForGarageTransaction(result);
+        return dataTable;
+    }
+
+    private TableData CreateDataTableForGarageTransaction(List<GarageTransactionAnalysis> data)
+    {
+        // Initialize table data to be displayed, setting the table's name and whether to show the header
+        var tableData = new TableData()
+        {
+            Name = "GarageTransactionAnalysis",
+            ShowHeader = true
+        };
+
+
+        
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType",TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text });
+      
+
+        foreach (var item in data)
+        {
+            var rowDef = new RowDef();
+           
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CameraType"), item.CameraType));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), item.PlateNumber));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
+
+
+            tableData.Rows.Add(rowDef);
+        }
+       return tableData;
     }
 }
