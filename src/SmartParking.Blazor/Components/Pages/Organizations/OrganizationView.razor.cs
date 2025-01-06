@@ -47,6 +47,8 @@ public partial class OrganizationView
     public int NumberOfMobileCustomers { get; set; }
     public int NumberOfOrganizations { get; set; }
     public int SubscriptionSlotNumber { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+
 
     private async Task FetchData()
     {
@@ -107,19 +109,12 @@ public partial class OrganizationView
         NumberOfUsers= organization.NumberOfUsers;
         SubscriptionArName = organization.SubscriptionArabicName;
         SubscriptionEnName= organization.SubscriptionEnglishName;
-        
-
+        TaxIdentificationNumber=organization.TaxNumber;
     }
     protected override async Task OnInitializedAsync()
     {
         await FetchData();
-
-
-
-
         await base.OnInitializedAsync();
-
-
     }
     private void Back()
     {

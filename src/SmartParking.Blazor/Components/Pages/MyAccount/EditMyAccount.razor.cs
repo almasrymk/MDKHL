@@ -76,6 +76,8 @@ public partial class EditMyAccount
     public int? SubscriptionId { get; set; }
     public bool HasChangeStatusPermission { get; set; }
     public bool IsPictureChanged { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+
     public EditMyAccount()
     {
         CreatePolicyName = GaragePermissions.Create;
@@ -138,7 +140,8 @@ public partial class EditMyAccount
             FreeMinutes = FreeMinutes,
             Graceperiod = Graceperiod,
             SubscriptionId = SubscriptionId,
-            OrganizationPicture = OrganizationPicture
+            OrganizationPicture = OrganizationPicture,
+            TaxNumber=TaxIdentificationNumber,
         };
 
         try
@@ -173,16 +176,7 @@ public partial class EditMyAccount
     }
     private void Cancel()
     {
-        if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
-        {
-
-            Navigation.NavigateTo("/organizations");
-        }
-        else
-        {
             Navigation.NavigateTo("/view-my-account");
-
-        }
     }
     private async Task FetchData()
     {
@@ -237,6 +231,7 @@ public partial class EditMyAccount
         FreeMinutes = organization.FreeMinutes;
         Graceperiod = organization.Graceperiod;
         SubscriptionId = organization.SubscriptionId;
+        TaxIdentificationNumber= organization.TaxNumber;
 
     }
     protected override async Task OnInitializedAsync()

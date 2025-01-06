@@ -21,17 +21,28 @@ partial class EditUserDialog
     [Parameter]
     public UpdateUserDto updateUserDto { get; set; }
     private List<IdentityRoleDto> Roles = new List<IdentityRoleDto>();
+    public string UserRole { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Roles = await RoleAppService.GetListByTenant(updateUserDto.TenantId);
+        UserRole = await GetRoleNameAsync(updateUserDto.RoleId);
         await base.OnInitializedAsync();
-        
+
+    }
+    private async Task<string> GetRoleNameAsync(Guid roleId)
+    {
+        var identityRoleDto = await RoleAppService.GetIdentityRoleById(updateUserDto.RoleId);
+        if (identityRoleDto == null) { 
+            return null;
+        }
+        return identityRoleDto.Name;
 
     }
     private void ChangeRole(string roleId)
     {
         updateUserDto.RoleId = Guid.Parse(roleId);
+        UserRole = Roles.Find(x => x.Id == updateUserDto.RoleId).Name;
     }
     public async Task SubmitEdit()
         {

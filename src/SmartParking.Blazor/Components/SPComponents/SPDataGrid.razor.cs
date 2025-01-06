@@ -1,12 +1,25 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Humanizer.Localisation;
+using iText.Html2pdf;
+using iText.IO.Font;
+using iText.Kernel.Font;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Annot;
+using iText.Kernel.Pdf.Canvas;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Font;
+using iText.Layout.Properties;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
+using OfficeOpenXml;
+using Polly;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SmartParking.Utilities;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -14,6 +27,7 @@ public partial class SPDataGrid
 {
     [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
+     public IList<RowDef> Rows { get; set; } = new List<RowDef>();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public bool ShowAdd { get; set; } = true;
@@ -25,6 +39,7 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<RowDef> OnClickButton { get; set; }
     [Parameter] public bool ShowEdit { get; set; } = true;
     [Parameter] public bool ShowButton { get; set; } = true;
+    [Parameter] public bool ShowExport { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
@@ -36,10 +51,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowAssign { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
-    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
-    {
-        _stringLocalizer = stringLocalizer;
-    }
+
 
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
@@ -77,6 +89,16 @@ public partial class SPDataGrid
         ["لا يكون فارغـًا"] = "IsNullOrEmpty"
     };
     private string FilterValue { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Rows = Data.Rows;
+        return base.OnInitializedAsync();
+    }
+    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
+    {
+        _stringLocalizer = stringLocalizer;
+    }
     public async Task ClearItem(string key)
     {
 
@@ -195,9 +217,78 @@ public partial class SPDataGrid
             Items = Data.Rows
         };
     }
-    //protected override Task OnParametersSetAsync()
-    //{
-    //    return base.OnParametersSetAsync();
-    //}
+    private async Task ExportToExcel()
+    {
+        try
+        {
+            var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
 
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/Excel/{Data.Name}.xlsx");
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+        
+
+    }
+
+    private async Task ExportToCSV()
+    {
+        try
+        {
+            var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
+
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+    }
+
+    private async Task OpenNewBlank(string url)
+    {
+       
+            await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
+    private async Task ExportToPDF()
+    {
+        try
+        {
+            var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
+            await GenerateFilesAppService.ExportToPdf(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
+        }
+        catch 
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+       
+       
+    }
+   
 }
+

@@ -6,7 +6,10 @@
 @using SmartParking.Authentication
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.MultiTenancy
+@using Volo.Abp.Validation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentTenant CurrentTenant
 @inject IAuthenticationAppService authentication
@@ -17,7 +20,7 @@
 <h2>@L["Sign In"]</h2>
 <MudContainer Class="d-flex justify-content-center my-5">
     <EditForm Model="@loginModel" Class="d-flex flex-column gap-3 w-75" OnValidSubmit="HandleLogin">
-        <MudTextField @bind-Value="loginModel.UserNameOrEmailAddress" T="string" Placeholder=@L["Type Here"] Label=@L["Mobile/User Name"] Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+        <MudTextField @bind-Value="loginModel.Username" T="string" Placeholder=@L["Type Here"] Label=@L["Mobile/User Name"] Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
         <MudTextField @bind-Value="loginModel.Password" T="string" Placeholder=@L["Type Here"] Label=@L["Password"] InputType="InputType.Password" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
         <div class="d-flex align-items-center justify-content-center gap-1">
             <p class="m-0">@L["Forget Your Password Don't worry .."]</p>
@@ -30,30 +33,55 @@
 </MudContainer>
 @code {
     private MudForm form;
-    private LoginModel loginModel = new LoginModel();
+    private LoginInputDto loginModel = new LoginInputDto();
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string? errorMessage { get; set; }
-    protected override Task OnInitializedAsync()
-    {
-        if(!errorMessage.IsNullOrEmpty())
-        {
-            SnackBar.ShowSnackbar(Snackbar, L["InvalidCredentials"], Severity.Error);
-        }
-        return base.OnInitializedAsync();
+    // [Parameter]
+    // [SupplyParameterFromQuery]
+    // public string? errorMessage { get; set; }
+    // protected override Task OnInitializedAsync()
+    // {
+    //     if(!errorMessage.IsNullOrEmpty())
+    //     {
+    //         SnackBar.ShowSnackbar(Snackbar, L["InvalidCredentials"], Severity.Error);
+    //     }
+    //     return base.OnInitializedAsync();
 
-    }
+    // }
+
     private async void HandleLogin()
     {
+        try
+        {
+            var user = await authentication.LoginForWebAsync(loginModel);
+            if(user != null)
+            {
+                var token =await authentication.GenerateToken(user.Id.ToString());
+                NavigationManager.NavigateTo($"logIn/{token}", true);
+            }
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-        NavigationManager.NavigateTo($"api/Accounts?username={loginModel.UserNameOrEmailAddress}&password={loginModel.Password}", true);
-    }
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
-    public class LoginModel
-    {
-        public string UserNameOrEmailAddress { get; set; }
-        public string Password { get; set; }
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+        
+        //NavigationManager.NavigateTo($"api/Accounts?username={loginModel.UserNameOrEmailAddress}&password={loginModel.Password}", true);
     }
 
 }

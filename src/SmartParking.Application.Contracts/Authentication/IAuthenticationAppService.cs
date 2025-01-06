@@ -109,7 +109,18 @@ public interface IAuthenticationAppService : IApplicationService
 
     Task<Guid> GetCurrentCustomerId();
 
+    /// <summary>
+    /// Generates a JWT token for the specified user ID.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns> The generated JWT token.</returns>
+    Task<string> GenerateToken(string userId);
 
+    /// <summary>
+    /// Checks if a user with the specified ID exists.
+    /// </summary>
+    /// <param name="Id"></param>
+    /// <returns> The user if found; otherwise, null.</returns>
 
-
+    Task<IdentityUser?> IsUserFoundAsync(string Id);
 }

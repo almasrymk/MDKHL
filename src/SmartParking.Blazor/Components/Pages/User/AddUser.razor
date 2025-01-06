@@ -19,13 +19,14 @@
 @inject IDialogService DialogService
 
 
-<PageTitle>@L["Add New User"]</PageTitle>
+<PageTitle>@L["CREATE NEW"]</PageTitle>
 <div class="modal-wrapper">
+        <h3 Color="fw-bold">@L["CREATE NEW"]</h3>
+
+        <MudForm Model="userCreate" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 
 
-
-    <MudForm Model="userCreate" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
-                <MudGrid>
+                <MudGrid Class="mt-2">
                     <MudItem sm="6" md="6">
                     <MudTextField @bind-Value="userCreate.Name"
                               For="@(() => userCreate.Name)"
@@ -131,7 +132,7 @@
                         </MudItem>
                     }
             
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="12" md="12">
 
 
                         <MudRadioGroup @bind-Value="@userCreate.IsActive" Class="d-inline-flex align-content-center">
@@ -143,14 +144,16 @@
                     </MudItem>
 
                 </MudGrid>
-                <MudItem sm="4" Class="mt-5">
+                <MudItem sm="12" Class="mt-5">
 
-                    <div class="d-flex justify-content-between ">
-                      
-                <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitCreate">@L["Create"]</MudButton>
+                    <div class="d-flex justify-content-between "> 
+                       <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitCreate">@L["Create"]</MudButton>
+                       <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelAdd">@L["Back"]</MudButton>
                     </div>
                 </MudItem>
-            </MudForm>
+
+        </MudForm>
+
 
       
 </div>

@@ -59,6 +59,8 @@ public partial class ViewMyAccount
     private string CountryName { get; set; }
     private string RegionName { get; set; }
     private string StateName { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+
     public int Status { get; set; } = 1;
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -139,6 +141,7 @@ public partial class ViewMyAccount
         Code = organization.Code;
         Address = organization.Address;
         FreeMinutes = organization.FreeMinutes;
+        TaxIdentificationNumber = organization.TaxNumber;
 
 
     }

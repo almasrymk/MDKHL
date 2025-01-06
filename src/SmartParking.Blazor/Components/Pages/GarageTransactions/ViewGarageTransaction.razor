@@ -5,6 +5,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Organizations
+@using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject IGarageAppService GaragesAppService
@@ -23,8 +24,8 @@
 				<MudGrid>
 
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.CameraType"
-						For="@(() => GarageTransaction.CameraType)"
+						<MudTextField
+						Value="@L[$"{GarageTransaction.CameraType}"]"
 						Immediate="true"
 						Disabled=true
 						Label="@L["TransactionType"]" />
@@ -51,24 +52,25 @@
 						Disabled=true
 						Label="@L["AccurateTime"]" />
 					</MudItem>
+
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="OrgName"
-						For="@(() => OrgName)"
+						<MudTextField
+						Value="OrgName"
 						Immediate="true"
 						Disabled=true
 						Label="@L["OrganizationName"]" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageName"
-						For="@(() => GarageName)"
+						<MudTextField 
+						Value="GarageName"
 						Immediate="true"
 						Disabled=true
 						Label="@L["Garage Name"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField
-						@bind-Value="CustomerCategory"
+						Value="@L[$"{CustomerCategory}"]"
 						Immediate="true"
 						Disabled=true
 						Label="@L["customer category"]" />
@@ -82,11 +84,6 @@
 						Label="@L["CameraId"]" />
 					</MudItem>
 
-					@* <MudItem sm="12" md="12" class="d-flex justify-center">
-						<div class="zoom-container">
-							<MudImage Class="zoom-image" Src="@GarageTransaction.VehiclePicture" Alt="Vehicle Image" Width="400" Height="300" />
-						</div>
-					</MudItem> *@
 					<MudItem sm="12" md="12" class="d-flex justify-center">
 						<div class="zoom-container"
 						@onmousemove="SetZoomOrigin"
@@ -170,10 +167,16 @@
 	protected override async Task OnInitializedAsync()
 	{
 		var organization = await OrganizationsAppService.GetAsync(GarageTransaction.OrganizationID);
-		OrgName = organization.EnglishName;
 
 		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
-		GarageName = Garage.NameEn;
+		@if (CultureInfo.CurrentCulture.Name == "en")
+		{
+			OrgName = organization.EnglishName;
+			GarageName = Garage.NameEn;
+		}else{
+			OrgName = organization.ArabicName;
+			GarageName = Garage.NameAr;
+		}
 		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
 		cameraCode = Camera.DeviceId;
 		CustomerCategory = GarageTransaction.CustomerCategory.ToString();

@@ -53,13 +53,13 @@
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required
+                            InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>                        
                         
                         <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                            InputType="InputType.Email" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
+                            InputType="InputType.Text" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
                         </MudItem>
 
                         <MudItem sm="6" Class="d-inline-flex">

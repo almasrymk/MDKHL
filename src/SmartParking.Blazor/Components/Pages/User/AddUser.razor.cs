@@ -13,6 +13,7 @@ using SmartParking.Enums;
 using Volo.Abp.Identity;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -182,6 +183,11 @@ public partial class AddUser
                 break;
 
         }
+    }
+    public void CancelAdd()
+    {
+        NavigationManager.NavigateTo("/users", true);
+
     }
 
 

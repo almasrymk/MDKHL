@@ -9,58 +9,52 @@ using System;
 using Volo.Abp.Users;
 using SmartParking.Enums;
 using MudBlazor;
-
+using Microsoft.AspNetCore.Identity;
+using IdentityUser =Volo.Abp.Identity.IdentityUser;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
 [ApiController]
 public class AccountsController : ControllerBase
 {
     private readonly IAuthenticationAppService _authenticationApp;
-    private readonly ITenantAppService _tenantAppService;
     private readonly ICurrentTenant currentTenant;
-    private readonly ICurrentUser _currentuser;
+    private readonly SignInManager<IdentityUser> _signInManager;
+
     public AccountsController(
         IAuthenticationAppService authenticationApp,
-        ITenantAppService tenantAppService,
         ICurrentTenant currentTenant,
-        ICurrentUser currentuser
+        SignInManager<IdentityUser> signInManager
         )
     {
         _authenticationApp = authenticationApp;
-        _tenantAppService = tenantAppService;
         this.currentTenant = currentTenant;
-        _currentuser = currentuser;
+        _signInManager = signInManager;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Login(string username , string password)
+    [HttpGet("/logIn/{token}")]
+    public async Task<IActionResult> Login(string token)
     {
-        
-        //var tenant =await _authenticationApp.GetTenantByNameDtoAsync(username);
-        //currentTenant.Change(tenant?.Id??null);
-        LoginInputDto loginInputDto = new LoginInputDto()
+        try
         {
-            Username = username,
-            Password = password
-        };
-       var userLogin= await _authenticationApp.LoginForWebAsync(loginInputDto);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
 
-        if (_currentuser.IsInRole(RolesType.Customer.ToString())) {
-           // _snackbar.Add("Invalid credentials.", Severity.Error);
-            //await Task.Delay(1000);
-            return await Logout();
-        
-        }
-        if (userLogin is not null)
-        {
+            var claimsIdentity = new ClaimsIdentity(jwtToken.Claims, "Bearer");
+            var userId = claimsIdentity.FindFirst("userId")?.Value;
+            var user = await _authenticationApp.IsUserFoundAsync(userId);
+            currentTenant.Change(user.TenantId);
+            await _signInManager.SignInAsync(user, false);
+
             return LocalRedirect("/");
-            
         }
-        //_snackbar.Add("Invalid credentials.", Severity.Error);
-        //await Task.Delay(1000);
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return LocalRedirect("/Account/Login/?errorMessage=Invalid credentials.");
-        
+        catch
+        {
+           return LocalRedirect($"/Account/Login");
+        }
     }
 
     [HttpGet("/logOut")]

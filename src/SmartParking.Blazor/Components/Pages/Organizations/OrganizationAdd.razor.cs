@@ -68,6 +68,8 @@ public partial class OrganizationAdd
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
     private string NewAddress { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -192,6 +194,7 @@ public partial class OrganizationAdd
             FreeMinutes = FreeMinutes,
             Address = NewAddress,
             Graceperiod = Graceperiod,
+            TaxNumber=TaxIdentificationNumber,
 
         };
        
