@@ -50,6 +50,7 @@ public partial class DetailsInvoice
     public Guid? CustomerId { get; set; }
 
     public bool IsPaid { get; set; }
+    public bool IsPackage { get; set; }
     private string LocalizedInvoiceType { get; set; }
 
 
@@ -107,6 +108,7 @@ public partial class DetailsInvoice
         CustomerId = invoice.CustomerId;
         IsPaid= invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
         LocalizedInvoiceType = L[invoice.InvoiceType];
+        IsPackage=invoice.IsPackage;
 
 
     }
@@ -119,7 +121,7 @@ public partial class DetailsInvoice
         var paymentChekout = new PaymentCheckoutRequestDto
         {
             OrganizationId=OrganizationId,
-            PaymentCategory=PaymentCategory.PaymentParking,
+            PaymentCategory= IsPackage?PaymentCategory.Package:PaymentCategory.PaymentParking,
             InvoiceId= Id,
             PaymentMethod=PaymentMethod.Cash,
             Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
