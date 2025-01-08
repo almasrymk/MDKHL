@@ -163,17 +163,15 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.GarageArabicName, o => o.MapFrom(s => s.Garage.NameAr))
             .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName))
             .ForMember(d => d.OrganizationEnglishName, o => o.MapFrom(s => s.Organization.EnglishName))
+            .ForMember(d => d.OrganizationAddress, o => o.MapFrom(s => s.Organization.Address))
+            .ForMember(d => d.OrganizationTIN, o => o.MapFrom(s => s.Organization.TaxIdentificationNumber))
             .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
             .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
-            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();
-            
+            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();    
 
         CreateMap<Payment, PaymentDto>()
-           .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.InvoiceId.HasValue?src.Invoice.PlateNumber:LocalizationHelper.GetLocalizedString("Package")))
-
-
-        .ReverseMap();
+           .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.InvoiceId.HasValue?src.Invoice.PlateNumber:LocalizationHelper.GetLocalizedString("Package"))).ReverseMap();
 
         CreateMap<Customer, CustomerDto>()
             .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.IdentityUser.Name))
@@ -206,7 +204,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Banner, BannerDto>();
         CreateMap<CreateUpdateBannerDto, Banner>();
 
-        CreateMap<GarageTransaction, GarageTransactionDto>();
+        CreateMap<GarageTransaction, GarageTransactionDto>()
+         .ForMember(d => d.IsMapped, s => s.MapFrom(o => o.IsMapped))
+         .ForMember(d => d.RemainingTime, s => s.MapFrom(o => o.CheckoutMobile.HasValue?Max(DateTime.MinValue, DateTime.MinValue+(DateTime.Now-o.CheckoutMobile.Value)): DateTime.MinValue))
+         .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false));
+
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();        
 
         // unLinked transaction 
@@ -276,5 +278,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
        .ConvertUsing(org => org.Customers.Count);
 
     }
+    private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
+
 }
 

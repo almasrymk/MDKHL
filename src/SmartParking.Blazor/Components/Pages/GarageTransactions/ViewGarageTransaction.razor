@@ -107,9 +107,8 @@
 			<div class="d-flex align-items-center justify-content-between">
 
 				<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-				@if (GarageTransaction.IsIn){
+				@if (GarageTransaction.IsIn && GarageTransaction.CameraType==Enums.CameraType.Entry && GarageTransaction.IsMapped==false){
 					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="Checkout"> @L["Checkout"]</MudButton>
-
 				}
 			</div>
 		</DialogActions>
