@@ -271,7 +271,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
 
-             entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn && t.CheckoutMobile==null);
+             entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn);
 
         }
 

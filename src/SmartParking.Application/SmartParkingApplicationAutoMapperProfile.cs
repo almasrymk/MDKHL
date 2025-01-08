@@ -205,11 +205,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateBannerDto, Banner>();
 
         CreateMap<GarageTransaction, GarageTransactionDto>()
-         .ForMember(d => d.IsMapped, s => s.MapFrom(o => o.IsMapped))
-         .ForMember(d => d.RemainingTime, s => s.MapFrom(o => o.CheckoutMobile.HasValue?Max(DateTime.MinValue, DateTime.MinValue+(DateTime.Now-o.CheckoutMobile.Value)): DateTime.MinValue))
-         .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false));
+        .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false)).ReverseMap();
 
-        CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>();        
+        CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
+        CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();        
 
         // unLinked transaction 
         CreateMap<UnLinkedTransaction, UnLinkedTransactionDto>();
@@ -279,6 +278,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
     }
     private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
+    private DateTime AddGracePeriodToCheckoutTime(DateTime a , int GracePeriod)
+    {
+        DateTime temporary = a;
+        temporary.AddMinutes(GracePeriod);
+        return temporary;
+    }
+
 
 }
 

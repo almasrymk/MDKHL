@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using AutoMapper.Internal.Mappers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -747,7 +749,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return customerId;
         }
     }
-    private async Task<GarageTransactionDto> GetTransactionById(int garagetransactionId)
+    private async Task<GarageTransaction> GetTransactionById(int garagetransactionId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -756,40 +758,38 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
             if (transaction != null)
             {
-
-                var transactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(transaction);
-
-                return transactionDto;
+                return transaction;
             }
-            throw new EntityNotFoundException($"Transaction with id {garagetransactionId} is not found");
-
-
+            throw new EntityNotFoundException($"Transaction with id {transaction} is not found");
         }
-
     }
     public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromHisMobile(int garageTransactionId)
     {
         var customerID = await GetCurrentCustomerId();
         var Customer = await GetCustomer(customerID.ToString());
         var result= await InitiateGarageTransaction(garageTransactionId);
-        var invoice = await CheckoutMobileProcessWithoutSave(customerID, result.Item2, result.Item1, Customer);
+        var invoice = await CheckoutMobileProcessWithoutSave(customerID, result.Item2.AccurateTime.Value, result.Item1, Customer);
         return invoice;
 
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int garageTransactionId)
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
+        if (result.Item2.CheckoutMobile != null)
+        {
+            throw new Exception("Transaction Already Checked-Out");
+        }
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
         invoice.Value.InvoiceType = InvoiceType.Paid;
-        return await SaveTransactionWithInvoice(invoice,result.Item1);
+        UpdateEntryTransactionCheckouFromMobile(result.Item2);
+        return await SaveTransactionWithInvoice(invoice, result.Item1);
     }
-    private async Task<(CreateUpdateGarageTransactionDto,DateTime)> InitiateGarageTransaction(int garageTransactionId)
+
+
+
+    private async Task<(CreateUpdateGarageTransactionDto,GarageTransaction)> InitiateGarageTransaction(int garageTransactionId)
     {
         var entryGarageTransaction = await GetTransactionById(garageTransactionId);
-        if(entryGarageTransaction.IsMapped || entryGarageTransaction.CheckoutMobile.HasValue)
-        {
-            throw new Exception("Transaction Is already mapped");
-        }
         var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
        var  exitGarageTransaction = new CreateUpdateGarageTransactionDto
         {
@@ -805,32 +805,49 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             VehiclePicture = entryGarageTransaction.VehiclePicture,
             CameraType = CameraType.Exit
        };
-        return (exitGarageTransaction, entryGarageTransaction.AccurateTime);
+        return (exitGarageTransaction, entryGarageTransaction);
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
+        if (result.Item2.CheckoutMobile != null)
+        {
+            throw new Exception("Transaction Already Checked-Out");
+        }
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
+        invoice.Value.InvoiceType = InvoiceType.Paid;
+        UpdateEntryTransactionCheckouFromMobile(result.Item2);
+        
         return await SaveTransactionWithInvoice(invoice, result.Item1);
+
     }
+
+    private async void UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction)
+    {
+        entryGarageTransaction.CheckoutMobile = DateTime.Now;
+        entryGarageTransaction.IsPending = true;
+        await _garageTransactionRepoistory.UpdateAsync(entryGarageTransaction,true);
+
+    }
+
     public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId)
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
         var org = await GetOrganization(result.Item1.OrganizationID);
-        int totalHours = _calculationsEndPointAppService.CalculateTime(result.Item2, (DateTime)result.Item1.AccurateTime, org.FreeMinutes);
+        int totalHours = _calculationsEndPointAppService.CalculateTime(result.Item2.AccurateTime.Value, (DateTime)result.Item1.AccurateTime, org.FreeMinutes);
         var customer = await CheckCustomer(result.Item1.PlateNumber);
         if (customer == null) {
 
-            decimal price = await CalcInvoice(result.Item2, totalHours, result.Item1);
-            return await GenrateInvoiceNumberAndInitiateInvoice(result.Item2, null, result.Item1, totalHours, price, false);
+            decimal price = await CalcInvoice(result.Item2.AccurateTime.Value, totalHours, result.Item1);
+            return await GenrateInvoiceNumberAndInitiateInvoice(result.Item2.AccurateTime.Value, null, result.Item1, totalHours, price, false);
 
         }
         var result2 = await GetCustomerWithItsFirstActivePackage(result.Item1, customer);
 
         return (result2.Item2) switch
         {
-            (null) => await CalculateInvoiceForCustomerWithoutPackage(result.Item2, totalHours, result2.Item1, result.Item1, CustomerCategoryStatus.Customer),
-            (not null) => await CalculateInvoiceForCustomerPackage(result.Item2, org, result2.Item1, result2.Item2, result.Item1, totalHours, (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), result2.Item2.Package.CustomerCategory)),
+            (null) => await CalculateInvoiceForCustomerWithoutPackage(result.Item2.AccurateTime.Value, totalHours, result2.Item1, result.Item1, CustomerCategoryStatus.Customer),
+            (not null) => await CalculateInvoiceForCustomerPackage(result.Item2.AccurateTime.Value, org, result2.Item1, result2.Item2, result.Item1, totalHours, (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), result2.Item2.Package.CustomerCategory)),
         };
 
     }

@@ -125,8 +125,6 @@ public partial class DetailsInvoice
             PaymentMethod=PaymentMethod.Cash,
             Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
             CustomerId= CustomerId
-
-
         };
         var payment =await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         if (payment != null) {
