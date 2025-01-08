@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using SmartParking.Entities.Invoices;
 using SmartParking.Payments;
 using FluentValidation;
+using SmartParking.Blazor.Components.Shared;
 
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
@@ -128,7 +129,8 @@ public partial class DetailsInvoice
         };
         var payment =await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         if (payment != null) {
-            Snackbar.Add("Payment Done Successfully ",MudBlazor.Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+            
             await Task.Delay(1000);
             Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
         }

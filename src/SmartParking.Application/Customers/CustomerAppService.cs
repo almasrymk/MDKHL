@@ -109,7 +109,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }

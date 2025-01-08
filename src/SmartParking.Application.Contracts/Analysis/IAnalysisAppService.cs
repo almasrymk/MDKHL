@@ -35,8 +35,8 @@ public interface IAnalysisAppService : IApplicationService
 
     Task<GetNumberOfParkingAndEmptyParkingDto> GetNumberOfParkingSlotsAndEmptySolts(int organizationId);
 
-    Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync();
-    Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId);
+    Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync();
+    Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync();
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId);
 
