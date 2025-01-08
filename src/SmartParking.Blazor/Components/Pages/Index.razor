@@ -336,7 +336,7 @@
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
 
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyMdkhlAsync();
-            showDataGraph(dataForSeries.Days, dataForSeries.TotalAmounts);
+            showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts, dataForSeries.InvoiceTotalAmounts, dataForSeries.PackageTotalAmounts);
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
             Day = dataForToday.Day;
@@ -350,7 +350,7 @@
             grid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
-            showDataGraph(dataForSeries.Days, dataForSeries.TotalAmounts);
+            showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts,dataForSeries.InvoiceTotalAmounts,dataForSeries.PackageTotalAmounts);
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
             Day = dataForToday.Day;
@@ -382,12 +382,14 @@
 
     }
 
-    private void showDataGraph(string[] days, double[] totalAmounts)
+    private void showDataGraph(string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts)
     {
         XAxisLabels = days;
         Series = new List<ChartSeries>()
         {
-            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("CollectedMoney"), Data =  totalAmounts}
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("TotalCollectedMoney"), Data =  allTotalAmounts},
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("InvoiceCollectedMoney"), Data =  invoiceTotalAmounts},
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("PackageCollectedMoney"), Data =  packageTotalAmounts}
         };
     }
 

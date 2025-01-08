@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,11 @@ public class VehiclesAppService:
         {
             input.ArPlateNumber = input.EnPlateNumber=null;
             throw new InvalidOperationException("Plate Numbers are Missing");
+        }
+        
+        if(VehicleValidation.ValidateYear(input.ModelYear) is not null)
+        {
+            throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
         }
         await CheckVehicleIfFound(input);
 
@@ -123,6 +129,10 @@ public class VehiclesAppService:
             {
                 throw new InvalidOperationException("licence type not found");
 
+            }
+            if (VehicleValidation.ValidateYear(input.ModelYear) is not null)
+            {
+                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
             }
             var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.FullArPlate && x.EnPlateNumber == input.FullEnPlate);
             input.PlateColorId = licenceType.PlateColorId;

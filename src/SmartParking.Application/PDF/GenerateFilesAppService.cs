@@ -35,7 +35,7 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
             System.Data.DataTable table = new System.Data.DataTable();
             foreach (var columns in Data.Columns)
             {
-                if (columns.DisplayName == "Id")
+                if (columns.Name == "Id")
                     continue;
 
                 table.Columns.Add(columns.DisplayName, typeof(string));
