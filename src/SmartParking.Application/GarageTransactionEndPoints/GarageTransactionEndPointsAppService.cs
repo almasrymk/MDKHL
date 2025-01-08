@@ -809,7 +809,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
     {
-        var transaction = tra
         var result = await InitiateGarageTransaction(garageTransactionId);
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
         return await SaveTransactionWithInvoice(invoice, result.Item1);
