@@ -42,13 +42,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         public DateTime Date { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
         public double TotalAmount { get; set; }
+        public PaymentCategory PaymentCategory { get; set; }
     }
 
     private class FinalResult
     {
         public DateTime Day { get; set; }
         public string DayOfWeek { get; set; }
-        public double TotalAmount { get; set; }
+        public double AllTotalAmount { get; set; }
+        public double PackageTotalAmount { get; set; }
+        public double InvoiceTotalAmount { get; set; }
+        
+
     }
     public AnalysisAppService(IRepository<Customer, Guid> custeRepo,
         IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
@@ -153,7 +158,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
 
 
-    public async Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync()
+    public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync()
     {
         DateTime now = DateTime.Now;
         DateTime oneWeekAgo = now.AddDays(-7);
@@ -168,7 +173,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return PrepareResult(finalResult, culture);
     }
     
-    public async Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId)
+    public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId)
     {
         DateTime now = DateTime.Now;
         DateTime oneWeekAgo = now.AddDays(-7);
@@ -186,16 +191,19 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     private async Task<List<PaymentGroup>> GetPaymentsInLastWeek(IQueryable<Payment> query, DateTime oneWeekAgo)
     {
-        return await query
+        var result= 
+            await query
             .Where(payment => payment.CreationTime >= oneWeekAgo.Date)
-            .GroupBy(payment => payment.CreationTime.Date)
+            .GroupBy(payment => new { payment.CreationTime.Date , payment.PaymentCategory })
             .Select(group => new PaymentGroup
             {
-                Date = group.Key,
-                DayOfWeek = group.Key.DayOfWeek,
+                Date = group.Key.Date,
+                PaymentCategory = group.Key.PaymentCategory,
+                DayOfWeek = group.Key.Date.DayOfWeek,
                 TotalAmount = group.Sum(payment => (double) payment.Amount)
             })
             .ToListAsync();
+        return result;
     }
 
     private List<DateTime> GetAllDays(DateTime oneWeekAgo)
@@ -215,7 +223,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     {
         var firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
 
-        return allDays
+        var finalResult = allDays
             .GroupJoin(
                 payments,
                 day => day,
@@ -224,26 +232,33 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 {
                     Day = day,
                     DayOfWeek = day.ToString("dddd"),
-                    TotalAmount = paymentGroup.Sum(p => p.TotalAmount)
+                    AllTotalAmount = paymentGroup.Sum(p => p.TotalAmount ),
+                    InvoiceTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.PaymentParking).Sum(p => p.TotalAmount ),
+                    PackageTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.Package).Sum(p => p.TotalAmount )
                 })
             .GroupBy(d => d.DayOfWeek)
             .Select(g => g.OrderByDescending(d => d.Day).First())
             .OrderBy(d => ((int)d.Day.DayOfWeek - (int)firstDayOfWeek + 7) % 7)
             .ToList();
+        return finalResult;
     }
 
-    private (string[] days, double[] totalAmounts) PrepareResult(List<FinalResult> finalResult, CultureInfo culture)
+    private (string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts) PrepareResult(List<FinalResult> finalResult, CultureInfo culture)
     {
         string[] days = finalResult.Select(r => r.DayOfWeek).ToArray();
-        double[] totalAmounts = finalResult.Select(r => (double)r.TotalAmount).ToArray();
+        double[] allTotalAmounts = finalResult.Select(r => (double)r.AllTotalAmount).ToArray();
+        double[] invoiceTotalAmounts = finalResult.Select(r => (double)r.InvoiceTotalAmount).ToArray();
+        double[] packageTotalAmounts = finalResult.Select(r => (double)r.PackageTotalAmount).ToArray();
 
         if (culture.Name == "ar")
         {
             Array.Reverse(days);
-            Array.Reverse(totalAmounts);
+            Array.Reverse(allTotalAmounts);
+            Array.Reverse(invoiceTotalAmounts);
+            Array.Reverse(packageTotalAmounts);
         }
 
-        return (days, totalAmounts);
+        return (days, allTotalAmounts, invoiceTotalAmounts, packageTotalAmounts);
     }
 
     public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync()
@@ -264,9 +279,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
 
             DayOfWeek = result?.CreationTime.ToString("dddd", culture),
-            TotalAmount = query.Sum(payment => (double)payment.Amount)
+            AllTotalAmount = query.Sum(payment => (double)payment.Amount)
         };
-        return (finalResult?.DayOfWeek?.ToString(), finalResult?.TotalAmount);
+        return (finalResult?.DayOfWeek?.ToString(), finalResult?.AllTotalAmount);
     }
 
     public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId)
