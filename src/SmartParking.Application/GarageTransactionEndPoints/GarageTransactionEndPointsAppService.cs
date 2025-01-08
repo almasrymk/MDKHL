@@ -786,6 +786,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<(CreateUpdateGarageTransactionDto,DateTime)> InitiateGarageTransaction(int garageTransactionId)
     {
         var entryGarageTransaction = await GetTransactionById(garageTransactionId);
+        if(entryGarageTransaction.IsMapped || entryGarageTransaction.CheckoutMobile.HasValue)
+        {
+            throw new Exception("Transaction Is already mapped");
+        }
         var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
        var  exitGarageTransaction = new CreateUpdateGarageTransactionDto
         {
@@ -805,6 +809,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
     {
+        var transaction = tra
         var result = await InitiateGarageTransaction(garageTransactionId);
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
         return await SaveTransactionWithInvoice(invoice, result.Item1);
