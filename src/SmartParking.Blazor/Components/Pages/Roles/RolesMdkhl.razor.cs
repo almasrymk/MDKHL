@@ -128,7 +128,7 @@ public partial class RolesMdkhl
         foreach (var item in rolesDto.Items)
         {
             var rowDef = new RowDef();
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Id", item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Id"], item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Name"], item.Name));
             if(CultureInfo.CurrentCulture.Name == "ar")
             {
