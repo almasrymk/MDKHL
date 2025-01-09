@@ -66,7 +66,7 @@
                     <MudImage Src="@Picture" Class="bg_w_foto " Width="200" Height="200" />
                     <div class="d-flex flex-column align-items-center">
                         <MudText Class="fw-bold">@(CultureInfo.CurrentCulture.Name == "en"?customerDataDto.FullName:customerDataDto.ArabicName)</MudText>
-                        <MudText>@customerDataDto.Email ?? @customerDataDto.PhoneNumber</MudText>
+                        <MudText>@(customerDataDto.Email is null ? customerDataDto.PhoneNumber : customerDataDto.Email)</MudText>
                     </div>
                 </div>
                 <MudGrid Class="mt-3">
