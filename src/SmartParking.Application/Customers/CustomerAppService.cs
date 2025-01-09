@@ -179,6 +179,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = query.Include(c => c.IdentityUser);
 			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
             if (!input.Sorting.IsNullOrEmpty())
             {

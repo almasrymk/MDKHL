@@ -80,8 +80,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         {
             var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
             var query = await _paymentRepository.GetQueryableAsync();
-            query = query.Include(x => x.Customers);
-            query = query.Where(x => x.OrganizationId == organization.Id);
+            query=query.OrderByDescending(x=>x.CreationTime);
+            query = query.Include(x => x.Customers).ThenInclude(c=>c.IdentityUser);
+            query = query.Include(x => x.Invoice);
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -95,7 +96,6 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 }
 
             }
-            query=query.OrderByDescending(x=>x.Id);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
