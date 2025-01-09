@@ -84,7 +84,7 @@ partial class Roles
             SearchingTerm = termSearch 
         };
 
-        var contactInfosDto = await RoleAppService.SearchByTenant(input,CurrentTenant.Id);
+        var contactInfosDto = await RoleAppService.SearchOrganization(input,CurrentTenant.Id);
 
         TotalItem = (int)contactInfosDto.TotalCount;
         CreateTable(contactInfosDto);
@@ -99,7 +99,7 @@ partial class Roles
 
        CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-
+        pageInfo.SortColumn = "Role.Id";
         var input = new PagedAndSortedResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -107,7 +107,7 @@ partial class Roles
             Sorting = pageInfo.SortColumn
         };
 
-        var RolesDto =  await RoleAppService.GetListAndPagedByTenant(input, CurrentTenant.Id);
+        var RolesDto =  await RoleAppService.GetListAndPagedOrganization(input, CurrentTenant.Id);
 
         
         TotalItem = (int)RolesDto.TotalCount;
