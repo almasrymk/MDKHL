@@ -1,5 +1,6 @@
 ﻿@page "/customers/edit/{customerId}"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Localization
@@ -17,6 +18,8 @@
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
 @inject IDialogService DialogService
+@inject IUsersAppService UsersAppService
+
 
 <PageTitle>@L["Edit"]</PageTitle>
 <div>

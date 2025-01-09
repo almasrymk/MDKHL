@@ -29,26 +29,21 @@ public partial class CustomerView
     public string customerId { get; set; }
     public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
     public string Picture { get; set; }
+    public Guid IdentityUserId { get; set; }
     protected async override Task OnInitializedAsync()
     {
         await Fetch();
 
-        if (CurrentTenant.Id is null)
-        {
-            Picture = "images/MDHKL_04.png";
+        
+            Picture =await UsersAppService.GetImage(IdentityUserId) ?? "images/users/149071.png";
 
-        }
-        else
-        {
-            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
-
-        }
+       
     }
 
     private async Task Fetch()
     {
         var customer = await CustomerAppService.GetAsync(Guid.Parse(customerId));
-
+        IdentityUserId= customer.IdentityId;
         customerDataDto = new CreateUpdateCustomerDto
         {
             ArabicName = customer.ArabicName,
