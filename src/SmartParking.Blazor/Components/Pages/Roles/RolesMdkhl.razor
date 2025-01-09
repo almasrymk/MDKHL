@@ -1,0 +1,32 @@
+﻿@page "/roles/mdkhl"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Pages.User
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Permissions.IdentityPermissions
+@using Volo.Abp.Identity
+@using Volo.Abp.MultiTenancy
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ICurrentTenant currrentTenant
+@inject IOrganizationsAppService OrganizationsAppService
+@inject IRoleAppService RoleAppService
+ @inject IAuthorizationService AuthorizationService
+@attribute [Authorize]
+@inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
+
+
+
+
+<PageTitle>@L["Roles"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Roles"]</MudText>
+
+<SPDataGrid PageName=@L["Roles"] Data="@itemData" ShowAdd="HasCreatePermission" ShowButton="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions).Result" OnClickButton="AddPermission" ShowView="AuthorizationService.IsGrantedAsync(CustomIdentityPermissions.Roles.ViewPermissions).Result" OnClickRowView="HandleView" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
+
+
+<PermissionRolesManagementModal @ref="PermissionRolesManagementModal" />
+<ViewPermissionRoleModal @ref="ViewPermissionRolesManagementModal" />
+
