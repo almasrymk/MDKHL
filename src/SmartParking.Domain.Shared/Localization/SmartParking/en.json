@@ -594,7 +594,9 @@
     "CSV": "CSV",
     "Done": "Done",
     "InvoiceCollectedMoney": "Invoice Collected Money",
-    "PackageCollectedMoney": "Package Collected Money"
+    "PackageCollectedMoney": "Package Collected Money",
+    "Send": "Send"
+
 
 
 
