@@ -14,6 +14,7 @@ using SmartParking.Enums;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -23,27 +24,22 @@ public partial class UpdateCustomerDialog
     public string customerId { get; set; }
     public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
     public string Picture { get; set; }
+    public Guid IdentityUserId { get; set; }
     protected async override Task OnInitializedAsync()
     {
         await Fetch();
-        
-        if (CurrentTenant.Id is null)
-        {
-            Picture = "images/MDHKL_04.png";
 
-        }
-        else
-        {
-            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
+        Picture = await UsersAppService.GetImage(IdentityUserId) ?? "images/users/149071.png";
 
-        }
     }
 
     private async Task Fetch()
     {
         var customer = await CustomerAppService.GetAsync(Guid.Parse(customerId));
-       
-         customerDataDto = new CreateUpdateCustomerDto
+        IdentityUserId = customer.IdentityId;
+
+
+        customerDataDto = new CreateUpdateCustomerDto
         {
             ArabicName = customer.ArabicName,
             Email = customer.Email,

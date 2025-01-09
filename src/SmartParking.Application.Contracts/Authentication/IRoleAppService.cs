@@ -15,8 +15,10 @@ public interface IRoleAppService: IApplicationService
     Task<List<IdentityRoleDto>> GetListByTenant(Guid? tenantId);
     Task<IdentityRoleDto> Create(IdentityRoleCreateDto roleCreateDto,[Optional] Guid? tenantId);
     Task<IdentityRoleDto> Update(Guid Id, IdentityRoleUpdateDto updateDto);
-    Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedByTenant(PagedResultRequestDto input,Guid? tenantId);
-    Task<PagedResultDto<IdentityRoleDto>> SearchByTenant(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
+    Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedResultRequestDto input,Guid? tenantId);
+    Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<IdentityRoleDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
+    Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input);
     Task<IdentityRoleDto> GetRoleById(Guid Id);
     Task<IdentityRole> GetIdentityRoleById(Guid Id);
     Task AssignRole(Guid UserId, Guid RoleId);

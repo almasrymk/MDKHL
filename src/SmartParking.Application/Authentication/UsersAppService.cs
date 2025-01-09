@@ -537,9 +537,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IdentityUser? user = await IsUserFound(id);
             var imagePath =await FileHelper.SaveImageFromBase64Async(image, PathHelper.UserFolder);
             user?.SetProperty("Image", imagePath);
-
+            
             await _userManager.UpdateAsync(user);
-            return ObjectMapper.Map<IdentityUser, UserDto>(user);
+            var userMap = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            userMap.Image = user.GetProperty<string>("Image");
+            return userMap;
         }
     }
 
@@ -596,6 +598,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
         {
 
             return await _userRepository.GetUserWithRolesForMdkhlAsync(userId);
+        }
+    }
+
+    public async Task<string?> GetImage(Guid? userId)
+    {
+     using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(userId);
+            return user?.GetProperty<string>("Image");
         }
     }
 }

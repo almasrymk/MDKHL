@@ -11,6 +11,7 @@ using SmartParking.Organizations;
 using SmartParking.Permissions.OrganizationPermissions;
 using SmartParking.Subscriptions;
 using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -357,6 +358,16 @@ public partial class OrganizationEdit
             ["organizationId"] = id
         };
         var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
+    }
+    private void FirstHourChange(decimal FirstHourValue)
+    {
+        FirstHourPrice = FirstHourValue;
+        var value = OrganizationValidtions.FreeMinutesAndFirstHourRelation(FirstHourValue);
+        if (value.HasValue)
+        {
+            FreeMinutes = value.Value;
+        }
+
     }
     private async Task ViewCustomers()
     {

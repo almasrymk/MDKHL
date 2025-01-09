@@ -268,6 +268,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
     private string GenerateRandomOtp()
     {
+        
         return _random.Next(0, (int)Math.Pow(10, OtpLength)).ToString($"D{OtpLength}");
     }
 

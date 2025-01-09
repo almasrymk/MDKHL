@@ -63,8 +63,13 @@
                         {
                         <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>
                         }
-                        @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Roles.Default).Result){
+                        @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Roles.Default).Result && currenttenant.Id is not null){
+                           
                         <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink>
+                        }                        
+                        @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Roles.Default).Result && currenttenant.Id is null){
+
+                            <MudNavLink Href="/roles/mdkhl" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink>
                         }
                     </MudNavGroup>
                 }

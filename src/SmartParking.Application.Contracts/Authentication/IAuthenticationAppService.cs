@@ -79,7 +79,7 @@ public interface IAuthenticationAppService : IApplicationService
     /// </summary>
     /// <param name="input">The input containing the current and new passwords.</param>
     /// <returns>A <see cref="BaseResultDto"/> indicating the result of the password change operation.</returns>
-    Task<bool> SetNewPasswordWeb(string input, string NewPassword);
+    Task<bool> SetNewPasswordWeb(string UserName, string NewPassword);
     Task<UserDataDto> UpdateUser(string phone, string password);
     /// <summary>
     /// Method used to generate toke for user.
@@ -87,7 +87,7 @@ public interface IAuthenticationAppService : IApplicationService
     /// </summary>
     /// <param name="email">Email for user that needs to generate its token.</param>
     /// <returns>Boolean describes status of process.</returns>
-    Task<bool> GenerateTokeForUser(string email);
+    Task<bool> GenerateOTPForUser(string UserName);
 
     /// <summary>
     /// Method sends email with otp to user email.
@@ -95,7 +95,7 @@ public interface IAuthenticationAppService : IApplicationService
     /// <param name="Email">UserEmail</param>
     /// <param name="Otp">Otp</param>
     /// <returns>flag</returns>
-    Task<bool> SendEmail(string Email, string Otp);
+    Task<bool> SendSms(string phoneNumber, string message);
 
 
     /// <summary>
@@ -105,7 +105,7 @@ public interface IAuthenticationAppService : IApplicationService
     /// <param name="OTP">Otp user have written</param>
     /// <returns>flag</returns>
 
-    Task<bool> VerifyOtp(string Email, string OTP);
+    Task<bool> VerifyOtp(string UserName, string OTP);
 
     Task<Guid> GetCurrentCustomerId();
 

@@ -43,6 +43,7 @@ using SmartParking.Lookups.CameraModel;
 using SmartParking.Lookups.CameraMainType;
 using Microsoft.Build.Framework;
 using SmartParking.Localization;
+using SmartParking.Entities.Authentication;
 
 namespace SmartParking;
 
@@ -227,6 +228,14 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.IdentificationTypes, s => s.MapFrom(o => o.IdentificationTypes))
             .ForMember(d => d.Password, s => s.MapFrom(o => o.Password))
             .ForMember(d => d.NationalId, s => s.MapFrom(o => o.NationalId)).ReverseMap();
+
+
+       CreateMap<RoleWithOrganization, RoleDto>()
+            .ForMember(d => d.OrganizationEnglishName, s => s.MapFrom(o =>  o.Organization.EnglishName  ))
+            .ForMember(d => d.OrganizationArabicName, s => s.MapFrom(o =>  o.Organization.ArabicName))
+            .ForMember(d => d.Name, s => s.MapFrom(o => o.Role.Name))
+            .ForMember(d => d.Id, s => s.MapFrom(o => o.Role.Id))
+            .ReverseMap();
 
         CreateMap<CreateUpdateCustomerDto, UserCreateDto>()
             .ForMember(d => d.Email, s => s.MapFrom(o => o.Email))

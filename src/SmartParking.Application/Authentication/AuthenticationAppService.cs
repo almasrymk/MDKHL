@@ -13,6 +13,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Localization;
+using SmartParking.Mobile.Otps;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -20,10 +21,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mail;
+using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -34,6 +38,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation;
+using static System.Net.WebRequestMethods;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -45,52 +50,43 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
-    private readonly IOpenIddictTokenManager _tokenManager;
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<IdentityUser, Guid> _userRepository;
-    IIdentityRoleRepository _roleRepository;
-    private readonly IConfiguration _config;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IDataFilter _dataFilter;
-    private readonly ICurrentTenant _currentTenant;
     private readonly IAuthenticationUtility _authenticationUtility;
-    private readonly IEmailSender _emailSender;
     private readonly IUsersAppService _usersAppService;
+    private readonly TaqnyatSmsOptionsDto _options;
+    private readonly HttpClient _httpClient;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
         UserManager<IdentityUser> userManager,
-        IOpenIddictTokenManager tokenManager,
+        IOptions<TaqnyatSmsOptionsDto> options,
         IHttpContextAccessor httpContext,
         IRepository<IdentityUser, Guid> userRepository,
-        IIdentityRoleRepository roleRepository,
-        IConfiguration config,
         IRepository<Tenant, Guid> tenantRepository,
         IRepository<Customer, Guid> CustomerRepository,
         IRepository<Organization, int> organizationRepository,
         IDataFilter dataFilter,
-        ICurrentTenant currentTenant,
         IAuthenticationUtility authenticationUtility,
-        IEmailSender emailSender,
-        IUsersAppService usersAppService)
+        IUsersAppService usersAppService,
+        HttpClient httpClient)
     {
         _signInManager = signInManager;
         _userManager = userManager;
-        _tokenManager = tokenManager;
         _httpContext = httpContext;
         _userRepository = userRepository;
-        _roleRepository = roleRepository;
-        _config = config;
         _tenantRepository = tenantRepository;
         _customerRepository = CustomerRepository;
         _organizationRepository = organizationRepository;
         _dataFilter = dataFilter;
-        _currentTenant = currentTenant;
         _authenticationUtility = authenticationUtility;
-        _emailSender = emailSender;
         _usersAppService = usersAppService;
+        _httpClient = httpClient;
+        _options = options.Value;
     }
     /// <inheritdoc/>
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
@@ -383,23 +379,28 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
 
-    public async Task<bool> SetNewPasswordWeb(string input , string NewPassword)
+    public async Task<bool> SetNewPasswordWeb(string UserName , string NewPassword)
     {
-        var user =await _userManager.FindByEmailAsync(input);
-        if (user == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("user isn't exist");
-        }
-        var user1= await _userManager.RemovePasswordAsync(user);
-        var password = await _userManager.AddPasswordAsync(user, NewPassword);
-        if (password.Succeeded)
-        {
-            await _userManager.UpdateAsync(user);
-            return true;
-        }
-        else
-        {
-            return false;
+            var user =await _userRepository.FirstOrDefaultAsync(x => x.UserName == UserName || x.PhoneNumber == UserName);
+        
+            if (user == null)
+            {
+                throw new Exception("user isn't exist");
+            }
+            await _userManager.RemovePasswordAsync(user);
+            var password = await _userManager.AddPasswordAsync(user, NewPassword);
+            if (password.Succeeded)
+            {
+                user.SetConcurrencyStampIfNotNull(user.ConcurrencyStamp);
+                await _userManager.UpdateAsync(user);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }
@@ -423,38 +424,22 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
         
     }
-    public async Task<bool> GenerateTokeForUser(string email)
+    public async Task<bool> GenerateOTPForUser(string UserName)
     {
-        IdentityUser user;
-
         using (_dataFilter.Disable<IMultiTenant>())
         {
- 
-                if (email.Contains("@"))
-                {
-                    user = await _userManager.FindByEmailAsync(email);
-
-                }
-                else
-                {
-                    user = await _userManager.FindByNameAsync(email);
-
-                }
-                if (user == null)
-                {
-                    throw new Exception("user isn't exist");
-                }
-                
-        var OTP = GenrateOTP();
-
-       var result = await SendEmail(user.Email, OTP);
-        user.SetProperty("OtpCode", OTP);
-        user.SetProperty("OtpExpirationDate", DateTime.UtcNow.AddMinutes(2));
-        await CurrentUnitOfWork.SaveChangesAsync();
-        return result;
+            var user = await _userRepository.FirstOrDefaultAsync(x=>x.UserName==UserName || x.PhoneNumber == UserName);    
+            if (user == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("User")+LocalizationHelper.GetLocalizedString("NotFound"));
+            }
+            var OTP = GenrateOTP();
+           var result = await SendSms(user.PhoneNumber, $"{OTP} رمز التحقق لدخول نظام مدخل هو " );
+           user.SetProperty("OtpCode", OTP);
+           user.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(2));
+           await _userManager.UpdateAsync(user);
+           return result;
         }
-
-
     }
     private string GenrateOTP()
     {
@@ -464,56 +449,43 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return random.Next(min, max).ToString();
     }
 
-    public async Task<bool> SendEmail(string Email , string Otp)
+    public async Task<bool> SendSms(string phoneNumber, string message)
     {
-        MailMessage message = new MailMessage(
 
-                    "info@mdkhl.com",
-                    Email,     // target email address
-                    "Verify Otp",         // subject
-                   $"Your One-Time Password (OTP) is: {Otp}");
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ApiKey}");
 
-        await _emailSender.SendAsync(message);
-        return true;
+        var payload = new
+        {
+            recipients = new[] { phoneNumber },
+            body = message,
+            sender = _options.SenderName
+        };
+
+        var jsonPayload = JsonSerializer.Serialize(payload);
+
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync(_options.ApiUrl, content);
+
+        return response.IsSuccessStatusCode;
 
     }
-    public async Task<bool> VerifyOtp(string Email, string Otp)
+    public async Task<bool> VerifyOtp(string UserName, string Otp)
     {
-        IdentityUser user;
         using (DataFilter.Disable<IMultiTenant>())
         {
-
-            if (Email.Contains("@"))
-            {
-                user = await _userManager.FindByEmailAsync(Email);
-
-            }
-            else
-            {
-                user = await _userManager.FindByNameAsync(Email);
-
-            }
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.UserName == UserName || x.PhoneNumber == UserName);
             if (user == null)
             {
                 throw new Exception("user isn't exist");
             }
             var result = CheckOtp(Otp, EF.Property<string>(user, "OtpCode"), EF.Property<DateTime>(user, "OtpExpirationDate"));
-            if (result == true)
-            {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return true;
-            }
-            return false;
-
-
-
-
+            return result;
         }
     }
 
     private bool CheckOtp(string Otp , string CurrentOtp , DateTime ExpiryTime)
     {
-        if(CurrentOtp==Otp && ExpiryTime.TimeOfDay >= DateTime.UtcNow.TimeOfDay)
+        if(CurrentOtp==Otp && ExpiryTime >= DateTime.Now)
         {
             return true;
         }
