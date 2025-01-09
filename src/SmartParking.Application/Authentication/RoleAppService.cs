@@ -18,6 +18,10 @@ using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Uow;
 using Volo.Abp;
 using SmartParking.Localization;
+using Volo.Abp.Domain.Repositories;
+using SmartParking.Entities.Organizations;
+using Volo.Abp.ObjectMapping;
+using SmartParking.Entities.Authentication;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -28,22 +32,25 @@ public class RoleAppService : ApplicationService, IRoleAppService
     private readonly IDataFilter _dataFilter;
     private readonly IOrganizationsAppService _organizationAppService;
     private readonly IMyUserRepository _myUserRepository;
+    private readonly IRepository<Organization, int> _organizationRepository;
     private readonly UserManager<IdentityUser> _userManager;
 
 
 
     public RoleAppService(ICustomRoleReository roleReository, IDataFilter dataFilter,
          UserManager<IdentityUser> userManager,
-        IOrganizationsAppService organizationAppService,IMyUserRepository myUserRepository)
+        IOrganizationsAppService organizationAppService,IMyUserRepository myUserRepository
+        ,IRepository<Organization, int> organizationRepository)
     {
         _roleReository = roleReository;
         _dataFilter = dataFilter;
         _userManager = userManager;
         _organizationAppService = organizationAppService;
         _myUserRepository = myUserRepository;
+        _organizationRepository = organizationRepository;
     }
 
-    public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedByTenant(PagedResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -51,6 +58,33 @@ public class RoleAppService : ApplicationService, IRoleAppService
             queryable = GetQueryByTenat(tenantId, queryable);
             
             return await GetPagedResultAsync(queryable, input);
+        }
+    } 
+    
+    public async Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _roleReository.GetQueryableAsync();
+            var organizationQueryable = await _organizationRepository.GetQueryableAsync();
+            var query = queryable
+                .GroupJoin(
+                     organizationQueryable,
+                     role => role.TenantId,
+                     organization => organization.TenantId,
+                     (role, organizationsGroup) => new { Role = role, OrganizationsGroup = organizationsGroup }
+                )
+                .SelectMany(
+                     result => result.OrganizationsGroup.DefaultIfEmpty(),
+                     (result, organization) => new RoleWithOrganization
+                     {
+                         Role = result.Role,
+                         Organization = organization
+                     }
+                );
+            query = query.OrderBy(input.Sorting);
+
+            return await GetPagedResultMdkhlAsync(query, input);
         }
     }
 
@@ -64,7 +98,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
     }
 
-    public async Task<PagedResultDto<IdentityRoleDto>> SearchByTenant(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
+    public async Task<PagedResultDto<IdentityRoleDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -114,11 +148,31 @@ public class RoleAppService : ApplicationService, IRoleAppService
             Items = RolesDto
         };
     }
+    
+    private async Task<PagedResultDto<RoleDto>> GetPagedResultMdkhlAsync(IQueryable<RoleWithOrganization> queryable, PagedAndSortedResultRequestDto input)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var RolesDto = await MapRolesForMdkhl(queryable);
+
+        return new PagedResultDto<RoleDto>
+        {
+            TotalCount = totalCount,
+            Items = RolesDto
+        };
+    }
 
     private async Task<List<IdentityRoleDto>> MapRoles(IQueryable<IdentityRole> queryable)
     {
         var roles = await AsyncExecuter.ToListAsync(queryable);
         var rolesDto = ObjectMapper.Map<List<IdentityRole>, List<IdentityRoleDto>>(roles);
+        return rolesDto;
+    }    
+    
+    private async Task<List<RoleDto>> MapRolesForMdkhl(IQueryable<RoleWithOrganization> queryable)
+    {
+        var roles = await AsyncExecuter.ToListAsync(queryable);
+        var rolesDto = ObjectMapper.Map<List<RoleWithOrganization>, List<RoleDto>>(roles);
         return rolesDto;
     }
 
@@ -220,5 +274,11 @@ public class RoleAppService : ApplicationService, IRoleAppService
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
         await _userManager.UpdateAsync(user);
+    }
+
+
+    public Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        throw new NotImplementedException();
     }
 }
