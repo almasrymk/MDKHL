@@ -15,11 +15,7 @@ public static class EntitiesConfiguration
 {
     public static void ConfigureEntities(this ModelBuilder builder)
     {
-        builder.Entity<Tenant>(b =>
-        {
-            // Apply a global query filter to the Tenant entity
-            b.HasQueryFilter(t => !t.IsDeleted); // Example filter for soft deletion
-        });
+        
 
         builder.Entity<Organization>(b =>
         {

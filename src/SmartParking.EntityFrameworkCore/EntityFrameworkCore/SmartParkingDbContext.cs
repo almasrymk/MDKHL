@@ -218,8 +218,13 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
-        builder.ConfigureEntities();
+        builder.Entity<Tenant>(b =>
+        {
+            // Apply a global query filter to the Tenant entity
+            b.HasQueryFilter(t => !t.IsDeleted); // Example filter for soft deletion
+        });
         builder.ApplyConfigurationsFromAssembly(typeof(SmartParkingDbContext).Assembly);
+        
         /* Configure your own tables/entities inside here */
 
 
