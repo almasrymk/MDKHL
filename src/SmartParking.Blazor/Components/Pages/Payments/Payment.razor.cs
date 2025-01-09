@@ -115,17 +115,17 @@ public partial class Payment
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNUmber", IsFilterable = false, PropertyName = "", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNUmber", IsFilterable = false, PropertyName = "", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = false, PropertyName = "", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customer.CustomerCategoryStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customers.CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Amount"], Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Currency"], Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customer.IdentityUser.UserName", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customers.IdentityUser.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
        
