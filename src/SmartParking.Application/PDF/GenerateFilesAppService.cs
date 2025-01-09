@@ -31,7 +31,7 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
 
         using (ExcelPackage package = new ExcelPackage())
         {
-            ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sheet1");
+            ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
             System.Data.DataTable table = new System.Data.DataTable();
             foreach (var columns in Data.Columns)
             {
