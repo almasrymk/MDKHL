@@ -124,10 +124,10 @@ public class AuthenticationsController : ControllerBase
     
     [HttpPost("changeImage")]
     [Authorize]
-    public async Task<Result<UserDto>> ChangeImage([FromBody]string image)
+    public async Task<Result<string>> ChangeImage([FromBody]string image)
     {
         var user =  await _usersAppService.UpdateImageAsync(_user.Id, image);
-        return Result.Success(user);
+        return Result.Success(user.Image);
     }    
     
     [HttpGet("GetImage")]
