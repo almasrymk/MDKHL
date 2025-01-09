@@ -110,9 +110,9 @@ public partial class MDKHLEditUserDialog
             Name = "User Roles",
             ShowHeader = true
         };
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ID"], Name = "ID", IsFilterable = false, PropertyName = "ID", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RoleName"], Name = "RoleName", IsFilterable = false, PropertyName = "RoleName", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "OrganizationName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ID"], Name = "ID", IsFilterable = false, PropertyName = "ID", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RoleName"], Name = "RoleName", IsFilterable = false, PropertyName = "RoleName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "OrganizationName", IsSortable = true, TypeFilter = TypeFilter.Text });
         foreach (var item in UserRoles)
         {
             var rowDef = new RowDef();

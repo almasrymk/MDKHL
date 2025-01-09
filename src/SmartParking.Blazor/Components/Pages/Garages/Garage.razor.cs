@@ -42,9 +42,7 @@ public partial class Garage
 
     public int ActiveGarages { get; set; }
 
-    private bool showOrganizationView => currentUser.IsInRole(Enums.RolesType.Organization.ToString())
-        || currentUser.IsInRole(Enums.RolesType.OrganizationEmployee.ToString())
-        || currentTenant.Id != null;
+    private bool showOrganizationView =>currentTenant.Id != null;
 
 
     public Garage(IStringLocalizer<SmartParkingResource> localizer)
@@ -61,14 +59,14 @@ public partial class Garage
 
     protected async override Task OnInitializedAsync()
     {
-        if (currentUser.IsInRole(RolesType.Organization.ToString()) || currentTenant.Id != null)
+        if (currentTenant.Id != null)
         {
             ViewAssign = false;
             MaxiumumNumberOfGarageAllowedToBeAdded = await OrganizationAppService.GetNumberOfGaragesAllowedToBeAdded();
             ActiveGarages = await OrganizationAppService.GetNumberOfActiveGaragesOfOrganization();
 
         }
-        else if ((currentUser.IsInRole(RolesType.Mdkhl.ToString()) || currentUser.IsInRole(RolesType.MdkhlEmployee.ToString()) || currentTenant.Id == null))
+        else if (currentTenant.Id == null)
 		{
             var result =await GarageAppService.GetMaxCapacityofActiveGaragesAndItsCount();
             ActiveGarages = result.Item2;
@@ -127,8 +125,6 @@ public partial class Garage
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
 
         // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
@@ -172,7 +168,6 @@ public partial class Garage
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -180,10 +175,11 @@ public partial class Garage
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-        // Retrieve the list of organizations from the server
+      
         var garagessDto = await GarageAppService.GetListAsync(input);
         TotalItem = (int)garagessDto.TotalCount;
         CreateTable(garagessDto);
+
 
     }
 
@@ -197,7 +193,7 @@ public partial class Garage
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {

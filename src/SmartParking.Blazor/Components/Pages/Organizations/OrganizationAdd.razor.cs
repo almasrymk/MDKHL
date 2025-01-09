@@ -10,6 +10,7 @@ using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
 using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -231,6 +232,15 @@ public partial class OrganizationAdd
     private void Cancel()
     {
         Navigation.NavigateTo("/organizations");
+    }
+    private void FirstHourChange(decimal FirstHourValue)
+    {
+        FirstHourPrice=FirstHourValue;
+        var value=OrganizationValidtions.FreeMinutesAndFirstHourRelation(FirstHourValue);
+        if (value.HasValue) {
+            FreeMinutes = value.Value;
+        }
+
     }
     private async Task OnImageUpload(IBrowserFile file)
     {
