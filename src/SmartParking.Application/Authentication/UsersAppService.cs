@@ -598,4 +598,13 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return await _userRepository.GetUserWithRolesForMdkhlAsync(userId);
         }
     }
+
+    public async Task<string?> GetImage(Guid? userId)
+    {
+     using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(userId);
+            return user?.GetProperty<string>("Image");
+        }
+    }
 }
