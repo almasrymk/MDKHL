@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Controllers;
 
@@ -119,5 +120,29 @@ public class AuthenticationsController : ControllerBase
     public async Task<Result> SetNewPassword(ChangePasswordInputDto input)
     {
         return await _authenticationApp.SetNewPassword(input);
+    }   
+    
+    [HttpPost("changeImage")]
+    [Authorize]
+    public async Task<Result<UserDto>> ChangeImage([FromBody]string image)
+    {
+        var user =  await _usersAppService.UpdateImageAsync(_user.Id, image);
+        return Result.Success(user);
+    }    
+    
+    [HttpGet("GetImage")]
+    [Authorize]
+    public async Task<Result<string?>> GetImage(string image)
+    {
+        try
+        {
+            var user = await _usersAppService.GetImage(_user.Id);
+            return Result.Success(user);
+        }
+        catch (Exception ex)
+        {
+            return Result.Error(ex.Message);
+        }
+        
     }
 }
