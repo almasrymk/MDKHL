@@ -67,25 +67,44 @@ public class RoleAppService : ApplicationService, IRoleAppService
         {
             var queryable = await _roleReository.GetQueryableAsync();
             var organizationQueryable = await _organizationRepository.GetQueryableAsync();
-            var query = queryable
-                .GroupJoin(
-                     organizationQueryable,
-                     role => role.TenantId,
-                     organization => organization.TenantId,
-                     (role, organizationsGroup) => new { Role = role, OrganizationsGroup = organizationsGroup }
-                )
-                .SelectMany(
-                     result => result.OrganizationsGroup.DefaultIfEmpty(),
-                     (result, organization) => new RoleWithOrganization
-                     {
-                         Role = result.Role,
-                         Organization = organization
-                     }
-                );
-            query = query.OrderBy(input.Sorting);
-
+            IQueryable<RoleWithOrganization> query = CreateQueryForMdkhl(input, queryable, organizationQueryable);
+            query = CheckSort(input, query);
             return await GetPagedResultMdkhlAsync(query, input);
         }
+    }
+
+    private static IQueryable<RoleWithOrganization> CheckSort(PagedAndSortedResultRequestDto input, IQueryable<RoleWithOrganization> query)
+    {
+        if (input.Sorting.IsNullOrEmpty())
+            query = ApplySortForMdkhl(input, query);
+        return query;
+    }
+
+    private static IQueryable<RoleWithOrganization> CreateQueryForMdkhl(PagedAndSortedResultRequestDto input, IQueryable<IdentityRole> queryable, IQueryable<Organization> organizationQueryable)
+    {
+        var query = queryable
+            .GroupJoin(
+                 organizationQueryable,
+                 role => role.TenantId,
+                 organization => organization.TenantId,
+                 (role, organizationsGroup) => new { Role = role, OrganizationsGroup = organizationsGroup }
+            )
+            .SelectMany(
+                 result => result.OrganizationsGroup.DefaultIfEmpty(),
+                 (result, organization) => new RoleWithOrganization
+                 {
+                     Role = result.Role,
+                     Organization = organization
+                 }
+            );
+        
+        return query;
+    }
+
+    private static IQueryable<RoleWithOrganization> ApplySortForMdkhl(PagedAndSortedResultRequestDto input, IQueryable<RoleWithOrganization> query)
+    {
+        query = query.OrderBy(input.Sorting);
+        return query;
     }
 
     public async Task<List<IdentityRoleDto>> GetListByTenant(Guid? tenantId)
@@ -183,6 +202,16 @@ public class RoleAppService : ApplicationService, IRoleAppService
             role.Name.ToLower().Contains(lowerTerm));
             
     }
+    
+    private IQueryable<RoleWithOrganization> ApplySearchFilterForMdkhl(IQueryable<RoleWithOrganization> queryable, string searchingTerm)
+    {
+        var lowerTerm = searchingTerm.ToLower();
+        return queryable.Where(role =>
+            role.Role.Name.ToLower().Contains(lowerTerm)||
+            role.Organization.ArabicName.ToLower().Contains(lowerTerm)||
+            role.Organization.EnglishName.ToLower().Contains(lowerTerm));
+            
+    }
 
     private IQueryable<IdentityRole> ApplySorting(IQueryable<IdentityRole> queryable, string sorting)
     {
@@ -277,8 +306,20 @@ public class RoleAppService : ApplicationService, IRoleAppService
     }
 
 
-    public Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input)
     {
-        throw new NotImplementedException();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _roleReository.GetQueryableAsync();
+            var organizationQueryable = await _organizationRepository.GetQueryableAsync();
+            IQueryable<RoleWithOrganization> query = CreateQueryForMdkhl(input, queryable, organizationQueryable);
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                query = ApplySearchFilterForMdkhl(query, input.SearchingTerm);
+            }
+
+            query = CheckSort(input, query);
+            return await GetPagedResultMdkhlAsync(query, input);
+        }
     }
 }
