@@ -1,15 +1,19 @@
-﻿@inject MudBlazor.IDialogService DialogService
+﻿
 @page "/"
 @page "/dashboard"
 @using Microsoft.Extensions.Localization
 @using MudBlazor.Components.Chart.Models
 @using SmartParking.Analysis
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Garages
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using System.Globalization
+@using SmartParking.PDF
+@using SmartParking.Utilities
+@using MudBlazor
 @using Volo.Abp.MultiTenancy
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -20,6 +24,9 @@
 @inject ICustomerAppService CustomerAppService
 @inject ICurrentTenant currenttenant
 @inject IAnalysisAppService AnalysisAppService
+@inject IJSRuntime JSRuntime
+@inject IGenerateFilesAppService GenerateFilesAppService
+@inject ISnackbar Snackbar
 
 @attribute [Authorize]
 
@@ -74,11 +81,18 @@
     @if(currenttenant.Id is not null)
     {
         <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex align-items-start justify-content-between">
+                <MudImage Src="images/dashboard/car.png" Class="me-3" />
                 <div>
-                    <MudText Class="fw-bold" Typo="Typo.h6">
-                        @L["Customers"]
-                    </MudText>
+
+                    <MudItem Class="d-flex align-items-center">
+
+
+                        <MudText Class="fw-bold" Typo="Typo.h6">
+                            @L["Customers"]
+                        </MudText>
+                    </MudItem>
+
                     <MudText >
                         @L["CustomersParking"] @getNumberOfParking.NumberOfCustomerParking
                     </MudText>
@@ -86,16 +100,26 @@
                         @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfCustomerEmptyParking
                     </MudText>
                 </div>
-                <MudImage Src="images/dashboard/car.png" />
+
+                <MudItem >
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
+                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))">@L["Excel"]</MudMenuItem>
+                    </MudMenu>
+                </MudItem>
             </MudPaper>
 
         </MudItem>
         <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-start">
+                <MudImage Src="images/dashboard/car.png"  Class="me-3"/>
                 <div>
-                    <MudText Class="fw-bold" Typo="Typo.h6">
-                        @L["Employees"]
-                    </MudText>
+
+                    <MudItem Class="d-flex align-items-center">
+                        <MudText Class="fw-bold" Typo="Typo.h6">
+                            @L["Employees"]
+                        </MudText>
+                    </MudItem>
+
                     <MudText >
                         @L["CustomersParking"] @getNumberOfParking.NumberOfEmployeeParking
                     </MudText>
@@ -103,16 +127,25 @@
                         @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfEmployeeEmptyParking
                     </MudText>
                 </div>
-                <MudImage Src="images/dashboard/car.png" />
+
+                <MudItem>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
+                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))">@L["Excel"]</MudMenuItem>
+                    </MudMenu>
+                </MudItem>
             </MudPaper>
         </MudItem>
 
         <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-start">
+                <MudImage Src="images/dashboard/car.png" Class="me-3"/>
+
                 <div>
-                    <MudText Class="fw-bold" Typo="Typo.h6">
-                        @L["Visitors"]
-                    </MudText>
+                    <MudItem Class=" d-flex align-items-center">
+                        <MudText Class="fw-bold" Typo="Typo.h6">
+                            @L["Visitors"]
+                        </MudText>
+                    </MudItem>
                     <MudText >
                         @L["CustomersParking"] @getNumberOfParking.NumberOfVisitorParking
                     </MudText>
@@ -120,7 +153,11 @@
                         @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfVisitorEmptyParking
                     </MudText>
                 </div>
-                <MudImage Src="images/dashboard/car.png" />
+                <MudItem>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
+                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))">@L["Excel"]</MudMenuItem>
+                    </MudMenu>
+                </MudItem>
             </MudPaper>
         </MudItem>
     }
@@ -241,6 +278,11 @@
     </MudItem>
     <MudItem sm="12">
         <MudPaper Class="custom-rounded">
+            <MudItem Class="d-flex align-items-start justify-content-end m-3 pt-5">
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
+                    <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
+                </MudMenu>
+            </MudItem>
             <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
 
         </MudPaper>
@@ -294,7 +336,7 @@
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
 
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyMdkhlAsync();
-            showDataGraph(dataForSeries.Days, dataForSeries.TotalAmounts);
+            showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts, dataForSeries.InvoiceTotalAmounts, dataForSeries.PackageTotalAmounts);
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
             Day = dataForToday.Day;
@@ -302,13 +344,13 @@
         }
         else
         {
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await ChangeSelect(organization.Id);
 
             grid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
-            showDataGraph(dataForSeries.Days, dataForSeries.TotalAmounts);
+            showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts,dataForSeries.InvoiceTotalAmounts,dataForSeries.PackageTotalAmounts);
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
             Day = dataForToday.Day;
@@ -328,7 +370,7 @@
     {
         data[0] = NumberOfParking;
         data[1] = NumberOfEmptyParking;
-        
+
         labels[0] = $"{LocalizationHelper.GetLocalizedString("Parking")} {NumberOfParking}";
         labels[1] = $"{LocalizationHelper.GetLocalizedString("EmptyParking")} {NumberOfEmptyParking}";
     }
@@ -340,13 +382,86 @@
 
     }
 
-    private void showDataGraph(string[] days, double[] totalAmounts)
+    private void showDataGraph(string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts)
     {
         XAxisLabels = days;
         Series = new List<ChartSeries>()
         {
-            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("CollectedMoney"), Data =  totalAmounts}
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("TotalCollectedMoney"), Data =  allTotalAmounts},
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("InvoiceCollectedMoney"), Data =  invoiceTotalAmounts},
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("PackageCollectedMoney"), Data =  packageTotalAmounts}
         };
+    }
+
+
+    private async Task ExportData (TableData data )
+    {
+        var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+
+        string file = System.IO.Path.Combine(folderName, $"{data.Name}.xlsx");
+
+        await GenerateFilesAppService.ExportToExcel(data, file);
+
+        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+        await Task.Delay(1000);
+        await OpenNewBlank($"Folders/Excel/{data.Name}.xlsx");
+    }
+
+    private async Task ExportToExcel(CustomerCategoryStatus category)
+    {
+        try
+        {
+
+            TableData data;
+            if(currenttenant.Id == null)
+            {
+                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category);
+            }
+            else
+            {
+                data = await AnalysisAppService.ReortGarageTransactionOrganizationAsync(category);
+            }
+
+            await ExportData(data);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+
+    }
+    
+    private async Task ExportPaymentAnalysisToExcel()
+    {
+        try
+        {
+            TableData data;
+            if(currenttenant.Id == null)
+            {
+                 data = await AnalysisAppService.ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+            }
+            else
+            {
+                data = await AnalysisAppService.ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+            }
+            await ExportData(data);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+
+    }
+    private async Task OpenNewBlank(string url)
+    {
+
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
     }
     
 }

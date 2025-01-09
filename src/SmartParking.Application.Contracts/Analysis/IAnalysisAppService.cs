@@ -1,4 +1,6 @@
 ﻿using Abp.Application.Services;
+using SmartParking.DataTable;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +35,31 @@ public interface IAnalysisAppService : IApplicationService
 
     Task<GetNumberOfParkingAndEmptyParkingDto> GetNumberOfParkingSlotsAndEmptySolts(int organizationId);
 
-    Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync();
-    Task<(string[] Days, double[] TotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId);
+    Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync();
+    Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync();
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId);
+
+    /// <summary>
+    /// Get report of garage transaction for mdkhl
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns> datatable of garage transaction</returns>
+    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category);
+    /// <summary>
+    /// Get report of garage transaction for organization
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns> datatable of garage transaction</returns>
+    Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category);
+    /// <summary>
+    /// Get report of payment collected money daily and monthly for organization
+    /// </summary>
+    /// <returns> datatable of payment collected money daily and monthly </returns>
+    Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+    /// <summary>
+    /// Get report of payment collected money daily and monthly for mdkhl
+    /// </summary>
+    /// <returns> datatable of payment collected money daily and monthly </returns>
+    Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
 }

@@ -109,7 +109,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
@@ -172,13 +172,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 	/// <inheritdoc/>
 	public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
 	{
-		 var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+		 var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
 
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = query.Include(c => c.IdentityUser);
 			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
             if (!input.Sorting.IsNullOrEmpty())
             {
@@ -255,7 +256,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
 
         using (_dataFilter.Disable<IMultiTenant>())
         {

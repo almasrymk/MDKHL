@@ -65,7 +65,7 @@ public partial class CustomerRegister
         Organizations = result.Items.ToList();
         if (CurrentTenant.Id is not null)
             {
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenat();
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
             Roles = await RoleAppService.GetListByTenant(CurrentTenant.Id);   
             createUpdateCustomerDto.OrganizationId = organization.Id;

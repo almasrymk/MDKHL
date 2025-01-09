@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using SmartParking.Entities.Invoices;
 using SmartParking.Payments;
 using FluentValidation;
+using SmartParking.Blazor.Components.Shared;
 
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
@@ -49,6 +50,7 @@ public partial class DetailsInvoice
     public Guid? CustomerId { get; set; }
 
     public bool IsPaid { get; set; }
+    public bool IsPackage { get; set; }
     private string LocalizedInvoiceType { get; set; }
 
 
@@ -106,6 +108,7 @@ public partial class DetailsInvoice
         CustomerId = invoice.CustomerId;
         IsPaid= invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
         LocalizedInvoiceType = L[invoice.InvoiceType];
+        IsPackage=invoice.IsPackage;
 
 
     }
@@ -118,17 +121,16 @@ public partial class DetailsInvoice
         var paymentChekout = new PaymentCheckoutRequestDto
         {
             OrganizationId=OrganizationId,
-            PaymentCategory=PaymentCategory.PaymentParking,
+            PaymentCategory= IsPackage?PaymentCategory.Package:PaymentCategory.PaymentParking,
             InvoiceId= Id,
             PaymentMethod=PaymentMethod.Cash,
             Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
             CustomerId= CustomerId
-
-
         };
         var payment =await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         if (payment != null) {
-            Snackbar.Add("Payment Done Successfully ",MudBlazor.Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+            
             await Task.Delay(1000);
             Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
         }

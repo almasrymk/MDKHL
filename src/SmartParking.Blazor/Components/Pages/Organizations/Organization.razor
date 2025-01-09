@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.OrganizationPermissions
 @using Volo.Abp.Application.Dtos
 @inject ISnackbar Snackbar
 @inject IOrganizationsAppService OrganizationsAppService
@@ -9,7 +10,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 @inject IAuthorizationService AuthorizationService
-@attribute [Authorize(Roles = "Mdkhl , admin")]
+@attribute [Authorize(OrganizationPermissions.Default)]
 @inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
 <PageTitle>@L["Organizations"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Organizations"]</MudText>

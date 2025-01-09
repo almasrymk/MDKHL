@@ -596,7 +596,7 @@
     "Parking": "عدد أماكن الركن",
     "EmptyParking": "عدد أماكن الركن المتاحة",
     "Visitors": "الزوار",
-    "CollectedMoney": "النقدية المحصلة",
+    "TotalCollectedMoney": "اجمالي النقدية المحصلة",
     "CollectedMoneyToday": "المبالغ المحصلة",
     "Collected": "المحصلة",
     "Day": "اليوم",
@@ -617,7 +617,15 @@
     "PDF": " بي دي إف",
     "Excel": "إكسل",
     "CSV": "ملف CSV",
-    "Done": "تم"
+    "Done": "تم",
+    "GarageName": "اسم الموقف",
+    "InvoiceCollectedMoney": "اجمالي المحصلة النقدية للمطابقات",
+    "PackageCollectedMoney": "اجمالي المحصلة النقدية للباقات"
+
+
+
+
+
 
   }
 }

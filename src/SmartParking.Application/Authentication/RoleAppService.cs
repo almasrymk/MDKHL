@@ -213,7 +213,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
            () => CurrentTenant.Id
        );
         
-        var org =await _organizationAppService.GetOrganizationForCurrentTenat();
+        var org =await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         user.SetProperty("OrganizationId", org.Id);
         user.AddRole(RoleId);
         

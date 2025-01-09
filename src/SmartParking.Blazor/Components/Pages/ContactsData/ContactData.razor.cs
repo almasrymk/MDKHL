@@ -115,7 +115,7 @@ public partial class ContactData
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         // Retrieve the list of organizations from the server
         var contactDto = await ContactInfoAppService.GetContactInfoByOrganization(input, organization.Id);
         TotalItem = (int)contactDto.TotalCount;
@@ -133,11 +133,11 @@ public partial class ContactData
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "PhoneNum", IsFilterable = true, PropertyName = "PhoneNum", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["WhatsAppNum"], Name = "WhatsAppNum", IsFilterable = true, PropertyName = "WhatsAppNum", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "ContactMail", IsFilterable = true, PropertyName = "ContactMail", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "PhoneNum", IsFilterable = true, PropertyName = "PhoneNum", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["WhatsAppNum"], Name = "WhatsAppNum", IsFilterable = true, PropertyName = "WhatsAppNum", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "ContactMail", IsFilterable = true, PropertyName = "ContactMail", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         foreach (var item in contactInfos.Items)
         {
@@ -155,7 +155,7 @@ public partial class ContactData
     }
     private async Task CreateContactData()
     {
-        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         var parameters = new DialogParameters
         {
             ["organizationId"] = organization.Id
@@ -166,7 +166,7 @@ public partial class ContactData
     {
         var id = int.Parse(row.Cells[0].Value);
         var contactData = await ContactInfoAppService.GetAsync(id);
-        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenat();
+        var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         var parameters = new DialogParameters
         {
             ["organizationId"] = organization.Id,

@@ -570,7 +570,7 @@
     "Parking": "Parking Lot",
     "EmptyParking": "Parking Empty Lot",
     "Visitors": "Visitors",
-    "CollectedMoney": "Collected Money",
+    "TotalCollectedMoney": "Total Collected Money",
     "CollectedMoneyToday": "Collected Money Today",
     "Collected": "Collected",
     "Day": "Day",
@@ -592,7 +592,9 @@
     "PDF": "PDF",
     "Excel": "Excel",
     "CSV": "CSV",
-    "Done": "Done"
+    "Done": "Done",
+    "InvoiceCollectedMoney": "Invoice Collected Money",
+    "PackageCollectedMoney": "Package Collected Money"
 
 
 
