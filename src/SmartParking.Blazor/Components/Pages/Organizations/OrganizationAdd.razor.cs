@@ -233,15 +233,7 @@ public partial class OrganizationAdd
     {
         Navigation.NavigateTo("/organizations");
     }
-    private void FirstHourChange(decimal FirstHourValue)
-    {
-        FirstHourPrice=FirstHourValue;
-        var value=OrganizationValidtions.FreeMinutesAndFirstHourRelation(FirstHourValue);
-        if (value.HasValue) {
-            FreeMinutes = value.Value;
-        }
 
-    }
     private async Task OnImageUpload(IBrowserFile file)
     {
         var imageFile = file;

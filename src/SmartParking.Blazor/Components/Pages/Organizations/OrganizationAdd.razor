@@ -253,7 +253,7 @@
 
 
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" RequiredError="@L["This field is required."]"  ValueChanged="FirstHourChange"  HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            <MudNumericField T="decimal" RequiredError="@L["This field is required."]"  @bind-Value="FirstHourPrice"  HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField @bind-Value="SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]"/>
