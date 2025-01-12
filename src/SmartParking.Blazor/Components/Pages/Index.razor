@@ -35,50 +35,24 @@
 <MudGrid>
     @if (currenttenant.Id == null)
     {
+        <SpCardInfo grid="totalGrid"
+           Number="@_organizationsCount.ToString()"
+           Type="@L["Organizations"]"
+           icon=" images/dashboard/organizations.png"></SpCardInfo>
 
-        <MudItem sm="@grid">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-                <div>
-                    <MudText Class="fw-bold" Typo="Typo.h4">
-                        @_organizationsCount
-                    </MudText>
-                    <MudText>
-                        @L["Organizations"]
-                    </MudText>
-                </div>
-                <MudImage Src="images/dashboard/organizations.png" />
-            </MudPaper>
-        </MudItem>
-    }        
-    <MudItem sm="@grid">
-
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_garagesCount
-                </MudText>
-                <MudText>
-                    @L["Garages"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/garage.png" />
-        </MudPaper>
-    </MudItem>
-
-    <MudItem sm="@grid">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_customersCount
-                </MudText>
-                <MudText>
-                    @L["Customers"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/customers.png" />
-        </MudPaper>
-    </MudItem>
-    @if (currenttenant.Id is not null){
+        
+     
+    }  
+    <SpCardInfo grid="grid"
+                Number="@_garagesCount.ToString()"
+                Type="@L["Garages"]"
+                icon="images/dashboard/garage.png"></SpCardInfo>
+    <SpCardInfo grid="grid"
+                Number="@_customersCount.ToString()"
+                Type="@L["Customers"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+    @if (currenttenant.Id is not null)
+    {
         <SpCardStatistics grid="grid"
                           Header="@L["TotalSlots"]"
                           HeaderText1="@L["CustomersParking"]"
@@ -86,6 +60,20 @@
                           HeaderText2="@L["CustomersEmptyParking"]"
                           BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
     }
+
+    <SpCardInfo grid="4"
+                Number="@data[0].ToString()"
+                Type="@L["Customers"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="4"
+                Number="@data[1].ToString()"
+                Type="@L["Employees"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="4"
+                Number="@data[2].ToString()"
+                Type="@L["Visitors"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+   
    
     @if(currenttenant.Id is not null)
     {
@@ -197,6 +185,7 @@
     private int _garagesCount;
     private int _customersCount;
     private int grid;
+    private int totalGrid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
     double[] data= { 20,77,100};
 
@@ -232,6 +221,7 @@
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
             ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
             grid = 4;
+            totalGrid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
 
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyMdkhlAsync();
@@ -248,6 +238,7 @@
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
             ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
             grid = 4;
+            totalGrid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
             showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts,dataForSeries.InvoiceTotalAmounts,dataForSeries.PackageTotalAmounts);
