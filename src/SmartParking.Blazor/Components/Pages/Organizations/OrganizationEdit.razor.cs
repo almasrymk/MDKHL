@@ -359,16 +359,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
     }
-    private void FirstHourChange(decimal FirstHourValue)
-    {
-        FirstHourPrice = FirstHourValue;
-        var value = OrganizationValidtions.FreeMinutesAndFirstHourRelation(FirstHourValue);
-        if (value.HasValue)
-        {
-            FreeMinutes = value.Value;
-        }
-
-    }
     private async Task ViewCustomers()
     {
         var id = int.Parse(Id);

@@ -62,4 +62,10 @@ public interface IAnalysisAppService : IApplicationService
     /// </summary>
     /// <returns> datatable of payment collected money daily and monthly </returns>
     Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+    /// <summary>
+    /// Get count of customers and visitors and employees
+    /// </summary>
+    /// <returns> count of customers and visitors and employees</returns>
+    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
 }

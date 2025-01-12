@@ -44,6 +44,7 @@ using SmartParking.Lookups.CameraMainType;
 using Microsoft.Build.Framework;
 using SmartParking.Localization;
 using SmartParking.Entities.Authentication;
+using SmartParking.Results;
 
 namespace SmartParking;
 
@@ -206,6 +207,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateBannerDto, Banner>();
 
         CreateMap<GarageTransaction, GarageTransactionDto>()
+       .ForMember(d => d.RemainingTime,
+        src =>
+        {
+            src.PreCondition(o => o.CheckoutMobile.HasValue);
+            src.MapFrom(o => CalculateRemainingTimeWithGrace(o.CheckoutMobile, o.Organization.Graceperiod));
+        })
         .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false)).ReverseMap();
 
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
@@ -286,14 +293,22 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
        .ConvertUsing(org => org.Customers.Count);
 
     }
-    private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
-    private DateTime AddGracePeriodToCheckoutTime(DateTime a , int GracePeriod)
+    private DateTime CalculateRemainingTimeWithGrace(DateTime? checkoutMobile, int gracePeriod)
     {
-        DateTime temporary = a;
-        temporary.AddMinutes(GracePeriod);
-        return temporary;
+        if (IfPassGracePeriod(checkoutMobile, gracePeriod))
+        {
+            return DateTime.MinValue;
+        }
+        return CalculateRemainingTime(checkoutMobile, gracePeriod);
+    }
+    private bool IfPassGracePeriod(DateTime? CheckoutMobile , int Graceperiod)
+    {
+        return (CheckoutMobile.Value.AddMinutes(Graceperiod) - DateTime.Now.AddHours(1)).Minutes < 0?true:false;
     }
 
-
+    private DateTime CalculateRemainingTime(DateTime? MobileCheckout,int Graceperiod)
+    {
+        return DateTime.Now.Add(MobileCheckout.Value.AddMinutes(Graceperiod * 1.0) - DateTime.Now);
+    }
 }
 

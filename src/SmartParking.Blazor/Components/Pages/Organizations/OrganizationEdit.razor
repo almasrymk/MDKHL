@@ -209,7 +209,7 @@
                         }
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                             <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" ValueChanged="FirstHourChange" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" @bind-Value="SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />

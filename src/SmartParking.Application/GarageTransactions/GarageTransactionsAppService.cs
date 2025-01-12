@@ -301,7 +301,7 @@ public class GarageTransactionsAppService :
     }
 
     // Function to convert base64 string to image and save it
-    private string SaveBase64Image(CreateUpdateGarageTransactionDto input)
+    public string SaveBase64Image(CreateUpdateGarageTransactionDto input)
     {
         string base64Image = input.VehiclePicture;
         try
