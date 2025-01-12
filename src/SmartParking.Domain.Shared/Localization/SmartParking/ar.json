@@ -622,7 +622,8 @@
     "InvoiceCollectedMoney": "اجمالي المحصلة النقدية للمطابقات",
     "PackageCollectedMoney": "اجمالي المحصلة النقدية للباقات",
     "Send": "إرسال",
-    "Beneficiaries": "العملاء"
+    "Beneficiaries": "العملاء",
+    "TotalSlots": "اجمالي أماكن الركن"
 
 
 
