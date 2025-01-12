@@ -623,7 +623,9 @@
     "PackageCollectedMoney": "اجمالي المحصلة النقدية للباقات",
     "Send": "إرسال",
     "Beneficiaries": "العملاء",
-    "TotalSlots": "اجمالي أماكن الركن"
+    "TotalSlots": "اجمالي أماكن الركن",
+    "All": "الكل",
+    "NoPackages": "بدون باقة"
 
 
 

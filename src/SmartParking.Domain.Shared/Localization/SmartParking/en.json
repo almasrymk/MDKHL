@@ -596,7 +596,9 @@
     "InvoiceCollectedMoney": "Invoice Collected Money",
     "PackageCollectedMoney": "Package Collected Money",
     "Send": "Send",
-    "TotalSlots": "Total Slots"
+    "TotalSlots": "Total Slots",
+    "All": "All",
+    "NoPackages": "No Packages"
 
 
 
