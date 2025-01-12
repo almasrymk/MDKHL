@@ -23,7 +23,7 @@ namespace SmartParking.Vehicles
         {
             get
             {
-                return ArPlateNumber.Replace(" ", string.Empty)+ArPlateLetters.Replace(" ", string.Empty) ;
+                return ArPlateLetters.Replace(" ", string.Empty)+ ArPlateNumber.Replace(" ", string.Empty);
             }
         }
         public string ArPlateNumber { get; set; } = "";
