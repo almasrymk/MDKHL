@@ -215,52 +215,7 @@
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
-        @if (currenttenant.Id == null)
-        {
-
-            <MudPaper Class="custom-rounded p-3">
-
-                <MudSelect T="int"
-                ValueChanged="ChangeSelect"
-                Placeholder="@L[ "Choose"]"
-                AdornmentColor="MudBlazor.Color.Primary"
-                Class="mb-3" 
-                Immediate="true"
-                >
-                    <MudSelectItem Value="0" Disabled>
-
-                        @L["Choose"]
-                    </MudSelectItem>
-                    @foreach (var organization in Organizations)
-                    {
-                        if (organization.Status != Status.Active)
-                            continue;
-                        <MudSelectItem  Value="@organization.Id">
-
-                            @organization.EnglishName
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-                <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
-
-                    <MudChart 
-                    ChartType="ChartType.Pie" 
-                    InputData="@data" 
-                    InputLabels="@labels" 
-                    Width="300px" 
-                    Height="300px" 
-                    ChartOptions="@options"
-
-
-
-
-                    />
-                </MudTooltip>
-            </MudPaper>
-
-        }
-        else
-        {
+        
             <MudPaper Class="custom-rounded p-3">
                 <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
@@ -273,8 +228,6 @@
                     />
                 </MudTooltip>
             </MudPaper>
-
-        }
     </MudItem>
     <MudItem sm="12">
         <MudPaper Class="custom-rounded">
@@ -302,9 +255,9 @@
     private int _customersCount;
     private int grid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
-    double[] data= { 20,77};
+    double[] data= { 20,77,100};
 
-    string[] labels = { "Parking", "EmptyParking" };
+    string[] labels = { "Customers", "Employees" , "Visitors" };
     string msg;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     public string[] XAxisLabels = { " " };
@@ -331,7 +284,8 @@
             Organizations = await OrganizationAppService.GetAllMobileAsync();
             var organization = Organizations.FirstOrDefault();
             var total = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organization.Id);
-            ShowData(total.NumberOfParking, total.NumberOfEmptyParking);
+            var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
             grid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
 
@@ -346,7 +300,8 @@
         {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await ChangeSelect(organization.Id);
-
+            var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
             grid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
@@ -366,20 +321,21 @@
         //   return await base.OnInitializedAsync();
     }
 
-    private void ShowData(int NumberOfParking, int NumberOfEmptyParking)
+    private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees)
     {
-        data[0] = NumberOfParking;
-        data[1] = NumberOfEmptyParking;
+        data[0] = NumberOfCustomers;
+        data[1] = NumberOfEmployees;
+        data[2] = NumberOfVisitors;
 
-        labels[0] = $"{LocalizationHelper.GetLocalizedString("Parking")} {NumberOfParking}";
-        labels[1] = $"{LocalizationHelper.GetLocalizedString("EmptyParking")} {NumberOfEmptyParking}";
+        labels[0] = $"{LocalizationHelper.GetLocalizedString("Beneficiaries")} {NumberOfCustomers}";
+        labels[1] = $"{LocalizationHelper.GetLocalizedString("Employees")} {NumberOfEmployees}";
+        labels[2] = $"{LocalizationHelper.GetLocalizedString("Visitors")} {NumberOfVisitors}";
     }
 
     private async Task ChangeSelect(int Value)
     {
         getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(Value);
-        ShowData(getNumberOfParking.NumberOfParking, getNumberOfParking.NumberOfEmptyParking);
-
+      
     }
 
     private void showDataGraph(string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts)
