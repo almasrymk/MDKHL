@@ -78,47 +78,48 @@
             <MudImage Src="images/dashboard/customers.png" />
         </MudPaper>
     </MudItem>
+    @if (currenttenant.Id is not null){
+        <SpCardStatistics grid="grid"
+                          Header="@L["TotalSlots"]"
+                          HeaderText1="@L["CustomersParking"]"
+                          BodyText1="@totalOfParking.ToString()"
+                          HeaderText2="@L["CustomersEmptyParking"]"
+                          BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
+    }
+   
     @if(currenttenant.Id is not null)
     {
 
         <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
         HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
         HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfCustomerEmptyParking"
-                        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
-                        ExportModel="@L["Excel"]"></SpCardDashbard>
-       
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+
         <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
         BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
         HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfEmployeeEmptyParking"
-                        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
-                        ExportModel="@L["Excel"]"></SpCardDashbard>
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
 
         <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
-                        BodyText1="@getNumberOfParking.NumberOfVisitorParking"
-                        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfVisitorEmptyParking"
-                        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
-                        ExportModel="@L["Excel"]"></SpCardDashbard>
-      
-
+        BodyText1="@getNumberOfParking.NumberOfVisitorParking"
+        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfVisitorEmptyParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
        
-      
+
+
     }
-    <MudItem sm="12">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h6">
-                    @L["CollectedMoneyToday"]
-                </MudText>
-                <MudText>
-                    @L["Day"] @Day
-                </MudText>
-                <MudText>
-                    @L["Collected"] @collectedMoneyToday
-                </MudText>
-            </div>
-            @*  <MudImage Src="images/dashboard/car.png" /> *@
-        </MudPaper>
-    </MudItem>
+    <SpCardStatistics 
+        grid="12"
+        Header="@L["CollectedMoneyToday"]"
+        HeaderText1="@L["Day"]"
+        BodyText1="@Day"
+        HeaderText2="@L["Collected"]"
+        BodyText2="@collectedMoneyToday.ToString()"
+    ></SpCardStatistics>
+
 
     <MudItem sm="6">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
@@ -163,7 +164,7 @@
             <MudPaper Class="custom-rounded p-3">
 
                 <MudSelect T="int"
-                ValueChanged="ChangeSelect"
+                       ValueChanged="GetNumberOfParkingAndEmptyAsync"
                 Placeholder="@L[ "Choose"]"
                 AdornmentColor="MudBlazor.Color.Primary"
                 Class="mb-3" 
@@ -258,6 +259,8 @@
     private double[] inputData { get; set; } = { 0 };
     private string? Day = default;
     private double? collectedMoneyToday = default;
+    int totalOfParking;
+    int totalEmptyOfParking;
     protected async override Task OnInitializedAsync()
     {
 
@@ -272,8 +275,8 @@
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
             var organization = Organizations.FirstOrDefault();
-            var total = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organization.Id);
-            ShowData(total.NumberOfParking, total.NumberOfEmptyParking);
+            await GetNumberOfParkingAndEmptyAsync(organization.Id);
+            //ShowData(total.NumberOfParking, total.NumberOfEmptyParking);
             grid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
 
@@ -287,9 +290,9 @@
         else
         {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            await ChangeSelect(organization.Id);
+            await GetNumberOfParkingAndEmptyAsync(organization.Id);
 
-            grid = 6;
+            grid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
             showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts,dataForSeries.InvoiceTotalAmounts,dataForSeries.PackageTotalAmounts);
@@ -317,10 +320,12 @@
         labels[1] = $"{LocalizationHelper.GetLocalizedString("EmptyParking")} {NumberOfEmptyParking}";
     }
 
-    private async Task ChangeSelect(int Value)
+    private async Task GetNumberOfParkingAndEmptyAsync(int organizationId)
     {
-        getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(Value);
-        ShowData(getNumberOfParking.NumberOfParking, getNumberOfParking.NumberOfEmptyParking);
+        getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organizationId);
+        totalOfParking = getNumberOfParking.NumberOfParking;
+        totalEmptyOfParking = getNumberOfParking.NumberOfEmptyParking;
+       
 
     }
 
