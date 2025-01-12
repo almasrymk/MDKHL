@@ -80,86 +80,28 @@
     </MudItem>
     @if(currenttenant.Id is not null)
     {
-        <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex align-items-start justify-content-between">
-                <MudImage Src="images/dashboard/car.png" Class="me-3" />
-                <div>
 
-                    <MudItem Class="d-flex align-items-center">
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
+        HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
+        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfCustomerEmptyParking"
+                        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
+                        ExportModel="@L["Excel"]"></SpCardDashbard>
+       
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
+        BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
+        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfEmployeeEmptyParking"
+                        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
+                        ExportModel="@L["Excel"]"></SpCardDashbard>
 
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
+                        BodyText1="@getNumberOfParking.NumberOfVisitorParking"
+                        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfVisitorEmptyParking"
+                        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
+                        ExportModel="@L["Excel"]"></SpCardDashbard>
+      
 
-                        <MudText Class="fw-bold" Typo="Typo.h6">
-                            @L["Customers"]
-                        </MudText>
-                    </MudItem>
-
-                    <MudText >
-                        @L["CustomersParking"] @getNumberOfParking.NumberOfCustomerParking
-                    </MudText>
-                    <MudText>
-                        @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfCustomerEmptyParking
-                    </MudText>
-                </div>
-
-                <MudItem >
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
-                </MudItem>
-            </MudPaper>
-
-        </MudItem>
-        <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-start">
-                <MudImage Src="images/dashboard/car.png"  Class="me-3"/>
-                <div>
-
-                    <MudItem Class="d-flex align-items-center">
-                        <MudText Class="fw-bold" Typo="Typo.h6">
-                            @L["Employees"]
-                        </MudText>
-                    </MudItem>
-
-                    <MudText >
-                        @L["CustomersParking"] @getNumberOfParking.NumberOfEmployeeParking
-                    </MudText>
-                    <MudText>
-                        @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfEmployeeEmptyParking
-                    </MudText>
-                </div>
-
-                <MudItem>
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-
-        <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-start">
-                <MudImage Src="images/dashboard/car.png" Class="me-3"/>
-
-                <div>
-                    <MudItem Class=" d-flex align-items-center">
-                        <MudText Class="fw-bold" Typo="Typo.h6">
-                            @L["Visitors"]
-                        </MudText>
-                    </MudItem>
-                    <MudText >
-                        @L["CustomersParking"] @getNumberOfParking.NumberOfVisitorParking
-                    </MudText>
-                    <MudText>
-                        @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfVisitorEmptyParking
-                    </MudText>
-                </div>
-                <MudItem>
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
+       
+      
     }
     <MudItem sm="12">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
