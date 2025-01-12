@@ -144,7 +144,7 @@ public static class VehicleValidation
                 throw new Exception(LocalizationHelper.GetLocalizedString("NotFoundValidation") + ' ' + LocalizationHelper.GetLocalizedString("PlateLetter") + ' ' + charInArabic);
             }
         }
-        return result.ToString();
+        return ReversStringBuilder(result);
     }
 
     private static string MapEnglishToArabic(string englishText)
@@ -164,12 +164,17 @@ public static class VehicleValidation
             }
             else
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("NotFoundValidation") +' '+LocalizationHelper.GetLocalizedString("PlateLetter") +' ' + charInEnglish);
+                throw new Exception(LocalizationHelper.GetLocalizedString("NotFoundValidation") + ' ' + LocalizationHelper.GetLocalizedString("PlateLetter") + ' ' + charInEnglish);
 
             }
         }
+        return ReversStringBuilder(result);
+    }
+
+    private static string ReversStringBuilder(StringBuilder result)
+    {
         var resultText = result.ToString();
-        return new string(resultText.ToCharArray().ToArray());
+        return new string(resultText.ToCharArray().Reverse().ToArray());
     }
 
     public static (string,string) HandleKeyUp(string e)

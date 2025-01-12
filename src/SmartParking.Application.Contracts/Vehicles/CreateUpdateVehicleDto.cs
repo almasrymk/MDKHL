@@ -15,7 +15,7 @@ namespace SmartParking.Vehicles
         public string FullEnPlate
         {
             get {
-               return    EnPlateLetters.Replace(" ", string.Empty) + EnPlateNumber.Replace(" ", string.Empty);
+               return EnPlateNumber.Replace(" ", string.Empty)+ EnPlateLetters.Replace(" ", string.Empty);
             }
         }
 
@@ -23,7 +23,7 @@ namespace SmartParking.Vehicles
         {
             get
             {
-                return  ArPlateLetters.Replace(" ", string.Empty) + ArPlateNumber.Replace(" ", string.Empty);
+                return ArPlateNumber.Replace(" ", string.Empty)+ArPlateLetters.Replace(" ", string.Empty) ;
             }
         }
         public string ArPlateNumber { get; set; } = "";
