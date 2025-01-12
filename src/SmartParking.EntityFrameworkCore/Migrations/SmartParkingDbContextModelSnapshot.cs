@@ -496,6 +496,12 @@ namespace SmartParking.Migrations
                     b.Property<bool>("IsIn")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsMapped")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPending")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationTime");
@@ -509,6 +515,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("PlateNumber")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("RemainingTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("SnapTime")
                         .HasColumnType("timestamp without time zone");
