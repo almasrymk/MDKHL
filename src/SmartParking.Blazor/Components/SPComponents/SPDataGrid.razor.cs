@@ -51,7 +51,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowAssign { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
-
+    [Parameter] public EventCallback<string> HandleCategory { get; set; }
 
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
@@ -66,6 +66,8 @@ public partial class SPDataGrid
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
 
     private bool IsNot = false;
+    private bool IsClickMenu = false;
+    private string ValueOfMenue= "All";
     public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
@@ -211,6 +213,10 @@ public partial class SPDataGrid
         {
             await OnFiltering.InvokeAsync(pageArgs);
         }
+        if (IsClickMenu)
+        {
+            await HandleCategory.InvokeAsync(ValueOfMenue);
+        }
         return new GridData<RowDef>
         {
             TotalItems = TotalItemsInTable,
@@ -290,5 +296,12 @@ public partial class SPDataGrid
        
     }
    
+    public async Task HandleMunue(string value)
+    {
+        IsClickMenu = true;
+        ValueOfMenue = value;
+        await HandleCategory.InvokeAsync(value);
+        await dataGrid.ReloadServerData();
+    }
 }
 
