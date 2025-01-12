@@ -176,26 +176,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     /// <inheritdoc/>
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
-        List<Invoice> unPaidInvoices = new List<Invoice>();
-
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-             unPaidInvoices = await _invoiceRepository.GetListAsync(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid );
-
-        }
-
-        var sortedInvoices = unPaidInvoices
-            .OrderByDescending(invo => invo.InvoiceTime)
-            .ToList();
-
-        var unpaidInvoicesMap = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(sortedInvoices);
-
-        if (unpaidInvoicesMap.Count < 0)
-        {
-            return Result<List<InvoiceDto>>.NotFound("Invoice Not Found");
-        }
-
-        return Result<List<InvoiceDto>>.Success(unpaidInvoicesMap);
+        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId && inv.InvoiceType == InvoiceType.UnPaid).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
+        return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
     }
 
 	/// <inheritdoc/>
