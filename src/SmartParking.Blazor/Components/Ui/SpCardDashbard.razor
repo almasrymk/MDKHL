@@ -1,0 +1,40 @@
+﻿<MudItem sm="4">
+    <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex align-items-start justify-content-between">
+        <MudImage Src=@Image Class="me-3" />
+        <div>
+
+            <MudItem Class="d-flex align-items-center">
+
+
+                <MudText Class="fw-bold" Typo="Typo.h6">
+                    @Header
+                </MudText>
+            </MudItem>
+
+            <MudText>
+                @HeaderText1 @BodyText1
+            </MudText>
+            <MudText>
+                @HeaderText2 @BodyText2
+            </MudText> 
+        </div>
+
+        <MudItem>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
+                <MudMenuItem OnClick="HandleExport">@ExportModel</MudMenuItem>
+            </MudMenu>
+        </MudItem>
+    </MudPaper>
+
+</MudItem>
+@code {
+
+    [Parameter] public string Image { get; set; }
+    [Parameter] public string Header { get; set; }
+    [Parameter] public string  HeaderText1{ get; set; }
+    [Parameter] public int  BodyText1{ get; set; }
+    [Parameter] public string HeaderText2 { get; set; }
+    [Parameter] public int BodyText2 { get; set; }
+    [Parameter] public EventCallback HandleExport { get; set; } 
+    [Parameter] public string ExportModel { get; set; } 
+}

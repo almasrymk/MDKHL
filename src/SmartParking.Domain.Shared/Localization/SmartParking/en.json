@@ -592,10 +592,14 @@
     "Excel": "Excel",
     "CSV": "CSV",
     "Done": "Done",
+    "Send": "Send",
+    "TotalSlots": "Total Slots",
+    "All": "All",
+    "NoPackages": "No Packages",
     "InvoiceCollectedMoney": "Parking",
     "PackageCollectedMoney": "Package",
-    "Send": "Send",
-    "Mapped": "Mapped"
+    "Mapped": "Mapped",
+    "Beneficiaries": "Beneficiaries"
 
 
 

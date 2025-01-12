@@ -618,10 +618,13 @@
     "CSV": "ملف CSV",
     "Done": "تم",
     "GarageName": "اسم الموقف",
-    "InvoiceCollectedMoney": "مواقف",
-    "PackageCollectedMoney": "باقات",
+    "InvoiceCollectedMoney": "اجمالي المحصلة النقدية للمطابقات",
+    "PackageCollectedMoney": "اجمالي المحصلة النقدية للباقات",
     "Send": "إرسال",
-    "Mapped": "تطابق"
+    "Beneficiaries": "العملاء",
+    "TotalSlots": "اجمالي أماكن الركن",
+    "All": "الكل",
+    "NoPackages": "بدون باقة"
 
 
 

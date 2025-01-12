@@ -35,148 +35,79 @@
 <MudGrid>
     @if (currenttenant.Id == null)
     {
+        <SpCardInfo grid="totalGrid"
+           Number="@_organizationsCount.ToString()"
+           Type="@L["Organizations"]"
+           icon=" images/dashboard/organizations.png"></SpCardInfo>
 
-        <MudItem sm="@grid">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-                <div>
-                    <MudText Class="fw-bold" Typo="Typo.h4">
-                        @_organizationsCount
-                    </MudText>
-                    <MudText>
-                        @L["Organizations"]
-                    </MudText>
-                </div>
-                <MudImage Src="images/dashboard/organizations.png" />
-            </MudPaper>
-        </MudItem>
-    }        
-    <MudItem sm="@grid">
+        
+     
+    }  
+    <SpCardInfo grid="grid"
+                Number="@_garagesCount.ToString()"
+                Type="@L["Garages"]"
+                icon="images/dashboard/garage.png"></SpCardInfo>
+    <SpCardInfo grid="grid"
+                Number="@_customersCount.ToString()"
+                Type="@L["Customers"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+    @if (currenttenant.Id is not null)
+    {
+        <SpCardStatistics grid="grid"
+                          Header="@L["TotalSlots"]"
+                          HeaderText1="@L["CustomersParking"]"
+                          BodyText1="@totalOfParking.ToString()"
+                          HeaderText2="@L["CustomersEmptyParking"]"
+                          BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
+    }
 
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_garagesCount
-                </MudText>
-                <MudText>
-                    @L["Garages"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/garage.png" />
-        </MudPaper>
-    </MudItem>
-
-    <MudItem sm="@grid">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_customersCount
-                </MudText>
-                <MudText>
-                    @L["Customers"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/customers.png" />
-        </MudPaper>
-    </MudItem>
+    <SpCardInfo grid="4"
+                Number="@data[0].ToString()"
+                Type="@L["Customers"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="4"
+                Number="@data[1].ToString()"
+                Type="@L["Employees"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="4"
+                Number="@data[2].ToString()"
+                Type="@L["Visitors"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+   
+   
     @if(currenttenant.Id is not null)
     {
-        <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex align-items-start justify-content-between">
-                <MudImage Src="images/dashboard/car.png" Class="me-3" />
-                <div>
 
-                    <MudItem Class="d-flex align-items-center">
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
+        HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
+        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfCustomerEmptyParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
+        BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
+        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfEmployeeEmptyParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
+        BodyText1="@getNumberOfParking.NumberOfVisitorParking"
+        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfVisitorEmptyParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+       
 
 
-                        <MudText Class="fw-bold" Typo="Typo.h6">
-                            @L["Customers"]
-                        </MudText>
-                    </MudItem>
-
-                    <MudText >
-                        @L["CustomersParking"] @getNumberOfParking.NumberOfCustomerParking
-                    </MudText>
-                    <MudText>
-                        @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfCustomerEmptyParking
-                    </MudText>
-                </div>
-
-                <MudItem >
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
-                </MudItem>
-            </MudPaper>
-
-        </MudItem>
-        <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-start">
-                <MudImage Src="images/dashboard/car.png"  Class="me-3"/>
-                <div>
-
-                    <MudItem Class="d-flex align-items-center">
-                        <MudText Class="fw-bold" Typo="Typo.h6">
-                            @L["Employees"]
-                        </MudText>
-                    </MudItem>
-
-                    <MudText >
-                        @L["CustomersParking"] @getNumberOfParking.NumberOfEmployeeParking
-                    </MudText>
-                    <MudText>
-                        @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfEmployeeEmptyParking
-                    </MudText>
-                </div>
-
-                <MudItem>
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
-
-        <MudItem sm="4">
-            <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-start">
-                <MudImage Src="images/dashboard/car.png" Class="me-3"/>
-
-                <div>
-                    <MudItem Class=" d-flex align-items-center">
-                        <MudText Class="fw-bold" Typo="Typo.h6">
-                            @L["Visitors"]
-                        </MudText>
-                    </MudItem>
-                    <MudText >
-                        @L["CustomersParking"] @getNumberOfParking.NumberOfVisitorParking
-                    </MudText>
-                    <MudText>
-                        @L["CustomersEmptyParking"] @getNumberOfParking.NumberOfVisitorEmptyParking
-                    </MudText>
-                </div>
-                <MudItem>
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
-                </MudItem>
-            </MudPaper>
-        </MudItem>
     }
-    <MudItem sm="12">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h6">
-                    @L["CollectedMoneyToday"]
-                </MudText>
-                <MudText>
-                    @L["Day"] @Day
-                </MudText>
-                <MudText>
-                    @L["Collected"] @collectedMoneyToday
-                </MudText>
-            </div>
-            @*  <MudImage Src="images/dashboard/car.png" /> *@
-        </MudPaper>
-    </MudItem>
+    <SpCardStatistics 
+        grid="12"
+        Header="@L["CollectedMoneyToday"]"
+        HeaderText1="@L["Day"]"
+        BodyText1="@Day"
+        HeaderText2="@L["Collected"]"
+        BodyText2="@collectedMoneyToday.ToString()"
+    ></SpCardStatistics>
+
 
     <MudItem sm="6">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
@@ -215,52 +146,7 @@
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
-        @if (currenttenant.Id == null)
-        {
-
-            <MudPaper Class="custom-rounded p-3">
-
-                <MudSelect T="int"
-                ValueChanged="ChangeSelect"
-                Placeholder="@L[ "Choose"]"
-                AdornmentColor="MudBlazor.Color.Primary"
-                Class="mb-3" 
-                Immediate="true"
-                >
-                    <MudSelectItem Value="0" Disabled>
-
-                        @L["Choose"]
-                    </MudSelectItem>
-                    @foreach (var organization in Organizations)
-                    {
-                        if (organization.Status != Status.Active)
-                            continue;
-                        <MudSelectItem  Value="@organization.Id">
-
-                            @organization.EnglishName
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-                <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
-
-                    <MudChart 
-                    ChartType="ChartType.Pie" 
-                    InputData="@data" 
-                    InputLabels="@labels" 
-                    Width="300px" 
-                    Height="300px" 
-                    ChartOptions="@options"
-
-
-
-
-                    />
-                </MudTooltip>
-            </MudPaper>
-
-        }
-        else
-        {
+        
             <MudPaper Class="custom-rounded p-3">
                 <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
@@ -273,8 +159,6 @@
                     />
                 </MudTooltip>
             </MudPaper>
-
-        }
     </MudItem>
     <MudItem sm="12">
         <MudPaper Class="custom-rounded">
@@ -301,10 +185,11 @@
     private int _garagesCount;
     private int _customersCount;
     private int grid;
+    private int totalGrid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
-    double[] data= { 20,77};
+    double[] data= { 20,77,100};
 
-    string[] labels = { "Parking", "EmptyParking" };
+    string[] labels = { "Customers", "Employees" , "Visitors" };
     string msg;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     public string[] XAxisLabels = { " " };
@@ -316,6 +201,8 @@
     private double[] inputData { get; set; } = { 0 };
     private string? Day = default;
     private double? collectedMoneyToday = default;
+    int totalOfParking;
+    int totalEmptyOfParking;
     protected async override Task OnInitializedAsync()
     {
 
@@ -330,9 +217,11 @@
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
             var organization = Organizations.FirstOrDefault();
-            var total = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organization.Id);
-            ShowData(total.NumberOfParking, total.NumberOfEmptyParking);
+            await GetNumberOfParkingAndEmptyAsync(organization.Id);
+            var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
             grid = 4;
+            totalGrid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
 
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyMdkhlAsync();
@@ -345,9 +234,11 @@
         else
         {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            await ChangeSelect(organization.Id);
-
-            grid = 6;
+            await GetNumberOfParkingAndEmptyAsync(organization.Id);
+            var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
+            grid = 4;
+            totalGrid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
             var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
             showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts,dataForSeries.InvoiceTotalAmounts,dataForSeries.PackageTotalAmounts);
@@ -366,19 +257,23 @@
         //   return await base.OnInitializedAsync();
     }
 
-    private void ShowData(int NumberOfParking, int NumberOfEmptyParking)
+    private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees)
     {
-        data[0] = NumberOfParking;
-        data[1] = NumberOfEmptyParking;
+        data[0] = NumberOfCustomers;
+        data[1] = NumberOfEmployees;
+        data[2] = NumberOfVisitors;
 
-        labels[0] = $"{LocalizationHelper.GetLocalizedString("Parking")} {NumberOfParking}";
-        labels[1] = $"{LocalizationHelper.GetLocalizedString("EmptyParking")} {NumberOfEmptyParking}";
+        labels[0] = $"{LocalizationHelper.GetLocalizedString("Beneficiaries")} {NumberOfCustomers}";
+        labels[1] = $"{LocalizationHelper.GetLocalizedString("Employees")} {NumberOfEmployees}";
+        labels[2] = $"{LocalizationHelper.GetLocalizedString("Visitors")} {NumberOfVisitors}";
     }
 
-    private async Task ChangeSelect(int Value)
+    private async Task GetNumberOfParkingAndEmptyAsync(int organizationId)
     {
-        getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(Value);
-        ShowData(getNumberOfParking.NumberOfParking, getNumberOfParking.NumberOfEmptyParking);
+        getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organizationId);
+        totalOfParking = getNumberOfParking.NumberOfParking;
+        totalEmptyOfParking = getNumberOfParking.NumberOfEmptyParking;
+
 
     }
 
