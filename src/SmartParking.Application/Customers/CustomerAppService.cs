@@ -162,14 +162,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             userMap.IsCustomer = true;
             var user = await _usersAppService.CreateWithRoleAsync(userMap,input.RoleId);
             return user;
-	}	
-    
+	}
 
 
 
-	
 
 
+
+    [RemoteService(false)]
 	/// <inheritdoc/>
 	public async Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
 	{
@@ -216,7 +216,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 
     }
-    
+    [RemoteService(false)]
     public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input,int? organizationId)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
@@ -252,7 +252,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
         return query;
     }
-
+    [RemoteService(false)]
     public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input,CustomerCategoryStatus customerCategory,int? organizationId)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())

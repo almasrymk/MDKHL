@@ -327,7 +327,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<InvoiceDto> SaveTransactionWithInvoice(CreateUpdateInvoiceDto invoice, CreateUpdateGarageTransactionDto GarageTransaction)
     {
-        await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        var garageTransaction =  await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        invoice.GarageTransactionExitId = garageTransaction.Id;
         var resultedInvoice= await _invoiceAppService.CreateAsync(invoice);
         return resultedInvoice;
     }
