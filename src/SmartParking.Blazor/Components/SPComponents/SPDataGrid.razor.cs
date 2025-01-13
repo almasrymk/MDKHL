@@ -40,6 +40,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowEdit { get; set; } = true;
     [Parameter] public bool ShowButton { get; set; } = true;
     [Parameter] public bool ShowExport { get; set; } = true;
+    [Parameter] public bool ShowMenue { get; set; } = false;
     [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
