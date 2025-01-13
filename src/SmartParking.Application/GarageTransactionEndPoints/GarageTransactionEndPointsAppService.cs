@@ -786,7 +786,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
         invoice.Value.InvoiceType = InvoiceType.Paid;
-        UpdateEntryTransactionCheckouFromMobile(result.Item2);
+        await UpdateEntryTransactionCheckouFromMobile(result.Item2);
         return await SaveTransactionWithInvoice(invoice, result.Item1);
     }
 
