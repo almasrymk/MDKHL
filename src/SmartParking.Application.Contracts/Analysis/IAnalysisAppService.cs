@@ -66,6 +66,6 @@ public interface IAnalysisAppService : IApplicationService
     /// Get count of customers and visitors and employees
     /// </summary>
     /// <returns> count of customers and visitors and employees</returns>
-    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
-    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
+    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
 }

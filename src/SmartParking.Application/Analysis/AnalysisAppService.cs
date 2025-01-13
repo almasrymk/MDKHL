@@ -329,41 +329,38 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         
     }
 
-    public async Task<(int totalCountOfCustomers,int totalCountOfVisitors,int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
+    public async Task<(int totalCountOfCustomers,int totalCountOfVisitors,int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
     {
-        var query = await _customerPackageRepository.GetQueryableAsync();
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _custeRepo.GetQueryableAsync();
+            var groupedCounts = await query
+                   .Select(g => new
+                   {
+                       CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
+                       CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
+                       CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
+                       CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
+                   }).FirstOrDefaultAsync();
 
-        var groupedCounts = await query
-         .GroupBy(c => c.CustomerCategory)
-               .Select(g => new 
-               {
-                   Category = g.Key,
-                   Count = g.Count()
-               }).ToListAsync();
-
-        int totalCountOfCustomers = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Customer)?.Count ?? 0;
-        int totalCountOfVisitors = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Visitor)?.Count ?? 0;
-        int totalCountOfEmployees = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Employee)?.Count ?? 0;
-
-        return (totalCountOfCustomers, totalCountOfVisitors, totalCountOfEmployees);
+            return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
+        }
+       
     }
     
-    public async Task<(int totalCountOfCustomers,int totalCountOfVisitors,int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
     {
-        var query = await _customerPackageRepository.GetQueryableAsync();
-        query = query.Where(_ => _.OrganizationId == organizationId);
+        var query = await _custeRepo.GetQueryableAsync();
+        query = query.Where(_ => _.CustomerPackages.Any(_ => _.OrganizationId == organizationId));
         var groupedCounts = await query
-         .GroupBy(c => c.CustomerCategory)
-               .Select(g => new
-               {
-                   Category = g.Key,
-                   Count = g.Count()
-               }).ToListAsync();
+                  .Select(g => new
+                  {
+                      CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
+                      CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
+                      CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
+                      CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
+                  }).FirstOrDefaultAsync();
 
-        int totalCountOfCustomers = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Customer)?.Count ?? 0;
-        int totalCountOfVisitors = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Visitor)?.Count ?? 0;
-        int totalCountOfEmployees = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Employee)?.Count ?? 0;
-
-        return (totalCountOfCustomers, totalCountOfVisitors, totalCountOfEmployees);
+        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
     }
 }
