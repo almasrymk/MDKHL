@@ -26,6 +26,7 @@ using SmartParking.Utilities;
 using SmartParking.Localization;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace SmartParking.Customers;
 [Authorize]
 public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService
@@ -351,42 +352,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = queryable.Include(c => c.CustomerPackages);
             queryable = queryable.Where(x => x.CustomerPackages.Any(cp => cp.OrganizationId == organization.Id));
 
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-                {
-
-                    queryable = queryable.Where(or => 
-                        or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
-                    );
-                }
-                if (!input.Sorting.IsNullOrEmpty())
-                {
-                    if (input.Sorting.Contains("DESC"))
-                    {
-                        var sorting = input.Sorting.Split(' ').ToList();
-                        queryable = queryable.OrderBy(sorting[0] + " descending");
-                    }
-                    else
-                    {
-                        queryable = queryable.OrderBy(input.Sorting);
-                    }
-
-                }
-                var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-                queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-                var customers = await AsyncExecuter.ToListAsync(queryable);
-
-                var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-                Console.WriteLine(customersDto.Count);
-                return new PagedResultDto<CustomerDto>(
-                    totalCount,
-                    customersDto
-                );
+            queryable = CreateSearchQuery(input, queryable);
+            queryable = AddSortQuery(input, queryable);
+            var paged = await AddPaged(input, queryable);
+            queryable = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(queryable);
+            return new PagedResultDto<CustomerDto>(
+                paged.totalCount,
+                cutomersDtos
+            );
         }
 
     }
@@ -398,29 +372,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(x => x.IdentityUser);
             queryable = CreateSearchQuery(input, queryable);
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var customers = await AsyncExecuter.ToListAsync(queryable);
-
-            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-            Console.WriteLine(customersDto.Count);
+            queryable = AddSortQuery(input, queryable);
+            var paged = await AddPaged(input, queryable);
+            queryable = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(queryable);
             return new PagedResultDto<CustomerDto>(
-                totalCount,
-                customersDto
+                paged.totalCount,
+                cutomersDtos
             );
         }
     }
