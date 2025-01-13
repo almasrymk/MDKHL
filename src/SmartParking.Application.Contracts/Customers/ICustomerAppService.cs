@@ -1,5 +1,6 @@
 ﻿using SmartParking.Cameras;
 using SmartParking.Entities.Customers;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Vehicles;
 using System;
@@ -43,9 +44,9 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <param name="input">Input used for pagination</param>
     /// <returns>Paged Result of Customers</returns>
-    Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input);
 
-    Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input);
 	/// <summary>
 	/// Method used to get customer by id 
 	/// </summary>
@@ -108,5 +109,8 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     Task<int> GetCountCustomersCountForOrganization(Guid ?CurrentTenantId);
 
     Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input);
+
+    Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId);
+    Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId);
 
 }
