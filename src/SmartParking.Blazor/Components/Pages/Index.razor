@@ -36,45 +36,50 @@
     @if (currenttenant.Id == null)
     {
         <SpCardInfo grid="totalGrid"
-           Number="@_organizationsCount.ToString()"
-           Type="@L["Organizations"]"
-           icon=" images/dashboard/organizations.png"></SpCardInfo>
+        Number="@_organizationsCount.ToString()"
+        Type="@L["Organizations"]"
+        icon=" images/dashboard/organizations.png"></SpCardInfo>
 
-        
-     
+
+
     }  
     <SpCardInfo grid="grid"
-                Number="@_garagesCount.ToString()"
-                Type="@L["Garages"]"
-                icon="images/dashboard/garage.png"></SpCardInfo>
+    Number="@_garagesCount.ToString()"
+    Type="@L["Garages"]"
+    icon="images/dashboard/garage.png"></SpCardInfo>
     <SpCardInfo grid="grid"
-                Number="@_customersCount.ToString()"
-                Type="@L["Customers"]"
-                icon="images/dashboard/customers.png"></SpCardInfo>
+    Number="@_customersCount.ToString()"
+    Type="@L["Customers"]"
+    icon="images/dashboard/customers.png"></SpCardInfo>
     @if (currenttenant.Id is not null)
     {
         <SpCardStatistics grid="grid"
-                          Header="@L["TotalSlots"]"
-                          HeaderText1="@L["CustomersParking"]"
-                          BodyText1="@totalOfParking.ToString()"
-                          HeaderText2="@L["CustomersEmptyParking"]"
-                          BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
+        Header="@L["TotalSlots"]"
+        HeaderText1="@L["CustomersParking"]"
+        BodyText1="@totalOfParking.ToString()"
+        HeaderText2="@L["CustomersEmptyParking"]"
+        BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
     }
 
-    <SpCardInfo grid="4"
-                Number="@data[0].ToString()"
-                Type="@L["Customers"]"
-                icon="images/dashboard/customers.png"></SpCardInfo>
-    <SpCardInfo grid="4"
-                Number="@data[1].ToString()"
-                Type="@L["Employees"]"
-                icon="images/dashboard/customers.png"></SpCardInfo>
-    <SpCardInfo grid="4"
-                Number="@data[2].ToString()"
-                Type="@L["Visitors"]"
-                icon="images/dashboard/customers.png"></SpCardInfo>
-   
-   
+    <SpCardInfo grid="3"
+    Number="@data[0].ToString()"
+    Type="@L["Customers"]"
+    icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="3"
+    Number="@data[1].ToString()"
+    Type="@L["Employees"]"
+    icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="3"
+    Number="@data[2].ToString()"
+    Type="@L["Visitors"]"
+    icon="images/dashboard/customers.png"></SpCardInfo>
+    <SpCardInfo grid="3"
+    Number="@data[3].ToString()"
+    Type="@L["NoPackages"]"
+    icon="images/dashboard/customers.png"></SpCardInfo>
+
+
+
     @if(currenttenant.Id is not null)
     {
 
@@ -95,17 +100,17 @@
         HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfVisitorEmptyParking"
         HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
         ExportModel="@L["Excel"]"></SpCardDashbard>
-       
+
 
 
     }
     <SpCardStatistics 
-        grid="12"
-        Header="@L["CollectedMoneyToday"]"
-        HeaderText1="@L["Day"]"
-        BodyText1="@Day"
-        HeaderText2="@L["Collected"]"
-        BodyText2="@collectedMoneyToday.ToString()"
+    grid="12"
+    Header="@L["CollectedMoneyToday"]"
+    HeaderText1="@L["Day"]"
+    BodyText1="@Day"
+    HeaderText2="@L["Collected"]"
+    BodyText2="@collectedMoneyToday.ToString()"
     ></SpCardStatistics>
 
 
@@ -146,19 +151,19 @@
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
-        
-            <MudPaper Class="custom-rounded p-3">
-                <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
 
-                    <MudChart ChartType="ChartType.Pie"
-                    InputData="@data"
-                    InputLabels="@labels"
-                    Width="300px"
-                    Height="300px"
-                    ChartOptions="@options"
-                    />
-                </MudTooltip>
-            </MudPaper>
+        <MudPaper Class="custom-rounded p-3">
+            <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
+
+                <MudChart ChartType="ChartType.Pie"
+                InputData="@data"
+                InputLabels="@labels"
+                Width="300px"
+                Height="300px"
+                ChartOptions="@options"
+                />
+            </MudTooltip>
+        </MudPaper>
     </MudItem>
     <MudItem sm="12">
         <MudPaper Class="custom-rounded">
@@ -187,9 +192,9 @@
     private int grid;
     private int totalGrid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
-    double[] data= { 20,77,100};
+    double[] data= { 20,77,100,20};
 
-    string[] labels = { "Customers", "Employees" , "Visitors" };
+    string[] labels = { "Customers", "Employees" , "Visitors","NoPackage"};
     string msg;
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     public string[] XAxisLabels = { " " };
@@ -219,7 +224,7 @@
             var organization = Organizations.FirstOrDefault();
             await GetNumberOfParkingAndEmptyAsync(organization.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
-            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
             totalGrid = 4;
             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
@@ -236,7 +241,7 @@
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await GetNumberOfParkingAndEmptyAsync(organization.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
-            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
             totalGrid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
@@ -257,15 +262,18 @@
         //   return await base.OnInitializedAsync();
     }
 
-    private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees)
+    private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees , int NumberOfNoPackage)
     {
         data[0] = NumberOfCustomers;
         data[1] = NumberOfEmployees;
         data[2] = NumberOfVisitors;
+        data[3] = NumberOfNoPackage;
 
         labels[0] = $"{LocalizationHelper.GetLocalizedString("Beneficiaries")} {NumberOfCustomers}";
         labels[1] = $"{LocalizationHelper.GetLocalizedString("Employees")} {NumberOfEmployees}";
         labels[2] = $"{LocalizationHelper.GetLocalizedString("Visitors")} {NumberOfVisitors}";
+        labels[3] = $"{LocalizationHelper.GetLocalizedString("NoPackages")} {NumberOfNoPackage}";
+
     }
 
     private async Task GetNumberOfParkingAndEmptyAsync(int organizationId)
