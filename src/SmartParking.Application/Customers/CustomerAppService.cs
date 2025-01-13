@@ -184,7 +184,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(query);
+            List<CustomerDto> cutomersDtos = await AddMap(query, null);
             return new PagedResultDto<CustomerDto>
             {
                 TotalCount = paged.totalCount,
@@ -205,7 +205,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(query);
+            List<CustomerDto> cutomersDtos = await AddMap(query, null);
 
             return new PagedResultDto<CustomerDto>
             {
@@ -231,7 +231,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(query);
+            List<CustomerDto> cutomersDtos = await AddMap(query, null);
 
             return new PagedResultDto<CustomerDto>
             {
@@ -267,7 +267,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(query);
+            List<CustomerDto> cutomersDtos = await AddMap(query, customerCategory);
 
             return new PagedResultDto<CustomerDto>
             {
@@ -279,7 +279,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-    private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query)
+    private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query,CustomerCategoryStatus? customerCategory)
     {
         
         List<CustomerDto> customersDtos = await query
@@ -291,10 +291,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Email = c.IdentityUser.Email,
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
-                PackageEnglishNames = string.Join(", ", c.CustomerPackages
-                                                    .Select(cp => cp.PackageEnglishName))   ,
-
-                PackageArabicNames = string.Join(", ", c.CustomerPackages
+                PackageEnglishNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue|| _.CustomerCategory == customerCategory)
+                                                    .Select(cp => cp.PackageEnglishName)),
+               
+                PackageArabicNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue || _.CustomerCategory == customerCategory)
                                                     .Select(cp => cp.PackageArabicName))
             })
             .ToListAsync();
@@ -356,7 +356,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = AddSortQuery(input, queryable);
             var paged = await AddPaged(input, queryable);
             queryable = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(queryable);
+            List<CustomerDto> cutomersDtos = await AddMap(queryable,null);
             return new PagedResultDto<CustomerDto>(
                 paged.totalCount,
                 cutomersDtos
@@ -375,7 +375,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = AddSortQuery(input, queryable);
             var paged = await AddPaged(input, queryable);
             queryable = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(queryable);
+            List<CustomerDto> cutomersDtos = await AddMap(queryable, null);
             return new PagedResultDto<CustomerDto>(
                 paged.totalCount,
                 cutomersDtos

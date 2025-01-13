@@ -57,7 +57,7 @@ public partial class SPDataGrid
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
-    private string _searchString;
+    public string _searchString;
     private string sort;
     MudDataGrid<RowDef> dataGrid;
     private bool _ascending = true;
@@ -170,7 +170,7 @@ public partial class SPDataGrid
     private async Task OnSearch(string text)
     {
         _searchString = text;
-
+        
 
         await dataGrid.ReloadServerData();
     }
