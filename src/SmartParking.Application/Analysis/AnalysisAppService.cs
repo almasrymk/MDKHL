@@ -348,19 +348,19 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
        
     }
     
-    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
     {
-        var query = await _custeRepo.GetQueryableAsync();
-        query = query.Where(_ => _.CustomerPackages.Any(_ => _.OrganizationId == organizationId));
+        var query = await _customerPackageRepository.GetQueryableAsync();
+        query = query.Where(_ => _.OrganizationId == organizationId);
         var groupedCounts = await query
                   .Select(g => new
                   {
-                      CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
-                      CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
-                      CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
-                      CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
+                      CountOfCustomers = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Customer).Count(),
+                      CountOfEmployees = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Employee).Count(),
+                      CountOfVisitors = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Visitor).Count(),
+                      
                   }).FirstOrDefaultAsync();
 
-        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
+        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees);
     }
 }
