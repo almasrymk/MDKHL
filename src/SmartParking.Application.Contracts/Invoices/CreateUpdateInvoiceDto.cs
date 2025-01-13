@@ -26,6 +26,8 @@ public class CreateUpdateInvoiceDto
     public bool IsPackage { get; set; }
     public string EntryTransactionImage { get; set; }
     public string ExitTransactionImage { get; set; }
+    public int GarageTransactionExitId { get; set; }
+
 
 
 
