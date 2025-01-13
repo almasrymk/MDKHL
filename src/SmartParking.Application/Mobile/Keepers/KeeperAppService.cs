@@ -194,6 +194,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
+            
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, input.Password))
             {
@@ -212,7 +213,15 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     ErrorMessage = "Account is Inactive"
                 });
             }
-
+            var orgId = user.GetProperty<int>("OrganizationId");
+            var organizationEntity=await _organizationRepoistory.FirstOrDefaultAsync(u => u.Id == orgId);
+            if (organizationEntity is null) {
+                return Result<LoginResponseDto>.Invalid(new Results.ValidationError
+                {
+                    ErrorCode = "400",
+                    ErrorMessage = "User has no organization"
+                });
+            }
             // Sign in the user
             await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -228,7 +237,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
                 TenantId = tenantId,
                 UserId = user.Id.ToString(),
-                OrganizationId = user.GetProperty<int>("OrganizationId")
+                OrganizationId = organizationEntity.Id,
+                GracePeriod = organizationEntity.Graceperiod
 
             });
         }
