@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
+using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
@@ -33,6 +34,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IDataFilter _datafilter;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Payment, Guid> _paymentRepository;
+    private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
     private readonly IPaymentAnalysisRepository _paymentAnalysisRepository;
     private readonly IOrganizationsAppService _organizationsAppService;
@@ -59,6 +61,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
         IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
         IRepository<Payment,Guid> paymentRepository,
+        IRepository<CustomerPackage,int> customerPackageRepository,
         IGarageTransactionAnalysisRepository garageTransactionAnalysis,
         IPaymentAnalysisRepository paymentAnalysisRepository,
         IOrganizationsAppService organizationsAppService)
@@ -69,6 +72,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _datafilter = datafilter;
         _garageRepository = GarageRepository;
         _paymentRepository = paymentRepository;
+        this._customerPackageRepository = customerPackageRepository;
         _garageTransactionAnalysis = garageTransactionAnalysis;
         _paymentAnalysisRepository = paymentAnalysisRepository;
         _organizationsAppService = organizationsAppService;
@@ -309,8 +313,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return dataTable;
     }
 
-   
-
     public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
@@ -325,5 +327,43 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
             return dataTable;
         
+    }
+
+    public async Task<(int totalCountOfCustomers,int totalCountOfVisitors,int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
+    {
+        var query = await _customerPackageRepository.GetQueryableAsync();
+
+        var groupedCounts = await query
+         .GroupBy(c => c.CustomerCategory)
+               .Select(g => new 
+               {
+                   Category = g.Key,
+                   Count = g.Count()
+               }).ToListAsync();
+
+        int totalCountOfCustomers = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Customer)?.Count ?? 0;
+        int totalCountOfVisitors = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Visitor)?.Count ?? 0;
+        int totalCountOfEmployees = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Employee)?.Count ?? 0;
+
+        return (totalCountOfCustomers, totalCountOfVisitors, totalCountOfEmployees);
+    }
+    
+    public async Task<(int totalCountOfCustomers,int totalCountOfVisitors,int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+    {
+        var query = await _customerPackageRepository.GetQueryableAsync();
+        query = query.Where(_ => _.OrganizationId == organizationId);
+        var groupedCounts = await query
+         .GroupBy(c => c.CustomerCategory)
+               .Select(g => new
+               {
+                   Category = g.Key,
+                   Count = g.Count()
+               }).ToListAsync();
+
+        int totalCountOfCustomers = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Customer)?.Count ?? 0;
+        int totalCountOfVisitors = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Visitor)?.Count ?? 0;
+        int totalCountOfEmployees = groupedCounts.FirstOrDefault(g => g.Category == CustomerCategoryStatus.Employee)?.Count ?? 0;
+
+        return (totalCountOfCustomers, totalCountOfVisitors, totalCountOfEmployees);
     }
 }

@@ -30,5 +30,7 @@ public class CustomerDto:AuditedEntityDto<Guid>
     public string CustomerCategory { get; set; }
     public int PackageId { get; set; }
     public Guid IdentityId { get; set; }
+    public string PackageEnglishNames { get; set; }
+    public string PackageArabicNames { get; set; }
 }
 
