@@ -71,7 +71,7 @@ public class UserAppService : ApplicationService, IUserAppService
     public async Task<Result<UserDataDto>> GetUserDataAsync()
     {
         
-        var userName = CurrentUser.Name;
+        var userName = CurrentUser.UserName;
         
         if (userName.IsNullOrEmpty())
         {
@@ -99,7 +99,7 @@ public class UserAppService : ApplicationService, IUserAppService
     }
 
     /// <inheritdoc/>
-    public async Task<Result<UserDataDto>> UpdateUserAsync(string phoneNumber, string password, string email, string image)
+    public async Task<Result<UserDataDto>> UpdateUserAsync(string FullName,string phoneNumber, string password, string email, string image)
     {
         Volo.Abp.Identity.IdentityUser? user;
         using (DataFilter.Disable<IMultiTenant>())
@@ -113,10 +113,16 @@ public class UserAppService : ApplicationService, IUserAppService
                 ErrorMessage = "user with phone number not found"
             });
         }
+        if (user.Name != FullName) { 
+            user.Name = FullName;
 
+        }
         if (phoneNumber != null)
-        { user.SetPhoneNumber(phoneNumber, true); }
-        if(password != null)
+        {
+            user.SetPhoneNumber(phoneNumber, true);
+            await _userManager.SetUserNameAsync(user,phoneNumber);
+        }
+        if (password != null)
         {
             user = await ChangePassword(password, user);
 
@@ -127,20 +133,23 @@ public class UserAppService : ApplicationService, IUserAppService
             var identityResult = await _userManager.ChangeEmailAsync(user, email,token);
 
         }
-        if(image != null)
+        UserDto result = new();
+        if (image != null)
         {
-            var result = await _usersAppService.UpdateImageAsync(CurrentUser.Id, image);
-
+             result = await _usersAppService.UpdateImageAsync(CurrentUser.Id, image);
         }
-
+        user.SetConcurrencyStampIfNotNull(user.ConcurrencyStamp);
+        var Newuser = await _userManager.UpdateAsync(user);
 
 
         return new UserDataDto
         {
-            FullName = user.UserName,
+            FullName = user.Name,
+            UserName = user.UserName,
             Email = user.Email,
             Phone = user.PhoneNumber,
-            Image = image is not null ? image : null,
+            Image = image is not null ? result.Image : null,
+            OrganizationId = user.GetProperty<int>("OrganizationId")
         };
     }
 

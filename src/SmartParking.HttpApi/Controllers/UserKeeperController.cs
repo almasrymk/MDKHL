@@ -27,9 +27,9 @@ public class UserKeeperController : AbpController
 
     [HttpPost("profileUser")]
     [Authorize]
-    public async Task<Result<UserDataDto>> UpdateProfileUser(string? phoneNumber, string? password,string? email , string? image)
+    public async Task<Result<UserDataDto>>UpdateUserAsync(string ?FullName, string? phoneNumber, string? password, string? email, string? image)
     {
-        return await _userAppService.UpdateUserAsync(phoneNumber, password, email, image);
+        return await _userAppService.UpdateUserAsync(FullName,phoneNumber, password, email, image);
     }
 
     [HttpGet]
