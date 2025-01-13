@@ -18,13 +18,14 @@ using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Blazor.Components.Pages.User;
+using SmartParking.Blazor.Components.SPComponents;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class Customer
 {
     private int TotalItem;
-
+    private SPDataGrid sPDataGrid;
     private bool assign = true;
     private string sortColumn;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
@@ -39,6 +40,7 @@ public partial class Customer
 
     public Customer(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
+        sPDataGrid = new SPDataGrid(localizer);
         _localizer = localizer;
         CreatePolicyName = CustomerPermissions.Create;
         UpdatePolicyName = CustomerPermissions.Edit;
@@ -128,6 +130,7 @@ public partial class Customer
             TotalItem = (int)customersDto.TotalCount;
             CreateTable(customersDto);
         }
+        //await HandleSelectAsync("All");
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -282,7 +285,7 @@ public partial class Customer
             MaxResultCount = RowPerPage,
             SkipCount = (CurrentPage - 1) * RowPerPage,
             Sorting = sortColumn,
-            SearchingTerm = termSearch
+            SearchingTerm = sPDataGrid._searchString
         };
 
         PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
