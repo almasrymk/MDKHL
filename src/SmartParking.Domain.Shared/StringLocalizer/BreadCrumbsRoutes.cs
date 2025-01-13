@@ -26,7 +26,7 @@ public static class BreadCrumbsRoutes
             "invoices" => LocalizationHelper.GetLocalizedString("Invoices"),
             "licencetypes" => LocalizationHelper.GetLocalizedString("LicenceTypes"),
             "subscription" => LocalizationHelper.GetLocalizedString("Organization Subscription"),
-            "packages" => LocalizationHelper.GetLocalizedString("Packages"),
+            "package" => LocalizationHelper.GetLocalizedString("Packages"),
             "packagetypes" => LocalizationHelper.GetLocalizedString("PackageTypes"),
             "platecolors" => LocalizationHelper.GetLocalizedString("PlateColors"),
             "regions" => LocalizationHelper.GetLocalizedString("Regions"),
@@ -47,10 +47,17 @@ public static class BreadCrumbsRoutes
             "edit-my-account" => LocalizationHelper.GetLocalizedString("Organization") + " / " + LocalizationHelper.GetLocalizedString("Edit"),
             "view-my-account" => LocalizationHelper.GetLocalizedString("Organization") + " / "+LocalizationHelper.GetLocalizedString("Details"),
             "users" => LocalizationHelper.GetLocalizedString("Users") ,
+            "payments" => LocalizationHelper.GetLocalizedString("Payments") ,
+            "unLinkedTransaction" => LocalizationHelper.GetLocalizedString("UnLinkedTransaction") ,
+            "plateColors" => LocalizationHelper.GetLocalizedString("PlateColors") ,
+            "licenceTypes" => LocalizationHelper.GetLocalizedString("LicenceTypes") ,
+            "vehicleBrands" => LocalizationHelper.GetLocalizedString("VehicleBrands") ,
+            "vehicleModels" => LocalizationHelper.GetLocalizedString("VehicleModels") ,
+            "CameraModels" => LocalizationHelper.GetLocalizedString("Cameramodels") ,
+            "edit-profile" => LocalizationHelper.GetLocalizedString("Edit Profile") ,
+            "roles/mdkhl" => LocalizationHelper.GetLocalizedString("Roles") ,
             "add-user" => LocalizationHelper.GetLocalizedString("Users") +" / "+ LocalizationHelper.GetLocalizedString("Add NEW"),
-
             "roles" => LocalizationHelper.GetLocalizedString("Roles"),
-
             _ => LocalizationHelper.GetLocalizedString("Dashboard") // Default title if no match found
         };
     }

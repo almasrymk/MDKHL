@@ -83,16 +83,17 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => r.RoleId) 
-                    join role in dbContext.Roles 
-                        on roleId equals role.Id
-                    join organization in dbContext.Organizations 
-                     on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
-                    from o in org.DefaultIfEmpty() 
+                    from roleId in user.Roles.Select(r => (Guid?)r.RoleId).DefaultIfEmpty() // Left join for roles
+                    join role in dbContext.Roles
+                        on roleId equals role.Id into roles
+                    from r in roles.DefaultIfEmpty() // Preserve users with no roles
+                    join organization in dbContext.Organizations
+                        on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                    from o in org.DefaultIfEmpty() // Preserve users with no organization
                     select new UserWithRole
                     {
                          User = user,
-                         Role = role,
+                         Role = r,
                          OrganizationEnglishName = o.EnglishName,
                          OrganizationArabicName = o.ArabicName
                         

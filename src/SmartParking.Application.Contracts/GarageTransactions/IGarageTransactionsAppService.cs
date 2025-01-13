@@ -53,6 +53,7 @@ namespace SmartParking.GarageTransactions
 		Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId);
 
 		Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
+		string SaveBase64Image(CreateUpdateGarageTransactionDto input);
 
 
     }

@@ -173,7 +173,7 @@ public partial class User
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserFullName"], item.User.Name));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.User.Email));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNumber"], item.User.PhoneNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserRole"], item.Role.Name));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserRole"], item.Role?.Name));
             
             switch (currrentTenant?.Id is null, CultureInfo.CurrentCulture.Name)
             {

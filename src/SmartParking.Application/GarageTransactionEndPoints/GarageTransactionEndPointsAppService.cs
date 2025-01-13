@@ -27,6 +27,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
@@ -38,7 +39,7 @@ namespace SmartParking.GarageTransactionEndPoints;
 
 //[Authorize]
 [IgnoreAntiforgeryToken]
-public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService
+public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGarageTransactionEndPointsAppService 
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
@@ -326,12 +327,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<InvoiceDto> SaveTransactionWithInvoice(CreateUpdateInvoiceDto invoice, CreateUpdateGarageTransactionDto GarageTransaction)
     {
-        var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        await _garageTransactionsAppService.CreateAsync(GarageTransaction);
         var resultedInvoice= await _invoiceAppService.CreateAsync(invoice);
         return resultedInvoice;
     }
     private async Task<CreateUpdateInvoiceDto> GenrateInvoiceNumberAndInitiateInvoice(DateTime EntranceTime, Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction, int TotalHours, decimal price, bool IsPackage)
     {
+        var image = _garageTransactionsAppService.SaveBase64Image(GarageTransaction);
+
         var invoice = await CreateInvoice(
           GarageTransaction.GarageId,
           "",
@@ -344,7 +347,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
           exsitCustomer?.IdentityUser.Name ?? customerEnName,
           exsitCustomer?.ArabicName ?? customerArName,
           IsPackage,
-          GarageTransaction.VehiclePicture,
+          image,
           exsitCustomer?.Id ?? null
          
           
@@ -816,13 +819,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
         invoice.Value.InvoiceType = InvoiceType.Paid;
-        UpdateEntryTransactionCheckouFromMobile(result.Item2);
+        await UpdateEntryTransactionCheckouFromMobile(result.Item2);
         
         return await SaveTransactionWithInvoice(invoice, result.Item1);
 
     }
 
-    private async void UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction)
+    private async Task UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction)
     {
         entryGarageTransaction.CheckoutMobile = DateTime.Now;
         entryGarageTransaction.IsPending = true;

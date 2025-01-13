@@ -26,6 +26,7 @@ using SmartParking.Utilities;
 using SmartParking.Localization;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace SmartParking.Customers;
 [Authorize]
 public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService
@@ -170,80 +171,165 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
 	/// <inheritdoc/>
-	public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+	public async Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
 	{
 		 var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
-
-
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             query = query.Include(c => c.IdentityUser);
 			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
-
-            }
-            var totalCount = await AsyncExecuter.CountAsync(query);
-
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var customers = await AsyncExecuter.ToListAsync(query);
-            var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            query = CreateSearchQuery(input, query);
+            query = AddSortQuery(input, query);
+            var paged = await AddPaged(input, query);
+            query = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(query);
             return new PagedResultDto<CustomerDto>
             {
-                TotalCount = totalCount,
+                TotalCount = paged.totalCount,
                 Items = cutomersDtos
             };
         }
 	}
 	/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
+	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
-		{
+        {
 
-			var query = await _repository.GetQueryableAsync();
-			query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            if (!input.Sorting.IsNullOrEmpty())
+            var query = await _repository.GetQueryableAsync();
+
+            query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = CreateSearchQuery(input, query);
+            query = AddSortQuery(input, query);
+            var paged = await AddPaged(input, query);
+            query = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(query);
+
+            return new PagedResultDto<CustomerDto>
             {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
+                TotalCount = paged.totalCount,
+                Items = cutomersDtos
+            };
 
+        }
+
+    }
+    
+    public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input,int? organizationId)
+	{
+		using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+
+            query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = query.Where(x => !x.CustomerPackages.Any());
+            query = IsOrganization(organizationId, query);
+            query = CreateSearchQuery(input, query);
+            query = AddSortQuery(input, query);
+            var paged = await AddPaged(input, query);
+            query = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(query);
+
+            return new PagedResultDto<CustomerDto>
+            {
+                TotalCount = paged.totalCount,
+                Items = cutomersDtos
+            };
+
+        }
+
+    }
+
+    private static IQueryable<Customer> IsOrganization(int? organizationId, IQueryable<Customer> query)
+    {
+        if (organizationId is not null)
+        {
+            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
+        }
+
+        return query;
+    }
+
+    public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input,CustomerCategoryStatus customerCategory,int? organizationId)
+	{
+		using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+
+            query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == customerCategory));
+            query = IsOrganization(organizationId, query);
+            query = CreateSearchQuery(input, query);
+            query = AddSortQuery(input, query);
+            var paged = await AddPaged(input, query);
+            query = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(query);
+
+            return new PagedResultDto<CustomerDto>
+            {
+                TotalCount = paged.totalCount,
+                Items = cutomersDtos
+            };
+
+        }
+
+    }
+
+    private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query)
+    {
+        
+        List<CustomerDto> customersDtos = await query
+            .Select(c => new CustomerDto
+            {
+                Id = c.Id,
+                ArabicName = c.ArabicName,
+                FullName = c.IdentityUser.Name,
+                Email = c.IdentityUser.Email,
+                MobileNumber = c.IdentityUser.PhoneNumber,
+                NationalId = c.NationalId,
+                PackageEnglishNames = string.Join(", ", c.CustomerPackages
+                                                    .Select(cp => cp.PackageEnglishName))   ,
+
+                PackageArabicNames = string.Join(", ", c.CustomerPackages
+                                                    .Select(cp => cp.PackageArabicName))
+            })
+            .ToListAsync();
+      
+        return customersDtos;
+    }
+
+    private async Task<(int totalCount, IQueryable<Customer> query)> AddPaged(PagedAndSortedResultRequestDto input,IQueryable<Customer> query)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        return (totalCount, query);
+    }
+
+    private static IQueryable<Customer> AddSortQuery(PagedAndSortedResultRequestDto input, IQueryable<Customer> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
             }
-            var totalCount = await AsyncExecuter.CountAsync(query);
-			query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-			var customers = await AsyncExecuter.ToListAsync(query);
-			var cutomersDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-            
-			return new PagedResultDto<CustomerDto>
-			{
-				TotalCount = totalCount,
-				Items = cutomersDtos
-			};
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
 
-		}
+        }
 
-	}
+        return query;
+    }
 
-	/// <inheritdoc/>
-	public override async Task<CustomerDto> GetAsync(Guid id)
+    /// <inheritdoc/>
+    public override async Task<CustomerDto> GetAsync(Guid id)
     {
         
         using (_dataFilter.Disable<IMultiTenant>())
@@ -266,42 +352,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = queryable.Include(c => c.CustomerPackages);
             queryable = queryable.Where(x => x.CustomerPackages.Any(cp => cp.OrganizationId == organization.Id));
 
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-                {
-
-                    queryable = queryable.Where(or => 
-                        or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
-                    );
-                }
-                if (!input.Sorting.IsNullOrEmpty())
-                {
-                    if (input.Sorting.Contains("DESC"))
-                    {
-                        var sorting = input.Sorting.Split(' ').ToList();
-                        queryable = queryable.OrderBy(sorting[0] + " descending");
-                    }
-                    else
-                    {
-                        queryable = queryable.OrderBy(input.Sorting);
-                    }
-
-                }
-                var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-                queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-                var customers = await AsyncExecuter.ToListAsync(queryable);
-
-                var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-                Console.WriteLine(customersDto.Count);
-                return new PagedResultDto<CustomerDto>(
-                    totalCount,
-                    customersDto
-                );
+            queryable = CreateSearchQuery(input, queryable);
+            queryable = AddSortQuery(input, queryable);
+            var paged = await AddPaged(input, queryable);
+            queryable = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(queryable);
+            return new PagedResultDto<CustomerDto>(
+                paged.totalCount,
+                cutomersDtos
+            );
         }
 
     }
@@ -309,48 +368,39 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-           
+
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(x => x.IdentityUser);
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-
-                queryable = queryable.Where(or =>
-                    or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower())||
-                    or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower())||
-                    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
-                );
-
-            }
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var customers = await AsyncExecuter.ToListAsync(queryable);
-
-            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-            Console.WriteLine(customersDto.Count);
+            queryable = CreateSearchQuery(input, queryable);
+            queryable = AddSortQuery(input, queryable);
+            var paged = await AddPaged(input, queryable);
+            queryable = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(queryable);
             return new PagedResultDto<CustomerDto>(
-                totalCount,
-                customersDto
+                paged.totalCount,
+                cutomersDtos
             );
         }
+    }
+
+    private static IQueryable<Customer> CreateSearchQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Customer> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+
+        }
+
+        return queryable;
     }
 
     /// <inheritdoc/>

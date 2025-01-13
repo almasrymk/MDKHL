@@ -580,6 +580,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         
         RemoveRole(input, user);
         user?.SetProperty("UserTypeId", 3);
+        user?.SetProperty("OrganizationId", 0);
         
         if (user.UserName != input.UserName)
         {
