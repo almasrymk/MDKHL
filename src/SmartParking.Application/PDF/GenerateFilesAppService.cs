@@ -90,10 +90,12 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                 Table table = new Table(NumberOfColumns);
 
                 table.SetWidth(UnitValue.CreatePercentValue(100));
-                if(CultureInfo.CurrentCulture.Name == "ar")
+
+                if (CultureInfo.CurrentCulture.Name == "ar")
                 {
                     table.SetTextAlignment(TextAlignment.RIGHT);
                     table.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
+                    Data.Columns.Reverse();
                 }
                 
                 foreach (var columns in Data.Columns)

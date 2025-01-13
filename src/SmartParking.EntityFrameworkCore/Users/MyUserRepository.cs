@@ -83,16 +83,17 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => r.RoleId) 
-                    join role in dbContext.Roles 
-                        on roleId equals role.Id
-                    join organization in dbContext.Organizations 
-                     on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
-                    from o in org.DefaultIfEmpty() 
+                    from roleId in user.Roles.Select(r => (Guid?)r.RoleId).DefaultIfEmpty() // Left join for roles
+                    join role in dbContext.Roles
+                        on roleId equals role.Id into roles
+                    from r in roles.DefaultIfEmpty() // Preserve users with no roles
+                    join organization in dbContext.Organizations
+                        on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                    from o in org.DefaultIfEmpty() // Preserve users with no organization
                     select new UserWithRole
                     {
                          User = user,
-                         Role = role,
+                         Role = r,
                          OrganizationEnglishName = o.EnglishName,
                          OrganizationArabicName = o.ArabicName
                         
@@ -144,14 +145,15 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => r.RoleId) // Get RoleIds for the user
+                    from roleId in user.Roles.Select(r => (Guid?)r.RoleId).DefaultIfEmpty() // Get RoleIds for the user
                     join role in dbContext.Roles // Join with Roles table
-                        on roleId equals role.Id // Match RoleId
+                        on roleId equals role.Id into rolegroup
+                        from r in rolegroup.DefaultIfEmpty()// Match RoleId
                     join organization in dbContext.Organizations
-                 on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                    on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
                     from o in org.DefaultIfEmpty()
                     where user.Name.ToLower().Contains(term.ToLower())
-                    || role.Name.ToLower().Contains(term.ToLower())
+                    || r.Name.ToLower().Contains(term.ToLower())
                     || user.PhoneNumber.ToLower().Contains(term.ToLower())
                     || user.UserName.ToLower().Contains(term.ToLower())
                     || user.Email.ToLower().Contains(term.ToLower())
@@ -160,7 +162,7 @@ public class MyUserRepository
                     select new UserWithRole
                     {
                         User = user,
-                        Role = role,
+                        Role = r,
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);

@@ -425,7 +425,7 @@
     "SumOfParkingSlotsOfActiveGarage": "Sum Of Parking Slots Of Active Garage",
     "Total Garage Can be added": "Total Garage Can be added",
     "ActiveGarages": "Active Garages",
-    "customer category": "Customer Category",
+    "customer category": "Category",
     "ArPlateNumber": "ArPlateNumber",
     "ArPlateLetter": "ArPlateLetter",
     "EnPlateNumber": "EnPlateNumber",
@@ -434,7 +434,7 @@
     "ParkingSlot": "Slots",
     "TransactionType": "Transaction Type",
     "Payments": "Payments",
-    "PackageName": "Package Name",
+    "PackageName": "Name",
     "Amount": "Amount",
     "Currency": "Currency",
     "PaymentCategory": "Category",
@@ -444,7 +444,7 @@
     "RegionName": "Region",
     "PackageType": "Package Type",
     "NumOfGarages": "Garages",
-    "PackageDuration": "Duration Of Package",
+    "PackageDuration": "Duration",
     "FreeMinutes": "Free Minutes",
     "DectivationDate": "Dectivation Date",
     "ViewMyAccount": "My Account",
@@ -461,8 +461,8 @@
     "EntranceTime": "Entrance Time",
     "CustomerVehicle": "Customer - Vehicle",
     "VehicleDeletedSuccessfully": "Vehicle Deleted Successfully",
-    "CustomerPackages": "Customer - Package",
-    "PriceOfPackage": "Price Of Package",
+    "CustomerPackages": "Packages",
+    "PriceOfPackage": "Price",
     "ExpiryDate": "Expiry Date",
     "CustomerInvoice": "Customer - Mapping",
     "VehichleWasUpdatedSuccessfully": "Vehichle Was Updated Successfully",
@@ -599,7 +599,8 @@
     "InvoiceCollectedMoney": "Parking",
     "PackageCollectedMoney": "Package",
     "Mapped": "Mapped",
-    "Beneficiaries": "Customers"
+    "Beneficiaries": "Customers",
+    "Package": "Package"
 
 
 

@@ -327,7 +327,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<InvoiceDto> SaveTransactionWithInvoice(CreateUpdateInvoiceDto invoice, CreateUpdateGarageTransactionDto GarageTransaction)
     {
-        await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        var garageTransaction =  await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+        invoice.GarageTransactionExitId = garageTransaction.Id;
         var resultedInvoice= await _invoiceAppService.CreateAsync(invoice);
         return resultedInvoice;
     }
@@ -444,6 +445,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 _logger.LogTrace($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");
 
                 var newInvoice= await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction, CustomerCategoryStatus.Customer);
+                newInvoice.EntranceTime = invoice.Value.InvoiceTime;
                 var resultedInvoice= await SaveTransactionWithInvoice(newInvoice, GarageTransaction);
 
                 return await Task.FromResult(false);
@@ -784,7 +786,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
         invoice.Value.InvoiceType = InvoiceType.Paid;
-        UpdateEntryTransactionCheckouFromMobile(result.Item2);
+        await UpdateEntryTransactionCheckouFromMobile(result.Item2);
         return await SaveTransactionWithInvoice(invoice, result.Item1);
     }
 

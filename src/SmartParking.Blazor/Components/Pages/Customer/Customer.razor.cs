@@ -18,13 +18,14 @@ using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Blazor.Components.Pages.User;
+using SmartParking.Blazor.Components.SPComponents;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class Customer
 {
     private int TotalItem;
-
+    private SPDataGrid sPDataGrid;
     private bool assign = true;
     private string sortColumn;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
@@ -39,6 +40,7 @@ public partial class Customer
 
     public Customer(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
+        sPDataGrid = new SPDataGrid(localizer);
         _localizer = localizer;
         CreatePolicyName = CustomerPermissions.Create;
         UpdatePolicyName = CustomerPermissions.Edit;
@@ -128,6 +130,7 @@ public partial class Customer
             TotalItem = (int)customersDto.TotalCount;
             CreateTable(customersDto);
         }
+        //await HandleSelectAsync("All");
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -174,19 +177,38 @@ public partial class Customer
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+      tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         //tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "IdentityUser.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NationalId"], Name = "NationalId", IsFilterable = false, PropertyName = "NationalId", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = false, PropertyName = "IdentityUser.PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
-        if(CultureInfo.CurrentCulture.Name == "ar")
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageName"], Name = "PackageName", IsFilterable = false, PropertyName = "CustomerPackages.PackageArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Package"], Name = "Package", IsFilterable = false, PropertyName = "CustomerPackages.PackageArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        }
         else
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageName"], Name = "PackageName", IsFilterable = false, PropertyName = "CustomerPackages.PackageEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        {
 
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Package"], Name = "Package", IsFilterable = false, PropertyName = "CustomerPackages.PackageEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+        }
+        if(CurrentTenant.Id == null)
+        {
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
 
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            }
+
+            else
+            {
+
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "CustomerPackages.Organization.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+            }
+
+        }
 
         foreach (var item in customers.Items)
         {
@@ -199,15 +221,25 @@ public partial class Customer
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NationalId"], item.NationalId));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MobileNumber"], item.MobileNumber));
             if(CultureInfo.CurrentCulture.Name == "ar")
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageName"], item.PackageArabicNames));
+            {
+
+               rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageArabicNames));
+            }
             else
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageName"], item.PackageEnglishNames));
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageEnglishNames));
+
+            }
             if (currrentTenant.Id == null)
             {
                 if (CultureInfo.CurrentCulture.Name == "ar")
+                {
                     rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationArabicName));
+                }
                 else
+                {
                     rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationEnglishName));
+                }
             }
 
 
@@ -282,7 +314,7 @@ public partial class Customer
             MaxResultCount = RowPerPage,
             SkipCount = (CurrentPage - 1) * RowPerPage,
             Sorting = sortColumn,
-            SearchingTerm = termSearch
+            SearchingTerm = sPDataGrid._searchString
         };
 
         PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
