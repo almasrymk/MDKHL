@@ -14,4 +14,5 @@ public class LoginResponseDto
     public string Baseurl { get; set; }
     public string TenantId { get; set; }
     public int OrganizationId { get; set; }
+    public int GracePeriod { get; set; }
 }
