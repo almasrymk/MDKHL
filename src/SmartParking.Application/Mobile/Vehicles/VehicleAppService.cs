@@ -119,7 +119,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 		{
 			return Result<VehicleDto>.NotFound("vehicle not found");
 		}
-        await _vehicleRepository.DeleteAsync(vehicle, autoSave: true);
+        await _vehicleRepository.HardDeleteAsync(vehicle, autoSave: true);
 		var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
 		return Result<VehicleDto>.Success(vehicleDto, "Vehicle Delete Succesuffuly");
 	}

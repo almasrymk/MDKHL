@@ -35,7 +35,7 @@
                         Class="w-100"
                         Placeholder=@L["Type Here"]
                         Required="true"
-                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Label=@L["ArabicName"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
@@ -43,7 +43,7 @@
                         For="@(() => createUpdatePackage.EnglishName)"
                         Variant="Variant.Text"
                         Required="true"
-                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Placeholder=@L["Type Here"]
                         Label=@L["EnglishName"] />
@@ -55,7 +55,7 @@
                         Min="0"
                         HideSpinButtons="true"
                         Required="true"
-                                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Label=@L["Price"] />
                     </MudItem>
@@ -66,7 +66,7 @@
                         Min="1"
                         HideSpinButtons="true"
                         Required="true"
-                                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Label=@L["PackageDuration"] />
                     </MudItem>
@@ -89,7 +89,7 @@
                         Label="@L["customer category"]"
                         Placeholder="@L[ "Choose"]"
                         HelperText=@L["Helper Text"]
-                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Required>
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
@@ -129,7 +129,7 @@
                             Class="w-100"
                             Required="!createUpdatePackage.Published"
                             PickerVariant="PickerVariant.Dialog"
-                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                             TimeChanged="OnTimeToChanged"
                             Placeholder=@L["Time Placeholder"]
                             Label="@L["Publish To"]" />
@@ -144,7 +144,7 @@
                         Variant="Variant.Outlined"
                         Class="w-100"
                         Required="true"
-                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Lines="5"
                         Placeholder=@L["Type Here"]
                         Label="@L["Description"]" />
@@ -226,14 +226,15 @@
         createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
         var currentTenant = CurrentTenant.Id;
         createUpdatePackage.OrganizationId =await organizationAppService.GetOrganizationIdByTenant(currentTenant);
-        
+
         try
         {
             createUpdatePackage.Published = PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
 
-                createUpdatePackage.TenantId = CurrentTenant.Id;
-                createUpdatePackage.ActivationDate = DateTime.Now;
-                await PackagesAppService.CreateAsync(createUpdatePackage);
+            createUpdatePackage.TenantId = CurrentTenant.Id;
+            createUpdatePackage.ActivationDate = DateTime.Now;
+            createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
+            await PackagesAppService.CreateAsync(createUpdatePackage);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);

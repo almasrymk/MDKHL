@@ -17,12 +17,14 @@ namespace SmartParking.Configurations
             builder.HasOne(cp => cp.Customer)
                 .WithMany(c => c.CustomerPackages) // Assuming Customer entity has ICollection<CustomerPackages>
                 .HasForeignKey(cp => cp.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
             // Configure the relationship between CustomerPackages and Package
             builder.HasOne(cp => cp.Package)
                 .WithMany(p => p.CustomerPackages) // Assuming Package entity has ICollection<CustomerPackages>
                 .HasForeignKey(cp => cp.PackageId)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
         }

@@ -131,10 +131,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         }
 
 
-        //await base.DeleteAsync(id);
-
-        subscription.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _subscriptionRepository.HardDeleteAsync(subscription);
     }
 
     /// <inheritdoc/>
