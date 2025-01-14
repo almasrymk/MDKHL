@@ -241,9 +241,6 @@
         var name = CurrentUser.UserName;
         if (currenttenant.Id == null)
         {
-            Organizations = await OrganizationAppService.GetAllMobileAsync();
-            var organization = Organizations.FirstOrDefault();
-            await GetNumberOfParkingAndEmptyAsync(organization.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
             ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
