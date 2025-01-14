@@ -10,11 +10,6 @@ namespace SmartParking.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Package",
-                table: "CustomerPackages",
-                type: "nvarchar(max)",
-                nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                name: "IsPackage",
