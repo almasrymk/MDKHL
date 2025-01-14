@@ -370,7 +370,8 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdentityUserId");
+                    b.HasIndex("IdentityUserId")
+                        .IsUnique();
 
                     b.ToTable("Customers");
                 });
@@ -4280,31 +4281,31 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "BrandName")
                         .WithMany()
                         .HasForeignKey("BrandNameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
                         .HasForeignKey("GarageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.CameraMainType", "MainType")
                         .WithMany()
                         .HasForeignKey("MainTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.CameraModel", "Model")
                         .WithMany()
                         .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("Cameras")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BrandName");
@@ -4323,7 +4324,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.State", "State")
                         .WithMany("Cities")
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("State");
@@ -4332,9 +4333,9 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
                 {
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne()
+                        .HasForeignKey("SmartParking.Entities.Customers.Customer", "IdentityUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("IdentityUser");
@@ -4371,7 +4372,8 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
                         .WithMany("Invoices")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
@@ -4397,7 +4399,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "CameraBrand")
                         .WithMany()
                         .HasForeignKey("CameraBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CameraBrand");
@@ -4408,7 +4410,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "CameraBrand")
                         .WithMany("Models")
                         .HasForeignKey("CameraBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CameraBrand");
@@ -4419,7 +4421,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Country", "Country")
                         .WithMany("Regions")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -4441,7 +4443,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", "PlateColor")
                         .WithMany("Types")
                         .HasForeignKey("PlateColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PlateColor");
@@ -4452,7 +4454,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", "VehiclesBrand")
                         .WithMany("Models")
                         .HasForeignKey("VehiclesBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("VehiclesBrand");
@@ -4463,7 +4465,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Organization", null)
                         .WithMany("organizationContactInfos")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -4483,16 +4485,18 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
                         .WithMany("CustomerPackages")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("Customers")
-                        .HasForeignKey("OrganizationId");
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SmartParking.Entities.Organizations.Package", "Package")
                         .WithMany("CustomerPackages")
-                        .HasForeignKey("PackageId");
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
 
@@ -4506,7 +4510,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("OrganizationGarages")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -4517,7 +4521,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Garage", null)
                         .WithMany("GarageCategories")
                         .HasForeignKey("GarageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -4526,30 +4530,31 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.Region", "Region")
                         .WithMany("Organizations")
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Subscriptions.Subscription", "Subscription")
                         .WithMany("Organizations")
-                        .HasForeignKey("SubscriptionId");
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("City");
 
@@ -4567,13 +4572,13 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("organizationPackages")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.PackageType", "PackageType")
                         .WithMany()
                         .HasForeignKey("PackageTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -4604,7 +4609,8 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customers")
                         .WithMany("Payments")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SmartParking.Entities.Invoices.Invoice", "Invoice")
                         .WithMany()
@@ -4620,7 +4626,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Subscriptions.SubscriptionType", "SubscriptionType")
                         .WithMany("Subscriptions")
                         .HasForeignKey("SubscriptionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("SubscriptionType");
@@ -4631,31 +4637,31 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", "LicenceType")
                         .WithMany()
                         .HasForeignKey("LicenceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", "PlateColor")
                         .WithMany()
                         .HasForeignKey("PlateColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", "VehicleBrand")
                         .WithMany()
                         .HasForeignKey("VehicleBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleModel", "VehicleModel")
                         .WithMany()
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
