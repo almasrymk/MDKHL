@@ -281,7 +281,9 @@ public class StateAppService : CrudAppService<State, StateDto,
 
         // await _stateRepository.HardDeleteAsync(state);
 
-        state.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        //state.Status = Status.Deleted;
+        //await CurrentUnitOfWork.SaveChangesAsync();
+
+        await _stateRepository.HardDeleteAsync(state);
     }
 }

@@ -30,6 +30,7 @@ namespace SmartParking.Configurations
             builder.Property(x => x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
+            builder.HasOne(x=>x.State).WithMany(x=>x.Cities).OnDelete(DeleteBehavior.Restrict);
             builder.ToTable("Cities");
 
         }
