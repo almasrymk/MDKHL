@@ -90,7 +90,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         UserCreateDto user = new UserCreateDto()
         {
             UserName = input.UserName,
-            PhoneNumber = input.PhoneNumber,
+            PhoneNumber = input.WhatsAppNum,
             Email = input.Email,
             Password = "P@ssw0rd",
             Name = input.EnglishName,
@@ -98,6 +98,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             UserType = 1,
             OrganizationId = organization.Id,
             TenantId = tenant.Id,
+            IdentificationTypes=IdentificationTypes.NationalID,
+            NationalId=input.NationalId
 
         };
 

@@ -35,7 +35,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x => x.WhatsAppNum)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
+            .Matches(@"^(05\d{7}|\+966\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
 
 		RuleFor(x => x.Email)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))

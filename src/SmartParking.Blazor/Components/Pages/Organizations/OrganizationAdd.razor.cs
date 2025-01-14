@@ -70,6 +70,7 @@ public partial class OrganizationAdd
     public int Graceperiod { get; set; }
     private string NewAddress { get; set; }
     public string TaxIdentificationNumber { get; set; }
+    public string NationalId { get; set; }
 
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -196,6 +197,9 @@ public partial class OrganizationAdd
             Address = NewAddress,
             Graceperiod = Graceperiod,
             TaxNumber=TaxIdentificationNumber,
+            SubscriptionId= int.Parse(PackageSelectValue),
+            NationalId=NationalId,
+            
 
         };
        
