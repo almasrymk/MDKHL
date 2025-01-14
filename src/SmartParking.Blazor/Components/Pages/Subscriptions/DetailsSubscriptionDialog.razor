@@ -171,6 +171,15 @@
 
 					</MudItem>
 
+					<MudItem sm="8">
+						<MudTextField @bind-Value="subscription.Status"
+										For="@(() => subscription.Status)"
+										Immediate="true"
+										Variant="Variant.Text"
+										  Label="@L["SubscriptionStatus"]"
+										Disabled />
+					</MudItem>
+					
 					</MudGrid>
 			</MudForm>
 
