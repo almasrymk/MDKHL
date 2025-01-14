@@ -124,8 +124,7 @@
     HeaderText1="@L["Day"]"
     BodyText1="@Day"
     HeaderText2="@L["Collected"]"
-    BodyText2="@collectedMoneyToday.ToString()"
-    ></SpCardStatistics>
+    BodyText2="@Math.Round(((decimal)collectedMoneyToday),2).ToString()"></SpCardStatistics>
 
 
     <MudItem sm="6">
