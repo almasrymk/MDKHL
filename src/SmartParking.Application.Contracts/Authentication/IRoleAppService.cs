@@ -19,6 +19,8 @@ public interface IRoleAppService: IApplicationService
     Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedResultRequestDto input);
     Task<PagedResultDto<IdentityRoleDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
     Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input);
+    Task<IdentityRole> GetRoleByNameMdkhlAsync(string roleName);
+    Task<IdentityRole> GetRoleByNameAsync(string roleName);
     Task<IdentityRoleDto> GetRoleById(Guid Id);
     Task<IdentityRole> GetIdentityRoleById(Guid Id);
     Task AssignRole(Guid UserId, Guid RoleId);

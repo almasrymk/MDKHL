@@ -273,6 +273,11 @@ public partial class User
         var id = Guid.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
         var userData = await UsersAppService.GetAsync(id);
+        if (row.Cells[5].Value == null)
+            return;
+        var roleData = currrentTenant.Id == null ?
+            await RoleAppService.GetRoleByNameMdkhlAsync((row.Cells[5].Value).ToString())
+            : await RoleAppService.GetRoleByNameAsync((row.Cells[5].Value).ToString());
         var userUpdate = new UpdateUserDto
         {
             Name = userData.Name,
@@ -281,7 +286,7 @@ public partial class User
             PhoneNumber = userData.PhoneNumber,
             UserName = userData.UserName,
             TenantId = userData.TenantId,
-            RoleId = userData.RoleId,
+            RoleId = roleData.Id,
             ConcurrencyStamp = userData.ConcurrencyStamp,
             IsActive = userData.IsActive,
             NationalId = userData.NationalId,
@@ -324,7 +329,7 @@ public partial class User
         catch (BusinessException ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
@@ -333,7 +338,7 @@ public partial class User
         catch (Exception ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Message} ", Severity.Error);
         }
 
 
