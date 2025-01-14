@@ -342,7 +342,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                        CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
                        CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
                    }).FirstOrDefaultAsync();
-
+            if (groupedCounts == null)
+            {
+                return (0, 0, 0,0);
+            }
             return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
         }
        
@@ -360,7 +363,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                       CountOfVisitors = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Visitor).Count(),
                       
                   }).FirstOrDefaultAsync();
-
+        if (groupedCounts == null)
+        {
+            return (0, 0, 0);
+        }
         return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees);
     }
 }
