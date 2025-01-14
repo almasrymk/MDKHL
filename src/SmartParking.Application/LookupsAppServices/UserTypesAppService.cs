@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities;
+using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Lookups;
@@ -32,9 +33,7 @@ public class UserTypesAppService : CrudAppService<UserType,
         if (userType == null)
             throw new EntityNotFoundException(typeof(UserType), id);
 
-        //await base.DeleteAsync(id);
-        userType.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.HardDeleteAsync(userType);
     }
 
 }

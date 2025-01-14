@@ -277,12 +277,9 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new EntityNotFoundException(typeof(State), id);
         }
 
-        // await base.DeleteAsync(id);
 
-        // await _stateRepository.HardDeleteAsync(state);
 
-        //state.Status = Status.Deleted;
-        //await CurrentUnitOfWork.SaveChangesAsync();
+        
 
         await _stateRepository.HardDeleteAsync(state);
     }
