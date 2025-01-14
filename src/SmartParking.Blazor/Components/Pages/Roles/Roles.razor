@@ -15,7 +15,7 @@
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IRoleAppService RoleAppService
  @inject IAuthorizationService AuthorizationService
-@attribute [Authorize]
+@attribute [Authorize(IdentityPermissions.Roles.Default)]
 @inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
 
 
