@@ -48,6 +48,8 @@ public class CreateUpdateOrganiztionDto
 
     public string TaxNumber { get; set; }
 
+    public string NationalId { get; set; }
+
 
 
 

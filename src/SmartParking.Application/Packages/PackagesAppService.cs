@@ -146,9 +146,7 @@ public class PackagesAppService : CrudAppService<
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-        package.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        //await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(package);
     }
     ///<inheritdoc/>
     public override async Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)

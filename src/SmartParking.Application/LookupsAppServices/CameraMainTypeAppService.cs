@@ -35,9 +35,7 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
             throw new EntityNotFoundException(typeof(CameraMainType), id);
         }
 
-        cameraMainType.Status = Enums.Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        //await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(cameraMainType);
     }
 
     ///<inheritdoc/>

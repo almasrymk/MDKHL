@@ -35,9 +35,7 @@ public class CameraModelAppService : CrudAppService<CameraModel, CameraModelDto,
             throw new EntityNotFoundException(typeof(CameraModel), id);
         }
 
-        cameraModel.Status = Enums.Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        //await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(cameraModel);
     }
 
     ///<inheritdoc/>
