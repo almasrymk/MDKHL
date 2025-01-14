@@ -208,10 +208,7 @@ public class CustomerPackagesAppService:
         {
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
-        //customerPackage.Status = Status.Deleted;
-        //await CurrentUnitOfWork.SaveChangesAsync();
-
-        await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(customerPackage);
     }
 
     public async Task<List<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId)

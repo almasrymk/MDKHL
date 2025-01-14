@@ -557,10 +557,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 					throw new Exception("Can't Delete an deleted Garage");
 
 				}
-				garage.Status = Status.Deleted;
                 
-                await CurrentUnitOfWork.SaveChangesAsync();
-                //await base.DeleteAsync(id);
+                await _repository.HardDeleteAsync(garage);
             }
 
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using SmartParking.AlertMessages;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
@@ -110,16 +111,17 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var vehicleModel = await _repository.FindAsync(id);
+        
+            var vehicleModel = await _repository.FindAsync(id);
 
-        if (vehicleModel is null)
-        {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
-        }
+            if (vehicleModel is null)
+            {
+                throw new EntityNotFoundException(typeof(VehicleModel), id);
+            }
 
-        vehicleModel.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        // await base.DeleteAsync(id);
+            await _repository.HardDeleteAsync(vehicleModel);
+        
+        
     }
 
     /// <inheritdoc/>

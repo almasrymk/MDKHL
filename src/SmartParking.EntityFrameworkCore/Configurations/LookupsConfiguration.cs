@@ -3,6 +3,7 @@ using SmartParking.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using SmartParking.Entities.Lookups;
+using SmartParking.Entities.Lookups.VehiclesLookups;
 namespace SmartParking.Configurations
 {
     public class CountryConfiguration : IEntityTypeConfiguration<Country>
@@ -122,5 +123,34 @@ namespace SmartParking.Configurations
             builder.ToTable("State");
         }
     }
+    public class VehicleModelConfiguration : IEntityTypeConfiguration<VehicleModel>
+    {
+        void IEntityTypeConfiguration<VehicleModel>.Configure(EntityTypeBuilder<VehicleModel> builder)
+        {
+            builder.HasOne(x => x.VehiclesBrand).WithMany(x => x.Models).OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+    public class ConfigurationlicenseType : IEntityTypeConfiguration<LicenceType>
+    {
+        void IEntityTypeConfiguration<LicenceType>.Configure(EntityTypeBuilder<LicenceType> builder)
+        {
+            builder.HasOne(x => x.PlateColor).WithMany(x => x.Types).OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+    public class ConfigurationCameraBrand : IEntityTypeConfiguration<CameraBrand>
+    {
+        void IEntityTypeConfiguration<CameraBrand>.Configure(EntityTypeBuilder<CameraBrand> builder)
+        {
+            builder.HasMany(x => x.Models).WithOne(x => x.CameraBrand).OnDelete(DeleteBehavior.Restrict);
+           
+        }
+    }
+    public class ConfigurationCameraMainType : IEntityTypeConfiguration<CameraMainType>
+    {
+        void IEntityTypeConfiguration<CameraMainType>.Configure(EntityTypeBuilder<CameraMainType> builder)
+        {
+            builder.HasOne(x => x.CameraBrand).WithMany().OnDelete(DeleteBehavior.Restrict);
 
+        }
+    }
 }

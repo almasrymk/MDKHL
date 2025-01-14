@@ -237,9 +237,8 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         if (region == null)
             throw new EntityNotFoundException(typeof(Region), id);
 
-        //await _regionRepository.HardDeleteAsync(region);
-        region.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _regionRepository.HardDeleteAsync(region);
+        
 
     }
 
