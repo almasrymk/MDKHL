@@ -103,6 +103,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await CreateUnLinkedTransaction(input);
             return await Task.FromResult(false);
         }
+        input.PlateNumber = input.PlateNumber.Replace(" ", "");
+
         var camera = await GetCamera(input.DeviceID);
 
         if (camera == null)
