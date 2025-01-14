@@ -167,10 +167,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
         {
             throw new EntityNotFoundException(typeof(PlateColor), id);
         }
-        plateColor.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-
-        // await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(plateColor);
     }
 
     public async Task<List<PlateColorDto>> GetAllPlateColorsAsync()

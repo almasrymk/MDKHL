@@ -184,10 +184,7 @@ public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto,
         {
             throw new EntityNotFoundException(typeof(LicenceType), id);
         }
-        licenceType.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-
-        //await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(licenceType);
     }
 
     public async Task<List<LicenceTypeDto>> GetAllLicencesAsync()
