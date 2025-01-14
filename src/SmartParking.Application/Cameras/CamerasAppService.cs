@@ -142,7 +142,7 @@ public class CamerasAppService :
     /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
     public override async Task DeleteAsync(int id)
     {
-        var camera = await GetAsync(id);
+        var camera = await _repository.GetAsync(id);
         if (camera == null)
             throw new EntityNotFoundException(typeof(Camera), id);
         if (camera.Status == Enums.Status.Active)
@@ -159,9 +159,9 @@ public class CamerasAppService :
                 throw new Exception("Can't delete camera");
             }
         }
-        
 
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.HardDeleteAsync(camera);
+
         //await base.DeleteAsync(id);
     }
     /// <summary>

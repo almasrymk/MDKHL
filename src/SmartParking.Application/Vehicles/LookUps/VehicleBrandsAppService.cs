@@ -36,16 +36,18 @@ namespace SmartParking.Vehicles.LookUps
         ///<inheritdoc/>
         public override async Task DeleteAsync(int id)
         {
-            var vehicleBrand = await _repository.FindAsync(id);
+            
+                var vehicleBrand = await _repository.FindAsync(id);
 
-            if (vehicleBrand is null)
-            {
-                throw new EntityNotFoundException(typeof(VehicleBrand), id);
-            }
+                if (vehicleBrand is null)
+                {
+                    throw new EntityNotFoundException(typeof(VehicleBrand), id);
+                }
 
-            vehicleBrand.Status = Status.Deleted;
-            await CurrentUnitOfWork.SaveChangesAsync();
-            // await base.DeleteAsync(id);
+                await _repository.HardDeleteAsync(vehicleBrand);
+                //await CurrentUnitOfWork.SaveChangesAsync();
+            
+             
         }
 
         ///<inheritdoc/>

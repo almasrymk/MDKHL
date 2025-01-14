@@ -72,9 +72,7 @@ public class ContactInfoAppService : CrudAppService<ContactInfo, ContactInfoDto,
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-        contactInfo.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        // await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(contactInfo);
     }
 
     /// <inheritdoc/>

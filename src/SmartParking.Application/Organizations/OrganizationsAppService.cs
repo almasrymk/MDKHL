@@ -197,12 +197,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
 
             var orgaization = await IsFoundOrganizationAsync(id);
-                //await base.DeleteByIdAsync(id);
-                orgaization.Status = Status.Deleted;
-                await CurrentUnitOfWork.SaveChangesAsync();
-                 //await UpdateAsync(id,orgaization);
+            await _repository.HardDeleteAsync(orgaization);
 
-                return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
+              return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
             
         }
     }

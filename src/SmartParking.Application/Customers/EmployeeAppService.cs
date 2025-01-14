@@ -419,7 +419,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             throw new Exception("There is no customer related to that id");
         }
-        await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(customer);
 
     }
     public override async Task<CustomerDto> GetAsync(Guid id)

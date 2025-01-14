@@ -13,6 +13,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -129,65 +130,68 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     {
 
     }
-    private void HandleDependent(EntityEntry entry)
+    //private void HandleDependent(EntityEntry entry)
+    //{
+    //    if (entry.Entity is IBaseEntity baseEntity)
+    //    {
+    //        baseEntity.Status = Enums.Status.Deleted;
+    //        entry.State = EntityState.Modified;
+    //    }
+    //}
+    private bool ProcessEntities()
     {
-        if (entry.Entity is IBaseEntity baseEntity)
-        {
-            baseEntity.Status = Enums.Status.Deleted;
-            entry.State = EntityState.Modified;
-        }
-    }
-    private void ProcessEntities()
-    {
-        var modifiedEntities = ChangeTracker.Entries()
-            .Where(e => e.State == EntityState.Modified && e.Entity is IBaseEntity)
+        var Entities = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Deleted)
             .ToList();
 
-        for (int i = 0; i < modifiedEntities.Count; i++)
-        {
-            var entry = modifiedEntities[i];
-            if (entry.Entity is not IBaseEntity baseEntity) continue;
+        if (Entities.Count > 0)
+            return true;
+        return false;
+        //for (int i = 0; i < modifiedEntities.Count; i++)
+        //{
+        //    var entry = modifiedEntities[i];
+        //    if (entry.Entity is not IBaseEntity baseEntity) continue;
 
-            var statusProperty = entry.Property(nameof(baseEntity.Status));
-            if (!statusProperty.IsModified || (Enums.Status)statusProperty.CurrentValue != Enums.Status.Deleted) continue;
+        //    var statusProperty = entry.Property(nameof(baseEntity.Status));
+        //    if (!statusProperty.IsModified || (Enums.Status)statusProperty.CurrentValue != Enums.Status.Deleted) continue;
 
-            LoadNavigations(entry);
-            //HandleDependent(entry);
-        }
+        //    LoadNavigations(entry);
+        //    //HandleDependent(entry);
+        //}
     }
 
-    private void LoadNavigations(EntityEntry entry)
-    {
-        var navigations = entry.Navigations.ToList();
+    //private void LoadNavigations(EntityEntry entry)
+    //{
+    //    var navigations = entry.Navigations.ToList();
 
-        for (int i = 0; i < navigations.Count; i++)
-        {
-            var navigation = navigations[i];
-            if (navigation.IsLoaded) continue;
+    //    for (int i = 0; i < navigations.Count; i++)
+    //    {
+    //        var navigation = navigations[i];
+    //        if (navigation.IsLoaded) continue;
 
-            navigation.Load();
+    //        navigation.Load();
 
-            if (navigation.CurrentValue == null) continue;
+    //        if (navigation.CurrentValue == null) continue;
 
-            if (navigation.CurrentValue is Organization) continue;
+    //        if (navigation.CurrentValue is Organization) continue;
 
-            if (navigation.Metadata.IsCollection)
-            {
-                HandleCollectionNavigation(navigation);
-            }
-        }
-    }
+    //        if (navigation.Metadata.IsCollection)
+    //        {
+    //            HandleCollectionNavigation(navigation);
+    //        }
+    //    }
+    //}
 
-    private void HandleCollectionNavigation(NavigationEntry navigation)
-    {
-        var collectionEntry = (CollectionEntry)navigation;
-        var dependentEntities = collectionEntry.CurrentValue.Cast<object>().ToList();
+    //private void HandleCollectionNavigation(NavigationEntry navigation)
+    //{
+    //    var collectionEntry = (CollectionEntry)navigation;
+    //    var dependentEntities = collectionEntry.CurrentValue.Cast<object>().ToList();
 
-        for (int i = 0; i < dependentEntities.Count; i++)
-        {
-            HandleDependent(Entry(dependentEntities[i]));
-        }
-    }
+    //    for (int i = 0; i < dependentEntities.Count; i++)
+    //    {
+    //        HandleDependent(Entry(dependentEntities[i]));
+    //    }
+    //}
 
 
 
@@ -196,15 +200,27 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public override int SaveChanges()
     {
 
-        //ProcessEntities(); // Apply soft delete cascade
+        ProcessEntities(); // Apply soft delete cascade
         return base.SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
 
-        //ProcessEntities();
-        return await base.SaveChangesAsync(cancellationToken);
+        
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        catch(Exception ex)
+        {
+            if (ProcessEntities())
+                throw new Exception(AlertMessages.AlertMessages.FAILED + " "+ AlertMessages.AlertMessages.DELETE);
+
+            throw new Exception(ex.Message);
+        }
+            
+        
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {

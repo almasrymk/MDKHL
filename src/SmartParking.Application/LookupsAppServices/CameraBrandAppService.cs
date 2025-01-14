@@ -35,9 +35,8 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             throw new EntityNotFoundException(typeof(CameraBrand), id);
         }
 
-        cameraBrand.Status = Enums.Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-         //await base.DeleteAsync(id);
+        
+         await _repository.HardDeleteAsync(cameraBrand);
     }
 
     ///<inheritdoc/>
