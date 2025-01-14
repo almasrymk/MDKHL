@@ -73,10 +73,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
             {
                 throw new EntityNotFoundException(typeof(SubscriptionType), id);
             }
-            // await base.DeleteAsync(id);
-
-            subscription.Status = Status.Deleted;
-            await CurrentUnitOfWork.SaveChangesAsync();
+            await _subscriptionTypeRepository.HardDeleteAsync(subscription);
         }
     }
 
