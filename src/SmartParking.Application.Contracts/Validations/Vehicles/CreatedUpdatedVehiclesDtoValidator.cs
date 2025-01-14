@@ -28,8 +28,8 @@ public class CreatedUpdatedVehiclesDtoValidator:AbstractValidator<CreateUpdateVe
 
 			RuleFor(x => x.ModelYear)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Must(modelYear => int.TryParse(modelYear,out int year) && year >= 1980 && year <=2099)
-			.WithMessage(LocalizationHelper.GetLocalizedString("MustBeGreaterThan")+' '+1980+ ' '+ LocalizationHelper.GetLocalizedString("MustBeSmallerThan")+' '+2099);
+            .Must(modelYear => int.TryParse(modelYear,out int year) && year >= 1980 && year <= DateTime.Now.Year)
+			.WithMessage(LocalizationHelper.GetLocalizedString("MustBeGreaterThan")+' '+1980+ ' '+ LocalizationHelper.GetLocalizedString("MustBeSmallerThan")+' '+DateTime.Now.Year);
 
             RuleFor(x => x.ArPlateLetters)
             .NotNull().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))

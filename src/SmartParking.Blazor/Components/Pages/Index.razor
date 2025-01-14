@@ -124,7 +124,7 @@
     HeaderText1="@L["Day"]"
     BodyText1="@Day"
     HeaderText2="@L["Collected"]"
-    BodyText2="@Math.Round(((decimal)collectedMoneyToday),2).ToString()"></SpCardStatistics>
+    BodyText2="collectedMoneyToday"></SpCardStatistics>
 
 
     <MudItem sm="6">
@@ -218,7 +218,8 @@
     private string[] inputLabels { get; set; } = { " " };
     private double[] inputData { get; set; } = { 0 };
     private string? Day = default;
-    private double? collectedMoneyToday = default;
+    private string collectedMoneyToday ;
+
     int totalOfParking;
     int totalEmptyOfParking;
     protected async override Task OnInitializedAsync()
@@ -247,7 +248,7 @@
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
             Day = dataForToday.Day;
-            collectedMoneyToday = dataForToday.totalAmounts;
+            collectedMoneyToday = Math.Round((decimal)dataForToday.totalAmounts,2).ToString();
         }
         else
         {
@@ -263,7 +264,7 @@
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
             Day = dataForToday.Day;
-            collectedMoneyToday = dataForToday.totalAmounts;
+            collectedMoneyToday = Math.Round((decimal)dataForToday.totalAmounts,2).ToString();
         }
 
         string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
