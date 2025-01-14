@@ -15,7 +15,7 @@ namespace SmartParking.Configurations
             builder.Property(x=>x.ArabicName).IsRequired();
             builder.Property(x => x.ArabicName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
             builder.Property(x => x.EnglishName).HasMaxLength(SmartParkingSettingsConsts.StringMinLength);
-
+            builder.HasMany(x => x.Regions).WithOne(x => x.Country).OnDelete(DeleteBehavior.Restrict);
             builder.ToTable("Countries");
         }
     }
