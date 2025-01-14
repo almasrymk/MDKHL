@@ -489,9 +489,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
 
-    private static void RemoveRole(UpdateUserDto input, IdentityUser? user)
+    private static async void RemoveRole(Guid roleId, IdentityUser? user)
     {
-        user.RemoveRole(user.Roles.First().RoleId);
+        user.RemoveRole(roleId);
     }
     
     public async Task RemoveRoleMdkhl(Guid UserId , Guid RoleId)
@@ -499,7 +499,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(UserId);
-
+            var role = await _roleReository.GetAsync(RoleId);
+            if(role.Name == RolesType.Customer.ToString())
+            {
+                throw new Exception(
+                   LocalizationHelper.GetLocalizedString("UserRole") + " " +
+                   LocalizationHelper.GetLocalizedString("Customer"));
+              
+            }
             user.RemoveRole(RoleId);
             await _userManager.UpdateAsync(user);
         }
@@ -577,8 +584,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         IdentityUser? user = await IsUserFound(id);
 
-        
-        RemoveRole(input, user);
+       
+        RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
         user?.SetProperty("OrganizationId", 0);
         

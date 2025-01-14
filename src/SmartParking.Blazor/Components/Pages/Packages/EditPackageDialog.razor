@@ -42,9 +42,10 @@
                         Label="@L["EnglishName"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="Package.Price"
+                        <MudNumericField @bind-Value="Package.Price"
                         For="@(() => Package.Price)"
                         Variant="Variant.Text"
+                        Min="0"
                         Class="w-100"
                         Label="@L["Price"]" />
                     </MudItem>

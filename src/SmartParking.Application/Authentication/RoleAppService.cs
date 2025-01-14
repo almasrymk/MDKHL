@@ -297,15 +297,30 @@ public class RoleAppService : ApplicationService, IRoleAppService
        );
         
         var org =await _organizationAppService.GetOrganizationForCurrentTenatAsync();
-        user.SetProperty("OrganizationId", org.Id);
         user.AddRole(RoleId);
         
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
+       // user.SetConcurrencyStampIfNotNull(user.SecurityStamp);
+        user.SetProperty("OrganizationId", org.Id);
         await _userManager.UpdateAsync(user);
     }
 
+    public async Task<IdentityRole?> GetRoleByNameAsync (string roleName)
+    {
+        var query = await _roleReository.GetQueryableAsync();
+        var role  =await  query.FirstOrDefaultAsync(r => r.Name == roleName);
+        return role;  
+    }
 
+
+    public async Task<IdentityRole?> GetRoleByNameMdkhlAsync(string roleName)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await GetRoleByNameAsync(roleName);
+        }
+    }
     public async Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())

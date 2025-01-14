@@ -35,7 +35,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x => x.WhatsAppNum)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^(05[3-8]\d{7}|\+966[3-8]\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
+            .Matches(@"^(05\d{7}|\+966\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
 
 		RuleFor(x => x.Email)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
@@ -97,28 +97,8 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
            .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
 
         RuleFor(x => x.TaxNumber)
-           .Cascade(CascadeMode.Stop)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-           .Length(15).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") +" "+15)
-           .Matches(@"^\d{15}$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed"))
-           .Must(BeValidChecksum).WithMessage(LocalizationHelper.GetLocalizedString("InvalidValidation"));
-    }
-    private bool BeValidChecksum(string tin)
-    {
-        if (string.IsNullOrWhiteSpace(tin) || tin.Length != 15) return false;
-
-        int[] weights = { 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3 }; 
-        int sum = 0;
-
-        for (int i = 0; i < 12; i++)
-        {
-            int digit = tin[i] - '0'; 
-            sum += digit * weights[i];
-        }
-        int calculatedChecksum = (10 - (sum % 10)) % 10;
-
-        int checksumDigit = tin[12] - '0'; 
-
-        return calculatedChecksum == checksumDigit;
+           .Length(15).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 15)
+           .Matches(@"^\d{15}$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed"));
     }
 }

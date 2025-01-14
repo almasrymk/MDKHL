@@ -7,6 +7,7 @@
 @using Volo.Abp.PermissionManagement
 @inject IDialogService DialogService
 @inject IUsersAppService UsersAppService
+@inject IRoleAppService RoleAppService
 @inject IAuthenticationAppService AuthenticationAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
@@ -17,7 +18,7 @@
 @using Volo.Abp.BlazoriseUI.Components.ObjectExtending
 @using Volo.Abp.Identity.Localization
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-@attribute [Authorize]
+@attribute [Authorize(IdentityPermissions.Users.Default)]
 @inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
 
 

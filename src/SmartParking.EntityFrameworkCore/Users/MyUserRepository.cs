@@ -163,6 +163,8 @@ public class MyUserRepository
                     {
                         User = user,
                         Role = r,
+                        OrganizationEnglishName = o.EnglishName,
+                        OrganizationArabicName = o.ArabicName
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);

@@ -11,7 +11,10 @@ public static class FileHelper
 {
     public static async Task<string> SaveImageFromBase64Async(string base64 , string folderName)
     {
-        
+        if (string.IsNullOrEmpty(base64))
+        {
+            return null ;
+        }
         var directoryPath = CreateImageDirectory(folderName);
         await Task.Yield();
         var base64Data = base64.Substring(base64.IndexOf(",") + 1);

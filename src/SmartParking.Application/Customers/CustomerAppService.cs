@@ -102,7 +102,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 				if (user != null)
 				{
                     throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ 
-                        LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
                 }
 			}
@@ -634,7 +634,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             throw new Exception(LocalizationHelper.GetLocalizedString("Customer") +" "+
                 LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-        await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(customer);
 
     }
 

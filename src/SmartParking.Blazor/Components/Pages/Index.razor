@@ -124,8 +124,7 @@
     HeaderText1="@L["Day"]"
     BodyText1="@Day"
     HeaderText2="@L["Collected"]"
-    BodyText2="@collectedMoneyToday.ToString()"
-    ></SpCardStatistics>
+    BodyText2="collectedMoneyToday"></SpCardStatistics>
 
 
     <MudItem sm="6">
@@ -180,16 +179,23 @@
         </MudPaper>
     </MudItem>
     <MudItem sm="12">
-        <MudPaper Class="custom-rounded">
-            <MudItem Class="d-flex align-items-start justify-content-end m-3 pt-5">
+        <MudPaper Class="custom-rounded" Style="width: 100%; height: auto;">
+            <MudItem Class="d-flex align-items-start justify-content-end">
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
                     <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
                 </MudMenu>
             </MudItem>
-            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
-
+            <MudChart ChartType="ChartType.Bar"
+                      ChartSeries="@Series"
+                      @bind-SelectedIndex="index"
+                      XAxisLabels="@XAxisLabels"
+                      Width="100%"
+                      Height="400px"
+                      Style="max-width: 100%; margin: 0 auto;">
+            </MudChart>
         </MudPaper>
     </MudItem>
+
 
 </MudGrid>
 
@@ -219,7 +225,8 @@
     private string[] inputLabels { get; set; } = { " " };
     private double[] inputData { get; set; } = { 0 };
     private string? Day = default;
-    private double? collectedMoneyToday = default;
+    private string collectedMoneyToday ;
+
     int totalOfParking;
     int totalEmptyOfParking;
     protected async override Task OnInitializedAsync()
@@ -248,7 +255,7 @@
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
             Day = dataForToday.Day;
-            collectedMoneyToday = dataForToday.totalAmounts;
+            collectedMoneyToday = Math.Round((decimal)dataForToday.totalAmounts,2).ToString();
         }
         else
         {
@@ -264,10 +271,10 @@
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
             Day = dataForToday.Day;
-            collectedMoneyToday = dataForToday.totalAmounts;
+            collectedMoneyToday = Math.Round((decimal)dataForToday.totalAmounts,2).ToString();
         }
 
-        string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
+        string[] colors = { "#0D5480", "#16B7D3", "#CE3333", "#ca06e1" };
         options.ChartPalette = colors;
         options.ShowLegend = true;
         options.LineStrokeWidth = 20;

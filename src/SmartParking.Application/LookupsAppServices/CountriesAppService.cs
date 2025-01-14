@@ -131,9 +131,8 @@ public class CountriesAppService : CrudAppService<Country,
             throw new EntityNotFoundException(typeof(Country), id);
         }
 
-        //await _countryRepository.DeleteAsync(country);
-        country.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _countryRepository.HardDeleteAsync(country);
+
 
     }
     /// <summary>

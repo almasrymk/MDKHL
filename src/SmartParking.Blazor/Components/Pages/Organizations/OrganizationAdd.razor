@@ -36,9 +36,14 @@
                 <h3 Color="fw-bold">@L["Main Data"]</h3>
                 <MudForm Class="flex-grow-1 mt-4" @ref="form">
                     <MudGrid>
-                        <MudItem sm="4">
+                        <MudItem sm="6">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="UserName" Placeholder=@L["Type Here"] Label=@L["UserName"] />
+                        </MudItem> 
+                        <MudItem sm="6">
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="NationalId" Placeholder=@L["Type Here"] Label=@L["NationalIdLbl"] />
                         </MudItem>
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
                         <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
                         </MudItem>

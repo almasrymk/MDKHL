@@ -99,6 +99,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
 
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(new { input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName })}");
+        if (input.PlateNumber == null) {
+            await CreateUnLinkedTransaction(input);
+            return await Task.FromResult(false);
+        }
+        input.PlateNumber = input.PlateNumber.Replace(" ", "");
+
         var camera = await GetCamera(input.DeviceID);
 
         if (camera == null)
