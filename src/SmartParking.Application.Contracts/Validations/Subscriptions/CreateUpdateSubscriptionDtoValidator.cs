@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SmartParking.Localization;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
@@ -36,23 +37,36 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
 
         RuleFor(x => x.NumberOfUsers)
          .NotEmpty()
-         .GreaterThan(0);
+         .GreaterThan(0)
+         .LessThan(9999)
+         .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
         RuleFor(x => x.NumbersOfGarages)
         .NotEmpty()
-        .GreaterThan(0);
+        .GreaterThan(0)
+        .LessThan(9999)
+        .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
         RuleFor(x => x.NumberOfCameras)
         .NotEmpty()
-        .GreaterThan(0);
+        .GreaterThan(0)
+        .LessThan(9999)
+        .WithMessage( LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+
 
         RuleFor(x => x.NumberOfCustomers)
         .NotEmpty()
-        .GreaterThan(0);
+        .GreaterThan(0)
+        .LessThan(9999)
+        .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+
 
         RuleFor(x => x.ParkingSlot)
        .NotEmpty()
-       .GreaterThan(0);
+       .GreaterThan(0)
+       .LessThan(9999)
+        .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+        
 
         RuleFor(x => x.SubscriptionTypeId)
         .NotEmpty()
