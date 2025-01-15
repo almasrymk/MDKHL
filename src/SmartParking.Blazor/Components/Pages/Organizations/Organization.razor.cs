@@ -225,7 +225,7 @@ public partial class Organization
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumOfGarages"], Name = "NumOfGarages", IsFilterable = false, IsSortable = true, PropertyName = "Subscription.NumbersOfGarages", TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlot"], Name = "ParkingSlots", IsFilterable = false,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", PropertyName = "Subscription.NumberOfCameras", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         foreach (var item in organizations.Items)
         {

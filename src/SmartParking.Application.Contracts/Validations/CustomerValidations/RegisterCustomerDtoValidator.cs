@@ -40,7 +40,7 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
         RuleFor(x => x.RepeatPassword).Matches(x=>x.Password).WithMessage("Repeat Password" + LocalizationHelper.GetLocalizedString("WrongPassword"));
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .Matches(@"^(05\d{8}|\+966\d{8})$")  
+            .Matches(@"(05\d{8}|\+9665\d{8})$")  
             .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         RuleFor(x => x.isActive)
             .Must(value => value == true || value == false)
