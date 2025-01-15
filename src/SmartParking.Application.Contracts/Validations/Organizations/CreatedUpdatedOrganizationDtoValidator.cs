@@ -18,6 +18,14 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x => x.CommercialRegistrationNumber)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Length(10);
+        
+        RuleFor(x => x.UserName)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
+
+        RuleFor(x => x.NationalId)
+     .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
 
         RuleFor(x => x.ArabicName)
         .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
@@ -35,7 +43,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x => x.WhatsAppNum)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^(05\d{8}|\+966\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
+            .Matches(@"^(05\d{8}|\+9665\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
 
 		RuleFor(x => x.Email)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))

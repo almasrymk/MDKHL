@@ -14,6 +14,7 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Lookups.CameraMainType;
 using SmartParking.Lookups.CameraBrands;
 using SmartParking.Blazor.Components.Shared;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.CameraMainType;
 
@@ -215,6 +216,13 @@ public partial class CameraMainType
             }
 
 
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
         }
         catch (BusinessException ex)
         {

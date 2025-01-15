@@ -72,6 +72,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await AssignRoleAndPermissionsAsync(user, roleId, input);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
+    }   
+    public async Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId)
+    {
+        IdentityUser user = await AddAndValidateUserAsync(input);
+
+        await AssignRoleAndPermissionsWithoutCustomerAsync(user, roleId, input);
+
+        return ObjectMapper.Map<IdentityUser, UserDto>(user);
     }
 
     [AllowAnonymous]
@@ -137,8 +145,18 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
 
     }
-    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId)
+    private async Task AssignRoleAndPermissionsWithoutCustomerAsync(IdentityUser user, Guid roleId, UserCreateDto input)
     {
+        if (input.IsCustomer)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+
+                await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+            }
+
+
+        }
         user.AddRole(roleId);
     }    
     private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId,UserCreateDto input)
@@ -158,9 +176,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
     [AllowAnonymous]
     public async Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input)
     {
+
         await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
-        await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+        }
+
     }
+
 
     /// <summary>
     /// Checks if the provided phone number is unique and associated with a user.
@@ -208,12 +233,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IQueryable<IdentityUser> query = await FindByUserType();
-            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount,input.MaxResultCount);
+            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount,input.MaxResultCount,input.Sorting);
             
             return new PagedResultDto<UserWithRole>
             {
@@ -239,7 +264,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             //{
             //    queryable = ApplySorting(queryable, input.Sorting);
             //}
-            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm);
+            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm,input.Sorting);
             return new PagedResultDto<UserWithRole>
             {
                 Items = users.Queryable.ToList(),
@@ -250,7 +275,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<PagedResultDto<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm);
+        var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm, input.Sorting);
         return new PagedResultDto<UserWithRole> { Items = users.Queryable.ToList(), TotalCount = users.PageSize };
 
     }
@@ -401,6 +426,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
         await CheckUpdatePhoneNumber(user, input);
+        await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         user.Name = input.Name;
         user.Surname = input.Surname;
 
@@ -424,8 +450,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         if (user.PhoneNumber != input.PhoneNumber)
         {
-            var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
-            if (!result1)
+            var result = await CheckPhoneIsUnique(input.PhoneNumber);
+            if (result is not null)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
@@ -557,11 +583,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
         return await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedAndSortedResultRequestDto input)
     {
         //IQueryable<IdentityUser> query = await FindByUserType(1, 4, 5);
         //return await GetPagedResultAsync(query, input);
-        var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount, input.MaxResultCount);
+        var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
         return new PagedResultDto<UserWithRole>
         {
             Items = users.Queryable.ToList(),

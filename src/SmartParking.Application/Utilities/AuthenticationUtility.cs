@@ -97,7 +97,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
     public async Task CheckPhoneNumberIsValid(string phoneNumber)
     {
        await Task.Yield();
-        var phoneNumberPattern = new Regex(@"^(05\d{8}|\+966\d{8})$");
+        var phoneNumberPattern = new Regex(@"(05\d{8}|\+9665\d{8})$");
         if (!phoneNumberPattern.IsMatch(phoneNumber))
         {
             throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneValidation"));

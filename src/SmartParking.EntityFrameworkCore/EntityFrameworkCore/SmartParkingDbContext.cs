@@ -13,6 +13,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
+using SmartParking.Localization;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -27,6 +28,7 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
+using Volo.Abp.Localization;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
@@ -199,15 +201,22 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     public override int SaveChanges()
     {
+        try
+        {
+            ProcessEntities(); // Apply soft delete cascade
+            return base.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            if (ProcessEntities())
+                throw new Exception("");
 
-        ProcessEntities(); // Apply soft delete cascade
-        return base.SaveChanges();
+            throw new Exception(ex.Message);
+        }
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-
-        
+    {  
         try
         {
             return await base.SaveChangesAsync(cancellationToken);
@@ -215,7 +224,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
         catch(Exception ex)
         {
             if (ProcessEntities())
-                throw new Exception(AlertMessages.AlertMessages.FAILED + " "+ AlertMessages.AlertMessages.DELETE);
+                throw new Exception("");
 
             throw new Exception(ex.Message);
         }

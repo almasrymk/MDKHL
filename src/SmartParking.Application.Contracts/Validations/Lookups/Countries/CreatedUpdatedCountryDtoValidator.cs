@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SmartParking.Localization;
 using SmartParking.Lookups;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,12 @@ public class CreatedUpdatedCountryDtoValidator : AbstractValidator<CreateUpdateC
         RuleFor(x => x.ArabicName)
          .NotEmpty()
          .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
-         .WithMessage("The Arabic name should only contain Arabic letters, digits, punctuation marks, and spaces.");
+         .WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
         RuleFor(x => x.EnglishName)
              .NotEmpty()
              .Matches(@"^[a-zA-Z][a-zA-Z0-9\s]*$")
-             .WithMessage("Name must start with a letter, accept only English letters and numbers, and cannot contain special characters such as ، / . \\ ,.");
+             .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
 
         RuleFor(x => x.ArabicCapital)
             .NotEmpty()

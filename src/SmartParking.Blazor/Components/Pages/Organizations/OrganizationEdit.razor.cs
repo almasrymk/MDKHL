@@ -190,11 +190,11 @@ public partial class OrganizationEdit
             if (IsPictureChanged)
                 createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
             var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
-            if (SubscriptionId != int.Parse(SubscriptionSelectValue))
-            {
-                await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(SubscriptionSelectValue));
+            //if (SubscriptionId != int.Parse(SubscriptionSelectValue))
+            //{
+            //    await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(SubscriptionSelectValue));
 
-            }
+            //}
             Navigation.NavigateTo("/organizations");
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {createUpdateOrganiztion.ArabicName}", Severity.Success);
 

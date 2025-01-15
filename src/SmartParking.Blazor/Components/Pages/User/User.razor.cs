@@ -5,6 +5,7 @@ using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.DataTable;
 using SmartParking.Entities;
 using SmartParking.Localization;
 using SmartParking.Permissions.CustomerPermissions;
@@ -129,7 +130,8 @@ public partial class User
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-
+        if(pageInfo.SortColumn == "Id")
+            input.Sorting = "User.Id";
         // Retrieve the list of organizations from the server
         PagedResultDto<UserWithRole> usersDto;
         if (currrentTenant.Id is not null)
@@ -155,15 +157,23 @@ public partial class User
             ShowHeader = true
         };
 
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "User.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "User.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "User.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "User.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNumber"], Name = "PhoneNumber", IsFilterable = true, PropertyName = "User.PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserRole"], Name = "UserRole", IsFilterable = false, PropertyName = "Role.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        switch (currrentTenant?.Id is null, CultureInfo.CurrentCulture.Name)
+        {
+            case (true, "ar"):
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "OrganizationEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+                break;
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "Email", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNumber"], Name = "PhoneNumber", IsFilterable = true, PropertyName = "PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserRole"], Name = "UserRole", IsFilterable = false, PropertyName = "Roles", IsSortable = true, TypeFilter = TypeFilter.Text });
-        if(currrentTenant.Id is null)
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "Organization", IsSortable = true, TypeFilter = TypeFilter.Text });
+            case (true, "en"):
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "OrganizationArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+                break;
+        }
+        
 
         foreach (var item in users)
         {

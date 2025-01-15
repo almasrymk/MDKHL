@@ -41,7 +41,7 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedResultRequestDto input);
 
     /// <summary>
     /// Asynchronously retrieves a paginated list of users based on the provided input.
@@ -52,7 +52,7 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedAndSortedResultRequestDto input);
     /// <summary>
     /// Searches for a paged and sorted list of users based on the specified input parameters.
     /// </summary>
@@ -102,4 +102,6 @@ public interface IUsersAppService:  IApplicationService
     Task<IdentityUser> AddAndValidateUserAsync(UserCreateDto input);
     Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input);
     Task<string?> GetImage(Guid? userId);
+
+    Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId);
 }
