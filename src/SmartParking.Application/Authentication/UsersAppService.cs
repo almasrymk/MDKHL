@@ -401,6 +401,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
         await CheckUpdatePhoneNumber(user, input);
+        await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         user.Name = input.Name;
         user.Surname = input.Surname;
 
