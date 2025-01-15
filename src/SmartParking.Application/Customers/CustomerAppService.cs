@@ -160,7 +160,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
             userMap.TenantId = input.TenantId;
             userMap.IsCustomer = true;
-            var user = await _usersAppService.CreateWithRoleAsync(userMap,input.RoleId);
+            var user = await _usersAppService.CreateWithRoleWithoutCustomerAsync(userMap,input.RoleId);
             return user;
 	}
 
