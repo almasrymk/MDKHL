@@ -412,10 +412,10 @@
     "UnLinkedTransactionCreatedSuccessfully": "UnLinkedTransactionCreatedSuccessfully",
     "Can'tCreateUnLinkedTransaction": "Can'tCreateUnLinkedTransaction",
     "FailedToAddUnLinkedTransaction": "FailedToAddUnLinkedTransaction",
-    "Max Number Of Garages": "Garages",
-    "Max Number Of Cameras": "Cameras",
-    "Max Number Of Users": "Users",
-    "Max Number Of Customers": "Max Number Of Customers",
+    "Max Number Of Garages": "Available Garages",
+    "Max Number Of Cameras": "Available Cameras",
+    "Max Number Of Users": "Available Users",
+    "Max Number Of Customers": "Available Customers",
     "Max Slots For Employees": "Max Slots For Employees",
     "Max Slots For Customers": "Max Slots For Customers",
     "Max Slots For Free": "Free Slots",
@@ -600,7 +600,8 @@
     "PackageCollectedMoney": "Package",
     "Mapped": "Mapped",
     "Beneficiaries": "Customers",
-    "Package": "Package"
+    "Package": "Package",
+    "CreationTimeSubView": "Creation Time"
 
 
 
