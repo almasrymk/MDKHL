@@ -145,6 +145,8 @@
 							<MudSelect @bind-Value="@Camera.GarageId"
 							Variant="Variant.Text"
 							Label="@L["EnGarageName"]"
+						    Required
+						    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 							Placeholder="Choose">
 								<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 
