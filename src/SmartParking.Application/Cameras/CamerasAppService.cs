@@ -79,8 +79,11 @@ public class CamerasAppService :
                 throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
             }
             var existingCamera = await _repository.GetAsync(id);
-            if (await CheckIPUnique(input.CameraIP) == 1 && existingCamera.Id != id) {
+            if (await CheckIPUnique(input.CameraIP) == 1 && existingCamera.Id != id ) {
                 throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            }
+            if (await CheckMacAddressUnique(input.MacAddress) == 1 && existingCamera.Id != id ) {
+                throw new Exception(LocalizationHelper.GetLocalizedString("MacAddress") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
             {
@@ -185,9 +188,13 @@ public class CamerasAppService :
             organization = await _organizationRepository.GetAsync(garage.OrganizationId);
             subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
 
-            if (await CheckIPUnique(input.CameraIP) == 1)
+            if (await CheckIPUnique(input.CameraIP) == 1 )
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP")+' '+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            }
+            if (await CheckMacAddressUnique(input.MacAddress) == 1 )
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("MacAddress") +' '+ LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             var numberOfCamerasForOrganization = await GetNumbersOfCamerasRelatedToGarage(input.GarageId);
 
@@ -239,6 +246,22 @@ public class CamerasAppService :
         if (camera != null)
         {
             return 1; // CameraIP exists
+        }
+
+        return -1;
+    }
+    /// <summary>
+    /// method used to Check if IP is unqiue or not
+    /// </summary>
+    /// <param name="cameraIP">Added Camera IP</param>
+    /// <returns>1 if IP Exists</returns>
+    private async Task<int> CheckMacAddressUnique(string MacAddress)
+    {
+        var camera = await _repository.FirstOrDefaultAsync(x => x.MacAddress.Equals(MacAddress));
+
+        if (camera != null)
+        {
+            return 1; // MacAddress exists
         }
 
         return -1;
