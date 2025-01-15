@@ -20,6 +20,10 @@ public class CameraDto: AuditedEntityDto<int>
     public string MacAddress { get; set; }
     public CameraType CameraType { get; set; }
     public int GarageId { get; set; }
+
+    public string GarageNameAr { get; set; }
+    public string GarageNameEn { get; set; }
+
     public Status Status { get; set; }
     public GarageDto Garage { get; set; }
     public Guid? TenantId { get; set; }
