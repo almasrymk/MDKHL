@@ -233,12 +233,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IQueryable<IdentityUser> query = await FindByUserType();
-            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount,input.MaxResultCount);
+            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount,input.MaxResultCount,input.Sorting);
             
             return new PagedResultDto<UserWithRole>
             {
@@ -264,7 +264,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             //{
             //    queryable = ApplySorting(queryable, input.Sorting);
             //}
-            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm);
+            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm,input.Sorting);
             return new PagedResultDto<UserWithRole>
             {
                 Items = users.Queryable.ToList(),
@@ -275,7 +275,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<PagedResultDto<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm);
+        var users = await _userRepository.SearchUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm, input.Sorting);
         return new PagedResultDto<UserWithRole> { Items = users.Queryable.ToList(), TotalCount = users.PageSize };
 
     }
@@ -582,11 +582,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
         return await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedResultRequestDto input)
+    public async Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedAndSortedResultRequestDto input)
     {
         //IQueryable<IdentityUser> query = await FindByUserType(1, 4, 5);
         //return await GetPagedResultAsync(query, input);
-        var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount, input.MaxResultCount);
+        var users = await _userRepository.FindUserWithRoleAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
         return new PagedResultDto<UserWithRole>
         {
             Items = users.Queryable.ToList(),
