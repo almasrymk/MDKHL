@@ -449,8 +449,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         if (user.PhoneNumber != input.PhoneNumber)
         {
-            var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
-            if (!result1)
+            var result = await CheckPhoneIsUnique(input.PhoneNumber);
+            if (result is not null)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
