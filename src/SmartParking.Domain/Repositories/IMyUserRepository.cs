@@ -15,10 +15,10 @@ public interface IMyUserRepository : IRepository<IdentityUser, Guid>
     Task<List<IdentityUser>> FindByOrganizationAsync(int oraganizationId);
     Task<IdentityUser> FindByOrganizationByTenantAsync(Guid? tenantId);
     Task<IdentityUser?> FindUserByOrganizationAsync(int organizationId, Guid userId);
-    Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount, int maxResultCount);
-    Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount, int maxResultCount, string term);
-    Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount, int maxResultCount);
-    Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string term);
+    Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount, int maxResultCount,string Sorting);
+    Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount, int maxResultCount, string term , string Sorting);
+    Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount, int maxResultCount,string Sorting);
+    Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string term, string Sorting);
     Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
 
 

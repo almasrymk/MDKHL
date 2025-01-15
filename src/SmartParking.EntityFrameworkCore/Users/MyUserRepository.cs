@@ -53,33 +53,40 @@ public class MyUserRepository
         }
     }
 
-    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount,int maxResultCount)
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount,int maxResultCount, string Sorting)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => r.RoleId) 
-                    join role in dbContext.Roles 
+                    from roleId in user.Roles.Select(r => r.RoleId)
+                    join role in dbContext.Roles
                         on roleId equals role.Id
-        
                     select new UserWithRole
                     {
-                         User = user,
-                         Role = role
-                        
+                        User = user,
+                        Role = role
+
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
+        query = ApplySort(Sorting, query);
         var result = query.ToList();
 
         return new PagedResult<UserWithRole>
         {
             PageSize = total,
-            Queryable = query,  
+            Queryable = query,
         };
-        
 
-    } 
-    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount,int maxResultCount)
+
+    }
+
+    private static IQueryable<UserWithRole> ApplySort(string Sorting, IQueryable<UserWithRole> query)
+    {
+        query = query.OrderBy(Sorting);
+        return query;
+    }
+
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount,int maxResultCount, string Sorting)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -100,6 +107,7 @@ public class MyUserRepository
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
+        query = ApplySort(Sorting, query);
         var result = query.ToList();
 
         return new PagedResult<UserWithRole>
@@ -110,7 +118,7 @@ public class MyUserRepository
         
 
     }
-    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount,int maxResultCount,string term)
+    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount,int maxResultCount,string term, string Sorting)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -130,6 +138,7 @@ public class MyUserRepository
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
+        query = ApplySort(Sorting, query);
         var result = query.ToList();
 
 
@@ -141,7 +150,7 @@ public class MyUserRepository
 
 
     }
-    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount,int maxResultCount,string term)
+    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount,int maxResultCount,string term, string Sorting)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -168,6 +177,7 @@ public class MyUserRepository
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
+        query = ApplySort(Sorting, query);
         var result = query.ToList();
 
 
