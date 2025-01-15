@@ -83,14 +83,7 @@
 							<MudTextField Disabled Label=@L["ParkingSlot"] @bind-Value="subscription.ParkingSlot" Variant="Variant.Text" />
 
 					</MudItem>
-						<MudItem sm="6">
-							<MudTextField @bind-Value="subscription.SubscriptionSlotNumber"
-										  For="@(() => subscription.SubscriptionSlotNumber)"
-										  Immediate="true"
-										  Variant="Variant.Text"
-										  Label="@L["SubscriptionSlotNumber"]"
-										  Disabled />
-						</MudItem>
+				
 					<MudItem sm="12">
 						<MudTextField @bind-Value="subscription.SubscriptionDescription"
 									  For="@(() => subscription.SubscriptionDescription)"
@@ -107,7 +100,7 @@
 									  For="@(() => subscription.CreationTime)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["CreationTime"]"
+										  Label="@L["CreationTimeSubView"]"
 									  Disabled />
 					</MudItem>
 					
@@ -135,7 +128,7 @@
 						}
 					
 								
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.NumberOfUsers"
 									  For="@(() => subscription.NumberOfUsers)"
 									  Immediate="true"

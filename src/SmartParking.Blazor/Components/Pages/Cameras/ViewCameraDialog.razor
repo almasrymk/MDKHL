@@ -85,14 +85,29 @@
 									  Disabled=true
 									  Label="@L["MacAddress"]" />
 					</MudItem>
-
+					@if (CultureInfo.CurrentCulture.Name == "ar")
+					{
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Garage.Code"
-									  For="@(() => Camera.Garage.Code)"
+							<MudTextField @bind-Value="Camera.Garage.NameAr"
+										  For="@(() => Camera.Garage.NameAr)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["Garage"]" />
-					</MudItem>
+									  Label="@L["GarageName"]" />
+						</MudItem>
+					}
+					else
+					{
+
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Garage.NameEn"
+										  For="@(() => Camera.Garage.NameEn)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["GarageName"]" />
+						</MudItem>
+
+					}
+					
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.CameraType"
 									  For="@(() => Camera.CameraType)"

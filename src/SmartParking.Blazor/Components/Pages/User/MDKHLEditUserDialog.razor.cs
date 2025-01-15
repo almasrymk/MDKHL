@@ -110,15 +110,15 @@ public partial class MDKHLEditUserDialog
             Name = "User Roles",
             ShowHeader = true
         };
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ID"], Name = "ID", IsFilterable = false, PropertyName = "ID", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RoleName"], Name = "RoleName", IsFilterable = false, PropertyName = "RoleName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "ID", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Role"], Name = "Role", IsFilterable = false, PropertyName = "RoleName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "OrganizationName", IsFilterable = false, PropertyName = "OrganizationName", IsSortable = true, TypeFilter = TypeFilter.Text });
         foreach (var item in UserRoles)
         {
             var rowDef = new RowDef();
 
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RoleId"], item.RoleId.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RoleName"], item.RoleName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Id"], item.RoleId.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Role"], item.RoleName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationName));
             tableData.Rows.Add(rowDef);
         }

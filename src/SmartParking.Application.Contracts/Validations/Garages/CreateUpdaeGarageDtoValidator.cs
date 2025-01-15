@@ -22,8 +22,8 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
         RuleFor(x => x.NameAr)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .MaximumLength(100)
-            .Matches(@"^[\u0621-\u064A\s،./\\_\-0-9a-zA-Z]+$")
-            .WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
+            .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
+
 
         RuleFor(x => x.ClosingHours.ToString("HH:mm"))
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
