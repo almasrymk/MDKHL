@@ -145,27 +145,28 @@ public class CamerasAppService :
     /// <exception cref="EntityNotFoundException">exception thrown when garage isn't exist</exception>
     public override async Task DeleteAsync(int id)
     {
-        var camera = await _repository.GetAsync(id);
-        if (camera == null)
-            throw new EntityNotFoundException(typeof(Camera), id);
-        if (camera.Status == Enums.Status.Active)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-
-           var result = await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
-
-            if (result == true)
+            var camera = await _repository.GetAsync(id);
+            if (camera == null)
+                throw new EntityNotFoundException(typeof(Camera), id);
+            if (camera.Status == Enums.Status.Active)
             {
-               camera.Status = Status.Deleted;
+
+                var result = await _garageAppService.AddActiveCameraRelatedToOrganizationGarage(camera.GarageId, -1);
+
+                if (result == true)
+                {
+                    camera.Status = Status.Deleted;
+                }
+                else
+                {
+                    throw new Exception("Can't delete camera");
+                }
             }
-            else
-            {
-                throw new Exception("Can't delete camera");
-            }
+
+            await _repository.HardDeleteAsync(camera);
         }
-
-        await _repository.HardDeleteAsync(camera);
-
-        //await base.DeleteAsync(id);
     }
     /// <summary>
     /// Method that used to create new camera to specific organization
