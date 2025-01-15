@@ -83,7 +83,8 @@ partial class Roles
             Sorting = pageInfo.SortColumn,
             SearchingTerm = termSearch 
         };
-
+        //if (pageInfo.SortColumn == "Id")
+        //    pageInfo.SortColumn = "Role.Id";
         var contactInfosDto = await RoleAppService.SearchOrganization(input,CurrentTenant.Id);
 
         TotalItem = (int)contactInfosDto.TotalCount;
@@ -99,7 +100,8 @@ partial class Roles
 
        CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        pageInfo.SortColumn = "Role.Id";
+        //if(pageInfo.SortColumn == "Id")
+        //  pageInfo.SortColumn = "Role.Id";
         var input = new PagedAndSortedResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
