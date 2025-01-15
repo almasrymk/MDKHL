@@ -46,9 +46,12 @@
                         <MudTextField ReadOnly T="string" Placeholder="@L["Type Here"]"
                                       Label="@L["NationalId"]" @bind-Value="userDto.NationalId" />
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Role"]" @bind-Value="RoleName" />
-                    </MudItem>
+                    @if(!string.IsNullOrEmpty(RoleName))
+                    {
+                        <MudItem sm="6">
+                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Role"]" Value="RoleName" />
+                        </MudItem>
+                    }
                     <MudItem sm="4">
                         <Label>@L["Status"]</Label>
                         <Div Style=@($"background-color: {(userDto.IsActive? "#b8efb0" : "#f20707")};border:none;color:{(userDto.IsActive? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>

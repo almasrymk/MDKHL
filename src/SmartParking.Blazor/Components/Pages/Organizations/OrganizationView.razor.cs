@@ -56,7 +56,7 @@ public partial class OrganizationView
         var organization = await OrganizationsAppService.GetAsync(id);
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
-        NumOfActiveCameras = organization.NumOfCameras;
+        NumOfActiveCameras = organization.ActiveCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         
         OrganizationPicture = organization.OrganizationPicture;
@@ -89,7 +89,7 @@ public partial class OrganizationView
             CityName = organization.CityNameAr;
             Address = organization.Address + organization.CityNameAr;
         }
-        NumOfActiveGarages = organization.MaxCapacity;
+        NumOfActiveGarages = organization.ActiveGarages;
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;

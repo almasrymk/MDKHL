@@ -16,7 +16,7 @@ public class UpdateUserDto
     [Required]
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxUserNameLength))]
     public string UserName { get; set; }
-
+    [Required]
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxNameLength))]
     public string Name { get; set; }
 
