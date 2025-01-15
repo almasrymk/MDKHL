@@ -102,4 +102,6 @@ public interface IUsersAppService:  IApplicationService
     Task<IdentityUser> AddAndValidateUserAsync(UserCreateDto input);
     Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input);
     Task<string?> GetImage(Guid? userId);
+
+    Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId);
 }

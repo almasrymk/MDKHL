@@ -72,6 +72,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await AssignRoleAndPermissionsAsync(user, roleId, input);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
+    }   
+    public async Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId)
+    {
+        IdentityUser user = await AddAndValidateUserAsync(input);
+
+        await AssignRoleAndPermissionsWithoutCustomerAsync(user, roleId, input);
+
+        return ObjectMapper.Map<IdentityUser, UserDto>(user);
     }
 
     [AllowAnonymous]
@@ -137,8 +145,18 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
 
     }
-    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId)
+    private async Task AssignRoleAndPermissionsWithoutCustomerAsync(IdentityUser user, Guid roleId, UserCreateDto input)
     {
+        if (input.IsCustomer)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+
+                await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+            }
+
+
+        }
         user.AddRole(roleId);
     }    
     private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId,UserCreateDto input)
@@ -158,9 +176,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
     [AllowAnonymous]
     public async Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input)
     {
+
         await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
-        await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+        }
+
     }
+
 
     /// <summary>
     /// Checks if the provided phone number is unique and associated with a user.
@@ -424,8 +449,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         if (user.PhoneNumber != input.PhoneNumber)
         {
-            var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
-            if (!result1)
+            var result = await CheckPhoneIsUnique(input.PhoneNumber);
+            if (result is not null)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
