@@ -435,7 +435,7 @@
     "Max Number Of Garages": " المتاح من المواقف",
     "Max Number Of Cameras": "المتاح من الكاميرات",
     "Max Number Of Users": "المتاح من المستخدمين",
-    "Max Number Of Customers": "عدد العملاء",
+    "Max Number Of Customers": "المتاح من العملاء",
     "Max Slots For Customers": "عدد أماكن الركن المتاح للعملاء",
     "Max Slots For Employees": "عدد أماكن الركن المتاح للموظفين",
     "Max Slots For Free": "عدد أماكن الركن المتاح مجانًا ",
@@ -624,7 +624,8 @@
     "Beneficiaries": "العملاء",
     "TotalSlots": "اجمالي أماكن الركن",
     "All": "الكل",
-    "NoPackages": "بدون باقة"
+    "NoPackages": "بدون باقة",
+    "CreationTimeSubView": "تاريخ الانشاء"
 
 
 
