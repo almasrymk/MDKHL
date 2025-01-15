@@ -19,8 +19,12 @@ partial class ViewUserDialog
 
     protected override async Task OnInitializedAsync()
     {
+        if (userDto.RoleId == Guid.Empty)
+        {
+            return;
+        }
         var role = await RoleAppService.GetRoleById(userDto.RoleId);
-        RoleName = role.Name;
+        RoleName = role.Name??null;
 
     }
     public void CancelEdit()
