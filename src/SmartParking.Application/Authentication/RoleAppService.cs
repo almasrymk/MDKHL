@@ -50,17 +50,25 @@ public class RoleAppService : ApplicationService, IRoleAppService
         _organizationRepository = organizationRepository;
     }
 
-    public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedAndSortedResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _roleReository.GetQueryableAsync();
+            queryable =
             queryable = GetQueryByTenat(tenantId, queryable);
-            
+            queryable = ApplySortForOrganization(input, queryable);
             return await GetPagedResultAsync(queryable, input);
         }
-    } 
-    
+    }
+
+    private static IQueryable<IdentityRole> ApplySortForOrganization(PagedAndSortedResultRequestDto input, IQueryable<IdentityRole> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+            queryable = queryable.OrderBy(input.Sorting);
+        return queryable;
+    }
+
     public async Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -75,7 +83,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     private static IQueryable<RoleWithOrganization> CheckSort(PagedAndSortedResultRequestDto input, IQueryable<RoleWithOrganization> query)
     {
-        if (input.Sorting.IsNullOrEmpty())
+        if (!input.Sorting.IsNullOrEmpty())
             query = ApplySortForMdkhl(input, query);
         return query;
     }
@@ -123,15 +131,13 @@ public class RoleAppService : ApplicationService, IRoleAppService
         {
             var queryable = await _roleReository.GetQueryableAsync();
             queryable = GetQueryByTenat(tenantId, queryable);
+            
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
                 queryable = ApplySearchFilter(queryable, input.SearchingTerm);
             }
 
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                queryable = ApplySorting(queryable, input.Sorting);
-            }
+            queryable = ApplySortForOrganization(input, queryable);
 
             return await GetPagedResultAsync(queryable, input);
         }
