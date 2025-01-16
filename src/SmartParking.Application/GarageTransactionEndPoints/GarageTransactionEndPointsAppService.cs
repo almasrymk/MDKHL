@@ -251,7 +251,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<bool> FreeSlots(Garage garage, CustomerCategoryStatus customer)
     {
         bool flag = false;
-        if (customer == CustomerCategoryStatus.Customer)
+        if (customer == CustomerCategoryStatus.Customer||customer==null)
         {
             garage.CurrnetCapacityForCustomers--;
             

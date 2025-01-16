@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
@@ -453,5 +454,15 @@ public class GarageTransactionsAppService :
             return Result.Success(transactionsDtos);
 
         }
+    }
+
+    public async Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId)
+    {
+        var garagetransaction=await _repository.FindAsync(garageTransactionId);
+        if (garagetransaction == null)
+        {
+            throw new EntityNotFoundException(typeof(GarageTransaction), garageTransactionId);
+        }
+        return garagetransaction.CameraId;
     }
 }
