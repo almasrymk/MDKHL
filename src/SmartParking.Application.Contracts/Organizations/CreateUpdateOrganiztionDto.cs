@@ -34,7 +34,7 @@ public class CreateUpdateOrganiztionDto
     public bool IsClose { get; set; }
     public TimeOnly? ClosingHoursStart { get; set; }
     public TimeOnly? ClosingHoursEnd { get; set; }
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
     public string Address { get; set; }
     public string OrganizationPicture { get; set; }
     public int BuildingNumber { get; set; }
@@ -48,7 +48,7 @@ public class CreateUpdateOrganiztionDto
 
     public string TaxNumber { get; set; }
 
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
 
 
 
