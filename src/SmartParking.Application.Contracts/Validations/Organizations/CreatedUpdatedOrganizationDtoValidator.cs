@@ -20,11 +20,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
             .Length(10);
         
         RuleFor(x => x.UserName)
-            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
-
-        RuleFor(x => x.NationalId)
-     .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
 
         RuleFor(x => x.ArabicName)

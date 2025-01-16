@@ -141,8 +141,8 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorArabicName"], Name = "PlateColorArabicName", IsFilterable = true, PropertyName = "PlateColorArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorEnglishName"], Name = "PlateColorEnglishName", IsFilterable = true, PropertyName = "PlateColorEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorArabicName"], Name = "PlateColorArabicName", IsFilterable = true, PropertyName = "PlateColor.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateColorEnglishName"], Name = "PlateColorEnglishName", IsFilterable = true, PropertyName = "PlateColor.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 			//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
 			//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
@@ -251,10 +251,17 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 
 
             }
+            catch (AbpValidationException validationException)
+            {
+                foreach (var validationError in validationException.ValidationErrors)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+                }
+            }
             catch (BusinessException ex)
             {
 
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
             }
             catch (AuthenticationException ex)
             {
