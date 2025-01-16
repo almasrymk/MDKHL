@@ -6,7 +6,10 @@
 @using SmartParking.Lookups.VehicleModel
 @using System.Globalization
 @using SmartParking.Utilities
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -150,6 +153,22 @@
                 Navigation.NavigateTo("/vehicleModels", true);
             }
         
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
         catch (Exception ex)
         {
 
