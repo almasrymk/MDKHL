@@ -16,7 +16,7 @@ public class ContactInfoCreateUpdateValidation : AbstractValidator<ContactInfoCr
     {
         RuleFor(x => x.WhatsAppNum)
          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-         .Matches(@"^(05[3-8]\d{8}|\+966[3-8]\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
+         .Matches(@"^(05\d{8}|\+9665\d{8})$").WithMessage(LocalizationHelper.GetLocalizedString("WhatsAppValidation"));
 
 
         RuleFor(x => x.ContactMail)
