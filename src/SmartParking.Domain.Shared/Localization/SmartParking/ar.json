@@ -625,7 +625,11 @@
     "TotalSlots": "اجمالي أماكن الركن",
     "All": "الكل",
     "NoPackages": "بدون باقة",
-    "CreationTimeSubView": "تاريخ الانشاء"
+    "CreationTimeSubView": "تاريخ الانشاء",
+    "OpenGate": "فتح البوابة",
+    "EntranceImage": "صورة الدخول",
+    "ExitImage": "صورة الخروج",
+    "LastInvoice": "الخروج"
 
 
 
