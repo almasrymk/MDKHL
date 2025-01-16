@@ -527,7 +527,7 @@
     "Deletion": "Deleted",
     "SUCCESS": "Successfully",
     "FAILED": "Failed",
-    "VaildtionError": "Vaildtion Error",
+    "VaildtionError": "Validation Error",
     "ArabicNameValidtion": "Name must contain only Arabic letters, spaces, and special characters such as ، / . \\.",
     "EnglishNameValidtion": "Name must contain only English letters, spaces, and special characters such as ، / . \\.",
     "TimeOnlyValidation": "Time must be in the format HH:MM.",
