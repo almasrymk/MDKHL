@@ -1,0 +1,14 @@
+﻿ <MudItem sm="5" Class="flex-column">
+	<MudText>@Title</MudText>
+	<Div>
+		<MudImage Src="@Image" Width="200" Height="200" Class="bg_w_foto " onerror="this.src='images/garages/car_placeholder.png'" />
+		<MudText>@Date.ToString()</MudText>
+	</Div>
+</MudItem>
+@code {
+	[Parameter] public string Title { get; set; }
+	[Parameter] public string Image { get; set; }
+	[Parameter] public DateTime Date { get; set; }
+
+
+}

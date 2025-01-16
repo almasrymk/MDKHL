@@ -328,7 +328,7 @@
     "...?": "...؟",
     "Camera with Mac Address : ": ": عنوان مـاك الكـاميرا ",
     "Confirm Deletion": "تـأكيـد الحـذف",
-    "Add NEW": "إضـافة جـديـد",
+    "Add NEW": "إضـافة",
     "OrganiztionCreatedSuccessfully": "تم إضــافة منظمة بنجاح",
     "Can'tCreateOrganiztion": "لا يمكن إضــافة منظمة",
     "FullDayPrice": "سعر اليوم الكامل",
@@ -625,7 +625,13 @@
     "TotalSlots": "اجمالي أماكن الركن",
     "All": "الكل",
     "NoPackages": "بدون باقة",
-    "CreationTimeSubView": "تاريخ الانشاء"
+    "AddNewPackage": "إضــافة باقة",
+    "Mapped": "تطابق",
+    "CreationTimeSubView": "تاريخ الانشاء",
+    "OpenGate": "فتح البوابة",
+    "EntranceImage": "صورة الدخول",
+    "ExitImage": "صورة الخروج",
+    "LastInvoice": "الخروج"
 
 
 

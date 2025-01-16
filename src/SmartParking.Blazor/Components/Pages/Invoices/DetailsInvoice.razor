@@ -28,7 +28,7 @@
     <MudGrid>
         <MudItem sm="7">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                <MudText Typo="Typo.h6" Class="fw-bold">@L["InvoiceDetails"]</MudText>
+                <MudText Typo="Typo.h6" Class="fw-bold">@L["Details"]</MudText>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
 
@@ -129,54 +129,7 @@
             </MudPaper>
         </MudItem>
 
-        <MudItem sm="5">
-            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-                <MudItem>
-
-                <MudText Class="mb-3 mt-3" Typo="Typo.h5">@L["Summary"]</MudText>
-
-                <MudGrid>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.h6">@L["DueValue"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">@InvoicePrice @L["SAR"]</MudText>
-                    </MudItem>
-
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.h6">@L["VAT"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">@($"{ Math.Round((InvoicePrice * 0.15m),2)} {L["SAR"]}")</MudText>
-                    </MudItem>
-
-                    <MudItem xs="6">
-                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
-                            @($"{Math.Round((InvoicePrice + (InvoicePrice * 0.15m)),2)} {L["SAR"]}")
-                        </MudText>
-                    </MudItem>
-                </MudGrid>
-                </MudItem>
-
-                <MudItem>
-
-                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result){
-
-                    <MudGrid Class="mt-4">
-                        <MudItem xs="12" Class="text-center">
-                            <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ?L["Paid"] :L["CONFIRM"])  </MudButton>
-                        </MudItem>
-                    </MudGrid>
-                }
-                </MudItem>
-
-
-            </MudPaper>
-        </MudItem>
-
+        <PriceSummaryComponent ComponentSize="5" ConfirmSize="12" InvoicePrice="@InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" ShowOpenGate="false"/>
     </MudGrid>
 </MudItem>
 

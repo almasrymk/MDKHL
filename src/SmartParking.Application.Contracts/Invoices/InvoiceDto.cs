@@ -24,8 +24,11 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public string ExitTransactionImage { get; set; }
     public string QrCodeInvoice { get; set; }
     public int InvoiceId { get; set; }
+    public int OrganizationId { get; set; }
     public string OrganizationAddress { get; set; }
     public string OrganizationTIN { get; set; }
+    public int GarageTransactionExitId { get; set; }
+
 
 
 

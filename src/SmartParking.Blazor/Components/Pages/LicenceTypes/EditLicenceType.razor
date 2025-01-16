@@ -19,17 +19,8 @@
 <PageTitle>@L["Edit LicenceType"]</PageTitle>
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
-		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.EnglishName</MudText>
-
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.ArabicName</MudText>
-
-			}
+		<TitleContent>			
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 

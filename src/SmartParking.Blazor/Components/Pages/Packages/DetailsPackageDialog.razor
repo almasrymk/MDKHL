@@ -12,7 +12,7 @@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" style="min-height:fit-content !important">
 		<TitleContent>
-            <MudText Typo="Typo.h6">@L["View Details"]</MudText>
+            <MudText Typo="Typo.h6">@L["Details"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -39,9 +39,11 @@
                                       Label=@L["EnglishName"] />
                     </MudItem>
                     <MudItem sm="4" md="4">
-                        <MudTextField @bind-Value="Package.Price"
+                        <MudNumericField @bind-Value="Package.Price"
                                       For="@(() => Package.Price)"
                                       Variant="Variant.Text"
+                                      Min="0"
+                                      HideSpinButtons="true"       
                                       Class="w-100"
                                       Disabled='true'
                                       Label=@L["Price"] />

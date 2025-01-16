@@ -12,25 +12,11 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@state.EnglishName</MudText>
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@state.ArabicName</MudText>
-
-			}
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
 				<MudGrid>
-
-
-
 					<MudItem sm="6">
 						<MudTextField @bind-Value="state.ArabicName"
 									  For="@(() => state.ArabicName)"
