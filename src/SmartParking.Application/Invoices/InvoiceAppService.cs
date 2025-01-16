@@ -23,13 +23,14 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Invoices;
 //[Authorize]
-public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedAndSortedResultRequestDto, CreateUpdateInvoiceDto>, IInvoiceAppService
+public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedAndSortedResultRequestDto, CreateUpdateInvoiceDto>, IInvoiceAppService 
 {
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Invoice, int> _invoiceRepository;
@@ -373,5 +374,16 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return Result.Success(invDtos);
 
         }
+    }
+
+    public async Task<InvoiceDto> GetLatestInvoiceForOrganization()
+    {
+
+       var query=await _invoiceRepository.GetQueryableAsync();
+       query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid);
+       query= query.OrderByDescending(x=>x.CreationTime);
+       var invoice =await query.FirstOrDefaultAsync();
+       return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+        
     }
 }
