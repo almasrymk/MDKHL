@@ -3,6 +3,7 @@
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Lookups.PlateColor
+@using System.Security.Authentication
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.Validation
@@ -100,10 +101,19 @@
                     SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
                 }
             }
-            catch (Exception e)
+            catch (BusinessException ex)
             {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
+
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
+            }
+            catch (AuthenticationException ex)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+            }
+            catch (Exception ex)
+            {
+
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
             }
            
 
