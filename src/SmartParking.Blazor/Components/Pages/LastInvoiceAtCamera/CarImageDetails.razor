@@ -1,8 +1,8 @@
 ﻿ <MudItem sm="5" Class="flex-column">
 	<MudText>@Title</MudText>
-	<Div>
-		<MudImage Src="@Image" Width="200" Height="200" Class="bg_w_foto " onerror="this.src='images/garages/car_placeholder.png'" />
-		<MudText>@Date.ToString()</MudText>
+	<Div Class="mt-4">
+		<MudImage Src="@Image" Width="200" Height="200" Class="bg_w_foto mt-4" onerror="this.src='images/garages/car_placeholder.jpg'" />
+		<MudText Class="mt-4">@Date.ToString()</MudText>
 	</Div>
 </MudItem>
 @code {
