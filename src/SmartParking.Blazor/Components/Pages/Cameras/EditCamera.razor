@@ -25,10 +25,8 @@
 			<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Name"
 						For="@(() => Camera.Name)"
@@ -42,21 +40,21 @@
 						<MudTextField @bind-Value="Camera.DeviceId"
 						Immediate="true"
 						Label="@L["Code"]" 
-						Required
+						Required="true"
 						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6">
 						<MudSelect 
-							 @bind-Value="@Camera.BrandNameId"
-								Variant="Variant.Text"
-								Label="@L["BrandName"]"
-								HelperText=@L["Helper Text"]
-								Placeholder=@L["Choose"]
-								Required="true"
-								Immediate="true"
-								RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-								Clearable="_clearable">
+						@bind-Value="@Camera.BrandNameId"
+						Variant="Variant.Text"
+						Label="@L["BrandName"]"
+						HelperText=@L["Helper Text"]
+						Placeholder=@L["Choose"]
+						Required="true"
+						Immediate="true"
+						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+						Clearable="_clearable">
 							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 							@foreach (var cameraBrand in CameraBrands)
 							{
@@ -127,7 +125,7 @@
 						For="@(() => Camera.CameraIP)"
 						Immediate="true"
 						Label="@L["CameraIP"]" 
-						Required
+						Required="true"
 						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6" md="6">
@@ -135,7 +133,7 @@
 						For="@(() => Camera.MacAddress)"
 						Immediate="true"
 						Label="@L["MacAddress"]" 
-						Required
+						Required="true"
 						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
@@ -145,8 +143,8 @@
 							<MudSelect @bind-Value="@Camera.GarageId"
 							Variant="Variant.Text"
 							Label="@L["EnGarageName"]"
-						    Required
-						    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+							Required
+							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 							Placeholder="Choose">
 								<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 
@@ -200,12 +198,12 @@
 			</MudForm>
 		</DialogContent>
 		<DialogActions>
-		  <MudItem sm="12">
-			 <div class="d-flex justify-content-between align-items-center">
-			 	<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-				<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-			 </div>
-		  </MudItem>
+			<MudItem sm="12">
+				<div class="d-flex justify-content-between align-items-center">
+					<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+					<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
+				</div>
+			</MudItem>
 		</DialogActions>
 	</MudDialog>
 
@@ -262,6 +260,12 @@
 				var newGarage = Garages.Find(x => x.Id == Camera.GarageId);
 				Camera.OrganizationId = newGarage.OrganizationId;
 				Camera.TenantId = newGarage.TenantId;
+			}
+			if(string.IsNullOrEmpty(Camera.DeviceId))
+			{
+				SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("VaildtionError")}: {LocalizationHelper.GetLocalizedString("DeviceId")}- {LocalizationHelper.GetLocalizedString("EmptyValidation")}", Severity.Error);
+				return;
+
 			}
 
 			await CamerasAppService.UpdateAsync(UpdatedId, Camera);

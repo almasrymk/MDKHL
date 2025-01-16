@@ -21,7 +21,7 @@ namespace SmartParking.Validations.Lookups.Cameras
 
             RuleFor(x => x.EnglishName)
                  .NotEmpty()
-                 .Matches(@"^[a-zA-Z][a-zA-Z0-9\s]*$")
+                 .Matches(@"^[a-zA-Z][a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/?]* $")
                  .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
 
             RuleFor(x => x.CameraBrandId)
