@@ -163,39 +163,37 @@
             <Image Source="images/dashboard/discount.png" Fluid Class="w-100" />
         </MudPaper>
     </MudItem>
-    <MudItem sm="6">
+    <div style="display: flex; gap: 16px; width: 100%; padding: 16px; box-sizing: border-box;">
+        <MudItem sm="5" Style="flex: 0 0 40%; display: flex; flex-direction: column; height: 100%; padding: 16px; margin: 0;">
+            <MudPaper Style="height: 100%; padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
+                    <MudChart ChartType="ChartType.Pie"
+                              InputData="@data"
+                              InputLabels="@labels"
+                              Width="300px"
+                              Height="300px"
+                              ChartOptions="@options" />
+                </MudTooltip>
+            </MudPaper>
+        </MudItem>
 
-        <MudPaper Class="custom-rounded p-3">
-            <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
-
-                <MudChart ChartType="ChartType.Pie"
-                InputData="@data"
-                InputLabels="@labels"
-                Width="300px"
-                Height="300px"
-                ChartOptions="@options"
-                />
-            </MudTooltip>
-        </MudPaper>
-    </MudItem>
-    <MudItem sm="12">
-        <MudPaper Class="custom-rounded" Style="width: 100%; height: auto;">
-            <MudItem Class="d-flex align-items-start justify-content-end">
-                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                    <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
-                </MudMenu>
-            </MudItem>
-            <MudChart ChartType="ChartType.Bar"
-                      ChartSeries="@Series"
-                      @bind-SelectedIndex="index"
-                      XAxisLabels="@XAxisLabels"
-                      Width="100%"
-                      Height="400px"
-                      Style="max-width: 100%; margin: 0 auto;">
-            </MudChart>
-        </MudPaper>
-    </MudItem>
-
+        <MudItem sm="7" Style="flex: 0 0 60%; display: flex; flex-direction: column; height: 100%; padding: 16px; margin: 0;">
+            <MudPaper Style="height: 100%; padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <MudItem Style="display: flex; align-items: flex-start; justify-content: flex-end;">
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
+                        <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
+                    </MudMenu>
+                </MudItem>
+                <MudChart ChartType="ChartType.Bar"
+                          ChartSeries="@Series"
+                          @bind-SelectedIndex="index"
+                          XAxisLabels="@XAxisLabels"
+                          Width="100%"
+                          Height="300px"
+                          Style="max-width: 100%; margin: 0 auto;" />
+            </MudPaper>
+        </MudItem>
+    </div>
 
 </MudGrid>
 
