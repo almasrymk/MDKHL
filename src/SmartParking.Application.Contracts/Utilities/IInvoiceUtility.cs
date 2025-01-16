@@ -10,4 +10,5 @@ public interface IInvoiceUtility
     Task<QRCodeDto> GetQrCodeAsync(decimal amount, int organizationId);
     Task<QRCodeDto> GetQrCodeAsync(decimal amount, Organization organization);
     Task<string?> GetTokenAsync();
+    Task OpenGate(string CameraIP);
 }
