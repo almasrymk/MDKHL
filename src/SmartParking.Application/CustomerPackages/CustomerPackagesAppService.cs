@@ -124,47 +124,6 @@ public class CustomerPackagesAppService:
                 }
 
                 return await InsertCustomerPackageAsync(customerPackage);
-
-           // var customer = await _customerRepository.FirstOrDefaultAsync(c => c.IdentityUserId == CurrentUser.Id);
-           // if(customer == null)
-           //     return Result.NotFound("Customer not found");
-           // var package = await _packageRepository.GetAsync(p => p.Id == packageId);
-
-           // if (package == null)
-           //     return Result.NotFound("Package not found");
-           // var customerPackageIsExist = await _repository.FirstOrDefaultAsync(p => p.PackageId == packageId && p.OrganizationId == package.OrganizationId && p.CustomerId == customer.Id
-           // && p.ExpiryDate >= DateTime.Today);
-           // if (customerPackageIsExist is not null)
-           // {
-           //     return Result.Invalid(new ValidationError
-           //     {
-           //         ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-           //         ErrorMessage = "This customer hanve the same package"
-
-           //     });
-           // }
-           // var customerPackage = CreateCustomerPackage(packageId, customer, package);
-           // var haveCustomerNull = await _repository.FirstOrDefaultAsync(p => p.PackageId == null && p.OrganizationId == package.OrganizationId);
-           // if (haveCustomerNull is not null)
-           // {
-
-           //     ObjectHelper.TrySetProperty(
-           //         customerPackage,
-           //         x => x.Id,
-           //         () => haveCustomerNull.Id
-           //     );
-           //     var  updatePackage = await _repository.UpdateAsync(customerPackage, true);
-           //     if (updatePackage == null)
-           //         return Result.Error("Can't assign package to customer");
-
-           //     return Result.Success();
-           // }
-
-           // var assignPackage = await _repository.InsertAsync(customerPackage, true);
-           //if(assignPackage == null)
-           //     return Result.Error("Can't assign package to customer");
-
-           // return Result.Success();
         }
     }
 
