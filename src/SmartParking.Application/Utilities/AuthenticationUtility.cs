@@ -60,7 +60,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
             if (!nationalIdPattern.IsMatch(NationalId))
             {
-                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NationIdValidation"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("NationIdValidation"));
             }
         }
         else if (identification == IdentificationTypes.Passport)
@@ -68,7 +68,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
             var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
             if (!passportPattern.IsMatch(NationalId))
             {
-                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PassportValidation"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("PassportValidation"));
             }
         }
     }
@@ -100,7 +100,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
         var phoneNumberPattern = new Regex(@"(05\d{8}|\+9665\d{8})$");
         if (!phoneNumberPattern.IsMatch(phoneNumber))
         {
-            throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         }
     }    
 
@@ -112,7 +112,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
 
             if (user != null)
             {
-                throw new ValidationException(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
             return user;
         }
