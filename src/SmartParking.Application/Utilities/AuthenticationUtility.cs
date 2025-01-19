@@ -100,7 +100,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
         var phoneNumberPattern = new Regex(@"(05\d{8}|\+9665\d{8})$");
         if (!phoneNumberPattern.IsMatch(phoneNumber))
         {
-            throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         }
     }    
 
