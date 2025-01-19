@@ -99,7 +99,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
 
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(new { input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName })}");
-        if (input.PlateNumber == null) {
+        if (string.IsNullOrEmpty(input.PlateNumber)) {
             await CreateUnLinkedTransaction(input);
             return await Task.FromResult(false);
         }
