@@ -14,7 +14,7 @@
             <MudText Class="fw-bold">@L["CustomerInvoice"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["CustomerInvoice"] Data="@itemData" OnPageChanged="FetchTableData" OnFiltering="HandleFilter"></SPDataGrid>
+            <SPDataGrid PageName=@L["CustomerInvoice"] Data="@itemData" TotalItemsInTable="@TotalItem" OnPageChanged="FetchTableData" OnFiltering="HandleFilter"></SPDataGrid>
         </DialogContent>
         <DialogActions>
 

@@ -499,7 +499,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
     /// <inheritdoc/>
-    public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId)
+    public async Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId,PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -511,11 +511,17 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             }
 
             var query = await _repositoryVehicle.GetQueryableAsync();
-
             query = query.Where(x => x.CustomerId == customerId);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
             var result = await AsyncExecuter.ToListAsync(query);
             var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
-            return output;
+            return new PagedResultDto<VehicleDto>
+            {
+                Items = output,
+                TotalCount = totalCount
+            };
         }
 
     }
