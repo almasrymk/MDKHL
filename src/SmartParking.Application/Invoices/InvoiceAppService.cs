@@ -352,14 +352,20 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    public async Task<List<InvoiceDto>> GetInvoiceForCustomer(Guid customerId)
+    public async Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId,PagedResultRequestDto input)
     {
 
             var query = await _invoiceRepository.GetQueryableAsync();
             query = query.Where(inv => inv.CustomerId == customerId);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var invoice = await AsyncExecuter.ToListAsync(query);
             var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoice);
-            return invoiceDto;
+            return new PagedResultDto<InvoiceDto>
+            {
+                Items = invoiceDto,
+                TotalCount = totalCount
+            };
     }
 
     public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber)

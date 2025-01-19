@@ -14,6 +14,7 @@ using System;
 using Volo.Abp;
 using SmartParking.CustomerPackages;
 using SmartParking.Blazor.Components.Shared;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
@@ -23,7 +24,7 @@ public partial class ViewCustomerPackageDialog
     private MudDialogInstance MudDialog { get; set; }
     [Parameter] public string CustomerId { get; set; }
     private void Cancel() => MudDialog.Cancel();
-
+    private int TotalItem;
     private TableData itemData = new TableData();
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
@@ -39,19 +40,25 @@ public partial class ViewCustomerPackageDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        List<CustomerPackageDto> customerPackageDto;
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+        PagedResultDto<CustomerPackageDto> customerPackageDto;
         if (CurrentTenant.Id == null)
         {
-            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerMdkl(Guid.Parse(CustomerId));
+            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerMdkl(Guid.Parse(CustomerId), input);
         }
         else
         {
-            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerOrganization(Guid.Parse(CustomerId));
+            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerOrganization(Guid.Parse(CustomerId), input);
         }
+        TotalItem =(int) customerPackageDto.TotalCount;
 
 
-
-        CreateTable(customerPackageDto);
+        CreateTable(customerPackageDto.Items.ToList());
 
     }
 

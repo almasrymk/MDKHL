@@ -265,30 +265,46 @@ public class CustomerPackagesAppService:
         await _repository.UpdateAsync(customerPackage, true);
     }
 
-    public async Task<List<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId)
+    public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId,PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Where(c => c.CustomerId == customerId && c.PackageId != null);
-
-            var result = await AsyncExecuter.ToListAsync(query);
+            var resultPaged = await ApplyPaged(input, query);
+            var result = await AsyncExecuter.ToListAsync(resultPaged.query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
-            return packageMap;
+            return new PagedResultDto<CustomerPackageDto>
+            {
+                Items = packageMap,
+                TotalCount = resultPaged.totalCount
+            };
         }
     }
 
-    public async Task<List<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId)
+    private async Task<(IQueryable<CustomerPackage> query, int totalCount)> ApplyPaged(PagedAndSortedResultRequestDto input, IQueryable<CustomerPackage> query)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        return (query, totalCount);
+    }
+
+    public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId, PagedAndSortedResultRequestDto input)
     {
         var org = await _organizationsApp.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Where(c => c.CustomerId == customerId && c.OrganizationId == org.Id && c.PackageId != null);
-
-            var result = await AsyncExecuter.ToListAsync(query);
+            var resultPaged = await ApplyPaged(input, query);
+            var result = await AsyncExecuter.ToListAsync(resultPaged.query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
-            return packageMap;
+            return new PagedResultDto<CustomerPackageDto>
+            {
+                Items = packageMap,
+                TotalCount = resultPaged.totalCount
+            };
+            
         }
     }
 }

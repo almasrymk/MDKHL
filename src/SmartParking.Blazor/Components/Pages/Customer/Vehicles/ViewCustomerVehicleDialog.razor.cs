@@ -56,13 +56,18 @@ public partial class ViewCustomerVehicleDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-      
-       
 
-           var vehicleDto = await CustomerAppService.GetVehiclesRelatedToSpecificCustomerMdkhl(Guid.Parse(CustomerId));
-        TotalItem = vehicleDto.Count;
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+
+        var vehicleDto = await CustomerAppService.GetVehiclesRelatedToSpecificCustomerMdkhl(Guid.Parse(CustomerId), input);
+        TotalItem =(int) vehicleDto.TotalCount;
         
-        CreateTable(vehicleDto);
+        CreateTable(vehicleDto.Items.ToList());
 
     }
 

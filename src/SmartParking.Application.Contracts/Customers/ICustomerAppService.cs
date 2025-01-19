@@ -54,21 +54,21 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 	/// <returns>CustomerDto</returns>
 	Task<CustomerDto> GetAsync(Guid customerId);
     //Task<bool> SendOtpAsync(string mobileNumber);
-    
+
     /// <summary>
     /// Method used to get vehicles for specific customer
     /// </summary>
     /// <param name="customerId">Customer Id</param>
     /// <returns>list of vehichles</returns>
-    Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId);    
+    Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId, PagedAndSortedResultRequestDto input);
 
 
-	/// <summary>
-	/// abstract method to search of customers
-	/// </summary>
-	/// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
-	/// <returns>customer Dto</returns>
-	public Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    /// <summary>
+    /// abstract method to search of customers
+    /// </summary>
+    /// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
+    /// <returns>customer Dto</returns>
+    public Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
     /// <summary>
     /// abstract method to search of customers for MDKHL
