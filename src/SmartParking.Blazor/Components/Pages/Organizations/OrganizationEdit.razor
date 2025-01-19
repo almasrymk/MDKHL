@@ -106,8 +106,16 @@
                                 <MudSelectItem Value="CountryNameEdit"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
+                                if (CultureInfo.CurrentCulture.Name == "en")
+                                {
                                     <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
                                 }
+                                else 
+                                {
+                                     <MudSelectItem Value="country.Id.ToString()">@country.ArabicName</MudSelectItem>
+                                }
+                                }
+
                             </MudSelect>
                         </MudItem>
 
@@ -121,7 +129,14 @@
                                 <MudSelectItem Value="RegionNameEdit"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
+                                if (CultureInfo.CurrentCulture.Name == "en")
+                                {
                                     <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="@region.Id.ToString()">@region.ArabicName</MudSelectItem>
+                                }
                                 }
                             </MudSelect>
                         </MudItem>
@@ -134,8 +149,18 @@
                                        @onchange="GetCities">
                                 <MudSelectItem Value="StateNameEdit"></MudSelectItem>
                                 @foreach (var state in states)
+                                {  
+                                    if (CultureInfo.CurrentCulture.Name == "en" )
                                 {
                                     <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                       
+                                     <MudSelectItem Value="@state.Id.ToString()">@state.ArabicName</MudSelectItem>
+                                        
+                                }
+
                                 }
                             </MudSelect>
                         </MudItem>
@@ -147,9 +172,17 @@
                                        @bind-Value="@CitySelectValue">
                                 <MudSelectItem Value="CityNameEdit"></MudSelectItem>
                                 @foreach (var city in cities)
+                                    {
+                                        
+                                if (CultureInfo.CurrentCulture.Name == "en")
                                 {
                                     <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
                                 }
+                                else
+                                {
+                                    <MudSelectItem Value="city.Id.ToString()">@city.ArabicName</MudSelectItem>
+                                }
+                                    }
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="4">

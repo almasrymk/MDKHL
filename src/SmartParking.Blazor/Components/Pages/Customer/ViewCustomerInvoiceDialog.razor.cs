@@ -14,6 +14,7 @@ using System;
 using Volo.Abp;
 using SmartParking.Invoices;
 using System.Linq;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -71,11 +72,16 @@ public partial class ViewCustomerInvoiceDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
+        var input = new PagedResultRequestDto
+        { 
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage
+        };
 
 
-        var invoiceDto = await InvoiceAppService.GetInvoiceForCustomer(Guid.Parse(CustomerId));
-
-        CreateTable(invoiceDto);
+        var invoiceDto = await InvoiceAppService.GetInvoiceForCustomer(Guid.Parse(CustomerId), input);
+        TotalItem = (int)invoiceDto.TotalCount;
+        CreateTable(invoiceDto.Items.ToList());
 
     }
 

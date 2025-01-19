@@ -78,7 +78,7 @@ public partial class OrganizationView
              RegionName = organization.RegionName;
              StateName=organization.StateName;
              CityName = organization.CityName;
-            Address = organization.Address + organization.CityName;
+             Address = organization.Address + organization.CityName;
         }
         else
         {
@@ -93,8 +93,7 @@ public partial class OrganizationView
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
-        WhatsAppNum = organization.WhatsAppNum;
-        StateName=organization.StateName;
+        WhatsAppNum = organization.WhatsAppNum; 
         Code = organization.Code;
         BuildingNumber = organization.BuildingNumber;
         StreetName = organization.StreetName;
