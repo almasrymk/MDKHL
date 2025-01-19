@@ -606,18 +606,8 @@
     "EntranceImage": "Entrance Image",
     "ExitImage": "Exit Image",
     "LastInvoice": "Check out",
-    "AtGate": "In front of gate."
-    "CreationTimeSubView": "Creation Time", 
+    "AtGate": "In front of gate." ,
     "ChooseGarage" : "Can't add without choose garage"
-
-
-
-
-
-
-
-
-
 
   } 
 }
