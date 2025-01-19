@@ -49,7 +49,7 @@ public partial class DetailsPayment
             ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice:null,
             ["ID"] = Payment.Invoice is not null ? Payment.Invoice.Id : null,
             ["Package"]= Payment.Package is not null ? Payment.Package : null,
-            ["CommercialRegisteration"] = Payment.Organization.CommercialRegistrationNumber,
+            ["CommercialRegisteration"] = Payment.Organization.TaxNumber,
             ["OrganizationAddress"] = Payment.Organization.Address,
             ["Code"] = Payment.PaymentNumber??"",
         };

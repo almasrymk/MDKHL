@@ -358,9 +358,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         var groupedCounts = await query
                   .Select(g => new
                   {
-                      CountOfCustomers = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Customer).Count(),
-                      CountOfEmployees = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Employee).Count(),
-                      CountOfVisitors = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Visitor).Count(),
+                      CountOfCustomers = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Customer)
+                      .Select(c => c.CustomerId).Distinct().Count(),
+                      CountOfEmployees = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Employee)
+                      .Select(c => c.CustomerId).Distinct().Count(),
+                      CountOfVisitors = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Visitor)
+                      .Select(c => c.CustomerId).Distinct().Count(),
                       
                   }).FirstOrDefaultAsync();
         if (groupedCounts == null)

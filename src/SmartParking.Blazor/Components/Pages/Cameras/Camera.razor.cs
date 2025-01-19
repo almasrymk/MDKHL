@@ -1,22 +1,13 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Customer;
-using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
-using SmartParking.Garages;
 using SmartParking.Localization;
-using SmartParking.Organizations;
-using SmartParking.OrganizationsGarages;
 using SmartParking.Permissions.CameraPermissions;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 
@@ -37,7 +28,7 @@ public partial class Camera
 
     public Camera(IStringLocalizer<SmartParkingResource> localizer)
     {
-       _localizer = localizer;
+        _localizer = localizer;
         CreatePolicyName = CameraPermissions.Create;
         UpdatePolicyName = CameraPermissions.Edit;
         DeletePolicyName = CameraPermissions.Delete;
@@ -65,10 +56,10 @@ public partial class Camera
         if (CurrentTenant.Id != null)
         {
 
-        var camerassDto = await CamerasAppService.Filter(input);
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)camerassDto.TotalCount;
-        CreateTable(camerassDto);
+            var camerassDto = await CamerasAppService.Filter(input);
+            // Calculate the total number of pages required to display all results
+            TotalItem = (int)camerassDto.TotalCount;
+            CreateTable(camerassDto);
         }
         else
         {
@@ -82,12 +73,12 @@ public partial class Camera
 
 
     }
-	/// <summary>
-	/// Searches for cameras on the server side using the cameras code search term.
-	/// </summary>
-	/// <param name="searchTerm">The term to search for among cameras.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleSearch(PageChangeEventArgs pageInfo)
+    /// <summary>
+    /// Searches for cameras on the server side using the cameras code search term.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for among cameras.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
         Console.WriteLine(pageInfo.SearchTerm);
@@ -122,12 +113,12 @@ public partial class Camera
             CreateTable(camerassDto);
         }
     }
-	/// <summary>
-	/// Fetches the table data for the specified page and updates the table with the retrieved data.
-	/// </summary>
-	/// <param name="page">The page number for which to fetch the data.</param>
-	/// <returns>A task that represents the asynchronous operation.</returns>
-	private async Task FetchTableData(PageChangeEventArgs pageInfo)
+    /// <summary>
+    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// </summary>
+    /// <param name="page">The page number for which to fetch the data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
         CurrentPage = pageInfo.PageNumber;
@@ -139,7 +130,7 @@ public partial class Camera
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
-             
+
 
         };
 
@@ -170,9 +161,10 @@ public partial class Camera
         else
         {
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "NameAr", IsFilterable = true, PropertyName = "Garage.NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "NameAr", IsFilterable = true, PropertyName = "Garage.NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
 
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraIP"], Name = "CameraIP", IsFilterable = true, PropertyName = "CameraIP", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = true, PropertyName = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyName = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -182,8 +174,9 @@ public partial class Camera
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.DeviceId));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraName"], item.Name));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraIP"], item.CameraIP));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MacAddress"], item.MacAddress));
-            if(item.Garage is not null)
+            if (item.Garage is not null)
             {
                 if (CultureInfo.CurrentCulture.Name == "en")
                 {
@@ -211,40 +204,40 @@ public partial class Camera
     {
         return Dialog.ShowAsync<AddDialog>("Add Camera", options);
     }
-	public async Task<IDialogReference> AssignGarage(string id)
-	{
-		var Gid = int.Parse(id);
-		var cameraDto = await CamerasAppService.GetAsync(Gid);
+    public async Task<IDialogReference> AssignGarage(string id)
+    {
+        var Gid = int.Parse(id);
+        var cameraDto = await CamerasAppService.GetAsync(Gid);
 
-		var createUpdateCamera = new CreateUpdateCameraDto
-		{
-			Name = cameraDto.Name,
+        var createUpdateCamera = new CreateUpdateCameraDto
+        {
+            Name = cameraDto.Name,
             DeviceId = cameraDto.DeviceId,
-			Status = cameraDto.Status,
-			BrandNameId = cameraDto.Id,
-			CameraIP = cameraDto.CameraIP,
-			GarageId = cameraDto.GarageId,
-			MacAddress = cameraDto.MacAddress,
-			MainTypeId = cameraDto.MainType.Id,
-			ModelId = cameraDto.Model.Id,
-			TenantId = cameraDto.TenantId,
-			//Type = cameraDto.Type,
-            CameraType=cameraDto.CameraType,
+            Status = cameraDto.Status,
+            BrandNameId = cameraDto.Id,
+            CameraIP = cameraDto.CameraIP,
+            GarageId = cameraDto.GarageId,
+            MacAddress = cameraDto.MacAddress,
+            MainTypeId = cameraDto.MainType.Id,
+            ModelId = cameraDto.Model.Id,
+            TenantId = cameraDto.TenantId,
+            //Type = cameraDto.Type,
+            CameraType = cameraDto.CameraType,
 
-		};
+        };
 
 
 
-		var parameters = new DialogParameters
-		{
-			["UpdatedId"] = Gid,
+        var parameters = new DialogParameters
+        {
+            ["UpdatedId"] = Gid,
             ["Camera"] = createUpdateCamera
-		};
+        };
 
-		return await Dialog.ShowAsync<AssignGarageDialog>("Assign Garage", parameters);
+        return await Dialog.ShowAsync<AssignGarageDialog>("Assign Garage", parameters);
 
-	}
-	private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
 
@@ -263,8 +256,8 @@ public partial class Camera
             ModelId = cameraDto.Model.Id,
             TenantId = cameraDto.TenantId,
             //Type=cameraDto.Type,
-           CameraType = cameraDto.CameraType
-           
+            CameraType = cameraDto.CameraType
+
         };
 
 
@@ -286,17 +279,17 @@ public partial class Camera
 
         var cameraDto = await CamerasAppService.GetAsync(id);
 
-		
 
-		var parameters = new DialogParameters
+
+        var parameters = new DialogParameters
         {
             ["Camera"] = cameraDto,
-			["UpdatedId"] = id
+            ["UpdatedId"] = id
 
-		};
+        };
 
 
-        return await Dialog.ShowAsync<ViewCameraDialog>( "CameraView",parameters);
+        return await Dialog.ShowAsync<ViewCameraDialog>("CameraView", parameters);
     }
 
     private async Task OnClickRowDelete(RowDef row)

@@ -10,16 +10,15 @@ namespace SmartParking.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
                 name: "PaymentType",
-                table: "Payments",
-                newName: "PackageId");
+                table: "Payments");
 
-            migrationBuilder.AddColumn<string>(
-                name: "InvoiceId",
-                table: "Payments",
-                type: "text",
-                nullable: true);
+            //migrationBuilder.AddColumn<string>(
+            //    name: "InvoiceId",
+            //    table: "Payments",
+            //    type: "text",
+            //    nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "OrganizationId",

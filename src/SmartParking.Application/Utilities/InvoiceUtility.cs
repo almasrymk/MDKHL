@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Tls;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
+using SmartParking.GarageTransactionEndPoints;
 using SmartParking.Invoices;
 using System;
 using System.Net.Http;
@@ -20,11 +22,15 @@ public class InvoiceUtility : IInvoiceUtility
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private string zatcaInvoices = "https://zatca.mazeedit.com/api/Invoices/V1/QRCode";
     private string zatcaLogin = "https://zatca.mazeedit.com/api/Auth/Login";
-    public InvoiceUtility(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository)
+    private string openGate = "http://ibrahimia.mazeedit.com/Barrierer/Open";
+    private readonly ILogger<InvoiceUtility> _logger;
+
+    public InvoiceUtility(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtility> logger)
     {
         _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
         _invoiceRepository = invoiceRepository;
+        _logger = logger;
     }
 
     public async Task<QRCodeDto> GetQrCodeAsync(string? token, int? invoiceId)
@@ -93,5 +99,19 @@ public class InvoiceUtility : IInvoiceUtility
         JObject json = await CreateRequest(zatcaLogin, user);
         var token = json["data"]?["token"]?.ToString();
         return token;
+    }
+
+    public async Task OpenGate(string CameraIP) {
+
+        var camera = new
+        {
+            ip = CameraIP,
+            port = 0, 
+            username = "",
+            password = ""
+        };
+        JObject json = await CreateRequest(openGate, camera);
+        _logger.LogDebug($"{DateTime.Now} ====> Gate Respons | {json}");
+
     }
 }

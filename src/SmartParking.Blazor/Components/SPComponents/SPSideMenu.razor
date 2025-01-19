@@ -50,6 +50,10 @@
                 {
                     <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
                 }
+                @if(currenttenant.Id!=null){
+                    <MudNavLink Href="/lastinvoice" Icon="@Icons.Material.Filled.Check">@L["LastInvoice"]</MudNavLink>
+
+                }
 
                 @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result )
                 {

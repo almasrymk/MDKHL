@@ -601,6 +601,12 @@
     "Mapped": "Mapped",
     "Beneficiaries": "Customers",
     "Package": "Package",
+    "CreationTimeSubView": "Creation Time",
+    "OpenGate": "Open Gate",
+    "EntranceImage": "Entrance Image",
+    "ExitImage": "Exit Image",
+    "LastInvoice": "Check out",
+    "AtGate": "In front of gate."
     "CreationTimeSubView": "Creation Time", 
     "ChooseGarage" : "Can't add without choose garage"
 

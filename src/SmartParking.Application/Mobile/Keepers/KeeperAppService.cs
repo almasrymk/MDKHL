@@ -222,13 +222,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     ErrorMessage = "User has no organization"
                 });
             }
-            // Sign in the user
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            // Re-enable tenant context for tenant-specific properties
+            if (!roles.Contains(RolesType.Keeper.ToString()))
+                return Result<LoginResponseDto>.Unauthorized();
+            CurrentTenant.Change(user?.TenantId ?? null);
+           
+            await _signInManager.SignInAsync(user, isPersistent: false);
             var tenantId = user.TenantId.ToString();
 
-            var roles = await _userManager.GetRolesAsync(user);
+            
 
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
