@@ -421,6 +421,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var organization = await GetOrganization(GarageTransaction.OrganizationID);
         var customer = await CheckCustomer(GarageTransaction.PlateNumber);
+        var garage = await GetGarage(garageId);
+
         var result = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
         Customer exsitCustomer = result.Item1;
         CustomerPackageDto packageDto= result.Item2;
@@ -436,12 +438,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
             var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, invoice.Value.InvoiceTime, organization.Graceperiod);
-
+            FreeSlots(garage, packageDto.CustomerCategory);
             if (!PassGraceTime)
             {
 
                 _logger.LogTrace($"{DateTime.Now} ====> Get Response true | In Grace period ");
-
+                var garageTransaction = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 return await Task.FromResult(true);
             }
             else if (PassGraceTime)
@@ -468,7 +470,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             _logger.LogTrace($"{DateTime.Now} ====> Get Response true | In Free minutes period");
             return await Task.FromResult(true);
         }
-        var garage = await GetGarage(garageId);
 
         //has plate number 
         bool MustPay = false, EmptyPlateNumber = false;
