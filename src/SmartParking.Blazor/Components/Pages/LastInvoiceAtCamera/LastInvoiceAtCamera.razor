@@ -55,16 +55,18 @@
 </MudGrid>
 
 @code {
-	private InvoiceDto? Invoice  = new InvoiceDto();
+	private InvoiceDto Invoice  = new InvoiceDto();
 
 	protected override async Task OnInitializedAsync()
 	{
-		Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
-		if(Invoice is null){
-			SnackBar.ShowSnackbar(Snackbar, $"{L["Vehicle"]} {L["NotFoundValidation"]} {L["AtGate"]}", MudBlazor.Severity.Warning);
-			Navigation.NavigateTo("/", true);
+		try{
 
+		  Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+		}catch(Exception ex){
+			SnackBar.ShowSnackbar(Snackbar,ex.Message , MudBlazor.Severity.Warning);
+			Navigation.NavigateTo("/", true);
 		}
+	
 	}
 	private async Task PayInvoice(){
 
