@@ -99,7 +99,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
 
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(new { input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName })}");
-        if (input.PlateNumber == null) {
+        if (string.IsNullOrEmpty(input.PlateNumber)) {
             await CreateUnLinkedTransaction(input);
             return await Task.FromResult(false);
         }
@@ -406,6 +406,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (EntranceTime is null || EntranceTime>GarageTransaction.AccurateTime)
         {
             GarageTransaction.IsIn = false;
+            GarageTransaction.IsMapped= false;
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");

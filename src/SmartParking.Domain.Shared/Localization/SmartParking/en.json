@@ -605,7 +605,8 @@
     "OpenGate": "Open Gate",
     "EntranceImage": "Entrance Image",
     "ExitImage": "Exit Image",
-    "LastInvoice": "Check out"
+    "LastInvoice": "Check out",
+    "AtGate": "In front of gate."
 
 
 
