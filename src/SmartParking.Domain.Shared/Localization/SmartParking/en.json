@@ -601,7 +601,8 @@
     "Mapped": "Mapped",
     "Beneficiaries": "Customers",
     "Package": "Package",
-    "CreationTimeSubView": "Creation Time"
+    "CreationTimeSubView": "Creation Time", 
+    "ChooseGarage" : "Can't add without choose garage"
 
 
 

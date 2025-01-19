@@ -627,7 +627,8 @@
     "NoPackages": "بدون باقة",
     "CreationTimeSubView": "تاريخ الانشاء",
     "AddNewPackage": "إضــافة باقة",
-    "Mapped": "تطابق"
+    "Mapped": "تطابق",
+    "ChooseGarage": "لا يمكن الاضافة بدون اختيار موقف"
 
 
 
