@@ -8,6 +8,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -382,14 +383,19 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    public async Task<InvoiceDto> GetLatestInvoiceForOrganization()
+    public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
     {
 
        var query=await _invoiceRepository.GetQueryableAsync();
        query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid);
        query= query.OrderByDescending(x=>x.CreationTime);
        var invoice =await query.FirstOrDefaultAsync();
+        if (invoice == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("Vehicle")+ LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
+        }
        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+      
         
     }
 }

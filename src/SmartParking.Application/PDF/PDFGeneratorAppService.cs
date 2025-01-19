@@ -412,11 +412,8 @@ img[style*='width:120px;'] {
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
-        string OrganizationLogo = "wwwroot";
         var organization =await _organizationPdfAppService.GetOrganizationForCurrentTenatAsync();
         var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
-        OrganizationLogo +=await _organizationPdfAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
-
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
@@ -437,8 +434,8 @@ img[style*='width:120px;'] {
         iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
             .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
             .SetWidth(120);
-
-        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(OrganizationLogo))
+        
+        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create("wwwroot"+organization.OrganizationPicture))
             .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
             .SetWidth(120);
 
