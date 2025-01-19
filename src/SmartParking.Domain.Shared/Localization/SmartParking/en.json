@@ -601,7 +601,11 @@
     "Mapped": "Mapped",
     "Beneficiaries": "Customers",
     "Package": "Package",
-    "CreationTimeSubView": "Creation Time"
+    "CreationTimeSubView": "Creation Time",
+    "OpenGate": "Open Gate",
+    "EntranceImage": "Entrance Image",
+    "ExitImage": "Exit Image",
+    "LastInvoice": "Check out"
 
 
 

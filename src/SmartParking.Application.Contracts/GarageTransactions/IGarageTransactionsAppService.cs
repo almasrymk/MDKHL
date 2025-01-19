@@ -55,6 +55,8 @@ namespace SmartParking.GarageTransactions
 		Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
 		string SaveBase64Image(CreateUpdateGarageTransactionDto input);
 
+		Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId);
+
 
     }
 }

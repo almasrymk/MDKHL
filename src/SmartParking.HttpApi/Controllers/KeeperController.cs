@@ -47,12 +47,12 @@ public class KeeperController : AbpController
     {
         try
         {
-            var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
-            _currentTenant.Change(tenant?.Id ?? null);
+            
             if (_currentUser.IsAuthenticated)
             {
                 return Result<LoginResponseDto>.Invalid(new ValidationError
                 {
+                    
                     ErrorCode = "400",
                     ErrorMessage = "You are already logged in."
                 });

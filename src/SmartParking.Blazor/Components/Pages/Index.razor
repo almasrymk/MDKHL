@@ -273,9 +273,6 @@
         options.ChartPalette = colors;
         options.ShowLegend = true;
         options.LineStrokeWidth = 20;
-
-
-        //   return await base.OnInitializedAsync();
     }
 
     private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees , int? NumberOfNoPackage)
@@ -348,7 +345,7 @@
             {
                 data = await AnalysisAppService.ReortGarageTransactionOrganizationAsync(category);
             }
-
+            data.Name = category.ToString() + "Transactions";
             await ExportData(data);
         }
         catch
