@@ -406,6 +406,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (EntranceTime is null || EntranceTime>GarageTransaction.AccurateTime)
         {
             GarageTransaction.IsIn = false;
+            GarageTransaction.IsMapped= false;
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
