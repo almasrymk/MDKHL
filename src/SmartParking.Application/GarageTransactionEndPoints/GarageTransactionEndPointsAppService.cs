@@ -99,7 +99,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
 
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(new { input.PlateNumber, input.AccurateTime, input.DeviceID, input.VehiclePictureName })}");
-        if (input.PlateNumber == null) {
+        if (string.IsNullOrEmpty(input.PlateNumber)) {
             await CreateUnLinkedTransaction(input);
             return await Task.FromResult(false);
         }
@@ -153,8 +153,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             if (Id != null)
             {
                 var packg = await CheckActivePackageForCustomer(Guid.Parse(Id), GarageTransaction.OrganizationID);
-                GarageTransaction.CustomerCategory = packg is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
-
+                GarageTransaction.CustomerCategory = packg is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package == null ? CustomerCategoryStatus.Customer.ToString() : packg.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
                 customer = await GetCustomer(Id);
             }
             else
@@ -205,6 +204,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             CameraType = camera.CameraType,
             IsIn = camera.CameraType == CameraType.Exit ? false : true,
             IsMapped = camera.CameraType == CameraType.Entry ? false : true,
+
         };
     }
 
@@ -406,6 +406,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (EntranceTime is null || EntranceTime>GarageTransaction.AccurateTime)
         {
             GarageTransaction.IsIn = false;
+            GarageTransaction.IsMapped= false;
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
 
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
@@ -475,8 +476,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool MustPay = false, EmptyPlateNumber = false;
         if (customer != null)
         {
-
-            var invoiceCreateUpdateDto = packageDto switch
+            
+            var invoiceCreateUpdateDto = (packageDto.Package) switch
             {
                 (null) => await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, totalHours, exsitCustomer, GarageTransaction, CustomerCategoryStatus.Customer),
                 (not null) => await CalculateInvoiceForCustomerPackage(EntranceTime.Value, organization, exsitCustomer, packageDto, GarageTransaction, totalHours, (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.Package.CustomerCategory)),
@@ -536,7 +537,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (customer != null)
         {
             packg = await CheckActivePackageForCustomer(Guid.Parse(customer), GarageTransaction.OrganizationID);
-            GarageTransaction.CustomerCategory = packg is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
+            GarageTransaction.CustomerCategory = packg is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packg.Package == null ? CustomerCategoryStatus.Customer.ToString() : packg.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
 
             exsitCustomer = await GetCustomer(customer);
 

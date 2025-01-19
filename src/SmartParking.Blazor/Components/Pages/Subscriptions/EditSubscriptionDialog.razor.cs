@@ -28,11 +28,28 @@ public partial class EditSubscriptionDialog
     private DateTime? InActivationDate = DateTime.Now;
 
     bool _clearable;
+
+    public bool maximumNumberOfGarages { get; set; }
+    public int UnlimitedMaximumNumber { get; set; } = 9999;
+    public bool maximumNumberOfCameras { get; set; }
+    public bool maximumNumberOfUsers { get; set; }
+    public bool maximumNumberOfCustomers { get; set; }
+    public bool maximumNumberOfParkingSlots { get; set; }
+
+
+    private int BoundNumberOfUsers;
+    private int BoundNumberOfGarages;
+    private int BoundNumberOfCustomers;
+    private int BoundNumberOfCameras;
     [Parameter] public int UpdatedId { get; set; }
     protected override async Task OnInitializedAsync()
     {
         var result = await SubscriptionTypeAppService.GetSubscriptionTypeLookupAsync();
         subscriptions = result;
+        BoundNumberOfUsers = subscription.NumberOfUsers;
+        BoundNumberOfCameras = subscription.NumberOfCameras;
+        BoundNumberOfCustomers = subscription.NumberOfCustomers;
+        BoundNumberOfGarages = subscription.NumbersOfGarages;
     }
     private async Task Save()
     {
@@ -52,10 +69,10 @@ public partial class EditSubscriptionDialog
                 SubscriptionTypeId = subscription.SubscriptionTypeId,
                 ActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MinValue),
                 InActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MaxValue),
-                NumberOfCameras = subscription.NumberOfCameras,
-                NumberOfCustomers = subscription.NumberOfCustomers, 
-                NumberOfUsers = subscription.NumberOfUsers ,
-                NumbersOfGarages = subscription.NumbersOfGarages,
+                NumberOfCameras = BoundNumberOfCameras,
+                NumberOfCustomers = BoundNumberOfCustomers, 
+                NumberOfUsers = BoundNumberOfUsers ,
+                NumbersOfGarages = BoundNumberOfGarages,
                 SubscriptionSlotNumber = subscription.SubscriptionSlotNumber,
                 ParkingSlot = subscription.ParkingSlot,
                 CreationTime = subscription.CreationTime

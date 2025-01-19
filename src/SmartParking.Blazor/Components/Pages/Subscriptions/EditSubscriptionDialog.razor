@@ -113,52 +113,88 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
 
-                    <MudItem sm="8">
-                        <MudTextField @bind-Value="subscription.NumberOfUsers"
-                                          For="@(() => subscription.NumberOfUsers)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder=@L["Type Here"]
-                                      InputType="InputType.Text"
-                                      Label="@L["NumberOfUsers"]"
-                                      Required="true"
-                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                    </MudItem>
-
+                        <MudItem sm="6">
+                            <MudNumericField @bind-Value="@(BoundNumberOfCustomers=maximumNumberOfCustomers?UnlimitedMaximumNumber:BoundNumberOfCustomers)"
+                                          For="@(() => subscription.NumberOfCustomers)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder="@L["Type Here"]"
+                                          Label="@L["NumberOfCustomers"]"
+                                             HideSpinButtons
+                                             Min="0"
+                                             Disabled="maximumNumberOfCustomers"
+                                             Required="maximumNumberOfCustomers"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["UnlimitedCustomers"]"
+                                       LabelPosition="LabelPosition.Start"
+                                       @bind-Value="maximumNumberOfCustomers"
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
                   
-                    <MudItem sm="8">
-                        <MudTextField @bind-Value="subscription.NumberOfCameras"
+                    <MudItem sm="6">
+                            <MudNumericField @bind-Value="@(BoundNumberOfCameras=maximumNumberOfCameras?UnlimitedMaximumNumber:BoundNumberOfCameras)"
                                       For="@(() => subscription.NumberOfCameras)"
                                       Immediate="true"
                                       Variant="Variant.Text"
-                                      InputType="InputType.Text"
                                       Placeholder=@L["Type Here"]
                                       Label="@L["NumberOfCameras"]"
-                                      Required="true"
+                                          HideSpinButtons
+                                          Min="0"
+                                             Disabled="maximumNumberOfCameras"
+                                             Required="maximumNumberOfCameras"
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
-                    <MudItem sm="8">
-                        <MudTextField @bind-Value="subscription.NumbersOfGarages"
-                                      For="@(() => subscription.NumbersOfGarages)"
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["UnlimitedCameras"]"
+                                       LabelPosition="LabelPosition.Start"
+                                       @bind-Value="maximumNumberOfCameras"
+                                       Color="MudBlazor.Color.Primary" />
+
+                        </MudItem>
+                    <MudItem sm="6">
+                            <MudNumericField @bind-Value="@(BoundNumberOfGarages=maximumNumberOfGarages?UnlimitedMaximumNumber:BoundNumberOfGarages)"
+                                             For="@(() => BoundNumberOfGarages)"
                                       Immediate="true"
                                       Variant="Variant.Text"
                                       Placeholder=@L["Type Here"]
-                                      InputType="InputType.Text"
                                       Label="@L["NumbersOfGarages"]"
-                                      Required="true"
+                                          HideSpinButtons
+                                          Min="0"
+                                             Disabled="maximumNumberOfGarages"
+                                             Required="maximumNumberOfGarages"
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
-                    <MudItem sm="8">
-                        <MudTextField @bind-Value="subscription.NumberOfCustomers"
-                                      For="@(() => subscription.NumberOfCustomers)"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Placeholder="@L["Type Here"]"
-                                      InputType="InputType.Text"
-                                       Label="@L["NumberOfCustomers"]"
-                                      Required="true"
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["UnlimitedGarages"]"
+                                       LabelPosition="LabelPosition.Start"
+                                       @bind-Value="maximumNumberOfGarages"
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                 
+
+
+                        <MudItem sm="6">
+                            <MudTextField @bind-Value="@(BoundNumberOfUsers=maximumNumberOfUsers?UnlimitedMaximumNumber:BoundNumberOfUsers)"
+                                          For="@(() => BoundNumberOfUsers)"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Placeholder=@L["Type Here"]
+                                          Label="@L["NumberOfUsers"]"
+                                          HideSpinButtons
+                                          Min="0"
+                                          Disabled="maximumNumberOfUsers"
+                                          Required="maximumNumberOfUsers"
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                    </MudItem>
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudSwitch Label="@L["UnlimitedUsers"]"
+                                       LabelPosition="LabelPosition.Start"
+                                       @bind-Value="maximumNumberOfUsers"
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                   
                         @if(subscription.Status == SubscriptionStatus.Active)
                         {
                             <MudItem sm="6">

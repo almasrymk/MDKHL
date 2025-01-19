@@ -18,6 +18,7 @@
 @inject IInvoiceUtility InvoiceUtility
 @inject ICamerasAppService CameraAppService
 @inject IGarageTransactionsAppService GarageTransactionAppService
+@inject NavigationManager NavigationManager
 <PageTitle>@L["LastInvoice"]</PageTitle>
 
 <MudGrid>
@@ -53,6 +54,11 @@
 	protected override async Task OnInitializedAsync()
 	{
 		Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+		if(Invoice==null){
+			SnackBar.ShowSnackbar(Snackbar, $"{L["Vehicle"]} {L["NotFoundValidation"]} {L["AtGate"]}", MudBlazor.Severity.Warning);
+			NavigationManager.NavigateTo("/");
+
+		}
 		await base.OnInitializedAsync();
 	}
 	private async Task PayInvoice(){
@@ -70,6 +76,7 @@
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+			NavigationManager.Refresh();
 		}
 	}
 	private async Task OpenGate(){

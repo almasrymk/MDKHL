@@ -224,8 +224,8 @@
         try
         {
             Package.TenantId = CurrentTenant.Id;
-            Package.Published = PackageValidations.CheckPackageTimeValiditity(Package.PublishFrom, Package.PublishTo);
-
+            Package.Published = Package.Published|| PackageValidations.CheckPackageTimeValiditity(Package.PublishFrom, Package.PublishTo);
+          
             await PackagesAppService.UpdateAsync(UpdatedId, Package);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
             MudDialogAdd.Close(DialogResult.Ok(true));
