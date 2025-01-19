@@ -5,22 +5,14 @@ using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.DataTable;
 using SmartParking.Entities;
 using SmartParking.Localization;
-using SmartParking.Permissions.CustomerPermissions;
-using SmartParking.Permissions.PackagePermissions;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
-using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -100,7 +92,7 @@ public partial class User
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
+            Sorting = pageInfo.SortColumn == "Id" ? "User.Id" : pageInfo.SortColumn,
             SearchingTerm = termSearch // The term to use for filtering results
         };
 
@@ -130,7 +122,7 @@ public partial class User
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-        if(pageInfo.SortColumn == "Id")
+        if (pageInfo.SortColumn == "Id")
             input.Sorting = "User.Id";
         // Retrieve the list of organizations from the server
         PagedResultDto<UserWithRole> usersDto;
@@ -173,7 +165,7 @@ public partial class User
                 tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "OrganizationArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
                 break;
         }
-        
+
 
         foreach (var item in users)
         {
@@ -184,7 +176,7 @@ public partial class User
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.User.Email));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNumber"], item.User.PhoneNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserRole"], item.Role?.Name));
-            
+
             switch (currrentTenant?.Id is null, CultureInfo.CurrentCulture.Name)
             {
                 case (true, "ar"):
@@ -233,7 +225,7 @@ public partial class User
             TenantId = userData.TenantId,
             RoleId = userData.RoleId,
             ConcurrencyStamp = userData.ConcurrencyStamp,
-            IsActive  = userData.IsActive,
+            IsActive = userData.IsActive,
             NationalId = userData.NationalId,
             IdentificationTypes = userData.IdentificationTypes,
             IsCustomer = userData.IsCustomer
@@ -264,8 +256,8 @@ public partial class User
             RoleId = userData.RoleId,
             ConcurrencyStamp = userData.ConcurrencyStamp,
             IsActive = userData.IsActive,
-            IdentificationTypes= userData.IdentificationTypes,
-            NationalId= userData.NationalId,
+            IdentificationTypes = userData.IdentificationTypes,
+            NationalId = userData.NationalId,
         };
         var parameters = new DialogParameters
         {
@@ -335,7 +327,7 @@ public partial class User
 
 
         }
-       
+
         catch (BusinessException ex)
         {
 
@@ -353,5 +345,5 @@ public partial class User
 
 
     }
-    
+
 }

@@ -1,16 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Polly;
-using Polly.Caching;
 using SmartParking.Entities;
-using SmartParking.Entities.Organizations;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Repositories;
-using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -27,7 +22,7 @@ public class MyUserRepository
     private readonly IDataFilter _dataFilter;
 
     public MyUserRepository(
-        IDbContextProvider<SmartParkingDbContext> dbContextProvider,IDataFilter dataFilter)
+        IDbContextProvider<SmartParkingDbContext> dbContextProvider, IDataFilter dataFilter)
         : base(dbContextProvider)
     {
         this._dataFilter = dataFilter;
@@ -37,8 +32,8 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         return await dbContext.Users.Where(user => EF.Property<int>(user, "OrganizationId") == organizationId).ToListAsync();
-    }    
-    public async Task<IdentityUser?> FindUserByOrganizationAsync(int organizationId , Guid userId)
+    }
+    public async Task<IdentityUser?> FindUserByOrganizationAsync(int organizationId, Guid userId)
     {
         var dbContext = await GetDbContextAsync();
         return await dbContext.Users.Where(user => EF.Property<int>(user, "OrganizationId") == organizationId && user.Id == userId).FirstOrDefaultAsync();
@@ -49,11 +44,11 @@ public class MyUserRepository
         using (DataFilter.Disable<IMultiTenant>())
         {
             var dbContext = await GetDbContextAsync();
-            return await dbContext.Users.Where(user => user.TenantId == tenantId && EF.Property<int>(user, "UserTypeId")==1).FirstOrDefaultAsync();
+            return await dbContext.Users.Where(user => user.TenantId == tenantId && EF.Property<int>(user, "UserTypeId") == 1).FirstOrDefaultAsync();
         }
     }
 
-    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount,int maxResultCount, string Sorting)
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount, int maxResultCount, string Sorting)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -82,11 +77,14 @@ public class MyUserRepository
 
     private static IQueryable<UserWithRole> ApplySort(string Sorting, IQueryable<UserWithRole> query)
     {
-        query = query.OrderBy(Sorting);
+        if (!string.IsNullOrEmpty(Sorting))
+        {
+            query = query.OrderBy(Sorting);
+        }
         return query;
     }
 
-    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount,int maxResultCount, string Sorting)
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string Sorting)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -99,11 +97,11 @@ public class MyUserRepository
                     from o in org.DefaultIfEmpty() // Preserve users with no organization
                     select new UserWithRole
                     {
-                         User = user,
-                         Role = r,
-                         OrganizationEnglishName = o.EnglishName,
-                         OrganizationArabicName = o.ArabicName
-                        
+                        User = user,
+                        Role = r,
+                        OrganizationEnglishName = o.EnglishName,
+                        OrganizationArabicName = o.ArabicName
+
                     };
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
@@ -113,12 +111,12 @@ public class MyUserRepository
         return new PagedResult<UserWithRole>
         {
             PageSize = total,
-            Queryable = query,  
+            Queryable = query,
         };
-        
+
 
     }
-    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount,int maxResultCount,string term, string Sorting)
+    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleAsync(int skipCount, int maxResultCount, string term, string Sorting = "User.Id")
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -150,14 +148,14 @@ public class MyUserRepository
 
 
     }
-    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount,int maxResultCount,string term, string Sorting)
+    public async Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string term, string Sorting = "User.Id")
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
                     from roleId in user.Roles.Select(r => (Guid?)r.RoleId).DefaultIfEmpty() // Get RoleIds for the user
                     join role in dbContext.Roles // Join with Roles table
                         on roleId equals role.Id into rolegroup
-                        from r in rolegroup.DefaultIfEmpty()// Match RoleId
+                    from r in rolegroup.DefaultIfEmpty()// Match RoleId
                     join organization in dbContext.Organizations
                     on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
                     from o in org.DefaultIfEmpty()
@@ -189,7 +187,7 @@ public class MyUserRepository
 
 
     }
-    
+
     public async Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId)
     {
         var dbContext = await GetDbContextAsync();
@@ -202,7 +200,7 @@ public class MyUserRepository
                     join organization in dbContext.Organizations
                  on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
                     from o in org.DefaultIfEmpty()
-                   
+
                     select new UserRolesForMdkhl
                     {
                         OrganizationName = o.EnglishName,
@@ -210,7 +208,7 @@ public class MyUserRepository
                         RoleName = role.Name,
                         TenantId = o.TenantId
                     };
-        
+
         var result = query.ToList();
 
 
@@ -219,5 +217,5 @@ public class MyUserRepository
 
     }
 
-   
+
 }
