@@ -14,6 +14,7 @@ using SmartParking.Utilities;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Authentication;
@@ -243,10 +244,22 @@ public partial class OrganizationEdit
         {
             Status = false;
         }
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            CityNameEdit = organization.CityName;
+            CountryNameEdit = organization.CountryName;
+            RegionNameEdit = organization.RegionName;
+            StateNameEdit = organization.StateName;
+
+        }
+        else
+        {
+            CityNameEdit = organization.CityNameAr;
+            CountryNameEdit = organization.CountryNameAr;
+            RegionNameEdit = organization.RegionNameAr;
+            StateNameEdit = organization.StateNameAr;
+        }
         MaxCapacity = organization.MaxCapacity;
-        CountryNameEdit = organization.CountryName;
-        CityNameEdit = organization.CityName;
-        RegionNameEdit = organization.RegionName;
         StateSelectValue = organization.StateId.ToString();
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
