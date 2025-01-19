@@ -340,7 +340,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task<CreateUpdateInvoiceDto> GenrateInvoiceNumberAndInitiateInvoice(DateTime EntranceTime, Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction, int TotalHours, decimal price, bool IsPackage)
     {
-        var image = _garageTransactionsAppService.SaveBase64Image(GarageTransaction);
+        string image = GarageTransaction.VehiclePicture;
+        if (GarageTransaction.VehiclePicture.Length > 120)
+        {
+             image = _garageTransactionsAppService.SaveBase64Image(GarageTransaction);
+        }
 
         var invoice = await CreateInvoice(
           GarageTransaction.GarageId,
