@@ -382,14 +382,17 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    public async Task<InvoiceDto> GetLatestInvoiceForOrganization()
+    public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
     {
 
        var query=await _invoiceRepository.GetQueryableAsync();
        query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid);
        query= query.OrderByDescending(x=>x.CreationTime);
        var invoice =await query.FirstOrDefaultAsync();
+        if (invoice == null)
+            return null;
        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+      
         
     }
 }
