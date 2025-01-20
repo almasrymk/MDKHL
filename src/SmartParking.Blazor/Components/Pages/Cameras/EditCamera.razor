@@ -28,8 +28,9 @@
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 
-					<MudText Class="text-bold">@L["CameraAccessData"]</MudText>
-					<MudItem sm="6" md="6">
+					<MudItem sm="12" md="12">
+						<MudText Class="text-bold">@L["CameraAccessData"]</MudText>
+					</MudItem>					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.UserName"
 									  Immediate="true"
 									  Required

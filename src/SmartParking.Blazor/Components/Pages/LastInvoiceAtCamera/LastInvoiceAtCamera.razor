@@ -86,7 +86,7 @@
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-			Navigation.Refresh();
+			Navigation.Refresh(true);
 		}
 	}
 	private async Task OpenGate(){
