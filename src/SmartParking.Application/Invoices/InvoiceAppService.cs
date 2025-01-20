@@ -38,10 +38,10 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IRepository<Organization, int> _organizationsRepository;
     private string folderQrImage = "QRCodeImage";
     private string folderImages = "image";
-    private readonly IInvoiceUtility _invoiceUtility;
+    private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IRepository<Payment, Guid> _paymentRepository;
 
-    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtility invoiceUtility , IRepository<Payment, Guid> paymentRepository)
+    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtilityAppService invoiceUtility , IRepository<Payment, Guid> paymentRepository)
     : base(repository)
     {
         _dataFilter = dataFilter;

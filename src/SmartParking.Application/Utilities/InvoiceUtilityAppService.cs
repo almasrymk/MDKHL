@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Abp.Json;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Tls;
@@ -16,7 +17,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Utilities;
 
-public class InvoiceUtility : IInvoiceUtility
+public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityAppService
 {
     private readonly IRepository<Organization, int> _organizationsRepository;
     private readonly HttpClient _httpClient;
@@ -24,9 +25,9 @@ public class InvoiceUtility : IInvoiceUtility
     private string zatcaInvoices = "https://zatca.mazeedit.com/api/Invoices/V1/QRCode";
     private string zatcaLogin = "https://zatca.mazeedit.com/api/Auth/Login";
     private string openGate = "http://ibrahimia.mazeedit.com/Barrierer/Open";
-    private readonly ILogger<InvoiceUtility> _logger;
+    private readonly ILogger<InvoiceUtilityAppService> _logger;
 
-    public InvoiceUtility(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtility> logger)
+    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger)
     {
         _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
@@ -79,6 +80,9 @@ public class InvoiceUtility : IInvoiceUtility
     private async Task<JObject> CreateRequest(string path, object qR)
     {
         var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
+        _logger.LogDebug($"{DateTime.Now} ====> path | {path}");
+        _logger.LogDebug($"{DateTime.Now} ====> body | {contentQR.ToJsonString()}");
+
         HttpResponseMessage responseQR = await _httpClient.PostAsync(path, contentQR);
 
         responseQR.EnsureSuccessStatusCode();
@@ -102,17 +106,17 @@ public class InvoiceUtility : IInvoiceUtility
         return token;
     }
 
-    public async Task OpenGate(CameraDto Camera) {
+    public async Task OpenGate(string CameraIP , string? UserName, string? Password) {
 
         var camera = new
         {
-            ip = Camera.CameraIP,
+            ip = CameraIP,
             port = 0, 
-            username = Camera.UserName,
-            password = Camera.Password,
+            username = UserName,
+            password = Password,
         };
         JObject json = await CreateRequest(openGate, camera);
-        _logger.LogDebug($"{DateTime.Now} ====> Gate Respons | {json}");
+        _logger.LogDebug($"{DateTime.Now} ====> Gate Response | {json}");
 
     }
 }

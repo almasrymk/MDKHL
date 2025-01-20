@@ -29,7 +29,7 @@ public class SmartParkingApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddTransient<IInvoiceUtility, InvoiceUtility>();
+        context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<SmartParkingApplicationModule>();

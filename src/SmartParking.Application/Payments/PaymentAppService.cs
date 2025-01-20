@@ -40,7 +40,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Package, int> _packageRepo;
     private readonly HttpClient _httpClient;
-    private readonly IInvoiceUtility _invoiceUtility;
+    private readonly IInvoiceUtilityAppService _invoiceUtility;
     private const string EntityId = "8ac7a4ca9244f53c01924741733e0327";
     private const string Currency = "SAR";
     private const string PaymentType = "DB";
@@ -61,7 +61,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
-        IInvoiceUtility invoiceUtility)
+        IInvoiceUtilityAppService invoiceUtility)
     : base(repository)
     {
 
