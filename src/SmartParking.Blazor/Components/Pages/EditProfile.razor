@@ -41,7 +41,7 @@
 
 
             <div class="d-flex align-items-center gap-3 mt-4">
-                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">@L["CHANGE PASSWORD"]</MudButton>
+                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href=@($"/change-password/{OldProfile.UserName}")>@L["CHANGE PASSWORD"]</MudButton>
                 <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() =>  SaveChanges())">@L["Save"]</MudButton>
             </div>
         </MudForm>

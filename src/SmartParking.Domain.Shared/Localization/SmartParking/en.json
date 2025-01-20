@@ -606,8 +606,14 @@
     "EntranceImage": "Entrance Image",
     "ExitImage": "Exit Image",
     "LastInvoice": "Check out",
-    "AtGate": "In front of gate." ,
-    "ChooseGarage" : "Can't add without choose garage"
+    "AtGate": "In front of gate.",
+    "ChooseGarage": "Can't add without choose garage",
+    "OTPCorrect": "OTP Verified correctly",
+    "OTPIncorrect": "OTP Is In-correct",
+    "NotMatchValidation": "doesn't match ",
+    "PasswordValidation": "Password length must be at least 8 , contains upper , lower , special chars!",
+    "CameraAccessData": "Camera Access Data"
+
 
   } 
 }

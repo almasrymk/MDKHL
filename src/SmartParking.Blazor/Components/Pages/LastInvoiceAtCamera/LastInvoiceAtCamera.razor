@@ -33,37 +33,40 @@
 		<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
 
 		<MudItem sm="12" Class="d-flex flex-row mb-4">
-
+			<CarImageDetails Date="@(Invoice.EntranceTime.HasValue ?Invoice.EntranceTime.Value : DateTime.Now)" Image="@Invoice?.EntryTransactionImage" Title="@L["EntranceImage"]" />
+			<MudItem sm="2" Class="d-flex align-items-center">
+				<MudIcon Icon="@(CultureInfo.CurrentCulture.Name=="en"?Icons.Material.Filled.ArrowForward:Icons.Material.Filled.ArrowBack)" />
+			</MudItem>
 			<CarImageDetails Date="@(Invoice.InvoiceTime.HasValue ?Invoice.InvoiceTime.Value : DateTime.Now)" Image="@Invoice?.ExitTransactionImage" Title="@L["ExitImage"]" />
 
-			<MudItem sm="2" Class="d-flex align-items-center">
-				<MudIcon Icon="@Icons.Material.Filled.ArrowBack" />
-			</MudItem>
-			<CarImageDetails Date="@(Invoice.EntranceTime.HasValue ?Invoice.EntranceTime.Value : DateTime.Now)" Image="@Invoice?.EntryTransactionImage" Title="@L["EntranceImage"]" />
 
 		</MudItem>
+		<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
+		<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
 		<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
-		<LastInvoiceOnGateDetails Key="@L["Garage Name"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.GarageEnglishName:Invoice?.GarageArabicName)" />
+		<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.GarageEnglishName:Invoice?.GarageArabicName)" />
 		<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
-		<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
 		<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
+		<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
 
 	</MudItem>
 
 
-	<PriceSummaryComponent ComponentSize="5" ConfirmSize="6" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="false" PayInvoice="PayInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
+	<PriceSummaryComponent ComponentSize="5" ConfirmSize="6" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" PayInvoice="PayInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
 </MudGrid>
 
 @code {
 	private InvoiceDto Invoice  = new InvoiceDto();
+	
 
 	protected override async Task OnInitializedAsync()
 	{
 		try{
 
-		  Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+			Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
 		}catch(Exception ex){
 			SnackBar.ShowSnackbar(Snackbar,ex.Message , MudBlazor.Severity.Warning);
+			await Task.Delay(500);
 			Navigation.NavigateTo("/", true);
 		}
 	
@@ -88,7 +91,7 @@
 	}
 	private async Task OpenGate(){
 		var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
-		var cameraIP = await CameraAppService.GetCameraIPByCameraId(cameraId);
-		await InvoiceUtility.OpenGate(cameraIP);
+		var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
+		await InvoiceUtility.OpenGate(camera);
 	}
 }

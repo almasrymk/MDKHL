@@ -123,4 +123,6 @@ public interface IAuthenticationAppService : IApplicationService
     /// <returns> The user if found; otherwise, null.</returns>
 
     Task<IdentityUser?> IsUserFoundAsync(string Id);
+    Task<string> GetUserNameByPhoneNumber(string phone);
+
 }

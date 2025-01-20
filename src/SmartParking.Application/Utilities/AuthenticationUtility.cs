@@ -27,6 +27,7 @@ using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 using Microsoft.AspNetCore.Http;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 namespace SmartParking.Utilities;
 
 public class AuthenticationUtility : IAuthenticationUtility , ITransientDependency
@@ -157,4 +158,6 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
 
         return accessToken;
     }
+
+
 }

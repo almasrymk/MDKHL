@@ -66,6 +66,6 @@ public interface ICamerasAppService:
     /// <returns>cameraeDto List</returns>
     Task<PagedResultDto<CameraDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
 
-    Task<string> GetCameraIPByCameraId(int cameraId);
+    Task<CameraDto> GetCameraIPByCameraId(int cameraId);
 
 }
