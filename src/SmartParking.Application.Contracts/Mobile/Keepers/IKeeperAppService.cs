@@ -1,6 +1,7 @@
 ﻿using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Mobile.Invoices;
 using SmartParking.Payments;
 using SmartParking.Results;
 using System;
@@ -60,6 +61,7 @@ public interface IKeeperAppService
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 
     Task<Result<InvoiceDto>> CheckoutAsync(int invoiceId);
-    Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType);
+    Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType);
 
+    Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
 }

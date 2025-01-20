@@ -45,6 +45,7 @@ using Microsoft.Build.Framework;
 using SmartParking.Localization;
 using SmartParking.Entities.Authentication;
 using SmartParking.Results;
+using SmartParking.Mobile.Invoices;
 
 namespace SmartParking;
 
@@ -153,6 +154,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(des => des.BrandArabicName, src => src.MapFrom(f => f.VehicleBrand.ArabicName))
             .ForMember(des => des.ModelArabicName, src => src.MapFrom(f => f.VehicleModel.ArabicName))
             .ForMember(des => des.ModelImage, src => src.MapFrom(f => f.VehicleModel.Image))
+            .ForMember(des => des.LicenceTypeImage, src => src.MapFrom(f => f.LicenceType.Image))
             .ForMember(des => des.LicenceArabicName, src => src.MapFrom(f => f.LicenceType.ArabicName));
         CreateMap<CreateUpdateVehicleDto, Vehicle>()
             .ForMember(dest => dest.ArPlateNumber, src => src.MapFrom(f => f.FullArPlate))
@@ -171,6 +173,20 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<Invoice, InvoiceDto>()
+            .ForMember(d => d.GarageEnglishName, o => o.MapFrom(s => s.Garage.NameEn))
+            .ForMember(d => d.GarageArabicName, o => o.MapFrom(s => s.Garage.NameAr))
+            .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName))
+            .ForMember(d => d.OrganizationEnglishName, o => o.MapFrom(s => s.Organization.EnglishName))
+            .ForMember(d => d.OrganizationAddress, o => o.MapFrom(s => s.Organization.Address))
+            .ForMember(d => d.OrganizationTIN, o => o.MapFrom(s => s.Organization.TaxIdentificationNumber))
+            .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
+            .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
+            .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
+            .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
+            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();   
+        
+        CreateMap<Invoice, InvoiceMobileDto>()
             .ForMember(d => d.GarageEnglishName, o => o.MapFrom(s => s.Garage.NameEn))
             .ForMember(d => d.GarageArabicName, o => o.MapFrom(s => s.Garage.NameAr))
             .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.Organization.ArabicName))
