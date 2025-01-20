@@ -234,6 +234,7 @@
             createUpdatePackage.TenantId = CurrentTenant.Id;
             createUpdatePackage.ActivationDate = DateTime.Now;
             createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
+            createUpdatePackage.Status = Status.Inactive;
             await PackagesAppService.CreateAsync(createUpdatePackage);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
