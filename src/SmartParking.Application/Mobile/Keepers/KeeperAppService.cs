@@ -11,6 +11,8 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Mobile.Invoices;
+using SmartParking.Mobile.Vehicles;
 using SmartParking.Payments;
 using SmartParking.Repositories;
 using SmartParking.Results;
@@ -45,6 +47,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IPaymentAppService _paymentAppService;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
+    private readonly IVehicleAppService _vehicleAppService;
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
@@ -59,7 +62,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IRepository<Tenant, Guid> tenantRepository,
          IPaymentAppService paymentAppService,
          IInvoiceAppService invoiceAppService,
-         IAuthenticationUtility authenticationUtility)
+         IAuthenticationUtility authenticationUtility,
+         IVehicleAppService vehicleAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -74,6 +78,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _paymentAppService = paymentAppService;
         _invoiceAppService = invoiceAppService;
         this._authenticationUtility = authenticationUtility;
+        _vehicleAppService = vehicleAppService;
     }
 
     /// <inheritdoc/>
@@ -177,6 +182,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
         var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId && inv.InvoiceType == InvoiceType.UnPaid).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
+        return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
+    }    
+    
+    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId)
+    {
+        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId && inv.InvoiceType == InvoiceType.Paid).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
         return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
     }
 
@@ -319,7 +330,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             return invoiceDto;
         }
     }
-    public async Task<Result<InvoiceDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
+    public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -338,8 +349,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             };
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
             var image =await _invoiceAppService.GetImage(invoice,result.QrCodeInvoice);
-            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
             invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
             return invoiceDto;
         }
     }

@@ -478,7 +478,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             {
                 throw new Exception("user isn't exist");
             }
-            var result = CheckOtp(Otp, EF.Property<string>(user, "OtpCode"), EF.Property<DateTime>(user, "OtpExpirationDate"));
+            var result = CheckOtp(Otp,user.GetProperty<string>("OtpCode"),user.GetProperty<DateTime>("OtpExpirationDate"));
             return result;
         }
     }
@@ -509,7 +509,18 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         using (_dataFilter.Disable<IMultiTenant>())
         {
             return await _userManager.FindByIdAsync(Id);
+        }   
+    }
+    public async Task<string> GetUserNameByPhoneNumber(string phone)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.PhoneNumber == phone || x.UserName == phone);
+            if (user == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return user.UserName;
         }
-        
     }
 }

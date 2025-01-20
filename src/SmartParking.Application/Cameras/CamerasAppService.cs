@@ -411,13 +411,13 @@ public class CamerasAppService :
         }
     }
 
-    public async Task<string> GetCameraIPByCameraId(int cameraId)
+    public async Task<CameraDto> GetCameraIPByCameraId(int cameraId)
     {
         var camera = await _repository.FindAsync(cameraId);
         if (camera == null)
         {
             throw new EntityNotFoundException(typeof(Camera),cameraId);
         }
-        return camera.CameraIP;
+        return ObjectMapper.Map<Camera, CameraDto>(camera);
     }
 }

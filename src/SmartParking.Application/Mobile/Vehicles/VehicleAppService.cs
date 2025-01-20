@@ -201,5 +201,11 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 
     }
 
+    public async Task<VehicleDto> GetVehicleByPlateNumberAsync(string plateNumber)
+    {
+        var vehicle = await _vehicleRepository.FirstOrDefaultAsync(v => v.ArPlateNumber == plateNumber || v.EnPlateNumber == plateNumber);
+        var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
+        return vehicleDto;
+    }
 
 }

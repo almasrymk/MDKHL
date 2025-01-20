@@ -12,6 +12,8 @@ namespace SmartParking.Cameras;
 public class CameraDto: AuditedEntityDto<int>
 {
     public string Name { get; set; }
+    public string UserName { get; set; }
+    public string Password { get; set; }
     public CameraModelDto Model { get; set; }
     public CameraMainTypeDto MainType { get; set; }
     public CameraBrandDto BrandName { get; set; }

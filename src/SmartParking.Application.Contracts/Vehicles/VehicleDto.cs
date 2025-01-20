@@ -29,6 +29,7 @@ namespace SmartParking.Vehicles
         public string ArPlateNumber { get; set; }
         public string EnPlateNumber { get; set; }
         public string ModelImage { get; set; }
+        public string LicenceTypeImage { get; set; }
         public Guid? TenantId { get; set; }
 	}
 }
