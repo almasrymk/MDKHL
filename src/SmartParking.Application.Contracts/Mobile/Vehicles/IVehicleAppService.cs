@@ -18,6 +18,7 @@ public interface IVehicleAppService : IApplicationService
     Task<Result<VehicleDto>> EditAsync(int vehicleId,CreateUpdateVehicleMobileDto input);
     Task<Result<VehicleDto>> DeleteAsync(int vehicleId);
     Task<Result<List<VehicleDto>>> GetListAsync();
+    Task<VehicleDto> GetVehicleByPlateNumberAsync(string plateNumber);
 
 
 }

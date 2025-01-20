@@ -4,6 +4,7 @@ using SmartParking.Authentication;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
 using SmartParking.Results;
 using System;
@@ -74,6 +75,13 @@ public class KeeperController : AbpController
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
     {
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
+    }    
+    
+    [HttpGet("paid/invoice")]
+    [Authorize]
+    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationPaidId([FromQuery] int organizationId)
+    {
+        return await _keeperAppService.GetAllInvoicesByOrganizationIdPaidAsync(organizationId);
     }
     [HttpGet("lastinvoice")]
     [Authorize]
@@ -126,14 +134,14 @@ public class KeeperController : AbpController
 
     [HttpGet("PayInvoiceByCustomerRequest")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType)
+    public async Task<Result<InvoiceMobileDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType)
     {
         return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId, PaymentType);
 
     }
     [HttpGet("KeeperCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType)
+    public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType)
     {
         var invoice = await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
         return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType);
