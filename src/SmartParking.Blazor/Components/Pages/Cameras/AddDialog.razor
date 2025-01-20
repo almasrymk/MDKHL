@@ -26,6 +26,24 @@
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
+                    <MudText Class="text-bold">@L["CameraAccessData"]</MudText>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="cameraDto.UserName"
+                                      Immediate="true"
+                                      Required
+                                      Placeholder="@L["UserName"]"
+                                      Label="@L["UserName"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="cameraDto.Password"
+                                      Immediate="true"
+                                      Required
+                                      Placeholder="@L["Password"]"
+                                      Label="@L["Password"]" />
+                    </MudItem>
+                    <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
+
                     <MudItem sm="6">
                         <MudTextField @bind-Value="cameraDto.Name"
                         For="@(() => cameraDto.Name)"
@@ -42,9 +60,7 @@
                         Placeholder="@L["Will Be Automatically Created"]"
                         Label="@L["Code"]" />
                     </MudItem>
-
-
-
+                   
                     <MudItem sm="6">
                         <MudSelect @bind-Value="@cameraDto.BrandNameId"
                         Variant="Variant.Text"
