@@ -3,10 +3,11 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Payments;
 
-public class Payment : FullAuditedEntity<Guid>
+public class Payment : FullAuditedEntity<Guid> , IMultiTenant
 {
     public int OrganizationId { get; set; }
     public string? EntityId { get; set; }
@@ -30,4 +31,5 @@ public class Payment : FullAuditedEntity<Guid>
 
     public virtual Invoice? Invoice { get; set; }
 
+    public Guid? TenantId { get; set; }
 }
