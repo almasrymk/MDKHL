@@ -229,7 +229,7 @@
 
         try
         {
-            createUpdatePackage.Published = PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
+            createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
 
             createUpdatePackage.TenantId = CurrentTenant.Id;
             createUpdatePackage.ActivationDate = DateTime.Now;

@@ -38,33 +38,33 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
         RuleFor(x => x.NumberOfUsers)
          .NotEmpty()
          .GreaterThan(0)
-         .LessThan(9999)
+         .LessThan(10000)
          .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
         RuleFor(x => x.NumbersOfGarages)
         .NotEmpty()
         .GreaterThan(0)
-        .LessThan(9999)
+        .LessThan(10000)
         .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
         RuleFor(x => x.NumberOfCameras)
         .NotEmpty()
         .GreaterThan(0)
-        .LessThan(9999)
+        .LessThan(10000)
         .WithMessage( LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
 
         RuleFor(x => x.NumberOfCustomers)
         .NotEmpty()
         .GreaterThan(0)
-        .LessThan(9999)
+        .LessThan(10000)
         .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
 
         RuleFor(x => x.ParkingSlot)
        .NotEmpty()
        .GreaterThan(0)
-       .LessThan(9999)
+       .LessThan(10000)
         .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
         
 

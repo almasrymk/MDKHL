@@ -201,6 +201,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             organization = await GetAndValidateOrganizationAsync(input.OrganizationId);
             garage = await GetAndValidateGarageAsync(id);
             input.TenantId = organization.TenantId;
+            CheckSolt(input, organization);
             numberOfGaragesInInputOrganization = await GetNumberOfGaragesInOrganizationAsync(input.OrganizationId);
             await UpdateGarageDetailsAsync(input, organization, numberOfGaragesInInputOrganization, garage);
         }
@@ -209,6 +210,13 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         return await UpdateGarageAsync(id, input);
     }
+
+    private static void CheckSolt(CreateUpdateGarageDto input, Organization organization)
+    {
+        if (input.MaxCapacity > organization.Subscription.ParkingSlot)
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
+    }
+
     [RemoteService(isEnabled: false)]
 
     private async Task<Garage> GetAndValidateGarageAsync(int id)

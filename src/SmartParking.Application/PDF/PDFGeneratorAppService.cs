@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using static QRCoder.SvgQRCode;
 using System.Drawing;
+using SmartParking.Payments;
 
 
 
@@ -34,16 +35,18 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
 {
     private readonly IInvoiceAppService _invoicePdfAppService;
     private readonly IOrganizationsAppService _organizationPdfAppService;
+    private readonly IPaymentWebAppService _paymentWebAppService;
     
     private string folderInvoiceImage = "Invoice";
     private string folderPdfs = "PDFs";
     private string imageDirectoryPath = null;
 
-    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService)
+    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService, IPaymentWebAppService paymentWebAppService)
     {
         _invoicePdfAppService = invoicePdfAppService;
         imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
         _organizationPdfAppService = organizationPdfAppService;
+        _paymentWebAppService = paymentWebAppService;
     }
     [RemoteService(isEnabled:false)]
     public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
@@ -409,9 +412,8 @@ img[style*='width:120px;'] {
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
-        string OrganizationLogo = "wwwroot";
-        OrganizationLogo+=await _organizationPdfAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
-
+        var organization =await _organizationPdfAppService.GetOrganizationForCurrentTenatAsync();
+        var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
@@ -432,8 +434,8 @@ img[style*='width:120px;'] {
         iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
             .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
             .SetWidth(120);
-
-        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(OrganizationLogo ?? imageDirectoryPdf))
+        
+        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create("wwwroot"+organization.OrganizationPicture))
             .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
             .SetWidth(120);
 
@@ -454,7 +456,7 @@ img[style*='width:120px;'] {
         Paragraph Vat = new Paragraph("VAT : ")
             .AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.CENTER)
-         .SetFontSize(15).Add(@"1230000000");
+         .SetFontSize(15).Add(organization.TaxIdentificationNumber);
 
         Paragraph RecieptPayemntDetails = new Paragraph($"This is the receipt for payment of This is the receipt for payment of {invoice.InvoicePrice} SAR")
             .AddStyle(styleBold)
@@ -466,10 +468,11 @@ img[style*='width:120px;'] {
             .SetBorder(Border.NO_BORDER)
             .SetTextAlignment(TextAlignment.CENTER)
             .Add(new Paragraph("Payment Number:")));
+
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
             .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.InvoiceNumber}")));
+            .Add(new Paragraph($"{payment.PaymentNumber}")));
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
@@ -505,7 +508,7 @@ img[style*='width:120px;'] {
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
             .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph(DateTime.UtcNow.ToString())));
+            .Add(new Paragraph(payment.CreationTime.ToString())));
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
@@ -541,7 +544,7 @@ img[style*='width:120px;'] {
             .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-        .Add(new Paragraph("Subscription\nHour").SetFontSize(14).SimulateBold()));
+        .Add(new Paragraph("Hour").SetFontSize(14).SimulateBold()));
 
 
         table1.AddCell(new Cell(1, 1)

@@ -101,7 +101,7 @@
     "Menu:Home": "الصفحة الرئيسية",
     "Model": "نموذج",
     "ُEditMyAccount": "تعديل حسابى",
-    "My Profile": "ملفي الشخصي",
+    "My Profile": "الحساب",
     "Name": "الإسم",
     "New Camera": "إضــافة كاميرا",
     "New LicenceType": "إضــافة نوع ترخيص",
@@ -618,7 +618,7 @@
     "CSV": "ملف CSV",
     "Done": "تم",
     "GarageName": "اسم الموقف",
-    "InvoiceCollectedMoney": "اجمالي المحصلة النقدية للمطابقات",
+    "InvoiceCollectedMoney": "اجمالي المحصلة النقدية للمواقف",
     "PackageCollectedMoney": "اجمالي المحصلة النقدية للباقات",
     "Send": "إرسال",
     "Beneficiaries": "العملاء",
@@ -631,7 +631,9 @@
     "OpenGate": "فتح البوابة",
     "EntranceImage": "صورة الدخول",
     "ExitImage": "صورة الخروج",
-    "LastInvoice": "الخروج"
+    "LastInvoice": "الخروج",
+    "AtGate": "أمام البواية",
+    "ChooseGarage": "لا يمكن الاضافة بدون اختيار موقف"
 
 
 

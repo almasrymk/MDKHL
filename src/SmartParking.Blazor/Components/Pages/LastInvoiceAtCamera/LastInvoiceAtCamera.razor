@@ -18,11 +18,18 @@
 @inject IInvoiceUtility InvoiceUtility
 @inject ICamerasAppService CameraAppService
 @inject IGarageTransactionsAppService GarageTransactionAppService
+@inject NavigationManager Navigation
 <PageTitle>@L["LastInvoice"]</PageTitle>
-
 <MudGrid>
 
 	<MudItem sm="7" Class="d-flex flex-column">
+		@{
+			if (Invoice is null)
+			{
+				<p>@L["No invoice found."]</p>
+				return;
+			}
+		}
 		<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
 
 		<MudItem sm="12" Class="d-flex flex-row mb-4">
@@ -44,7 +51,7 @@
 	</MudItem>
 
 
-	<PriceSummaryComponent ComponentSize="5" ConfirmSize="6" InvoicePrice="@Invoice.InvoicePrice" IsPaid="false" PayInvoice="PayInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
+	<PriceSummaryComponent ComponentSize="5" ConfirmSize="6" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="false" PayInvoice="PayInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
 </MudGrid>
 
 @code {
@@ -52,8 +59,14 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
-		await base.OnInitializedAsync();
+		try{
+
+		  Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+		}catch(Exception ex){
+			SnackBar.ShowSnackbar(Snackbar,ex.Message , MudBlazor.Severity.Warning);
+			Navigation.NavigateTo("/", true);
+		}
+	
 	}
 	private async Task PayInvoice(){
 
@@ -70,6 +83,7 @@
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+			Navigation.Refresh();
 		}
 	}
 	private async Task OpenGate(){
