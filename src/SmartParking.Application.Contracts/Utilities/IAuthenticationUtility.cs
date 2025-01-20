@@ -22,4 +22,6 @@ public interface IAuthenticationUtility : ITransientDependency
     /// <param name="user">The user for whom the token will be generated.</param>
     /// <returns>A string representing the generated JWT token.</returns>
     Task<string> GenerateTokenAsync(IdentityUser user);
+
+
 }
