@@ -15,7 +15,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar
-@inject IInvoiceUtility InvoiceUtility
+@inject IInvoiceUtilityAppService InvoiceUtility
 @inject ICamerasAppService CameraAppService
 @inject IGarageTransactionsAppService GarageTransactionAppService
 @inject NavigationManager Navigation
@@ -86,12 +86,12 @@
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-			Navigation.Refresh();
+			Navigation.Refresh(true);
 		}
 	}
 	private async Task OpenGate(){
 		var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
 		var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
-		await InvoiceUtility.OpenGate(camera);
+		await InvoiceUtility.OpenGate(camera.CameraIP,camera.UserName,camera.Password);
 	}
 }
