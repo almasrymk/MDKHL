@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Tls;
+using SmartParking.Cameras;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactionEndPoints;
@@ -101,14 +102,14 @@ public class InvoiceUtility : IInvoiceUtility
         return token;
     }
 
-    public async Task OpenGate(string CameraIP) {
+    public async Task OpenGate(CameraDto Camera) {
 
         var camera = new
         {
-            ip = CameraIP,
+            ip = Camera.CameraIP,
             port = 0, 
-            username = "",
-            password = ""
+            username = Camera.UserName,
+            password = Camera.Password,
         };
         JObject json = await CreateRequest(openGate, camera);
         _logger.LogDebug($"{DateTime.Now} ====> Gate Respons | {json}");
