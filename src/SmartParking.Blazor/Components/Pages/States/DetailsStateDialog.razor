@@ -35,14 +35,28 @@
 									  Disabled/>
 					</MudItem>
 
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
 					<MudItem sm="6">
 						<MudTextField @bind-Value="state.RegionEnglishName"
 									  For="@(() => state.RegionEnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["Region English Name"]"
+									  Label="@L["Region"]"
 									  Disabled />
 					</MudItem>
+					}
+					else 
+					{
+					<MudItem sm="6">
+						<MudTextField @bind-Value="state.RegionArabicName"
+									  For="@(() => state.RegionArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["Region"]"
+									  Disabled />
+					</MudItem>
+					}
 
 					<MudItem sm="6" >
 						<MudTextField @bind-Value="state.Status"

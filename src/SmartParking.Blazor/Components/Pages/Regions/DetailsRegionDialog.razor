@@ -22,30 +22,42 @@
 
 					<MudItem sm="6">
 						<MudTextField @bind-Value="region.ArabicName"
-									  For="@(() => region.ArabicName)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["ArabicName"]"
-									  Disabled/>
+						For="@(() => region.ArabicName)"
+						Immediate="true"
+						Variant="Variant.Text"
+						Label="@L["ArabicName"]"
+						Disabled/>
 					</MudItem>
 
 					<MudItem sm="6">
 						<MudTextField @bind-Value="region.EnglishName"
-									  For="@(() => region.EnglishName)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["EnglishName"]"
-									  Disabled/>
+						For="@(() => region.EnglishName)"
+						Immediate="true"
+						Variant="Variant.Text"
+						Label="@L["EnglishName"]"
+						Disabled/>
 					</MudItem>
 
-					<MudItem sm="6">
-						<MudTextField @bind-Value="region.CountryEnglishName"
-									  For="@(() => region.CountryEnglishName)"
-									  Immediate="true"
-									  Disabled
-									  Label="@L["Country English Name"]" />
-					</MudItem>
-
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
+						<MudItem sm="6">
+							<MudTextField @bind-Value="region.CountryEnglishName"
+							For="@(() => region.CountryEnglishName)"
+							Immediate="true"
+							Disabled
+							Label="@L["Country"]" />
+						</MudItem>
+					}
+					else
+					{
+						<MudItem sm="6">
+							<MudTextField @bind-Value="region.CountryArabicName"
+										  For="@(() => region.CountryArabicName)"
+										  Immediate="true"
+										  Disabled
+										  Label="@L["Country"]" />
+						</MudItem>
+					}
 
 					<MudItem sm="6">
 						<MudTextField @bind-Value="region.Status"
