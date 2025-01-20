@@ -15,7 +15,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar
-@inject IInvoiceUtility InvoiceUtility
+@inject IInvoiceUtilityAppService InvoiceUtility
 @inject ICamerasAppService CameraAppService
 @inject IGarageTransactionsAppService GarageTransactionAppService
 @inject NavigationManager Navigation
@@ -92,6 +92,6 @@
 	private async Task OpenGate(){
 		var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
 		var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
-		await InvoiceUtility.OpenGate(camera);
+		await InvoiceUtility.OpenGate(camera.CameraIP,camera.UserName,camera.Password);
 	}
 }
