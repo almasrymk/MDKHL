@@ -148,12 +148,18 @@ namespace SmartParking.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -2135,6 +2141,10 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("QrCodeInvoice")
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
 
                     b.HasKey("Id");
 
