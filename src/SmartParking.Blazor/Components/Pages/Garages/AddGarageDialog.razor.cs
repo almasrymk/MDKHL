@@ -31,7 +31,7 @@ public partial class AddGarageDialog
     {
         createUpdateGarage = new CreateUpdateGarageDto();
         createUpdateGarage.Status = Enums.Status.Active;
-        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())||currrentUser.IsInRole("admin"))
+        if (!currrentTenant.Id.HasValue)
         {
 
             var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
