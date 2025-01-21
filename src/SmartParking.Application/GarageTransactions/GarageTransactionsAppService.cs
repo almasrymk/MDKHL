@@ -6,6 +6,7 @@ using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -462,7 +463,7 @@ public class GarageTransactionsAppService :
         var garagetransaction=await _repository.FindAsync(garageTransactionId);
         if (garagetransaction == null)
         {
-            throw new EntityNotFoundException(typeof(GarageTransaction), garageTransactionId);
+            throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         return garagetransaction.CameraId;
     }
