@@ -91,20 +91,25 @@
 		}
 	}
 	private async Task OpenGate(){
-		var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
-		var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
-		var openGateBody = new OpenGateRequestDto
-		{
-			ip=camera.CameraIP,
-			port=0,
-			username=camera.UserName??"",
-			password=camera.Password??""
-		};
-		var result = await InvoiceUtility.OpenGate(openGateBody);
-		if(result==true){
-			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);
-			await Task.Delay(1000);
-			Navigation.Refresh(true);
+		try{
+
+			var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
+			var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
+			var openGateBody = new OpenGateRequestDto
+			{
+				ip=camera.CameraIP,
+				port=0,
+				username=camera.UserName??"",
+				password=camera.Password??""
+			};
+			var result = await InvoiceUtility.OpenGate(openGateBody);
+			if(result==true){
+				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);
+				await Task.Delay(1000);
+				Navigation.Refresh(true);
+			}
+		}catch(Exception ex){
+			SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
 		}
 	}
 }
