@@ -133,7 +133,9 @@ public class GarageTransactionsAppService :
 
                 queryable = queryable.OrderBy(input.Sorting);
             }
+           
         }
+        queryable = queryable.OrderByDescending(x => x.Id);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
