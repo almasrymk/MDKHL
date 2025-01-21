@@ -57,7 +57,7 @@
 
 @code {
 	private InvoiceDto Invoice  = new InvoiceDto();
-	
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -69,7 +69,7 @@
 			await Task.Delay(500);
 			Navigation.NavigateTo("/", true);
 		}
-	
+
 	}
 	private async Task PayInvoice(){
 
@@ -86,12 +86,24 @@
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-			Navigation.Refresh(true);
+			await Task.Delay(500);
+			await OpenGate();
 		}
 	}
 	private async Task OpenGate(){
 		var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
 		var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
-		await InvoiceUtility.OpenGate(camera.CameraIP,camera.UserName,camera.Password);
+		var openGateBody = new OpenGateRequestDto
+		{
+			ip=camera.CameraIP,
+			port=0,
+			username=camera.UserName,
+			password=camera.Password
+		};
+		var result = await InvoiceUtility.OpenGate(openGateBody);
+		if(result==true){
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);
+			Navigation.Refresh(true);
+		}
 	}
 }
