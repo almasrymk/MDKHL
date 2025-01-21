@@ -295,7 +295,7 @@ public class GarageTransactionsAppService :
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
-        input.VehiclePicture = SaveBase64Image(input) ?? "";
+        input.VehiclePicture = SaveBase64Image(input) ?? input.VehiclePicture;
         var result = await base.CreateAsync(input);
 
         return result;
