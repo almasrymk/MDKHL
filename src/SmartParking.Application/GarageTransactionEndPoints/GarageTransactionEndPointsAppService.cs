@@ -833,10 +833,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             throw new Exception("Transaction Already Checked-Out");
         }
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
-        invoice.Value.InvoiceType = InvoiceType.Paid;
         await UpdateEntryTransactionCheckouFromMobile(result.Item2);
         var newinvoice = await SaveTransactionWithInvoice(invoice, result.Item1);
-        await PayInvoiceFromWeb(newinvoice);
         return newinvoice;
 
     }
@@ -849,7 +847,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    private async Task<PaymentCheckoutDto> PayInvoiceFromWeb(InvoiceDto invoice)
+    public async Task<PaymentCheckoutDto> PayInvoiceFromWeb(InvoiceDto invoice)
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {
