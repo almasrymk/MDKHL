@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal.Mappers;
 using SmartParking.Entities.Lookups;
+using SmartParking.Localization;
 using SmartParking.Lookups.CameraMainType;
 using System;
 using System.Collections.Generic;
@@ -51,13 +52,13 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
         {
             if (cameraMainType.EnglishName == input.EnglishName.Trim(' '))
             {
-                throw new InvalidOperationException("Camera maintype english name already exists");
-
+                throw new InvalidOperationException(
+                                                        $"{LocalizationHelper.GetLocalizedString("EnglishName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
             }
             else if (cameraMainType.ArabicName == input.ArabicName.Trim(' '))
             {
-                throw new InvalidOperationException("Camera maintype  arabic name already exists");
-
+                throw new InvalidOperationException(
+                                            $"{LocalizationHelper.GetLocalizedString("ArabicName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
             }
 
 
@@ -86,12 +87,13 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
         {
             if (cameraMainType.EnglishName == input.EnglishName.Trim(' ') && cameraMainType.Id != id)
             {
-                throw new InvalidOperationException("Camera maintype english name already exists");
-
+                throw new InvalidOperationException(
+                                        $"{LocalizationHelper.GetLocalizedString("EnglishName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
             }
             else if (cameraMainType.ArabicName == input.ArabicName.Trim(' ') && cameraMainType.Id != id)
             {
-                throw new InvalidOperationException("Camera maintype arabic name already exists");
+                throw new InvalidOperationException(
+                            $"{LocalizationHelper.GetLocalizedString("ArabicName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
 
             }
 
