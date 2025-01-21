@@ -97,12 +97,13 @@
 		{
 			ip=camera.CameraIP,
 			port=0,
-			username=camera.UserName,
-			password=camera.Password
+			username=camera.UserName??"",
+			password=camera.Password??""
 		};
 		var result = await InvoiceUtility.OpenGate(openGateBody);
 		if(result==true){
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);
+			await Task.Delay(1000);
 			Navigation.Refresh(true);
 		}
 	}
