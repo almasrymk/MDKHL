@@ -16,7 +16,7 @@ namespace SmartParking.Validations.Lookups.Cameras
         {
             RuleFor(x => x.ArabicName)
                 .NotEmpty()
-                .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
+                .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d\s!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/؟]*$")
                 .WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
             RuleFor(x => x.EnglishName)
