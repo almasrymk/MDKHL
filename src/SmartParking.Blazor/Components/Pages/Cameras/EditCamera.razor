@@ -34,14 +34,17 @@
 						<MudTextField @bind-Value="Camera.UserName"
 									  Immediate="true"
 									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 									  Placeholder="@L["UserName"]"
 									  Label="@L["UserName"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Password"
 									  Immediate="true"
-									  Required
+									  
 									  Placeholder="@L["Password"]"
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 									  Label="@L["Password"]" />
 					</MudItem>
 					<MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
