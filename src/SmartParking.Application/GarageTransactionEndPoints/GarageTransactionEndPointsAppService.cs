@@ -860,7 +860,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
             CustomerId = invoice.CustomerId
         };
-        var payment = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
     }
 
     public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId)
