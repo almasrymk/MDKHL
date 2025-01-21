@@ -123,15 +123,16 @@
 					}
 					
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.CameraType"
-									  For="@(() => Camera.CameraType)"
+						<MudTextField T="string"
+									  Value="@L[$"{Camera.CameraType}"]"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["Type"]" />
+									  Label="@L["CameraType"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Status"
-									  For="@(() => Camera.Status)"
+						<MudTextField
+									T="string"
+									 Value="@L[$"{Camera.Status}"]"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["Status"]" />
