@@ -86,9 +86,8 @@
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+			await Task.Delay(500);
 			await OpenGate();
-			await Task.Delay(100);
-			Navigation.Refresh(true);
 		}
 	}
 	private async Task OpenGate(){
