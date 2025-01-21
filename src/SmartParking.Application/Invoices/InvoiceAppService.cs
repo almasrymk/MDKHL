@@ -133,10 +133,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             queryable = queryable.Where(or =>
                 or.Id.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoicePrice.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.CustomerArName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) |
-                or.InvoiceType.ToString().ToLower().StartsWith(input.SearchingTerm.ToLower()) 
+                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
+                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower())
             // full date-time or includes hour
             );
 
