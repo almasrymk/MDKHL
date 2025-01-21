@@ -442,7 +442,7 @@
     "ParkingSlots": "عدد أماكن الوقوف",
     "Employees": "الموظفين",
     "Details for Employee": "تفاصيل للموظف",
-    "CameraName": "إسم بالعربية",
+    "CameraName": "إسم الكاميرا",
     "Total Garage Can be added": "عدد المواقف المتاح تفعيلها",
     "ActiveGarages": "عدد المواقف المفعلة",
     "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
