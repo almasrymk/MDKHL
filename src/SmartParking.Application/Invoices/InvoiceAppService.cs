@@ -389,7 +389,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     {
 
        var query=await _invoiceRepository.GetQueryableAsync();
-       query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid);
+       query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid&&x.InvoicePrice>0);
        query= query.OrderByDescending(x=>x.CreationTime);
        var invoice =await query.FirstOrDefaultAsync();
         if (invoice == null)
