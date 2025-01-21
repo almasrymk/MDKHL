@@ -1,4 +1,5 @@
 ﻿using Abp.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,6 +15,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
+using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Utilities;
 
@@ -106,17 +108,14 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         return token;
     }
 
-    public async Task OpenGate(string CameraIP , string? UserName, string? Password) {
-
-        var camera = new
-        {
-            ip = CameraIP,
-            port = 0, 
-            username = UserName,
-            password = Password,
-        };
-        JObject json = await CreateRequest(openGate, camera);
-        _logger.LogDebug($"{DateTime.Now} ====> Gate Response | {json}");
+    public async Task<bool> OpenGate(OpenGateRequestDto camera) {
+  
+        var content = new StringContent(camera.ToJsonString(), Encoding.UTF8, "application/json");
+        _logger.LogDebug($"Open Gate Request body => {camera.ToJsonString()}");
+        _logger.LogDebug($"Open Gate Request Header => {content.Headers.ToJsonString()}");
+        var response = await _httpClient.PostAsync(openGate, content);
+        _logger.LogDebug($"Open Gate Response body => {response.Headers.ToJsonString()}");
+        return response.IsSuccessStatusCode;
 
     }
 }
