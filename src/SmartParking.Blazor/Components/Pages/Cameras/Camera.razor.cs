@@ -1,15 +1,19 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
+using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.GaragePermissions;
 using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras;
@@ -33,6 +37,17 @@ public partial class Camera
         CreatePolicyName = CameraPermissions.Create;
         UpdatePolicyName = CameraPermissions.Edit;
         DeletePolicyName = CameraPermissions.Delete;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(CameraPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
     }
 
     /// <summary>
