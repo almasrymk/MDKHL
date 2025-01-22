@@ -269,7 +269,7 @@
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await GetNumberOfParkingAndEmptyAsync(organization.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
-            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees,null);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
             totalGrid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);

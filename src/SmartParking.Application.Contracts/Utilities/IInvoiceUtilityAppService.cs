@@ -13,4 +13,5 @@ public interface IInvoiceUtilityAppService : IApplicationService
     Task<QRCodeDto> GetQrCodeAsync(decimal amount, Organization organization);
     Task<string?> GetTokenAsync();
     Task<bool> OpenGate(OpenGateRequestDto camera);
+    Task<bool> SendRequestToOpenGate(int ExitGarageTransactionId);
 }

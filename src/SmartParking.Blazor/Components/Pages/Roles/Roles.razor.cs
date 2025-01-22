@@ -47,7 +47,7 @@ partial class Roles
 
     protected async override Task OnInitializedAsync()
     {
-        if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Default))
+        if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Default))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);

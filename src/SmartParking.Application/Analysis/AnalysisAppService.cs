@@ -180,6 +180,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
         
     }
+
     
     public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId)
     {
@@ -370,25 +371,22 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
        
     }
     
-    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees , int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
     {
-        var query = await _customerPackageRepository.GetQueryableAsync();
-        query = query.Where(_ => _.OrganizationId == organizationId);
+        var query = await _custeRepo.GetQueryableAsync();
         var groupedCounts = await query
-                  .Select(g => new
-                  {
-                      CountOfCustomers = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Customer)
-                      .Select(c => c.CustomerId).Distinct().Count(),
-                      CountOfEmployees = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Employee)
-                      .Select(c => c.CustomerId).Distinct().Count(),
-                      CountOfVisitors = query.Where(c => c.CustomerCategory == CustomerCategoryStatus.Visitor)
-                      .Select(c => c.CustomerId).Distinct().Count(),
-                      
-                  }).FirstOrDefaultAsync();
+               .Select(g => new
+               {
+                   CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
+                   CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
+                   CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
+                   CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
+
+               }).FirstOrDefaultAsync();
         if (groupedCounts == null)
         {
-            return (0, 0, 0);
+            return (0, 0, 0,0);
         }
-        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees);
+        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees,groupedCounts.CountOfNoPackage);
     }
 }

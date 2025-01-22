@@ -16,8 +16,6 @@
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar
 @inject IInvoiceUtilityAppService InvoiceUtility
-@inject ICamerasAppService CameraAppService
-@inject IGarageTransactionsAppService GarageTransactionAppService
 @inject NavigationManager Navigation
 <PageTitle>@L["LastInvoice"]</PageTitle>
 <MudGrid>
@@ -92,17 +90,7 @@
 	}
 	private async Task OpenGate(){
 		try{
-
-			var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(Invoice.GarageTransactionExitId);
-			var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
-			var openGateBody = new OpenGateRequestDto
-			{
-				ip=camera.CameraIP,
-				port=80,
-				username=camera.UserName??"",
-				password=camera.Password??""
-			};
-			var result = await InvoiceUtility.OpenGate(openGateBody);
+			var result =await InvoiceUtility.SendRequestToOpenGate(Invoice.GarageTransactionExitId);
 			if(result==true){
 				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);
 				await Task.Delay(1000);
