@@ -229,23 +229,24 @@ public partial class Customer
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["MobileNumber"], item.MobileNumber));
             if(CultureInfo.CurrentCulture.Name == "ar")
             {
+                
+               rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"],item.PackageArabicNames.IsNullOrWhiteSpace()? _localizer["NoPackages"]:item.PackageArabicNames));
 
-               rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageArabicNames));
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageEnglishNames));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageEnglishNames.IsNullOrWhiteSpace() ? _localizer["NoPackages"] : item.PackageEnglishNames));
 
             }
             if (currrentTenant.Id == null)
             {
                 if (CultureInfo.CurrentCulture.Name == "ar")
                 {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationArabicName));
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationArabicName.IsNullOrWhiteSpace() ? _localizer["NoOrganization"] : item.OrganizationArabicName));
                 }
                 else
                 {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationEnglishName));
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationEnglishName.IsNullOrWhiteSpace() ? _localizer["NoOrganization"] : item.OrganizationEnglishName));
                 }
             }
 
