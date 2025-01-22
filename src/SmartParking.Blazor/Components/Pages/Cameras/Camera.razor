@@ -11,7 +11,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-@attribute [Authorize(CameraPermissions.Default)]
+@* @attribute [Authorize(CameraPermissions.Default)] *@
 @inherits AbpCrudPageBase<ICamerasAppService, CameraDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraDto>
 
 <PageTitle>@L["Cameras"]</PageTitle>

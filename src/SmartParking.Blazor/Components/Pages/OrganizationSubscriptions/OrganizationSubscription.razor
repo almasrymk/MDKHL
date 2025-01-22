@@ -8,8 +8,9 @@
 @inject IOrganizationsAppService OrganizationAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentTenant currentTenant
-
-@attribute [Authorize(SubscriptionPermissions.Default)]
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager Navigation
+@* @attribute [Authorize(SubscriptionPermissions.Default)] *@
 
 <PageTitle>@L["Organization Subscription"]</PageTitle>
 <div class="d-flex justify-content-between align-items-center my-5 flex-column">
@@ -77,6 +78,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(SubscriptionPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+
         var orgId = await OrganizationAppService.GetOrganizationIdByTenant(currentTenant.Id);
         var Organization =await OrganizationAppService.GetAsync(orgId);
 

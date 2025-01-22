@@ -11,6 +11,8 @@ using SmartParking.Lookups.State;
 using System.Collections.Generic;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.MyAccount;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.MyAccount;
 
@@ -149,6 +151,15 @@ public partial class ViewMyAccount
 
     protected override async Task OnInitializedAsync()
     {
+    
+        if (!await AuthorizationService.IsGrantedAsync(MyAccountPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
+   
         states = await StateAppService.GetStateLookupAsync();
         regions = await StateAppService.GetRegionLookupAsync();
         countries = await CountriesAppService.GetCountryLookupAsync();

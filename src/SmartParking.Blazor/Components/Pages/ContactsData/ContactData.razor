@@ -14,7 +14,7 @@
 @inject IDialogService Dialog
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
-@attribute [Authorize(ContactPermissions.Default)]
+@* @attribute [Authorize(ContactPermissions.Default)] *@
 @inherits AbpCrudPageBase<IContactInfoAppService, ContactInfoDto, int, PagedAndSortedResultRequestDto, ContactInfoCreateUpdateDto>
 
 <PageTitle>@L["Contact Data"]</PageTitle>

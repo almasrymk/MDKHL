@@ -14,6 +14,7 @@ using Volo.Abp.Identity;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -80,6 +81,10 @@ public partial class AddUser
     }
     protected override async Task OnInitializedAsync()
     {
+        if(!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Create))
+        {
+            NavigationManager.NavigateTo("/Account/AccessDenied", true);
+        }
         userCreate = new UserCreateDto();
         Roles = await RoleAppService.GetListByTenant(null);
        await GetOrganizationDetailsAsync();

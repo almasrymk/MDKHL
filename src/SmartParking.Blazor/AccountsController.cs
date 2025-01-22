@@ -15,6 +15,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Localization;
+using System.Text.RegularExpressions;
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
 [ApiController]
@@ -47,8 +49,12 @@ public class AccountsController : ControllerBase
             var userId = claimsIdentity.FindFirst("userId")?.Value;
             var user = await _authenticationApp.IsUserFoundAsync(userId);
             currentTenant.Change(user.TenantId);
+            
+            if (user.TenantId.HasValue)
+            {
+                Response.Cookies.Append(TenantResolverConsts.DefaultTenantKey, user.TenantId.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1) });
+            }
             await _signInManager.SignInAsync(user, false);
-
             return LocalRedirect("/");
         }
         catch
@@ -61,7 +67,7 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult> Logout()
     {
         await _authenticationApp.LogOutAsync();
-        return LocalRedirect($"/Account/Login");
+        return LocalRedirect($"/Account/Login"); 
     }
 
 

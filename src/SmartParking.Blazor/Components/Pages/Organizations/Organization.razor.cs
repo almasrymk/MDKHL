@@ -15,6 +15,7 @@ using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.OrganizationPermissions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -38,8 +39,17 @@ public partial class Organization
         DeletePolicyName = OrganizationPermissions.Delete;
         
     }
-   
 
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(OrganizationPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
+    }
     private async Task HandleDelete(RowDef row)
     {
         var successMessage = L["OrganizationDeletedSuccessfully"];
