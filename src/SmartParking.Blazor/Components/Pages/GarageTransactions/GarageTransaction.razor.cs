@@ -8,6 +8,9 @@ using Volo.Abp.Application.Dtos;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
 using SmartParking.Entities.GarageTransactions;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 {
@@ -33,6 +36,17 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
         public GarageTransaction(IStringLocalizer<SmartParkingResource> localizer)
         {
             _localizer = localizer;
+        }
+
+        protected async override Task OnInitializedAsync()
+        {
+            if (!await AuthorizationService.IsGrantedAsync(GarageTransactionPermissions.Default))
+            {
+
+                Navigation.NavigateTo("/Account/AccessDenied", true);
+            }
+            await base.OnInitializedAsync();
+
         }
 
         /// <summary>
