@@ -269,8 +269,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     {
         
         var query = await _paymentRepository.GetQueryableAsync();
-        
-        return await GetCollectMoneyToday( query);
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            return await GetCollectMoneyToday(query);
+        }
     }
 
     private async Task<(string? Day, double? totalAmounts)> GetCollectMoneyToday(IQueryable<Payment> query)

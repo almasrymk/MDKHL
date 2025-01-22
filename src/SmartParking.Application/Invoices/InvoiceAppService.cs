@@ -133,10 +133,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             queryable = queryable.Where(or =>
                 or.Id.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.InvoicePrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoicePrice.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.CustomerArName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) |
-                or.InvoiceType.ToString().ToLower().StartsWith(input.SearchingTerm.ToLower()) 
+                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
+                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower())
             // full date-time or includes hour
             );
 
@@ -387,7 +389,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     {
 
        var query=await _invoiceRepository.GetQueryableAsync();
-       query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid);
+       query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid&&x.InvoicePrice>0);
        query= query.OrderByDescending(x=>x.CreationTime);
        var invoice =await query.FirstOrDefaultAsync();
         if (invoice == null)

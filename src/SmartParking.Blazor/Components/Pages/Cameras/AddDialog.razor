@@ -33,6 +33,7 @@
                         <MudTextField @bind-Value="cameraDto.UserName"
                                       Immediate="true"
                                       Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                       Placeholder="@L["UserName"]"
                                       Label="@L["UserName"]" />
                     </MudItem>
@@ -40,6 +41,7 @@
                         <MudTextField @bind-Value="cameraDto.Password"
                                       Immediate="true"
                                       Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                       Placeholder="@L["Password"]"
                                       Label="@L["Password"]" />
                     </MudItem>

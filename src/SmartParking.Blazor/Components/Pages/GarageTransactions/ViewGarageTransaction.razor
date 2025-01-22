@@ -194,6 +194,8 @@
 	private async void Checkout(){
 
 		var result = await GarageTransactionAppService.CustomerCheckoutFromKeeperMobile(GarageTransaction.Id);
+		await GarageTransactionAppService.PayInvoiceFromWeb(result.Value);
+
 		if(result.IsSuccess){
 			SnackBar.ShowSnackbar(Snackbar, $"{L["Done"]} , {L["Submit"]} {L["Invoice"]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
 			await Task.Delay(1000);

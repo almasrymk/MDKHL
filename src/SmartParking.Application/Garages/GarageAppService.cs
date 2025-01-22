@@ -153,6 +153,12 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             organization.ActiveGarages++;
         }
     }
+
+    private void UpdateOrganizationUsageDelete(Organization organization, int maxcapacity)
+    {
+        organization.UsedSlots -= maxcapacity;
+       
+    }
     [RemoteService(isEnabled: false)]
 
     /// <summary>
@@ -199,6 +205,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         using (DataFilter.Disable<IMultiTenant>())
         {
             organization = await GetAndValidateOrganizationAsync(input.OrganizationId);
+            var subscription = await CheckSubscriptionLimitsAsync(organization, input);
             garage = await GetAndValidateGarageAsync(id);
             input.TenantId = organization.TenantId;
             CheckSolt(input, organization);
@@ -537,18 +544,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task DeleteAsync(int id)
     {
-        
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+
+        if (!CurrentTenant.Id.HasValue)
         {
 
             using (DataFilter.Disable<IMultiTenant>())
             {
 				Garage garage;
-				using (DataFilter.Disable<IMultiTenant>())
-				{
+				
 					garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
-
-				}
 
 				if (garage == null)
 				{
@@ -565,7 +569,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 					throw new Exception("Can't Delete an deleted Garage");
 
 				}
-                
+                UpdateOrganizationUsageDelete(org,garage.MaxCapacity);
                 await _repository.HardDeleteAsync(garage);
             }
 

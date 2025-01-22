@@ -416,7 +416,7 @@ public class CamerasAppService :
         var camera = await _repository.FindAsync(cameraId);
         if (camera == null)
         {
-            throw new EntityNotFoundException(typeof(Camera),cameraId);
+            throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " "+LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         return ObjectMapper.Map<Camera, CameraDto>(camera);
     }

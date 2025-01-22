@@ -10,6 +10,7 @@ using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
@@ -248,7 +249,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return result;
         }
     }
-    private async Task<bool> FreeSlots(Garage garage, CustomerCategoryStatus customer)
+    private async Task<bool> FreeSlots(Garage garage, CustomerCategoryStatus? customer)
     {
         bool flag = false;
         if (customer == CustomerCategoryStatus.Customer||customer==null)
@@ -430,7 +431,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
         var result = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
         Customer exsitCustomer = result.Item1;
-        CustomerPackageDto packageDto= result.Item2;
+        CustomerPackageDto ? packageDto= result.Item2;
 
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);
         if (CheckIfLoggedOutFromMobile)
@@ -443,7 +444,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
             var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, invoice.Value.InvoiceTime, organization.Graceperiod);
-            FreeSlots(garage, packageDto.CustomerCategory);
+           await FreeSlots(garage, packageDto is null ? null : packageDto.CustomerCategory);
             if (!PassGraceTime)
             {
 
@@ -832,10 +833,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             throw new Exception("Transaction Already Checked-Out");
         }
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
-        invoice.Value.InvoiceType = InvoiceType.Paid;
         await UpdateEntryTransactionCheckouFromMobile(result.Item2);
-        
-        return await SaveTransactionWithInvoice(invoice, result.Item1);
+        var newinvoice = await SaveTransactionWithInvoice(invoice, result.Item1);
+        return newinvoice;
 
     }
 
@@ -845,6 +845,20 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         entryGarageTransaction.IsPending = true;
         await _garageTransactionRepoistory.UpdateAsync(entryGarageTransaction,true);
 
+    }
+
+    public async Task<PaymentCheckoutDto> PayInvoiceFromWeb(InvoiceDto invoice)
+    {
+        var paymentChekout = new PaymentCheckoutRequestDto
+        {
+            OrganizationId = invoice.OrganizationId,
+            PaymentCategory = invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
+            InvoiceId = invoice.Id,
+            PaymentMethod = PaymentMethod.Cash,
+            Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+            CustomerId = invoice.CustomerId
+        };
+        return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
     }
 
     public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId)

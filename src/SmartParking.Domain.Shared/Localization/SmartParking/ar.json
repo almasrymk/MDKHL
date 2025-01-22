@@ -442,7 +442,7 @@
     "ParkingSlots": "عدد أماكن الوقوف",
     "Employees": "الموظفين",
     "Details for Employee": "تفاصيل للموظف",
-    "CameraName": "إسم بالعربية",
+    "CameraName": "إسم الكاميرا",
     "Total Garage Can be added": "عدد المواقف المتاح تفعيلها",
     "ActiveGarages": "عدد المواقف المفعلة",
     "SumOfParkingSlotsOfActiveGarage": "مجموع أماكن الركن للمواقف المفعلة",
@@ -638,7 +638,8 @@
     "OTPIncorrect": "رمز التحقق  غير صحيح",
     "NotMatchValidation": "غير متطابقين",
     "PasswordValidation": "يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل، وتحتوي على أحرف كبيرة وصغيرة وأحرف خاصة!",
-    "CameraAccessData": "بيانات الوصول للكاميرا"
+    "CameraAccessData": "بيانات الوصول للكاميرا",
+    "Transaction": "حركة"
 
 
 
