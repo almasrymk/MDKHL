@@ -19,7 +19,7 @@
 @inject NavigationManager Navigation
 @inject ICurrentUser currentUser
 @inject ICurrentTenant currentTenant
-@attribute [Authorize(GaragePermissions.Default)]
+@* @attribute [Authorize(GaragePermissions.Default)] *@
 @inherits AbpCrudPageBase<IGarageAppService, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>
 <PageTitle>@L["Garages"]</PageTitle>
 <div class="d-flex flex-row justify-content-between">
