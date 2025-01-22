@@ -347,6 +347,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         {
             var query = await _invoiceRepository.GetQueryableAsync();
             query=query.Where(inv=>inv.PlateNumber == PlateNumber && inv.GarageId==GarageId && inv.OrganizationId == OrganizationId);
+            query=query.OrderByDescending(inv=>inv.InvoiceTime);
             var invoice = await AsyncExecuter.FirstOrDefaultAsync(query);
             var invoiceDto = ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
             return Result.Success(invoiceDto);
