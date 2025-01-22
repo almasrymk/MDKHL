@@ -9,9 +9,9 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-
+@inject IAuthorizationService AuthorizationService
 @page "/garagetransactions"
-@attribute [Authorize(GarageTransactionPermissions.Default)]
+@* @attribute [Authorize(GarageTransactionPermissions.Default)] *@
 <PageTitle>@L["GarageTransactions"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["GarageTransactions"]</MudText>
 
