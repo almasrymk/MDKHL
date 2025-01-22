@@ -8,6 +8,7 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactionEndPoints;
+using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using System;
 using System.Net.Http;
@@ -28,13 +29,17 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     private string zatcaLogin = "https://zatca.mazeedit.com/api/Auth/Login";
     private string openGate = "http://ibrahimia.mazeedit.com/Barrierer/Open";
     private readonly ILogger<InvoiceUtilityAppService> _logger;
+    private readonly IGarageTransactionsAppService GarageTransactionAppService;
+    private readonly ICamerasAppService CameraAppService;
 
-    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger)
+    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger, IGarageTransactionsAppService garageTransactionAppService, ICamerasAppService cameraAppService)
     {
         _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
         _invoiceRepository = invoiceRepository;
         _logger = logger;
+        GarageTransactionAppService = garageTransactionAppService;
+        CameraAppService = cameraAppService;
     }
 
     public async Task<QRCodeDto> GetQrCodeAsync(string? token, int? invoiceId)
@@ -117,5 +122,20 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         _logger.LogDebug($"Open Gate Response body => {response.Headers.ToJsonString()}");
         return response.IsSuccessStatusCode;
 
+    }
+
+    public async Task<bool> SendRequestToOpenGate(int ExitGarageTransactionId)
+    {
+
+        var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(ExitGarageTransactionId);
+        var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
+        var openGateBody = new OpenGateRequestDto
+        {
+            ip = camera.CameraIP,
+            port = 80,
+            username = camera.UserName ?? "",
+            password = camera.Password ?? ""
+        };
+        return await OpenGate(openGateBody);
     }
 }
