@@ -44,6 +44,16 @@ partial class Roles
         ManagePermissionsPolicyName = IdentityPermissions.Roles.ManagePermissions;
 
     }
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+    }
     protected override async Task SetPermissionsAsync()
     {
         await base.SetPermissionsAsync();
