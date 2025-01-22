@@ -281,7 +281,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query,CustomerCategoryStatus? customerCategory)
     {
-        
+
         List<CustomerDto> customersDtos = await query
             .Select(c => new CustomerDto
             {
@@ -291,11 +291,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Email = c.IdentityUser.Email,
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
-                PackageEnglishNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue|| _.CustomerCategory == customerCategory)
+                PackageEnglishNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue || _.CustomerCategory == customerCategory)
                                                     .Select(cp => cp.PackageEnglishName)),
-               
+
                 PackageArabicNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue || _.CustomerCategory == customerCategory)
-                                                    .Select(cp => cp.PackageArabicName))
+                                                    .Select(cp => cp.PackageArabicName)),
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId !=null)
+                                                    .Select(cp => cp.Organization.ArabicName).Distinct()), 
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId !=null)
+                                                    .Select(cp => cp.Organization.EnglishName).Distinct()),
             })
             .ToListAsync();
       
