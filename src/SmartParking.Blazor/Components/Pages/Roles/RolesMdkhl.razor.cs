@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Authentication;
@@ -35,6 +36,14 @@ public partial class RolesMdkhl
         DeletePolicyName = IdentityPermissions.Roles.Delete;
         ManagePermissionsPolicyName = IdentityPermissions.Roles.ManagePermissions;
 
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
     }
     protected override async Task SetPermissionsAsync()
     {
