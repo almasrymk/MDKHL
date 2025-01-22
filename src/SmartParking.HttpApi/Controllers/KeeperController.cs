@@ -7,6 +7,7 @@ using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -29,7 +30,8 @@ public class KeeperController : AbpController
     private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService)
+    private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, IInvoiceUtilityAppService invoiceUtilityAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -38,6 +40,7 @@ public class KeeperController : AbpController
         _invoiceAppService = invoiceAppService;
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _usersAppService = usersAppService;
+        _invoiceUtilityAppService = invoiceUtilityAppService;
     }
 
     [HttpPost("login")]
@@ -122,7 +125,9 @@ public class KeeperController : AbpController
     [Authorize]
     public async Task<Result<InvoiceDto>> PayInvoice(int InvoiceId)
     {
-        return await _keeperAppService.CheckoutAsync(InvoiceId);
+        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId);
+        var openGate=await _invoiceUtilityAppService.SendRequestToOpenGate(invoice.Value.GarageTransactionExitId);
+        return invoice;
     }
 
     [HttpGet("GetUnpaidInvoicesForPlateNumber")]
