@@ -227,6 +227,17 @@
 
     int totalOfParking;
     int totalEmptyOfParking;
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Save the authentication state ID to local storage
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authentication-state-id", CurrentUser.Id);
+        }
+
+        // You can call the base method if needed (but it's optional)
+         await base.OnAfterRenderAsync(firstRender);
+    }
     protected async override Task OnInitializedAsync()
     {
 

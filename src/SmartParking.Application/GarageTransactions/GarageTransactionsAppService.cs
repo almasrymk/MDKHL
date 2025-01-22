@@ -133,7 +133,9 @@ public class GarageTransactionsAppService :
 
                 queryable = queryable.OrderBy(input.Sorting);
             }
+           
         }
+        queryable = queryable.OrderByDescending(x => x.Id);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -183,6 +185,8 @@ public class GarageTransactionsAppService :
                     queryable = queryable.OrderBy(input.Sorting);
                 }
             }
+            queryable = queryable.OrderByDescending(x => x.Id);
+
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -291,7 +295,7 @@ public class GarageTransactionsAppService :
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
-        input.VehiclePicture = SaveBase64Image(input) ?? "";
+        input.VehiclePicture = SaveBase64Image(input) ?? input.VehiclePicture;
         var result = await base.CreateAsync(input);
 
         return result;

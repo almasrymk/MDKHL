@@ -10,7 +10,8 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-@attribute [Authorize(UnLinkedTransactionPermission.Default)]
+@inject IAuthorizationService AuthorizationService
+@* @attribute [Authorize(UnLinkedTransactionPermission.Default)] *@
 
 
 <PageTitle>@L["UnLinkedTransaction"]</PageTitle>

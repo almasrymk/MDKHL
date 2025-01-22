@@ -7,6 +7,7 @@ using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Entities;
 using SmartParking.Localization;
+using SmartParking.Permissions.GaragePermissions;
 using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
@@ -45,10 +46,14 @@ public partial class User
 
     }
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Default))
+        {
 
-        return base.OnInitializedAsync();
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+         await base.OnInitializedAsync();
     }
     /// <summary>
     /// filter for users on the server side using the user columns.
