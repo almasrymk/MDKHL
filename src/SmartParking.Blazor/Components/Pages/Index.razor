@@ -265,6 +265,7 @@
         }
         else
         {
+            
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await GetNumberOfParkingAndEmptyAsync(organization.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
