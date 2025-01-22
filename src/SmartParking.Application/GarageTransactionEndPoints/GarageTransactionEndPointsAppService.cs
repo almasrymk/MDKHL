@@ -472,6 +472,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (totalHours == 0)
         {
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+            _logger.LogInformation($"{DateTime.Now} ====> Close Entry : {GarageTransaction.PlateNumber}");
+
+            await CloseEntryTransaction(GarageTransaction.PlateNumber);
             _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer}");
 
             _logger.LogInformation($"{DateTime.Now} ====> Get Response true | In Free minutes period");
