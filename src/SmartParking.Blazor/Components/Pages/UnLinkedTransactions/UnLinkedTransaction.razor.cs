@@ -14,6 +14,9 @@ using SmartParking.Subscriptions;
 using SmartParking.Blazor.Components.SPComponents;
 using System.Security.Authentication;
 using Volo.Abp;
+using System.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.UnLinkedTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.UnLinkedTransactions;
 
@@ -38,6 +41,16 @@ public partial class UnLinkedTransaction
     public UnLinkedTransaction(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(UnLinkedTransactionPermission.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
     }
 
     /// <summary>
