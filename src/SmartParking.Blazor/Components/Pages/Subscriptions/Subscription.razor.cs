@@ -18,6 +18,8 @@ using System.Globalization;
 using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Permissions.SubsctriptionPermissions;
 using SmartParking.Blazor.Components.Shared;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -40,6 +42,14 @@ public partial class Subscription
         CreatePolicyName = SubscriptionPermissions.Create;
         UpdatePolicyName = SubscriptionPermissions.Edit;
         DeletePolicyName = SubscriptionPermissions.Delete;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(SubscriptionPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
     }
 
     /// <summary>

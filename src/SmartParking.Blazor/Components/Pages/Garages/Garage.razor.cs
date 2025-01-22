@@ -1,4 +1,7 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
@@ -21,10 +24,9 @@ using Volo.Abp.Application.Dtos;
 
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
-
 public partial class Garage
 {
-
+    //[Inject] public IAuthorizationService AuthorizationService { get; set; }
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -59,6 +61,11 @@ public partial class Garage
 
     protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(GaragePermissions.Default))
+        {
+            
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
         if (currentTenant.Id != null)
         {
             ViewAssign = false;
@@ -72,8 +79,6 @@ public partial class Garage
             ActiveGarages = result.Item2;
             SumOfAllMaximumCapacityforActiveGarages = result.Item1;
 		}
-		await base.OnInitializedAsync();
-
 	}
 
 

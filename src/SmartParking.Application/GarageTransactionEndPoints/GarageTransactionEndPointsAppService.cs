@@ -459,7 +459,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 _logger.LogTrace($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");
 
                 var newInvoice= await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction, CustomerCategoryStatus.Customer);
-                newInvoice.EntranceTime = invoice.Value.InvoiceTime;
+                newInvoice.EntranceTime = invoice.Value.InvoiceTime.Value;
+                newInvoice.EntryTransactionImage = invoice.Value.EntryTransactionImage;
                 var resultedInvoice= await SaveTransactionWithInvoice(newInvoice, GarageTransaction);
 
                 return await Task.FromResult(false);

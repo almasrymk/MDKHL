@@ -495,9 +495,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
         {
             await CustomerToUser(user);
         }
-        if (user.Roles.Count > 0)
+        if (input.RoleId == Guid.Empty)
+            throw new Exception(LocalizationHelper.GetLocalizedString("Role")+" "+
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        
+        foreach (var item in user.Roles)
         {
-            user.RemoveRole(user.Roles.First().RoleId);
+            if(item.TenantId == CurrentTenant.Id)
+                user.RemoveRole(item.RoleId);
         }
         user.AddRole(input.RoleId);
     }

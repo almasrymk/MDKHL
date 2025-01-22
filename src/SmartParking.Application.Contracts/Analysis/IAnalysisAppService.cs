@@ -68,4 +68,5 @@ public interface IAnalysisAppService : IApplicationService
     /// <returns> count of customers and visitors and employees</returns>
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
+    Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
 }

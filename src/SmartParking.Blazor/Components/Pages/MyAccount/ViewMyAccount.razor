@@ -29,7 +29,7 @@
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
 
-@attribute [Authorize(MyAccountPermissions.Default)]
+@* @attribute [Authorize(MyAccountPermissions.Default)] *@
 @inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
 <PageTitle>@L["ViewMyAccount"]</PageTitle>
 <div>
