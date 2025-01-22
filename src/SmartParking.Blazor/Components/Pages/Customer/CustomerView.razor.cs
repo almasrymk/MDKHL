@@ -20,6 +20,8 @@ using SmartParking.Enums;
 using Blazorise;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.CustomerPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -32,6 +34,10 @@ public partial class CustomerView
     public Guid IdentityUserId { get; set; }
     protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
         await Fetch();
 
         

@@ -15,8 +15,6 @@
 @inherits AbpCrudPageBase<ICustomerAppService, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>
 @inject IAuthorizationService AuthorizationService
 @inject IOrganizationsAppService OrganizationAppService
-
-@attribute [Authorize]
 <PageTitle>@L["Customers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
 
