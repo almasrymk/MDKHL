@@ -141,7 +141,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             catch (Exception ex)
             {
                 await CreateUnLinkedTransaction(input);
-                _logger.LogDebug($"{DateTime.Now} ====> Get Response false | {ex.Message}");
+                _logger.LogInformation($"{DateTime.Now} ====> Get Response false | {ex.Message}");
                 return await Task.FromResult(false);
             }
         }
@@ -442,13 +442,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             var invoice = await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(GarageTransaction.PlateNumber, organizationId, GarageTransaction.GarageId);
             await CloseCheckoutMobileTransaction(GarageTransaction.PlateNumber);
 
-            _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
+            _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer}");
             var PassGraceTime = await CheckIfPassGraceTime(GarageTransaction.AccurateTime.Value, invoice.Value.InvoiceTime, organization.Graceperiod);
            await FreeSlots(garage, packageDto is null ? null : packageDto.CustomerCategory);
             if (!PassGraceTime)
             {
 
-                _logger.LogTrace($"{DateTime.Now} ====> Get Response true | In Grace period ");
+                _logger.LogInformation($"{DateTime.Now} ====> Get Response true | In Grace period ");
                 var garageTransaction = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 return await Task.FromResult(true);
             }
@@ -456,7 +456,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             {
                 int Hours = (int)(GarageTransaction.AccurateTime.Value - invoice.Value.InvoiceTime.Value).Hours + (GarageTransaction.AccurateTime.Value-invoice.Value.InvoiceTime.Value ).Minutes > 0 ? 1 : 0;
 
-                _logger.LogTrace($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");
+                _logger.LogInformation($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");
 
                 var newInvoice= await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, Hours, exsitCustomer, GarageTransaction, CustomerCategoryStatus.Customer);
                 newInvoice.EntranceTime = invoice.Value.InvoiceTime.Value;
@@ -472,9 +472,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (totalHours == 0)
         {
             var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-            _logger.LogTrace($"{DateTime.Now} ====> Customer ID : {customer}");
+            _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer}");
 
-            _logger.LogTrace($"{DateTime.Now} ====> Get Response true | In Free minutes period");
+            _logger.LogInformation($"{DateTime.Now} ====> Get Response true | In Free minutes period");
             return await Task.FromResult(true);
         }
 
@@ -516,21 +516,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         await CloseEntryTransaction(GarageTransaction.PlateNumber);
         await CurrentUnitOfWork.SaveChangesAsync();
-        _logger.LogTrace($"{DateTime.Now} ====> Get Response {flag}");
+        _logger.LogInformation($"{DateTime.Now} ====> Get Response {flag}");
 
         switch (flag, MustPay, EmptyPlateNumber)
         {
             case (false, true, _):
-                _logger.LogTrace("| Not Customer");
+                _logger.LogInformation("| Not Customer");
                 break;
             case (false, _, false):
-                _logger.LogTrace("| Plate Number Is Empty");
+                _logger.LogInformation("| Plate Number Is Empty");
                 break;
             case (false, _, _):
-                _logger.LogTrace("| Enter and Leave outside package time");
+                _logger.LogInformation("| Enter and Leave outside package time");
                 break;
             case (true, _, _):
-                _logger.LogTrace("| Enter and Leave in package time");
+                _logger.LogInformation("| Enter and Leave in package time");
                 break;
         }
 
