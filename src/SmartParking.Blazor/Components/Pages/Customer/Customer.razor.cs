@@ -19,6 +19,9 @@ using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Blazor.Components.Pages.User;
 using SmartParking.Blazor.Components.SPComponents;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -47,15 +50,19 @@ public partial class Customer
         DeletePolicyName = CustomerPermissions.Delete;
     }
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
         if (currrentTenant.Id is null)
         {
             assign = false;
             ViewAdd = false;
 
         }
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
     /// <summary>

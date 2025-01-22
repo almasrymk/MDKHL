@@ -15,6 +15,8 @@ using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.CustomerPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -27,6 +29,10 @@ public partial class UpdateCustomerDialog
     public Guid IdentityUserId { get; set; }
     protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Edit))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
         await Fetch();
 
         Picture = await UsersAppService.GetImage(IdentityUserId) ?? "images/users/149071.png";

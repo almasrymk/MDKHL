@@ -164,17 +164,21 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync()
     {
-        DateTime now = DateTime.Now;
-        DateTime oneWeekAgo = now.AddDays(-7);
-        var query = await _paymentRepository.GetQueryableAsync();
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            DateTime now = DateTime.Now;
+            DateTime oneWeekAgo = now.AddDays(-7);
+            var query = await _paymentRepository.GetQueryableAsync();
 
-        var paymentsInLastWeek = await GetPaymentsInLastWeek(query, oneWeekAgo);
-        var allDays = GetAllDays(oneWeekAgo);
-        var culture = GetCultureInfo();
+            var paymentsInLastWeek = await GetPaymentsInLastWeek(query, oneWeekAgo);
+            var allDays = GetAllDays(oneWeekAgo);
+            var culture = GetCultureInfo();
 
-        var finalResult = AggregatePaymentsByDay(allDays, paymentsInLastWeek, culture);
+            var finalResult = AggregatePaymentsByDay(allDays, paymentsInLastWeek, culture);
 
-        return PrepareResult(finalResult, culture);
+            return PrepareResult(finalResult, culture);
+        }
+        
     }
     
     public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId)
@@ -267,12 +271,25 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync()
     {
-        
-        var query = await _paymentRepository.GetQueryableAsync();
         using (DataFilter.Disable<IMultiTenant>())
         {
-            return await GetCollectMoneyToday(query);
+            var query = await _paymentRepository.GetQueryableAsync();
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                return await GetCollectMoneyToday(query);
+            }
         }
+        
+    }    
+    public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync()
+    {
+        
+            var query = await _paymentRepository.GetQueryableAsync();
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                return await GetCollectMoneyToday(query);
+            }
+        
     }
 
     private async Task<(string? Day, double? totalAmounts)> GetCollectMoneyToday(IQueryable<Payment> query)

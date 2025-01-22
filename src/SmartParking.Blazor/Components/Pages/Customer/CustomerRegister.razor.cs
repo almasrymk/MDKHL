@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
@@ -13,6 +14,7 @@ using SmartParking.Lookups.VehicleModel;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Validations;
 using SmartParking.Vehicles;
 using SmartParking.Vehicles.LookUps;
@@ -60,7 +62,11 @@ public partial class CustomerRegister
             
     }
     protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Create))
         {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items.ToList();
         if (CurrentTenant.Id is not null)
