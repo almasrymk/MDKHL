@@ -17,6 +17,8 @@ using Volo.Abp;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.ContactPermissions;
 using SmartParking.Blazor.Components.Shared;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.CameraPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -39,6 +41,17 @@ public partial class ContactData
         UpdatePolicyName = ContactPermissions.Edit;
         DeletePolicyName = ContactPermissions.Delete;
 
+
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(ContactPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
 
     }
     /// <summary>
