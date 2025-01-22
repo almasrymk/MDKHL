@@ -210,7 +210,7 @@
     private int grid;
     private int totalGrid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
-    double[] data= { 20,77,100,20};
+    double[] data= { 0,0,0,0};
 
     string[] labels = { "Customers", "Employees" , "Visitors","NoPackage"};
     string msg;
@@ -269,7 +269,7 @@
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             await GetNumberOfParkingAndEmptyAsync(organization.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
-            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees,null);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
             totalGrid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
