@@ -87,8 +87,8 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     private async Task<JObject> CreateRequest(string path, object qR)
     {
         var contentQR = new StringContent(JsonConvert.SerializeObject(qR), Encoding.UTF8, "application/json");
-        _logger.LogDebug($"{DateTime.Now} ====> path | {path}");
-        _logger.LogDebug($"{DateTime.Now} ====> body | {contentQR.ToJsonString()}");
+        _logger.LogInformation($"{DateTime.Now} ====> path | {path}");
+        _logger.LogInformation($"{DateTime.Now} ====> body | {contentQR.ToJsonString()}");
 
         HttpResponseMessage responseQR = await _httpClient.PostAsync(path, contentQR);
 
@@ -116,10 +116,10 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     public async Task<bool> OpenGate(OpenGateRequestDto camera) {
   
         var content = new StringContent(camera.ToJsonString(), Encoding.UTF8, "application/json");
-        _logger.LogDebug($"Open Gate Request body => {camera.ToJsonString()}");
-        _logger.LogDebug($"Open Gate Request Header => {content.Headers.ToJsonString()}");
+        _logger.LogInformation($"Open Gate Request body => {camera.ToJsonString()}");
+        _logger.LogInformation($"Open Gate Request Header => {content.Headers.ToJsonString()}");
         var response = await _httpClient.PostAsync(openGate, content);
-        _logger.LogDebug($"Open Gate Response body => {response.Headers.ToJsonString()}");
+        _logger.LogInformation($"Open Gate Response body => {response.Headers.ToJsonString()}");
         return response.IsSuccessStatusCode;
 
     }
