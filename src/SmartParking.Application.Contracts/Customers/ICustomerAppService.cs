@@ -46,7 +46,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <returns>Paged Result of Customers</returns>
     Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input);
 
-    Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
 	/// <summary>
 	/// Method used to get customer by id 
 	/// </summary>
@@ -110,7 +110,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 
     Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input);
 
-    Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId);
-    Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId);
+    Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId, Guid? tenantId);
+    Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId, Guid? tenantId);
 
 }
