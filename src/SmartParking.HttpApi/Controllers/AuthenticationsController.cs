@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.Results;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
@@ -62,6 +63,14 @@ public class AuthenticationsController : ControllerBase
     {
        
         return await _authenticationApp.UpdateUser(phone,password);
+    }
+    [HttpPost("update/profile")]
+    [Authorize]
+    public async Task<Result<UserDataDto>> UpdateUserMobile(UserDataDto input)
+    {
+
+        return await _usersAppService.UpdateProfileDataMobileAsync(_user.Id, input);
+
     }
     [HttpPost("addprofileimage")]
     [Authorize]
