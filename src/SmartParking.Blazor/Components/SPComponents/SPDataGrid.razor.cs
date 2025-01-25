@@ -25,6 +25,7 @@ namespace SmartParking.Blazor.Components.SPComponents;
 
 public partial class SPDataGrid
 {
+    [Parameter] public List<MudMenuData> Menus { get; set; } = new List<MudMenuData>();
     [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
      public IList<RowDef> Rows { get; set; } = new List<RowDef>();
@@ -68,7 +69,8 @@ public partial class SPDataGrid
 
     private bool IsNot = false;
     private bool IsClickMenu = false;
-    private string ValueOfMenue= "All";
+    private string ValueOfMenue { get; set; }="All";
+    private Func<string, Task>? ActionMenue;
     public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
@@ -192,7 +194,6 @@ public partial class SPDataGrid
         var sorting = $"{sort} {sortDirection}";
 
         sortString = sorting;
-        Console.WriteLine(sortString);
         await dataGrid.ReloadServerData();
     }
     private async Task<GridData<RowDef>> ServerReload(GridState<RowDef> state)
@@ -205,7 +206,9 @@ public partial class SPDataGrid
             SearchTerm = _searchString,
             Filters = ColumnsFilter
         };
-        await OnPageChanged.InvokeAsync(pageArgs);
+     
+            await OnPageChanged.InvokeAsync(pageArgs);
+        
         if (!_searchString.IsNullOrEmpty())
         {
             await OnSearching.InvokeAsync(pageArgs);
@@ -296,12 +299,13 @@ public partial class SPDataGrid
        
        
     }
-   
-    public async Task HandleMunue(string value)
+
+    public async Task HandleMunue(string value, EventCallback<string> action)
     {
+        HandleCategory = action;
         IsClickMenu = true;
         ValueOfMenue = value;
-        await HandleCategory.InvokeAsync(value);
+       await action.InvokeAsync(value);
         await dataGrid.ReloadServerData();
     }
 }

@@ -18,5 +18,5 @@
 <PageTitle>@L["Customers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
 
-<SPDataGrid PageName=@L["Customers"] HandleCategory="HandleSelectAsync" ShowMenue="true" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" ShowAssign=" AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.AddRoleToCustomer).Result" OnClickAssign="AssignRole" OnClickRowView="ViewCustomer"></SPDataGrid>
+<SPDataGrid PageName=@L["Customers"] Menus="@MenuDatas" ShowMenue="true" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" ShowAssign=" AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.AddRoleToCustomer).Result" OnClickAssign="AssignRole" OnClickRowView="ViewCustomer"></SPDataGrid>
 
