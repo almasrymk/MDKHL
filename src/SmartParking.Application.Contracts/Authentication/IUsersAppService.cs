@@ -1,6 +1,7 @@
 ﻿
 
 using SmartParking.Entities;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -76,6 +77,7 @@ public interface IUsersAppService:  IApplicationService
     Task<UserDto> UpdateUserWithRoleChangeAsync(Guid? id, UpdateUserDto input);
     Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input);
     Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input);
+    Task<Result<UserDataDto>> UpdateProfileDataMobileAsync(Guid? id, UserDataDto input);
 
     Task<UserDto> GetAsync(Guid? id);
 

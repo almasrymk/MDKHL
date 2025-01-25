@@ -193,7 +193,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 	}
 	/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input)
+	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -201,6 +201,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var query = await _repository.GetQueryableAsync();
 
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = CheckTenant(tenantId, query);
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
@@ -216,8 +217,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 
     }
+
+    private static IQueryable<Customer> CheckTenant(Guid? tenantId, IQueryable<Customer> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(x => x.CustomerPackages.Any(org => org.TenantId == tenantId.Value));
+        return query;
+    }
+
     [RemoteService(false)]
-    public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input,int? organizationId)
+    public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input,int? organizationId,Guid? tenantId)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -226,6 +235,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             query = query.Where(x => !x.CustomerPackages.Any());
+            query = CheckTenant(tenantId, query);
             query = IsOrganization(organizationId, query);
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
@@ -253,7 +263,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return query;
     }
     [RemoteService(false)]
-    public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input,CustomerCategoryStatus customerCategory,int? organizationId)
+    public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input,CustomerCategoryStatus customerCategory,int? organizationId,Guid? tenantId)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -262,6 +272,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             query = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == customerCategory));
+            query = CheckTenant(tenantId, query);
             query = IsOrganization(organizationId, query);
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
