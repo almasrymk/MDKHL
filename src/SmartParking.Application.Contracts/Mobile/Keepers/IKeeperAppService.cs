@@ -60,7 +60,7 @@ public interface IKeeperAppService
 
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 
-    Task<Result<InvoiceDto>> CheckoutAsync(int invoiceId);
+    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId);
     Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType);
 
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
