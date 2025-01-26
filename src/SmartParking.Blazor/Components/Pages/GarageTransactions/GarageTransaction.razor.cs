@@ -11,22 +11,28 @@ using SmartParking.Entities.GarageTransactions;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.GarageTransactionPermissions;
+using Microsoft.AspNetCore.Components;
+using System.Globalization;
+using SmartParking.Cameras;
 
 namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 {
 	public partial class GarageTransaction
 	{
 		private List<GarageTransactionDto> garageTransactions = new List<GarageTransactionDto>();
+        private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+        public Guid? TenantId { get; private set; }
+        private string sortColumn;
+        private string ValueOfMenue = "";
+        private TableData itemData = new TableData();
 
-
-		private int currentPage = 1;
+        private int currentPage = 1;
 		private int pageSize = 100;
 
 		private int TotalItem;
 		public int CurrentPage { get; set; } = 1; // Default current page value is 10
 		public int RowPerPage { get; set; } = 10; // Default value is 10
 
-		private TableData itemData = new TableData();
 
 		private string termSearch;
 
@@ -45,6 +51,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
                 Navigation.NavigateTo("/Account/AccessDenied", true);
             }
+            await CreateMenue();
             await base.OnInitializedAsync();
 
         }
@@ -60,7 +67,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 			// Create a new search input object with pagination, sorting, and search term parameters
 			var input = new PagedAndSortedAndFilteredResultRequestDto
-			{
+            {
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
 				Sorting = pageInfo.SortColumn,
@@ -75,7 +82,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 				// Calculate the total number of pages required to display all results
 				TotalItem = (int)garageTransactionDto.TotalCount;
-				CreateTable(garageTransactionDto);
+				await CreateTable(garageTransactionDto);
 			}
 			else
 			{
@@ -85,7 +92,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
                 // Calculate the total number of pages required to display all results
                 TotalItem = (int)garageTransactionDto.TotalCount;
-                CreateTable(garageTransactionDto);
+                await CreateTable(garageTransactionDto);
             }
 
 
@@ -119,7 +126,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 				// Calculate the total number of pages required to display all results
 				TotalItem = (int)garageTransactionsDto.TotalCount;
-				CreateTable(garageTransactionsDto);
+				await CreateTable(garageTransactionsDto);
 			}
 			else
 			{
@@ -129,7 +136,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
                 // Calculate the total number of pages required to display all results
                 TotalItem = (int)garageTransactionsDto.TotalCount;
-                CreateTable(garageTransactionsDto);
+                await CreateTable(garageTransactionsDto);
             }
 		}
 		/// <summary>
@@ -139,7 +146,11 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		private async Task FetchTableData(PageChangeEventArgs pageInfo)
 		{
-			string sort ;
+            termSearch = pageInfo.SearchTerm;
+            CurrentPage = pageInfo.PageNumber;
+            RowPerPage = pageInfo.RowsPerPage;
+            sortColumn = pageInfo.SortColumn;
+            string sort ;
 			if (pageInfo.SortColumn == "Id")
 				sort = "AccurateTime DESC";
 			else
@@ -148,18 +159,20 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
             CurrentPage = pageInfo.PageNumber;
 			RowPerPage = pageInfo.RowsPerPage;
 			// Create a request object for paged and sorted data
-			var input = new PagedAndSortedResultRequestDto
+			var input = new PagedAndSortedAndSearchResultRequestDto
 			{
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-				Sorting = sort
+				Sorting = sort,
+				SearchingTerm= pageInfo.SearchTerm
+				
             };
 			if(CurrentTenant.Id == null)
 			{
 				// Retrieve the list of organizations from the server
-				var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input);
+				var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input,null);
 				TotalItem = (int)garageTransactionsDto.TotalCount;
-				CreateTable(garageTransactionsDto);
+				await CreateTable(garageTransactionsDto);
 			}
 
 			else
@@ -167,11 +180,58 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				var tenantId = CurrentTenant.Id;	
 				var garageTransactionDto = await GarageTransactionsAppService.GetAllTransactionsByOrganizationAsync(input,tenantId);
 				TotalItem = (int)garageTransactionDto.TotalCount;
-				CreateTable(garageTransactionDto);
+				await CreateTable(garageTransactionDto);
 			}
 		}
+        public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+        {
+            TenantId = tenantId;
+            ValueOfMenue = selectedValue;
+            var request = new PagedAndSortedAndSearchResultRequestDto
+            {
+                MaxResultCount = RowPerPage,
+                SkipCount = (CurrentPage - 1) * RowPerPage,
+                Sorting = sortColumn,
+                SearchingTerm = termSearch
+            };
 
-		private void CreateTable(PagedResultDto<GarageTransactionDto> garageTransactions)
+            PagedResultDto<GarageTransactionDto> garageTransactionDto = await GarageTransactionsAppService.GetListAsync(request, TenantId);
+
+            TotalItem = (int)garageTransactionDto.TotalCount;
+            await CreateTable(garageTransactionDto);
+        }
+        private async Task CreateMenue()
+        {
+            var itemsOrganizations = new List<MenuItem>();
+            var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+            itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                foreach (var org in organizations.Items)
+                {
+                    itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+                }
+            }
+            else
+            {
+                foreach (var org in organizations.Items)
+                {
+                    itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+                }
+            }
+
+            MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = "Organization",
+            Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+        }
+
+        private async Task CreateTable(PagedResultDto<GarageTransactionDto> garageTransactions)
 		{
 			// Initialize table data to be displayed, setting the table's name and whether to show the header
 			var tableData = new TableData()
@@ -206,9 +266,10 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                 tableData.Rows.Add(rowDef);
 			}
 			itemData = tableData;
-		}
+            await Task.Yield();
+        }
 
-		private Task CreateGarageTransaction(DialogOptions options)//Add 
+        private Task CreateGarageTransaction(DialogOptions options)//Add 
 		{
             ShowSnackbar("Not Working", Severity.Warning);
 
