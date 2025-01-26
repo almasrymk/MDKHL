@@ -42,7 +42,7 @@ namespace SmartParking.GarageTransactions
         /// </summary>
         /// <param name="input">Input used for pagination</param>
         /// <returns>Paged Result of garage transactions</returns>
-        Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+        Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
 		/// <summary>
 		/// Method used to get all garage transactions by organization

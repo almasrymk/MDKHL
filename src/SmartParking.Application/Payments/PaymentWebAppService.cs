@@ -39,7 +39,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         _organizationsAppService = organizationsAppService;
     }
 
-    public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -47,19 +47,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             query = query.OrderByDescending(x => x.CreationTime);
             query = query.Include(x => x.Customers).ThenInclude(c => c.IdentityUser);
             query = query.Include(x => x.Invoice);
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
-
-            }
+            query = ApplyFilterTenant(tenantId, query);
+            query = ApplySearch(input, query);
+            query = ApplySort(input, query);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
@@ -73,9 +63,34 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
         }
     }
-    
 
-    public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedResultRequestDto input)
+    private static IQueryable<Payment> ApplyFilterTenant(Guid? tenantId, IQueryable<Payment> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(x => x.TenantId == tenantId);
+        return query;
+    }
+
+    private static IQueryable<Payment> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<Payment> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return query;
+    }
+
+    public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -85,19 +100,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             query=query.OrderByDescending(x=>x.CreationTime);
             query = query.Include(x => x.Customers).ThenInclude(c=>c.IdentityUser);
             query = query.Include(x => x.Invoice);
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
-
-            }
+            query = ApplySearch(input, query);
+            query = ApplySort(input, query);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
@@ -177,27 +181,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var queryable = await _paymentRepository.GetQueryableAsync();
 
             // Apply search filtering
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-
-
-                queryable = queryable.Where(or =>
-                    or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
-                    or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
-
-                    
-                // full date-time or includes hour
-                );
-
-            }
+            queryable = ApplySearch(input, queryable);
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -211,7 +195,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 }
 
             }
-            queryable=queryable.OrderByDescending(x=>x.Id);
+            queryable = queryable.OrderByDescending(x => x.Id);
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -228,6 +212,33 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 paymentResponseDtos
             );
         }
+    }
+
+    private static IQueryable<Payment> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Payment> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+
+            queryable = queryable.Where(or =>
+                or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower())
+
+
+            // full date-time or includes hour
+            );
+
+        }
+
+        return queryable;
     }
 
     public async Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)

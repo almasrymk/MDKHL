@@ -50,12 +50,41 @@ public class GarageTransactionsAppService :
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
     }
-    public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = ApplyFilterTenant(tenantId, queryable);
+            queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            List<GarageTransaction> garageTransactions = await ApplyPaged(input, queryable);
+            var garageTransactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransactions);
+            return new PagedResultDto<GarageTransactionDto>(
+                totalCount,
+                garageTransactionsDto
+            );
+        }
 
-        var queryable = await _repository.GetQueryableAsync();
+    }
 
+    private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(t => t.TenantId == tenantId);
+        return queryable;
+    }
 
+    private async Task<List<GarageTransaction>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var garageTransactions = await AsyncExecuter.ToListAsync(queryable);
+        return garageTransactions;
+    }
+
+    private static IQueryable<GarageTransaction> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
         if (!input.Sorting.IsNullOrEmpty())
         {
             // Determine if the sorting should be ascending or descending
@@ -71,14 +100,9 @@ public class GarageTransactionsAppService :
             }
         }
 
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var transactions = await base.GetListAsync(input);
-
-            return transactions;
-        }
-
+        return queryable;
     }
+
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
 
@@ -109,17 +133,7 @@ public class GarageTransactionsAppService :
         // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
         // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(or =>
-                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
-            ); 
-        }
+        queryable = ApplySearch(input, queryable);
         if (!input.Sorting.IsNullOrEmpty())
         {
             // Determine if the sorting should be ascending or descending
@@ -133,7 +147,7 @@ public class GarageTransactionsAppService :
 
                 queryable = queryable.OrderBy(input.Sorting);
             }
-           
+
         }
         queryable = queryable.OrderByDescending(x => x.Id);
         // Get the total count of filtered records
@@ -152,6 +166,24 @@ public class GarageTransactionsAppService :
             garageTransactionsDto
         );
     }
+
+    private static IQueryable<GarageTransaction> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
+    }
+
     public async Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())

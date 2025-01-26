@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Cameras
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using SmartParking.Permissions.CameraPermissions
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
@@ -11,10 +12,10 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-@* @attribute [Authorize(CameraPermissions.Default)] *@
+@inject IOrganizationsAppService OrganizationAppService
 @inherits AbpCrudPageBase<ICamerasAppService, CameraDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraDto>
 
 <PageTitle>@L["Cameras"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Cameras"]</MudText>
 
-<SPDataGrid PageName=@L["Cameras"] Data="@itemData" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" ShowAssign="false" OnClickAssign="AssignGarage"></SPDataGrid>
+<SPDataGrid PageName=@L["Cameras"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" ShowAssign="false" OnClickAssign="AssignGarage"></SPDataGrid>
