@@ -2,14 +2,17 @@
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using SmartParking.Packages
 @using System.Globalization
 @using System.Security.Authentication
 @using SmartParking.Validations
 @using Volo.Abp
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
 @inject IPackagesAppService PackagesAppService
+@inject IOrganizationsAppService organizationAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
@@ -44,12 +47,12 @@
                     <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="Package.Price"
                         For="@(() => Package.Price)"
-                                         Variant="Variant.Text"
-                                         Min="0"
-                                         HideSpinButtons="true"
-                                         Required="true"
-                                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                                         Class="w-100"
+                        Variant="Variant.Text"
+                        Min="0"
+                        HideSpinButtons="true"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Class="w-100"
                         Label="@L["Price"]" />
                     </MudItem>
 
@@ -63,6 +66,39 @@
                         Class="w-100"
                         Label=@L["PackageDuration"] />
                     </MudItem>
+                    @if (CurrentTenant.Id == null)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect T="int"
+                            Variant="Variant.Text"
+                            Label=@L["Organizations"]
+                            Placeholder=@L["Choose"]
+                            HelperText=@L["Helper Text"]
+                            Required
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            @bind-Value="Package.OrganizationId">
+                                <MudSelectItem Value="0"></MudSelectItem>
+                                @foreach (var organization in _organizations)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
+
+
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+
+
+                    }
 
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="Package.CustomerCategory"
@@ -160,7 +196,7 @@
         <DialogActions>
             <MudItem sm="12">
 
-            	<div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
                     <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
                     <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
                 </div>
@@ -186,7 +222,8 @@
 
 
     public DateTime? ActivationDate { get; set; } = DateTime.Now;
-
+    public DateTime? DeactivationDate { get; set; } = DateTime.Now;
+    private List<OrganizationDto> _organizations = new List<OrganizationDto>();
     bool _clearable;
     private MudForm form;
     private TimeSpan? timeSpanFrom;
@@ -197,9 +234,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        _organizations = organizationsList.Items.ToList();
         currentStatus = Package.Status;
         timeSpanFrom = Package.PublishFrom.ToTimeSpan();
         timeSpanTo = Package.PublishTo.ToTimeSpan();
+        ActivationDate = Package.ActivationDate;
+        DeactivationDate = Package.DeactivationDate;
         await base.OnInitializedAsync();
     }
     private void OnTimeFromChanged(TimeSpan? value)

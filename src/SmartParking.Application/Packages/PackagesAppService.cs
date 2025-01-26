@@ -23,13 +23,7 @@ using Volo.Abp.MultiTenancy;
 namespace SmartParking.DefaultPackages;
 
 [Authorize]
-public class PackagesAppService : CrudAppService<
-            Package,
-            PackageDto,
-            int,
-            PagedAndSortedResultRequestDto,
-            CreateUpdatePackageDto
-            >, IPackagesAppService
+public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAndSortedResultRequestDto,CreateUpdatePackageDto> , IPackagesAppService 
 {
     private readonly IRepository<Package, int> _repository;
     private readonly IRepository<Customer, Guid> _customerRepository;
@@ -69,13 +63,15 @@ public class PackagesAppService : CrudAppService<
         }
 
     }
-    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<PackageDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
     {
-        // Get the IQueryable<camera> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        queryable = queryable.Where(p => p.Status != Status.Deleted);
+        queryable = SearchCriteria(input, queryable);
+        return await ProcessDataToMapDto(input, queryable);
 
-        // Apply search filtering
+    }
+
+    private static IQueryable<Package> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
 
@@ -84,10 +80,27 @@ public class PackagesAppService : CrudAppService<
                 or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
-                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
+
+        return queryable;
+    }
+
+    public async Task<PagedResultDto<PackageDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            queryable = SearchCriteria(input, queryable);
+            return await ProcessDataToMapDto(input, queryable);
+        }
+    }
+
+    private async Task<PagedResultDto<PackageDto>> ProcessDataToMapDto(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable)
+    {
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var packages = await AsyncExecuter.ToListAsync(queryable);
@@ -96,6 +109,19 @@ public class PackagesAppService : CrudAppService<
             totalCount,
             packagesDto
         );
+    }
+
+    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = queryable.Include(x => x.Organization);
+        return CurrentTenant.Id switch
+        {
+            (null) => await SearchMdkhl(input, queryable),
+            (not null)=> await SearchOrganization(input, queryable)
+        };
+
+
     }
     public async Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -158,7 +184,8 @@ public class PackagesAppService : CrudAppService<
             queryable = queryable.Include(p => p.PackageType);
             queryable = queryable.Include(p => p.CustomerPackages);
 
-            queryable = queryable.Where(p => p.TenantId == CurrentTenant.Id);
+            if(CurrentTenant.IsAvailable)
+                queryable = queryable.Where(p =>p.TenantId == CurrentTenant.Id);
             queryable = queryable.Where(p => p.Status != Status.Deleted);
 
             if (!string.IsNullOrEmpty(input.Sorting))
@@ -232,5 +259,17 @@ public class PackagesAppService : CrudAppService<
             input.ActivationDate = DateTime.Now;
         }
         return await base.UpdateAsync(id, input);
+    }
+    public override Task<PackageDto> GetAsync(int id)
+    {
+        if (CurrentTenant.Id == null)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return base.GetAsync(id);
+            }
+        }
+        return base.GetAsync(id);
+
     }
 }
