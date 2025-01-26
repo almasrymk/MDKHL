@@ -7,6 +7,7 @@ using SmartParking.Results;
 using SmartParking.Enums;
 using SmartParking.Entities.Organizations;
 using System.Linq;
+using System;
 namespace SmartParking.Packages
 {
 	public interface IPackagesAppService:
@@ -37,7 +38,9 @@ namespace SmartParking.Packages
         /// </summary>
         /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
-         Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+        Task<PagedResultDto<PackageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+        Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input,Guid?TenantId=null);
+
 
         /// <summary>
         /// abstract method to get all for mdkhl of Packages
@@ -82,7 +85,7 @@ namespace SmartParking.Packages
         /// </summary>
         /// <param name="input">Criteria Of searching</param>
         /// <returns>List of package Dto.</returns>
-        Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+        Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null);
         /// <summary>
         /// abstract method to filter of cameras
         /// </summary>
