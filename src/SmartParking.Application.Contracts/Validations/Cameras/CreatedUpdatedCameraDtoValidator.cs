@@ -46,6 +46,12 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
         RuleFor(x => x.MacAddress)
            .NotEmpty()
             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        RuleFor(x => x.UserName)
+           .NotEmpty()
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        RuleFor(x => x.Password)
+           .NotEmpty()
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
     }
 }

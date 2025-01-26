@@ -253,8 +253,9 @@ public partial class Camera
             MainTypeId = cameraDto.MainType.Id,
             ModelId = cameraDto.Model.Id,
             TenantId = cameraDto.TenantId,
-            //Type = cameraDto.Type,
             CameraType = cameraDto.CameraType,
+            UserName = cameraDto.UserName,
+            Password = cameraDto.Password, 
 
         };
 
@@ -287,7 +288,8 @@ public partial class Camera
             MainTypeId = cameraDto.MainType.Id,
             ModelId = cameraDto.Model.Id,
             TenantId = cameraDto.TenantId,
-            //Type=cameraDto.Type,
+            UserName = cameraDto.UserName,
+            Password = cameraDto.Password,
             CameraType = cameraDto.CameraType
 
         };

@@ -6,6 +6,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Validations
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
@@ -70,7 +71,39 @@
                         Class="w-100"
                         Label=@L["PackageDuration"] />
                     </MudItem>
+                    @if (CurrentTenant.Id == null)
+                    {
+                        <MudItem sm="6">
+                            <MudSelect T="int"
+                            Variant="Variant.Text"
+                            Label=@L["Organizations"]
+                            Placeholder=@L["Choose"]
+                            HelperText=@L["Helper Text"]
+                            Required
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            @bind-Value="createUpdatePackage.OrganizationId">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                @foreach (var organization in _organizations)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
 
+
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+
+
+                    }
 
 
                     <MudItem sm="6" md="6">
@@ -183,12 +216,14 @@
     private MudDialogInstance MudDialog { get; set; }
     bool _clearable;
     private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
+    private List<OrganizationDto> _organizations = new List<OrganizationDto>();
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
     private string CustomerCategory { get; set; }
     protected override async Task OnInitializedAsync()
     {
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        _organizations = organizationsList.Items.ToList();
         var packageTypesList = await packageTypesAppService.GetAllListAsync();
         packageTypes = packageTypesList;
         timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
@@ -224,9 +259,10 @@
     private async Task Submit()
     {
         createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
-        var currentTenant = CurrentTenant.Id;
-        createUpdatePackage.OrganizationId =await organizationAppService.GetOrganizationIdByTenant(currentTenant);
-
+        if (CurrentTenant.Id != null)
+        {
+            createUpdatePackage.OrganizationId = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+        }
         try
         {
             createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);

@@ -5,6 +5,8 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using SmartParking.Results;
 using SmartParking.Enums;
+using SmartParking.Entities.Organizations;
+using System.Linq;
 namespace SmartParking.Packages
 {
 	public interface IPackagesAppService:
@@ -13,7 +15,7 @@ namespace SmartParking.Packages
         int,
         PagedAndSortedResultRequestDto,
         CreateUpdatePackageDto
-        >
+        > , IApplicationService
     {
         public Task<PagedResultDto<PackageDto>> GetPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
 
@@ -75,20 +77,18 @@ namespace SmartParking.Packages
         /// <returns>updated Package dto</returns>
         /// 
         Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input);
-
-        ///// <summary>
-        ///// abstract method to delete DefaultPackage
-        ///// </summary>
-        ///// <param name="id">id of DefaultPackage</param>
-        ///// <returns>successfull message of deletion</returns>
-        public Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
-
+        /// <summary>
+        /// abstract method to search for package
+        /// </summary>
+        /// <param name="input">Criteria Of searching</param>
+        /// <returns>List of package Dto.</returns>
+        Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
         /// <summary>
         /// abstract method to filter of cameras
         /// </summary>
         /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
         /// <returns>Camera Dto</returns>
-        public Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+        Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
     }
 }

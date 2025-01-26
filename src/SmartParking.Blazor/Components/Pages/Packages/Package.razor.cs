@@ -106,7 +106,6 @@ public partial class Package
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -144,6 +143,18 @@ public partial class Package
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "Price", IsFilterable = false, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Subscribers"], Name = "Subscribers", IsFilterable = false, PropertyName = "CustomerPackages.Count", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CurrentTenant.Id == null)
+        {
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            }
+            else
+            {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            }
+
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "PackageStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
@@ -162,6 +173,18 @@ public partial class Package
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published ? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
+            if (CurrentTenant.Id == null)
+            {
+                if (CultureInfo.CurrentCulture.Name == "en")
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationEnglishName));
+                }
+                else
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationArabicName));
+                }
+
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
