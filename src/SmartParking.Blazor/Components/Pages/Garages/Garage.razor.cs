@@ -87,16 +87,18 @@ public partial class Garage
             ActiveGarages = result.Item2;
             SumOfAllMaximumCapacityforActiveGarages = result.Item1;
 		}
-	}
+        await base.OnInitializedAsync();
+
+    }
 
 
 
-	/// <summary>
-	/// filter for hotels on the server side using the hotel columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among hotel.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    /// <summary>
+    /// filter for hotels on the server side using the hotel columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
 

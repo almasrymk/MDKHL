@@ -23,7 +23,7 @@
 <PageTitle>@L["Roles"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Roles"]</MudText>
 
-<SPDataGrid PageName=@L["Roles"] Data="@itemData" enus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowButton="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions).Result" OnClickButton="AddPermission" ShowView="AuthorizationService.IsGrantedAsync(CustomIdentityPermissions.Roles.ViewPermissions).Result" OnClickRowView="HandleView" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnSearching="FetchTableData" />
+<SPDataGrid PageName=@L["Roles"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowButton="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions).Result" OnClickButton="AddPermission" ShowView="AuthorizationService.IsGrantedAsync(CustomIdentityPermissions.Roles.ViewPermissions).Result" OnClickRowView="HandleView" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnSearching="FetchTableData" />
 
 
 <PermissionRolesManagementModal @ref="PermissionRolesManagementModal" />
