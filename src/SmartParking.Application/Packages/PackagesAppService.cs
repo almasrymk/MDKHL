@@ -66,6 +66,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
     public async Task<PagedResultDto<PackageDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
     {
         queryable = SearchCriteria(input, queryable);
+        queryable = SortingCriteria(input, queryable);
         return await ProcessDataToMapDto(input, queryable);
 
     }
@@ -90,11 +91,14 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         return queryable;
     }
 
-    public async Task<PagedResultDto<PackageDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable)
+    public async Task<PagedResultDto<PackageDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable , Guid? TenantId = null)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
+            if (TenantId != null)
+                queryable = queryable.Where(p => p.TenantId == TenantId);
             queryable = SearchCriteria(input, queryable);
+            queryable = SortingCriteria(input, queryable);
             return await ProcessDataToMapDto(input, queryable);
         }
     }
@@ -111,13 +115,14 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         );
     }
 
-    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
     {
         var queryable = await _repository.GetQueryableAsync();
         queryable = queryable.Include(x => x.Organization);
+
         return CurrentTenant.Id switch
         {
-            (null) => await SearchMdkhl(input, queryable),
+            (null) => await SearchMdkhl(input, queryable,TenantId),
             (not null)=> await SearchOrganization(input, queryable)
         };
 
@@ -175,44 +180,71 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         await _repository.HardDeleteAsync(package);
     }
     ///<inheritdoc/>
-    public override async Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<PackageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
 
+        IQueryable<Package> queryable = await IntializeGetListQuery();
+        queryable = SearchCriteria(input, queryable);
+        queryable = SortingCriteria(input, queryable);
+        return await MapToGetListDto(input, queryable);
+
+    }
+
+    private async Task<PagedResultDto<PackageDto>> MapToGetListDto(PagedAndSortedResultRequestDto input,  IQueryable<Package> queryable)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(queryable);
+        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+
+        return new PagedResultDto<PackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
+
+    public async Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
+    {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var queryable = await _repository.GetQueryableAsync();
-            queryable = queryable.Include(p => p.PackageType);
-            queryable = queryable.Include(p => p.CustomerPackages);
-
-            if(CurrentTenant.IsAvailable)
-                queryable = queryable.Where(p =>p.TenantId == CurrentTenant.Id);
-            queryable = queryable.Where(p => p.Status != Status.Deleted);
-
-            if (!string.IsNullOrEmpty(input.Sorting))
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var packages = await AsyncExecuter.ToListAsync(queryable);
-            var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-
-            return new PagedResultDto<PackageDto>(
-                totalCount,
-                packagesDto
-            );
+            IQueryable<Package> queryable = await IntializeGetListQuery();
+           if(TenantId != null)
+                queryable=queryable.Where(p=>p.TenantId == TenantId );
+            queryable = SearchCriteria(input, queryable);
+            queryable = SortingCriteria(input, queryable);
+            return await MapToGetListDto(input,  queryable);
         }
+
     }
+
+    private async Task<IQueryable<Package>> IntializeGetListQuery()
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = queryable.Include(p => p.PackageType);
+        queryable = queryable.Include(p => p.CustomerPackages);
+        return queryable;
+    }
+
+    private static IQueryable<Package> SortingCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
+        if (!string.IsNullOrEmpty(input.Sorting))
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return queryable;
+    }
+
     ///<inheritdoc/>
     public async Task<List<PackageDto>> GetAllMdkhlAsync(int organizationId, CustomerCategoryStatus customerCategory)
     {
@@ -251,14 +283,16 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
     public override async Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
     {
-        var packageDto = await _repository.GetAsync(id);
-        if (packageDto.Status == Status.Active && input.Status==Status.Inactive) {
-            input.DeactivationDate=DateTime.Now;
-        }else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
-        {
-            input.ActivationDate = DateTime.Now;
-        }
-        return await base.UpdateAsync(id, input);
+
+      var packageDto = await _repository.GetAsync(id);
+      if (packageDto.Status == Status.Active && input.Status==Status.Inactive) {
+          input.DeactivationDate=DateTime.Now;
+      }else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
+      {
+          input.ActivationDate = DateTime.Now;
+      }
+      return await base.UpdateAsync(id, input);
+        
     }
     public override Task<PackageDto> GetAsync(int id)
     {
@@ -272,4 +306,6 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         return base.GetAsync(id);
 
     }
+
+
 }

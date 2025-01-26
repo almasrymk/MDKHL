@@ -1,12 +1,16 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Cutomers;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Lookups;
 using SmartParking.Packages;
+using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Permissions.PackagePermissions;
 using System;
 using System.Collections.Generic;
@@ -20,14 +24,15 @@ namespace SmartParking.Blazor.Components.Pages.Packages;
 
 public partial class Package
 {
-    private List<PackageDto> packages = new List<PackageDto>();
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
 
-    private int currentPage = 1;
-    private int pageSize = 100;
+    private string sortColumn;
+    private Guid? TenantId;
+    private string ValueOfMenue { get; set; } = "All";
 
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1; 
+    public int RowPerPage { get; set; } = 10; 
 
     private TableData itemData = new TableData();
 
@@ -44,6 +49,17 @@ public partial class Package
         DeletePolicyName = PackagePermissions.Delete;
     }
 
+    protected async override Task OnInitializedAsync()
+    {
+        await CreateMenue();
+        if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+
+
+        await base.OnInitializedAsync();
+    }
     /// <summary>
     /// filter for cameras on the server side using the camera columns.
     /// </summary>
@@ -67,19 +83,80 @@ public partial class Package
 
         // Calculate the total number of pages required to display all results
         TotalItem = (int)packagesDto.TotalCount;
-        CreateTable(packagesDto);
+        await CreateTable(packagesDto);
 
 
 	}
-	/// <summary>
-	/// Searches for packages on the server side using the packages search term.
-	/// </summary>
-	/// <param name="searchTerm">The term to search for among packages.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleSearch(PageChangeEventArgs pageInfo)
-	{
-		termSearch = pageInfo.SearchTerm;
+    private async Task CreateMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync( null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync( org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(org.TenantId)) });
+            }
+        }
 
+        MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = @L[ValueOfMenue],
+                Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+    }
+    public async Task HandleSelectTenantAsync( Guid? tenantId)
+    {
+        TenantId = tenantId;
+
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<PackageDto> packages = await GetPackagesAsync(request, TenantId);
+
+        TotalItem = (int)packages.TotalCount;
+        await CreateTable(packages);
+    }
+
+    private async Task<PagedResultDto<PackageDto>> GetPackagesAsync(PagedAndSortedAndSearchResultRequestDto request,Guid? tenantId = null)
+    {
+        if (CurrentTenant.Id == null)
+        {
+            return await PackagesAppService.GetListMDKHLAsync(request, tenantId);
+        }
+        else
+        {
+            return await PackagesAppService.GetListOrganizationAsync(request);
+        }
+    }
+    /// <summary>
+    /// Searches for packages on the server side using the packages search term.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for among packages.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleSearch(PageChangeEventArgs pageInfo)
+	{
+        termSearch = pageInfo.SearchTerm;
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
         // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
@@ -90,11 +167,11 @@ public partial class Package
         };
 
         // Call the service to perform the search based on the input parameters
-        var packagesDto = await PackagesAppService.Search(input);
+        var packagesDto = await PackagesAppService.Search(input );
 
         // Calculate the total number of pages required to display all results
         TotalItem = (int)packagesDto.TotalCount;
-        CreateTable(packagesDto);
+        await CreateTable(packagesDto);
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -104,24 +181,32 @@ public partial class Package
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
+
+
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm= termSearch
+            
         };
 
-        // Retrieve the list of organizations from the server
-        var packagesDto = await PackagesAppService.GetListAsync(input);
+        var packagesDto = (CurrentTenant.Id) switch {
+            (not null)=>await PackagesAppService.GetListAsync(input),
+            (null)=>await PackagesAppService.GetListMDKHLAsync(input,null),
+        };
         TotalItem = (int)packagesDto.TotalCount;
-        CreateTable(packagesDto);
+        await CreateTable(packagesDto);
 
     }
 
-    private void CreateTable(PagedResultDto<PackageDto> packages)
+    private async Task CreateTable(PagedResultDto<PackageDto> packages)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -155,7 +240,7 @@ public partial class Package
             }
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "PackageStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         foreach (var item in packages.Items)
@@ -191,6 +276,8 @@ public partial class Package
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
+
     }
 
     private Task OpenDialogAsync(DialogOptions options)//Add Package

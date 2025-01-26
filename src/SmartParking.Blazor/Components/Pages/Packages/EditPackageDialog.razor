@@ -66,40 +66,7 @@
                         Class="w-100"
                         Label=@L["PackageDuration"] />
                     </MudItem>
-                    @if (CurrentTenant.Id == null)
-                    {
-                        <MudItem sm="6" md="6">
-                            <MudSelect T="int"
-                            Variant="Variant.Text"
-                            Label=@L["Organizations"]
-                            Placeholder=@L["Choose"]
-                            HelperText=@L["Helper Text"]
-                            Required
-                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                            @bind-Value="Package.OrganizationId">
-                                <MudSelectItem Value="0"></MudSelectItem>
-                                @foreach (var organization in _organizations)
-                                {
-                                    if (organization.Status != Enums.Status.Active)
-                                        continue;
-
-
-                                    if (CultureInfo.CurrentCulture.Name == "en")
-                                    {
-                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
-                                    }
-                                    else
-                                    {
-                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
-                                    }
-                                }
-                            </MudSelect>
-                        </MudItem>
-
-
-
-                    }
-
+                
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="Package.CustomerCategory"
                         Label="@L["customer category"]"
@@ -264,7 +231,7 @@
 
         try
         {
-            Package.TenantId = CurrentTenant.Id;
+            Package.TenantId = _organizations.FirstOrDefault(x=>x.Id==Package.OrganizationId).TenantId;
             Package.Published = Package.Published|| PackageValidations.CheckPackageTimeValiditity(Package.PublishFrom, Package.PublishTo);
           
             await PackagesAppService.UpdateAsync(UpdatedId, Package);

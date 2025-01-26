@@ -263,6 +263,9 @@
         {
             createUpdatePackage.OrganizationId = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
         }
+        else{
+            createUpdatePackage.TenantId = _organizations.FirstOrDefault(x => x.Id == createUpdatePackage.OrganizationId).TenantId;
+        }
         try
         {
             createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
