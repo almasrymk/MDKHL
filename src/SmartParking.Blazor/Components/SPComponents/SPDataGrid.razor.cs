@@ -208,8 +208,8 @@ public partial class SPDataGrid
         };
      
             await OnPageChanged.InvokeAsync(pageArgs);
-        
-        if (!_searchString.IsNullOrEmpty())
+
+        if (!_searchString.IsNullOrEmpty() && !IsClickMenu)
         {
             await OnSearching.InvokeAsync(pageArgs);
         }
