@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Cameras;
 using SmartParking.Localization;
 using System.Globalization;
 using Volo.Abp.Application.Dtos;
@@ -16,14 +17,16 @@ public partial class RolesMdkhl
     protected PermissionRolesManagementModal PermissionRolesManagementModal;
     protected ViewPermissionRoleModal ViewPermissionRolesManagementModal;
 
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
-    private string sortColumn = "Role.Id";
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
-
+    public Guid? TenantId { get; private set; }
+    private string sortColumn;
+    private string ValueOfMenue = "";
     private TableData itemData = new TableData();
-
     private string termSearch;
+
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     protected bool HasManagePermissionsPermission { get; set; } = true;
     protected const string PermissionProviderName = "R";
@@ -43,6 +46,7 @@ public partial class RolesMdkhl
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
+        await CreateMenue();
         await base.OnInitializedAsync();
     }
     protected override async Task SetPermissionsAsync()
@@ -88,7 +92,7 @@ public partial class RolesMdkhl
         var contactInfosDto = await RoleAppService.SearchMdkhl(input);
 
         TotalItem = (int)contactInfosDto.TotalCount;
-        CreateTable(contactInfosDto);
+        await CreateTable(contactInfosDto);
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -97,28 +101,75 @@ public partial class RolesMdkhl
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
-        CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
         if(pageInfo.SortColumn == "Id")
             pageInfo.SortColumn = "Role.Id";
-        var input = new PagedAndSortedResultRequestDto
+        termSearch = pageInfo.SearchTerm;
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch
         };
-
-        var RolesDto = await RoleAppService.GetListAndPagedMdkhl(input);
+        var RolesDto = await RoleAppService.GetListAndPagedMdkhl(input , TenantId);
 
 
         TotalItem = (int)RolesDto.TotalCount;
-        CreateTable(RolesDto);
+        await CreateTable(RolesDto);
 
     }
 
+    private async Task CreateMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationsAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
 
-    private void CreateTable(PagedResultDto<RoleDto> rolesDto)
+        MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = "Organization",
+            Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+    }
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    {
+        TenantId = tenantId;
+        ValueOfMenue = selectedValue;
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        var RolesDto = await RoleAppService.GetListAndPagedMdkhl(request, TenantId);
+        TotalItem = (int)RolesDto.TotalCount;
+        await CreateTable(RolesDto);
+    }
+    private async Task CreateTable(PagedResultDto<RoleDto> rolesDto)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -150,6 +201,7 @@ public partial class RolesMdkhl
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
     private async Task HandleAdd()
     {

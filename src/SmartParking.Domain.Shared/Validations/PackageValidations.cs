@@ -8,9 +8,9 @@ namespace SmartParking.Validations;
 
 public static class PackageValidations
 {
-    public static bool CheckPackageTimeValiditity(TimeOnly From, TimeOnly To) {
+    public static bool CheckPackageTimeValiditity(TimeOnly? From, TimeOnly? To) {
         
-        if(From==To) return true;
+        if(From.Value==To.Value) return true;
         return false;
     
     }
