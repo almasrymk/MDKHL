@@ -7,6 +7,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Garages;
@@ -27,7 +28,12 @@ namespace SmartParking.Blazor.Components.Pages.Garages;
 public partial class Garage
 {
     //[Inject] public IAuthorizationService AuthorizationService { get; set; }
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
+    private bool assign = true;
+    private string sortColumn;
+    private Guid? TenantId;
+    private string ValueOfMenue = "All";
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
 
@@ -66,6 +72,8 @@ public partial class Garage
             
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
+        await CreateMenue();
+        await base.OnInitializedAsync();
         if (currentTenant.Id != null)
         {
             ViewAssign = false;
@@ -79,16 +87,18 @@ public partial class Garage
             ActiveGarages = result.Item2;
             SumOfAllMaximumCapacityforActiveGarages = result.Item1;
 		}
-	}
+        await base.OnInitializedAsync();
+
+    }
 
 
 
-	/// <summary>
-	/// filter for hotels on the server side using the hotel columns.
-	/// </summary>
-	/// <param name="columnFilter">The name of column to filter for among hotel.</param>
-	/// <returns>Returns a task that represents the asynchronous operation.</returns>
-	private async Task HandleFilter(PageChangeEventArgs pageInfo)
+    /// <summary>
+    /// filter for hotels on the server side using the hotel columns.
+    /// </summary>
+    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
+    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         // Log the search term to the console for debugging purposes
 
@@ -150,7 +160,7 @@ public partial class Garage
 
             // Calculate the total number of pages required to display all results
             TotalItem = (int)garagessDto.TotalCount;
-            CreateTable(garagessDto);
+            await CreateTable(garagessDto);
         }
         else
         {
@@ -159,9 +169,56 @@ public partial class Garage
 
             // Calculate the total number of pages required to display all results
             TotalItem = (int)garagessDto.TotalCount;
-            CreateTable(garagessDto);
+            await CreateTable(garagessDto);
 
         }
+    }
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    {
+        TenantId = tenantId;
+        ValueOfMenue = selectedValue;
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<GarageDto> garageDto = await GarageAppService.GetListMdkhlAsync(request, TenantId);
+
+        TotalItem = (int)garageDto.TotalCount;
+        await CreateTable(garageDto);
+    }
+    private async Task CreateMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+
+        MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = "Organization",
+            Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -170,25 +227,30 @@ public partial class Garage
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-      
-        var garagessDto = await GarageAppService.GetListAsync(input);
-        TotalItem = (int)garagessDto.TotalCount;
-        CreateTable(garagessDto);
+
+        PagedResultDto<GarageDto> garagesDto = new PagedResultDto<GarageDto>();
+        if (CurrentTenant.Id is null)
+            garagesDto = await GarageAppService.GetListMdkhlAsync(input, null);
+        else
+            garagesDto = await GarageAppService.GetListOrganizationAsync(input);
+        TotalItem = (int)garagesDto.TotalCount;
+        await CreateTable(garagesDto);
 
 
     }
 
-    private void CreateTable(PagedResultDto<GarageDto> garages)
+    private async Task CreateTable(PagedResultDto<GarageDto> garages)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -238,6 +300,7 @@ public partial class Garage
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
 
     private Task CreateGarage()

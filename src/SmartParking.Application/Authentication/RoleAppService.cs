@@ -50,13 +50,13 @@ public class RoleAppService : ApplicationService, IRoleAppService
         _organizationRepository = organizationRepository;
     }
 
-    public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedAndSortedResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _roleReository.GetQueryableAsync();
-            queryable =
             queryable = GetQueryByTenat(tenantId, queryable);
+            queryable = ApplySearchFilter(queryable, input.SearchingTerm);
             queryable = ApplySortForOrganization(input, queryable);
             return await GetPagedResultAsync(queryable, input);
         }
@@ -69,16 +69,28 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return queryable;
     }
 
-    public async Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedAndSearchResultRequestDto input , Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _roleReository.GetQueryableAsync();
             var organizationQueryable = await _organizationRepository.GetQueryableAsync();
             IQueryable<RoleWithOrganization> query = CreateQueryForMdkhl(input, queryable, organizationQueryable);
+            query = ApplyFilterTenant(tenantId, query);
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                query = ApplySearchFilterForMdkhl(query, input.SearchingTerm);
+            }
             query = CheckSort(input, query);
             return await GetPagedResultMdkhlAsync(query, input);
         }
+    }
+
+    private static IQueryable<RoleWithOrganization> ApplyFilterTenant(Guid? tenantId, IQueryable<RoleWithOrganization> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(x => x.Role.TenantId == tenantId);
+        return query;
     }
 
     private static IQueryable<RoleWithOrganization> CheckSort(PagedAndSortedResultRequestDto input, IQueryable<RoleWithOrganization> query)
@@ -203,9 +215,14 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     private IQueryable<IdentityRole> ApplySearchFilter(IQueryable<IdentityRole> queryable, string searchingTerm)
     {
-        var lowerTerm = searchingTerm.ToLower();
-        return queryable.Where(role =>
-            role.Name.ToLower().Contains(lowerTerm));
+        if (!searchingTerm.IsNullOrWhiteSpace())
+        {
+            var lowerTerm = searchingTerm.ToLower();
+            return queryable.Where(role =>
+                role.Name.ToLower().Contains(lowerTerm));
+        }
+
+        return queryable;
             
     }
     

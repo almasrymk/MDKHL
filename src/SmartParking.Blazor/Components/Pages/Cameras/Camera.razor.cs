@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
+using SmartParking.Cutomers;
 using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Permissions.CameraPermissions;
@@ -20,10 +22,13 @@ namespace SmartParking.Blazor.Components.Pages.Cameras;
 
 public partial class Camera
 {
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
-
+    public Guid? TenantId { get; private set; }
+    private string sortColumn;
+    private string ValueOfMenue = "";
     private TableData itemData = new TableData();
 
     private string termSearch;
@@ -46,6 +51,7 @@ public partial class Camera
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
+        await CreateMenue();
         await base.OnInitializedAsync();
 
     }
@@ -75,7 +81,7 @@ public partial class Camera
             var camerassDto = await CamerasAppService.Filter(input);
             // Calculate the total number of pages required to display all results
             TotalItem = (int)camerassDto.TotalCount;
-            CreateTable(camerassDto);
+           await CreateTable(camerassDto);
         }
         else
         {
@@ -83,51 +89,59 @@ public partial class Camera
             var camerassDto = await CamerasAppService.FilterForMDKHL(input);
             // Calculate the total number of pages required to display all results
             TotalItem = (int)camerassDto.TotalCount;
-            CreateTable(camerassDto);
+            await CreateTable(camerassDto);
         }
 
 
 
     }
-    /// <summary>
-    /// Searches for cameras on the server side using the cameras code search term.
-    /// </summary>
-    /// <param name="searchTerm">The term to search for among cameras.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    private async Task HandleSearch(PageChangeEventArgs pageInfo)
+
+    private async Task CreateMenue()
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
-
-        // Update the term used for searching with the provided search term
-        termSearch = pageInfo.SearchTerm;
-
-        // Create a new search input object with pagination, sorting, and search term parameters
-        var input = new PagedAndSortedAndSearchResultRequestDto
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
-        };
-        if (CurrentTenant.Id != null)
-        {
-
-            // Call the service to perform the search based on the input parameters
-            var camerasDto = await CamerasAppService.Search(input);
-
-            // Calculate the total number of pages required to display all results
-            TotalItem = (int)camerasDto.TotalCount;
-            CreateTable(camerasDto);
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
         }
         else
         {
-
-            var camerassDto = await CamerasAppService.SearchForMDKHL(input);
-            // Calculate the total number of pages required to display all results
-            TotalItem = (int)camerassDto.TotalCount;
-            CreateTable(camerassDto);
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
         }
+
+        MenuDatas = new List<MudMenuData>
+        { 
+            new MudMenuData
+            {
+                Name = "Organization",
+            Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+    }
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    {
+        TenantId = tenantId;
+        ValueOfMenue = selectedValue;
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<CameraDto> cameraDto = await CamerasAppService.GetListMdkhlAsync(request,TenantId);
+
+        TotalItem = (int)cameraDto.TotalCount;
+        await CreateTable(cameraDto);
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -136,28 +150,29 @@ public partial class Camera
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
-        // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        sortColumn = pageInfo.SortColumn;
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
-
-
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch
         };
-
-        // Retrieve the list of organizations from the server
-        var camerassDto = await CamerasAppService.GetListAsync(input);
+        PagedResultDto<CameraDto> camerassDto = new PagedResultDto<CameraDto>();
+        if (CurrentTenant.Id is null)
+            camerassDto = await CamerasAppService.GetListMdkhlAsync(input, null);
+        else
+            camerassDto = await CamerasAppService.GetListOrganizationAsync(input);
         TotalItem = (int)camerassDto.TotalCount;
-        CreateTable(camerassDto);
+       await CreateTable(camerassDto);
 
     }
-
-    private void CreateTable(PagedResultDto<CameraDto> cameras)
+   
+    private async Task CreateTable(PagedResultDto<CameraDto> cameras)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -214,6 +229,7 @@ public partial class Camera
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
 
     private Task OpenDialogAsync(DialogOptions options)//Add Camera
@@ -237,8 +253,9 @@ public partial class Camera
             MainTypeId = cameraDto.MainType.Id,
             ModelId = cameraDto.Model.Id,
             TenantId = cameraDto.TenantId,
-            //Type = cameraDto.Type,
             CameraType = cameraDto.CameraType,
+            UserName = cameraDto.UserName,
+            Password = cameraDto.Password, 
 
         };
 
@@ -271,13 +288,11 @@ public partial class Camera
             MainTypeId = cameraDto.MainType.Id,
             ModelId = cameraDto.Model.Id,
             TenantId = cameraDto.TenantId,
-            //Type=cameraDto.Type,
+            UserName = cameraDto.UserName,
+            Password = cameraDto.Password,
             CameraType = cameraDto.CameraType
 
         };
-
-
-
         var parameters = new DialogParameters
         {
             ["Camera"] = createUpdateCamera,

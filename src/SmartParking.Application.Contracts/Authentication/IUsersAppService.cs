@@ -42,7 +42,7 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
     /// <summary>
     /// Asynchronously retrieves a paginated list of users based on the provided input.
@@ -53,7 +53,7 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
     /// <summary>
     /// Searches for a paged and sorted list of users based on the specified input parameters.
     /// </summary>

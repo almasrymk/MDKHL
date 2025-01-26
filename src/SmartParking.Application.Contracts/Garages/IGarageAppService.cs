@@ -71,7 +71,9 @@ public interface IGarageAppService : ICrudAppService<GarageDto,int,PagedAndSorte
     /// </summary>
     /// <param name="input">Input used for pagination</param>
     /// <returns>Paged Result of Garages</returns>
-    Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input);    
+    Task<PagedResultDto<GarageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);    
+    Task<PagedResultDto<GarageDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
 
 
     /// <summary>

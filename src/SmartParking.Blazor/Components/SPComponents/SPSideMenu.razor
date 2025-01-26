@@ -64,7 +64,7 @@
                     <MudNavLink Href="/subscriptions" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
                     <MudNavLink Href="/subscriptiontypes" Icon="@Icons.Material.Filled.Group">@L["SubscriptionTypes"]</MudNavLink>
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(PackagePermissions.Default).Result && currenttenant.Id is not null)
+                @if (AuthorizationService.IsGrantedAnyAsync(PackagePermissions.Default).Result)
                 {
                     <MudNavLink Href="/package" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                 }

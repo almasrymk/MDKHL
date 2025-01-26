@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Cameras;
 using SmartParking.Entities;
 using SmartParking.Localization;
 using SmartParking.Permissions.GaragePermissions;
@@ -20,10 +22,13 @@ namespace SmartParking.Blazor.Components.Pages.User;
 public partial class User
 {
     protected PermissionManagementModal PermissionManagementModal;
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
-
+    public Guid? TenantId { get; private set; }
+    private string sortColumn;
+    private string ValueOfMenue = "";
     private TableData itemData = new TableData();
 
     public bool ViewAdd { get; set; } = true;
@@ -53,7 +58,8 @@ public partial class User
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
-         await base.OnInitializedAsync();
+        await CreateMenue();
+        await base.OnInitializedAsync();
     }
     /// <summary>
     /// filter for users on the server side using the user columns.
@@ -116,16 +122,70 @@ public partial class User
     /// </summary>
     /// <param name="page">The page number for which to fetch the data.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
+    /// 
+    private async Task CreateMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+
+        MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = "Organization",
+            Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+    }
+
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    {
+        TenantId = tenantId;
+        ValueOfMenue = selectedValue;
+        if (sortColumn == "Id")
+            sortColumn = "User.Id";
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<UserWithRole> userDto = await UsersAppService.GetListMdklAsync(request, TenantId);
+
+        TotalItem = (int)userDto.TotalCount;
+        await CreateTable(userDto.Items);
+    }
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = pageInfo.SearchTerm
         };
         if (pageInfo.SortColumn == "Id")
             input.Sorting = "User.Id";
@@ -134,9 +194,9 @@ public partial class User
         if (currrentTenant.Id is not null)
             usersDto = await UsersAppService.GetListForOrganizationAsync(input);
         else
-            usersDto = await UsersAppService.GetListMdklAsync(input);
+            usersDto = await UsersAppService.GetListMdklAsync(input,null);
         TotalItem = (int)usersDto.TotalCount;
-        CreateTable(usersDto.Items);
+        await CreateTable(usersDto.Items);
 
     }
 
@@ -145,7 +205,7 @@ public partial class User
         Navigation.NavigateTo("/add-user", true);
     }
 
-    private void CreateTable(IReadOnlyList<UserWithRole> users)
+    private async Task CreateTable(IReadOnlyList<UserWithRole> users)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -199,6 +259,7 @@ public partial class User
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
 
     protected override async Task SetPermissionsAsync()
