@@ -31,7 +31,6 @@ public partial class Customer
 {
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
-    private SPDataGrid sPDataGrid;
     private bool assign = true;
     private string sortColumn;
     private Guid? TenantId;
@@ -48,7 +47,6 @@ public partial class Customer
 
     public Customer(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
-        sPDataGrid = new SPDataGrid(localizer);
         _localizer = localizer;
         CreatePolicyName = CustomerPermissions.Create;
         UpdatePolicyName = CustomerPermissions.Edit;
@@ -122,15 +120,12 @@ public partial class Customer
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch, 
             filters = pageInfo.Filters
         };
         if (currrentTenant.Id == null)
@@ -138,7 +133,7 @@ public partial class Customer
             var customersDto = await CustomerAppService.FilterMDKHL(input);
 
             TotalItem = (int)customersDto.TotalCount;
-            CreateTable(customersDto);
+            await CreateTable(customersDto);
         }
         else
         {
@@ -146,49 +141,11 @@ public partial class Customer
             var customersDto = await CustomerAppService.Filter(input);
 
             TotalItem = (int)customersDto.TotalCount;
-            CreateTable(customersDto);
+            await CreateTable(customersDto);
         }
 
     }
-    /// <summary>
-    /// Searches for hotels on the server side using the hotel code search term.
-    /// </summary>
-    /// <param name="searchTerm">The term to search for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    private async Task HandleSearch(PageChangeEventArgs pageInfo)
-    {
-
-        // Update the term used for searching with the provided search term
-        termSearch = pageInfo.SearchTerm;
-        CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
-        sortColumn = pageInfo.SortColumn;
-        // Create a new search input object with pagination, sorting, and search term parameters
-        var input = new PagedAndSortedAndSearchResultRequestDto
-        {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
-        };
-
-        if (currrentTenant.Id == null)
-        {
-            var customersDto = await CustomerAppService.SearchMDKHL(input);
-
-            TotalItem = (int)customersDto.TotalCount;
-            CreateTable(customersDto);
-        }
-        else
-        {
-
-            var customersDto = await CustomerAppService.Search(input);
-
-            TotalItem = (int)customersDto.TotalCount;
-            CreateTable(customersDto);
-        }
-        //await HandleSelectAsync("All");
-    }
+ 
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
@@ -196,26 +153,24 @@ public partial class Customer
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
         sortColumn = pageInfo.SortColumn;
-        // Create a request object for paged and sorted data
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch 
         };
-
-        // Retrieve the list of organizations from the server
         PagedResultDto<CustomerDto> customersDto;
         if (currrentTenant.Id == null)
             customersDto = await CustomerAppService.GetListMdkhlAsync(input,null);
         else
             customersDto = await CustomerAppService.GetListAsync(input);
         TotalItem = (int)customersDto.TotalCount;
-        CreateTable(customersDto);
+        await CreateTable(customersDto);
 
     }
 
@@ -224,9 +179,9 @@ public partial class Customer
         Navigation.NavigateTo("/customers/register", true);
     }
 
-    private void CreateTable(PagedResultDto<CustomerDto> customers)
+    private async Task CreateTable(PagedResultDto<CustomerDto> customers)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
+
         var tableData = new TableData()
         {
             Name = "Customers",
@@ -235,7 +190,7 @@ public partial class Customer
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        //tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "IdentityUser.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+      
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -271,7 +226,6 @@ public partial class Customer
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            //rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserName"], item.UserName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.FullName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.Email));
@@ -304,6 +258,7 @@ public partial class Customer
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
 
     public async Task<IDialogReference> CreateVehicle(RowDef row)
@@ -373,13 +328,13 @@ public partial class Customer
             MaxResultCount = RowPerPage,
             SkipCount = (CurrentPage - 1) * RowPerPage,
             Sorting = sortColumn,
-            SearchingTerm = sPDataGrid._searchString
+            SearchingTerm = termSearch
         };
 
         PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
 
         TotalItem = (int)customers.TotalCount;
-        CreateTable(customers);
+        await CreateTable(customers);
     }
     
     public async Task HandleSelectTenantAsync(string selectedValue,Guid? tenantId)
@@ -391,13 +346,13 @@ public partial class Customer
             MaxResultCount = RowPerPage,
             SkipCount = (CurrentPage - 1) * RowPerPage,
             Sorting = sortColumn,
-            SearchingTerm = sPDataGrid._searchString
+            SearchingTerm = termSearch
         };
 
         PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue, TenantId);
 
         TotalItem = (int)customers.TotalCount;
-        CreateTable(customers);
+        await CreateTable(customers);
     }
 
     private async Task<PagedResultDto<CustomerDto>> GetCustomersAsync(
