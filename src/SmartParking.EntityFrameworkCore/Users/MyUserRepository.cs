@@ -100,12 +100,14 @@ public class MyUserRepository
                     join organization in dbContext.Organizations
                         on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
                     from o in org.DefaultIfEmpty()
-                    where user.Name.ToLower().Contains(searchTerm.ToLower())
+                    where tenantId.HasValue ? user.TenantId == tenantId : true
+                    where !searchTerm.IsNullOrWhiteSpace() ? 
+                    user.Name.ToLower().Contains(searchTerm.ToLower())
                    || r.Name.ToLower().Contains(searchTerm.ToLower())
                    || user.PhoneNumber.ToLower().Contains(searchTerm.ToLower())
                    || user.UserName.ToLower().Contains(searchTerm.ToLower())
                    || user.Email.ToLower().Contains(searchTerm.ToLower())
-                   || tenantId.HasValue? user.TenantId == tenantId : true
+                   : true
                     select new UserWithRole
                     {
                         User = user,
