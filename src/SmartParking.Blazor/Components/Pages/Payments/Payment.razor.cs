@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
+using Microsoft.AspNetCore.Authorization;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
@@ -14,14 +15,21 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Payments;
 using Blazorise;
 
+using SmartParking.Permissions.PaymentsPermissions;
+using Microsoft.AspNetCore.Components;
+using SmartParking.Cameras;
+
 namespace SmartParking.Blazor.Components.Pages.Payments;
 
 public partial class Payment
 {
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
-
+    public Guid? TenantId { get; private set; }
+    private string sortColumn;
+    private string ValueOfMenue = "All";
     private TableData itemData = new TableData();
 
     private string termSearch;
@@ -32,8 +40,49 @@ public partial class Payment
         _localizer = localizer;
     }
 
-    
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(PaymentsPermission.Default))
+        {
 
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await CreateMenue();
+        await base.OnInitializedAsync();
+
+    }
+    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+    {
+
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "CreationTime DESC";
+        else
+            sort = pageInfo.SortColumn;
+
+        termSearch = pageInfo.SearchTerm;
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch
+        };
+
+        // Retrieve the list of payments from the server
+        PagedResultDto<PaymentDto> paymentsDto;
+        if (CurrentTenant.Id == null)
+            paymentsDto = await PaymentWebAppService.GetListMdkhlAsync(input, TenantId);
+        else
+            paymentsDto = await PaymentWebAppService.GetListOrganizationAsync(input);
+        TotalItem = (int)paymentsDto.TotalCount;
+        await CreateTable(paymentsDto);
+
+    }
 
     /// <summary>
     /// Searches for hotels on the server side using the hotel code search term.
@@ -59,53 +108,71 @@ public partial class Payment
         PagedResultDto<PaymentDto> pagedResultDto;
         if (CurrentTenant.Id == null)
         {
-            pagedResultDto = await PaymentWebAppService.SearchMdkhlAsync(input);
+            pagedResultDto = await PaymentWebAppService.GetListMdkhlAsync(input , null);
         }
         else
         {
-            pagedResultDto = await PaymentWebAppService.SearchOrganizationAsync(input);
+            pagedResultDto = await PaymentWebAppService.GetListOrganizationAsync(input);
         }
 
         // Calculate the total number of pages required to display all results
         TotalItem = (int)pagedResultDto.TotalCount;
-        CreateTable(pagedResultDto);
+        await CreateTable(pagedResultDto);
+    }
+    private async Task CreateMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+
+        MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = "Organization",
+                Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+    }
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    {
+        TenantId = tenantId;
+        ValueOfMenue = selectedValue;
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<PaymentDto> paymentDto = await PaymentWebAppService.GetListMdkhlAsync(request, TenantId);
+
+        TotalItem = (int)paymentDto.TotalCount;
+        await CreateTable(paymentDto);
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
     /// <param name="page">The page number for which to fetch the data.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    private async Task FetchTableData(PageChangeEventArgs pageInfo)
-    {
-
-        string sort;
-        if (pageInfo.SortColumn == "Id")
-            sort = "CreationTime DESC";
-        else
-            sort = pageInfo.SortColumn;
-
-        CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
-        // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
-        {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = sort
-        };
-
-        // Retrieve the list of payments from the server
-        PagedResultDto<PaymentDto> paymentsDto;
-        if (CurrentTenant.Id == null) 
-         paymentsDto = await PaymentWebAppService.GetListMdkhlAsync(input);
-        else
-            paymentsDto = await PaymentWebAppService.GetListOrganizationAsync(input);
-        TotalItem = (int)paymentsDto.TotalCount;
-        CreateTable(paymentsDto);
-
-    }
-
-    private void CreateTable(PagedResultDto<PaymentDto> organizations)
+   
+    private async Task CreateTable(PagedResultDto<PaymentDto> organizations)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -156,6 +223,7 @@ public partial class Payment
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
     private async Task HandleView(RowDef rowDef)
     {
