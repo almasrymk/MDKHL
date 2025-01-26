@@ -48,13 +48,18 @@ public class MyUserRepository
         }
     }
 
-    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount, int maxResultCount, string Sorting)
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleAsync(int skipCount, int maxResultCount, string Sorting, string searchTerm)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
                     from roleId in user.Roles.Select(r => r.RoleId)
                     join role in dbContext.Roles
                         on roleId equals role.Id
+                    where user.Name.ToLower().Contains(searchTerm.ToLower())
+                    || role.Name.ToLower().Contains(searchTerm.ToLower())
+                    || user.PhoneNumber.ToLower().Contains(searchTerm.ToLower())
+                    || user.UserName.ToLower().Contains(searchTerm.ToLower())
+                    || user.Email.ToLower().Contains(searchTerm.ToLower())
                     select new UserWithRole
                     {
                         User = user,
@@ -84,7 +89,7 @@ public class MyUserRepository
         return query;
     }
 
-    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string Sorting)
+    public async Task<PagedResult<UserWithRole>> FindUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string Sorting,string searchTerm,Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
@@ -94,7 +99,13 @@ public class MyUserRepository
                     from r in roles.DefaultIfEmpty() // Preserve users with no roles
                     join organization in dbContext.Organizations
                         on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
-                    from o in org.DefaultIfEmpty() // Preserve users with no organization
+                    from o in org.DefaultIfEmpty()
+                    where user.Name.ToLower().Contains(searchTerm.ToLower())
+                   || r.Name.ToLower().Contains(searchTerm.ToLower())
+                   || user.PhoneNumber.ToLower().Contains(searchTerm.ToLower())
+                   || user.UserName.ToLower().Contains(searchTerm.ToLower())
+                   || user.Email.ToLower().Contains(searchTerm.ToLower())
+                   || tenantId.HasValue? user.TenantId == tenantId : true
                     select new UserWithRole
                     {
                         User = user,
@@ -218,4 +229,6 @@ public class MyUserRepository
     }
 
 
+
+   
 }
