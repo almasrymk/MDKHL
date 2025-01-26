@@ -301,7 +301,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<InvoiceDto>> CheckoutAsync(int invoiceId)
+    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -323,8 +323,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             };
 
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
-            var image = await _invoiceAppService.GetInvoiceQRCodeForMDKHL(invoiceId);
-            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            var image = await _invoiceAppService.GetImage(invoice, result.QrCodeInvoice);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
+            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
             invoiceDto.QrCodeInvoice = image.Value;
             invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
             return invoiceDto;
