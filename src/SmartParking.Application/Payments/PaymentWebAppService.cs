@@ -39,7 +39,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         _organizationsAppService = organizationsAppService;
     }
 
-    public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -47,19 +47,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             query = query.OrderByDescending(x => x.CreationTime);
             query = query.Include(x => x.Customers).ThenInclude(c => c.IdentityUser);
             query = query.Include(x => x.Invoice);
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
-
-            }
+            query = ApplyFilterTenant(tenantId, query);
+            query = ApplySort(input, query);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
@@ -73,7 +62,32 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
         }
     }
-    
+
+    private static IQueryable<Payment> ApplyFilterTenant(Guid? tenantId, IQueryable<Payment> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(x => x.TenantId == tenantId);
+        return query;
+    }
+
+    private static IQueryable<Payment> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<Payment> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return query;
+    }
 
     public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedResultRequestDto input)
     {
@@ -85,19 +99,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             query=query.OrderByDescending(x=>x.CreationTime);
             query = query.Include(x => x.Customers).ThenInclude(c=>c.IdentityUser);
             query = query.Include(x => x.Invoice);
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
-
-            }
+            query = ApplySort(input, query);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
