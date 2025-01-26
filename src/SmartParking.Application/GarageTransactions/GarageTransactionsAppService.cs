@@ -50,20 +50,29 @@ public class GarageTransactionsAppService :
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
     }
-    public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
-
-        var queryable = await _repository.GetQueryableAsync();
-
-        queryable = ApplySort(input, queryable);
-
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var transactions = await base.GetListAsync(input);
-
-            return transactions;
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            List<GarageTransaction> garageTransactions = await ApplyPaged(input, queryable);
+            var garageTransactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransactions);
+            return new PagedResultDto<GarageTransactionDto>(
+                totalCount,
+                garageTransactionsDto
+            );
         }
 
+    }
+
+    private async Task<List<GarageTransaction>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var garageTransactions = await AsyncExecuter.ToListAsync(queryable);
+        return garageTransactions;
     }
 
     private static IQueryable<GarageTransaction> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<GarageTransaction> queryable)
