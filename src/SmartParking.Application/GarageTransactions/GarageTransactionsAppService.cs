@@ -55,6 +55,7 @@ public class GarageTransactionsAppService :
         using (DataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _repository.GetQueryableAsync();
+            queryable = ApplyFilterTenant(tenantId, queryable);
             queryable = ApplySearch(input, queryable);
             queryable = ApplySort(input, queryable);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -66,6 +67,13 @@ public class GarageTransactionsAppService :
             );
         }
 
+    }
+
+    private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(t => t.TenantId == tenantId);
+        return queryable;
     }
 
     private async Task<List<GarageTransaction>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
