@@ -112,7 +112,7 @@ partial class Roles
         RowPerPage = pageInfo.RowsPerPage;
         //if(pageInfo.SortColumn == "Id")
         //  pageInfo.SortColumn = "Role.Id";
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
