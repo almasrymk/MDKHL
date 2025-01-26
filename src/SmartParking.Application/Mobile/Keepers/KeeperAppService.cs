@@ -181,7 +181,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     /// <inheritdoc/>
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
-        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId && inv.InvoiceType == InvoiceType.UnPaid).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
+        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
         return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
     }    
     
@@ -320,6 +320,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 CustomerId=invoice.CustomerId,
                 OrganizationId=invoice.OrganizationId,
                 InvoiceId=invoiceId,
+                PaymentName= PaymentMethod.Cash.ToString()
             };
 
             var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
@@ -353,6 +354,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             var image =await _invoiceAppService.GetImage(invoice,result.QrCodeInvoice);
             var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
             invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
             invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
             return invoiceDto;
         }

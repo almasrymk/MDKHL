@@ -31,6 +31,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Customers;
 using Castle.Core.Resource;
 using SmartParking.Cutomers;
+using SmartParking.Results;
 
 namespace SmartParking.Authentication;
 
@@ -486,6 +487,42 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var createdUser = await _userManager.UpdateAsync(user);
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
+        }
+    }
+    public async Task<Result<UserDataDto>> UpdateProfileDataMobileAsync(Guid? id, UserDataDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            try
+            {
+                IdentityUser? user = await IsUserFound(id);
+                var UpdateDataDto = new UpdateUserDto
+                {
+                    Name = input.FullName,
+                    IdentificationTypes= (IdentificationTypes)Enum.Parse(typeof(IdentificationTypes), input.IdentificationTypes),
+                    PhoneNumber = input.Phone,
+                    Email = input.Email , 
+                    NationalId = input.NationalId  
+                };
+                await UpdateUserProperties(user, UpdateDataDto);
+                var createdUser = await _userManager.UpdateAsync(user);
+                var userDto = new UserDataDto
+                {
+                    FullName = user.Name,
+                    Email = user.Email,
+                    Phone = user.PhoneNumber,
+                    Image = user.GetProperty<string>("Image"),
+                    IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes").ToString(),
+                    NationalId = user.GetProperty<string>("NationalId"),
+                };
+
+                return Result<UserDataDto>.Success(userDto);
+            }
+            catch(Exception ex) 
+            {
+                return Result<UserDataDto>.Error(ex.Message);
+            }
+            
         }
     }
 
