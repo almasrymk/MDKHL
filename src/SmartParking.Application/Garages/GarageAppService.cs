@@ -356,19 +356,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             // Get the IQueryable<garage> from the repository
             var queryable = await _repository.GetQueryableAsync();
             // Apply search filtering
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-
-                queryable = queryable.Where(or =>
-                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-			        or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				    or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				    or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
-                );
-			}
+            queryable = ApplySearch(input, queryable);
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -399,6 +387,25 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 garagesDto
             );
         }
+    }
+
+    private static IQueryable<Garage> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Garage> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
     }
 
 
@@ -449,9 +456,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            // Get the IQueryable<garage> from the repository
             var queryable = await _repository.GetQueryableAsync();
-            // Apply filtering
             var filterExpression = BuildExpression<Garage>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
@@ -824,5 +829,72 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         }
 
+    }
+
+    public async Task<PagedResultDto<GarageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = ApplySearch(input, queryable);
+        queryable = ApplySort(input, queryable);
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        List<Garage> garages = await ApplyPaged(input, queryable);
+        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        Console.WriteLine(garagesDto.Count);
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garagesDto
+        );
+    }
+
+    private async Task<List<Garage>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Garage> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+        return garages;
+    }
+
+    private static IQueryable<Garage> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Garage> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return queryable;
+    }
+
+    public async Task<PagedResultDto<GarageDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = ApplyFilterTenant(tenantId, queryable);
+            queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            List<Garage> garages = await ApplyPaged(input, queryable);
+            var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+            Console.WriteLine(garagesDto.Count);
+            return new PagedResultDto<GarageDto>(
+                totalCount,
+                garagesDto
+            );
+        }
+    }
+
+    private static IQueryable<Garage> ApplyFilterTenant(Guid? tenantId, IQueryable<Garage> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(x => x.TenantId == tenantId);
+        return queryable;
     }
 }
