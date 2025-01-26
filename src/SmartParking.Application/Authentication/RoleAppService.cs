@@ -215,9 +215,14 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     private IQueryable<IdentityRole> ApplySearchFilter(IQueryable<IdentityRole> queryable, string searchingTerm)
     {
-        var lowerTerm = searchingTerm.ToLower();
-        return queryable.Where(role =>
-            role.Name.ToLower().Contains(lowerTerm));
+        if (!searchingTerm.IsNullOrWhiteSpace())
+        {
+            var lowerTerm = searchingTerm.ToLower();
+            return queryable.Where(role =>
+                role.Name.ToLower().Contains(lowerTerm));
+        }
+
+        return queryable;
             
     }
     

@@ -55,11 +55,13 @@ public class MyUserRepository
                     from roleId in user.Roles.Select(r => r.RoleId)
                     join role in dbContext.Roles
                         on roleId equals role.Id
-                    where user.Name.ToLower().Contains(searchTerm.ToLower())
+                    where !searchTerm.IsNullOrWhiteSpace() ? 
+                    user.Name.ToLower().Contains(searchTerm.ToLower())
                     || role.Name.ToLower().Contains(searchTerm.ToLower())
                     || user.PhoneNumber.ToLower().Contains(searchTerm.ToLower())
                     || user.UserName.ToLower().Contains(searchTerm.ToLower())
                     || user.Email.ToLower().Contains(searchTerm.ToLower())
+                    : true
                     select new UserWithRole
                     {
                         User = user,
