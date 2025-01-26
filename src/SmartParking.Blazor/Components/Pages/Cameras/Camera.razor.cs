@@ -277,9 +277,6 @@ public partial class Camera
             CameraType = cameraDto.CameraType
 
         };
-
-
-
         var parameters = new DialogParameters
         {
             ["Camera"] = createUpdateCamera,

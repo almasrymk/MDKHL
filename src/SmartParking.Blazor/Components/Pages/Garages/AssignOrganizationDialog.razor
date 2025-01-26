@@ -101,7 +101,6 @@
 			var tenantId = Organizations.Find(x=>x.Id==Garage.OrganizationId).TenantId;
 			Garage.TenantId = tenantId;
 			var garage=await GaragesAppService.UpdateAsync(UpdatedId, Garage);
-			Console.WriteLine(garage.Code);
 			var output = await GaragesAppService.ChangeTenantForCamerasRelatedToGarage(garage.Id,tenantId);
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ASSIGN]} ", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
