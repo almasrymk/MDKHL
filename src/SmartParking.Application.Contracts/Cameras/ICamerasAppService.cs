@@ -59,7 +59,7 @@ public interface ICamerasAppService :
     /// </summary>
     /// <param name="input">specifies max number of camera and if it sorted or not</param>
     /// <returns>cameraDto List</returns>
-    Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
+   // Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
     /// <summary>
     /// method used to get list of cameraes for MDKHL
     /// </summary>

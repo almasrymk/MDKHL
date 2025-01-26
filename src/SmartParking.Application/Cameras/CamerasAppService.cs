@@ -18,7 +18,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
-
+using System.Linq.Dynamic.Core;
 
 namespace SmartParking.Cameras;
 
@@ -58,6 +58,7 @@ public class CamerasAppService :
         var queryable = await _repository.GetQueryableAsync();
 
         queryable = ApplySearch(input, queryable);
+        queryable = ApplySort(input, queryable);
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         List<Camera> cameraes = await ApplyPaged(input, queryable);
         var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
@@ -65,8 +66,27 @@ public class CamerasAppService :
             totalCount,
             cameraesDto
         );
-    } 
-    
+    }
+
+    private static IQueryable<Camera> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return queryable;
+    }
+
     public async Task<PagedResultDto<CameraDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -74,6 +94,7 @@ public class CamerasAppService :
             var queryable = await _repository.GetQueryableAsync();
             queryable = ApplyTenant(tenantId, queryable);
             queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             List<Camera> cameraes = await ApplyPaged(input, queryable);
             var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
@@ -337,45 +358,45 @@ public class CamerasAppService :
         return queryable;
     }
 
-    ///<inheritdoc/>
-    public async Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
+    /////<inheritdoc/>
+    //public async Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+    //{
+    //    using (DataFilter.Disable<IMultiTenant>())
+    //    {
 
-            // Get the IQueryable<camera> from the repository
-            var queryable = await _repository.GetQueryableAsync();
-            // Apply search filtering
+    //        // Get the IQueryable<camera> from the repository
+    //        var queryable = await _repository.GetQueryableAsync();
+    //        // Apply search filtering
 
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
+    //        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+    //        {
 
-                queryable = queryable.Where(or =>
-                    or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
+    //            queryable = queryable.Where(or =>
+    //                or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+    //                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+    //                or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+    //                or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+    //                or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
 
-                );
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
+    //            );
+    //        }
+    //        // Get the total count of filtered records
+    //        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of camera entities
-            var cameraes = await AsyncExecuter.ToListAsync(queryable);
+    //        // Apply pagination
+    //        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+    //        // Execute the query and get the list of camera entities
+    //        var cameraes = await AsyncExecuter.ToListAsync(queryable);
 
-            // Map the hotel entities to cameraDto objects
-            var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
-            // Return the paginated result
-            return new PagedResultDto<CameraDto>(
-                totalCount,
-                cameraesDto
-            );
-        }
-    }
+    //        // Map the hotel entities to cameraDto objects
+    //        var cameraesDto = ObjectMapper.Map<List<Camera>, List<CameraDto>>(cameraes);
+    //        // Return the paginated result
+    //        return new PagedResultDto<CameraDto>(
+    //            totalCount,
+    //            cameraesDto
+    //        );
+    //    }
+    //}
 
     /// <summary>
     /// method used to get list of cameraes
