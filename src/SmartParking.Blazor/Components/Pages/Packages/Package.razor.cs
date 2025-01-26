@@ -91,19 +91,19 @@ public partial class Package
     {
         var itemsOrganizations = new List<MenuItem>();
         var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync( null)) });
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             foreach (var org in organizations.Items)
             {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync( org.TenantId)) });
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
             }
         }
         else
         {
             foreach (var org in organizations.Items)
             {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(org.TenantId)) });
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
             }
         }
 
@@ -117,9 +117,10 @@ public partial class Package
             },
         };
     }
-    public async Task HandleSelectTenantAsync( Guid? tenantId)
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
+        ValueOfMenue = selectedValue;
 
         var request = new PagedAndSortedAndSearchResultRequestDto
         {
