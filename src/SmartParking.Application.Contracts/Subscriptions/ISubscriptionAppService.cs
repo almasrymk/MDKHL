@@ -34,7 +34,7 @@ public interface ISubscriptionAppService : ICrudAppService<SubscriptionDto,int, 
     /// </summary>
     /// <param name="input"> PagedAndSortedResultRequestDto</param>
     /// <returns>PagedResultDto of SubscriptionDto</returns>
-    public Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
+    public Task<PagedResultDto<SubscriptionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
     /// <summary>
     /// abstract method to get subscriptions

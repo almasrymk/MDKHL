@@ -493,7 +493,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
             };
             var resultedInvoice = await SaveTransactionWithInvoice(invoiceCreateUpdateDto, GarageTransaction);
-            flag =resultedInvoice.InvoicePrice > 0 ? false : true;
+            flag = resultedInvoice.InvoicePrice > 0 ? false : true;
+            await FreeSlots(garage, packageDto is null ? null : packageDto.CustomerCategory);
         }
         else
         {
@@ -501,6 +502,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             {
                 var garageTransactionDto = await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                 _logger.LogError($"{DateTime.Now} ====> Get Response false | Plate number is empty");
+                await FreeSlots(garage, CustomerCategoryStatus.Customer);
 
                 flag = false;
                 EmptyPlateNumber = true;
@@ -509,7 +511,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             {
                 //Not Customer
                 decimal price = await CalcInvoice(EntranceTime.Value, totalHours, GarageTransaction);
-
                 var newInvoice = await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, totalHours, exsitCustomer, GarageTransaction, CustomerCategoryStatus.Customer);
                 await SaveTransactionWithInvoice(newInvoice, GarageTransaction);
                 await FreeSlots(garage, CustomerCategoryStatus.Customer);
@@ -517,6 +518,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 flag = false;
             }
         }
+
         await CloseEntryTransaction(GarageTransaction.PlateNumber);
         await CurrentUnitOfWork.SaveChangesAsync();
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {flag}");

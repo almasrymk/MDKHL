@@ -614,7 +614,9 @@
         "PasswordValidation": "Password length must be at least 8 , contains upper , lower , special chars!",
         "CameraAccessData": "Camera Access Data",
         "Transaction": "Transaction",
-        "NoOrganization": "No Organization"
+        "NoOrganization": "No Organization",
+        "RequiredValidation": "Is Required"
+
 
 
 
