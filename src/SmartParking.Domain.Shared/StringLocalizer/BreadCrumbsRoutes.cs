@@ -25,7 +25,7 @@ public static class BreadCrumbsRoutes
             "garageTransactions" => LocalizationHelper.GetLocalizedString("GarageTransactions"),
             "invoices" => LocalizationHelper.GetLocalizedString("Invoices"),
             "licencetypes" => LocalizationHelper.GetLocalizedString("LicenceTypes"),
-            "subscription" => LocalizationHelper.GetLocalizedString("Organization Subscription"),
+            "subscription" => LocalizationHelper.GetLocalizedString("Subscriptions"),
             "package" => LocalizationHelper.GetLocalizedString("Packages"),
             "packagetypes" => LocalizationHelper.GetLocalizedString("PackageTypes"),
             "platecolors" => LocalizationHelper.GetLocalizedString("PlateColors"),

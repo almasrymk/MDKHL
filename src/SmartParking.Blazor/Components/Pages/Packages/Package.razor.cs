@@ -111,7 +111,7 @@ public partial class Package
         {
             new MudMenuData
             {
-                Name = @L[ValueOfMenue],
+                Name = @L["Organizations"],
                 Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },
@@ -144,7 +144,7 @@ public partial class Package
         }
         else
         {
-            return await PackagesAppService.GetListOrganizationAsync(request);
+            return await PackagesAppService.GetAllListOrganizationAsync(request);
         }
     }
     /// <summary>
@@ -256,7 +256,7 @@ public partial class Package
 			{
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
 			}
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.Price.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"],$"{item.Price} {_localizer["SAR"]}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published ? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
             if (CurrentTenant.Id == null)

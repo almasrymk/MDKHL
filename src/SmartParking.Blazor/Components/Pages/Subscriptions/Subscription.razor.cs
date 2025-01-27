@@ -182,7 +182,8 @@ public partial class Subscription
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"], item.SubscriptionPrice.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"],$"{item.SubscriptionPrice.ToString()} {_localizer["SAR"]}"
+            ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 

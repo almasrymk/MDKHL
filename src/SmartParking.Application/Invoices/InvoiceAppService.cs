@@ -315,16 +315,20 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
         if (!input.Sorting.IsNullOrEmpty())
         {
-            // Determine if the sorting should be ascending or descending
+            
             if (input.Sorting.Contains("DESC"))
             {
                 var sorting = input.Sorting.Split(' ').ToList();
                 queryable = queryable.OrderBy(sorting[0] + " descending");
+                if (input.Sorting.Contains("InvoiceType"))
+                    queryable = queryable = queryable.OrderBy(sorting[0] + " descending").ThenByDescending(_ => _.IsPackage);
             }
             else
             {
-
                 queryable = queryable.OrderBy(input.Sorting);
+
+                if (input.Sorting.Contains("InvoiceType"))
+                    queryable = queryable = queryable.OrderBy(input.Sorting).ThenBy(_ => _.IsPackage);
             }
         }
         var totalCount = await AsyncExecuter.CountAsync(queryable);

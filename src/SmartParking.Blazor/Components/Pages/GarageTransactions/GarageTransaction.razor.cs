@@ -170,7 +170,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			if(CurrentTenant.Id == null)
 			{
 				// Retrieve the list of organizations from the server
-				var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input,null);
+				var garageTransactionsDto = await GarageTransactionsAppService.GetAllListAsync(input,null);
 				TotalItem = (int)garageTransactionsDto.TotalCount;
 				await CreateTable(garageTransactionsDto);
 			}
@@ -195,7 +195,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                 SearchingTerm = termSearch
             };
 
-            PagedResultDto<GarageTransactionDto> garageTransactionDto = await GarageTransactionsAppService.GetListAsync(request, TenantId);
+            PagedResultDto<GarageTransactionDto> garageTransactionDto = await GarageTransactionsAppService.GetAllListAsync(request, TenantId);
 
             TotalItem = (int)garageTransactionDto.TotalCount;
             await CreateTable(garageTransactionDto);
@@ -224,7 +224,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
         {
             new MudMenuData
             {
-                Name = "Organization",
+                Name = @L["Organizations"],
             Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },

@@ -214,7 +214,7 @@ public partial class Garage
         {
             new MudMenuData
             {
-                Name = "Organization",
+                Name = @L["Organizations"],
             Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },
