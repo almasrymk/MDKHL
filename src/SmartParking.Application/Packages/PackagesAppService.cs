@@ -180,7 +180,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         await _repository.HardDeleteAsync(package);
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<PackageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<PackageDto>> GetAllListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
 
         IQueryable<Package> queryable = await IntializeGetListQuery();

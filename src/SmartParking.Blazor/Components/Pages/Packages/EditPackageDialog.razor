@@ -2,6 +2,7 @@
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
+@using SmartParking.Lookups
 @using SmartParking.Organizations
 @using SmartParking.Packages
 @using System.Globalization
@@ -13,6 +14,7 @@
 @using Volo.Abp.Validation
 @inject IPackagesAppService PackagesAppService
 @inject IOrganizationsAppService organizationAppService
+@inject IPackageTypesAppService packageTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
@@ -66,7 +68,27 @@
                         Class="w-100"
                         Label=@L["PackageDuration"] />
                     </MudItem>
-                
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="@Package.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            @foreach (var type in packageTypes)
+                            {
+                                @if(CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                  <MudSelectItem T="int" Value="@type.Id">
+                                    @type.EnglishName
+                                </MudSelectItem>
+                                }
+                                else
+                                {
+                                  <MudSelectItem T="int" Value="@type.Id">
+                                    @type.ArabicName
+                                </MudSelectItem>
+                                }
+                              
+                            }
+                        </MudSelect>
+                    </MudItem>
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="Package.CustomerCategory"
                         Label="@L["customer category"]"
@@ -197,6 +219,7 @@
     private TimeSpan? timeSpanTo;
     private DateTime? DectivationDate { get; set; } = DateTime.Now;
     private Status currentStatus { get; set; }
+    private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
 
 
     protected override async Task OnInitializedAsync()
@@ -208,6 +231,8 @@
         timeSpanTo = Package.PublishTo.ToTimeSpan();
         ActivationDate = Package.ActivationDate;
         DeactivationDate = Package.DeactivationDate;
+        var packageTypesList = await packageTypesAppService.GetAllListAsync();
+        packageTypes = packageTypesList;
         await base.OnInitializedAsync();
     }
     private void OnTimeFromChanged(TimeSpan? value)

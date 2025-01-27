@@ -79,26 +79,14 @@
                     {
                         @foreach (var menu in Menus)
                         {
-                            <MudMenu Label="@menu.Name" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
+                            <MudMenu Label="@L[@menu.Name]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
                                 @foreach (var item in menu.Items)
                                 {
                                     <MudMenuItem OnClick="@(()=>HandleMunue(@item.Label,@item.OnClick))">@L[@item.Label]</MudMenuItem>
                                 }
                             </MudMenu>
                         }
-                        @* <MudItem> *@
-
-                        @*     <MudMenu Class="me-3" Label="@L[ValueOfMenue]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown"> *@
-
-                        @*         <MudMenuItem OnClick="@(()=>HandleMunue("All"))">@L["All"] </MudMenuItem> *@
-                        @*         <MudMenuItem OnClick="@(()=>HandleMunue("Beneficiaries"))">@L["Beneficiaries"] </MudMenuItem> *@
-                        @*         <MudMenuItem OnClick="@(()=>HandleMunue("Employees"))">@L["Employees"]</MudMenuItem> *@
-                        @*         <MudMenuItem OnClick="@(()=>HandleMunue("Visitors"))">@L["Visitors"]</MudMenuItem> *@
-                        @*         <MudMenuItem OnClick="@(()=>HandleMunue("NoPackages"))">@L["NoPackages"]</MudMenuItem> *@
-                            
-                        @*     </MudMenu> *@
-                        @* </MudItem> *@
-                
+                     
                     }                   
                     
                     @if (OnAdd.HasDelegate && ShowAdd)
