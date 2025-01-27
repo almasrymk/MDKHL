@@ -224,7 +224,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
         {
             new MudMenuData
             {
-                Name = "Organization",
+                Name = @L["Organizations"],
             Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },
