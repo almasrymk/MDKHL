@@ -214,7 +214,14 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() is null ? _localizer["NotCustomer"]: _localizer[$"{item.Customers?.CustomerCategory.ToString()}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Amount"], item.Amount.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Currency"], _localizer[$"{item.Currency.ToString()}"]));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.ArabicName ?? _localizer["NotCustomer"]));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.ArabicName ?? _localizer["NotCustomer"]));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.FullName ?? _localizer["NotCustomer"]));
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], _localizer[$"{item.PaymentStatus.ToString()}"]));
 
