@@ -111,7 +111,7 @@ public partial class Package
         {
             new MudMenuData
             {
-                Name = @L[ValueOfMenue],
+                Name = @L["Organizations"],
                 Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },

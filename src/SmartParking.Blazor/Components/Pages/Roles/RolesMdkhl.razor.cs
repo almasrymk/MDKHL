@@ -147,7 +147,7 @@ public partial class RolesMdkhl
         {
             new MudMenuData
             {
-                Name = "Organization",
+                Name = @L["Organizations"],
             Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },
