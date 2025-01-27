@@ -19,7 +19,7 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
         RuleFor(x => x.Status)
             .IsInEnum();
@@ -29,29 +29,29 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
 
         RuleFor(x => x.BrandNameId)
             .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
         RuleFor(x => x.ModelId)
             .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
         RuleFor(x => x.MainTypeId)
             .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
         RuleFor(x => x.CameraIP)
            .NotEmpty()
-           .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+           .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
         RuleFor(x => x.MacAddress)
            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
         RuleFor(x => x.UserName)
            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
         RuleFor(x => x.Password)
            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
     }
 }
