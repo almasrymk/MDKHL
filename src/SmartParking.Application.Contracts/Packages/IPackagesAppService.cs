@@ -38,7 +38,7 @@ namespace SmartParking.Packages
         /// </summary>
         /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
-        Task<PagedResultDto<PackageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+        Task<PagedResultDto<PackageDto>> GetAllListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
         Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input,Guid?TenantId=null);
 
 

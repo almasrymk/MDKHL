@@ -111,7 +111,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
    
     }
     /// <inheritdoc/>
-    public async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
+    public async Task<PagedResultDto<SubscriptionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

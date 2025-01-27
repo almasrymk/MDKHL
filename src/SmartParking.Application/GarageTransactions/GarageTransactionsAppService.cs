@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -50,7 +51,7 @@ public class GarageTransactionsAppService :
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
     }
-    public async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<GarageTransactionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {

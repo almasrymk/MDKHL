@@ -93,15 +93,15 @@ public partial class Customer
         {
             new MudMenuData
             {
-                Name = "Customer",
+                Name = "Package",
                 Label = @L[ValueOfMenue],
                 Items = new List<MenuItem>
                 {
-                    new MenuItem { MenueName = "Customer", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Customer", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Customer",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Customer",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Customer", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
+                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
+                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
+                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
                 }
             },
             new MudMenuData
@@ -116,15 +116,15 @@ public partial class Customer
         {
             new MudMenuData
             {
-                Name = "Customer",
+                Name = "Package",
                 Label = @L[ValueOfMenue],
                 Items = new List<MenuItem>
                 {
-                    new MenuItem { MenueName = "Customer", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Customer", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Customer",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Customer",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Customer", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
+                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
+                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
+                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
                 }
             },
         };

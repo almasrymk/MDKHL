@@ -144,7 +144,7 @@ public partial class Package
         }
         else
         {
-            return await PackagesAppService.GetListOrganizationAsync(request);
+            return await PackagesAppService.GetAllListOrganizationAsync(request);
         }
     }
     /// <summary>

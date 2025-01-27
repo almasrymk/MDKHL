@@ -122,13 +122,13 @@ public partial class CustomerRegister
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
-
+            CheckPackage();
             customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
             if (customer != null)
             {
                 CustomerId = customer.Id;
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
-                
+
                 showVehicle = true;
             }
 
@@ -156,6 +156,12 @@ public partial class CustomerRegister
 
         }
 
+    }
+
+    private void CheckPackage()
+    {
+        if (createUpdateCustomerDto.PackageId == 0)
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {L["Package"] + " " + L["NotSelected"]}", Severity.Error);
     }
 
     private async Task CreateUser()
