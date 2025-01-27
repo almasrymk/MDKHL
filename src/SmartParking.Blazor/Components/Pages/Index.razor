@@ -124,8 +124,8 @@
     HeaderText1="@L["Day"]"
     BodyText1="@Day"
     HeaderText2="@L["Collected"]"
-    BodyText2="@collectedMoneyToday"></SpCardStatistics>
-
+    BodyText2=@collectedMoneyToday
+    ></SpCardStatistics>
 
     <MudItem sm="6">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
@@ -261,7 +261,7 @@
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
             Day = dataForToday.Day;
-            collectedMoneyToday = Math.Round((decimal)dataForToday.totalAmounts,2).ToString();
+            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts,2).ToString()} {@L["SAR"]}" ;
         }
         else
         {
@@ -278,7 +278,7 @@
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
             Day = dataForToday.Day;
-            collectedMoneyToday = Math.Round((decimal)dataForToday.totalAmounts,2).ToString();
+            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()} {@L["SAR"]}";
         }
 
         string[] colors = { "#0D5480", "#16B7D3", "#CE3333", "#ca06e1" };
