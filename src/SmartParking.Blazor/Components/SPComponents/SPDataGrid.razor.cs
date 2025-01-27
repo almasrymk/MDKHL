@@ -1,4 +1,5 @@
-﻿using Humanizer.Localisation;
+﻿using Blazorise.DataGrid;
+using Humanizer.Localisation;
 using iText.Html2pdf;
 using iText.IO.Font;
 using iText.Kernel.Font;
@@ -231,6 +232,9 @@ public partial class SPDataGrid
     {
         try
         {
+            GridState<RowDef> state = new GridState<RowDef>();
+            state.PageSize = 500;
+            await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
 
@@ -255,6 +259,9 @@ public partial class SPDataGrid
     {
         try
         {
+            GridState<RowDef> state = new GridState<RowDef>();
+            state.PageSize = 500;
+            await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
 
@@ -282,6 +289,9 @@ public partial class SPDataGrid
     {
         try
         {
+            GridState<RowDef> state = new GridState<RowDef>();
+            state.PageSize = 500;
+            await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
             await GenerateFilesAppService.ExportToPdf(Data, file);
