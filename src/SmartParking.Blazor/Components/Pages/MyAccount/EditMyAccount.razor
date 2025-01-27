@@ -119,7 +119,6 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@CountrySelectValue">
-                                <MudSelectItem Value="CountryNameEdit"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
                                     if (CultureInfo.CurrentCulture.Name == "en")
@@ -140,7 +139,6 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@RegionSelectValue">
-                                <MudSelectItem Value="RegionNameEdit"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
                                     if (CultureInfo.CurrentCulture.Name == "en")
@@ -163,7 +161,6 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@StateSelectValue">
-                                <MudSelectItem Value="StateNameEdit"></MudSelectItem>
                                 @foreach (var state in states)
                                 {
                                     if (CultureInfo.CurrentCulture.Name == "en")
@@ -184,7 +181,6 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@CitySelectValue">
-                                <MudSelectItem Value="CityNameEdit"></MudSelectItem>
                                 @foreach (var city in cities)
                                 {
                                     if(CultureInfo.CurrentCulture.Name == "en")

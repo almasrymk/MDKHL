@@ -18,6 +18,7 @@ using SmartParking.Utilities;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Authentication;
@@ -234,6 +235,16 @@ public partial class EditMyAccount
         Graceperiod = organization.Graceperiod;
         SubscriptionId = organization.SubscriptionId;
         TaxIdentificationNumber= organization.TaxNumber;
+        if( CultureInfo.CurrentCulture.Name == "ar")
+        {
+            StateNameEdit = organization.StateNameAr;
+
+        }
+        else
+        {
+            StateNameEdit = organization.StateName;
+
+        }
 
     }
     protected override async Task OnInitializedAsync()
