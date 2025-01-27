@@ -93,7 +93,7 @@ public partial class Customer
         {
             new MudMenuData
             {
-                Name = "Customer",
+                Name = @L["Customers"],
                 Label = @L[ValueOfMenue],
                 Items = new List<MenuItem>
                 {
@@ -106,7 +106,7 @@ public partial class Customer
             },
             new MudMenuData
             {
-                Name = "Organization",
+                Name = @L["Organizations"],
                 Label = @L[ValueOfMenue],
                 Items =itemsOrganizations
             },
