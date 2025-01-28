@@ -1,7 +1,12 @@
-﻿<MudItem sm="12" Class="d-flex flex-row justify-content-between">
-		<MudText  Class="mx-4 fw-bold">@Key</MudText>
-	<MudText Class="mx-4">@Value</MudText>
+﻿<MudItem sm="12" Class="d-flex flex-row justify-content-around">
+    <MudItem FullWidth="true" sm="6" Class="d-flex flex-row align-items-center justify-content-start" Style="flex: 1;">
+        <MudText Class="mx-4 fw-bold">@Key</MudText>
+    </MudItem>
+    <MudItem FullWidth="true" sm="6" Class="d-flex flex-row align-items-center justify-content-start" Style="flex: 1;">
+        <MudText Class="mx-4">@Value</MudText>
+    </MudItem>
 </MudItem>
+
 @code {
 	[Parameter] public string Key { get; set; }
 	[Parameter] public string Value { get; set; }
