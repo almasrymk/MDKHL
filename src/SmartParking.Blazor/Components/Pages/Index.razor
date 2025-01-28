@@ -184,6 +184,19 @@
                         <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
                     </MudMenu>
                 </MudItem>
+                @if (CultureInfo.CurrentCulture.Name == "en")               
+                {
+                    <MudItem Style="margin-left: 32px;font-size: 12px; margin-bottom: 4px;">
+                    @L["SAR"]
+                </MudItem>
+                }
+                else
+                {
+                    <MudItem Style="text-align:left ; font-size: 12px; margin-bottom: 4px;">
+                        @L["SAR"]
+                    </MudItem>
+
+                }
                 <MudChart ChartType="ChartType.Bar"
                           ChartSeries="@Series"
                           @bind-SelectedIndex="index"
@@ -193,6 +206,7 @@
                           Style="max-width: 100%; margin: 0 auto;" />
             </MudPaper>
         </MudItem>
+
     </div>
 
 </MudGrid>

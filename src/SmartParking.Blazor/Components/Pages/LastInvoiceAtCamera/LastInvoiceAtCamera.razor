@@ -16,18 +16,14 @@
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar
 @inject IInvoiceUtilityAppService InvoiceUtility
+@inject IGarageTransactionsAppService GarageTransactionAppService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime;
+
 <PageTitle>@L["LastInvoice"]</PageTitle>
 <MudGrid>
 
 	<MudItem sm="7" Class="d-flex flex-column">
-		@{
-			if (Invoice is null)
-			{
-				<p>@L["No invoice found."]</p>
-				return;
-			}
-		}
 		<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
 
 		<MudItem sm="12" Class="d-flex flex-row mb-4">
@@ -39,6 +35,7 @@
 
 
 		</MudItem>
+
 		<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
 		<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
 		<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
@@ -47,14 +44,18 @@
 		<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
 		<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
 
+
+
 	</MudItem>
 
 
-	<PriceSummaryComponent ComponentSize="5" ConfirmSize="6" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" PayInvoice="PayInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
+	<PriceSummaryComponent ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
 </MudGrid>
 
 @code {
 	private InvoiceDto Invoice  = new InvoiceDto();
+	private bool NoInvoice { get; set; } = false;
+	public PaymentMethod PaymentMethod { get; set; }
 
 
 	protected override async Task OnInitializedAsync()
@@ -64,8 +65,9 @@
 			Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
 		}catch(Exception ex){
 			SnackBar.ShowSnackbar(Snackbar,ex.Message , MudBlazor.Severity.Warning);
-			await Task.Delay(500);
-			Navigation.NavigateTo("/", true);
+			NoInvoice = true;
+			//await Task.Delay(1000);
+			//Navigation.NavigateTo("/", true);
 		}
 
 	}
@@ -76,7 +78,7 @@
 			OrganizationId = Invoice.OrganizationId,
 			PaymentCategory = Invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
 			InvoiceId = Invoice.Id,
-			PaymentMethod = PaymentMethod.Cash,
+			PaymentMethod = PaymentMethod,
 			Amount = Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2),
 			CustomerId = Invoice.CustomerId
 		};
@@ -86,6 +88,8 @@
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
 			await Task.Delay(500);
 			await OpenGate();
+			await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
+
 		}
 	}
 	private async Task OpenGate(){
@@ -102,5 +106,16 @@
 		}catch(Exception ex){
 			SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
 		}
+	}
+	private async Task Cancel()
+	{
+		var ExitTransctionId = Invoice.GarageTransactionExitId;
+		await InvoiceAppService.DeleteAsync(Invoice.Id);
+		await GarageTransactionAppService.DeleteAsync(ExitTransctionId);
+		SnackBar.ShowSnackbar(Snackbar, @L["Done"] + " " + @L["Delete"] + " " + @L["Invoice"], MudBlazor.Severity.Success);
+		await Task.Delay(1000);
+		Navigation.Refresh(true);
+
+
 	}
 }

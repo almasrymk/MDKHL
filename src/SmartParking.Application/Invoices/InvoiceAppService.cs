@@ -223,7 +223,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
         if (invoice is null)
         {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
+            throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
 
 
@@ -399,7 +399,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
        var invoice =await query.FirstOrDefaultAsync();
         if (invoice == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Vehicle")+ LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("Vehicle")+ " "+ LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
         }
        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
       

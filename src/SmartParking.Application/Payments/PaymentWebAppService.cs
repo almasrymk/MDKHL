@@ -230,7 +230,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
 
 
             // full date-time or includes hour
