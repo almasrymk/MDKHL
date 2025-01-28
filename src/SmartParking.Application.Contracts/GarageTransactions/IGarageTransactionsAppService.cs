@@ -57,6 +57,9 @@ namespace SmartParking.GarageTransactions
 
 		Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId);
 
+		
+		
+
 
     }
 }

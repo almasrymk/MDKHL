@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Entities.Invoices;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
+using SmartParking.MobileInvoices;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -30,8 +32,9 @@ public class KeeperController : AbpController
     private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
+    private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, IInvoiceUtilityAppService invoiceUtilityAppService = null)
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, IInvoiceUtilityAppService invoiceUtilityAppService = null, IGarageTransactionsAppService garageTransactionsAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -41,6 +44,7 @@ public class KeeperController : AbpController
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _usersAppService = usersAppService;
         _invoiceUtilityAppService = invoiceUtilityAppService;
+        _garageTransactionsAppService = garageTransactionsAppService;
     }
 
     [HttpPost("login")]
@@ -128,6 +132,25 @@ public class KeeperController : AbpController
         var invoice = await _keeperAppService.CheckoutAsync(InvoiceId);
         var openGate=invoice.IsSuccess&& await _invoiceUtilityAppService.SendRequestToOpenGate(invoice.Value.GarageTransactionExitId);
         return invoice;
+    }
+    [HttpPut("cancelinvoiceandmapping")]
+    [Authorize]
+    public async Task<Result<bool>> RemoveInvoiceAndUnMappEntryTransaction(int InvoiceId,int ExitTransactionId)
+    {
+        try
+        {
+            await _invoiceAppService.DeleteAsync(InvoiceId);
+            await _garageTransactionsAppService.DeleteAsync(ExitTransactionId);
+            return Result.Success();
+        }
+        catch (Exception ex) {
+            return Result<bool>.Invalid(new ValidationError
+            {
+                ErrorCode = "404",
+                ErrorMessage = ex.Message
+            });
+
+        }
     }
 
     [HttpGet("GetUnpaidInvoicesForPlateNumber")]
