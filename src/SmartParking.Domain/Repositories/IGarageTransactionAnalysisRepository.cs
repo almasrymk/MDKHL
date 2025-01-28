@@ -1,5 +1,6 @@
 ﻿using SmartParking.Entities.Analysis;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -13,4 +14,7 @@ namespace SmartParking.Repositories;
 public interface IGarageTransactionAnalysisRepository : IRepository<GarageTransaction, int>
 {
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysis(CustomerCategoryStatus category);
+    Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisPlate(string PlateNumber);
+    Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisCustomerId(Guid CustomerId);
+
 }
