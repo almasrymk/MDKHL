@@ -641,7 +641,8 @@
     "CameraAccessData": "بيانات الوصول للكاميرا",
     "Transaction": "حركة",
     "NoOrganization": "بدون منشأة",
-    "NotSelected" : "غير مختار"
+    "NotSelected": "غير مختار",
+    "Invoice": "مطابقة"
 
 
 

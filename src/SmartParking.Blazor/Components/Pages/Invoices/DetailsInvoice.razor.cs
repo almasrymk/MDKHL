@@ -52,6 +52,7 @@ public partial class DetailsInvoice
     public bool IsPaid { get; set; }
     public bool IsPackage { get; set; }
     private string LocalizedInvoiceType { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
 
 
 
@@ -123,7 +124,7 @@ public partial class DetailsInvoice
             OrganizationId=OrganizationId,
             PaymentCategory= IsPackage?PaymentCategory.Package:PaymentCategory.PaymentParking,
             InvoiceId= Id,
-            PaymentMethod=PaymentMethod.Cash,
+            PaymentMethod= PaymentMethod,
             Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
             CustomerId= CustomerId
         };
