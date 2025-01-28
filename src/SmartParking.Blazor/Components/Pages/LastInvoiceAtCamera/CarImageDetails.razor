@@ -1,14 +1,54 @@
 ﻿ <MudItem sm="5" Class="flex-column">
 	<MudText>@Title</MudText>
 	<Div Class="mt-4">
-		<MudImage Src="@Image" Width="200" Height="200" Class="bg_w_foto mt-4" onerror="this.src='images/garages/car_placeholder.jpg'" />
+		<MudImage Src="@Image" Width="200" @onmousemove="SetZoomOrigin" @onmouseleave="ResetZoom" Height="200" Class="bg_w_foto mt-4" onerror="this.src='images/garages/car_placeholder.jpg'" />
 		<MudText Class="mt-4">@Date.ToString()</MudText>
 	</Div>
 </MudItem>
+<style>
+	.zoom-container {
+		position: relative;
+		display: inline-block;
+		overflow: hidden;
+		width: 400px; /* Container width */
+		height: 300px; /* Container height */
+		cursor: zoom-in;
+	}
+
+		.zoom-container img {
+			width: 100%;
+			height: 100%;
+			transition: transform 0.3s ease, transform-origin 0.3s ease;
+			transform: scale(1);
+		}
+
+		.zoom-container:hover img {
+			transform: scale(2); /* Adjust the scale for zoom level */
+		}
+</style>
+
 @code {
 	[Parameter] public string Title { get; set; }
 	[Parameter] public string Image { get; set; }
 	[Parameter] public DateTime Date { get; set; }
+
+	private string TransformOrigin { get; set; } = "center center";
+	private string Scale { get; set; } = "scale(1)";
+	private void SetZoomOrigin(MouseEventArgs e)
+	{
+		// Calculate the position of the mouse relative to the container
+		double xPercent = e.OffsetX / 400 * 100; // 400 is the container width
+		double yPercent = e.OffsetY / 300 * 100; // 300 is the container height
+
+		TransformOrigin = $"{xPercent}% {yPercent}%";
+		Scale = "scale(2)"; // Zoom level when hovered
+	}
+
+	private void ResetZoom(MouseEventArgs e)
+	{
+		TransformOrigin = "center center";
+		Scale = "scale(1)"; // Reset zoom when mouse leaves
+	}
 
 
 }
