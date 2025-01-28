@@ -173,11 +173,10 @@ public class GarageTransactionsAppService :
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
+                or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
                 or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             );
@@ -448,11 +447,13 @@ public class GarageTransactionsAppService :
     }
 
     /// <inheritdoc/>
-	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
+	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         var queryable = await _repository.GetQueryableAsync();
 
         queryable = queryable.Where(t => t.TenantId == tenantId);
+
+        queryable = ApplySearch(input, queryable);
 
         if (!input.Sorting.IsNullOrEmpty())
         {
