@@ -72,20 +72,20 @@ public class AuthenticationsController : ControllerBase
         return await _usersAppService.UpdateProfileDataMobileAsync(_user.Id, input);
 
     }
-    [HttpPost("addprofileimage")]
-    [Authorize]
-    public async Task<Result<UserDataDto>> AddProfileImage(string image)
-    {
-        var currentCustomerId=await _authenticationApp.GetCurrentCustomerId();
-        var result = await _usersAppService.UpdateImageAsync(currentCustomerId, image);
-        return Result.Success( new UserDataDto
-        {
-            FullName=result.Name,
-            Email=result.Email,
-            Phone=result.PhoneNumber,
-            Image=result.Image,
-        });
-    }
+    //[HttpPost("addprofileimage")]
+    //[Authorize]
+    //public async Task<Result<UserDataDto>> AddProfileImage(string image)
+    //{
+    //    var currentCustomerId=await _authenticationApp.GetCurrentCustomerId();
+    //    var result = await _usersAppService.UpdateImageAsync(currentCustomerId, image);
+    //    return Result.Success( new UserDataDto
+    //    {
+    //        FullName=result.Name,
+    //        Email=result.Email,
+    //        Phone=result.PhoneNumber,
+    //        Image=result.Image,
+    //    });
+    //}
 
 
     [HttpPost("register")]
@@ -133,6 +133,7 @@ public class AuthenticationsController : ControllerBase
     
     [HttpPost("changeImage")]
     [Authorize]
+    [IgnoreAntiforgeryToken]
     public async Task<Result<string>> ChangeImage([FromBody]string image)
     {
         var user =  await _usersAppService.UpdateImageAsync(_user.Id, image);
@@ -141,7 +142,7 @@ public class AuthenticationsController : ControllerBase
     
     [HttpGet("GetImage")]
     [Authorize]
-    public async Task<Result<string?>> GetImage(string image)
+    public async Task<Result<string?>> GetImage()
     {
         try
         {
