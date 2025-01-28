@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
@@ -172,11 +173,10 @@ public class GarageTransactionsAppService :
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
+                or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
                 or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             );
@@ -335,10 +335,29 @@ public class GarageTransactionsAppService :
     }
     public async override Task DeleteAsync(int id)
     {
-
+        var transactionDto=await GetAsync(id);
+        if (transactionDto == null)
+        {
+           throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") +" "+LocalizationHelper.GetLocalizedString("NotFoundValidation")); 
+        }
+        if (transactionDto.CameraType == CameraType.Exit)
+        {
+            await UnMappingEntryTransactionForDeletedExit(transactionDto.PlateNumber);
+        }
         await base.DeleteAsync(id);
     }
+    private async Task UnMappingEntryTransactionForDeletedExit(string plateNumber)
+    {
+        var query = await _repository.GetQueryableAsync();
 
+        var latestTransaction = query
+                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == false && gt.IsMapped==true)
+                .OrderByDescending(gt => gt.AccurateTime) 
+                .FirstOrDefault();
+        latestTransaction.IsIn = true;
+        latestTransaction.IsMapped = false;
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
     // Function to convert base64 string to image and save it
     public string SaveBase64Image(CreateUpdateGarageTransactionDto input)
     {
@@ -428,11 +447,13 @@ public class GarageTransactionsAppService :
     }
 
     /// <inheritdoc/>
-	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
+	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         var queryable = await _repository.GetQueryableAsync();
 
         queryable = queryable.Where(t => t.TenantId == tenantId);
+
+        queryable = ApplySearch(input, queryable);
 
         if (!input.Sorting.IsNullOrEmpty())
         {
