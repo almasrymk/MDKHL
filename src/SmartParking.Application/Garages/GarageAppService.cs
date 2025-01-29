@@ -113,14 +113,29 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             if (subscription == null || (subscription.NumbersOfGarages > numberOfGaragesForOrganization.Count + 1 &&
            (organization.UsedSlots + input.MaxCapacity > subscription.ParkingSlot || input.MaxCapacity > subscription.ParkingSlot)))
             {
-            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation") + input.MaxCapacity + LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUpdate") + (subscription.ParkingSlot - organization.UsedSlots));
             }
 
         return subscription;
         
     }
-    
-    
+
+    private async Task<Subscription> CheckSubscriptionUpdateLimitsAsync(Organization organization, CreateUpdateGarageDto input , int usedSlots)
+    {
+
+        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId && x.Status == Enums.Status.Active);
+        var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+
+        if (subscription == null || (subscription.NumbersOfGarages > numberOfGaragesForOrganization.Count + 1 &&
+       (usedSlots + input.MaxCapacity > subscription.ParkingSlot || input.MaxCapacity > subscription.ParkingSlot)))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation") + input.MaxCapacity + LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUpdate") + (subscription.ParkingSlot - usedSlots));
+        }
+
+        return subscription;
+
+    }
+
     [RemoteService(isEnabled: false)]
 
     private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization,int camerasCout , Subscription subscription)
@@ -205,8 +220,9 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         using (DataFilter.Disable<IMultiTenant>())
         {
             organization = await GetAndValidateOrganizationAsync(input.OrganizationId);
-            var subscription = await CheckSubscriptionLimitsAsync(organization, input);
             garage = await GetAndValidateGarageAsync(id);
+            var usedSlots = organization.UsedSlots - garage.MaxCapacity;
+            var subscription = await CheckSubscriptionUpdateLimitsAsync(organization, input, usedSlots);
             input.TenantId = organization.TenantId;
             CheckSolt(input, organization);
             numberOfGaragesInInputOrganization = await GetNumberOfGaragesInOrganizationAsync(input.OrganizationId);
