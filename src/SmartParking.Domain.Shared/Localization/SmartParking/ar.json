@@ -559,7 +559,7 @@
     "GreaterZeroValidtion": " يجب أن يكون أكبر من 0",
     "LessThan9999Validation": "القيمة تساوي 9999 أوأقل.",
     "SummationValidation": "خطأ في مجموع",
-    "UpgradeSubscriptionValidation": "اشتراكك الحالي لا يسمح بالإضافة",
+    "UpgradeSubscriptionValidation": "اشتراكك الحالي لا يسمح باإضافة :",
     "InvalidValidation": "قيمة غير صحيحة",
     "DuplicateValidation": "موجود من قبل",
     "Picture": "الصورة",
@@ -642,7 +642,8 @@
     "Transaction": "حركة",
     "NoOrganization": "بدون منشأة",
     "NotSelected": "غير مختار",
-    "Invoice": "مطابقة"
+    "Invoice": "مطابقة",
+    "UpgradeSubscriptionValidationUpdate": " اماكن ,المسموح لك : "
 
 
 
