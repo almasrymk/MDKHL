@@ -644,7 +644,10 @@
     "NotSelected": "غير مختار",
     "Invoice": "مطابقة",
     "UpgradeSubscriptionValidationUpdate": " اماكن ,المسموح لك : ",
-    "Permission:Reports": "التقارير"
+    "Permission:Reports": "التقارير",
+    "Permission:IT": "تقارير IT",
+    "Permission:SecurityManager": "تقارير مدير الأمن",
+    "Permission:FinancialManagement": "تقارير الإدراة المالية"
 
 
   }

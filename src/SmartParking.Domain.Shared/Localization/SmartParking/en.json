@@ -618,7 +618,10 @@
     "RequiredValidation": "Is Required",
     "Invoice": "Invoice",
     "UpgradeSubscriptionValidationUpdate": " slots , allow for you :",
-    "Permission:Reports": "Reports"
+    "Permission:Reports": "Reports",
+    "Permission:IT": "IT Reports",
+    "Permission:SecurityManager": "Security Manager Reports",
+    "Permission:FinancialManagement": "Financial Management Reports"
 
 
 
