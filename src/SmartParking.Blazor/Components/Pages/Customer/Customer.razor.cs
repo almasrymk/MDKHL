@@ -28,6 +28,7 @@ using SmartParking.Utilities;
 using SmartParking.Blazor.Components.Shared;
 using Microsoft.JSInterop;
 using System.Data;
+using SmartParking.Permissions.Reports;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -60,7 +61,10 @@ public partial class Customer
 
     protected async override Task OnInitializedAsync()
     {
-        await CreateMenue();
+        if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result)
+        {
+         await CreateMenue();
+        }
         if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
