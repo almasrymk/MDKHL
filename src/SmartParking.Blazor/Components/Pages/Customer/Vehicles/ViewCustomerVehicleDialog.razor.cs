@@ -18,6 +18,10 @@ using Volo.Abp.MultiTenancy;
 using SmartParking.Entities.Vehicles;
 using System.Text.RegularExpressions;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Analysis;
+using Microsoft.JSInterop;
+using SmartParking.PDF;
+using SmartParking.Utilities;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -127,7 +131,31 @@ public partial class ViewCustomerVehicleDialog
         }
         itemData = tableData;
     }
+    public async Task ShowCustomerTransactions(RowDef row)
+    {
+        var plateNumber = row.Cells[1].Value;
+        TableData Data;
+        if (CurrentTenant.Id == null)
+        {
+           Data = await AnalysisAppService.ReportGarageTransactionForMDKHLPlateAsync(plateNumber);
+        }
+        else
+        {
+            Data=await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber);
+        }
+        await DownloadExcel(Data);
 
+    }
+    public async Task DownloadExcel(TableData Data)
+    {
+        var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
+        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+        await GenerateFilesAppService.ExportToExcel(Data, file);
+        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+    }
     private async Task<IDialogReference> HandleAdd()
     {
 
