@@ -12,7 +12,7 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using Volo.Abp.Users;
 using SmartParking.Enums;
-using System.Globalization;
+using System.Globalization; 
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Permissions.PackagePermissions;
@@ -355,6 +355,13 @@ public partial class Customer
         Navigation.NavigateTo($"/customers/view/{customerId}", true);
 
 
+    } 
+    public void ShowCustomerTransactions(RowDef row)
+    {
+        var customerId = Guid.Parse(row.Cells[0].Value);
+
+
+
     }
 
     public async Task<IDialogReference> AssignPackage(string id)
@@ -398,19 +405,13 @@ public partial class Customer
     {
         try
         {
-            
+
             ValueOfMenue = selectedValue;
-            
+
             if (currrentTenant != null)
                 TenantId = currrentTenant.Id;
             var Data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
-            var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
-            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
-            await GenerateFilesAppService.ExportToExcel(Data, file);
-            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
-
-            await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+            await DownloadExcel(Data);
         }
         catch (Exception ex)
         {
@@ -418,6 +419,17 @@ public partial class Customer
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
         }
        
+    }
+
+    private async Task DownloadExcel(TableData Data)
+    {
+        var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
+        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+        await GenerateFilesAppService.ExportToExcel(Data, file);
+        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
     }
 
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
