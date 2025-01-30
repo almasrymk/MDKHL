@@ -185,18 +185,13 @@ public class KeeperController : AbpController
         return invoice;
     }
 
-    [HttpPost("addprofileimage")]
+    [HttpPost("changeImage")]
     [Authorize]
-    public async Task<Result<UserDataDto>> AddProfileImage(string image)
+    [IgnoreAntiforgeryToken]
+    public async Task<Result<string>> ChangeImage([FromBody] string image)
     {
-        var result = await _usersAppService.UpdateImageAsync(CurrentUser.Id, image);
-        return Result.Success(new UserDataDto
-        {
-            FullName = result.Name,
-            Email = result.Email,
-            Phone = result.PhoneNumber,
-            Image = result.Image,
-        });
+        var user = await _usersAppService.UpdateImageAsync(_currentUser.Id, image);
+        return Result.Success(user.Image);
     }
 
 }
