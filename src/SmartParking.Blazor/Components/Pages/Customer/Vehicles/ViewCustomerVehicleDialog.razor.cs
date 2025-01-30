@@ -143,18 +143,18 @@ public partial class ViewCustomerVehicleDialog
         {
             Data=await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber);
         }
-        await DownloadExcel(Data);
+        await DownloadExcel(Data,plateNumber);
 
     }
-    public async Task DownloadExcel(TableData Data)
+    public async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
-        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+        string file = System.IO.Path.Combine(folderName, $"{Name} Transactions.xlsx");
         await GenerateFilesAppService.ExportToExcel(Data, file);
         SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
-        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Name} Transactions.xlsx", "_blank");
     }
     private async Task<IDialogReference> HandleAdd()
     {

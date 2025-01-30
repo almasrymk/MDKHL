@@ -244,7 +244,7 @@
                                     }
                                     @if (ShowCustomerTransactionsMethod.HasDelegate && ShowCustomerTransactions)
                                     {
-                                        <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
+                                        <MudIconButton OnClick="@(e => ShowCustomerTransactionsMethod.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CompareArrows"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Tertiary"
@@ -253,7 +253,7 @@
                                     }
                                     @if (ShowVehicleTransactionsMethod.HasDelegate && ShowVehicleTransactions)
                                     {
-                                        <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
+                                        <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CompareArrows"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Tertiary"
