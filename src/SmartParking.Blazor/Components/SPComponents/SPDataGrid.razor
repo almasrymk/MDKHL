@@ -242,6 +242,24 @@
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
                                     }
+                                    @if (ShowCustomerTransactionsMethod.HasDelegate && ShowCustomerTransactions)
+                                    {
+                                        <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
+                                                       Icon="@Icons.Material.Filled.CompareArrows"
+                                                       Variant="Variant.Filled"
+                                                       Color="MudBlazor.Color.Tertiary"
+                                                       Size="MudBlazor.Size.Small"
+                                                       Class="mx-1" />
+                                    }
+                                    @if (ShowVehicleTransactionsMethod.HasDelegate && ShowVehicleTransactions)
+                                    {
+                                        <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
+                                                       Icon="@Icons.Material.Filled.CompareArrows"
+                                                       Variant="Variant.Filled"
+                                                       Color="MudBlazor.Color.Tertiary"
+                                                       Size="MudBlazor.Size.Small"
+                                                       Class="mx-1" />
+                                    }
                                     @if (OnClickRowDelete.HasDelegate && ShowDelete && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
                                         <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item))"

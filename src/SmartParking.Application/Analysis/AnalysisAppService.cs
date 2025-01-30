@@ -332,16 +332,22 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
    
 
-    public async Task<TableData> ReortGarageTransactionPlateAsync(string PlateNumber)
+    public async Task<TableData> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
-            return dataTable;
+            return await ReportGarageTransactionForOrganization(PlateNumber);
         }
 
     }
+
+    public async Task<TableData> ReportGarageTransactionForOrganization(string PlateNumber)
+    {
+        var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber);
+        var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
+        return dataTable;
+    }
+
     public async Task<TableData> ReortGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())

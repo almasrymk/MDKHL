@@ -356,11 +356,11 @@ public partial class Customer
 
 
     } 
-    public void ShowCustomerTransactions(RowDef row)
+    public async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-
-
+        var Data = await AnalysisAppService.ReortGarageTransactionCustomerIdAsync(customerId);
+        await DownloadExcel(Data);
 
     }
 
@@ -421,7 +421,7 @@ public partial class Customer
        
     }
 
-    private async Task DownloadExcel(TableData Data)
+    public async Task DownloadExcel(TableData Data)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
         string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
