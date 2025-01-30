@@ -32,40 +32,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _usersAppService = usersAppService;
     }
 
-    /// <inheritdoc/>
-    public async Task<Result> SetNewPasswordAsync(ChangePasswordDto input)
-    {
-        var Name = CurrentUser.Name;
-
-		Volo.Abp.Identity.IdentityUser? user;
-        using(DataFilter.Disable<IMultiTenant>())
-        {
-		  user = await _userManager.FindByNameAsync(Name);
-
-		}
-
-		if (user is null)
-        {
-            return Result.Invalid(new ValidationError
-            {
-                ErrorMessage = "User Not Found"
-            });
-        }
-
-		await _userManager.RemovePasswordAsync(user);
-		var password = await _userManager.AddPasswordAsync(user, input.NewPassword);
-
-		if (password.Succeeded)
-		{
-			return Result.SuccessWithMessage("Set New Password Successfully");
-
-		}
-
-		return Result.Invalid(new Results.ValidationError
-		{
-			ErrorMessage = "Incorrect password."
-		});
-	}
+   
 
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> GetUserDataAsync()
