@@ -64,4 +64,8 @@ public interface IAnalysisAppService : IApplicationService
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
     Task<TableData> ReortGarageTransactionCustomerIdAsync(Guid CustomerId);
+    Task<TableData> ReortGarageStatusDateAsync(DateTime accurateDate); 
+    Task<TableData> ReortGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
+    Task<TableData> ReportGarageTransactionForOrganization(string PlateNumber);
+    Task<TableData> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
 }

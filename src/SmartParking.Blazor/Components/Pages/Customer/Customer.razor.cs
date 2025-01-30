@@ -28,6 +28,7 @@ using SmartParking.Utilities;
 using SmartParking.Blazor.Components.Shared;
 using Microsoft.JSInterop;
 using System.Data;
+using SmartParking.Permissions.Reports;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -60,7 +61,10 @@ public partial class Customer
 
     protected async override Task OnInitializedAsync()
     {
-        await CreateMenue();
+        if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result)
+        {
+         await CreateMenue();
+        }
         if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
@@ -356,11 +360,11 @@ public partial class Customer
 
 
     } 
-    public void ShowCustomerTransactions(RowDef row)
+    public async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-
-
+        var Data = await AnalysisAppService.ReortGarageTransactionCustomerIdAsync(customerId);
+        await DownloadExcel(Data, row.Cells[1].Value);
 
     }
 
@@ -411,7 +415,7 @@ public partial class Customer
             if (currrentTenant != null)
                 TenantId = currrentTenant.Id;
             var Data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
-            await DownloadExcel(Data);
+            await DownloadExcel(Data,Data.Name);
         }
         catch (Exception ex)
         {
@@ -421,15 +425,15 @@ public partial class Customer
        
     }
 
-    private async Task DownloadExcel(TableData Data)
+    public async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
-        string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+        string file = System.IO.Path.Combine(folderName, $"{Name} Transactions.xlsx");
         await GenerateFilesAppService.ExportToExcel(Data, file);
         SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
-        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Name} Transactions.xlsx", "_blank");
     }
 
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)

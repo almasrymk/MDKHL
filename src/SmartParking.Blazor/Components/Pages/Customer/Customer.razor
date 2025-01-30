@@ -6,6 +6,7 @@
 @using SmartParking.Organizations
 @using SmartParking.PDF
 @using SmartParking.Permissions.CustomerPermissions
+@using SmartParking.Permissions.Reports
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @inject IDialogService DialogService
@@ -24,5 +25,5 @@
 <PageTitle>@L["Customers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
 
-<SPDataGrid PageName=@L["Customers"] Menus="@MenuDatas" ShowMenue="true" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="FetchTableData" ShowAssign=" AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.AddRoleToCustomer).Result" OnClickAssign="AssignRole" OnClickRowView="ViewCustomer"></SPDataGrid>
+<SPDataGrid PageName=@L["Customers"] Menus="@MenuDatas" ShowMenue="true" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="FetchTableData" ShowAssign=" AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.AddRoleToCustomer).Result" OnClickAssign="AssignRole" ShowCustomerTransactions="AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result" ShowCustomerTransactionsMethod="ShowCustomerTransactions" OnClickRowView="ViewCustomer"></SPDataGrid>
 
