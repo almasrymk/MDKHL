@@ -618,6 +618,12 @@
     "RequiredValidation": "Is Required",
     "Invoice": "Invoice",
     "UpgradeSubscriptionValidationUpdate": " slots , allow for you :",
+    "Permission:Reports": "Reports",
+    "Permission:IT": "IT Reports",
+    "Permission:SecurityManager": "Security Manager Reports",
+    "Permission:FinancialManagement": "Financial Management Reports"
+
+    "UpgradeSubscriptionValidationUpdate": " slots , allow for you :",
     "Reports": "Reports",
     "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions"
 
