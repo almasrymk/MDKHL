@@ -61,7 +61,7 @@ public partial class Customer
 
     protected async override Task OnInitializedAsync()
     {
-        if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result)
+        if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currrentTenant.Id is null)
         {
          await CreateMenue();
         }
