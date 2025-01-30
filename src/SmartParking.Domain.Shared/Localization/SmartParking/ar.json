@@ -649,7 +649,9 @@
     "Permission:SecurityManager": "تقارير مدير الأمن",
     "Permission:FinancialManagement": "تقارير الإدراة المالية",
     "Reports": "تقارير",
-    "TotalCustomersAndTheirTransactions": "تقرير العملاء وحركة سياراتهم"
+    "TotalCustomersAndTheirTransactions": "تقرير العملاء وحركة سياراتهم",
+    "GarageStatusDateAsync": "حالة الجراج في تاريخ" , 
+    "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ" 
 
 
 

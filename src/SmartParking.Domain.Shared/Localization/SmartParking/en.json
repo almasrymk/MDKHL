@@ -623,7 +623,9 @@
     "Permission:SecurityManager": "Security Manager Reports",
     "Permission:FinancialManagement": "Financial Management Reports",
     "Reports": "Reports",
-    "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions"
+    "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions",
+    "GarageStatusDateAsync": "Garage Status on Accurate Date",
+    "GarageStatusRangeAsync" :  "Garage Status between Date "
 
 
 
