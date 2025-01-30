@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
+using SmartParking.Analysis;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
@@ -13,8 +15,10 @@ using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
+using SmartParking.PDF;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -192,6 +196,30 @@ public partial class Garage
     }
     private async Task CreateMenue()
     {
+        var MenuDatasMdkhl = new List<MudMenuData>
+        {
+           await CreateOrganizationMenue(),
+           CreateReportsMenue()
+
+        };
+
+        var MenuDatasOrganization = new List<MudMenuData>
+        {
+            CreateReportsMenue()
+        };
+
+        if (currentTenant.Id is null)
+        {
+            MenuDatas = MenuDatasMdkhl;
+        }
+        else
+        {
+            MenuDatas = MenuDatasOrganization;
+        }
+
+    }
+    private async Task<MudMenuData> CreateOrganizationMenue()
+    {
         var itemsOrganizations = new List<MenuItem>();
         var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
@@ -210,15 +238,55 @@ public partial class Garage
             }
         }
 
-        MenuDatas = new List<MudMenuData>
+        return new MudMenuData
         {
-            new MudMenuData
-            {
-                Name = @L["Organizations"],
-            Label = @L[ValueOfMenue],
-                Items =itemsOrganizations
-            },
+            Name = L["Organizations"],
+            Label = L[ValueOfMenue],
+            Items = itemsOrganizations
         };
+    }
+    private MudMenuData CreateReportsMenue()
+    {
+        return new MudMenuData
+        {
+            Name = "Reports",
+            Label = @L[ValueOfMenue],
+            Items = new List<MenuItem>
+                {
+                    new MenuItem {  MenueName = "Reports", Label = @L["GarageStatusDateAsync"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("GarageStatusDateAsync"))   },
+                    new MenuItem {  MenueName = "Reports", Label = @L["GarageStatusRangeAsync"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("GarageStatusRangeAsync"))   },
+
+                }
+            ,
+            IsExport = true
+        };
+    }
+
+
+    public async Task HandleSelectReportAsync(string selectedValue)
+    {
+        try
+        {
+
+            ValueOfMenue = selectedValue;
+            DateTime accurateTime = new DateTime();
+            if (currentTenant != null)
+                TenantId = currentTenant.Id;
+            var Data = await AnalysisAppService.ReortGarageStatusDateAsync(accurateTime);
+            var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+            await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
     }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
