@@ -82,7 +82,9 @@
                             <MudMenu Label="@L[@menu.Name]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
                                 @foreach (var item in menu.Items)
                                 {
-                                    <MudMenuItem OnClick="@(()=>HandleMunue(@item.Label,@item.OnClick))">@L[@item.Label]</MudMenuItem>
+                                    if(!item.IsShow)
+                                        continue;
+                                     <MudMenuItem OnClick="@(()=>HandleMunue(@item.Label,@item.OnClick))">@L[@item.Label]</MudMenuItem>
                                 }
                             </MudMenu>
                         }

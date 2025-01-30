@@ -29,6 +29,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class Customer
 {
+    private SPDataGrid DataGridComponent { get; set; }
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
     private bool assign = true;
@@ -71,62 +72,18 @@ public partial class Customer
 
     private async Task CreateMenue()
     {
-        var itemsOrganizations = new List<MenuItem>();
-        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue,null)) });
-        if (CultureInfo.CurrentCulture.Name == "ar")
-        {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue,org.TenantId)) });
-            }
-        }
-        else
-        {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue,org.TenantId)) });
-            }
-        }
-       
-       var  MenuDatasMdkhl = new List<MudMenuData>
-        {
-            new MudMenuData
-            {
-                Name = "Package",
-                Label = @L[ValueOfMenue],
-                Items = new List<MenuItem>
-                {
-                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
-                }
-            },
-            new MudMenuData
-            {
-                Name = @L["Organizations"],
-                Label = @L[ValueOfMenue],
-                Items =itemsOrganizations
-            },
-        };
         
-        var  MenuDatasOrganization = new List<MudMenuData>
+        var MenuDatasMdkhl = new List<MudMenuData>
         {
-            new MudMenuData
-            {
-                Name = "Package",
-                Label = @L[ValueOfMenue],
-                Items = new List<MenuItem>
-                {
-                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
-                }
-            },
+            CreatePackageMenue(),
+           await CreateOrganizationMenue()
+
+        };
+
+        var MenuDatasOrganization = new List<MudMenuData>
+        {
+            CreatePackageMenue()
+
         };
 
         if (currrentTenant.Id is null)
@@ -137,6 +94,73 @@ public partial class Customer
         {
             MenuDatas = MenuDatasOrganization;
         }
+    }
+
+    private async Task<MudMenuData> CreateOrganizationMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        
+        return new MudMenuData
+        {
+            Name = L["Organizations"],
+            Label = L[ValueOfMenue],
+            Items = itemsOrganizations
+        };
+    }
+
+    private MudMenuData CreatePackageMenue()
+    {
+        return new MudMenuData
+        {
+            Name = "Package",
+            Label = @L[ValueOfMenue],
+            Items = new List<MenuItem>
+                {
+                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
+                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
+                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
+                }
+        };
+    } 
+    
+    private MudMenuData CreateReportsMenue()
+    {
+        return new MudMenuData
+        {
+            Name = "Reports",
+            Label = @L[ValueOfMenue],
+            Items = new List<MenuItem>
+                {
+                    new MenuItem { MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("TotalCustomersAndTheirTransactions"))   },
+                    
+                }
+        };
+    }
+
+    private List<MudMenuData> CreateoragnizationMenue()
+    {
+        return new List<MudMenuData>
+        {
+            CreatePackageMenue()
+        };
     }
 
     /// <summary>
@@ -361,6 +385,24 @@ public partial class Customer
 
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
+    }
+    
+    public async Task HandleSelectReportAsync(string selectedValue)
+    {
+        ValueOfMenue = selectedValue;
+        itemData = new TableData();
+        //var request = new PagedAndSortedAndSearchResultRequestDto
+        //{
+        //    MaxResultCount = RowPerPage,
+        //    SkipCount = (CurrentPage - 1) * RowPerPage,
+        //    Sorting = sortColumn,
+        //    SearchingTerm = termSearch
+        //};
+
+        //PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
+
+        //TotalItem = (int)customers.TotalCount;
+        //await CreateTable(customers);
     }
     
     public async Task HandleSelectTenantAsync(string selectedValue,Guid? tenantId)

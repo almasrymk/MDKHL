@@ -50,12 +50,15 @@ namespace SmartParking.GarageTransactions
 		/// <param name="input">Input used for pagination</param>
 		/// <param name="tenantId">id of tenant</param>
 		/// <returns>Paged Result of garage transactions</returns>
-		Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId);
+		Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
 		Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
 		string SaveBase64Image(CreateUpdateGarageTransactionDto input);
 
 		Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId);
+
+		
+		
 
 
     }
