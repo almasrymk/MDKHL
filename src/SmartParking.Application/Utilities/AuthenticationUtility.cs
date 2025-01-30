@@ -103,8 +103,15 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
         {
             throw new ValidationException(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         }
-    }    
-
+    }
+    public async Task CheckUserNameIsValid(string name)
+    {
+        await Task.Yield();
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ValidationException(LocalizationHelper.GetLocalizedString("UserName") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+    }
     public async Task<IdentityUser> CheckPhoneISFound(string phone)
     {
         using (_dataFilter.Disable<IMultiTenant>())
