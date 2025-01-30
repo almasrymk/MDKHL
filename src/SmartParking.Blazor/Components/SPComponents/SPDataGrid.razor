@@ -82,7 +82,9 @@
                             <MudMenu Label="@L[@menu.Name]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
                                 @foreach (var item in menu.Items)
                                 {
-                                    <MudMenuItem OnClick="@(()=>HandleMunue(@item.Label,@item.OnClick))">@L[@item.Label]</MudMenuItem>
+                                    if(!item.IsShow)
+                                        continue;
+                                     <MudMenuItem OnClick="@(()=> HandleMunue(@item.Label,@item.OnClick,menu.IsExport))">@L[@item.Label]</MudMenuItem>
                                 }
                             </MudMenu>
                         }
@@ -235,6 +237,24 @@
                                     {
                                         <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.AdminPanelSettings"
+                                                       Variant="Variant.Filled"
+                                                       Color="MudBlazor.Color.Tertiary"
+                                                       Size="MudBlazor.Size.Small"
+                                                       Class="mx-1" />
+                                    }
+                                    @if (ShowCustomerTransactionsMethod.HasDelegate && ShowCustomerTransactions)
+                                    {
+                                        <MudIconButton OnClick="@(e => ShowCustomerTransactionsMethod.InvokeAsync(context.Item))"
+                                                       Icon="@Icons.Material.Filled.CompareArrows"
+                                                       Variant="Variant.Filled"
+                                                       Color="MudBlazor.Color.Tertiary"
+                                                       Size="MudBlazor.Size.Small"
+                                                       Class="mx-1" />
+                                    }
+                                    @if (ShowVehicleTransactionsMethod.HasDelegate && ShowVehicleTransactions)
+                                    {
+                                        <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))"
+                                                       Icon="@Icons.Material.Filled.CompareArrows"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Tertiary"
                                                        Size="MudBlazor.Size.Small"

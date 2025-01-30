@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
+using SmartParking.Analysis;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
@@ -13,8 +15,10 @@ using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
+using SmartParking.PDF;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -192,6 +196,24 @@ public partial class Garage
     }
     private async Task CreateMenue()
     {
+        var MenuDatasMdkhl = new List<MudMenuData>
+        {
+           await CreateOrganizationMenue(),
+          
+
+        };
+
+       
+
+        if (currentTenant.Id is null)
+        {
+            MenuDatas = MenuDatasMdkhl;
+        }
+        
+
+    }
+    private async Task<MudMenuData> CreateOrganizationMenue()
+    {
         var itemsOrganizations = new List<MenuItem>();
         var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
@@ -210,16 +232,14 @@ public partial class Garage
             }
         }
 
-        MenuDatas = new List<MudMenuData>
+        return new MudMenuData
         {
-            new MudMenuData
-            {
-                Name = @L["Organizations"],
-            Label = @L[ValueOfMenue],
-                Items =itemsOrganizations
-            },
+            Name = L["Organizations"],
+            Label = L[ValueOfMenue],
+            Items = itemsOrganizations
         };
     }
+  
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>

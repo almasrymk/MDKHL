@@ -62,45 +62,42 @@
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
-                        @if (CultureInfo.CurrentCulture.Name == "en"){
-
 
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionEnName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
-                        </MudItem>
-                        }else{
+                            <MudTextField ReadOnly="true"
+                                          Variant="Variant.Text"
+                                          Label=@L["Country"]
+                                          @bind-Value="@CountryName">
 
-                        <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionArName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
-                        </MudItem>
-                        }
-                        <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveCameras" HideSpinButtons="true"  Label=@L["Num Of Cameras"] />
+                            </MudTextField>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveGarages" HideSpinButtons="true" Label=@L["ParkingSlot"] />
+                            <MudTextField ReadOnly="true"
+                                          Variant="Variant.Text"
+                                          Label=@L["Region"]
+                                          @bind-Value="@RegionName">
+                            </MudTextField>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="NumbersOfGarages" />
-
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="NumberOfCameras" />
-
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="NumberOfUsers" />
-
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfMobileCustomers" />
-
+                            <MudTextField ReadOnly="true"
+                                          Variant="Variant.Text"
+                                          Label=@L["State"]
+                                          @bind-Value="@StateName">
+                            </MudTextField>
                         </MudItem>
 
 
+                        <MudItem sm="4">
+                            <MudTextField ReadOnly="true"
+                                          Variant="Variant.Text"
+                                          Label=@L["City"]
+                                          @bind-Value="@CityName">
+
+                            </MudTextField>
+                        </MudItem>
+
+                        @* Address *@
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
-
-
                         <MudItem sm="4">
                             <MudNumericField ReadOnly="true" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                         </MudItem>
@@ -121,45 +118,79 @@
                         <MudItem sm="8">
                             <MudNumericField ReadOnly="true" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
-                       
-                       
-
+                        
+                        @* Subscription  *@
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+                        @if (CultureInfo.CurrentCulture.Name == "en")
+                        {
 
+
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" @bind-Value="SubscriptionEnName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                            </MudItem>
+                        }
+                        else
+                        {
+
+                            <MudItem sm="4">
+                                <MudNumericField ReadOnly="true" @bind-Value="SubscriptionArName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                            </MudItem>
+                        }
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true"
-                                          Variant="Variant.Text"
-                                          Label=@L["Country"]
-                                          @bind-Value="@CountryName">
-
-                            </MudTextField>
+                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveCameras" HideSpinButtons="true" Label=@L["Num Of Cameras"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true"
-                                          Variant="Variant.Text"
-                                          Label=@L["Region"]
-                                          @bind-Value="@RegionName">
-                            </MudTextField>
+                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveGarages" HideSpinButtons="true" Label=@L["ParkingSlot"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" 
-                                Variant="Variant.Text"
-                                Label=@L["State"]
-                                @bind-Value="@StateName">
-                            </MudTextField>
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="NumbersOfGarages" />
+
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="NumberOfCameras" />
+
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="NumberOfUsers" />
+
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfMobileCustomers" />
+
                         </MudItem>
                        
-                      
-                        <MudItem sm="4">
-                            <MudTextField
-                                ReadOnly="true"
-                                Variant="Variant.Text"
-                                Label=@L["City"]
-                                @bind-Value="@CityName">
-                                
-                            </MudTextField>
-                        </MudItem>
                        
+
+                       
+
+
+                        @* Hours *@
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+                        <MudItem sm="4">
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" ReadOnly="true" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudNumericField T="int" @bind-Value="FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FreeMinutes"]" ReadOnly="true" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Graceperiod"]" ReadOnly="true" />
+                        </MudItem>
+
+
                     </MudGrid>
 
                     <div class="d-flex justify-content-between mt-5">

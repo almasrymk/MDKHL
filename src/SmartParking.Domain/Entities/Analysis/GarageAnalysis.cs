@@ -1,0 +1,35 @@
+﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartParking.Entities.Analysis;
+
+public class GarageAnalysis
+{
+    public Garage Garage { get; set; }
+    public string Code { get; set; }
+    public string NameAr { get; set; }
+    public string NameEn { get; set; }
+    public int MaxCapacity { get; set; }
+    public TimeOnly ClosingHours { get; set; }
+    public int OrganizationId { get; set; }
+    public virtual Organization Organization { get; set; }
+    public Status Status { get; set; }
+    public int CurrnetCapicity { get; set; }
+    public int CurrnetCapacityForCustomers { get; set; }
+    public int CurrnetCapacityEmployees { get; set; }
+    public int CurrnetCapacityForFree { get; set; }
+    public Guid? TenantId { get; set; }
+    public virtual ICollection<GarageCategories> GarageCategories { get; set; }
+    public int MaxSlotsForCustomers { get; set; }
+    public int MaxSlotsForEmployess { get; set; }
+    public int MaxSlotsForFree { get; set; }
+
+}

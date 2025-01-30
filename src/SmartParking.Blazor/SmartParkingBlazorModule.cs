@@ -16,6 +16,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.EntityFrameworkCore;
@@ -23,6 +24,7 @@ using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
@@ -273,6 +275,7 @@ public class SmartParkingBlazorModule : AbpModule
     private void ConfigureSwaggerServices(IServiceCollection services)
     {
         LocalizationHelper.Configure(services.BuildServiceProvider());
+        FileUtilitiy.Configure(services.BuildServiceProvider());
 
         services.AddAbpSwaggerGen(
             options =>

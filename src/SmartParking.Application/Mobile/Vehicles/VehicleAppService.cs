@@ -114,75 +114,80 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 
     public async Task<Result<VehicleDto>> DeleteAsync(int vehicleId)
     {
-		var vehicle = await _vehicleRepository.GetAsync(vehicleId);
-		if (vehicle == null)
-		{
-			return Result<VehicleDto>.NotFound("vehicle not found");
-		}
-        await _vehicleRepository.HardDeleteAsync(vehicle, autoSave: true);
-		var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
-		return Result<VehicleDto>.Success(vehicleDto, "Vehicle Delete Succesuffuly");
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var vehicle = await _vehicleRepository.GetAsync(vehicleId);
+            if (vehicle == null)
+            {
+                return Result<VehicleDto>.NotFound("vehicle not found");
+            }
+            await _vehicleRepository.HardDeleteAsync(vehicle, autoSave: true);
+            var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
+            return Result<VehicleDto>.Success(vehicleDto, "Vehicle Delete Succesuffuly");
+        }
 	}
 
     public async Task<Result<VehicleDto>> EditAsync(int vehicleId, CreateUpdateVehicleMobileDto input)
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
 
             var vehicle = await _vehicleRepository.GetAsync(vehicleId);
             if (vehicle == null)
             {
                 return Result<VehicleDto>.NotFound("vehicle not found");
             }
-            
-            
+
+
             // check plate number must include both plate letters and plate numbers, either in Arabic or English.
-			if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
-			{
+            if (!input.ArPlateLetters.IsNullOrEmpty() && !input.ArPlateNumber.IsNullOrEmpty())
+            {
                 vehicle.ArPlateNumber = input.ArPlateLetters + input.ArPlateNumber;
 
-			}
-			else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
-			{
+            }
+            else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
+            {
                 vehicle.EnPlateNumber = input.EnPlateLetters + input.EnPlateNumber;
-			}
-			else
-			{
-				return Result<VehicleDto>.Invalid(new ValidationError
-				{
-					ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-					ErrorMessage = "Plate number must include both plate letters and plate numbers, either in Arabic or English."
+            }
+            else
+            {
+                return Result<VehicleDto>.Invalid(new ValidationError
+                {
+                    ErrorCode = StatusCodes.Status400BadRequest.ToString(),
+                    ErrorMessage = "Plate number must include both plate letters and plate numbers, either in Arabic or English."
 
-				});
-			}
-			// LicenceType is plate type is found 
-			var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
-			if (plateType == null)
-			{
-				return Result<VehicleDto>.NotFound("Plate type not found");
+                });
+            }
+            // LicenceType is plate type is found 
+            var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
+            if (plateType == null)
+            {
+                return Result<VehicleDto>.NotFound("Plate type not found");
 
-			}
-			var brand = await _brandRepository.FirstOrDefaultAsync(b => b.Id == input.BrandId);
-			if (brand == null)
-			{
-				return Result<VehicleDto>.NotFound("Vehicle Brand not found");
-			}
-			var model = await _modelRepository.FirstOrDefaultAsync(b => b.Id == input.ModelId);
-			if (model == null)
-			{
-				return Result<VehicleDto>.NotFound("Vehicle Model not found");
-			}
-			var customer = await _customerRepository.FirstOrDefaultAsync(b => b.IdentityUserId == CurrentUser.Id);
+            }
+            var brand = await _brandRepository.FirstOrDefaultAsync(b => b.Id == input.BrandId);
+            if (brand == null)
+            {
+                return Result<VehicleDto>.NotFound("Vehicle Brand not found");
+            }
+            var model = await _modelRepository.FirstOrDefaultAsync(b => b.Id == input.ModelId);
+            if (model == null)
+            {
+                return Result<VehicleDto>.NotFound("Vehicle Model not found");
+            }
+            var customer = await _customerRepository.FirstOrDefaultAsync(b => b.IdentityUserId == CurrentUser.Id);
             vehicle.LicenceType = plateType;
             vehicle.LicenceTypeId = plateType.Id;
             vehicle.PlateColorId = plateType.PlateColorId;
             vehicle.VehicleModelId = model.Id;
             vehicle.VehicleBrandId = brand.Id;
             vehicle.CustomerId = customer.Id;
-			var vehicleUpdate = await _vehicleRepository.UpdateAsync(vehicle, autoSave: true);
+            var vehicleUpdate = await _vehicleRepository.UpdateAsync(vehicle, autoSave: true);
 
-			var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicleUpdate);
+            var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicleUpdate);
 
-			return Result<VehicleDto>.Success(vehicleDto, "Vehicle Edit Succesuffuly");
-
+            return Result<VehicleDto>.Success(vehicleDto, "Vehicle Edit Succesuffuly");
+        }
 	}
 
     public async Task<Result<List<VehicleDto>>> GetListAsync()

@@ -1,12 +1,14 @@
 ﻿@page "/garages"
 @using Customs
 @using Microsoft.Extensions.Localization
+@using SmartParking.Analysis
 @using SmartParking.Garages
 @using FluentValidation
 @using Enums
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.OrganizationsGarages
+@using SmartParking.PDF
 @using SmartParking.Permissions.GaragePermissions
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
@@ -19,6 +21,9 @@
 @inject NavigationManager Navigation
 @inject ICurrentUser currentUser
 @inject ICurrentTenant currentTenant
+@inject IJSRuntime JSRuntime
+@inject IAnalysisAppService AnalysisAppService
+@inject IGenerateFilesAppService GenerateFilesAppService
 @inherits AbpCrudPageBase<IGarageAppService, GarageDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageDto>
 <PageTitle>@L["Garages"]</PageTitle>
 <div class="d-flex flex-row justify-content-between">
@@ -38,7 +43,7 @@
 </div>
 
 
-<SPDataGrid PageName=@L["Garages"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" ShowAssign="ViewAssign" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
+<SPDataGrid PageName=@L["Garages"] Data="@itemData" Menus="@MenuDatas" ShowMenue="true" ShowAssign="ViewAssign" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
 <style>
 	.visible {
 		display: block;
