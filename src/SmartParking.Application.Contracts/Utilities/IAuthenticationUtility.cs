@@ -15,6 +15,7 @@ public interface IAuthenticationUtility : ITransientDependency
     Task CheckNationalId(IdentificationTypes identification,string NationalId);
     Task CheckIfNationalIDIsUnique( string NationalId);
     Task CheckPhoneNumberIsValid(string phoneNumber);
+    Task CheckUserNameIsValid(string name);
     Task<IdentityUser> CheckPhoneISFound(string phone);
     /// <summary>
     /// Generates a JWT token for the specified user.
