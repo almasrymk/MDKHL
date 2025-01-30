@@ -643,7 +643,9 @@
     "NoOrganization": "بدون منشأة",
     "NotSelected": "غير مختار",
     "Invoice": "مطابقة",
-    "UpgradeSubscriptionValidationUpdate": " اماكن ,المسموح لك : "
+    "UpgradeSubscriptionValidationUpdate": " اماكن ,المسموح لك : ",
+    "Reports": "تقارير",
+    "TotalCustomersAndTheirTransactions": "تقرير العملاء وحركة سياراتهم"
 
 
 

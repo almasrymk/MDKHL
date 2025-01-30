@@ -617,7 +617,9 @@
     "NoOrganization": "No Organization",
     "RequiredValidation": "Is Required",
     "Invoice": "Invoice",
-    "UpgradeSubscriptionValidationUpdate": " slots , allow for you :"
+    "UpgradeSubscriptionValidationUpdate": " slots , allow for you :",
+    "Reports": "Reports",
+    "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions"
 
 
 
