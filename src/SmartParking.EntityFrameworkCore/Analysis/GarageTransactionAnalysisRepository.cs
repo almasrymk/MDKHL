@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Castle.Core.Resource;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Customers;
@@ -35,11 +36,12 @@ public class GarageTransactionAnalysisRepository
         this._dataFilter = dataFilter;
     }
 
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysis(CustomerCategoryStatus category)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysis(CustomerCategoryStatus category,Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
+                    where tenantId == null || garageTransaction.TenantId == tenantId
                     where garageTransaction.CustomerCategory == category
                     join vehicle in dbContext.Vehicles
                         on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
@@ -52,12 +54,169 @@ public class GarageTransactionAnalysisRepository
                     
                     select new GarageTransactionAnalysis
                     {
-                       PlateNumber = garageTransaction.PlateNumber,
-                       AccurateTime = garageTransaction.AccurateTime,
-                       CameraType = garageTransaction.CameraType.ToString(),
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId ,
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
-                       OrganizationName = garageTransaction.Organization.EnglishName
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName
+
                     };
         return await query.ToListAsync();
     }
+
+  
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisPlate(string PlateNumber)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from garageTransaction in dbContext.GarageTransactions
+                    where garageTransaction.PlateNumber == PlateNumber
+
+                    join vehicle1 in dbContext.Vehicles
+                    .Include(x => x.Customer).ThenInclude(x => x.IdentityUser)
+                        on garageTransaction.PlateNumber equals vehicle1.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+
+                    join vehicle2 in dbContext.Vehicles
+                    .Include(x => x.Customer)
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+
+                    select new GarageTransactionAnalysis
+                    {
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
+                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
+                        CustomerId = v1.CustomerId
+
+                    };
+
+        return await query.ToListAsync();
+    }
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisCustomerId(Guid CustomerId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from garageTransaction in dbContext.GarageTransactions
+
+                    join vehicle1 in dbContext.Vehicles
+                    .Include(x => x.Customer).ThenInclude(x => x.IdentityUser)
+                        on garageTransaction.PlateNumber equals vehicle1.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+
+                    join vehicle2 in dbContext.Vehicles
+                    .Include(x => x.Customer)
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+
+
+                    where (v1.Customer != null && v1.CustomerId == CustomerId) ||
+                     (v2.Customer != null && v2.Customer.Id == CustomerId)
+
+                    select new GarageTransactionAnalysis
+                    {
+                        Customer = v1.Customer,
+                        Vehicle = v1,
+                        GarageTransaction = garageTransaction,
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
+                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
+                        CustomerId = v1.CustomerId
+
+                    };
+
+        return await query.ToListAsync();
+    }
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(
+    CustomerCategoryStatus category, DateTime startDate, DateTime endDate)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from garageTransaction in dbContext.GarageTransactions
+                    where garageTransaction.CustomerCategory == category
+                          && garageTransaction.AccurateTime >= startDate
+                          && garageTransaction.AccurateTime <= endDate
+                    join vehicle in dbContext.Vehicles
+                        on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+                    join vehicle2 in dbContext.Vehicles
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+
+                    select new GarageTransactionAnalysis
+                    {
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
+                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
+                        CustomerId = v1.CustomerId
+                    };
+
+        return await query.ToListAsync();
+    }
+
+
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerId(Guid CustomerId, DateTime startDate, DateTime endDate)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from garageTransaction in dbContext.GarageTransactions
+
+                    join vehicle1 in dbContext.Vehicles
+                    .Include(x => x.Customer).ThenInclude(x => x.IdentityUser)
+                        on garageTransaction.PlateNumber equals vehicle1.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+
+                    join vehicle2 in dbContext.Vehicles
+                    .Include(x => x.Customer)
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+
+
+                    where (v1.Customer != null && v1.CustomerId == CustomerId) ||
+                     (v2.Customer != null && v2.Customer.Id == CustomerId)
+                     && garageTransaction.AccurateTime >= startDate
+                          && garageTransaction.AccurateTime <= endDate
+
+                    select new GarageTransactionAnalysis
+                    {
+                        Customer = v1.Customer,
+                        Vehicle = v1,
+                        GarageTransaction = garageTransaction,
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
+                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
+                        CustomerId = v1.CustomerId,
+                    };
+
+        return await query.ToListAsync();
+    }
+
+
 }

@@ -48,6 +48,13 @@ public partial class OrganizationView
     public int NumberOfOrganizations { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public string TaxIdentificationNumber { get; set; }
+    public decimal FirstHourPrice { get; set; }
+    public decimal SecondHourPrice { get; set; }
+    public decimal ThirdHourPrice { get; set; }
+    public decimal AdditionalHourPrice { get; set; }
+    public decimal FullDayPrice { get; set; }
+    public int FreeMinutes { get; set; }
+    public int Graceperiod { get; set; }
 
 
     private async Task FetchData()
@@ -109,6 +116,14 @@ public partial class OrganizationView
         SubscriptionArName = organization.SubscriptionArabicName;
         SubscriptionEnName= organization.SubscriptionEnglishName;
         TaxIdentificationNumber=organization.TaxNumber;
+        FirstHourPrice = organization.FirstHourPrice;
+        SecondHourPrice = organization.SecondHourPrice;
+        ThirdHourPrice = organization.ThirdHourPrice;
+        FullDayPrice = organization.FullDayPrice;
+        AdditionalHourPrice = organization.AdditionalHourPrice;
+        FreeMinutes = organization.FreeMinutes;
+        Graceperiod = organization.Graceperiod;
+
     }
     protected override async Task OnInitializedAsync()
     {

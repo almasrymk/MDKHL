@@ -535,7 +535,7 @@
     "GreaterZeroValidtion": "Must be greater than 0",
     "LessThan9999Validation": "Must be less than or equal 9999.",
     "SummationValidation": "Check Summation of",
-    "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new",
+    "UpgradeSubscriptionValidation": "Your Current Subscription is limited to add new:",
     "InvalidValidation": "Invalid Value",
     "DuplicateValidation": "Already Exist",
     "Picture": "Picture",
@@ -616,7 +616,16 @@
     "Transaction": "Transaction",
     "NoOrganization": "No Organization",
     "RequiredValidation": "Is Required",
-    "Invoice": "Invoice"
+    "Invoice": "Invoice",
+    "UpgradeSubscriptionValidationUpdate": " slots , allow for you :",
+    "Permission:Reports": "Reports",
+    "Permission:IT": "IT Reports",
+    "Permission:SecurityManager": "Security Manager Reports",
+    "Permission:FinancialManagement": "Financial Management Reports",
+    "Reports": "Reports",
+    "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions",
+    "GarageStatusDateAsync": "Garage Status on Accurate Date",
+    "GarageStatusRangeAsync" :  "Garage Status between Date "
 
 
 

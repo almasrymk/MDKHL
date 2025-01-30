@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Customers;
+﻿using SmartParking.Cutomers;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Organizations;
@@ -33,4 +34,5 @@ public class CustomerPackageDto
     public string PackageEnglishName { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
 
+    public CustomerDto Customer { get; set; }
 }

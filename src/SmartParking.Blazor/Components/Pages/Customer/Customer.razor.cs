@@ -12,7 +12,7 @@ using Volo.Abp.Application.Dtos;
 using SmartParking.Cutomers;
 using Volo.Abp.Users;
 using SmartParking.Enums;
-using System.Globalization;
+using System.Globalization; 
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Permissions.PackagePermissions;
@@ -24,16 +24,22 @@ using Microsoft.AspNetCore.Components;
 using Volo.Abp.Identity;
 using iText.Commons.Utils;
 using Microsoft.AspNetCore.Components.Web;
+using SmartParking.Utilities;
+using SmartParking.Blazor.Components.Shared;
+using Microsoft.JSInterop;
+using System.Data;
+using SmartParking.Permissions.Reports;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
 public partial class Customer
 {
+    private SPDataGrid DataGridComponent { get; set; }
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
     private bool assign = true;
     private string sortColumn;
-    private Guid? TenantId;
+    private Guid? TenantId = null;
     private string ValueOfMenue = "All";
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -55,7 +61,10 @@ public partial class Customer
 
     protected async override Task OnInitializedAsync()
     {
-        await CreateMenue();
+        if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currrentTenant.Id is null)
+        {
+         await CreateMenue();
+        }
         if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
@@ -71,62 +80,19 @@ public partial class Customer
 
     private async Task CreateMenue()
     {
-        var itemsOrganizations = new List<MenuItem>();
-        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue,null)) });
-        if (CultureInfo.CurrentCulture.Name == "ar")
+
+        var MenuDatasMdkhl = new List<MudMenuData>
         {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue,org.TenantId)) });
-            }
-        }
-        else
-        {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue,org.TenantId)) });
-            }
-        }
-       
-       var  MenuDatasMdkhl = new List<MudMenuData>
-        {
-            new MudMenuData
-            {
-                Name = "Package",
-                Label = @L[ValueOfMenue],
-                Items = new List<MenuItem>
-                {
-                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
-                }
-            },
-            new MudMenuData
-            {
-                Name = @L["Organizations"],
-                Label = @L[ValueOfMenue],
-                Items =itemsOrganizations
-            },
+            CreatePackageMenue(),
+           await CreateOrganizationMenue(),
+           CreateReportsMenue()
+
         };
-        
-        var  MenuDatasOrganization = new List<MudMenuData>
+
+        var MenuDatasOrganization = new List<MudMenuData>
         {
-            new MudMenuData
-            {
-                Name = "Package",
-                Label = @L[ValueOfMenue],
-                Items = new List<MenuItem>
-                {
-                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
-                }
-            },
+            CreatePackageMenue(),
+            CreateReportsMenue()
         };
 
         if (currrentTenant.Id is null)
@@ -137,6 +103,75 @@ public partial class Customer
         {
             MenuDatas = MenuDatasOrganization;
         }
+    }
+
+    private async Task<MudMenuData> CreateOrganizationMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+
+        return new MudMenuData
+        {
+            Name = L["Organizations"],
+            Label = L[ValueOfMenue],
+            Items = itemsOrganizations
+        };
+    }
+
+    private MudMenuData CreatePackageMenue()
+    {
+        return new MudMenuData
+        {
+            Name = "Package",
+            Label = @L[ValueOfMenue],
+            Items = new List<MenuItem>
+                {
+                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
+                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
+                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
+                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
+                }
+        };
+    }
+
+    private MudMenuData CreateReportsMenue()
+    {
+        return new MudMenuData
+        {
+            Name = "Reports",
+            Label = @L[ValueOfMenue],
+            Items = new List<MenuItem>
+                {
+                    new MenuItem {  MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("TotalCustomersAndTheirTransactions"))   },
+
+                }
+            ,
+            IsExport = true
+        };
+    }
+
+    private List<MudMenuData> CreateoragnizationMenue()
+    {
+        return new List<MudMenuData>
+        {
+            CreatePackageMenue()
+        };
     }
 
     /// <summary>
@@ -151,7 +186,7 @@ public partial class Customer
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, 
+            SearchingTerm = termSearch,
             filters = pageInfo.Filters
         };
         if (currrentTenant.Id == null)
@@ -171,7 +206,7 @@ public partial class Customer
         }
 
     }
- 
+
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
@@ -188,11 +223,11 @@ public partial class Customer
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch 
+            SearchingTerm = termSearch
         };
         PagedResultDto<CustomerDto> customersDto;
         if (currrentTenant.Id == null)
-            customersDto = await CustomerAppService.GetListMdkhlAsync(input,null);
+            customersDto = await CustomerAppService.GetListMdkhlAsync(input, null);
         else
             customersDto = await CustomerAppService.GetListAsync(input);
         TotalItem = (int)customersDto.TotalCount;
@@ -216,7 +251,7 @@ public partial class Customer
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-      
+
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -324,6 +359,13 @@ public partial class Customer
         Navigation.NavigateTo($"/customers/view/{customerId}", true);
 
 
+    } 
+    public async Task ShowCustomerTransactions(RowDef row)
+    {
+        var customerId = Guid.Parse(row.Cells[0].Value);
+        var Data = await AnalysisAppService.ReortGarageTransactionCustomerIdAsync(customerId);
+        await DownloadExcel(Data, row.Cells[1].Value);
+
     }
 
     public async Task<IDialogReference> AssignPackage(string id)
@@ -362,8 +404,39 @@ public partial class Customer
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
     }
-    
-    public async Task HandleSelectTenantAsync(string selectedValue,Guid? tenantId)
+
+    public async Task HandleSelectReportAsync(string selectedValue)
+    {
+        try
+        {
+
+            ValueOfMenue = selectedValue;
+
+            if (currrentTenant != null)
+                TenantId = currrentTenant.Id;
+            var Data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
+            await DownloadExcel(Data,Data.Name);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+       
+    }
+
+    public async Task DownloadExcel(TableData Data, string Name)
+    {
+        var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
+        string file = System.IO.Path.Combine(folderName, $"{Name} Transactions.xlsx");
+        await GenerateFilesAppService.ExportToExcel(Data, file);
+        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+        await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Name} Transactions.xlsx", "_blank");
+    }
+
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
         ValueOfMenue = selectedValue;
@@ -388,7 +461,7 @@ public partial class Customer
     {
         if (currrentTenant.Id == null)
         {
-            return await GetCustomersForMdkhlAsync(request, selectedValue,tenantId);
+            return await GetCustomersForMdkhlAsync(request, selectedValue, tenantId);
         }
         else
         {
@@ -421,7 +494,7 @@ public partial class Customer
         return selectedValue switch
         {
             "All" => await CustomerAppService.GetListAsync(request),
-            "Beneficiaries" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Customer, organizationId,null),
+            "Beneficiaries" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Customer, organizationId, null),
             "Employees" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Employee, organizationId, null),
             "Visitors" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Visitor, organizationId, null),
             "NoPackages" => await CustomerAppService.GetListNoPackageAsync(request, organizationId, null),

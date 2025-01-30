@@ -45,13 +45,7 @@ public interface IAnalysisAppService : IApplicationService
     /// </summary>
     /// <param name="category"></param>
     /// <returns> datatable of garage transaction</returns>
-    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category);
-    /// <summary>
-    /// Get report of garage transaction for organization
-    /// </summary>
-    /// <param name="category"></param>
-    /// <returns> datatable of garage transaction</returns>
-    Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category);
+    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
     /// <summary>
     /// Get report of payment collected money daily and monthly for organization
     /// </summary>
@@ -69,4 +63,9 @@ public interface IAnalysisAppService : IApplicationService
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
+    Task<TableData> ReortGarageTransactionCustomerIdAsync(Guid CustomerId);
+    Task<TableData> ReortGarageStatusDateAsync(DateTime accurateDate); 
+    Task<TableData> ReortGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
+    Task<TableData> ReportGarageTransactionForOrganization(string PlateNumber);
+    Task<TableData> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
 }

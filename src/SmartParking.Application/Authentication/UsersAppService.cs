@@ -87,8 +87,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
     public async Task<IdentityUser> AddAndValidateUserAsync (UserCreateDto input)
     {
         await _identityOptions.SetAsync();
-        var user = CreateUser(input);
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
+        await _authenticationUtility.CheckUserNameIsValid(input.Name);
+        var user = CreateUser(input);
         var result = await CheckPhoneIsUnique(input.PhoneNumber);
         if (result != null)
         {
@@ -428,6 +429,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
         await CheckUpdatePhoneNumber(user, input);
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
+        await _authenticationUtility.CheckUserNameIsValid(input.Name);
         user.Name = input.Name;
         user.Surname = input.Surname;
 

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using SmartParking.Localization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -365,11 +365,11 @@
             TableData data;
             if(currenttenant.Id == null)
             {
-                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category);
+                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category,null);
             }
             else
             {
-                data = await AnalysisAppService.ReortGarageTransactionOrganizationAsync(category);
+                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category, currenttenant.Id);
             }
             data.Name = category.ToString() + "Transactions";
             await ExportData(data);
