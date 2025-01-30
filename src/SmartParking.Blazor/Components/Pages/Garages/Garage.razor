@@ -43,7 +43,7 @@
 </div>
 
 
-<SPDataGrid PageName=@L["Garages"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" ShowAssign="ViewAssign" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
+<SPDataGrid PageName=@L["Garages"] Data="@itemData" Menus="@MenuDatas" ShowMenue="true" ShowAssign="ViewAssign" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="CreateGarage" OnClickRowDelete="OnClickRowDelete" OnClickAssign="AssignOrganization"></SPDataGrid>
 <style>
 	.visible {
 		display: block;
