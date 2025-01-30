@@ -45,13 +45,7 @@ public interface IAnalysisAppService : IApplicationService
     /// </summary>
     /// <param name="category"></param>
     /// <returns> datatable of garage transaction</returns>
-    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category);
-    /// <summary>
-    /// Get report of garage transaction for organization
-    /// </summary>
-    /// <param name="category"></param>
-    /// <returns> datatable of garage transaction</returns>
-    Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category);
+    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
     /// <summary>
     /// Get report of payment collected money daily and monthly for organization
     /// </summary>

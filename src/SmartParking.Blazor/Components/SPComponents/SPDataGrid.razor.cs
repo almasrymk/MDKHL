@@ -228,7 +228,7 @@ public partial class SPDataGrid
             Items = Data.Rows
         };
     }
-    private async Task ExportToExcel()
+    public async Task ExportToExcel()
     {
         try
         {
@@ -281,7 +281,7 @@ public partial class SPDataGrid
 
     private async Task OpenNewBlank(string url)
     {
-       
+
             await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
     }
 
@@ -299,7 +299,7 @@ public partial class SPDataGrid
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
-            await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
+            await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
         }
         catch 
         {
@@ -310,13 +310,16 @@ public partial class SPDataGrid
        
     }
 
-    public async Task HandleMunue(string value, EventCallback<string> action)
+    public async Task HandleMunue(string value, EventCallback<string> action,bool isExport)
     {
         HandleCategory = action;
         IsClickMenu = true;
         ValueOfMenue = value;
+
        await action.InvokeAsync(value);
+        if (!isExport)
         await dataGrid.ReloadServerData();
+      
     }
 }
 

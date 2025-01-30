@@ -320,11 +320,11 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return await GetCollectMoneyToday(query);
     }
 
-    public async Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category)
+    public async Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category,tenantId);
             var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
             return dataTable;
         }
@@ -419,13 +419,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             return dataTable;
         }
 
-    }
-
-    public async Task<TableData> ReortGarageTransactionOrganizationAsync(CustomerCategoryStatus category)
-    {
-        var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category);
-        var dataTable = CreateTableHelper.CreateDataTableForGarageTransaction(result);
-        return dataTable;
     }
 
     public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()

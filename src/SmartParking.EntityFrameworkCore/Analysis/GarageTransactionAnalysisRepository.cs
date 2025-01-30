@@ -36,11 +36,12 @@ public class GarageTransactionAnalysisRepository
         this._dataFilter = dataFilter;
     }
 
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysis(CustomerCategoryStatus category)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysis(CustomerCategoryStatus category,Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
+                    where tenantId == null || garageTransaction.TenantId == tenantId
                     where garageTransaction.CustomerCategory == category
                     join vehicle in dbContext.Vehicles
                         on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
@@ -53,14 +54,14 @@ public class GarageTransactionAnalysisRepository
                     
                     select new GarageTransactionAnalysis
                     {
-                        CustomerId = v1.CustomerId,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId ,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
                         CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
-                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
-                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName
 
                     };
         return await query.ToListAsync();

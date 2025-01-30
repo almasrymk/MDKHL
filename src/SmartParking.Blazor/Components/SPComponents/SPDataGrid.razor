@@ -84,7 +84,7 @@
                                 {
                                     if(!item.IsShow)
                                         continue;
-                                     <MudMenuItem OnClick="@(()=>HandleMunue(@item.Label,@item.OnClick))">@L[@item.Label]</MudMenuItem>
+                                     <MudMenuItem OnClick="@(()=> HandleMunue(@item.Label,@item.OnClick,menu.IsExport))">@L[@item.Label]</MudMenuItem>
                                 }
                             </MudMenu>
                         }

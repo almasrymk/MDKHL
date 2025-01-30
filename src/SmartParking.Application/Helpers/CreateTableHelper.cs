@@ -52,7 +52,7 @@ public static class CreateTableHelper
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "GarageTransactionAnalysis",
+            Name = "TotalCustomresAndTheirTransactions",
             ShowHeader = true
         };
 

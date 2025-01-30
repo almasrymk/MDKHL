@@ -24,6 +24,10 @@ using Microsoft.AspNetCore.Components;
 using Volo.Abp.Identity;
 using iText.Commons.Utils;
 using Microsoft.AspNetCore.Components.Web;
+using SmartParking.Utilities;
+using SmartParking.Blazor.Components.Shared;
+using Microsoft.JSInterop;
+using System.Data;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -34,7 +38,7 @@ public partial class Customer
     private int TotalItem;
     private bool assign = true;
     private string sortColumn;
-    private Guid? TenantId;
+    private Guid? TenantId = null;
     private string ValueOfMenue = "All";
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
@@ -72,18 +76,19 @@ public partial class Customer
 
     private async Task CreateMenue()
     {
-        
+
         var MenuDatasMdkhl = new List<MudMenuData>
         {
             CreatePackageMenue(),
-           await CreateOrganizationMenue()
+           await CreateOrganizationMenue(),
+           CreateReportsMenue()
 
         };
 
         var MenuDatasOrganization = new List<MudMenuData>
         {
-            CreatePackageMenue()
-
+            CreatePackageMenue(),
+            CreateReportsMenue()
         };
 
         if (currrentTenant.Id is null)
@@ -115,7 +120,7 @@ public partial class Customer
                 itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
             }
         }
-        
+
         return new MudMenuData
         {
             Name = L["Organizations"],
@@ -139,8 +144,8 @@ public partial class Customer
                     new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
                 }
         };
-    } 
-    
+    }
+
     private MudMenuData CreateReportsMenue()
     {
         return new MudMenuData
@@ -149,9 +154,11 @@ public partial class Customer
             Label = @L[ValueOfMenue],
             Items = new List<MenuItem>
                 {
-                    new MenuItem { MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("TotalCustomersAndTheirTransactions"))   },
-                    
+                    new MenuItem {  MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("TotalCustomersAndTheirTransactions"))   },
+
                 }
+            ,
+            IsExport = true
         };
     }
 
@@ -175,7 +182,7 @@ public partial class Customer
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, 
+            SearchingTerm = termSearch,
             filters = pageInfo.Filters
         };
         if (currrentTenant.Id == null)
@@ -195,7 +202,7 @@ public partial class Customer
         }
 
     }
- 
+
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
@@ -212,11 +219,11 @@ public partial class Customer
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch 
+            SearchingTerm = termSearch
         };
         PagedResultDto<CustomerDto> customersDto;
         if (currrentTenant.Id == null)
-            customersDto = await CustomerAppService.GetListMdkhlAsync(input,null);
+            customersDto = await CustomerAppService.GetListMdkhlAsync(input, null);
         else
             customersDto = await CustomerAppService.GetListAsync(input);
         TotalItem = (int)customersDto.TotalCount;
@@ -240,7 +247,7 @@ public partial class Customer
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-      
+
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -386,26 +393,34 @@ public partial class Customer
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
     }
-    
+
     public async Task HandleSelectReportAsync(string selectedValue)
     {
-        ValueOfMenue = selectedValue;
-        itemData = new TableData();
-        //var request = new PagedAndSortedAndSearchResultRequestDto
-        //{
-        //    MaxResultCount = RowPerPage,
-        //    SkipCount = (CurrentPage - 1) * RowPerPage,
-        //    Sorting = sortColumn,
-        //    SearchingTerm = termSearch
-        //};
+        try
+        {
+            
+            ValueOfMenue = selectedValue;
+            
+            if (currrentTenant != null)
+                TenantId = currrentTenant.Id;
+            var Data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
+            var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
-        //PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
-
-        //TotalItem = (int)customers.TotalCount;
-        //await CreateTable(customers);
+            await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+       
     }
-    
-    public async Task HandleSelectTenantAsync(string selectedValue,Guid? tenantId)
+
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
         ValueOfMenue = selectedValue;
@@ -430,7 +445,7 @@ public partial class Customer
     {
         if (currrentTenant.Id == null)
         {
-            return await GetCustomersForMdkhlAsync(request, selectedValue,tenantId);
+            return await GetCustomersForMdkhlAsync(request, selectedValue, tenantId);
         }
         else
         {
@@ -463,7 +478,7 @@ public partial class Customer
         return selectedValue switch
         {
             "All" => await CustomerAppService.GetListAsync(request),
-            "Beneficiaries" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Customer, organizationId,null),
+            "Beneficiaries" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Customer, organizationId, null),
             "Employees" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Employee, organizationId, null),
             "Visitors" => await CustomerAppService.GetListForCustomerCategoryAsync(request, CustomerCategoryStatus.Visitor, organizationId, null),
             "NoPackages" => await CustomerAppService.GetListNoPackageAsync(request, organizationId, null),
