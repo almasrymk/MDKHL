@@ -142,7 +142,15 @@ public static class CreateTableHelper
 
         // Define the columns for the table
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "Code", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "Code" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("NameEn"), Name = "NameEn", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "NameEn" });
+        if(CultureInfo.CurrentCulture.Name == "en")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("NameEn"), Name = "NameEn", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "NameEn" });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("NameAr"), Name = "NameAr", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "NameAr" });
+
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("MaxCapacity"), Name = "MaxCapacity", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "MaxCapacity" });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CurrnetCapacity"), Name = "CurrnetCapacity", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "CurrnetCapicity" });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CurrnetCapacityForCustomers"), Name = "CurrnetCapacityForCustomers", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "CurrnetCapacityForCustomers" });
@@ -159,8 +167,17 @@ public static class CreateTableHelper
         {
             var rowDef = new RowDef();
 
+            
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), garage.Garage.Code));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("NameEn"), garage.Garage.NameEn));
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("NameEn"), garage.Garage.NameEn));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("NameAr"), garage.Garage.NameAr));
+
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("MaxCapacity"), garage.Garage.MaxCapacity.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CurrnetCapacity"), garage.Garage.CurrnetCapicity.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CurrnetCapacityForCustomers"), garage.Garage.CurrnetCapacityForCustomers.ToString()));
