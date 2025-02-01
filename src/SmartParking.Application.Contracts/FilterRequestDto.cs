@@ -13,4 +13,8 @@ public class FilterRequestDto
     public string FilterOperator { get; set; }
     public bool IsNot { get; set; }
     public TypeFilter TypeFilter { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public DateTime? Date { get; set; }
+
 }
