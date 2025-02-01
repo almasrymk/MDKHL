@@ -13,11 +13,13 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
 using SmartParking.PDF;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -272,7 +274,8 @@ public partial class Garage
             DateTime accurateTime = new DateTime();
             if (currentTenant != null)
                 TenantId = currentTenant.Id;
-            var Data = await AnalysisAppService.ReportGarageStatusDateAsync(accurateTime);
+            var garageAnalysis = await AnalysisAppService.ReportGarageStatusDateAsync(accurateTime);
+            var Data = CreateTableHelper.CreateDataTableForGarages(garageAnalysis);
             var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
             await GenerateFilesAppService.ExportToExcel(Data, file);

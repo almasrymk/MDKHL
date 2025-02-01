@@ -29,6 +29,9 @@ using SmartParking.Blazor.Components.Shared;
 using Microsoft.JSInterop;
 using System.Data;
 using SmartParking.Permissions.Reports;
+using Org.BouncyCastle.Crypto.Digests;
+using SmartParking.Helpers;
+using SmartParking.Results;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -363,8 +366,10 @@ public partial class Customer
     public async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-        var Data = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId);
-        await DownloadExcel(Data, row.Cells[1].Value);
+        var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId);
+        var data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+
+        await DownloadExcel(data, row.Cells[1].Value);
 
     }
 
@@ -414,7 +419,9 @@ public partial class Customer
 
             if (currrentTenant != null)
                 TenantId = currrentTenant.Id;
-            var Data = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
+            var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
+            var Data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+
             await DownloadExcel(Data,Data.Name);
         }
         catch (Exception ex)

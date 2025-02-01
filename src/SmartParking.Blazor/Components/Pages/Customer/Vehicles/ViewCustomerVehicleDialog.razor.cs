@@ -22,6 +22,8 @@ using SmartParking.Analysis;
 using Microsoft.JSInterop;
 using SmartParking.PDF;
 using SmartParking.Utilities;
+using SmartParking.Helpers;
+using SmartParking.Results;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -137,11 +139,14 @@ public partial class ViewCustomerVehicleDialog
         TableData Data;
         if (CurrentTenant.Id == null)
         {
-           Data = await AnalysisAppService.ReportGarageTransactionForMDKHLPlateAsync(plateNumber);
+            var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForMDKHLPlateAsync(plateNumber);
+            Data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto);
         }
         else
         {
-            Data=await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber);
+            var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber);
+            Data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto);
+
         }
         await DownloadExcel(Data,plateNumber);
 

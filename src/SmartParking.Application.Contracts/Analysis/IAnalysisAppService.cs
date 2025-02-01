@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services;
+using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
+using SmartParking.Entities.Analysis;
 using SmartParking.Enums;
 using SmartParking.Payments;
 using System;
@@ -46,7 +48,7 @@ public interface IAnalysisAppService : IApplicationService
     /// </summary>
     /// <param name="category"></param>
     /// <returns> datatable of garage transaction</returns>
-    Task<TableData> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
     /// <summary>
     /// Get report of payment collected money daily and monthly for organization
     /// </summary>
@@ -64,10 +66,14 @@ public interface IAnalysisAppService : IApplicationService
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
-    Task<TableData> ReportGarageTransactionCustomerIdAsync(Guid CustomerId);
-    Task<TableData> ReportGarageStatusDateAsync(DateTime accurateDate); 
-    Task<TableData> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
-    Task<TableData> ReportGarageTransactionForOrganization(string PlateNumber);
-    Task<TableData> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId);
+    Task<List<GarageAnalysis>> ReportGarageStatusDateAsync(DateTime accurateDate); 
+    Task<List<GarageAnalysis>> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
     Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate);
+    Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(CustomerCategoryStatus category, DateTime startDate, DateTime endDate);
+    Task<List<CustomerPackageDto>> ReportCustomerPackage();
 }

@@ -8,6 +8,7 @@
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Garages
+@using SmartParking.Helpers
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using System.Globalization
@@ -365,11 +366,16 @@
             TableData data;
             if(currenttenant.Id == null)
             {
-                data = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category,null);
+                var garageTransactionAnalysis  = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category,null);
+                data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+
+
             }
             else
             {
-                data = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category, currenttenant.Id);
+                var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category, currenttenant.Id);
+                data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+
             }
             data.Name = category.ToString() + "Transactions";
             await ExportData(data);

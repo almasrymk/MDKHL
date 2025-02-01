@@ -17,6 +17,7 @@ public interface IGarageTransactionAnalysisRepository : IRepository<GarageTransa
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisPlate(string PlateNumber);
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisCustomerId(Guid CustomerId);
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerId(Guid CustomerId, DateTime startDate, DateTime endDate);
+    Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerName(string UserName, DateTime startDate, DateTime endDate);
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(CustomerCategoryStatus category, DateTime startDate, DateTime endDate);
 
 

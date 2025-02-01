@@ -218,5 +218,47 @@ public class GarageTransactionAnalysisRepository
         return await query.ToListAsync();
     }
 
+    //GetGarageTransactionsAnalysisDateCustomerName
 
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerName(string UserName, DateTime startDate, DateTime endDate)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from garageTransaction in dbContext.GarageTransactions
+
+                    join vehicle1 in dbContext.Vehicles
+                    .Include(x => x.Customer).ThenInclude(x => x.IdentityUser)
+                        on garageTransaction.PlateNumber equals vehicle1.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+
+                    join vehicle2 in dbContext.Vehicles
+                    .Include(x => x.Customer)
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+
+
+                    where (v1.Customer != null &&   v1.Customer.IdentityUser.UserName == UserName) ||
+                     (v2.Customer != null &&   v2.Customer.IdentityUser.UserName == UserName)
+                     && garageTransaction.AccurateTime >= startDate
+                          && garageTransaction.AccurateTime <= endDate
+
+                    select new GarageTransactionAnalysis
+                    {
+                        Customer = v1.Customer,
+                        Vehicle = v1,
+                        GarageTransaction = garageTransaction,
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
+                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
+                        CustomerId = v1.CustomerId,
+                    };
+
+        return await query.ToListAsync();
+    }
 }
