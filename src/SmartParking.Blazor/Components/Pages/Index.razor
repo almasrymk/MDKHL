@@ -365,11 +365,11 @@
             TableData data;
             if(currenttenant.Id == null)
             {
-                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category,null);
+                data = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category,null);
             }
             else
             {
-                data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(category, currenttenant.Id);
+                data = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category, currenttenant.Id);
             }
             data.Name = category.ToString() + "Transactions";
             await ExportData(data);
@@ -390,11 +390,11 @@
             TableData data;
             if(currenttenant.Id == null)
             {
-                 data = await AnalysisAppService.ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+                 data = await AnalysisAppService.ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
             }
             else
             {
-                data = await AnalysisAppService.ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+                data = await AnalysisAppService.ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
             }
             await ExportData(data);
         }

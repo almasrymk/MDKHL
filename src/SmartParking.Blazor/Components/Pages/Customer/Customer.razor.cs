@@ -363,7 +363,7 @@ public partial class Customer
     public async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-        var Data = await AnalysisAppService.ReortGarageTransactionCustomerIdAsync(customerId);
+        var Data = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId);
         await DownloadExcel(Data, row.Cells[1].Value);
 
     }
@@ -414,7 +414,7 @@ public partial class Customer
 
             if (currrentTenant != null)
                 TenantId = currrentTenant.Id;
-            var Data = await AnalysisAppService.ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
+            var Data = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
             await DownloadExcel(Data,Data.Name);
         }
         catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using SmartParking.DataTable;
 using SmartParking.Enums;
+using SmartParking.Payments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,17 +46,17 @@ public interface IAnalysisAppService : IApplicationService
     /// </summary>
     /// <param name="category"></param>
     /// <returns> datatable of garage transaction</returns>
-    Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
+    Task<TableData> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
     /// <summary>
     /// Get report of payment collected money daily and monthly for organization
     /// </summary>
     /// <returns> datatable of payment collected money daily and monthly </returns>
-    Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+    Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
     /// <summary>
     /// Get report of payment collected money daily and monthly for mdkhl
     /// </summary>
     /// <returns> datatable of payment collected money daily and monthly </returns>
-    Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+    Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
     /// <summary>
     /// Get count of customers and visitors and employees
     /// </summary>
@@ -63,9 +64,10 @@ public interface IAnalysisAppService : IApplicationService
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
-    Task<TableData> ReortGarageTransactionCustomerIdAsync(Guid CustomerId);
-    Task<TableData> ReortGarageStatusDateAsync(DateTime accurateDate); 
-    Task<TableData> ReortGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
+    Task<TableData> ReportGarageTransactionCustomerIdAsync(Guid CustomerId);
+    Task<TableData> ReportGarageStatusDateAsync(DateTime accurateDate); 
+    Task<TableData> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
     Task<TableData> ReportGarageTransactionForOrganization(string PlateNumber);
     Task<TableData> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
+    Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate);
 }

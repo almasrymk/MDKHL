@@ -320,7 +320,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return await GetCollectMoneyToday(query);
     }
 
-    public async Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category,Guid? tenantId)
+    public async Task<TableData> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -348,7 +348,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return dataTable;
     }
 
-    public async Task<TableData> ReortGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate)
+    public async Task<TableData> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -368,7 +368,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<TableData> ReortGarageTransactionCustomerIdAsync(Guid CustomerId)
+    public async Task<TableData> ReportGarageTransactionCustomerIdAsync(Guid CustomerId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -378,7 +378,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<TableData> ReortCustomerPackage()
+    public async Task<TableData> ReportCustomerPackage()
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -391,7 +391,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<TableData> ReortCustomerPayment(DateTime StartDate , DateTime EndDate)
+    public async Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate , DateTime EndDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -399,13 +399,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             query = query.Where(_ =>_.CreationTime.Date>=StartDate.Date && _.CreationTime.Date<=EndDate.Date);
             var result = await AsyncExecuter.ToListAsync(query);
             var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
-            var dataTable = CreateTableHelper.CreateDataTableForPayments(paymentMap);
-            return dataTable;
+            return paymentMap;
         }
 
     }
 
-    public async Task<TableData> ReortGarageStatusDateAsync(DateTime accurateDate)
+    public async Task<TableData> ReportGarageStatusDateAsync(DateTime accurateDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -416,7 +415,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<TableData> ReortGarageStatusRangeAsync(DateTime startDate, DateTime endDate)
+    public async Task<TableData> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -427,7 +426,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
+    public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(organization.Id);
@@ -435,7 +434,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return dataTable;
     }
 
-    public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
+    public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
     {
             var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(null);
             var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
