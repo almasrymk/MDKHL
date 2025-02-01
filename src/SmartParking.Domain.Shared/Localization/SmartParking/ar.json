@@ -652,6 +652,10 @@
     "TotalCustomersAndTheirTransactions": "تقرير العملاء وحركة سياراتهم",
     "GarageStatusDateAsync": "حالة الجراج في تاريخ",
     "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ",
+    "InRange": "في خلال فترة زمنية",
+    "Ok": "تأكيد",
+    "Cashier No" :  "رقم الكاشير",
+    "Range": "في خلال",
     "StartDate": "البداية",
     "EndDate": "النهاية"
 

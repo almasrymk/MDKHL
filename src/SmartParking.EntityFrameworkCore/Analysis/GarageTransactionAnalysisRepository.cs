@@ -94,9 +94,9 @@ public class GarageTransactionAnalysisRepository
                         CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
-                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
-                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
-                        CustomerId = v1.CustomerId
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId
 
                     };
 
@@ -126,17 +126,17 @@ public class GarageTransactionAnalysisRepository
 
                     select new GarageTransactionAnalysis
                     {
-                        Customer = v1.Customer,
-                        Vehicle = v1,
+                        Customer = (v1.Customer == null )? (v2.Customer ==null) ? null:v2.Customer:v1.Customer ,
+                        Vehicle = v1??v2,
                         GarageTransaction = garageTransaction,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
                         CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
-                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
-                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
-                        CustomerId = v1.CustomerId
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId
 
                     };
 
@@ -149,8 +149,8 @@ public class GarageTransactionAnalysisRepository
 
         var query = from garageTransaction in dbContext.GarageTransactions
                     where garageTransaction.CustomerCategory == category
-                          && garageTransaction.AccurateTime >= startDate
-                          && garageTransaction.AccurateTime <= endDate
+                          && garageTransaction.AccurateTime.Value.Date >= startDate.Date
+                          && garageTransaction.AccurateTime.Value.Date <= endDate.Date
                     join vehicle in dbContext.Vehicles
                         on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
                         into vehicleJoin1
@@ -167,9 +167,9 @@ public class GarageTransactionAnalysisRepository
                         CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
-                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
-                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
-                        CustomerId = v1.CustomerId
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId
                     };
 
         return await query.ToListAsync();
@@ -197,12 +197,12 @@ public class GarageTransactionAnalysisRepository
 
                     where (v1.Customer != null && v1.CustomerId == CustomerId) ||
                      (v2.Customer != null && v2.Customer.Id == CustomerId)
-                     && garageTransaction.AccurateTime >= startDate
-                          && garageTransaction.AccurateTime <= endDate
+                     && garageTransaction.AccurateTime.Value.Date >= startDate.Date
+                          && garageTransaction.AccurateTime.Value.Date <= endDate.Date
 
                     select new GarageTransactionAnalysis
                     {
-                        Customer = v1.Customer,
+                        Customer = (v1.Customer == null) ? (v2.Customer == null) ? null : v2.Customer : v1.Customer,
                         Vehicle = v1,
                         GarageTransaction = garageTransaction,
                         PlateNumber = garageTransaction.PlateNumber,
@@ -210,13 +210,58 @@ public class GarageTransactionAnalysisRepository
                         CameraType = garageTransaction.CameraType.ToString(),
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
-                        ArabicName = v1.Customer.ArabicName ?? v2.Customer.ArabicName,
-                        UserName = v1.Customer.IdentityUser.Name ?? v2.Customer.IdentityUser.Name,
-                        CustomerId = v1.CustomerId,
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId
                     };
 
         return await query.ToListAsync();
     }
 
+    //GetGarageTransactionsAnalysisDateCustomerName
 
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerName(string UserName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = from garageTransaction in dbContext.GarageTransactions
+
+                    join vehicle1 in dbContext.Vehicles
+                    .Include(x => x.Customer).ThenInclude(x => x.IdentityUser)
+                        on garageTransaction.PlateNumber equals vehicle1.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+
+                    join vehicle2 in dbContext.Vehicles
+                    .Include(x => x.Customer)
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+
+
+                    where (v1.Customer != null &&   v1.Customer.IdentityUser.UserName == UserName) ||
+                     (v2.Customer != null &&   v2.Customer.IdentityUser.UserName == UserName)
+                     && garageTransaction.AccurateTime.Value.Date >= startDate.Date
+                          && garageTransaction.AccurateTime.Value.Date <= endDate.Date
+                         && garageTransaction.CustomerCategory == category
+                    where tenantId == null || garageTransaction.TenantId == tenantId
+
+
+                    select new GarageTransactionAnalysis
+                    {
+                        Customer = (v1.Customer == null) ? (v2.Customer == null) ? null : v2.Customer : v1.Customer,
+                        Vehicle = v1??v2,
+                        GarageTransaction = garageTransaction,
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType.ToString(),
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId
+                    };
+
+        return await query.ToListAsync();
+    }
 }

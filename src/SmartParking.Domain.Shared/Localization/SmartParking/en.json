@@ -625,7 +625,12 @@
     "Reports": "Reports",
     "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions",
     "GarageStatusDateAsync": "Garage Status on Accurate Date",
-    "GarageStatusRangeAsync" :  "Garage Status between Date "
+    "GarageStatusRangeAsync": "Garage Status between Date ",
+    "InRange": "Within Specific Range",
+    "Ok": "Ok",
+    "Cashier No": "Cashier No",
+    "Range": "Range"
+
 
 
 
