@@ -650,8 +650,10 @@
     "Permission:FinancialManagement": "تقارير الإدراة المالية",
     "Reports": "تقارير",
     "TotalCustomersAndTheirTransactions": "تقرير العملاء وحركة سياراتهم",
-    "GarageStatusDateAsync": "حالة الجراج في تاريخ" , 
-    "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ" 
+    "GarageStatusDateAsync": "حالة الجراج في تاريخ",
+    "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ",
+    "InRange": "في خلال فترة زمنية",
+    "Ok": "تأكيد"
 
 
 

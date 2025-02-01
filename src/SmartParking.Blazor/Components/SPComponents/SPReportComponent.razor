@@ -1,0 +1,70 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div class="modal-wrapper text-center">
+    <MudDialog class="text-center">
+        <TitleContent>
+            <MudText Class="fw-bold">@Name @L["Report"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudItem sm="8" md="8">
+                <MudTextField @bind-Value="SearchingText"
+                Variant="Variant.Text"
+                Required
+                Class="w-100"
+                Placeholder="@L["Type Here"]"
+                Label="@L["Search"]"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            </MudItem>
+            <MudItem sm="4">
+                <MudCheckBox T="bool" @bind-Value="InRange" Color="MudBlazor.Color.Primary">@L["InRange"]</MudCheckBox>
+            </MudItem>
+            @if (InRange)
+            {
+                <MudItem sm="12">
+                    <MudStack>
+                        <MudDateRangePicker @ref="_picker" Label="With action buttons" @bind-DateRange="_dateRange"
+                        AutoClose="true" PickerVariant="MudBlazor.PickerVariant.Dialog">
+                            <PickerActions>
+                                <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">@L["Clear All"]</MudButton>
+                                <MudButton OnClick="@(() => _picker.CloseAsync(false))">@L["Cancel"]</MudButton>
+                                <MudButton Color="MudBlazor.Color.Primary" OnClick="@(() => _picker.CloseAsync())">@L["Ok"]</MudButton>
+                            </PickerActions>
+                        </MudDateRangePicker>
+                    </MudStack>
+                </MudItem>
+
+            }
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton Class="text-light" FullWidth="true" Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Error" OnClick="Submit">@L["Confirm Deletion"]</MudButton>
+            <MudButton FullWidth="true" DropShadow="true" OnClick="Cancel">@L["CANCEL"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    public string SearchingText { get; set; }
+
+    public bool InRange { get; set; } = false;
+    public MudDateRangePicker _picker;
+    public DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+
+    private void Submit() { 
+        var result = new { SearchingText, InRange, _dateRange };
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
