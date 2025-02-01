@@ -93,7 +93,7 @@
 
     public bool InRange { get; set; } = false;
     public MudDateRangePicker _picker;
-    public DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    public DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.Date);
 
     private void Submit()
     {
