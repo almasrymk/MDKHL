@@ -91,6 +91,7 @@
                 @if(currenttenant.Id!=null){
                     <MudNavGroup Icon="@Icons.Material.Filled.Report" Title="@L["Reports"]">
                         <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.Public">@L["Customers"] @L["Reports"]</MudNavLink>
+                        <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Public">@L["customerPackages"] @L["Reports"]</MudNavLink>
                     </MudNavGroup>
                 }
                 @if (currenttenant.Id == null)
