@@ -627,7 +627,8 @@
     "GarageStatusDateAsync": "Garage Status on Accurate Date",
     "GarageStatusRangeAsync": "Garage Status between Date ",
     "InRange": "Within Specific Range",
-    "Ok": "Ok"
+    "Ok": "Ok",
+    "Cashier No": "Cashier No"
 
 
 
