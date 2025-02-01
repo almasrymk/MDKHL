@@ -13,11 +13,13 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Garages;
+using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
 using SmartParking.PDF;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -199,17 +201,23 @@ public partial class Garage
         var MenuDatasMdkhl = new List<MudMenuData>
         {
            await CreateOrganizationMenue(),
-          
+           CreateReportsMenue()
 
         };
 
-       
+        var MenuDatasOrganization = new List<MudMenuData>
+        {
+            CreateReportsMenue()
+        };
 
         if (currentTenant.Id is null)
         {
             MenuDatas = MenuDatasMdkhl;
         }
-        
+        else
+        {
+            MenuDatas = MenuDatasOrganization;
+        }
 
     }
     private async Task<MudMenuData> CreateOrganizationMenue()
@@ -239,7 +247,50 @@ public partial class Garage
             Items = itemsOrganizations
         };
     }
-  
+    private MudMenuData CreateReportsMenue()
+    {
+        return new MudMenuData
+        {
+            Name = "Reports",
+            Label = @L[ValueOfMenue],
+            Items = new List<MenuItem>
+                {
+                    new MenuItem {  MenueName = "Reports", Label = @L["GarageStatusDateAsync"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("GarageStatusDateAsync"))   },
+                    new MenuItem {  MenueName = "Reports", Label = @L["GarageStatusRangeAsync"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("GarageStatusRangeAsync"))   },
+
+                }
+            ,
+            IsExport = true
+        };
+    }
+
+
+    public async Task HandleSelectReportAsync(string selectedValue)
+    {
+        try
+        {
+
+            ValueOfMenue = selectedValue;
+            DateTime accurateTime = new DateTime();
+            if (currentTenant != null)
+                TenantId = currentTenant.Id;
+            var garageAnalysis = await AnalysisAppService.ReportGarageStatusDateAsync(accurateTime);
+            var Data = CreateTableHelper.CreateDataTableForGarages(garageAnalysis);
+            var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+            await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Data.Name}.xlsx", "_blank");
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+    }
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
