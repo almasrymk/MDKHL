@@ -75,7 +75,10 @@ partial class ForSpecificActor
         CustomerCategoryStatus customerCategory = sPReportResult.CustomerCategory;
         DateRange dateRange = sPReportResult.DateRange;
         List<GarageTransactionAnalysis> garageTransactionAnalyses = new List<GarageTransactionAnalysis>();
-        garageTransactionAnalyses = await AnalysisAppService.GetGarageTransactionsAnalysisDateCustomerNameAsync(sPReportResult.SearchingText, dateRange.Start.Value, dateRange.End.Value, customerCategory,CurrentTenant.Id);
+        if(sPReportResult.InRange)
+            garageTransactionAnalyses = await AnalysisAppService.GetGarageTransactionsAnalysisDateCustomerNameAsync(sPReportResult.SearchingText, dateRange.Start.Value, dateRange.End.Value, customerCategory,CurrentTenant.Id);
+        else
+            garageTransactionAnalyses = await AnalysisAppService.GetGarageTransactionsAnalysisDateCustomerNameAsync(sPReportResult.SearchingText, DateTime.MinValue, DateTime.MaxValue, customerCategory,CurrentTenant.Id);
         TotalItem = garageTransactionAnalyses.Count;
         itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses);
         await Task.Yield();
