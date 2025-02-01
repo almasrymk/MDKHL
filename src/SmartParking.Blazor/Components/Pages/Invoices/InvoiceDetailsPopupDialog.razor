@@ -1,39 +1,38 @@
-﻿@using SmartParking.Invoices
-
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Invoices
+@using System.Globalization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
 <div class="invoice-body d-flex flex-column justify-content-center">
- 
+
     <div class="row ">
         <div class="col-md-12 d-flex justify-content-center ">
-           
+
             <div class="col-md-7">
-                <p><strong>Cashier No.:</strong> @Invoice.GarageArabicName</p>
+                <p><strong>@L["Cashier No"].:</strong> @Invoice.GarageArabicName</p>
             </div>
-            
+
             <div class="col-md-5">
-                <p><strong>Hotel Name:</strong> @Invoice.OrganizationArabicName</p>
+                <p><strong>@L["Name"] @L["Organization"]:</strong> @Invoice.OrganizationArabicName</p>
             </div>
         </div>
         <div class="col-md-12 d-flex justify-content-center " >
-          
+
             <div class="col-md-7">
-                <p><strong>Hotel Address:</strong> @OrganizationAddress</p>
-            </div>
-           
+                <p><strong>@L["Address"] @L["Organization"]:</strong> @OrganizationAddress</p>
+            </div>         
             <div class="col-md-5">
-                <p><strong>Plate Number:</strong> @Invoice.PlateNumber</p>
+                <p><strong>@L["PlateNumber"]:</strong> @Invoice.PlateNumber</p>
             </div>
         </div>
         <div class="col-md-12 d-flex justify-content-center ">
-          
-           
-            <div class="col-md-7">
-                <p><strong>Entry Date:</strong> @Invoice.EntranceTime.ToString()</p>
-            </div>
-            
-            <div class="col-md-5">
-                <p><strong>Exit Date:</strong> @Invoice.InvoiceTime.ToString()</p>
-            </div>
-            
+                <div class="col-md-7">
+                    <p><strong>@L["EntranceTime"]: </strong> @Invoice.EntranceTime.ToString()</p>
+                </div>
+
+                <div class="col-md-5">
+                    <p><strong>@L["ExitTime"]:</strong> @Invoice.InvoiceTime.ToString()</p>
+                </div>
         </div>
     </div>
 </div>

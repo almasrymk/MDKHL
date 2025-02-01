@@ -198,63 +198,58 @@ public static class CreateTableHelper
 
         return tableData;
     }
-    public static TableData CreateDataTableForCustomerPackages(List<CustomerPackageDto> customerPackages)
+    public static async Task<TableData> CreateDataTableForCustomerPackages(List<CustomerPackageDto> customerPackages)
     {
         var tableData = new TableData()
         {
             Name = "Customer Packages Data",
             ShowHeader = true
         };
-   
-
-        // Define the columns for the table
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerId"), Name = "CustomerId", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "CustomerId" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageId"), Name = "PackageId", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "PackageId" }); 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text  , IsSortable = true, PropertyName = "PackageArabicName" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageStatus"), Name = "PackageStatus", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "CustomerPackageStatus" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PriceOfPackage"), Name = "PriceOfPackage", TypeFilter = TypeFilter.Text  , IsSortable = true, PropertyName = "PriceOfPackage" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("DurationOfPackage"), Name = "DurationOfPackage", TypeFilter = TypeFilter.Text  , IsSortable = true , PropertyName = "DurationOfPackage" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ActivationDateOfPackage"), Name = "ActivationDateOfPackage", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "ActivationDateOfPackage" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("DeactivationDateOfPackage"), Name = "DeactivationDateOfPackage", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "DectivationDateOfPackage" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ExpiryDate"), Name = "ExpiryDate", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "ExpiryDate" });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageEnglishName"), Name = "PackageEnglishName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageEnglishName" });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageEnglishName" });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageEnglishName" });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageArabicName"), Name = "PackageArabicName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageArabicName" });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageArabicName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageArabicName" });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageArabicName" });
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerCategory"), Name = "CustomerCategory", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "CustomerCategory" });
 
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PriceOfPackage"), Name = "PriceOfPackage", TypeFilter = TypeFilter.Text  , IsSortable = true, PropertyName = "PriceOfPackage" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageDuration"), Name = "PackageDuration", TypeFilter = TypeFilter.Text  , IsSortable = true , PropertyName = "DurationOfPackage" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ActivationDate"), Name = "ActivationDateOfPackage", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "ActivationDateOfPackage" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ExpiryDate"), Name = "ExpiryDate", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "ExpiryDate" });
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("customer category"), Name = "CustomerCategory", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "CustomerCategory" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Status"), Name = "Status", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "CustomerPackageStatus" });
         // Loop through the customer packages data and add rows to the table
         foreach (var customerPackage in customerPackages)
         {
             var rowDef = new RowDef();
-
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerId"), customerPackage.CustomerId.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageId"), customerPackage.PackageId.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), customerPackage.Package.EnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageStatus"), customerPackage.CustomerPackageStatus.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PriceOfPackage"), customerPackage.PriceOfPackage?.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("DurationOfPackage"), customerPackage.DurationOfPackage?.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ActivationDateOfPackage"), customerPackage.ActivationDateOfPackage?.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("DeactivationDateOfPackage"), customerPackage.DectivationDateOfPackage?.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ExpiryDate"), customerPackage.ExpiryDate.ToString()));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageArabicName"), customerPackage.PackageArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), customerPackage.PackageArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), customerPackage.Customer.ArabicName));
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageEnglishName"), customerPackage.PackageEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), customerPackage.PackageEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), customerPackage.Customer.FullName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerCategory"), customerPackage.CustomerCategory.ToString()));
 
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PriceOfPackage"), customerPackage.PriceOfPackage?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageDuration"), customerPackage.DurationOfPackage?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ActivationDate"), customerPackage.ActivationDateOfPackage?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ExpiryDate"), customerPackage.ExpiryDate.ToString()));
+           
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), customerPackage.CustomerCategory.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Status"), customerPackage.CustomerPackageStatus.ToString()));
             tableData.Rows.Add(rowDef);
         }
-
+        await Task.Yield();
         return tableData;
+        
     }
 
     public static TableData CreateDataTableForPayments(List<PaymentDto> payments)
