@@ -92,7 +92,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\Reports\" />
     <Folder Include="wwwroot\GarageTransactionsImages\" />
   </ItemGroup>
 

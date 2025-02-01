@@ -1,0 +1,17 @@
+﻿@page "/beneficiariesreport"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Analysis
+@using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IDialogService Dialog
+@inject IAnalysisAppService AnalysisAppService
+@inject ICurrentTenant CurrentTenant
+
+<PageTitle>@L["Customers"] @L["Reports"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Customers"] @L["Reports"]</MudText>
+
+<SPDataGrid PageName=@($"{@L["Customers"]} {@L["Reports"]}")  ShowMenue="true" Data="@itemData"  TotalItemsInTable="TotalItem"   ></SPDataGrid>
+@* OnPageChanged="FetchTableData"
+	Menus="@MenuDatas"
+ *@

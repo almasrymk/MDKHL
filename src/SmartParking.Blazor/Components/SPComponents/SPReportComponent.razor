@@ -93,11 +93,12 @@
     public DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
 
     private void Submit() { 
-        var result = new { SearchingText, InRange, _dateRange, CustomerCategory };
+        (string searchingText, bool inRange, DateRange dateRange, CustomerCategoryStatus customerCategory) result =
+        ( SearchingText, InRange, _dateRange, CustomerCategory );
 
-        MudDialog.Close(DialogResult.Ok(true));
+        MudDialog.Close(DialogResult.Ok(result));
     }
-    private async Task GetCategory(string customerCategory){
+    private void GetCategory(string customerCategory){
         CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customerCategory);
 
     }
