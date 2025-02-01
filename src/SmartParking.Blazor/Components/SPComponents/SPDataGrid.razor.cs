@@ -65,7 +65,7 @@ public partial class SPDataGrid
     [Parameter] public int TotalItemsInTable { get; set; }
     public string _searchString;
     private string sort;
-    MudDataGrid<RowDef> dataGrid;
+    public MudDataGrid<RowDef> dataGrid { get; set; }
     private bool _ascending = true;
     public string sortString = "Id";
     public bool ClickFilter { get; set; } = false;
@@ -107,7 +107,12 @@ public partial class SPDataGrid
     }
     public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
     {
+        dataGrid = new MudDataGrid<RowDef>();
         _stringLocalizer = stringLocalizer;
+    }
+    public async Task Reload()
+    {
+        await dataGrid.ReloadServerData();
     }
     public async Task ClearItem(string key)
     {
@@ -303,7 +308,7 @@ public partial class SPDataGrid
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
-            await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
+            await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
         }
         catch 
         {

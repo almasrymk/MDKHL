@@ -140,12 +140,12 @@ public partial class ViewCustomerVehicleDialog
         if (CurrentTenant.Id == null)
         {
             var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForMDKHLPlateAsync(plateNumber);
-            Data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto);
+            Data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto);
         }
         else
         {
             var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber);
-            Data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto);
+            Data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto);
 
         }
         await DownloadExcel(Data,plateNumber);

@@ -367,7 +367,7 @@ public partial class Customer
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
         var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId);
-        var data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+        var data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
 
         await DownloadExcel(data, row.Cells[1].Value);
 
@@ -420,7 +420,7 @@ public partial class Customer
             if (currrentTenant != null)
                 TenantId = currrentTenant.Id;
             var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
-            var Data = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+            var Data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
 
             await DownloadExcel(Data,Data.Name);
         }
