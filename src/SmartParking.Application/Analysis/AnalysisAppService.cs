@@ -1,4 +1,5 @@
-﻿using Castle.Core.Resource;
+﻿
+using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
@@ -22,6 +23,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
@@ -320,19 +322,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return await GetCollectMoneyToday(query);
     }
 
-    public async Task<TableData> ReortGarageTransactionMdkhlAsync(CustomerCategoryStatus category,Guid? tenantId)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category,tenantId);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
-            return dataTable;
+            return result;
         }
         
     }
    
 
-    public async Task<TableData> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -341,57 +342,104 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<TableData> ReportGarageTransactionForOrganization(string PlateNumber)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber)
     {
         var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber);
-        var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
-        return dataTable;
+        return result;
     }
 
-    public async Task<TableData> ReortGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerId(CustomerId , startDate, endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
-            return dataTable;
+            return result;
         }
 
     }
-    public async Task<TableData> ReortGarageTransactionDateCustomeCategoryAsync(CustomerCategoryStatus category, DateTime startDate, DateTime endDate)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName , DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate, category,tenantId );
+            return result;
+        }
+
+    }
+
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(CustomerCategoryStatus category, DateTime startDate, DateTime endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDate( category, startDate, endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
-            return dataTable;
+            return result;
         }
 
     }
-    public async Task<TableData> ReortGarageTransactionCustomerIdAsync(Guid CustomerId)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisCustomerId(CustomerId);
             var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
-            return dataTable;
+            return result;
         }
 
     }
-    public async Task<TableData> ReortCustomerPackage()
+    public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId , DateTime? startDate, DateTime? endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _customerPackageRepository.GetQueryableAsync();
             query = query.Where(_ => _.CustomerCategory == CustomerCategoryStatus.Customer);
+            query = CheckTenant(tenantId, query);
+            query = CheckDate(startDate, endDate, query);
+            query = ApplySort(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var result = await AsyncExecuter.ToListAsync(query);
-            var customerPackageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
-            var dataTable = CreateTableHelper.CreateDataTableForCustomerPackages(customerPackageMap);
-            return dataTable;
+            return new PagedResultDto<CustomerPackageDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result)
+            };
+        }
+    }
+
+    private static IQueryable<CustomerPackage> CheckDate(DateTime? startDate, DateTime? endDate, IQueryable<CustomerPackage> query)
+    {
+        if (startDate.HasValue && endDate.HasValue)
+            query = query.Where(_ => _.CreationTime.Date >= startDate.Value.Date && _.CreationTime.Date <= endDate.Value.Date);
+        return query;
+    }
+
+    private static IQueryable<CustomerPackage> CheckTenant(Guid? tenantId, IQueryable<CustomerPackage> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(_ => _.TenantId == tenantId.Value);
+        return query;
+    }
+
+    private static IQueryable<CustomerPackage> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackage> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
         }
 
+        return query;
     }
-    public async Task<TableData> ReortCustomerPayment(DateTime StartDate , DateTime EndDate)
+
+    public async Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate , DateTime EndDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -399,35 +447,32 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             query = query.Where(_ =>_.CreationTime.Date>=StartDate.Date && _.CreationTime.Date<=EndDate.Date);
             var result = await AsyncExecuter.ToListAsync(query);
             var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
-            var dataTable = CreateTableHelper.CreateDataTableForPayments(paymentMap);
-            return dataTable;
+            return paymentMap;
         }
 
     }
 
-    public async Task<TableData> ReortGarageStatusDateAsync(DateTime accurateDate)
+    public async Task<List<GarageAnalysis>> ReportGarageStatusDateAsync(DateTime accurateDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageAnalysis.GetGarageStatusByDate(accurateDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarages(result);
-            return dataTable;
+            return result;
         }
 
     }
 
-    public async Task<TableData> ReortGarageStatusRangeAsync(DateTime startDate, DateTime endDate)
+    public async Task<List<GarageAnalysis>> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageAnalysis.GetGarageStatusRange(startDate,endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarages(result);
-            return dataTable;
+            return result;
         }
 
     }
 
-    public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
+    public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(organization.Id);
@@ -435,7 +480,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return dataTable;
     }
 
-    public async Task<TableData> ReortPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
+    public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
     {
             var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(null);
             var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
