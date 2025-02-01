@@ -4,14 +4,14 @@
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
 
-    <MudDialog class="text-center">
+<MudDialog class="text-center" Style="min-height: 75%;">
         <TitleContent>
             <MudText Class="fw-bold">@Name @L["Report"]</MudText>
         </TitleContent>
         <DialogContent>
             @if (AddCustomerCategory)
             {
-                <MudItem sm="6" md="6">
+                <MudItem sm="12" md="12">
                     <MudSelect T="string"
                     Label="@L["customer category"]"
                     Placeholder=@L["Choose"]
@@ -48,9 +48,8 @@
                 </MudItem>
                 @if (InRange)
                 {
-                    <MudItem sm="12">
-                        <MudStack>
-                            <MudDateRangePicker @ref="_picker" OverflowBehavior="MudBlazor.OverflowBehavior.FlipAlways" Label="With action buttons" @bind-DateRange="_dateRange" Required="true"
+                <MudItem sm="12" Style="min-height: 100%;">
+                            <MudDateRangePicker @ref="_picker" Label="@L["Range"]"  @bind-DateRange="_dateRange" Required="true"
                             AutoClose="true" PickerVariant="MudBlazor.PickerVariant.Dialog">
                                 <PickerActions>
                                     <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">@L["Clear All"]</MudButton>
@@ -58,7 +57,6 @@
                                     <MudButton Color="MudBlazor.Color.Primary" OnClick="@(() => _picker.CloseAsync())">@L["Ok"]</MudButton>
                                 </PickerActions>
                             </MudDateRangePicker>
-                        </MudStack>
                     </MudItem>
 
                 }
@@ -66,7 +64,7 @@
 
         </DialogContent>
         <DialogActions>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["Confirm"]</MudButton>
+        <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["CONFIRM"]</MudButton>
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
         </DialogActions>
     </MudDialog>
@@ -99,6 +97,7 @@
 
     private void Submit()
     {
+
         var result = new SPReportResult
         {
             SearchingText = SearchingText,
@@ -119,8 +118,7 @@
 
 
     private void Cancel() {
-        if (!HasBeenOpened)
-            return;
+   
         MudDialog.Cancel();
     }
 }

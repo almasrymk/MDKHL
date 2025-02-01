@@ -1,4 +1,5 @@
-﻿using Castle.Core.Resource;
+﻿
+using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
@@ -22,6 +23,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
@@ -355,11 +357,11 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName , DateTime startDate, DateTime endDate)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName , DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate, category,tenantId );
             return result;
         }
 
@@ -384,17 +386,59 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<List<CustomerPackageDto>> ReportCustomerPackage()
+    public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId , DateTime? startDate, DateTime? endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _customerPackageRepository.GetQueryableAsync();
             query = query.Where(_ => _.CustomerCategory == CustomerCategoryStatus.Customer);
+            query = CheckTenant(tenantId, query);
+            query = CheckDate(startDate, endDate, query);
+            query = ApplySort(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var result = await AsyncExecuter.ToListAsync(query);
-            var customerPackageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
-            return customerPackageMap;
+            return new PagedResultDto<CustomerPackageDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result)
+            };
         }
     }
+
+    private static IQueryable<CustomerPackage> CheckDate(DateTime? startDate, DateTime? endDate, IQueryable<CustomerPackage> query)
+    {
+        if (startDate.HasValue && endDate.HasValue)
+            query = query.Where(_ => _.CreationTime.Date >= startDate.Value.Date && _.CreationTime.Date <= endDate.Value.Date);
+        return query;
+    }
+
+    private static IQueryable<CustomerPackage> CheckTenant(Guid? tenantId, IQueryable<CustomerPackage> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(_ => _.TenantId == tenantId.Value);
+        return query;
+    }
+
+    private static IQueryable<CustomerPackage> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackage> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return query;
+    }
+
     public async Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate , DateTime EndDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
