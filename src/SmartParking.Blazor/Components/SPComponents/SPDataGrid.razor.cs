@@ -308,7 +308,7 @@ public partial class SPDataGrid
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
-            await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
+            await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
         }
         catch 
         {
