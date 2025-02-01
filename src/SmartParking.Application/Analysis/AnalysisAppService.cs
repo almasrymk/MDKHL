@@ -355,11 +355,11 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName , DateTime startDate, DateTime endDate)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName , DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate, category,tenantId );
             return result;
         }
 

@@ -90,7 +90,9 @@
                 }
                 @if(currenttenant.Id!=null){
                     <MudNavGroup Icon="@Icons.Material.Filled.Report" Title="@L["Reports"]">
-                        <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.Public">@L["Customers"] @L["Reports"]</MudNavLink>
+                        <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"] @L["Reports"]</MudNavLink>
+                        <MudNavLink Href="/vehiclereportreport" Icon="@Icons.Material.Filled.CarRental">@L["Vehicles"] @L["Reports"]</MudNavLink>
+                        <MudNavLink Href="/specificactorreport" Icon="@Icons.Material.Filled.PersonPin">@L["User"] @L["Reports"]</MudNavLink>
                     </MudNavGroup>
                 }
                 @if (currenttenant.Id == null)
