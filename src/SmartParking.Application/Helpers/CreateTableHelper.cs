@@ -16,7 +16,7 @@ namespace SmartParking.Helpers;
 
 public static class CreateTableHelper
 {
-    public static TableData CreateDataTableForGarageTransaction(List<GarageTransactionAnalysis> data)
+    public static async Task<TableData> CreateDataTableForGarageTransaction(List<GarageTransactionAnalysis> data)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -47,9 +47,11 @@ public static class CreateTableHelper
 
             tableData.Rows.Add(rowDef);
         }
+        await Task.Yield();
+
         return tableData;
     }
-    public static TableData CreateDataTableForGarageTransactionCustomer(List<GarageTransactionAnalysis> data)
+    public static async Task<TableData> CreateDataTableForGarageTransactionCustomer(List<GarageTransactionAnalysis> data)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
@@ -95,6 +97,8 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerId"), item.CustomerId.ToString()));
             tableData.Rows.Add(rowDef);
         }
+        await Task.Yield();
+
         return tableData;
     }
 

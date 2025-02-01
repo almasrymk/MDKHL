@@ -4,7 +4,6 @@
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
 
-<div class="modal-wrapper text-center">
     <MudDialog class="text-center">
         <TitleContent>
             <MudText Class="fw-bold">@Name @L["Report"]</MudText>
@@ -51,7 +50,7 @@
                 {
                     <MudItem sm="12">
                         <MudStack>
-                            <MudDateRangePicker @ref="_picker" Label="With action buttons" @bind-DateRange="_dateRange" Required="true"
+                            <MudDateRangePicker @ref="_picker" OverflowBehavior="MudBlazor.OverflowBehavior.FlipAlways" Label="With action buttons" @bind-DateRange="_dateRange" Required="true"
                             AutoClose="true" PickerVariant="MudBlazor.PickerVariant.Dialog">
                                 <PickerActions>
                                     <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">@L["Clear All"]</MudButton>
@@ -71,7 +70,6 @@
             <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
         </DialogActions>
     </MudDialog>
-</div>
 
 
 
@@ -90,6 +88,9 @@
 
     public string SearchingText { get; set; }
 
+    public bool HasBeenOpened { get; set; } = false;
+
+
     public CustomerCategoryStatus CustomerCategory { get; set; }
 
     public bool InRange { get; set; } = false;
@@ -103,7 +104,9 @@
             SearchingText = SearchingText,
             InRange = InRange,
             DateRange = _dateRange,
-            CustomerCategory = CustomerCategory
+            CustomerCategory = CustomerCategory,
+            HasBeenOpened = true
+            
         };
 
         MudDialog.Close(DialogResult.Ok(result));
@@ -111,9 +114,13 @@
     private void GetCategory(string customerCategory)
     {
         CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customerCategory);
-
+        HasBeenOpened = true;
     }
 
 
-    private void Cancel() => MudDialog.Cancel();
+    private void Cancel() {
+        if (!HasBeenOpened)
+            return;
+        MudDialog.Cancel();
+    }
 }

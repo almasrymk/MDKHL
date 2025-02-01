@@ -343,7 +343,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber)
     {
         var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber);
-        var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
         return result;
     }
 
@@ -352,7 +351,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerId(CustomerId , startDate, endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
             return result;
         }
 
@@ -362,7 +360,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
             return result;
         }
 
@@ -373,7 +370,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDate( category, startDate, endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
             return result;
         }
 
@@ -396,7 +392,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             query = query.Where(_ => _.CustomerCategory == CustomerCategoryStatus.Customer);
             var result = await AsyncExecuter.ToListAsync(query);
             var customerPackageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
-            var dataTable = CreateTableHelper.CreateDataTableForCustomerPackages(customerPackageMap);
             return customerPackageMap;
         }
     }
@@ -418,7 +413,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageAnalysis.GetGarageStatusByDate(accurateDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarages(result);
             return result;
         }
 
@@ -429,7 +423,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageAnalysis.GetGarageStatusRange(startDate,endDate);
-            var dataTable = CreateTableHelper.CreateDataTableForGarages(result);
             return result;
         }
 
