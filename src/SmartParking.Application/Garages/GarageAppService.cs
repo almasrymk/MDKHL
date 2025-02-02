@@ -275,32 +275,34 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     private async Task UpdateGarageDetailsAsync(CreateUpdateGarageDto input, Organization organization, int numberOfGarages, Garage existingGarage)
     {
-        
-
-        
 
         if (input.Status == Enums.Status.Inactive && existingGarage.Status == Enums.Status.Active)
         {
             existingGarage.Status = Enums.Status.Inactive;
             organization.ActiveGarages--;
             organization.UsedSlots -= existingGarage.MaxCapacity;
-            
+
             var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
-            await ChangeCameraStatusRelatedToGarage(existingGarage,cameras);
-            organization.ActiveCameras-=cameras.Count;
+            await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
+            organization.ActiveCameras -= cameras.Count;
         }
         else if (input.Status == Enums.Status.Active && existingGarage.Status == Enums.Status.Inactive)
         {
-            existingGarage.Status= Enums.Status.Active;
-            var subscription =await CheckSubscriptionLimitsAsync(organization, input);
+            existingGarage.Status = Enums.Status.Active;
+            var subscription = await CheckSubscriptionLimitsAsync(organization, input);
             var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
-            var result = CheckSubscriptionLimitsCamerasAsync(organization,cameras.Count, subscription);
+            var result = CheckSubscriptionLimitsCamerasAsync(organization, cameras.Count, subscription);
             await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
 
             organization.ActiveGarages++;
             organization.ActiveCameras += cameras.Count;
             organization.UsedSlots += existingGarage.MaxCapacity;
 
+        }
+        else if (input.Status == Enums.Status.Active && existingGarage.Status == Enums.Status.Active)
+        {
+            organization.UsedSlots -= existingGarage.MaxCapacity;
+            organization.UsedSlots += input.MaxCapacity;
         }
     }
     [RemoteService(isEnabled: false)]
