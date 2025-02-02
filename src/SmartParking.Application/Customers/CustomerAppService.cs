@@ -56,68 +56,69 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _usersAppService = usersAppService;
         _authenticationUtility = authenticationUtility;
     }
-  
+
 
     /// <inheritdoc/>
-  //  public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
-  //  {
-  //      try
-		//{
-		//	var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
-		//	using (_dataFilter.Disable<IMultiTenant>())
-                
-		//	{
-		//		var user = await _userManager.FindByNameAsync(input.UserName); 
-		//		if (user != null)
-		//		{
-  //                  throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " +LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-  //              }
+    //  public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
+    //  {
+    //      try
+    //{
+    //	var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+    //	using (_dataFilter.Disable<IMultiTenant>())
 
-  //          }
-		//	await _baseCustomer.CheckCustomer(input);
+    //	{
+    //		var user = await _userManager.FindByNameAsync(input.UserName); 
+    //		if (user != null)
+    //		{
+    //                  throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " +LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+    //              }
 
-		//	var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
-		//	await AddUser(input, customer);
-		//	var customerAdd = await _repository.InsertAsync(customer, true);
-  //          await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
-			
-		//	return ObjectMapper.Map<Customer, CustomerDto>(customer);
-		//}
-		//catch (Exception ex)
-  //      {
+    //          }
+    //	await _baseCustomer.CheckCustomer(input);
 
-  //          throw new UserFriendlyException("Registration failed: " + ex.Message);
-  //      }
-  //  }
+    //	var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+    //	await AddUser(input, customer);
+    //	var customerAdd = await _repository.InsertAsync(customer, true);
+    //          await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
 
-	
+    //	return ObjectMapper.Map<Customer, CustomerDto>(customer);
+    //}
+    //catch (Exception ex)
+    //      {
 
-	/// <inheritdoc/>
-	public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
-	{
-		
-			using (_dataFilter.Disable<IMultiTenant>())
-			{
-				var user = await _userManager.FindByNameAsync(input.UserName);
-				if (user != null)
-				{
-                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ 
+    //          throw new UserFriendlyException("Registration failed: " + ex.Message);
+    //      }
+    //  }
+
+
+
+    /// <inheritdoc/>
+    public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
+    {
+        try
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var user = await _userManager.FindByNameAsync(input.UserName);
+                if (user != null)
+                {
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
                         LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
                 }
-			}
-			await _baseCustomer.CheckCustomer(input);
+            }
+            await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
             {
-                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
             var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
             if (!result2)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") +" "+ 
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
@@ -126,15 +127,26 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             if (input.IsUser)
                 userCreated = await AddUser(input);
             else
-             userCreated = await AddUser(input, customer);
+                userCreated = await AddUser(input, customer);
             customer.IdentityUserId = userCreated.Id;
-			var customerAdd = await _repository.InsertAsync(customer, true);
-			await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
-			return ObjectMapper.Map<Customer, CustomerDto>(customer);
-		
+            var customerAdd = await _repository.InsertAsync(customer, true);
+            await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
 
-	}
 
+        }
+
+        catch (BusinessException businessException)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString(businessException.Code));
+
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+
+    }
 
 	/// <summary>
 	/// Asynchronously adds a user based on the provided customer data.
