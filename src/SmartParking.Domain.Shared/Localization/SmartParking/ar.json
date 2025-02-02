@@ -662,7 +662,7 @@
     "TotalIncludeVAT": "الإجمالي مع القيمة المضافه",
     "SimplifiedTaxInvoice": "فاتورة ضريبية مبسطة",
     "HeaderVatReceiptPayment": "هذا إيصال دفع لـ",
-    "Hours" :  "ساعات"
+    "Hours" :  "ساعات" ,
 
     "StartDate": "البداية",
     "EndDate": "النهاية"
