@@ -654,8 +654,18 @@
     "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ",
     "InRange": "في خلال فترة زمنية",
     "Ok": "تأكيد",
-    "Cashier No" :  "رقم الكاشير",
-    "Range": "في خلال"
+    "Cashier No": "رقم الكاشير",
+    "Range": "في خلال",
+    "Subscription": "الاشتراك",
+    "Interval": "",
+    "TotalPreVAT": "الإجمالي قبل القيمة المضافه",
+    "TotalIncludeVAT": "الإجمالي مع القيمة المضافه",
+    "SimplifiedTaxInvoice": "فاتورة ضريبية مبسطة",
+    "HeaderVatReceiptPayment": "هذا إيصال دفع لـ",
+    "Hours" :  "ساعات" ,
+
+    "StartDate": "البداية",
+    "EndDate": "النهاية"
 
 
 

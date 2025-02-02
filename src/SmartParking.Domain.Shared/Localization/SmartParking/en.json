@@ -629,7 +629,16 @@
     "InRange": "Within Specific Range",
     "Ok": "Ok",
     "Cashier No": "Cashier No",
-    "Range": "Range"
+    "Range": "Range",
+    "Subscription": "Subscription",
+    "Interval": "",
+    "TotalPreVAT": "Total Pre VAT",
+    "TotalIncludeVAT": "Total Include VAT",
+    "SimplifiedTaxInvoice": "Simplified Tax Invoice",
+    "HeaderVatReceiptPayment": "This is the receipt for payment of",
+    "Hours": "Hours"
+
+
 
 
 

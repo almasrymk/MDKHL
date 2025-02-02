@@ -26,7 +26,7 @@
 	<MudItem sm="7" Class="d-flex flex-column">
 		<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
 
-		<MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center mx-4">
+		<MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center mx-3">
 			<CarImageDetails Date="@(Invoice.EntranceTime.HasValue ?Invoice.EntranceTime.Value : DateTime.Now)" Image="@Invoice?.EntryTransactionImage" Title="@L["EntranceImage"]" />
 			<MudItem sm="2" Class="d-flex align-items-center">
 				<MudIcon Icon="@(CultureInfo.CurrentCulture.Name=="en"?Icons.Material.Filled.ArrowForward:Icons.Material.Filled.ArrowBack)" />
@@ -35,7 +35,7 @@
 
 
 		</MudItem>
-
+		<div class="mx-3">
 		<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
 		<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
 		<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
@@ -43,7 +43,7 @@
 		<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
 		<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
 		<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
-
+		</div>
 
 
 	</MudItem>
