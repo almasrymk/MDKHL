@@ -146,11 +146,30 @@
                                         </MudSelect>
                                     </MudItem>
                                 }
-                                @if (SelectOperator.Value != "IsNullOrEmpty")
+                                @if (SelectOperator.Value != "IsNullOrEmpty" && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date)
                                 {
                                     <MudItem>
                                         @L["Value"]:
                                         <MudTextField @bind-Value="FilterValue" Placeholder="@L["Value"]" Variant="Variant.Outlined" Margin="MudBlazor.Margin.Dense" />
+                                    </MudItem>
+                                }
+
+                                @if ((SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan") && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date)
+                                {
+                                    <MudItem>
+                                        <MudDatePicker Label="@L["Date"]" Editable="true" @bind-Date="@FilterRequestDto.Date" Placeholder="Select Date" />
+                                    </MudItem>
+                                }@if (SelectOperator.Value == "Between" && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date)
+                                {
+                                    <MudItem>
+                                        <MudItem>
+                                            <MudDatePicker Label="@L["StartDate"]" Editable="true" @bind-Date="@FilterRequestDto.StartDate" Placeholder="Select Date" />
+                                        </MudItem>
+                                    </MudItem>
+                                    <MudItem>
+                                        <MudItem>
+                                            <MudDatePicker Label="@L["EndDate"]" Editable="true" @bind-Date="@FilterRequestDto.EndDate" Placeholder="Select Date" />
+                                        </MudItem>
                                     </MudItem>
                                 }
                             </MudItem>

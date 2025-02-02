@@ -29,7 +29,7 @@ public partial class SPDataGrid
     [Parameter] public List<MudMenuData> Menus { get; set; } = new List<MudMenuData>();
     [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
-     public IList<RowDef> Rows { get; set; } = new List<RowDef>();
+    public IList<RowDef> Rows { get; set; } = new List<RowDef>();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public bool ShowAdd { get; set; } = true;
@@ -74,8 +74,8 @@ public partial class SPDataGrid
 
     private bool IsNot = false;
     private bool IsClickMenu = false;
-    private string ValueOfMenue { get; set; }="All";
-    private Func<string, Task>? ActionMenue;
+    private string ValueOfMenue { get; set; } = "All";
+    public FilterRequestDto FilterRequestDto { get; set; }
     public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
@@ -85,7 +85,10 @@ public partial class SPDataGrid
         ["starts with"] = "StartsWith",
         ["ends with"] = "EndsWith",
         ["is empty"] = "IsNullOrEmpty",
-        ["is not empty"] = "IsNullOrEmpty"
+        ["is not empty"] = "IsNullOrEmpty",
+        ["greater than"] = "GreaterThan",
+        ["less than"] = "LessThan",
+        ["between"] = "Between",
     };
     public Dictionary<string, string> StringOperatorAR { get; set; } = new Dictionary<string, string>
     {
@@ -96,7 +99,10 @@ public partial class SPDataGrid
         ["يبدأ بـ"] = "StartsWith",
         ["لا يبدأ بـ"] = "EndsWith",
         ["فارغـًا"] = "IsNullOrEmpty",
-        ["لا يكون فارغـًا"] = "IsNullOrEmpty"
+        ["لا يكون فارغـًا"] = "IsNullOrEmpty",
+        ["اكبر من"] = "GreaterThan",
+        ["اقل من"] = "LessThan",
+        ["بين"] = "Between",
     };
     private string FilterValue { get; set; }
 
@@ -143,36 +149,29 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if (Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number || Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
+        if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
+            IsNot = true;
+        var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
+        FilterRequestDto filterEventArgs = new FilterRequestDto()
         {
-            SelectOperator = new KeyValuePair<string, string>(SelectedColumn, FilterValue);
-        }
+            FilterProperty = SelectedColumn,
+            FilterValue = FilterValue,
+            FilterOperator = SelectOperator.Value,
+            IsNot = IsNot,
+            TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter,
+             Date = FilterRequestDto.Date,
+             EndDate = FilterRequestDto.EndDate,
+             StartDate = FilterRequestDto.StartDate
+        };
+        ColumnsFilter.Add(filterEventArgs);
+        ColumnsFilterApply.Add(DisplayFilter.Name);
 
-        if (!SelectOperator.Key.IsNullOrEmpty() && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") || !FilterValue.IsNullOrEmpty()))
-        {
-            if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
-                IsNot = true;
-            var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
-            FilterRequestDto filterEventArgs = new FilterRequestDto()
-            {
-                FilterProperty = SelectedColumn,
-                FilterValue = FilterValue,
-                FilterOperator = SelectOperator.Value,
-                IsNot = IsNot,
-                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter
-            };
-            ColumnsFilter.Add(filterEventArgs);
-            ColumnsFilterApply.Add(DisplayFilter.Name);
-
-            ClickFilter = false;
-            SelectedColumn = "";
-            FilterValue = "";
-            SelectOperator = default;
-            IsNot = false;
-            await dataGrid.ReloadServerData();
-
-        }
-
+        ClickFilter = false;
+        SelectedColumn = "";
+        FilterValue = "";
+        SelectOperator = default;
+        IsNot = false;
+        await dataGrid.ReloadServerData();
 
     }
     private void OnClickFilter()
@@ -182,7 +181,7 @@ public partial class SPDataGrid
     private async Task OnSearch(string text)
     {
         _searchString = text;
-        
+
 
         await dataGrid.ReloadServerData();
     }
@@ -216,8 +215,8 @@ public partial class SPDataGrid
             SearchTerm = _searchString,
             Filters = ColumnsFilter
         };
-     
-            await OnPageChanged.InvokeAsync(pageArgs);
+
+        await OnPageChanged.InvokeAsync(pageArgs);
 
         if (!_searchString.IsNullOrEmpty() && !IsClickMenu)
         {
@@ -260,7 +259,7 @@ public partial class SPDataGrid
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
         }
-        
+
 
     }
 
@@ -291,7 +290,7 @@ public partial class SPDataGrid
     private async Task OpenNewBlank(string url)
     {
 
-            await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
     }
 
     private async Task ExportToPDF()
@@ -310,25 +309,25 @@ public partial class SPDataGrid
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
         }
-        catch 
+        catch
         {
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
         }
-       
-       
+
+
     }
 
-    public async Task HandleMunue(string value, EventCallback<string> action,bool isExport)
+    public async Task HandleMunue(string value, EventCallback<string> action, bool isExport)
     {
         HandleCategory = action;
         IsClickMenu = true;
         ValueOfMenue = value;
 
-       await action.InvokeAsync(value);
+        await action.InvokeAsync(value);
         if (!isExport)
-        await dataGrid.ReloadServerData();
-      
+            await dataGrid.ReloadServerData();
+
     }
 }
 
