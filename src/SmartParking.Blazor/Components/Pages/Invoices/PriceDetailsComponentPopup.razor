@@ -1,14 +1,17 @@
-﻿<div class="col-md-6">
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+<div class="col-md-6">
     <div class="d-flex flex-row">
-        <p><strong>Total Pre VAT:</strong> @Price SAR</p>
+        <p><strong>@L["TotalPreVAT"]:</strong> @Price @L["SAR"]</p>
     </div>
     <div class="d-flex flex-row">
-        <p><strong>VAT 15%:</strong> @($"{Math.Round((Price * 0.15m), 2)} ") SAR</p>
+        <p><strong>@L["VAT"] 15%:</strong> @($"{Math.Round((Price * 0.15m), 2)} ") @L["SAR"]</p>
     </div>
     <div class="d-flex flex-row">
         <p>
-            <strong>Total Include VAT:</strong>
-            @($"{Math.Round((Price + (Price * 0.15m)), 2)} ") SAR
+            <strong>@L["TotalIncludeVAT"]:</strong>
+            @($"{Math.Round((Price + (Price * 0.15m)), 2)} ") @L["SAR"]
         </p>
     </div>
 </div>

@@ -187,7 +187,7 @@ public partial class OrganizationEdit
 
         try
         {
-            createUpdateOrganiztion.IsClose = createUpdateOrganiztion.IsClose || PackageValidations.CheckPackageTimeValiditity(createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
+            createUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(IsClose, createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
 
             if (IsPictureChanged)
                 createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);

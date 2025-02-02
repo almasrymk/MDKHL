@@ -71,7 +71,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
             if (!nationalIdPattern.IsMatch(input.NationalId))
             {
-                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NationIdValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationIdValidation"));
             }
         }
         else if (input.IdentificationType == IdentificationTypes.Passport)
@@ -79,13 +79,13 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
             var passportPattern = new Regex(@"^(?=(?:\d*[a-zA-Z]){1}\d*$)[a-zA-Z0-9]{6,9}$");
             if (!passportPattern.IsMatch(input.NationalId))
             {
-                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("PassportValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("PassportValidation"));
             }
         }
         var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
         if (!result2)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("NationalId") +" "+LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("NationalId") +" "+LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
         }
     }

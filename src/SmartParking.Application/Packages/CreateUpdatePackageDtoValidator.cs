@@ -26,9 +26,6 @@ namespace SmartParking.Packages
 				.GreaterThan(0)
 				.WithMessage("Package Type is invalid");
 
-			//RuleFor(x => x.Status)
-			//	.NotEmpty()
-			//	.WithMessage("Status is invalid");
 
 			RuleFor(x => x.Price)
 				.GreaterThan(-1)
@@ -40,9 +37,12 @@ namespace SmartParking.Packages
 			.LessThan(x => x.PublishTo)
 			.When( x => !x.Published )
 			.WithMessage("Start time must be before to the end time.");
-		////.Must(BeAValidTime).WithMessage("Start time is not a valid time.");
 
-			RuleFor(x => x.PublishTo);
+            RuleFor(x => x)
+            .Must(x => !x.Published || (x.PublishFrom != default(TimeOnly) && x.PublishTo != default(TimeOnly)))
+            .WithMessage("Both 'From' and 'To' must have a valid value when Published is true.");
+
+            RuleFor(x => x.PublishTo);
 				//.Must(BeAValidTime).WithMessage("End time is not a valid time.");
 
 			RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1);
