@@ -206,8 +206,7 @@ public partial class OrganizationAdd
         
         try
         {
-            createUpdateOrganiztion.IsClose = createUpdateOrganiztion.IsClose || PackageValidations.CheckPackageTimeValiditity(createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
-
+            createUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(IsClose, createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
             var oragnization =  await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id,int.Parse(PackageSelectValue));
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Organization"]} {oragnization.ArabicName}", Severity.Success);
