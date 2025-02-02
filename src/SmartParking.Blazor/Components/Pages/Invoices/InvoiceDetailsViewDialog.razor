@@ -5,6 +5,9 @@
 @using System.IO
 @using SmartParking.Packages
 @using Volo.Abp.MultiTenancy
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
 @inject IInvoiceAppService InvoiceAppService
 @inject ICurrentTenant currentTenant
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
@@ -16,7 +19,7 @@
     </div>
     <div class="title-content d-flex justify-content-center align-items-center">
 
-    <InvoiceDetailsPopupHeader Title="@title" Description="@description" />
+    <InvoiceDetailsPopupHeader Title="@L[@title]" Description="@description" />
     </div>
 
 
@@ -32,14 +35,14 @@
                 </div>
             </div>
             <div class="invoice-header d-flex flex-column flex-grow-1 h-100 p-3 justify-content-center align-items-center">
-                <h3>***Simplified tax invoice***</h3>
+                <h3>*** @L["SimplifiedTaxInvoice"] ***</h3>
                 <div class="d-flex flex-row">
-                    <h5 class="fw-bold">VAT:</h5>
+                    <h5 class="fw-bold">@L["VAT"]:</h5>
                     <h5>@CommercialRegisteration</h5>
                 </div>
                 <div class="align-items-center justify-content-center">
                     <h4 class="text-center">
-                        This is the receipt for payment of  @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2)} ") SAR
+                        @L["HeaderVatReceiptPayment"]  @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2)} ") @L["SAR"]
                     </h4>
                 </div>
             </div>
