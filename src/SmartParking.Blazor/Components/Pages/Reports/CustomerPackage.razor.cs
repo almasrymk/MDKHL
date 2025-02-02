@@ -23,72 +23,66 @@ public partial class CustomerPackage
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private bool _dialogShown = false;
     private bool _dialogOpen = false;
-    private SPDataGrid DataGridComponent { get; set; }
+    //private SPDataGrid DataGridComponent { get; set; }
     public string sordColumn { get; private set; }
 
     public CustomerPackage(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
-        DataGridComponent = new SPDataGrid(localizer);
+        //DataGridComponent = new SPDataGrid(localizer);
 
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender && !_dialogShown)
+    //    {
+    //        _dialogShown = true;
+    //        StateHasChanged();
+
+    //    }
+    //}
+
+    //private async Task ShowDialogReports(PageChangeEventArgs paged)
+    //{
+
+    //    CurrentPage = paged.PageNumber;
+    //    RowPerPage = paged.RowsPerPage;
+    //    sordColumn = paged.SortColumn;
+
+    //    var parameters = new DialogParameters
+    //    {
+    //        ["Name"] = $"{_localizer["CustomerPackage"]} {_localizer["Reports"]}",
+    //        ["AddRange"] = true,
+    //        ["QueryText"] = false,
+    //        ["AddCustomerCategory"] = false
+    //    };
+
+    //    var dialog = await Dialog.ShowAsync<ReportDialog>("CustomerPackage Reports", parameters, _closeButton);
+    //    var result = await dialog.Result;
+    //    if (result.Data is not null && result.Data is SPReportResult data)
+    //    {
+    //        sPReportResult = data;
+
+    //        _dialogOpen = sPReportResult.HasBeenOpened;
+    //        await FetchData();
+    //    }
+
+
+    //}
+
+    private async Task FetchData(PageChangeEventArgs paged)
     {
-        if (firstRender && !_dialogShown)
-        {
-            _dialogShown = true;
-            StateHasChanged();
-
-        }
-    }
-
-    private async Task ShowDialogReports(PageChangeEventArgs paged)
-    {
-
-        CurrentPage = paged.PageNumber;
-        RowPerPage = paged.RowsPerPage;
-        sordColumn = paged.SortColumn;
-
-        var parameters = new DialogParameters
-        {
-            ["Name"] = $"{_localizer["CustomerPackage"]} {_localizer["Reports"]}",
-            ["AddRange"] = true,
-            ["QueryText"] = false,
-            ["AddCustomerCategory"] = false
-        };
-
-        var dialog = await Dialog.ShowAsync<ReportDialog>("CustomerPackage Reports", parameters, _closeButton);
-        var result = await dialog.Result;
-        if (result.Data is not null && result.Data is SPReportResult data)
-        {
-            sPReportResult = data;
-
-            _dialogOpen = sPReportResult.HasBeenOpened;
-            await FetchData();
-        }
-
-
-    }
-
-    private async Task FetchData()
-    {
-        
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
-            MaxResultCount = RowPerPage,
-            SkipCount = (CurrentPage - 1) * RowPerPage,
-            Sorting = sordColumn
+            MaxResultCount = paged.RowsPerPage,
+            SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
+            Sorting = paged.SortColumn,
+            filters = paged.Filters,
+            SearchingTerm = paged.SearchTerm
+            
         };
-
-        DateRange dateRange = sPReportResult.DateRange;
-        PagedResultDto<CustomerPackageDto> customerPackages = new PagedResultDto<CustomerPackageDto>();
-        if (sPReportResult.InRange && _dialogOpen)
-            customerPackages = await AnalysisAppService.ReportCustomerPackage(input,CurrentTenant.Id, dateRange.Start.Value, dateRange.End.Value);
-        else if (_dialogOpen)
-            customerPackages = await AnalysisAppService.ReportCustomerPackage(input, CurrentTenant.Id,null,null);
-
-
+        var customerPackages = await AnalysisAppService.ReportCustomerPackage(input, CurrentTenant.Id,null,null);
         TotalItem = (int) customerPackages.TotalCount;
         itemData = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
         await Task.Yield();

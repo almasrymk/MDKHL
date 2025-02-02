@@ -67,8 +67,16 @@ public static class BuildExpression<T>
 
     private static Expression BuildNumberCondition(Expression property, FilterRequestDto filter)
     {
-        ConstantExpression valueNumber = Expression.Constant(int.Parse(filter.FilterValue));
-        return Expression.Equal(property, valueNumber);
+        return property.Type switch
+        {
+            Type t when t == typeof(int) && int.TryParse(filter.FilterValue, out int intValue)
+                => Expression.Equal(property, Expression.Constant(intValue, typeof(int))),
+
+            Type t when t == typeof(decimal) && decimal.TryParse(filter.FilterValue, out decimal decimalValue)
+                => Expression.Equal(property, Expression.Constant(decimalValue, typeof(decimal))),
+
+            _ => throw new ArgumentException("Invalid number format or unsupported type.")
+        };
     }
 
     private static Expression BuildDateCondition(Expression property, FilterRequestDto filter)
@@ -86,22 +94,31 @@ public static class BuildExpression<T>
 
     private static Expression BuildDateBetweenCondition(Expression property, FilterRequestDto filter)
     {
-        ConstantExpression startDate = Expression.Constant(filter.StartDate);
-        ConstantExpression endDate = Expression.Constant(filter.EndDate);
-        var greaterThan = Expression.GreaterThanOrEqual(property, startDate);
-        var lessThan = Expression.LessThanOrEqual(property, endDate);
+        Expression startDateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        Expression endDateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+
+        ConstantExpression startDateValueExpression = Expression.Constant(filter.StartDate, typeof(DateTime));
+        ConstantExpression endDateValueExpression = Expression.Constant(filter.EndDate, typeof(DateTime));
+        var greaterThan = Expression.GreaterThanOrEqual(startDateNonNullableProperty, startDateValueExpression);
+        var lessThan = Expression.LessThanOrEqual(endDateNonNullableProperty, endDateValueExpression);
         return Expression.AndAlso(greaterThan, lessThan);
+
     }
     
     private static Expression BuildDateGreaterThanCondition(Expression property, FilterRequestDto filter)
     {
-        ConstantExpression date = Expression.Constant(filter.Date);
-        return Expression.GreaterThanOrEqual(property, date);
+        Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+       
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
+       
+        return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }    
     private static Expression BuildDateLessThanCondition(Expression property, FilterRequestDto filter)
     {
-        ConstantExpression date = Expression.Constant(filter.Date);
-        return Expression.LessThanOrEqual(property, date);
+        Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
+        return Expression.LessThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
 
     private static Expression BuildStringCondition(Expression property, FilterRequestDto filter, ConstantExpression value)
