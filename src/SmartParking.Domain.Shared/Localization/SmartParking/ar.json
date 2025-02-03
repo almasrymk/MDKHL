@@ -662,16 +662,10 @@
     "TotalIncludeVAT": "الإجمالي مع القيمة المضافه",
     "SimplifiedTaxInvoice": "فاتورة ضريبية مبسطة",
     "HeaderVatReceiptPayment": "هذا إيصال دفع لـ",
-    "Hours" :  "ساعات" ,
-
+    "Hours": "ساعات",
+    "AddNewGarageValidation": "لا يمكن اضافة جراج جديد بسبب تخطيت عدد الجراج المسموح للاشتراك",
     "StartDate": "البداية",
     "EndDate": "النهاية"
-
-
-
-
-
-
 
   }
 }
