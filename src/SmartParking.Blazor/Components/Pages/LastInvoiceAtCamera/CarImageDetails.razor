@@ -1,29 +1,32 @@
 ﻿ <MudItem sm="5" Class="flex-column">
 	<MudText>@Title</MudText>
-	<Div Class="mt-4 mx-5">
-<MudImage 
+	<Div Class="mt-4 zoom-container"
+		 @onmousemove="SetZoomOrigin"
+		 @onmouseleave="ResetZoom">
+    <MudImage 
     Src="@Image" 
-	Width="180"
-    Height="200" 
-    @onmousemove="SetZoomOrigin" 
-    @onmouseleave="ResetZoom" 
+	Width="300"
+    Height="300" 
     Class="bg_w_foto mt-5" 
     onerror="this.src='images/garages/car_placeholder.jpg'"
     Style="@ComputedStyle" />
-		<MudText Class="mt-4">@Date.ToString()</MudText>
 	</Div>
+	<MudText Class="mt-5">@Date.ToString()</MudText>
 </MudItem>
+
 <style>
 	.zoom-container {
 		position: relative;
 		display: inline-block;
 		overflow: hidden;
-		width: 100%; /* Container width */
+		width: 300px; /* Container width */
 		height: 300px; /* Container height */
 		cursor: zoom-in;
 	}
 
 		.zoom-container img {
+			width: 100%;
+			height: 100%;
 			transition: transform 0.3s ease, transform-origin 0.3s ease;
 			transform: scale(1);
 		}
@@ -42,21 +45,20 @@
 	private string Scale { get; set; } = "scale(1)";
 	private string ComputedStyle => $"transform-origin: {TransformOrigin}; transform: {Scale};";
 
-	private void SetZoomOrigin(MouseEventArgs e)
-	{
-		// Calculate the position of the mouse relative to the container
-		// double xPercent = e.OffsetX / 300 * 100; // 400 is the container width
-		// double yPercent = e.OffsetY / 200 * 100; // 300 is the container height
 
-		// TransformOrigin = $"{xPercent}% {yPercent}%";
-		Scale = "scale(1.5)"; // Zoom level when hovered
-	}
 
 	private void ResetZoom(MouseEventArgs e)
 	{
 		TransformOrigin = "center center";
 		Scale = "scale(1)"; // Reset zoom when mouse leaves
 	}
+	private void SetZoomOrigin(MouseEventArgs e)
+	{
+		// Calculate the position of the mouse relative to the container
+		double xPercent = e.OffsetX / 300 * 100; // 400 is the container width
+		double yPercent = e.OffsetY / 300 * 100; // 300 is the container height
 
-
+		TransformOrigin = $"{xPercent}% {yPercent}%";
+		Scale = "scale(1.5)"; // Zoom level when hovered
+	}
 }
