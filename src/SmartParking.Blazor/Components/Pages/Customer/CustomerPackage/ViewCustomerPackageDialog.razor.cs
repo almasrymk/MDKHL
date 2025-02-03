@@ -114,19 +114,6 @@ public partial class ViewCustomerPackageDialog
         itemData = tableData;
     }
 
-    private async Task<IDialogReference> HandleAdd()
-    {
-
-        var customer = await CustomerAppService.GetAsync(Guid.Parse(CustomerId));
-        var parameters = new DialogParameters
-        {
-            ["Customer"] = customer,
-        };
-
-
-        return await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
-    }
-
     private async Task HandleDelete(RowDef row)
     {
         
