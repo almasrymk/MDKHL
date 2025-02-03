@@ -86,6 +86,7 @@ public partial class ViewCustomerPackageDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ActivationDate"], Name = "ActivationDate", IsFilterable = false, PropertyName = "ActivationDate", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ExpiryDate"], Name = "ExpiryDate", IsFilterable = false, PropertyName = "ExpiryDate", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
         
         foreach (var item in customerPackages)
         {
@@ -106,25 +107,23 @@ public partial class ViewCustomerPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item.ActivationDateOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item.ExpiryDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], (bool)item.publishedOfPackage ? 24 + _localizer[$"Hour"] : $" {item.PublishFromOfPackage} " + " - " + $" {item.PublishToOfPackage}"));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"],item.ArPlateNumber));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"],item.EnPlateNumber));
+
+
+            }
+
 
 
 
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
-    }
-
-    private async Task<IDialogReference> HandleAdd()
-    {
-
-        var customer = await CustomerAppService.GetAsync(Guid.Parse(CustomerId));
-        var parameters = new DialogParameters
-        {
-            ["Customer"] = customer,
-        };
-
-
-        return await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
     }
 
     private async Task HandleDelete(RowDef row)
