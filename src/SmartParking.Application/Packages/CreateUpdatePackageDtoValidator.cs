@@ -36,7 +36,6 @@ namespace SmartParking.Packages
 				.PrecisionScale(18, 2, false)
 				.WithMessage("Price must not have more than two decimal places and must be less than 18 digits.");
 
-		////.Must(BeAValidTime).WithMessage("Start time is not a valid time.");
 
 			RuleFor(x => x.PublishTo);
 				//.Must(BeAValidTime).WithMessage("End time is not a valid time.");
