@@ -5,20 +5,26 @@ using SmartParking.Mobile.Keepers;
 using SmartParking.Results;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
-using UserDataDto = SmartParking.Mobile.Keepers.UserDataDto;
+using Volo.Abp.Users;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using UserDataDto = SmartParking.Authentication.UserDataDto;
 namespace SmartParking.Controllers;
 
 [Route("api/Keeper/User")]
 [ApiController]
 public class UserKeeperController : AbpController
 {
-    private readonly IUserAppService _userAppService;
+    private readonly IUsersAppService _userAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
+    private readonly ICurrentUser _user;
 
-    public UserKeeperController(IUserAppService userAppService, IAuthenticationAppService authenticationAppService)
+    public UserKeeperController(IUsersAppService userAppService
+        , IAuthenticationAppService authenticationAppService,
+        ICurrentUser user)
     {
         _userAppService = userAppService;
-        this._authenticationAppService = authenticationAppService;
+        _authenticationAppService = authenticationAppService;
+        _user = user;
     }
 
     [HttpPost("setNewPassword")]
@@ -30,15 +36,15 @@ public class UserKeeperController : AbpController
 
     [HttpPost("profileUser")]
     [Authorize]
-    public async Task<Result<UserDataDto>>UpdateUserAsync(string ?FullName, string? phoneNumber, string? password, string? email, string? image)
+    public async Task<Result<UserDataDto>>UpdateUserAsync(UserDataDto input)
     {
-        return await _userAppService.UpdateUserAsync(FullName,phoneNumber, password, email, image);
+        return await _userAppService.UpdateProfileDataMobileAsync(_user.Id, input);
     }
 
     [HttpGet]
     [Authorize]
     public async Task<Result<UserDataDto>> GetUserData()
     {
-        return await _userAppService.GetUserDataAsync();
+        return await _authenticationAppService.GetUserDataAsync();
     }
 }
