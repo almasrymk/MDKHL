@@ -36,8 +36,8 @@ public class PackagesController : ControllerBase
     
     [HttpGet("assignpackage")]
     [Authorize]
-    public Task<Result> AssignPackageToCustomer(int packageId)
+    public Task<Result> AssignPackageToCustomer(int packageId,string ArabicNumber , string EnglishPlateNumber)
     {
-        return _customerPackagesApp.AssignPackageToCustomerAsync(packageId);
+        return _customerPackagesApp.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
     }
 }

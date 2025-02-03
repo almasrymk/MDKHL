@@ -32,4 +32,6 @@ public class Payment : FullAuditedEntity<Guid> , IMultiTenant
     public virtual Invoice? Invoice { get; set; }
 
     public Guid? TenantId { get; set; }
+    public string? EnPlateNumber { get; set; }
+    public string? ArPlateNumber { get; set; }
 }

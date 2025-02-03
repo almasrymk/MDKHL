@@ -24,6 +24,7 @@ using SmartParking.PDF;
 using SmartParking.Utilities;
 using SmartParking.Helpers;
 using SmartParking.Results;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -254,6 +255,20 @@ public partial class ViewCustomerVehicleDialog
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
+    }
+
+    public async Task<IDialogReference> HandleAssign(string vehicleId)
+    {
+        var vehicleIdAfterParse = int.Parse(vehicleId);
+        var customer = await CustomerAppService.GetAsync(Guid.Parse(CustomerId));
+        var parameters = new DialogParameters
+        {
+            ["Customer"] = customer,
+            ["VehicleId"] = vehicleIdAfterParse,
+        };
+
+
+        return await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
     }
 
 }

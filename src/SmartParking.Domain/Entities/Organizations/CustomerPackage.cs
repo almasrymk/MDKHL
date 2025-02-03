@@ -28,4 +28,7 @@ public class CustomerPackage : FullAuditedEntity<int>, IBaseEntity
 	public string PackageArabicName { get; set; }
 	public string PackageEnglishName { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
+    public string EnPlateNumber { get; set; }
+    public string ArPlateNumber { get; set; }
+
 }
