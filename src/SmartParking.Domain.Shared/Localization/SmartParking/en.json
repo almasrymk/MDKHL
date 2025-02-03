@@ -636,7 +636,10 @@
     "TotalIncludeVAT": "Total Include VAT",
     "SimplifiedTaxInvoice": "Simplified Tax Invoice",
     "HeaderVatReceiptPayment": "This is the receipt for payment of",
-    "Hours": "Hours"
+    "Hours": "Hours",
+    "AddNewGarageValidation": "cannot add new garage because exceed available garage for subscription",
+    "StartDate": "Start Date",
+    "EndDate": "End Date"
 
 
 
