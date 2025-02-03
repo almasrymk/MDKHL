@@ -123,7 +123,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             FullName = user.UserName,
             Email = user.Email,
             Phone = user.PhoneNumber,
-            Image = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}/images/users/149071.png",
+            Image = user.GetProperty<string>("Image"),
             IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes").ToString(),
             NationalId = user.GetProperty<string>("NationalId")
         };
