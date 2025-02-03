@@ -4,6 +4,7 @@ using SmartParking.CustomerPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using System;
+using SmartParking.Enums;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -224,74 +225,126 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         DateTime packageStart = entranceTime.Value.Date.AddHours(packageDto.PublishFromOfPackage.Value.Hour).AddMinutes(packageDto.Package.PublishFrom.Minute);
         DateTime packageEnd = entranceTime.Value.Date.AddHours(packageDto.PublishToOfPackage.Value.Hour).AddMinutes(packageDto.Package.PublishTo.Minute);
 
-        double extraHours = 0;
+        DateInt EntryDateInt, ExitDateInt, PackageStartDateInt, PackageEndDateInt, minimumDateInt;
+        ChangeToMyCustomDataType(entranceTime.Value, exitTime.Value, packageStart, packageEnd, PackageExpiryDate.Value, out EntryDateInt, out ExitDateInt, out PackageStartDateInt, out PackageEndDateInt, out minimumDateInt);
 
-        DateTime currentDay = entranceTime.Value;
-        DateTime endDay = exitTime.Value;
+        int TotalHours = (int)Math.Ceiling((exitTime.Value - entranceTime.Value).TotalHours);
+        int TotalTimeInsidePackage = 0;
 
-        while (currentDay <= Min(PackageExpiryDate.Value, exitTime.Value))
+        var daysInsidePackage = (minimumDateInt.DayOfYear - EntryDateInt.DayOfYear);
+        var totalHoursOfPackage = PackageDuration(packageStart, packageEnd);
+        TotalTimeInsidePackage += (daysInsidePackage * totalHoursOfPackage) + totalHoursOfPackage;
+        if (packageStart.TimeOfDay > packageEnd.TimeOfDay)
         {
-            DateTime dayPackageStart = currentDay.Date + packageStart.TimeOfDay;
-            DateTime dayPackageEnd = currentDay.Date + packageEnd.TimeOfDay;
-
-            if (packageEnd < packageStart)
-            {
-                dayPackageEnd = dayPackageEnd.AddDays(1);
-            }
-
-            DateTime effectiveStart = Max(currentDay, dayPackageStart);
-            DateTime effectiveEnd = Min(endDay, dayPackageEnd);
-
-
-
-            if (currentDay < dayPackageStart)
-            {
-                var smallestDay = (Min(endDay, dayPackageStart) - currentDay);
-                extraHours += smallestDay.Hours + (smallestDay.Minutes > 0 ? 1 : 0);
-                currentDay = dayPackageStart;
-
-            }
-            if (currentDay.TimeOfDay > dayPackageEnd.TimeOfDay)
-            {
-                var hours = currentDay.Hour - dayPackageEnd.Hour;
-                currentDay.AddHours(hours);
-                extraHours -= hours;
-            }
-
-            if (endDay > dayPackageEnd && endDay.Date == currentDay.Date)
-            {
-                extraHours += (endDay - Max(currentDay, dayPackageEnd)).TotalHours;
-                extraHours += (endDay - Max(currentDay, dayPackageEnd)).Minutes > 0 ? 1 : 0;
-            }
-
-            if (endDay.Date > currentDay.Date)
-            {
-                extraHours += 24 - Math.Abs(dayPackageStart.Hour - dayPackageEnd.Hour) + (Math.Abs(dayPackageStart.Minute - dayPackageEnd.Minute) > 0 ? 1 : 0);
-            }
-            currentDay = currentDay.AddDays(1);
-            if (currentDay.Date == exitTime.Value.Date)
-            {
-                if (exitTime.Value.Hour < packageStart.Hour)
-                {
-                    extraHours -= packageStart.Hour - exitTime.Value.Hour;
-                }
-            }
+            EntryDateInt.Hours += 24;
+            ExitDateInt.Hours += 24;
+            PackageStartDateInt.Hours += 24;
+            PackageEndDateInt.Hours += 24;
         }
-
-
-        if (endDay > PackageExpiryDate)
+        //cases of entrance
+        if (EntryDateInt.Hours > PackageStartDateInt.Hours)
         {
-            extraHours -= packageStart.Hour;
-            extraHours += (endDay - PackageExpiryDate).Value.Hours;
-            extraHours += (endDay - currentDay).Minutes > 0 ? 1 : 0;
-        }
+            TotalTimeInsidePackage = HandleEntranceCases(EntryDateInt, PackageEndDateInt, TotalTimeInsidePackage, totalHoursOfPackage);
 
-        // Return result
-        return  (int)extraHours;
+        }
+        //cases of left
+        // remove Time of day and replace with my custom object.
+        if ((minimumDateInt.Hours < PackageEndDateInt.Hours) && ExitDateInt.Date == EntryDateInt.Date)
+        {
+            TotalTimeInsidePackage = CasesOfLeft(minimumDateInt, PackageStartDateInt, TotalTimeInsidePackage, totalHoursOfPackage);
+        }
+        if (ExitDateInt.Date == EntryDateInt.Date)
+        {
+            return TotalHours - TotalTimeInsidePackage;
+        }
+        //cases of left
+        //cases of left when package has been ended
+        if ((minimumDateInt.Hours < PackageEndDateInt.Hours))
+        {
+            TotalTimeInsidePackage = CasesOfLeft(ExitDateInt, PackageStartDateInt, TotalTimeInsidePackage, totalHoursOfPackage);
+        }
+        var result = TotalHours - TotalTimeInsidePackage;
+        return Math.Max(result, 0);
+
     }
-    private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
 
-    private static DateTime Min(DateTime a, DateTime b) => a < b ? a : b;
+    private void ChangeToMyCustomDataType(DateTime EntryDate, DateTime ExitDate, DateTime PackageStartTime, DateTime PackageEndTime, DateTime ExpiryDate, out DateInt EntryDateInt, out DateInt ExitDateInt, out DateInt PackageStartDateInt, out DateInt PackageEndDateInt, out DateInt minimumDateInt)
+    {
+        EntryDateInt = DateTimeToDateInt(EntryDate);
+        ExitDateInt = DateTimeToDateInt(ExitDate);
+        PackageStartDateInt = DateTimeToDateInt(PackageStartTime);
+        PackageEndDateInt = DateTimeToDateInt(PackageEndTime);
+        DateTime minimumDate = MinDate(ExitDate, ExpiryDate);
+        minimumDateInt = DateTimeToDateInt(minimumDate);
+    }
 
-  
+    private static int HandleEntranceCases(DateInt EntryDate, DateInt PackageEndTime, int TotalTimeInsidePackage, int totalHoursOfPackage)
+    {
+        if (EntryDate.TimeOfDay < PackageEndTime.TimeOfDay)
+        {
+            var timeOustidePackage = totalHoursOfPackage - CalculatesHoursBetweenTwoTimes(PackageEndTime, EntryDate); ;
+            TotalTimeInsidePackage -= timeOustidePackage;
+        }
+        else
+        {
+            TotalTimeInsidePackage -= totalHoursOfPackage;
+
+        }
+
+        return TotalTimeInsidePackage;
+    }
+    private static int PackageDuration(DateTime PackageStart, DateTime PackageEnd)
+    {
+        var hours = (PackageEnd.TimeOfDay - PackageStart.TimeOfDay).Hours;
+        if (hours < 0)
+        {
+            hours += 24;
+        }
+        var minutes = (PackageEnd.TimeOfDay - PackageEnd.TimeOfDay).Minutes;
+        if (minutes < 0)
+        {
+            minutes += 60;
+        }
+        return hours + (minutes > 0 ? 1 : 0);
+
+
+    }
+    private DateInt DateTimeToDateInt(DateTime Date)
+    {
+        return new DateInt
+        {
+            DayOfYear = Date.DayOfYear,
+            Hours = Date.Hour,
+            Minutes = Date.Minute,
+            TimeOfDay = Date.TimeOfDay,
+            Date = Date
+
+        };
+    }
+    private static int CalculatesHoursBetweenTwoTimes(DateInt PackageStartTime, DateInt PackageEndTime)
+    {
+        return ((Math.Abs((PackageEndTime.TimeOfDay - PackageStartTime.TimeOfDay).Hours) + ((Math.Abs((PackageEndTime.TimeOfDay - PackageStartTime.TimeOfDay).Minutes)) > 0 ? 1 : 0)));
+    }
+
+    private static int CasesOfLeft(DateInt ExitDate, DateInt PackageStartTime, int TotalTimeInsidePackage, int totalHoursOfPackage)
+    {
+        if (ExitDate.TimeOfDay < PackageStartTime.TimeOfDay)
+        {
+            TotalTimeInsidePackage -= totalHoursOfPackage;
+        }
+        else
+        {
+            TotalTimeInsidePackage -= (totalHoursOfPackage - (Math.Abs((ExitDate.TimeOfDay.Hours - PackageStartTime.TimeOfDay.Hours)) + ((ExitDate.TimeOfDay.Minutes - PackageStartTime.TimeOfDay.Minutes) > 0 ? 1 : 0)));
+
+        }
+
+        return TotalTimeInsidePackage;
+    }
+
+    public static DateTime MinDate(DateTime T1, DateTime T2) => (T1.Date.Date <= T2.Date.Date && T1.Date.TimeOfDay <= T2.Date.TimeOfDay) ? T1 : T2;
+    public static DateTime MaxTimeOfDay(DateTime T1, DateTime T2) => T1.Date.TimeOfDay > T2.Date.TimeOfDay ? T1 : T2;
+    public static DateTime MinTimeOfDay(DateTime T1, DateTime T2) => T1.Date.TimeOfDay > T2.Date.TimeOfDay ? T2 : T1;
+
+
+
 }
