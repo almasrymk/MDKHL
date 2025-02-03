@@ -311,7 +311,7 @@ public partial class Package
             DurationOfPackage = packageDto.DurationOfPackage,
             Status = packageDto.Status,
             ActivationDate = packageDto.ActivationDate,
-            DeactivationDate = packageDto.ActivationDate,
+            DeactivationDate = packageDto.DectivationDate,
 
 
         };

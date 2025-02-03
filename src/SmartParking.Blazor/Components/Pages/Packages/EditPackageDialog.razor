@@ -230,7 +230,7 @@
         timeSpanFrom = Package.PublishFrom.ToTimeSpan();
         timeSpanTo = Package.PublishTo.ToTimeSpan();
         ActivationDate = Package.ActivationDate;
-        DeactivationDate = Package.DeactivationDate;
+        DectivationDate = Package.DeactivationDate;
         var packageTypesList = await packageTypesAppService.GetAllListAsync();
         packageTypes = packageTypesList;
         await base.OnInitializedAsync();
