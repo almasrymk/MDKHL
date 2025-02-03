@@ -50,7 +50,8 @@ public partial class CustomerRegister
     private string plateLetters = "";
     private string plateNumbers = "";
     private string RoleId = "";
-
+    private int  PackageId { get; set; }
+    private CustomerDto Customer = new CustomerDto();
     private async void CheckIsUser(bool isUser)
     {
         createUpdateCustomerDto.IsUser = isUser;
@@ -118,15 +119,15 @@ public partial class CustomerRegister
 		try
         {
             await CreateUser();
-            CustomerDto customer;
+            
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
-            CheckPackage();
-            customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
-            if (customer != null)
+
+            Customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
+            if (Customer != null)
             {
-                CustomerId = customer.Id;
+                CustomerId = Customer.Id;
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
 
                 showVehicle = true;
@@ -160,7 +161,7 @@ public partial class CustomerRegister
 
     private void CheckPackage()
     {
-        if (createUpdateCustomerDto.PackageId == 0)
+        if (PackageId == 0)
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {L["Package"] + " " + L["NotSelected"]}", Severity.Error);
     }
 
@@ -197,8 +198,9 @@ public partial class CustomerRegister
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
-
+            CheckPackage();
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
+            await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(PackageId, CustomerId,vehichle.ArPlateNumber,vehichle.EnPlateNumber);
             if (vehichle != null)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
