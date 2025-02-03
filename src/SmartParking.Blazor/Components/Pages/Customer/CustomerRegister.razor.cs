@@ -54,12 +54,12 @@ public partial class CustomerRegister
     private string RoleId = "";
     private int  PackageId { get; set; }
     private CustomerDto Customer = new CustomerDto();
-    private async void CheckIsUser(bool isUser)
+    private async void CheckIsUser(int organizationId)
     {
-        createUpdateCustomerDto.IsUser = isUser;
-        if (isUser && createUpdateCustomerDto.OrganizationId > 0)
+        createUpdateCustomerDto.OrganizationId = organizationId;
+        if (createUpdateCustomerDto.IsUser && organizationId > 0)
         {
-            var organization = await OrganizationAppService.GetAsync(createUpdateCustomerDto.OrganizationId);
+            var organization = await OrganizationAppService.GetAsync(organizationId);
             Roles = await RoleAppService.GetListByTenant(organization.TenantId);
         }
             

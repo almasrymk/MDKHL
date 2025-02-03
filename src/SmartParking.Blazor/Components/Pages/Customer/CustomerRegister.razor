@@ -79,10 +79,42 @@
                             Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
+                        @if (createUpdateCustomerDto.IsUser && CurrentTenant.Id is null)
+                        {
+                            <MudItem sm="6" md="6">
+                                <MudSelect T="int"
+                                           Variant="Variant.Text"
+                                           Label=@L["Organizations"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Required
+                                           ReadOnly="showVehicle"
+                                           ValueChanged="CheckIsUser">
+                                    <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                    @foreach (var organization in Organizations)
+                                    {
+                                        if (organization.Status != Enums.Status.Active)
+                                            continue;
 
+
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+
+
+                        }
                        
                         <MudItem sm="6">
-                            <MudCheckBox T="bool" ValueChanged="(Action<bool>)CheckIsUser" Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
+                            <MudCheckBox T="bool" @bind-Value="createUpdateCustomerDto.IsUser"  Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
                         </MudItem>
                         @if (createUpdateCustomerDto.IsUser && createUpdateCustomerDto.OrganizationId > 0)
                         {
@@ -228,39 +260,7 @@
                         <MudItem sm="6" md="6">
                         <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate">@L["Create"]</MudButton>
                         </MudItem>
-                            @if (CurrentTenant.Id is null)
-                            {
-                                <MudItem sm="6" md="6">
-                                    <MudSelect T="int"
-                                               Variant="Variant.Text"
-                                               Label=@L["Organizations"]
-                                               Placeholder=@L["Choose"]
-                                               HelperText=@L["Helper Text"]
-                                               Required
-                                               ReadOnly="showVehicle"
-                                               @bind-Value="createUpdateCustomerDto.OrganizationId">
-                                        <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
-                                        @foreach (var organization in Organizations)
-                                        {
-                                            if (organization.Status != Enums.Status.Active)
-                                                continue;
-
-
-                                            if (CultureInfo.CurrentCulture.Name == "en")
-                                            {
-                                                <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
-                                            }
-                                            else
-                                            {
-                                                <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
-                                            }
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-
-
-
-                            }
+                          
                           
                     </MudGrid>
                 </MudForm>
