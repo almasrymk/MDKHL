@@ -72,21 +72,6 @@ public class AuthenticationsController : ControllerBase
         return await _usersAppService.UpdateProfileDataMobileAsync(_user.Id, input);
 
     }
-    //[HttpPost("addprofileimage")]
-    //[Authorize]
-    //public async Task<Result<UserDataDto>> AddProfileImage(string image)
-    //{
-    //    var currentCustomerId=await _authenticationApp.GetCurrentCustomerId();
-    //    var result = await _usersAppService.UpdateImageAsync(currentCustomerId, image);
-    //    return Result.Success( new UserDataDto
-    //    {
-    //        FullName=result.Name,
-    //        Email=result.Email,
-    //        Phone=result.PhoneNumber,
-    //        Image=result.Image,
-    //    });
-    //}
-
 
     [HttpPost("register")]
     [AllowAnonymous]
