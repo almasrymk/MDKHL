@@ -386,12 +386,13 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId , DateTime? startDate, DateTime? endDate)
+    public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId , DateTime? startDate, DateTime? endDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _customerPackageRepository.GetQueryableAsync();
             query = query.Where(_ => _.CustomerCategory == CustomerCategoryStatus.Customer);
+            query = CheckFilter(input, query);
             query = CheckTenant(tenantId, query);
             query = CheckDate(startDate, endDate, query);
             query = ApplySort(input, query);
@@ -404,6 +405,20 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 Items = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result)
             };
         }
+    }
+
+    private static IQueryable<CustomerPackage> CheckFilter(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<CustomerPackage> query)
+    {
+        if (input.filters.Count > 0)
+        {
+            var filterExpression = BuildExpression<CustomerPackage>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        return query;
     }
 
     private static IQueryable<CustomerPackage> CheckDate(DateTime? startDate, DateTime? endDate, IQueryable<CustomerPackage> query)

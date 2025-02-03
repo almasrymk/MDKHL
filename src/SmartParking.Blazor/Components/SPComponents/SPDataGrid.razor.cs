@@ -75,7 +75,9 @@ public partial class SPDataGrid
     private bool IsNot = false;
     private bool IsClickMenu = false;
     private string ValueOfMenue { get; set; } = "All";
-    public FilterRequestDto FilterRequestDto { get; set; }
+    public DateTime? Date { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
@@ -85,7 +87,11 @@ public partial class SPDataGrid
         ["starts with"] = "StartsWith",
         ["ends with"] = "EndsWith",
         ["is empty"] = "IsNullOrEmpty",
-        ["is not empty"] = "IsNullOrEmpty",
+        ["is not empty"] = "IsNullOrEmpty"
+    };    
+    
+    public Dictionary<string, string> DateOperatorEn { get; set; } = new Dictionary<string, string>
+    {
         ["greater than"] = "GreaterThan",
         ["less than"] = "LessThan",
         ["between"] = "Between",
@@ -99,7 +105,11 @@ public partial class SPDataGrid
         ["يبدأ بـ"] = "StartsWith",
         ["لا يبدأ بـ"] = "EndsWith",
         ["فارغـًا"] = "IsNullOrEmpty",
-        ["لا يكون فارغـًا"] = "IsNullOrEmpty",
+        ["لا يكون فارغـًا"] = "IsNullOrEmpty"
+    };
+    
+    public Dictionary<string, string> DateOperatorAR { get; set; } = new Dictionary<string, string>
+    {
         ["اكبر من"] = "GreaterThan",
         ["اقل من"] = "LessThan",
         ["بين"] = "Between",
@@ -115,10 +125,6 @@ public partial class SPDataGrid
     {
         dataGrid = new MudDataGrid<RowDef>();
         _stringLocalizer = stringLocalizer;
-    }
-    public async Task Reload()
-    {
-        await dataGrid.ReloadServerData();
     }
     public async Task ClearItem(string key)
     {
@@ -159,9 +165,9 @@ public partial class SPDataGrid
             FilterOperator = SelectOperator.Value,
             IsNot = IsNot,
             TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter,
-             Date = FilterRequestDto.Date,
-             EndDate = FilterRequestDto.EndDate,
-             StartDate = FilterRequestDto.StartDate
+             Date = Date??DateTime.MinValue,
+             EndDate = EndDate ?? DateTime.MinValue,
+             StartDate = StartDate ?? DateTime.MinValue
         };
         ColumnsFilter.Add(filterEventArgs);
         ColumnsFilterApply.Add(DisplayFilter.Name);
@@ -222,10 +228,10 @@ public partial class SPDataGrid
         {
             await OnSearching.InvokeAsync(pageArgs);
         }
-        if (ColumnsFilter.Count > 0)
-        {
-            await OnFiltering.InvokeAsync(pageArgs);
-        }
+        //if (ColumnsFilter.Count > 0)
+        //{
+        //    await OnFiltering.InvokeAsync(pageArgs);
+        //}
         if (IsClickMenu)
         {
             await HandleCategory.InvokeAsync(ValueOfMenue);
