@@ -1420,6 +1420,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("ActivationDateOfPackage")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("ArPlateNumber")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1453,6 +1456,9 @@ namespace SmartParking.Migrations
 
                     b.Property<int?>("DurationOfPackage")
                         .HasColumnType("integer");
+
+                    b.Property<string>("EnPlateNumber")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("timestamp without time zone");
@@ -2070,6 +2076,9 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("ArPlateNumber")
+                        .HasColumnType("text");
+
                     b.Property<string>("CheckoutId")
                         .HasColumnType("text");
 
@@ -2094,6 +2103,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnPlateNumber")
+                        .HasColumnType("text");
 
                     b.Property<string>("EntityId")
                         .HasColumnType("text");
