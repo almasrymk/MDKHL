@@ -35,4 +35,6 @@ public class CustomerPackageDto
     public CustomerCategoryStatus CustomerCategory { get; set; }
 
     public CustomerDto Customer { get; set; }
+    public string EnPlateNumber { get; set; }
+    public string ArPlateNumber { get; set; }
 }
