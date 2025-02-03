@@ -147,7 +147,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             CustomerId = customerId,
             PaymentStatus = paymentStatus,
             QrCodeInvoice = qrCode.QRCode,
-            PaymentNumber = paymentCheckoutRequest.PaymentNumber
+            PaymentNumber = paymentCheckoutRequest.PaymentNumber,
+            ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
+            EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
         };
 
         payment = await _repository.InsertAsync(payment);
@@ -212,7 +214,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         };
     }
 
-    public async Task<PaymentDto> GetPaymentStatus(string input, string entityId)
+    public async Task<PaymentDto> GetPaymentStatus(string input, string entityId,string ArabicPlateNumber , string EnglishPlateNumber)
     {
         var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
 
@@ -266,7 +268,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         {
                             //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
                             //await _packageRepo.UpdateAsync(package);
-                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
+                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId,ArabicPlateNumber,EnglishPlateNumber);
                             if (!assignStatus)
                             {
                                 throw new Exception("Can't assign package to customer");
@@ -323,6 +325,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 PayementTime = payement.CreationTime,
                 Price = package.Price,
                 Description = package.Description,
+                
 
 
             };

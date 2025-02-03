@@ -14,6 +14,8 @@ public class PaymentCheckoutRequestDto
     public Guid? CustomerId { get; set; }
     public string? PaymentName { get; set; }
     public string PaymentNumber { get; set; }
+    public string? EnPlateNumber { get; set; }
+    public string? ArPlateNumber { get; set; }
 
 
 }
