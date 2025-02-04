@@ -1,0 +1,20 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using System.Globalization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div>
+    <MudButton Variant="@ButtonOneVariant" Color="@ButtonOneColor" OnClick="@ButtonOneClick">@ButtonOneLabel</MudButton>
+    <MudButton Variant="@ButtonTwoVariant" Color="@ButtonTwoColor" OnClick="@ButtonTwoClick">@ButtonTwoLabel</MudButton>
+</div>
+
+@code {
+    [Parameter] public string ButtonOneLabel { get; set; }
+    [Parameter] public string ButtonTwoLabel { get; set; } 
+    [Parameter] public EventCallback ButtonOneClick { get; set; }
+    [Parameter] public EventCallback ButtonTwoClick { get; set; }
+    [Parameter] public MudBlazor.Color ButtonOneColor { get; set; }
+    [Parameter] public MudBlazor.Color ButtonTwoColor { get; set; } 
+    [Parameter] public MudBlazor.Variant ButtonOneVariant { get; set; } 
+    [Parameter] public MudBlazor.Variant ButtonTwoVariant { get; set; } 
+}
