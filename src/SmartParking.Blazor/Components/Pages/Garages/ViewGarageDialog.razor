@@ -1,4 +1,4 @@
-﻿
+﻿@using SmartParking.Blazor.Components.Shared;
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using System.Globalization
@@ -121,8 +121,14 @@
 
 
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-        </DialogActions>
+    <DialogActionComponent 
+        ButtonTwoColor="MudBlazor.Color.Dark" 
+        ButtonTwoLabel="@L["Back"]" 
+        ButtonTwoClick="OnCloseViewOnly" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" 
+    />
+</DialogActions>
+
     </MudDialog>
 
 

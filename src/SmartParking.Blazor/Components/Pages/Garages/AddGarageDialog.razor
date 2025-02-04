@@ -1,5 +1,4 @@
-﻿
-@using Abp.Application.Navigation
+﻿@using Abp.Application.Navigation
 @using SmartParking.Garages
 @using SmartParking.Organizations
 @inject IOrganizationsAppService OrganizationAppService
@@ -11,6 +10,7 @@
 @using SmartParking.Validations
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
+@using SmartParking.Blazor.Components.Shared;
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager NavigationManager
 @inject ICurrentUser currrentUser
@@ -153,11 +153,10 @@
                     </MudForm>
               
         </DialogContent>
-        <DialogActions>
-
-                    <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
-                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled"  OnClick="SubmitCreate">@L["Add"]</MudButton>
+        <DialogActions >
+            <DialogActionComponent ButtonTwoColor="MudBlazor.Color.Primary" ButtonOneColor="MudBlazor.Color.Dark" ButtonTwoLabel="@L["Add"]" ButtonOneLabel="@L["Back"]" ButtonTwoClick="SubmitCreate" ButtonOneClick="CancelCreate" ButtonTwoVariant="MudBlazor.Variant.Filled" ButtonOneVariant="MudBlazor.Variant.Filled" />
         </DialogActions>
+                       
     </MudDialog>
 </div>
 
