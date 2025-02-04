@@ -37,13 +37,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private IDataFilter _dataFilter;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IBaseCustomerAppService _baseCustomer;
-	private readonly ICustomerPackagesAppService _packagesAppService;
+    private readonly ICustomerPackagesAppService _packagesAppService;
     private readonly IUsersAppService _usersAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
 
     public CustomerAppService(IRepository<Customer, Guid> repository, IRepository<Vehicle, int> repositoryVehicle, IDataFilter dataFilter,
         IOrganizationsAppService organizationAppService, UserManager<IdentityUser> userManager,
-        IBaseCustomerAppService baseCustomer , ICustomerPackagesAppService packagesAppService,
+        IBaseCustomerAppService baseCustomer, ICustomerPackagesAppService packagesAppService,
         IUsersAppService usersAppService, IAuthenticationUtility authenticationUtility) : base(repository)
     {
         _repository = repository;
@@ -52,27 +52,27 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _organizationAppService = organizationAppService;
         _userManager = userManager;
         _baseCustomer = baseCustomer;
-		_packagesAppService = packagesAppService;
+        _packagesAppService = packagesAppService;
         _usersAppService = usersAppService;
         _authenticationUtility = authenticationUtility;
     }
 
 
 
-	/// <inheritdoc/>
-	public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
-	{
-		
-			using (_dataFilter.Disable<IMultiTenant>())
-			{
-				var user = await _userManager.FindByNameAsync(input.UserName);
-				if (user != null)
-				{
-                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ 
-                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+    /// <inheritdoc/>
+    public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
+    {
 
-                }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var user = await _userManager.FindByNameAsync(input.UserName);
+            if (user != null)
+            {
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+
             }
+
             await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
@@ -95,45 +95,41 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             else
                 userCreated = await AddUser(input, customer);
             customer.IdentityUserId = userCreated.Id;
-			var customerAdd = await _repository.InsertAsync(customer, true);
-			return ObjectMapper.Map<Customer, CustomerDto>(customer);
-		
+            var customerAdd = await _repository.InsertAsync(customer, true);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
 
         }
-        catch (Exception ex)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
+
 
     }
 
-	/// <summary>
-	/// Asynchronously adds a user based on the provided customer data.
-	/// </summary>
-	/// <param name="input">The DTO containing customer details for user creation.</param>
-	/// <param name="customer">The customer entity to associate with the new user.</param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	private async Task<UserDto> AddUser(CreateUpdateCustomerDto input, Customer customer)
-	{
+    /// <summary>
+    /// Asynchronously adds a user based on the provided customer data.
+    /// </summary>
+    /// <param name="input">The DTO containing customer details for user creation.</param>
+    /// <param name="customer">The customer entity to associate with the new user.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task<UserDto> AddUser(CreateUpdateCustomerDto input, Customer customer)
+    {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
+            var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
             userMap.TenantId = null;
             var role = await _authenticationUtility.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
-            var user = await _usersAppService.CreateWithRoleAsync(userMap,role.Id);
+            var user = await _usersAppService.CreateWithRoleAsync(userMap, role.Id);
             return user;
-		}
-	}		
-    
+        }
+    }
+
     private async Task<UserDto> AddUser(CreateUpdateCustomerDto input)
-	{
-        
-            var userMap = ObjectMapper.Map< CreateUpdateCustomerDto , UserCreateDto>(input);
-            userMap.TenantId = input.TenantId;
-            userMap.IsCustomer = true;
-            var user = await _usersAppService.CreateWithRoleWithoutCustomerAsync(userMap,input.RoleId);
-            return user;
-	}
+    {
+
+        var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
+        userMap.TenantId = input.TenantId;
+        userMap.IsCustomer = true;
+        var user = await _usersAppService.CreateWithRoleWithoutCustomerAsync(userMap, input.RoleId);
+        return user;
+    }
 
 
 
@@ -141,16 +137,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
     [RemoteService(false)]
-	/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
-	{
-		 var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             query = query.Include(c => c.IdentityUser);
-			query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
+            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
@@ -162,11 +158,11 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Items = cutomersDtos
             };
         }
-	}
-	/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
-	{
-		using (_dataFilter.Disable<IMultiTenant>())
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
         {
 
             var query = await _repository.GetQueryableAsync();
@@ -197,9 +193,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
     [RemoteService(false)]
-    public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input,int? organizationId,Guid? tenantId)
-	{
-		using (_dataFilter.Disable<IMultiTenant>())
+    public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId, Guid? tenantId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
         {
 
             var query = await _repository.GetQueryableAsync();
@@ -234,9 +230,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return query;
     }
     [RemoteService(false)]
-    public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input,CustomerCategoryStatus customerCategory,int? organizationId,Guid? tenantId)
-	{
-		using (_dataFilter.Disable<IMultiTenant>())
+    public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId, Guid? tenantId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
         {
 
             var query = await _repository.GetQueryableAsync();
@@ -261,7 +257,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-    private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query,CustomerCategoryStatus? customerCategory)
+    private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
     {
 
         List<CustomerDto> customersDtos = await query
@@ -278,17 +274,17 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
                 PackageArabicNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue || _.CustomerCategory == customerCategory)
                                                     .Select(cp => cp.PackageArabicName)),
-                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId !=null)
-                                                    .Select(cp => cp.Organization.ArabicName).Distinct()), 
-                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId !=null)
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)
+                                                    .Select(cp => cp.Organization.ArabicName).Distinct()),
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)
                                                     .Select(cp => cp.Organization.EnglishName).Distinct()),
             })
             .ToListAsync();
-      
+
         return customersDtos;
     }
 
-    private async Task<(int totalCount, IQueryable<Customer> query)> AddPaged(PagedAndSortedResultRequestDto input,IQueryable<Customer> query)
+    private async Task<(int totalCount, IQueryable<Customer> query)> AddPaged(PagedAndSortedResultRequestDto input, IQueryable<Customer> query)
     {
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -317,11 +313,11 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public override async Task<CustomerDto> GetAsync(Guid id)
     {
-        
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var customer =  await _repository.GetAsync(c => c.Id == id);
-            return ObjectMapper.Map<Customer,CustomerDto>(customer);
+            var customer = await _repository.GetAsync(c => c.Id == id);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
 
         }
     }
@@ -333,7 +329,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _repository.GetQueryableAsync();
-            
+
             queryable = queryable.Include(x => x.IdentityUser);
             queryable = queryable.Include(c => c.CustomerPackages);
             queryable = queryable.Where(x => x.CustomerPackages.Any(cp => cp.OrganizationId == organization.Id));
@@ -342,7 +338,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = AddSortQuery(input, queryable);
             var paged = await AddPaged(input, queryable);
             queryable = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(queryable,null);
+            List<CustomerDto> cutomersDtos = await AddMap(queryable, null);
             return new PagedResultDto<CustomerDto>(
                 paged.totalCount,
                 cutomersDtos
@@ -485,7 +481,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId,PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId, PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -526,26 +522,26 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-        var query = await _repository.GetQueryableAsync();
-        query = query.Where(c => c.IsEmployee==false);
-        query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
-        var totalCount = await AsyncExecuter.CountAsync(query);
-        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-        query.OrderBy(x => x.Id);
-        var customers = await AsyncExecuter.ToListAsync(query);
-        var customerDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-        return new PagedResultDto<CustomerDto>(
-           totalCount,
-           customerDtos
-       );
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.IsEmployee == false);
+            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            query.OrderBy(x => x.Id);
+            var customers = await AsyncExecuter.ToListAsync(query);
+            var customerDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            return new PagedResultDto<CustomerDto>(
+               totalCount,
+               customerDtos
+           );
         }
 
 
     }
 
-   
 
-	public async Task<int> GetCountCustomersCountForMDKHL()
+
+    public async Task<int> GetCountCustomersCountForMDKHL()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -582,10 +578,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var customer = await _repository.FirstOrDefaultAsync(c => c.Id == id);
-     
+
             if (customer == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + 
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
                     LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
@@ -598,22 +594,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
                 if (!result1)
                 {
-                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " + 
+                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                         LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
                 }
             }
-            await UpdateUser(input,customer.IdentityUserId);
+            await UpdateUser(input, customer.IdentityUserId);
             return await base.UpdateAsync(id, input);
         }
 
 
     }
 
-    private async Task UpdateUser(CreateUpdateCustomerDto input,Guid userId)
+    private async Task UpdateUser(CreateUpdateCustomerDto input, Guid userId)
     {
         var user = ObjectMapper.Map<CreateUpdateCustomerDto, UpdateUserDto>(input);
-        await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId,user);
+        await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId, user);
     }
 
     /// <inheritdoc/>
@@ -623,7 +619,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         var customer = await _repository.FindAsync(x => x.Id == id);
         if (customer == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") +" "+
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
                 LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         await _repository.HardDeleteAsync(customer);
