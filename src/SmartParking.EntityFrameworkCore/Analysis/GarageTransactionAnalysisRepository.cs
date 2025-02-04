@@ -142,15 +142,12 @@ public class GarageTransactionAnalysisRepository
 
         return await query.ToListAsync();
     }
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(
-    CustomerCategoryStatus category, DateTime startDate, DateTime endDate)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
-                    where garageTransaction.CustomerCategory == category
-                          && garageTransaction.AccurateTime.Value.Date >= startDate.Date
-                          && garageTransaction.AccurateTime.Value.Date <= endDate.Date
+                    where tenantId == null || garageTransaction.TenantId == tenantId
                     join vehicle in dbContext.Vehicles
                         on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
                         into vehicleJoin1
