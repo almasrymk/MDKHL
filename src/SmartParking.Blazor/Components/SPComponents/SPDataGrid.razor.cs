@@ -206,6 +206,7 @@ public partial class SPDataGrid
             FilterValue = "";
             SelectOperator = default;
             IsNot = false;
+            IsShowValue = true;
             await dataGrid.ReloadServerData();
         }
 
