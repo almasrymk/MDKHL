@@ -629,11 +629,7 @@
     "InRange": "Within Specific Range",
     "Ok": "Ok",
     "Cashier No": "Cashier No",
-    "Range": "Range"
-
-
-
-
-
+    "Range": "Range",
+    "UpgradeSubscriptionValidationUser": "Your Current Subscription is limited to add new user"
   } 
 }

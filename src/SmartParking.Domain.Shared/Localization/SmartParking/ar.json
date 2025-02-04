@@ -654,8 +654,9 @@
     "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ",
     "InRange": "في خلال فترة زمنية",
     "Ok": "تأكيد",
-    "Cashier No" :  "رقم الكاشير",
-    "Range": "في خلال"
+    "Cashier No": "رقم الكاشير",
+    "Range": "في خلال",
+    "UpgradeSubscriptionValidationUser": " اشتراكك الحالي لا يسمح باإضافة مستخدم جديد"
 
 
 
