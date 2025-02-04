@@ -405,7 +405,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return await ExitsInFreeMinutesPeriod(GarageTransaction);
         }
 
-        //has plate number 
+        //has plate number => Is Registered
         if (customer != null)
         {
             
@@ -421,8 +421,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         else
         {
-                //Not Customer
-                decimal price = await CalculateInvoiceCases(EntranceTime.Value, totalHours, GarageTransaction);
                 var newInvoice = await CalculateInvoiceForCustomerWithoutPackage(EntranceTime.Value, totalHours, exsitCustomer, GarageTransaction, CustomerCategoryStatus.Customer);
                 await SaveTransactionWithInvoice(newInvoice, GarageTransaction);
                 await FreeSlots(garage, CustomerCategoryStatus.Customer);
