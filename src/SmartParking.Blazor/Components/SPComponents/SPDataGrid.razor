@@ -109,7 +109,7 @@
                             <MudItem sm="12" Class="d-flex flex-row flex-nowrap align-end">
                                 <MudItem>
                                     @L["Select Column"]:
-                                    <MudSelect  Variant="Variant.Outlined" @bind-Value="@SelectedColumn" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                    <MudSelect  Variant="Variant.Outlined" T="string" ValueChanged="OnSelectColumn"  Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                                         @foreach (var column in Data.Columns)
                                         {
                                             @if (column.IsFilterable)
@@ -122,7 +122,7 @@
                                         }
                                     </MudSelect>
                                 </MudItem>
-                            @if (!SelectedColumn.IsNullOrEmpty())
+                                @if (!SelectedColumn.IsNullOrEmpty() && IsShowValue)
                                 
                                 {
                                     <MudItem>
@@ -140,6 +140,13 @@
                                                 else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
                                                 {
                                                     @foreach (var column in DateOperatorEn)
+                                                    {
+                                                        <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                                    }
+                                                }
+                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number)
+                                                {
+                                                    @foreach (var column in NumberOperatorEn)
                                                     {
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
@@ -162,12 +169,19 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
+                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number)
+                                                {
+                                                    @foreach (var column in NumberOperatorAR)
+                                                    {
+                                                        <MudSelectItem Value="@column">@column.Key</MudSelectItem>
+                                                    }
+                                                }
                                                 
                                             }
                                         </MudSelect>
                                     </MudItem>
                                 }
-                            @if (SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty" && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date)
+                            @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date))
                                 {
                                     <MudItem>
                                         @L["Value"]:

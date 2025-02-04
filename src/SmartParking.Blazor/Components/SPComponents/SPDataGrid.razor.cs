@@ -70,7 +70,11 @@ public partial class SPDataGrid
     public string sortString = "Id";
     public bool ClickFilter { get; set; } = false;
     private string SelectedColumn { get; set; }
+
+    private bool IsShowValue  { get; set; } = true;
+
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
+    private List<KeyValuePair<string, string>> SelectProprtyName { get; set; } = new List<KeyValuePair<string, string>>();
 
     private bool IsNot = false;
     private bool IsClickMenu = false;
@@ -96,6 +100,13 @@ public partial class SPDataGrid
         ["less than"] = "LessThan",
         ["between"] = "Between",
     };
+    
+    public Dictionary<string, string> NumberOperatorEn { get; set; } = new Dictionary<string, string>
+    {
+        ["greater than"] = "GreaterThan",
+        ["less than"] = "LessThan",
+        ["equals"] = "Equals"
+    };
     public Dictionary<string, string> StringOperatorAR { get; set; } = new Dictionary<string, string>
     {
         ["يحتوي على"] = "Contains",
@@ -114,6 +125,13 @@ public partial class SPDataGrid
         ["اقل من"] = "LessThan",
         ["بين"] = "Between",
     };
+    
+    public Dictionary<string, string> NumberOperatorAR { get; set; } = new Dictionary<string, string>
+    {
+        ["اكبر من"] = "GreaterThan",
+        ["اقل من"] = "LessThan",
+        ["يساوي"] = "Equals"
+    };
     private string FilterValue { get; set; }
 
     protected override Task OnInitializedAsync()
@@ -126,11 +144,19 @@ public partial class SPDataGrid
         dataGrid = new MudDataGrid<RowDef>();
         _stringLocalizer = stringLocalizer;
     }
+
+    public void OnSelectColumn(string selectColumn)
+    {
+        SelectedColumn = selectColumn;
+        if(Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
+        IsShowValue = false;
+
+    }
     public async Task ClearItem(string key)
     {
-
-
+        var removeItem = SelectProprtyName.FirstOrDefault(c => c.Key == key); ;
         ColumnsFilterApply.Remove(key);
+        ColumnsFilter.Remove(ColumnsFilter.FirstOrDefault(x => x.FilterProperty == removeItem.Value));
         if (ColumnsFilterApply.Count == 0)
         {
 
@@ -143,6 +169,7 @@ public partial class SPDataGrid
     {
 
         ColumnsFilter.Clear();
+        ColumnsFilterApply.Clear();
         ClickFilter = false;
         await dataGrid.ReloadServerData();
     }
@@ -155,29 +182,32 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
-            IsNot = true;
-        var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
-        FilterRequestDto filterEventArgs = new FilterRequestDto()
+        if (!SelectedColumn.IsNullOrEmpty())
         {
-            FilterProperty = SelectedColumn,
-            FilterValue = FilterValue,
-            FilterOperator = SelectOperator.Value,
-            IsNot = IsNot,
-            TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter,
-             Date = Date??DateTime.MinValue,
-             EndDate = EndDate ?? DateTime.MinValue,
-             StartDate = StartDate ?? DateTime.MinValue
-        };
-        ColumnsFilter.Add(filterEventArgs);
-        ColumnsFilterApply.Add(DisplayFilter.Name);
-
-        ClickFilter = false;
-        SelectedColumn = "";
-        FilterValue = "";
-        SelectOperator = default;
-        IsNot = false;
-        await dataGrid.ReloadServerData();
+            if (IsShowValue && (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))  )
+                IsNot = true;
+            var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
+            FilterRequestDto filterEventArgs = new FilterRequestDto()
+            {
+                FilterProperty = SelectedColumn,
+                FilterValue = FilterValue,
+                FilterOperator = SelectOperator.Value??"",
+                IsNot = IsNot,
+                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter,
+                Date = Date ?? DateTime.MinValue,
+                EndDate = EndDate ?? DateTime.MinValue,
+                StartDate = StartDate ?? DateTime.MinValue
+            };
+            ColumnsFilter.Add(filterEventArgs);
+            ColumnsFilterApply.Add(DisplayFilter.Name);
+            SelectProprtyName.Add(new KeyValuePair<string, string>(DisplayFilter.Name, filterEventArgs.FilterProperty));
+            ClickFilter = false;
+            SelectedColumn = "";
+            FilterValue = "";
+            SelectOperator = default;
+            IsNot = false;
+            await dataGrid.ReloadServerData();
+        }
 
     }
     private void OnClickFilter()
@@ -228,10 +258,10 @@ public partial class SPDataGrid
         {
             await OnSearching.InvokeAsync(pageArgs);
         }
-        //if (ColumnsFilter.Count > 0)
-        //{
-        //    await OnFiltering.InvokeAsync(pageArgs);
-        //}
+        if (ColumnsFilter.Count > 0)
+        {
+            await OnFiltering.InvokeAsync(pageArgs);
+        }
         if (IsClickMenu)
         {
             await HandleCategory.InvokeAsync(ValueOfMenue);
