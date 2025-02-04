@@ -7,6 +7,8 @@ using SmartParking.Payments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -75,6 +77,6 @@ public interface IAnalysisAppService : IApplicationService
     Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate);
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate);
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId);  
-    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(CustomerCategoryStatus category, DateTime startDate, DateTime endDate);
+    Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId);
     Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }

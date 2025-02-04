@@ -6,9 +6,11 @@ using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
@@ -22,19 +24,22 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Analysis;
 
 public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 {
-    private readonly IRepository<Invoice, int> _invoiceRepo;
+    private readonly IRepository<Vehicle, int> _vehicleRepository;
+    private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
     private readonly IRepository<Organization, int> _orgRepo;
-    private readonly IRepository<Customer, Guid> _custeRepo; 
+    private readonly IRepository<Customer, Guid> _custeRepo;
     private readonly IDataFilter _datafilter;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Payment, Guid> _paymentRepository;
@@ -59,22 +64,25 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         public double AllTotalAmount { get; set; }
         public double PackageTotalAmount { get; set; }
         public double InvoiceTotalAmount { get; set; }
-        
+
 
     }
-    public AnalysisAppService(IRepository<Customer, Guid> custeRepo,
-        IRepository<Organization, int> orgRepo, IRepository<Invoice, int> invoiceRepo,
-        IDataFilter datafilter,IRepository<Garage,int> GarageRepository,
-        IRepository<Payment,Guid> paymentRepository,
-        IRepository<CustomerPackage,int> customerPackageRepository,
+    public AnalysisAppService(
+        IRepository<Customer, Guid> custeRepo,
+        IRepository<Organization, int> orgRepo,
+        IRepository<Vehicle, int> VehicleRepository,
+        IDataFilter datafilter,
+        IRepository<Garage, int> GarageRepository,
+        IRepository<Payment, Guid> paymentRepository,
+        IRepository<CustomerPackage, int> customerPackageRepository,
         IGarageTransactionAnalysisRepository garageTransactionAnalysis,
         IGarageAnalysisRepository garageAnalysis,
         IPaymentAnalysisRepository paymentAnalysisRepository,
-        IOrganizationsAppService organizationsAppService)
+        IOrganizationsAppService organizationsAppService,
+        IRepository<GarageTransaction, int> garageTransactionRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
-        _invoiceRepo = invoiceRepo;
         _datafilter = datafilter;
         _garageRepository = GarageRepository;
         _paymentRepository = paymentRepository;
@@ -83,6 +91,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _garageAnalysis = garageAnalysis;
         _paymentAnalysisRepository = paymentAnalysisRepository;
         _organizationsAppService = organizationsAppService;
+        _garageTransactionRepository = garageTransactionRepository;
+        _vehicleRepository = VehicleRepository;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -153,8 +163,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             // Calculate sums
             var result = new GetNumberOfParkingAndEmptyParkingDto
             {
-                NumberOfParking = query.Sum(g => g.CurrnetCapicity), 
-                NumberOfEmptyParking = query.Sum(g => g.MaxCapacity - g.CurrnetCapicity) ,
+                NumberOfParking = query.Sum(g => g.CurrnetCapicity),
+                NumberOfEmptyParking = query.Sum(g => g.MaxCapacity - g.CurrnetCapicity),
                 NumberOfCustomerEmptyParking = query.Sum(c => c.MaxSlotsForCustomers - c.CurrnetCapacityForCustomers),
                 NumberOfCustomerParking = query.Sum(c => c.CurrnetCapacityForCustomers),
                 NumberOfEmployeeEmptyParking = query.Sum(c => c.MaxSlotsForEmployess - c.CurrnetCapacityEmployees),
@@ -162,10 +172,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 NumberOfVisitorParking = query.Sum(c => c.CurrnetCapacityForFree),
                 NumberOfVisitorEmptyParking = query.Sum(c => c.MaxSlotsForFree - c.CurrnetCapacityForFree),
             };
-            
+
             return result;
         }
-       
+
     }
 
 
@@ -185,10 +195,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
             return PrepareResult(finalResult, culture);
         }
-        
+
     }
 
-    
+
     public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId)
     {
         DateTime now = DateTime.Now;
@@ -207,16 +217,16 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     private async Task<List<PaymentGroup>> GetPaymentsInLastWeek(IQueryable<Payment> query, DateTime oneWeekAgo)
     {
-        var result= 
+        var result =
             await query
             .Where(payment => payment.CreationTime >= oneWeekAgo.Date)
-            .GroupBy(payment => new { payment.CreationTime.Date , payment.PaymentCategory })
+            .GroupBy(payment => new { payment.CreationTime.Date, payment.PaymentCategory })
             .Select(group => new PaymentGroup
             {
                 Date = group.Key.Date,
                 PaymentCategory = group.Key.PaymentCategory,
                 DayOfWeek = group.Key.Date.DayOfWeek,
-                TotalAmount = group.Sum(payment => (double) payment.Amount)
+                TotalAmount = group.Sum(payment => (double)payment.Amount)
             })
             .ToListAsync();
         return result;
@@ -248,9 +258,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 {
                     Day = day,
                     DayOfWeek = day.ToString("dddd"),
-                    AllTotalAmount = paymentGroup.Sum(p => p.TotalAmount ),
-                    InvoiceTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.PaymentParking).Sum(p => p.TotalAmount ),
-                    PackageTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.Package).Sum(p => p.TotalAmount )
+                    AllTotalAmount = paymentGroup.Sum(p => p.TotalAmount),
+                    InvoiceTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.PaymentParking).Sum(p => p.TotalAmount),
+                    PackageTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.Package).Sum(p => p.TotalAmount)
                 })
             .GroupBy(d => d.DayOfWeek)
             .Select(g => g.OrderByDescending(d => d.Day).First())
@@ -277,7 +287,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return (days, allTotalAmounts, invoiceTotalAmounts, packageTotalAmounts);
     }
 
-    public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync()
+    public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync()
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -287,25 +297,25 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 return await GetCollectMoneyToday(query);
             }
         }
-        
-    }    
-    public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync()
+
+    }
+    public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync()
     {
-        
-            var query = await _paymentRepository.GetQueryableAsync();
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                return await GetCollectMoneyToday(query);
-            }
-        
+
+        var query = await _paymentRepository.GetQueryableAsync();
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            return await GetCollectMoneyToday(query);
+        }
+
     }
 
     private async Task<(string? Day, double? totalAmounts)> GetCollectMoneyToday(IQueryable<Payment> query)
     {
         DateTime now = DateTime.Now;
         var culture = GetCultureInfo();
-        query =  query.Where(payment => payment.CreationTime.DayOfYear == now.DayOfYear);
-        var result =  await query.FirstOrDefaultAsync();
+        query = query.Where(payment => payment.CreationTime.DayOfYear == now.DayOfYear);
+        var result = await query.FirstOrDefaultAsync();
         var finalResult = new FinalResult
         {
 
@@ -315,23 +325,23 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return (finalResult?.DayOfWeek?.ToString(), finalResult?.AllTotalAmount);
     }
 
-    public async Task<(string? Day,double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId)
+    public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId)
     {
         var query = await _paymentRepository.GetQueryableAsync();
         query = query.Where(_ => _.OrganizationId == organizationId);
         return await GetCollectMoneyToday(query);
     }
 
-    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category,Guid? tenantId)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category,tenantId);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category, tenantId);
             return result;
         }
-        
+
     }
-   
+
 
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber)
     {
@@ -352,27 +362,104 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerId(CustomerId , startDate, endDate);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerId(CustomerId, startDate, endDate);
             return result;
         }
 
     }
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName , DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate, category,tenantId );
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDateCustomerName(userName, startDate, endDate, category, tenantId);
             return result;
         }
 
     }
 
-    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(CustomerCategoryStatus category, DateTime startDate, DateTime endDate)
+    public async Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisDate( category, startDate, endDate);
-            return result;
+            var queryGarageTransaction = await _garageTransactionRepository.GetQueryableAsync();
+            var queryVehicle = await _vehicleRepository.GetQueryableAsync();
+            var query = queryGarageTransaction
+                 .Where(garageTransaction => tenantId == null || garageTransaction.TenantId == tenantId)
+                 .GroupJoin(
+                     queryVehicle,
+                     garageTransaction => garageTransaction.PlateNumber,
+                     vehicle => vehicle.EnPlateNumber,
+                     (garageTransaction, vehicles) => new { garageTransaction, vehicles }
+                 )
+                 .SelectMany(
+                     gv1 => gv1.vehicles.DefaultIfEmpty(),
+                     (gv1, v1) => new { gv1.garageTransaction, v1 }
+                 )
+                 .GroupJoin(
+                     queryVehicle,
+                     gv1 => gv1.garageTransaction.PlateNumber,
+                     vehicle => vehicle.ArPlateNumber,
+                     (gv1, vehicles) => new { gv1.garageTransaction, gv1.v1, vehicles }
+                 )
+                 .SelectMany(
+                     gv2 => gv2.vehicles.DefaultIfEmpty(),
+                     (gv2, v2) => new
+                     {
+                         gv2.garageTransaction,
+                         v1 = gv2.v1,
+                         v2
+                     }
+                 );
+                
+            if (input.filters.Count > 0)
+            {
+                var filterExpression = BuildExpression<GarageTransactionAnalysis>.BuildFilterExpression(input.filters);
+                if (filterExpression is not null)
+                {
+                    query = query.Where(filterExpression);
+                }
+            }
+
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    query = query.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    query = query.OrderBy(input.Sorting);
+                }
+
+            }
+
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+           var  result = query.Select(result => new GarageTransactionAnalysis
+              {
+                  PlateNumber = result.garageTransaction.PlateNumber,
+                  AccurateTime = result.garageTransaction.AccurateTime,
+                  CameraType = result.garageTransaction.CameraType.ToString(),
+                  GarageName = result.garageTransaction.Garage.NameEn,
+                  OrganizationName = result.garageTransaction.Organization.EnglishName,
+                  ArabicName = result.v1 == null
+                         ? (result.v2 == null ? "غير معرف" : result.v2.Customer.ArabicName)
+                         : result.v1.Customer.ArabicName,
+                  UserName = result.v1 == null
+                         ? (result.v2 == null ? "Unknown" : result.v2.Customer.IdentityUser.UserName)
+                         : result.v1.Customer.IdentityUser.UserName,
+                  CustomerId = result.v1 == null
+                         ? (result.v2 == null ? Guid.Empty : result.v2.CustomerId)
+                         : (Guid)result.v1.CustomerId
+              }).ToList();
+
+           
+            return new PagedResultDto<GarageTransactionAnalysis>
+            {
+                TotalCount = totalCount,
+                Items = result
+            };
         }
 
     }
@@ -454,12 +541,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return query;
     }
 
-    public async Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate , DateTime EndDate)
+    public async Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
-            query = query.Where(_ =>_.CreationTime.Date>=StartDate.Date && _.CreationTime.Date<=EndDate.Date);
+            query = query.Where(_ => _.CreationTime.Date >= StartDate.Date && _.CreationTime.Date <= EndDate.Date);
             var result = await AsyncExecuter.ToListAsync(query);
             var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
             return paymentMap;
@@ -481,7 +568,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageAnalysis.GetGarageStatusRange(startDate,endDate);
+            var result = await _garageAnalysis.GetGarageStatusRange(startDate, endDate);
             return result;
         }
 
@@ -497,15 +584,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
     {
-            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(null);
-            var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
-            return dataTable;
-        
+        var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(null);
+        var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
+        return dataTable;
+
     }
 
 
 
-    public async Task<(int totalCountOfCustomers,int totalCountOfVisitors,int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
+    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -520,14 +607,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                    }).FirstOrDefaultAsync();
             if (groupedCounts == null)
             {
-                return (0, 0, 0,0);
+                return (0, 0, 0, 0);
             }
             return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
         }
-       
+
     }
-    
-    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees , int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+
+    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
     {
         var query = await _custeRepo.GetQueryableAsync();
         var groupedCounts = await query
@@ -541,8 +628,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                }).FirstOrDefaultAsync();
         if (groupedCounts == null)
         {
-            return (0, 0, 0,0);
+            return (0, 0, 0, 0);
         }
-        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees,groupedCounts.CountOfNoPackage);
+        return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
     }
 }

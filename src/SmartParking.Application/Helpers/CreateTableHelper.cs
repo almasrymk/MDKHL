@@ -18,21 +18,17 @@ public static class CreateTableHelper
 {
     public static async Task<TableData> CreateDataTableForGarageTransaction(List<GarageTransactionAnalysis> data)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = "GarageTransactionAnalysis",
             ShowHeader = true
         };
 
-
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "GarageName" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Text  , IsSortable = true, PropertyName = "CameraType" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Enum  , IsSortable = true, PropertyName = "GarageTransaction.CameraType" });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "PlateNumber" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "AccurateTime" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Date , IsSortable = true, PropertyName = "AccurateTime" });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "OrganizationName" });
-
 
         foreach (var item in data)
         {
