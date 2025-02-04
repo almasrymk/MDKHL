@@ -15,6 +15,7 @@ using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Authorization;
+using FluentValidation.Validators;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -131,7 +132,22 @@ public partial class AddUser
 
         return (orgId, tenantId);
     }
+    private void CheckUser()
+    {
+        userCreate.Password = "P@ssw0rd";
+        userCreate.UserName = userCreate.PhoneNumber;
+        if(role == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("UserRole") +" "+LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
 
+        userCreate.UserType = role?.Name switch
+        {
+            var name when name == RolesType.Organization.ToString() => 1,
+            var name when name == RolesType.Keeper.ToString() => 4,
+            _ => 5
+        };
+    }
     private async Task AddUserAsync()
     {
         try
@@ -168,27 +184,7 @@ public partial class AddUser
         }
     }
 
-    private void CheckUser()
-    {
-        userCreate.Password = "P@ssw0rd";
-        userCreate.UserName = userCreate.PhoneNumber;
-
-        switch (role.Name)
-        {
-            case var name when name == RolesType.Organization.ToString():
-                userCreate.UserType = 1;
-                break;
-
-            case var name when name == RolesType.Keeper.ToString():
-                userCreate.UserType = 4;
-                break;
-
-            default:
-                userCreate.UserType = 5;
-                break;
-
-        }
-    }
+  
     public void CancelAdd()
     {
         NavigationManager.NavigateTo("/users", true);
