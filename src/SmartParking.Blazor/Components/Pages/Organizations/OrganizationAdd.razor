@@ -309,13 +309,18 @@
                         
                        
                     </MudGrid>
-                    <MudItem sm="4" Class="mt-5">
-
+                    <DialogActions>
                         <div class="d-flex justify-content-between ">
-                            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="Save">@L["Create"]</MudButton>
-                        </div>
-                    </MudItem>
+                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">
+            @L["Cancel"]
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="Save">
+            @L["Create"]
+        </MudButton>
+    </div>
+</DialogActions>
+
+
                 </MudForm>
 
             </MudPaper>

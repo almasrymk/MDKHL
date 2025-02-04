@@ -268,10 +268,10 @@
                             <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Graceperiod"]" />
                         </MudItem>
                         <MudItem sm="12">
-                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudItem sm="12">
-                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.Start" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.End" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                     
                         @if (IsNumberOfHoursExceeded)
@@ -283,13 +283,13 @@
                         }
                         @if (IsClose)
                         {
-
                             <MudItem sm="6">
                                 <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
                             </MudItem>
                             <MudItem sm="6">
                                 <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                             </MudItem>
+
                         }
                                                
                        
