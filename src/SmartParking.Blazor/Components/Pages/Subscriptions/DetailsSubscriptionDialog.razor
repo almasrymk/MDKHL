@@ -173,9 +173,13 @@
 
 		</DialogContent>
 
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-		</DialogActions>
+			<DialogActions>
+				<DialogActionComponent ButtonTwoLabel="@L["Back"]"
+									   ButtonTwoClick="Cancel"
+									   ButtonTwoVariant="MudBlazor.Variant.Filled"
+									   ButtonTwoColor="MudBlazor.Color.Dark"/>
+			</DialogActions>
+
 	</MudDialog>
 
 </MudItem>
