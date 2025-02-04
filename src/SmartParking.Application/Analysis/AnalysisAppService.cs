@@ -386,15 +386,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId , DateTime? startDate, DateTime? endDate)
+    public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _customerPackageRepository.GetQueryableAsync();
+            query = query.Include(x => x.Customer).ThenInclude(x => x.IdentityUser);
             query = query.Where(_ => _.CustomerCategory == CustomerCategoryStatus.Customer);
             query = CheckFilter(input, query);
             query = CheckTenant(tenantId, query);
-            query = CheckDate(startDate, endDate, query);
             query = ApplySort(input, query);
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
