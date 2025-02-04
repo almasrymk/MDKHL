@@ -7,6 +7,7 @@
 @using SmartParking.Organizations
 @using SmartParking.Packages
 @using System.Globalization
+@using SmartParking.Vehicles
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
@@ -18,7 +19,7 @@
 @inject ICurrentTenant CurrentTenant
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
-
+@inject IVehiclesAppService VehiclesAppService
 <PageTitle>@L["Assign Package"]</PageTitle>
 
 <div class="modal-wrapper w-100">
@@ -161,6 +162,7 @@
 	public PackageDto CustomerPackage = new PackageDto();
 	[Parameter]
 	public CustomerDto Customer { get; set; }
+	[Parameter] public int VehicleId { get; set; }
 	public CustomerCategoryStatus Customercategory { get; set; }
 	private int organizationId;
 	private IReadOnlyList<OrganizationDto> Organizations = new List<OrganizationDto>();
@@ -199,7 +201,8 @@
 		}
 		try
 		{
-			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id);
+			var vehicle = await VehiclesAppService.GetAsync(VehicleId);
+			var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id, vehicle.ArPlateNumber,vehicle.EnPlateNumber);
 			if (!assignPackage)
 				throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " "+
 				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +

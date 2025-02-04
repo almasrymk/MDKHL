@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
 using SmartParking.DefaultPackages;
+using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Lookups.LicenceType;
@@ -50,13 +52,14 @@ public partial class CustomerRegister
     private string plateLetters = "";
     private string plateNumbers = "";
     private string RoleId = "";
-
-    private async void CheckIsUser(bool isUser)
+    private int  PackageId { get; set; }
+    private CustomerDto Customer = new CustomerDto();
+    private async void CheckIsUser(int organizationId)
     {
-        createUpdateCustomerDto.IsUser = isUser;
-        if (isUser && createUpdateCustomerDto.OrganizationId > 0)
+        createUpdateCustomerDto.OrganizationId = organizationId;
+        if (createUpdateCustomerDto.IsUser && organizationId > 0)
         {
-            var organization = await OrganizationAppService.GetAsync(createUpdateCustomerDto.OrganizationId);
+            var organization = await OrganizationAppService.GetAsync(organizationId);
             Roles = await RoleAppService.GetListByTenant(organization.TenantId);
         }
             
@@ -95,22 +98,8 @@ public partial class CustomerRegister
         createUpdateVehicle.VehicleBrandId = brandId;
         var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId);
         VehicleModels = resultVehicleModel.Value;
-    }
-    private async Task getPackage(string customerCategory)
-    {
-        var CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customerCategory);
-        if (CurrentTenant.Id is null )
-            packages = await PackagesAppService.GetAllMdkhlAsync(createUpdateCustomerDto.OrganizationId, CustomerCategory);
-        else
-            packages = await PackagesAppService.GetAllOrganizationAsync(CustomerCategory);
-
-        if (packages.Count == 0)
-        {
-            SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("NotFoundValidation")}: " +
-                $"{LocalizationHelper.GetLocalizedString("Package")}" +" "+ $"{@L["To"]}" + " " + $"{@L["customer category"]}" , Severity.Error);
-            await Task.Delay(1000);
-        }
-
+        if(VehicleModels.Count < 0) 
+            throw new Exception(L["Model"] + " " + L["NotSelected"]);
     }
     public async  Task HandleSubmit()
     {
@@ -118,15 +107,15 @@ public partial class CustomerRegister
 		try
         {
             await CreateUser();
-            CustomerDto customer;
+            
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
-            CheckPackage();
-            customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
-            if (customer != null)
+
+            Customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
+            if (Customer != null)
             {
-                CustomerId = customer.Id;
+                CustomerId = Customer.Id;
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
 
                 showVehicle = true;
@@ -159,12 +148,6 @@ public partial class CustomerRegister
 
     }
 
-    private void CheckPackage()
-    {
-        if (createUpdateCustomerDto.PackageId == 0)
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {L["Package"] + " " + L["NotSelected"]}", Severity.Error);
-    }
-
     private async Task CreateUser()
     {
         if (createUpdateCustomerDto.IsUser)
@@ -174,18 +157,6 @@ public partial class CustomerRegister
             createUpdateCustomerDto.RoleId = Guid.Parse(RoleId);
         }
     }
-
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-
     public void HandleCancel()
     {
         Navigation.NavigateTo("/customers", true);
@@ -198,14 +169,22 @@ public partial class CustomerRegister
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
-
+            
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
 
                 await Task.Delay(1000);
-                Navigation.NavigateTo("/customers", true);
+               
+                var parameters = new DialogParameters
+                {
+                    ["Customer"] = Customer,
+                    ["VehicleId"] = vehichle.Id,
+                };
+
+
+                await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
 
             }
 

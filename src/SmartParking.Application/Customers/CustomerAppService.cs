@@ -58,51 +58,17 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-    /// <inheritdoc/>
-    //  public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
-    //  {
-    //      try
-    //{
-    //	var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
-    //	using (_dataFilter.Disable<IMultiTenant>())
 
-    //	{
-    //		var user = await _userManager.FindByNameAsync(input.UserName); 
-    //		if (user != null)
-    //		{
-    //                  throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " +LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-    //              }
-
-    //          }
-    //	await _baseCustomer.CheckCustomer(input);
-
-    //	var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
-    //	await AddUser(input, customer);
-    //	var customerAdd = await _repository.InsertAsync(customer, true);
-    //          await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
-
-    //	return ObjectMapper.Map<Customer, CustomerDto>(customer);
-    //}
-    //catch (Exception ex)
-    //      {
-
-    //          throw new UserFriendlyException("Registration failed: " + ex.Message);
-    //      }
-    //  }
-
-
-
-    /// <inheritdoc/>
-    public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
-    {
-        try
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                var user = await _userManager.FindByNameAsync(input.UserName);
-                if (user != null)
-                {
-                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
+	/// <inheritdoc/>
+	public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
+	{
+		
+			using (_dataFilter.Disable<IMultiTenant>())
+			{
+				var user = await _userManager.FindByNameAsync(input.UserName);
+				if (user != null)
+				{
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") +" "+ 
                         LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
                 }
@@ -129,16 +95,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             else
                 userCreated = await AddUser(input, customer);
             customer.IdentityUserId = userCreated.Id;
-            var customerAdd = await _repository.InsertAsync(customer, true);
-            await _packagesAppService.AssignPackageToCustomerWebAsync(input.PackageId, customerAdd.Id);
-            return ObjectMapper.Map<Customer, CustomerDto>(customer);
-
-
-        }
-
-        catch (BusinessException businessException)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString(businessException.Code));
+			var customerAdd = await _repository.InsertAsync(customer, true);
+			return ObjectMapper.Map<Customer, CustomerDto>(customer);
+		
 
         }
         catch (Exception ex)

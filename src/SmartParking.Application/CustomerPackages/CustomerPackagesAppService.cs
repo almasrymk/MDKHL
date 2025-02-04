@@ -90,7 +90,7 @@ public class CustomerPackagesAppService:
 
     ///<inheritdoc/>
     [RemoteService(IsEnabled =false)]
-    public  async Task<Result> AssignPackageToCustomerAsync(int packageId)
+    public  async Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         try
         {
@@ -104,7 +104,7 @@ public class CustomerPackagesAppService:
                 if (package == null)
                     return Result.NotFound("Package not found");
 
-                if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id))
+                if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id, ArabicPlateNumber, EnglishPlateNumber))
                 {
                     return Result.Invalid(new ValidationError
                     {
@@ -113,7 +113,7 @@ public class CustomerPackagesAppService:
                     });
                 }
 
-                var customerPackage = CreateCustomerPackage(packageId, customer, package);
+                var customerPackage = CreateCustomerPackage(packageId, customer, package,ArabicPlateNumber,EnglishPlateNumber);
                 var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
 
                 if (existingPackage != null)
@@ -147,14 +147,17 @@ public class CustomerPackagesAppService:
         return await _packageRepository.GetAsync(p => p.Id == packageId);
     }
 
-    private async Task<bool> CustomerPackageExistsAsync(int packageId, int organizationId, Guid customerId)
+    private async Task<bool> CustomerPackageExistsAsync(int packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
     {
         var existingPackage = await _repository.FirstOrDefaultAsync(p =>
             p.PackageId == packageId &&
             p.OrganizationId == organizationId &&
             p.CustomerId == customerId &&
             p.ExpiryDate >= DateTime.Today &&
-            p.CustomerPackageStatus == CustomerPackageStatus.Active);
+            p.CustomerPackageStatus == CustomerPackageStatus.Active &&
+            p.ArPlateNumber==ArabicPlateNumber &&
+            p.EnPlateNumber==EnglishPlateNumber
+            );
         return existingPackage != null;
     }
 
@@ -177,7 +180,7 @@ public class CustomerPackagesAppService:
         return assignedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
     }
 
-    private static CustomerPackage CreateCustomerPackage(int packageId, Customer? customer, Package package)
+    private static CustomerPackage CreateCustomerPackage(int packageId, Customer? customer, Package package,string arPlateNumber,string enPlateNumber)
     {
         return  new CustomerPackage
         {
@@ -196,12 +199,15 @@ public class CustomerPackagesAppService:
             CustomerCategory = package.CustomerCategory,
             PackageArabicName = package.ArabicName,
             PackageEnglishName = package.EnglishName,
-            TenantId = package.TenantId
+            TenantId = package.TenantId,
+            ArPlateNumber= arPlateNumber,
+            EnPlateNumber= enPlateNumber,
+
         };
     }
 
     ///<inheritdoc/>
-    public  async Task<bool> AssignPackageToCustomerWebAsync(int packageId,Guid? customerId)
+    public  async Task<bool> AssignPackageToCustomerWebAsync(int packageId,Guid? customerId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -213,13 +219,13 @@ public class CustomerPackagesAppService:
             if (package == null)
                 throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             
-            if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id))
+            if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id,ArabicPlateNumber,EnglishPlateNumber))
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
                     + " " + LocalizationHelper.GetLocalizedString("Customer"));
             }
 
-            var customerPackage = CreateCustomerPackage(packageId, customer, package);
+            var customerPackage = CreateCustomerPackage(packageId, customer, package, ArabicPlateNumber, EnglishPlateNumber);
             var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
 
             if (existingPackage != null)

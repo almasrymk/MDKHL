@@ -26,9 +26,9 @@
 	<MudItem sm="7" Class="d-flex flex-column">
 		<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
 
-		<MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center mx-3">
+		<MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center">
 			<CarImageDetails Date="@(Invoice.EntranceTime.HasValue ?Invoice.EntranceTime.Value : DateTime.Now)" Image="@Invoice?.EntryTransactionImage" Title="@L["EntranceImage"]" />
-			<MudItem sm="2" Class="d-flex align-items-center">
+			<MudItem sm="2" Class="d-flex align-items-center mx-6">
 				<MudIcon Icon="@(CultureInfo.CurrentCulture.Name=="en"?Icons.Material.Filled.ArrowForward:Icons.Material.Filled.ArrowBack)" />
 			</MudItem>
 			<CarImageDetails Date="@(Invoice.InvoiceTime.HasValue ?Invoice.InvoiceTime.Value : DateTime.Now)" Image="@Invoice?.ExitTransactionImage" Title="@L["ExitImage"]" />
