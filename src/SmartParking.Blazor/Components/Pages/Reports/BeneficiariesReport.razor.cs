@@ -6,6 +6,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Entities.Analysis;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
@@ -22,10 +23,7 @@ partial class BeneficiariesReport
     private TableData itemData = new TableData();
     private int TotalItem;
     private SPReportResult sPReportResult { get; set; } = new SPReportResult();
-    private readonly DialogOptions _closeButton = new() { CloseButton = false };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-    private bool _dialogShown = false;
-    private bool _dialogOpen = false;
     private SPDataGrid DataGridComponent { get; set; }
 
     public BeneficiariesReport(IStringLocalizer<SmartParkingResource> localizer)
@@ -35,61 +33,40 @@ partial class BeneficiariesReport
 
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !_dialogShown)
-        {
-            _dialogShown = true;
-           // await ShowDialogReports();
-           // await DataGridComponent.Reload();
-            StateHasChanged();
+    //private async Task FetchData(PageChangeEventArgs paged)
+    //{
+    //    var input = new PagedAndSortedAndFilteredResultRequestDto
+    //    {
+    //        MaxResultCount = paged.RowsPerPage,
+    //        SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
+    //        Sorting = paged.SortColumn,
+    //        filters = paged.Filters,
+    //        SearchingTerm = paged.SearchTerm
 
-        }
-    }
+    //    };
+    //    var customerPackages = await AnalysisAppService.ReportCustomerPackage(input, CurrentTenant.Id);
+    //    TotalItem = (int)customerPackages.TotalCount;
+    //    itemData = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
+    //    await Task.Yield();
 
-    private async Task  ShowDialogReports(PageChangeEventArgs paged)
+
+    //}
+
+    private async Task FetchData(PageChangeEventArgs paged)
     {
-        var parameters = new DialogParameters
+        
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
-            ["Name"] = "Customers Reports",
-            ["AddRange"] = true,
-            ["QueryText"]=false,
-            ["AddCustomerCategory"] = true
+            MaxResultCount = paged.RowsPerPage,
+            SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
+            Sorting = paged.SortColumn=="Id"? "GarageTransaction.Id" : paged.SortColumn,
+            filters = paged.Filters,
+            SearchingTerm = paged.SearchTerm
+
         };
-
-       var dialog = await Dialog.ShowAsync<ReportDialog>("Customers Reports", parameters, _closeButton);
-       var result = await dialog.Result;
-        if (result.Data is not null && result.Data is SPReportResult data)
-        {
-            sPReportResult = data;
-            var pagedResult = new PageChangeEventArgs
-            {
-                PageNumber = CurrentPage,
-                RowsPerPage = RowPerPage,
-                
-            };
-            _dialogOpen = sPReportResult.HasBeenOpened;
-            await FetchData();
-        }
-
-
-    }
-
-    private async Task FetchData()
-    {
-     
-        CustomerCategoryStatus customerCategory = sPReportResult.CustomerCategory;
-        DateRange dateRange = sPReportResult.DateRange;
-        List<GarageTransactionAnalysis> garageTransactionAnalyses = new List<GarageTransactionAnalysis>();
-        if (sPReportResult.InRange && _dialogOpen)
-            garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionDateCustomeCategoryAsync(customerCategory, dateRange.Start.Value, dateRange.End.Value);
-        else if(_dialogOpen)
-            garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(customerCategory, CurrentTenant.Id);
-
-
-        TotalItem = garageTransactionAnalyses.Count;
-        itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses);
-        await Task.Yield();
+        var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionDateCustomeCategoryAsync(input,CurrentTenant.Id);
+        TotalItem = (int)garageTransactionAnalyses.TotalCount;
+        itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
 
 
     }
