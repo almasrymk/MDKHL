@@ -33,6 +33,11 @@ public class MyUserRepository
         var dbContext = await GetDbContextAsync();
         return await dbContext.Users.Where(user => EF.Property<int>(user, "OrganizationId") == organizationId).ToListAsync();
     }
+    public async Task<List<IdentityUser>> FindByOrganizationAndActiveAsync(int organizationId)
+    {
+        var dbContext = await GetDbContextAsync();
+        return await dbContext.Users.Where(user => EF.Property<int>(user, "OrganizationId") == organizationId && user.IsActive).ToListAsync();
+    }
     public async Task<IdentityUser?> FindUserByOrganizationAsync(int organizationId, Guid userId)
     {
         var dbContext = await GetDbContextAsync();
