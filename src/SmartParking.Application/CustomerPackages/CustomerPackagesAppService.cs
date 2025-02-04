@@ -50,13 +50,12 @@ public class CustomerPackagesAppService:
         _organizationsApp = organizationsApp;
     }
   
-    public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrgIdAndCustomerId(int orgID,Guid customerID)
+    public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Include(p => p.Customer).Include(p => p.Organization).Include(p => p.Package);
-            query = query.Where(x => x.OrganizationId == orgID && x.CustomerId == customerID && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= DateTime.Today && x.PackageId != null);
+            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber==PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= DateTime.Today && x.PackageId != null);
             var result = await query.FirstOrDefaultAsync();
 
             if (result == null)
