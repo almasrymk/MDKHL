@@ -70,8 +70,7 @@ public interface IAnalysisAppService : IApplicationService
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId);
-    Task<List<GarageAnalysis>> ReportGarageStatusDateAsync(DateTime accurateDate); 
-    Task<List<GarageAnalysis>> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate);
+    Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber);
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
     Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate);
@@ -79,4 +78,5 @@ public interface IAnalysisAppService : IApplicationService
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId);  
     Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId);
     Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+    Task<PagedResultDto<PackagePaymentAnalysis>> ReportPackagePaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }

@@ -641,7 +641,19 @@
     "StartDate": "Start Date",
     "EndDate": "End Date",
     "OrganizationNameInvoicePopUp": "Organization Name",
-    "OrganizationAddressInvoicePopUp": "Organization Address"
+    "OrganizationAddressInvoicePopUp": "Organization Address",
+    "CurrnetCapacity": "Capacity",
+    "CurrnetCapacityForCustomers": "Capacity Customers",
+    "CurrnetCapacityEmployees": "Capacity Employees",
+    "CurrnetCapacityForFree": "Capacity Free",
+    "PackagePaymentsData": "Package Payments",
+    "CountUsePackage": "Use Package",
+    "ValueOfPackage": "Package Value",
+    "ValueTotalPackage": "Total Value",
+    "Date": "Date"
+
+
+
 
 
 

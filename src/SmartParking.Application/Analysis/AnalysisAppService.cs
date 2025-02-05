@@ -41,6 +41,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 {
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
+    private readonly IPackageAnalysisRepository _packageAnalysisRepository;
     private readonly IRepository<Organization, int> _orgRepo;
     private readonly IRepository<Customer, Guid> _custeRepo;
     private readonly IDataFilter _datafilter;
@@ -82,7 +83,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IGarageAnalysisRepository garageAnalysis,
         IPaymentAnalysisRepository paymentAnalysisRepository,
         IOrganizationsAppService organizationsAppService,
-        IRepository<GarageTransaction, int> garageTransactionRepository)
+        IRepository<GarageTransaction, int> garageTransactionRepository,
+        IPackageAnalysisRepository packageAnalysisRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -95,6 +97,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _paymentAnalysisRepository = paymentAnalysisRepository;
         _organizationsAppService = organizationsAppService;
         _garageTransactionRepository = garageTransactionRepository;
+        _packageAnalysisRepository = packageAnalysisRepository;
         _vehicleRepository = VehicleRepository;
     }
 
@@ -396,6 +399,22 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    
+    public async Task<PagedResultDto<PackagePaymentAnalysis>> ReportPackagePaymentAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var filterExpression = BuildExpression<PackagePaymentAnalysis>.BuildFilterExpression(input.filters);
+
+            var result= await _packageAnalysisRepository.GetPackagePaymentAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            return new PagedResultDto<PackagePaymentAnalysis>
+            {
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
+            };
+        }
+
+    }
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -487,22 +506,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<List<GarageAnalysis>> ReportGarageStatusDateAsync(DateTime accurateDate)
+    
+    public async Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageAnalysis.GetGarageStatusByDate(accurateDate);
-            return result;
-        }
-
-    }
-
-    public async Task<List<GarageAnalysis>> ReportGarageStatusRangeAsync(DateTime startDate, DateTime endDate)
-    {
-        using (_datafilter.Disable<IMultiTenant>())
-        {
-            var result = await _garageAnalysis.GetGarageStatusRange(startDate, endDate);
-            return result;
+            var filterExpression = BuildExpression<GarageAnalysis>.BuildFilterExpression(input.filters);
+            var result = await _garageAnalysis.GetGarageReportAsync(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            return new PagedResultDto<GarageAnalysis>
+            {
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
+            };
         }
 
     }

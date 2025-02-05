@@ -667,7 +667,16 @@
     "StartDate": "البداية",
     "EndDate": "النهاية",
     "OrganizationNameInvoicePopUp": "إسم المنشأة",
-    "OrganizationAddressInvoicePopUp": "عنوان المنشأة"
+    "OrganizationAddressInvoicePopUp": "عنوان المنشأة",
+    "CurrnetCapacity": "اشغال الحالي",
+    "CurrnetCapacityForCustomers": "اشغال العملاء",
+    "CurrnetCapacityEmployees": "اشغال الموظفين",
+    "CurrnetCapacityForFree": "اشغال الزوار",
+    "PackagePaymentsData": "الباقات و الفواتير",
+    "CountUsePackage": "المستخدمين",
+    "ValueOfPackage": "قيمة الباقة",
+    "ValueTotalPackage": "قيمة الباقات",
+    "Date": "الوقت"
 
   }
 }
