@@ -208,7 +208,7 @@ public partial class Organization
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Organization",
+            Name = L["Organizations"],
             ShowHeader = true
         };
 
