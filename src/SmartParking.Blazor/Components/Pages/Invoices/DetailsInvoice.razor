@@ -44,7 +44,7 @@
                             For="@(() => TotalHours)"
                             Immediate="true"
                             Variant="Variant.Text"
-                            Label="@L["TotalHours"]"
+                            Label="@($"{L["TotalHours"]} ({L["Hours"]})")"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
@@ -52,7 +52,7 @@
                             For="@(() => InvoicePrice)"
                             Immediate="true"
                             Variant="Variant.Text"
-                            Label="@L["InvoicePrice"]"
+                            Label="@($"{L["InvoicePrice"]} ({L["SAR"]})")"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
