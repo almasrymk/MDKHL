@@ -161,7 +161,7 @@ public partial class Employee
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Employee",
+            Name = L["Employees"],
             ShowHeader = true
         };
 
