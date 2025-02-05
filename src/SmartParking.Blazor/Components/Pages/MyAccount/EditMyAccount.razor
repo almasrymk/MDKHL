@@ -204,27 +204,27 @@
                        
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FirstHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["ThirdHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["AdditionalHourPrice"]" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FullDay"]" />
-                        </MudItem>
-
-                        <MudItem sm="4">
-                            <MudNumericField T="int" @bind-Value="FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["FreeMinutes"]" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDay"]} ({L["SAR"]})") />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Graceperiod"]" />
+                            <MudNumericField T="int" @bind-Value="FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") />
                         </MudItem>
                         <MudItem sm="12">
                             <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.Start" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
