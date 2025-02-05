@@ -269,11 +269,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Email = c.IdentityUser.Email,
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
-                PackageEnglishNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue || _.CustomerCategory == customerCategory)
-                                                    .Select(cp => cp.PackageEnglishName)),
-
-                PackageArabicNames = string.Join(", ", c.CustomerPackages.Where(_ => !customerCategory.HasValue || _.CustomerCategory == customerCategory)
-                                                    .Select(cp => cp.PackageArabicName)),
+                _packageEnglishNames = string.Join(", ", c.CustomerPackages
+                           .Where(_ =>
+                               !customerCategory.HasValue || _.CustomerCategory == customerCategory)
+                           .Select(cp => cp.PackageEnglishName)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))),
+                _packageArabicNames = string.Join(", ", c.CustomerPackages
+                           .Where(_ =>
+                               !customerCategory.HasValue || _.CustomerCategory == customerCategory)
+                           .Select(cp => cp.PackageArabicName)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))),
                 OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)
                                                     .Select(cp => cp.Organization.ArabicName).Distinct()),
                 OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)

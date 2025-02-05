@@ -30,7 +30,29 @@ public class CustomerDto:AuditedEntityDto<Guid>
     public string CustomerCategory { get; set; }
     public int PackageId { get; set; }
     public Guid IdentityId { get; set; }
-    public string PackageEnglishNames { get; set; }
-    public string PackageArabicNames { get; set; }
+    public string _packageEnglishNames;
+    public string _packageArabicNames;
+
+    public string PackageEnglishNames
+    {
+        get => CleanCommas(_packageEnglishNames);
+        set => _packageEnglishNames = value;
+    }
+
+    public string PackageArabicNames
+    {
+        get => CleanCommas(_packageArabicNames);
+        set => _packageArabicNames = value;
+    }
+
+    private string CleanCommas(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input; 
+
+        return input.Trim().Trim(',');
+    }
+
 }
+
 
