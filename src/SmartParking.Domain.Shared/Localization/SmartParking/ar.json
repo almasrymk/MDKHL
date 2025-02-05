@@ -665,7 +665,9 @@
     "Hours": "ساعات",
     "AddNewGarageValidation": "لا يمكن اضافة جراج جديد بسبب تخطيت عدد الجراج المسموح للاشتراك",
     "StartDate": "البداية",
-    "EndDate": "النهاية"
+    "EndDate": "النهاية",
+    "OrganizationNameInvoicePopUp": "إسم المنشأة",
+    "OrganizationAddressInvoicePopUp": "عنوان المنشأة"
 
   }
 }

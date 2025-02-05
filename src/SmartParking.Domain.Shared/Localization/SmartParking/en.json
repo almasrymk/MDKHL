@@ -639,7 +639,9 @@
     "Hours": "Hours",
     "AddNewGarageValidation": "cannot add new garage because exceed available garage for subscription",
     "StartDate": "Start Date",
-    "EndDate": "End Date"
+    "EndDate": "End Date",
+    "OrganizationNameInvoicePopUp": "Organization Name",
+    "OrganizationAddressInvoicePopUp": "Organization Address"
 
 
 
