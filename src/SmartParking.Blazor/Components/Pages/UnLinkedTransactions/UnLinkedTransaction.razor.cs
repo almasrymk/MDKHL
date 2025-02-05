@@ -139,7 +139,7 @@ public partial class UnLinkedTransaction
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "UnLinkedTransactions",
+            Name = L["UnLinkedTransaction"],
             ShowHeader = true
         };
 
