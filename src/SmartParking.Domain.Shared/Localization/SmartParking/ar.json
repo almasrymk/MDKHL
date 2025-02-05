@@ -668,6 +668,10 @@
     "EndDate": "النهاية",
     "OrganizationNameInvoicePopUp": "إسم المنشأة",
     "OrganizationAddressInvoicePopUp": "عنوان المنشأة",
+    "GarageHeader": "المواقف",
+    "CustomerPackageHeader": "باقات العميل",
+    "CustomerVehicleHeader" : "مركبات العميل"
+    "OrganizationAddressInvoicePopUp": "عنوان المنشأة",
     "CurrnetCapacity": "اشغال الحالي",
     "CurrnetCapacityForCustomers": "اشغال العملاء",
     "CurrnetCapacityEmployees": "اشغال الموظفين",

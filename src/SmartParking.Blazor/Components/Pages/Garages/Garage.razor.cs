@@ -279,7 +279,7 @@ public partial class Garage
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Garages",
+            Name = @L["GarageHeader"],
             ShowHeader = true
         };
 

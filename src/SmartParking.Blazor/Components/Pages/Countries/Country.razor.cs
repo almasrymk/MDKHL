@@ -120,7 +120,7 @@ public partial class Country
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Countries",
+            Name = L["Countries"],
             ShowHeader = true
         };
 

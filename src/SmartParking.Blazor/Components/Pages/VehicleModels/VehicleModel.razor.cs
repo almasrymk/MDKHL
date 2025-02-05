@@ -130,7 +130,7 @@ public partial class VehicleModel
 		// Initialize table data to be displayed, setting the table's name and whether to show the header
 		var tableData = new TableData()
 		{
-			Name = "VehicleModelس",
+			Name = L["VehicleModel"],
 			ShowHeader = true
 		};
 

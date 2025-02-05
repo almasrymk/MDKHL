@@ -642,6 +642,10 @@
     "EndDate": "End Date",
     "OrganizationNameInvoicePopUp": "Organization Name",
     "OrganizationAddressInvoicePopUp": "Organization Address",
+    "GarageHeader": "Garages",
+    "CustomerPackageHeader": "Customer Packages",
+    "CustomerVehicleHeader": "Customer Vehicles"
+    "OrganizationAddressInvoicePopUp": "Organization Address",
     "CurrnetCapacity": "Capacity",
     "CurrnetCapacityForCustomers": "Capacity Customers",
     "CurrnetCapacityEmployees": "Capacity Employees",

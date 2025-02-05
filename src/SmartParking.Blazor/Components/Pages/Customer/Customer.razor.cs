@@ -248,7 +248,7 @@ public partial class Customer
 
         var tableData = new TableData()
         {
-            Name = "Customers",
+            Name = L[ "Customers"],
             ShowHeader = true
         };
 

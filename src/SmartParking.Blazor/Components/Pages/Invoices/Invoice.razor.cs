@@ -133,7 +133,7 @@ public partial class Invoice
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Invoices",
+            Name = L["Invoices"],
             ShowHeader = true
         };
 

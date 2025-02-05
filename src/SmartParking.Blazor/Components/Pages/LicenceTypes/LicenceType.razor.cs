@@ -133,7 +133,7 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 			// Initialize table data to be displayed, setting the table's name and whether to show the header
 			var tableData = new TableData()
 			{
-				Name = "LicenceType",
+				Name = L["LicenceTypes"],
 				ShowHeader = true
 			};
 
