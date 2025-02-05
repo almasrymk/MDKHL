@@ -641,7 +641,10 @@
     "StartDate": "Start Date",
     "EndDate": "End Date",
     "OrganizationNameInvoicePopUp": "Organization Name",
-    "OrganizationAddressInvoicePopUp": "Organization Address"
+    "OrganizationAddressInvoicePopUp": "Organization Address",
+    "GarageHeader": "Garages",
+    "CustomerPackageHeader": "Customer Packages",
+    "CustomerVehicleHeader": "Customer Vehicles"
 
 
 
