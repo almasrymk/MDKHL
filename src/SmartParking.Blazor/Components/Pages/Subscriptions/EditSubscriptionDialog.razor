@@ -74,10 +74,10 @@
                         <MudTextField @bind-Value="subscription.SubscriptionPrice"
                                       For="@(() => subscription.SubscriptionPrice)"
                                       Immediate="true"
-                                      Label="@L["SubscriptionPrice"]"
+                                      Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")" 
                                       InputType="InputType.Text"
                                       Required="true"
-                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                         <MudItem sm="6">
                             <MudTextField @bind-Value="subscription.ParkingSlot"

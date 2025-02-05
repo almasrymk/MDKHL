@@ -69,8 +69,8 @@
 									  For="@(() => subscription.SubscriptionPrice)"
 									  Immediate="true"
 									  Disabled
-									  Label="@L["SubscriptionPrice"]" />
-					</MudItem>
+									  Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")" />
+						</MudItem>
 
 					<MudItem sm="6">
 							<MudTextField Disabled Label=@L["ParkingSlot"] @bind-Value="subscription.ParkingSlot" Variant="Variant.Text" />
