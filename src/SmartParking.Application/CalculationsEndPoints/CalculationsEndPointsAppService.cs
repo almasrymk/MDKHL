@@ -89,7 +89,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime, organization);
         var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
         double price = 0;
-        double totalDays = Math.Ceiling(specialHours / closingHour);
+        double totalDays = Math.Ceiling(specialHours / closingHour==0?1: closingHour);
         // calculates full days price
         price += totalDays * (double)organization.FullDayPrice;
         //calculates hours
