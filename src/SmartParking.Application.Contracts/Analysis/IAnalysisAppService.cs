@@ -77,6 +77,6 @@ public interface IAnalysisAppService : IApplicationService
     Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate);
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate);
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId);  
-    Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId);
+    Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId);
     Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }
