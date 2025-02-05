@@ -32,26 +32,6 @@ partial class BeneficiariesReport
         DataGridComponent = new SPDataGrid(localizer);
 
     }
-
-    //private async Task FetchData(PageChangeEventArgs paged)
-    //{
-    //    var input = new PagedAndSortedAndFilteredResultRequestDto
-    //    {
-    //        MaxResultCount = paged.RowsPerPage,
-    //        SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-    //        Sorting = paged.SortColumn,
-    //        filters = paged.Filters,
-    //        SearchingTerm = paged.SearchTerm
-
-    //    };
-    //    var customerPackages = await AnalysisAppService.ReportCustomerPackage(input, CurrentTenant.Id);
-    //    TotalItem = (int)customerPackages.TotalCount;
-    //    itemData = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
-    //    await Task.Yield();
-
-
-    //}
-
     private async Task FetchData(PageChangeEventArgs paged)
     {
         
@@ -59,12 +39,12 @@ partial class BeneficiariesReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn=="Id"? "GarageTransaction.Id" : paged.SortColumn,
+            Sorting = paged.SortColumn=="Id"? "GarageName" : paged.SortColumn,
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 
         };
-        var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionDateCustomeCategoryAsync(input,CurrentTenant.Id);
+        var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(input,CurrentTenant.Id);
         TotalItem = (int)garageTransactionAnalyses.TotalCount;
         itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
 
