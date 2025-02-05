@@ -630,6 +630,7 @@
     "Ok": "Ok",
     "Cashier No": "Cashier No",
     "Range": "Range",
-    "UpgradeSubscriptionValidationUser": "Your Current Subscription is limited to add new user"
+    "UpgradeSubscriptionValidationUser": "Your Current Subscription is limited to add new user",
+    "Minutes": "Minutes"
   } 
 }
