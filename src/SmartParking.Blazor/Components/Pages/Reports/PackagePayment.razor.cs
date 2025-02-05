@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Helpers;
 using SmartParking.Localization;
+using SmartParking.Permissions.Reports;
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
 
@@ -20,9 +23,15 @@ public partial class PackagePayment
     public PackagePayment(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
-
     }
+    protected async override Task OnInitializedAsync()
+    {
+        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement) || CurrentTenant.Id is null)
+        {
 
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+    }
     private async Task FetchData(PageChangeEventArgs paged)
     {
         var input = new PagedAndSortedAndFilteredResultRequestDto

@@ -254,55 +254,58 @@ public static class CreateTableHelper
         
     }
 
-    public static TableData CreateDataTableForPayments(List<PaymentDto> payments)
+    public static async Task<TableData> CreateDataTableForPayments(List<PaymentDto> payments)
     {
         var tableData = new TableData()
         {
             Name = "Payments Data",
             ShowHeader = true
         };
-
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = false, PropertyName = "Invoice.PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentCategory"), Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum,EnumType=typeof(PaymentCategory) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("InvoiceId"), Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentMethod"), Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum,EnumType = typeof(PaymentMethod) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("customer category"), Name = "customer category", IsFilterable = true, PropertyName = "Customers.CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum,EnumType = typeof(CustomerCategoryStatus) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Amount"), Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Currency"), Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text, IsSortable = false, PropertyName = "PlateNumber", IsFilterable = false });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", IsFilterable = true, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Date });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentStatus"), Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum ,EnumType = typeof(PaymentStatus) });
         // Define the columns for the table
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Payment ID", Name = "Id", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "Id" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Customer ID", Name = "CustomerId", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "CustomerId" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Checkout ID", Name = "CheckoutId", TypeFilter = TypeFilter.Text  , IsSortable = true , PropertyName = "CheckoutId" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Payment Status", Name = "PaymentStatus", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "PaymentStatus" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Invoice ID", Name = "InvoiceId", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "InvoiceId" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Package ID", Name = "PackageId", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "PackageId" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Payment Category", Name = "PaymentCategory", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "PaymentCategory" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Organization ID", Name = "OrganizatioId", TypeFilter = TypeFilter.Text  , IsSortable = true, PropertyName = "OrganizatioId" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "QR Code Invoice", Name = "QrCodeInvoice", TypeFilter = TypeFilter.Text  , IsSortable = true , PropertyName = "QrCodeInvoice" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Payment Method", Name = "PaymentMethod", TypeFilter = TypeFilter.Text  , IsSortable = true, PropertyName = "PaymentMethod" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Amount", Name = "Amount", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "Amount" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Currency", Name = "Currency", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "Currency" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Creation Time", Name = "CreationTime", TypeFilter = TypeFilter.Text  , IsSortable = true , PropertyName = "CreationTime" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Payment Number", Name = "PaymentNumber", TypeFilter = TypeFilter.Text , IsSortable  = true, PropertyName = "PaymentNumber" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Plate Number", Name = "PlateNumber", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "PlateNumber" });
-
-        // Loop through the payments data and add rows to the table
+        
         foreach (var payment in payments)
         {
             var rowDef = new RowDef();
 
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Payment ID", payment.Id.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Customer ID",payment.CustomerId.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Checkout ID", payment.CheckoutId ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Payment Status", payment.PaymentStatus.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Invoice ID", payment.InvoiceId?.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Package ID", payment.PackageId?.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Payment Category", payment.PaymentCategory.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Organization ID", payment.OrganizatioId.ToString() ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("QR Code Invoice", payment.QrCodeInvoice ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Payment Method", payment.PaymentMethod ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Amount", payment.Amount.ToString("F2") ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Currency", payment.Currency ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Creation Time", payment.CreationTime ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Payment Number", payment.PaymentNumber ?? "N/A"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>("Plate Number", payment.PlateNumber ?? "N/A"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), payment.PaymentNumber?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.InvoiceId.HasValue ? payment.PlateNumber : LocalizationHelper.GetLocalizedString("Pacakge")));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentCategory"), LocalizationHelper.GetLocalizedString(payment.PaymentCategory.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                LocalizationHelper.GetLocalizedString("InvoiceId"),
+                payment.PaymentCategory == Enums.PaymentCategory.PaymentParking
+                ? payment.InvoiceId.ToString()
+                : payment.PackageId.ToString()
+            ));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.PaymentMethod)));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), payment.Customers?.CustomerCategory.ToString() is null ? LocalizationHelper.GetLocalizedString("NotCustomer") : LocalizationHelper.GetLocalizedString(payment.Customers?.CustomerCategory.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), payment.Amount.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Currency"), LocalizationHelper.GetLocalizedString(payment.Currency.ToString())));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.ArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.FullName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CreationTime"), payment.CreationTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
             tableData.Rows.Add(rowDef);
         }
-
+        await Task.Yield();
         return tableData;
     } 
     

@@ -431,7 +431,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var query = await _customerPackageRepository.GetQueryableAsync();
             query = query.Include(x => x.Customer).ThenInclude(x => x.IdentityUser);
-            query = query.Where(_ => _.CustomerCategory == CustomerCategoryStatus.Customer);
             query = CheckFilter(input, query);
             query = CheckTenant(tenantId, query);
             query = ApplySort(input, query);
@@ -460,12 +459,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return query;
     }
 
-    private static IQueryable<CustomerPackage> CheckDate(DateTime? startDate, DateTime? endDate, IQueryable<CustomerPackage> query)
-    {
-        if (startDate.HasValue && endDate.HasValue)
-            query = query.Where(_ => _.CreationTime.Date >= startDate.Value.Date && _.CreationTime.Date <= endDate.Value.Date);
-        return query;
-    }
+   
 
     private static IQueryable<CustomerPackage> CheckTenant(Guid? tenantId, IQueryable<CustomerPackage> query)
     {
@@ -493,20 +487,67 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return query;
     }
 
-    public async Task<List<PaymentDto>> ReportCustomerPayment(DateTime StartDate, DateTime EndDate)
+    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
-            query = query.Where(_ => _.CreationTime.Date >= StartDate.Date && _.CreationTime.Date <= EndDate.Date);
+            query = CheckTenantPayment(tenantId, query);
+            query = ApplySortPayment(input, query);
+            query = ApplyFilterPayment(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var result = await AsyncExecuter.ToListAsync(query);
             var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
-            return paymentMap;
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = paymentMap,
+                TotalCount = totalCount
+            };
         }
 
     }
 
-    
+    private static IQueryable<Payment> ApplyFilterPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<Payment> query)
+    {
+        if (input.filters.Count > 0)
+        {
+            var filterExpression = BuildExpression<Payment>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        return query;
+    }
+
+    private static IQueryable<Payment> ApplySortPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<Payment> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return query;
+    }
+
+    private static IQueryable<Payment> CheckTenantPayment(Guid? tenantId, IQueryable<Payment> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(_ => _.TenantId == tenantId);
+        return query;
+    }
+
     public async Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())

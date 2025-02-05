@@ -1,5 +1,7 @@
 ﻿
 using Blazorise.DataGrid;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
@@ -10,6 +12,8 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
+using SmartParking.Permissions.PaymentsPermissions;
+using SmartParking.Permissions.Reports;
 using SmartParking.Results;
 using Volo.Abp.MultiTenancy;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -31,6 +35,16 @@ partial class BeneficiariesReport
         _localizer = localizer;
         DataGridComponent = new SPDataGrid(localizer);
 
+    }
+    protected async override Task OnInitializedAsync()
+    {
+
+        
+        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) || await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT) || CurrentTenant.Id is null)
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
     }
     private async Task FetchData(PageChangeEventArgs paged)
     {
