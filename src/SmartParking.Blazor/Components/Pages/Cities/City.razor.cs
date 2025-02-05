@@ -126,7 +126,7 @@ public partial class City
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Cities",
+            Name = L["Cities"],
             ShowHeader = true
         };
 
