@@ -194,7 +194,7 @@
                                             </MudSelect>
                                         </MudItem>
                                     }
-                                    else
+                                    else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date)
                                     {
                                         <MudItem>
                                             @L["Value"]:

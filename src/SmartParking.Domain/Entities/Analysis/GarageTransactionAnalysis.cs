@@ -2,6 +2,7 @@
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,10 @@ public class GarageTransactionAnalysis
     public GarageTransaction GarageTransaction { get; set; }
     public Vehicle  Vehicle { get; set; }
     public Customer Customer { get; set; }
+    public Garage Garage { get; set; }
     public string GarageName { get; set; }
     public string UserName { get; set; }
-    public string CameraType { get; set; }
+    public CameraType CameraType { get; set; }
     public string PlateNumber { get; set; }
     public DateTime? AccurateTime { get; set; }
     public string OrganizationName { get; set; }

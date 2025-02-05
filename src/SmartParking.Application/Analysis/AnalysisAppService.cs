@@ -1,5 +1,6 @@
 ﻿
 using Castle.Core.Resource;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
@@ -24,6 +25,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -31,6 +33,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking.Analysis;
 
@@ -336,8 +339,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
+
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysis(category, tenantId);
-            return result;
+            return result.ToList();
         }
 
     }
@@ -377,88 +381,17 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomeCategoryAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var queryGarageTransaction = await _garageTransactionRepository.GetQueryableAsync();
-            var queryVehicle = await _vehicleRepository.GetQueryableAsync();
-            var query = queryGarageTransaction
-                 .Where(garageTransaction => tenantId == null || garageTransaction.TenantId == tenantId)
-                 .GroupJoin(
-                     queryVehicle,
-                     garageTransaction => garageTransaction.PlateNumber,
-                     vehicle => vehicle.EnPlateNumber,
-                     (garageTransaction, vehicles) => new { garageTransaction, vehicles }
-                 )
-                 .SelectMany(
-                     gv1 => gv1.vehicles.DefaultIfEmpty(),
-                     (gv1, v1) => new { gv1.garageTransaction, v1 }
-                 )
-                 .GroupJoin(
-                     queryVehicle,
-                     gv1 => gv1.garageTransaction.PlateNumber,
-                     vehicle => vehicle.ArPlateNumber,
-                     (gv1, vehicles) => new { gv1.garageTransaction, gv1.v1, vehicles }
-                 )
-                 .SelectMany(
-                     gv2 => gv2.vehicles.DefaultIfEmpty(),
-                     (gv2, v2) => new
-                     {
-                         gv2.garageTransaction,
-                         v1 = gv2.v1,
-                         v2
-                     }
-                 );
-                
-            if (input.filters.Count > 0)
-            {
-                var filterExpression = BuildExpression<GarageTransactionAnalysis>.BuildFilterExpression(input.filters);
-                if (filterExpression is not null)
-                {
-                    query = query.Where(filterExpression);
-                }
-            }
+            var filterExpression = BuildExpression<GarageTransactionAnalysis>.BuildFilterExpression(input.filters);
 
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    query = query.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    query = query.OrderBy(input.Sorting);
-                }
-
-            }
-
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-           var  result = query.Select(result => new GarageTransactionAnalysis
-              {
-                  PlateNumber = result.garageTransaction.PlateNumber,
-                  AccurateTime = result.garageTransaction.AccurateTime,
-                  CameraType = result.garageTransaction.CameraType.ToString(),
-                  GarageName = result.garageTransaction.Garage.NameEn,
-                  OrganizationName = result.garageTransaction.Organization.EnglishName,
-                  ArabicName = result.v1 == null
-                         ? (result.v2 == null ? "غير معرف" : result.v2.Customer.ArabicName)
-                         : result.v1.Customer.ArabicName,
-                  UserName = result.v1 == null
-                         ? (result.v2 == null ? "Unknown" : result.v2.Customer.IdentityUser.UserName)
-                         : result.v1.Customer.IdentityUser.UserName,
-                  CustomerId = result.v1 == null
-                         ? (result.v2 == null ? Guid.Empty : result.v2.CustomerId)
-                         : (Guid)result.v1.CustomerId
-              }).ToList();
-
-           
+            var result= await _garageTransactionAnalysis.GetGarageTransactionsAnalysisReportAsync(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
             return new PagedResultDto<GarageTransactionAnalysis>
             {
-                TotalCount = totalCount,
-                Items = result
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
             };
         }
 
@@ -632,4 +565,5 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
         return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
     }
+
 }
