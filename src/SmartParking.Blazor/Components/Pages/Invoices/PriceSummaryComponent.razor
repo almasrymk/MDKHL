@@ -43,16 +43,19 @@
             <MudGrid Class="mt-4">
                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result)
                 {
-                    <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
-                        <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
-                          <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
-                          <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
-                      </MudRadioGroup>
-                    </MudItem>
+                     @if (!IsPaid || InvoicePrice==0)                    
+                      {
+                        <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
+                            <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
+                              <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
+                              <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
+                          </MudRadioGroup>
+                        </MudItem>
 
-                    <MudItem xs="@(ConfirmSize)" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
-                    </MudItem>
+                    }
+                        <MudItem xs="@(ConfirmSize)" Class="text-center">
+                            <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
+                        </MudItem>
 
                 }
                 @if (ShowOpenGate)
@@ -76,7 +79,6 @@
 </MudItem>
 
 @code {
-
     [Parameter] public bool IsPaid { get; set; }
     [Parameter] public bool NoInvoice { get; set; }
     [Parameter] public bool ShowOpenGate { get; set; }
@@ -87,6 +89,7 @@
     [Parameter] public PaymentMethod PaymentMethod { get; set; }
     [Parameter] public int ConfirmSize { get; set; }
     [Parameter] public int ComponentSize { get; set; }
+
 
 
 
