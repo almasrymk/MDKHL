@@ -1,9 +1,11 @@
 ﻿using AraibcPdfUnicodeGlyphsResharper;
 using iText.IO.Font;
+using iText.IO.Image;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
+using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
@@ -80,10 +82,58 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
 
                 set.AddFont(fontPath);
                 Style styleBold = new Style();
-
                 styleBold.SetFont(font);
-
                 doc.SetFontProvider(new FontProvider(set));
+                Table headerTable = new Table(3);
+                headerTable.SetWidth(UnitValue.CreatePercentValue(100));
+
+                // Left image
+                string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+                Image leftImage = new Image(ImageDataFactory.Create(leftImagePath))
+                    .SetHeight(75)
+                    .SetWidth(75)
+                    .SetMarginLeft(20)
+                    .SetHorizontalAlignment(HorizontalAlignment.LEFT);
+                Cell leftCell = new Cell().Add(leftImage)
+                                          .SetBorder(Border.NO_BORDER);
+                headerTable.AddCell(leftCell);
+                string displayTitle = "";
+                // Centered title
+                if (CultureInfo.CurrentCulture.Name == "en")
+                {
+                    displayTitle = Data.Name;
+                }
+                else
+                {
+                    displayTitle = Data.Name.ArabicWithFontGlyphsToPfd();
+                }
+                    Paragraph title = new Paragraph(displayTitle) // Report Title in Arabic
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetFont(font)
+                    .SetFontSize(25)
+                    .SimulateBold()
+                    .SetMarginTop(20);
+                 
+                Cell centerCell = new Cell().Add(title)
+                                            .SetTextAlignment(TextAlignment.CENTER)
+                                            .SetBorder(Border.NO_BORDER);
+                headerTable.AddCell(centerCell);
+
+                //// Right image
+                string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/maen.jpg");
+                Image rightImage = new Image(ImageDataFactory.Create(rightImagePath))
+                    .SetHeight(75)
+                    .SetWidth(75)
+                    .SetMarginRight(20)
+                    .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+                Cell rightCell = new Cell().Add(rightImage)
+                                           .SetBorder(Border.NO_BORDER);
+                headerTable.AddCell(rightCell);
+
+                // Add the header table to the document
+                doc.Add(headerTable);
+                doc.SetBottomMargin(15);
+               
                 int NumberOfColumns = Data.Columns.Count;
                 if (Data?.Columns?.FirstOrDefault()?.Name == "Id")
                     NumberOfColumns--;
@@ -105,7 +155,8 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                     var txt = new Text(columns.DisplayName.ArabicWithFontGlyphsToPfd());
                     table.AddHeaderCell(new Cell().Add(new Paragraph(txt)))
                          .AddStyle(styleBold.SimulateBold())
-                        .SetFontSize(9);
+                        .SetFontSize(9)
+                        .SetTextAlignment(TextAlignment.CENTER);
                 }
 
                 foreach (var row in Data.Rows)
@@ -118,7 +169,7 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id")
                         {
                             var txt = new Text(cellValue.ArabicWithFontGlyphsToPfd()).SetFontSize(9);
-                            table.AddCell(new Cell().Add(new Paragraph(txt)));
+                            table.AddCell(new Cell().Add(new Paragraph(txt))).SetTextAlignment(TextAlignment.CENTER); 
                         }
 
 
