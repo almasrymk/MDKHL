@@ -242,9 +242,17 @@
         </DialogContent>
 
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit" >@L["Create"]</MudButton>
-        </DialogActions>
+            <DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonOneLabel="@L["Back"]" 
+        ButtonOneClick="Cancel" 
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonTwoLabel="@L["Create"]" 
+        ButtonTwoClick="Submit" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled"
+    />
+</DialogActions>
+
 
     </MudDialog>
 

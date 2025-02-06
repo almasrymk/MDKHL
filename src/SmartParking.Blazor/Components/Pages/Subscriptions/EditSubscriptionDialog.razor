@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
@@ -73,10 +74,10 @@
                         <MudTextField @bind-Value="subscription.SubscriptionPrice"
                                       For="@(() => subscription.SubscriptionPrice)"
                                       Immediate="true"
-                                      Label="@L["SubscriptionPrice"]"
+                                      Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")" 
                                       InputType="InputType.Text"
                                       Required="true"
-                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                         <MudItem sm="6">
                             <MudTextField @bind-Value="subscription.ParkingSlot"
@@ -234,9 +235,18 @@
 		</DialogContent>
 
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-                <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Save"]</MudButton>
-        </DialogActions>
+    <DialogActionComponent 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonOneClick="Cancel" 
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonTwoLabel="@L["Save"]" 
+        ButtonTwoClick="Save" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled"
+    />
+</DialogActions>
+
 	</MudDialog>
 
 </MudItem>

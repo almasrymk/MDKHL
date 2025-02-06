@@ -46,7 +46,7 @@
                                       HideSpinButtons="true"       
                                       Class="w-100"
                                       Disabled='true'
-                                      Label=@L["Price"] />
+                                      Label="@($"{L["Price"]} ({L["SAR"]})")" />
                     </MudItem>
 
                     <MudItem sm="4" md="4">
@@ -145,7 +145,7 @@
 
 		</DialogContent>
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
         </DialogActions>
 
 	</MudDialog>

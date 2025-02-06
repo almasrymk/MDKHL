@@ -219,13 +219,16 @@
 			</MudForm>
 		</DialogContent>
 		<DialogActions>
-			<MudItem sm="12">
-				<div class="d-flex justify-content-between align-items-center">
-					<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-					<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-				</div>
-			</MudItem>
+					<DialogActionComponent ButtonOneLabel="@L["Back"]"
+										   ButtonOneClick="CancelEdit"
+										   ButtonOneVariant="MudBlazor.Variant.Filled"
+										   ButtonOneColor="MudBlazor.Color.Dark"
+										   ButtonTwoColor="MudBlazor.Color.Primary"
+										   ButtonTwoLabel="@L["Save"]"
+										   ButtonTwoClick="SubmitEdit"
+										   ButtonTwoVariant="MudBlazor.Variant.Filled" />
 		</DialogActions>
+
 	</MudDialog>
 
 </div>

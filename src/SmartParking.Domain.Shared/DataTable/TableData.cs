@@ -34,5 +34,6 @@ public class ColumnDef
     public string PropertyName { get; set; }
     public TypeFilter TypeFilter { get; set; }
     public Type EnumType { get; set; }
+    public bool IsColumnVisible { get; set; } = true;
 }
 

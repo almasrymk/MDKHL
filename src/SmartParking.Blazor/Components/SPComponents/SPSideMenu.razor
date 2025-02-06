@@ -31,9 +31,13 @@
 
 
 <div class="pt-5">
-    <MudDrawerContainer Class="mud-height-full">
+    <MudDrawerContainer Class="mud-height-full" >
+        @* <div style="flex: 0 0 250px;  z-index: 1000"> *@
+
+
         <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
-            <MudNavMenu>
+                @* <MudNavMenu Style="height: 100vh; overflow-y: auto; overflow-x: hidden;"> *@
+                <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
                 @if (AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result && currenttenant.Id is not null)
                 {
@@ -95,19 +99,19 @@
                     <MudNavGroup Icon="@Icons.Material.Filled.Assessment" Title="@L["Reports"]">
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"] @L["Reports"]</MudNavLink>
+                            <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"]</MudNavLink>
                         }
                         @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"] @L["Reports"]</MudNavLink>
+                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["CustomerPackages"]</MudNavLink>
 
                         }
 
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"] @L["Reports"]</MudNavLink>
-                            <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"] @L["Reports"]</MudNavLink>
+                            <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
+                            <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                         }
 
                     </MudNavGroup>
@@ -156,12 +160,14 @@
             </MudNavMenu>
             <MudButton Variant="Variant.Filled" Class="logout-button rounded-0 mt-20" OnClick="HandleLogout">
                 @L["Logout"]
-            </MudButton>
-            <div class="icon-logout-button mt-20">
-                <MudIcon Icon="@Icons.Material.Filled.Logout" />
-            </div>
+                <div class="icon-logout-button mt-20">
+                    <MudIcon Icon="@Icons.Material.Filled.Logout" />
+                </div>
+        </MudButton>
+            
         </MudDrawer>
-        <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler" StartIcon="@Icons.Material.Filled.ChevronLeft">
+        @* </div> *@
+        <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler" StartIcon="@(_open ? Icons.Material.Filled.ChevronLeft : Icons.Material.Filled.ChevronRight)">
 
         </MudButton>
     </MudDrawerContainer>

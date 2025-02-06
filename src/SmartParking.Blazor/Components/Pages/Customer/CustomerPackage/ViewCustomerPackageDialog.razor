@@ -21,8 +21,7 @@
             <SPDataGrid PageName=@L["CustomerPackages"] TotalItemsInTable="@TotalItem" Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete"></SPDataGrid>
         </DialogContent>
         <DialogActions>
-
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

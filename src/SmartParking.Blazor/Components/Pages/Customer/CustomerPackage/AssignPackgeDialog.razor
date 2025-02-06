@@ -117,19 +117,25 @@
 
 
 				</MudGrid>
-				<MudTable T="PackageDto" Items="selectedPackageDto" Style="width:fit-content">
+				<MudTable T="PackageDto" Items="selectedPackageDto" Style="width:100%">
 					<HeaderContent>
-						<MudTh>@L["ArabicName"]</MudTh>
-						<MudTh>@L["English Name"]</MudTh>
+						<MudTh>@L["Name"]</MudTh>
 						<MudTh>@L["Package Type"]</MudTh>
 						<MudTh>@L["Price"]</MudTh>
 						<MudTh>@L["Publish From"]</MudTh>
 						<MudTh>@L["Publish To"]</MudTh>
-						<MudTh>@L["Duration"]</MudTh>
+						<MudTh>@L["TotalHours"]</MudTh>
 					</HeaderContent>
 					<RowTemplate>
-						<MudTd>@context.ArabicName</MudTd>
-						<MudTd>@context.EnglishName</MudTd>
+						@if (CultureInfo.CurrentCulture.Name == "en")
+						{
+							<MudTd>@context.EnglishName</MudTd>
+						}
+						else
+						{
+							<MudTd>@context.ArabicName</MudTd>
+						}
+
 						<MudTd>@context.PackageTypeEnglishName</MudTd>
 						<MudTd>@context.Price</MudTd>
 						<MudTd>@context.PublishFrom</MudTd>
@@ -141,9 +147,16 @@
 			</MudForm>
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Assign"]</MudButton>
+			<DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+								   ButtonTwoColor="MudBlazor.Color.Primary"
+								   ButtonOneLabel="@L["Back"]"
+								   ButtonTwoLabel="@L["Assign"]"
+								   ButtonOneClick="CancelEdit"
+								   ButtonTwoClick="SubmitEdit"
+								   ButtonOneVariant="MudBlazor.Variant.Filled"
+								   ButtonTwoVariant="MudBlazor.Variant.Filled" />
 		</DialogActions>
+
 
 	</MudDialog>
 

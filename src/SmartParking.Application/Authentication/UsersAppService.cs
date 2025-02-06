@@ -32,6 +32,9 @@ using SmartParking.Customers;
 using Castle.Core.Resource;
 using SmartParking.Cutomers;
 using SmartParking.Results;
+using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
+using SmartParking.OrganizationsGarages;
 
 namespace SmartParking.Authentication;
 
@@ -46,6 +49,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IBaseCustomerAppService _baseCustomer;
     private readonly IRepository<Customer, Guid> _customerRepository;
+    private readonly IRepository<Subscription, int> _subscriptionRepository;
+    private readonly IRepository<Organization, int> _organizationsRepository;
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
@@ -53,7 +58,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         IOptions<IdentityOptions> identityOptions,
         IAuthenticationUtility authenticationUtility,
         IBaseCustomerAppService baseCustomer,
-        IRepository<Customer, Guid> customerRepository
+        IRepository<Customer, Guid> customerRepository ,
+        IRepository<Subscription, int> subscriptionRepository ,
+        IRepository<Organization, int> organizationsRepository
         )
     {
         _userManager = userManager;
@@ -64,6 +71,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _authenticationUtility = authenticationUtility;
         _baseCustomer = baseCustomer;
         _customerRepository = customerRepository;
+        _subscriptionRepository = subscriptionRepository;
+        _organizationsRepository = organizationsRepository;
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
@@ -86,6 +95,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
     [AllowAnonymous]
     public async Task<IdentityUser> AddAndValidateUserAsync (UserCreateDto input)
     {
+        if(input.OrganizationId != 0 && input.IsActive)
+        {
+            await CheckSubscriptionUsersLimitsAsync(input.OrganizationId);
+        }
         await _identityOptions.SetAsync();
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         await _authenticationUtility.CheckUserNameIsValid(input.Name);
@@ -103,6 +116,28 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         return user;
+    }
+
+    private async Task<Subscription> CheckSubscriptionUsersLimitsAsync(int organizationId)
+    {
+        var organization = await _organizationsRepository.GetAsync(organizationId);
+        var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
+        Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
+
+        if (subscription == null || subscription.NumberOfUsers < usersActive.Count + 1)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
+        }
+
+        return subscription;
+    }
+
+    private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
+    {
+        using(DataFilter.Disable<IMultiTenant>())
+        {
+            return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+        }
     }
 
     private IdentityUser CreateUser(UserCreateDto input)
@@ -389,7 +424,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
+            input.IsActive = false;
             await UpdateUserProperties(user, input);
+            
             var updatedUser = await _userManager.UpdateAsync(user);
             if (!updatedUser.Succeeded)
             {
@@ -408,7 +445,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            
+            if (user != null && input.IsActive && !user.IsActive)
+            {
+                int organizationId = Convert.ToInt32(user.GetProperty("OrganizationId"));
+                await CheckSubscriptionUsersLimitsAsync(organizationId);
+            }
 
             await ChangeRole(input, user);
             await UpdateUserProperties(user, input);
@@ -655,7 +696,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
        
         RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
-        user?.SetProperty("OrganizationId", 0);
+        user?.SetProperty("OrganizationId", value: 0);
         
         if (user.UserName != input.UserName)
         {

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Entities.Organizations;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.Permissions.Reports;
@@ -18,7 +20,8 @@ public partial class PaymentReport
     private SPReportResult sPReportResult { get; set; } = new SPReportResult();
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     public string sordColumn { get; private set; }
-
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+    public string ColumnVisibility { get; private set; }
     public PaymentReport(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
@@ -26,11 +29,45 @@ public partial class PaymentReport
     }
     protected async override Task OnInitializedAsync()
     {
-        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement) || CurrentTenant.Id is null)
+        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
+    }
+
+    private async Task CreateMenue(List<ColumnDef> columns)
+    {
+        var MenuDatasTable = new List<MudMenuData>
+    {
+       await CreateColumnVisibilityMenue(columns),
+
+    };
+        MenuDatas = MenuDatasTable;
+
+
+    }
+    private async Task<MudMenuData> CreateColumnVisibilityMenue(List<ColumnDef> columns)
+    {
+        var items = new List<MenuItem>();
+        foreach (var item in columns)
+        {
+            items.Add(new MenuItem { MenueName = "ColumnVisibility", Label = item.DisplayName, ISColumnVisibility = true, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectColumnVisibilityAsync(selectedValue)) });
+        }
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["ColumnVisibility"],
+            Label = L["ColumnVisibilitySelector"],
+            Items = items,
+            IsMenueColumnVisible = true
+        };
+    }
+
+    private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
+    {
+        ColumnVisibility = valueOfMenue;
+        await Task.Yield();
     }
     private async Task FetchData(PageChangeEventArgs paged)
     {
@@ -45,6 +82,16 @@ public partial class PaymentReport
         };
         var payments = await AnalysisAppService.ReportCustomerPayment(input, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
-        itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+       
+        if (!ColumnVisibility.IsNullOrWhiteSpace())
+        {
+            itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible = !itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible;
+
+        }
+        else
+        {
+            itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+        }
+        await CreateMenue(itemData.Columns);
     }
 }
