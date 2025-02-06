@@ -55,7 +55,7 @@
                         Required="true"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
-                        Label="@L["Price"]" />
+                        Label="@($"{L["Price"]} ({L["SAR"]})")" />
                     </MudItem>
 
                     <MudItem sm="6" md="6">
@@ -183,14 +183,17 @@
 
         </DialogContent>
         <DialogActions>
-            <MudItem sm="12">
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark" 
+        ButtonTwoColor="MudBlazor.Color.Primary" 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonTwoLabel="@L["Save"]" 
+        ButtonOneClick="CancelEdit" 
+        ButtonTwoClick="SubmitEdit" 
+        ButtonOneVariant="MudBlazor.Variant.Filled" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
 
-                <div class="d-flex justify-content-between align-items-center">
-                    <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-                    <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-                </div>
-            </MudItem>
-        </DialogActions>
 
     </MudDialog>
 

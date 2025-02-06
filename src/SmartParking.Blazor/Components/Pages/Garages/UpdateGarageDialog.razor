@@ -9,6 +9,7 @@
 @using SmartParking.Validations
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
+@using SmartParking.Blazor.Components.Shared;
 @inject ICurrentUser currrentUser
 @inject ICurrentTenant currrentTenant
 @inject IStringLocalizer<SmartParkingResource> L
@@ -151,9 +152,17 @@
               
         </DialogContent>
         <DialogActions>
-            <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark"  OnClick="CancelEdit">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-        </DialogActions>
+        <DialogActionComponent 
+        ButtonTwoColor="MudBlazor.Color.Primary" 
+        ButtonOneColor="MudBlazor.Color.Dark" 
+        ButtonTwoLabel="@L["Save"]" 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonTwoClick="SubmitEdit" 
+        ButtonOneClick="CancelEdit" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" 
+        ButtonOneVariant="MudBlazor.Variant.Filled" 
+            />
+</DialogActions>
     </MudDialog>
 </div>
 

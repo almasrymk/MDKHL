@@ -161,7 +161,9 @@ public partial class Subscription
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeAr", IsFilterable = true, PropertyName = "Subscription.TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef()
+        {
+            DisplayName = $"{_localizer["SubscriptionPrice"]} ({_localizer["SAR"]})", Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 
@@ -182,7 +184,7 @@ public partial class Subscription
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"],$"{item.SubscriptionPrice.ToString()} {_localizer["SAR"]}"
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["SubscriptionPrice"]} ({_localizer["SAR"]})", $"{item.SubscriptionPrice.ToString()}"
             ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
