@@ -100,7 +100,7 @@
                         @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
+                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["CustomerPackages"]</MudNavLink>
 
                         }
 
