@@ -19,6 +19,7 @@
 @inject ICurrentTenant currenttenant
 @inject IOrganizationsAppService OrganizationAppService
 @inject IAuthorizationService AuthorizationService
+@inject IJSRuntime Js
 
 <MudDialogProvider FullWidth="true"
                    MaxWidth="MaxWidth.Medium" />
@@ -28,14 +29,14 @@
 
 <div class="main-layout-gradient d-flex flex-column">
 
-    <header class="bg-transparent px-5 py-10 d-flex">
+    <header id="header" class="px-5 py-10 d-flex fixed" style="top: 0; left: 0; width: 100%;">
 
         <MudItem Style="width:240px">
             <MudLink Href="#">
                 <Image Source="images/logo/logo.png" />
             </MudLink>
         </MudItem>
-        <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
+        <MudItem  Class="text-white d-flex justify-content-between gap-2 flex-1">
             <div class="d-flex flex-column justify-center">
                 <h2 >
                     @GetTitleForCurrentUri()
@@ -77,11 +78,15 @@
         </MudItem>
 
     </header>
-    <div Class="d-flex me-5 flex-grow-1">
-        <SPSideMenu />
-        <MudPaper Class="p-3 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl w-100 main-layout-paper">
-            @Body
-        </MudPaper>
+    <div Class="d-flex me-5 flex-grow-1" style="margin-top: 25vh;">
+        <div id="sideMenu">
+            <SPSideMenu/>
+        </div>
+        <div style="flex-grow: 1; height: 100vh; overflow-y: auto;">
+            <MudPaper Class="p-3 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl w-100 main-layout-paper">
+                @Body
+            </MudPaper>
+        </div>
     </div>
     <footer class="text-center text-white my-5">
         @L["All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles"]
@@ -108,7 +113,7 @@
     private string UserName { get; set; }
     private bool hasPermission;
 
-
+    
     protected async override Task OnInitializedAsync()
     {
         UserName = CurrentUser.Name;
@@ -135,6 +140,7 @@
     }
     private void ChangeLanguage()
     {
+        
         Navigation.NavigateTo($"api/SetLanguage?returnUrl={Navigation.Uri}", true);
     }
     private string LocaleImgSrc()
@@ -155,4 +161,5 @@
                 White = "FFFFFF"
             },
         };
+
 }

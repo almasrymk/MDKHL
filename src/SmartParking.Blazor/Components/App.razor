@@ -51,10 +51,48 @@
        
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
+    <script>
+        window.onscroll = function() { changeHeaderBackground(); };
+        function changeHeaderBackground() {
+            var header = document.getElementById("header");
+            var sideMenu = document.getElementById("sideMenu")
+            if (document.documentElement.scrollTop > 50) {
+                header.classList.add("scrolled");
+                sideMenu.classList.add("scrolled");
+            } else {
+                header.classList.remove("scrolled");
+                sideMenu.classList.remove("scrolled");
+            }
+        }
+    </script>
+
+
     <style>
         *{
             font-family: "Inter", sans-serif !important;
         }
+
+        #header {
+            background-color: transparent;
+            transition: background-color 0.3s ease;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        #header.scrolled {
+            background-color: #0D5480;
+            padding: 10px;
+        }
+
+        #sideMenu.scrolled {
+            z-index: 999;
+        }
+        
+
     </style>
 
 </body>
