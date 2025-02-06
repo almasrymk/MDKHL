@@ -95,19 +95,19 @@
                     <MudNavGroup Icon="@Icons.Material.Filled.Assessment" Title="@L["Reports"]">
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"] @L["Reports"]</MudNavLink>
+                            <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"]</MudNavLink>
                         }
                         @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"] @L["Reports"]</MudNavLink>
+                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
 
                         }
 
                         @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                         {
-                            <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"] @L["Reports"]</MudNavLink>
-                            <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"] @L["Reports"]</MudNavLink>
+                            <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
+                            <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                         }
 
                     </MudNavGroup>
