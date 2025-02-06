@@ -88,7 +88,6 @@ public static class CreateTableHelper
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("UserName"), Name = "UserName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "UserName" ,IsFilterable = true});
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerId"), Name = "CustomerId", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "CustomerId" });
 
         foreach (var item in data)
         {
@@ -99,6 +98,7 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), item.PlateNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString())); 
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), item.GarageTransaction.CustomerCategory.ToString()));
 
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
@@ -108,8 +108,6 @@ public static class CreateTableHelper
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), item.UserName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerId"), item.CustomerId.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), item.GarageTransaction.CustomerCategory.ToString()));
             tableData.Rows.Add(rowDef);
         }
         await Task.Yield();
