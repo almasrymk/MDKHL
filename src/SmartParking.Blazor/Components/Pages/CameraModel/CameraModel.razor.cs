@@ -119,7 +119,7 @@ public partial class CameraModel
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Camera model",
+            Name = L["Cameramodels"],
             ShowHeader = true
         };
 

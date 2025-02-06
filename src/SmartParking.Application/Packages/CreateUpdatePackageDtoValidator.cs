@@ -26,9 +26,6 @@ namespace SmartParking.Packages
 				.GreaterThan(0)
 				.WithMessage("Package Type is invalid");
 
-			//RuleFor(x => x.Status)
-			//	.NotEmpty()
-			//	.WithMessage("Status is invalid");
 
 			RuleFor(x => x.Price)
 				.GreaterThan(-1)
@@ -37,7 +34,7 @@ namespace SmartParking.Packages
 				.WithMessage("Price must not have more than two decimal places and must be less than 18 digits.");
 
 
-			RuleFor(x => x.PublishTo);
+            RuleFor(x => x.PublishTo);
 				//.Must(BeAValidTime).WithMessage("End time is not a valid time.");
 
 			RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1);

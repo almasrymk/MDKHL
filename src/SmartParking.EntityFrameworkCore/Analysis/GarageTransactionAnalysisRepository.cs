@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
@@ -54,10 +55,11 @@ public class GarageTransactionAnalysisRepository
                     
                     select new GarageTransactionAnalysis
                     {
+                        GarageTransaction = garageTransaction,
                         CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId ,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
-                        CameraType = garageTransaction.CameraType.ToString(),
+                        CameraType = garageTransaction.CameraType,
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
@@ -91,7 +93,7 @@ public class GarageTransactionAnalysisRepository
                     {
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
-                        CameraType = garageTransaction.CameraType.ToString(),
+                        CameraType = garageTransaction.CameraType,
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
@@ -131,7 +133,7 @@ public class GarageTransactionAnalysisRepository
                         GarageTransaction = garageTransaction,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
-                        CameraType = garageTransaction.CameraType.ToString(),
+                        CameraType = garageTransaction.CameraType,
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
@@ -142,15 +144,12 @@ public class GarageTransactionAnalysisRepository
 
         return await query.ToListAsync();
     }
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(
-    CustomerCategoryStatus category, DateTime startDate, DateTime endDate)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
-                    where garageTransaction.CustomerCategory == category
-                          && garageTransaction.AccurateTime.Value.Date >= startDate.Date
-                          && garageTransaction.AccurateTime.Value.Date <= endDate.Date
+                    where tenantId == null || garageTransaction.TenantId == tenantId
                     join vehicle in dbContext.Vehicles
                         on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
                         into vehicleJoin1
@@ -164,7 +163,7 @@ public class GarageTransactionAnalysisRepository
                     {
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
-                        CameraType = garageTransaction.CameraType.ToString(),
+                        CameraType = garageTransaction.CameraType,
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
@@ -207,7 +206,7 @@ public class GarageTransactionAnalysisRepository
                         GarageTransaction = garageTransaction,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
-                        CameraType = garageTransaction.CameraType.ToString(),
+                        CameraType = garageTransaction.CameraType,
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
@@ -254,7 +253,7 @@ public class GarageTransactionAnalysisRepository
                         GarageTransaction = garageTransaction,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
-                        CameraType = garageTransaction.CameraType.ToString(),
+                        CameraType = garageTransaction.CameraType,
                         GarageName = garageTransaction.Garage.NameEn,
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
@@ -263,5 +262,54 @@ public class GarageTransactionAnalysisRepository
                     };
 
         return await query.ToListAsync();
+    }
+
+    public async Task<PagedResult<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisReportAsync(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<GarageTransactionAnalysis, bool>> filterRequests)
+    {
+
+        var dbContext = await GetDbContextAsync();
+       
+            if (sorting.Contains("DESC"))
+            {
+                var sortingSplit = sorting.Split(' ').ToList();
+               sorting = sortingSplit[0] + " descending";
+            }
+            
+        
+        var query = from garageTransaction in dbContext.GarageTransactions
+                    where tenantId == null || garageTransaction.TenantId == tenantId
+                    join vehicle in dbContext.Vehicles
+                        on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+                    join vehicle2 in dbContext.Vehicles
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
+                    orderby garageTransaction.Garage.NameEn
+                    select new GarageTransactionAnalysis
+                    {
+                        GarageTransaction = garageTransaction,
+                        CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId,
+                        PlateNumber = garageTransaction.PlateNumber,
+                        AccurateTime = garageTransaction.AccurateTime,
+                        CameraType = garageTransaction.CameraType,
+                        GarageName = garageTransaction.Garage.NameEn,
+                        OrganizationName = garageTransaction.Organization.EnglishName,
+                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName
+
+                    };
+        query = query.Where(filterRequests);
+        query = query.OrderBy(sorting);
+        var total = query.Count();
+        query = query.Skip(skipCount).Take(maxResultCount);
+        
+        return new PagedResult<GarageTransactionAnalysis>
+        {
+            PageSize = total,
+            Queryable = query,
+        };
+       
     }
 }

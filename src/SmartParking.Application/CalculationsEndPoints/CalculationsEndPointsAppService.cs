@@ -84,15 +84,11 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     public  decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime)
     {
 
-        //special hours -> hours where organization is close
-        //normal hours -> hours where organization is open 
         (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime, organization);
         var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
         double price = 0;
-        double totalDays = Math.Ceiling(specialHours / closingHour);
-        // calculates full days price
+        double totalDays = Math.Ceiling(specialHours / closingHour==0?1: closingHour);
         price += totalDays * (double)organization.FullDayPrice;
-        //calculates hours
         if ((int)normalHours + (int)specialHours > 24)
         {
             price += (double)  CalculatePriceHoursExceededDay(organization, (int)normalHours + (int)specialHours);

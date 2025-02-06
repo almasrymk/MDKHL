@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
@@ -90,6 +91,8 @@ public class CustomerPackagesAppService:
     [RemoteService(IsEnabled =false)]
     public  async Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
+        try
+        {
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 var customer = await GetCustomerAsync();
@@ -123,7 +126,14 @@ public class CustomerPackagesAppService:
                 }
 
                 return await InsertCustomerPackageAsync(customerPackage);
+            }
         }
+        catch (Exception ex)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+
+
     }
 
     private async Task<Customer> GetCustomerAsync()

@@ -654,14 +654,32 @@
     "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ",
     "InRange": "في خلال فترة زمنية",
     "Ok": "تأكيد",
-    "Cashier No" :  "رقم الكاشير",
-    "Range": "في خلال"
-
-
-
-
-
-
+    "Cashier No": "رقم الكاشير",
+    "Range": "في خلال",
+    "Subscription": "الاشتراك",
+    "Interval": "",
+    "TotalPreVAT": "الإجمالي قبل القيمة المضافه",
+    "TotalIncludeVAT": "الإجمالي مع القيمة المضافه",
+    "SimplifiedTaxInvoice": "فاتورة ضريبية مبسطة",
+    "HeaderVatReceiptPayment": "هذا إيصال دفع لـ",
+    "Hours": "ساعات",
+    "AddNewGarageValidation": "لا يمكن اضافة جراج جديد بسبب تخطيت عدد الجراج المسموح للاشتراك",
+    "StartDate": "البداية",
+    "EndDate": "النهاية",
+    "OrganizationNameInvoicePopUp": "إسم المنشأة",
+    "OrganizationAddressInvoicePopUp": "عنوان المنشأة",
+    "GarageHeader": "المواقف",
+    "CustomerPackageHeader": "باقات العميل",
+    "CustomerVehicleHeader" : "مركبات العميل",
+    "CurrnetCapacity": "اشغال الحالي",
+    "CurrnetCapacityForCustomers": "اشغال العملاء",
+    "CurrnetCapacityEmployees": "اشغال الموظفين",
+    "CurrnetCapacityForFree": "اشغال الزوار",
+    "PackagePaymentsData": "الباقات و الفواتير",
+    "CountUsePackage": "المستخدمين",
+    "ValueOfPackage": "قيمة الباقة",
+    "ValueTotalPackage": "قيمة الباقات",
+    "Date": "الوقت"
 
   }
 }

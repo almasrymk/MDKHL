@@ -35,7 +35,7 @@
 
 
 		</MudItem>
-
+		<div class="mx-3">
 		<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
 		<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
 		<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
@@ -43,7 +43,7 @@
 		<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
 		<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
 		<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
-
+		</div>
 
 
 	</MudItem>

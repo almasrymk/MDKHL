@@ -161,7 +161,7 @@ public partial class Customer
             Label = @L[ValueOfMenue],
             Items = new List<MenuItem>
                 {
-                    new MenuItem {  MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("TotalCustomersAndTheirTransactions"))   },
+                   // new MenuItem {  MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("TotalCustomersAndTheirTransactions"))   },
 
                 }
             ,
@@ -248,7 +248,7 @@ public partial class Customer
 
         var tableData = new TableData()
         {
-            Name = "Customers",
+            Name = L[ "Customers"],
             ShowHeader = true
         };
 
@@ -409,29 +409,6 @@ public partial class Customer
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
     }
-
-    public async Task HandleSelectReportAsync(string selectedValue)
-    {
-        try
-        {
-
-            ValueOfMenue = selectedValue;
-
-            if (currrentTenant != null)
-                TenantId = currrentTenant.Id;
-            var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus.Customer, TenantId);
-            var Data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
-
-            await DownloadExcel(Data,Data.Name);
-        }
-        catch (Exception ex)
-        {
-            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
-                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
-        }
-       
-    }
-
     public async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);

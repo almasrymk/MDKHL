@@ -168,7 +168,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.SubscribersInPackages, o => o.MapFrom(s => s.CustomerPackages.Count))
         .ForMember(d => d.Status, o => o.MapFrom(s => s.Status));
         
-        CreateMap<CreateUpdatePackageDto, Package>();
+        CreateMap<CreateUpdatePackageDto, Package>()
+            .ForMember(dest => dest.DectivationDate , opt => opt.MapFrom (src => src.DeactivationDate));
            
 
 

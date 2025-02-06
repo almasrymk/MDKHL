@@ -212,7 +212,7 @@ public partial class Package
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Packages",
+            Name =L["Packages"],
             ShowHeader = true
         };
 
@@ -311,7 +311,7 @@ public partial class Package
             DurationOfPackage = packageDto.DurationOfPackage,
             Status = packageDto.Status,
             ActivationDate = packageDto.ActivationDate,
-            DeactivationDate = packageDto.ActivationDate,
+            DeactivationDate = packageDto.DectivationDate,
 
 
         };

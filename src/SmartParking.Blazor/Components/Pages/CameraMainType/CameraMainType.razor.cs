@@ -119,7 +119,7 @@ public partial class CameraMainType
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Camera Main Type",
+            Name = L["Cameramaintypes"],
             ShowHeader = true
         };
 

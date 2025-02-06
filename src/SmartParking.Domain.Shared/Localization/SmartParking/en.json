@@ -629,7 +629,36 @@
     "InRange": "Within Specific Range",
     "Ok": "Ok",
     "Cashier No": "Cashier No",
-    "Range": "Range"
+    "Range": "Range",
+    "Subscription": "Subscription",
+    "Interval": "",
+    "TotalPreVAT": "Total Pre VAT",
+    "TotalIncludeVAT": "Total Include VAT",
+    "SimplifiedTaxInvoice": "Simplified Tax Invoice",
+    "HeaderVatReceiptPayment": "This is the receipt for payment of",
+    "Hours": "Hours",
+    "AddNewGarageValidation": "cannot add new garage because exceed available garage for subscription",
+    "StartDate": "Start Date",
+    "EndDate": "End Date",
+    "OrganizationNameInvoicePopUp": "Organization Name",
+    "OrganizationAddressInvoicePopUp": "Organization Address",
+    "GarageHeader": "Garages",
+    "CustomerPackageHeader": "Customer Packages",
+    "CustomerVehicleHeader": "Customer Vehicles",
+    "CurrnetCapacity": "Capacity",
+    "CurrnetCapacityForCustomers": "Capacity Customers",
+    "CurrnetCapacityEmployees": "Capacity Employees",
+    "CurrnetCapacityForFree": "Capacity Free",
+    "PackagePaymentsData": "Package Payments",
+    "CountUsePackage": "Use Package",
+    "ValueOfPackage": "Package Value",
+    "ValueTotalPackage": "Total Value",
+    "Date": "Date"
+
+
+
+
+
 
 
 

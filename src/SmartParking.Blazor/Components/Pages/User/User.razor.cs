@@ -210,7 +210,7 @@ public partial class User
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Users",
+            Name = L["Users"],
             ShowHeader = true
         };
 

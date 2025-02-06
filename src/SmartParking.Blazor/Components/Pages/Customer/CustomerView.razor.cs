@@ -22,6 +22,7 @@ using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
+using SmartParking.Entities.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -59,7 +60,7 @@ public partial class CustomerView
             PhoneNumber = customer.MobileNumber,
             NationalId = customer.NationalId,
             UserName = customer.UserName,
-            CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), customer.CustomerCategory)
+
         };
     }
     public void CancelView()
