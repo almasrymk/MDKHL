@@ -33,11 +33,14 @@
                         </div>
                         @if (ClickFilter)
                         {
+                            @if (ClickFilter)
+{
                             <MudItem xl="2" Class="d-flex align-center gap-2">
-                                <MudButton Class="clear-btn" Variant="Variant.Outlined" OnClick="CloseFilter">@L["Cancel"]</MudButton>
-                                <MudButton Class="apply-filter-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
+                                 <MudButton Class="clear-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="CloseFilter">@L["Cancel"]</MudButton>
+                                 <MudButton Class="apply-filter-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
+                             </MudItem>
+}
 
-                            </MudItem>
                         }
                     }
                     
