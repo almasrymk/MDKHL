@@ -44,7 +44,7 @@
                             For="@(() => TotalHours)"
                             Immediate="true"
                             Variant="Variant.Text"
-                            Label="@L["TotalHours"]"
+                            Label="@($"{L["TotalHours"]} ({L["Hours"]})")"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
@@ -52,7 +52,7 @@
                             For="@(() => InvoicePrice)"
                             Immediate="true"
                             Variant="Variant.Text"
-                            Label="@L["InvoicePrice"]"
+                            Label="@($"{L["InvoicePrice"]} ({L["SAR"]})")"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
@@ -128,7 +128,7 @@
 
                     </MudGrid>
 
-                    <MudItem class="d-flex justify-content-between mt-auto">
+                    <MudItem class="d-flex justify-content-end mt-auto">
                         <MudButton OnClick="@Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
                     </MudItem>
                 </MudForm>

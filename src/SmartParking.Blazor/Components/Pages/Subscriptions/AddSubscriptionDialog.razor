@@ -77,7 +77,7 @@
                                           For="@(() => input.SubscriptionPrice)"
                                           Immediate="true"
                                           Placeholder=@L["Type Here"]
-                                          Label="@L["SubscriptionPrice"]"
+                                          Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")"
                                           InputType="InputType.Text"
                                           Required="true" 
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />

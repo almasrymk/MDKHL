@@ -92,11 +92,11 @@
                 {
                     <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
                 }
-               <MudNavGroup Icon="@Icons.Material.Filled.Report" Title="@L["Reports"]">
-                   <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"] @L["Reports"]</MudNavLink>
-                   <MudNavLink Href="/vehiclereport" Icon="@Icons.Material.Filled.CarRental">@L["Vehicles"] @L["Reports"]</MudNavLink>
-                   <MudNavLink Href="/specificactorreport" Icon="@Icons.Material.Filled.PersonPin">@L["User"] @L["Reports"]</MudNavLink>
-                   <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Backpack">@L["Packages"] @L["Reports"]</MudNavLink>
+               <MudNavGroup Icon="@Icons.Material.Filled.LibraryBooks" Title="@L["Reports"]">
+                   <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"] </MudNavLink>
+                   <MudNavLink Href="/vehiclereport" Icon="@Icons.Material.Filled.CarRental">@L["Vehicles"] </MudNavLink>
+                   <MudNavLink Href="/specificactorreport" Icon="@Icons.Material.Filled.PersonPin">@L["User"] </MudNavLink>
+                    <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Backpack">@L["PackageReports"] </MudNavLink>
                </MudNavGroup>
                 
                @if (currenttenant.Id == null)

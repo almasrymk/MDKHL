@@ -185,18 +185,21 @@
                         <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
                     </MudMenu>
                 </MudItem>
-                @if (CultureInfo.CurrentCulture.Name == "en")               
+                @if (Series != null && Series.Any(s => s.Data != null && s.Data.Any(d => d > 0))) 
                 {
-                    <MudItem Style="margin-left: 32px;font-size: 12px; margin-bottom: 4px;">
-                    @L["SAR"]
-                </MudItem>
-                }
-                else
-                {
-                    <MudItem Style="text-align:left ; font-size: 12px; margin-bottom: 4px;">
-                        @L["SAR"]
-                    </MudItem>
+                  @if (CultureInfo.CurrentCulture.Name == "en")               
+                  {
+                      <MudItem Style="margin-left: 32px;font-size: 12px; margin-bottom: 4px;">
+                      @L["SAR"]
+                      </MudItem>
+                  }
+                  else
+                  {
+                      <MudItem Style="text-align:left ; font-size: 12px; margin-bottom: 4px;">
+                          @L["SAR"]
+                      </MudItem>
 
+                  }
                 }
                 <MudChart ChartType="ChartType.Bar"
                           ChartSeries="@Series"
