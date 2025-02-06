@@ -40,7 +40,7 @@ partial class BeneficiariesReport
     {
 
         
-        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) || await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT) || CurrentTenant.Id is null)
+        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) || await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
