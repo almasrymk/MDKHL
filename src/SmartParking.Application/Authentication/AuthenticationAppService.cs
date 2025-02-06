@@ -120,7 +120,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         return new UserDataDto
         {
-            FullName = user.UserName,
+            FullName = user.Name,
             Email = user.Email,
             Phone = user.PhoneNumber,
             Image = user.GetProperty<string>("Image"),
@@ -163,7 +163,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         {
             return Result<UserDataDto>.Success(new UserDataDto
             {
-                FullName = user.UserName,
+                FullName = user.Name,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
                 Image = $"{user.GetProperty<string>("Image")}",
