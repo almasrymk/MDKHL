@@ -31,7 +31,7 @@ public partial class CustomerPackage
     }
     protected async override Task OnInitializedAsync()
     {
-        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager))
+        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);

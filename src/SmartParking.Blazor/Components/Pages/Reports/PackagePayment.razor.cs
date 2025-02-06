@@ -26,7 +26,7 @@ public partial class PackagePayment
     }
     protected async override Task OnInitializedAsync()
     {
-        if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement))
+        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
