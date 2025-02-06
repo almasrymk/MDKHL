@@ -15,8 +15,7 @@
 @inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
 <div>
-    <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" SortMode="SortMode.Single" Filterable="true"
-                 >
+    <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" SortMode="SortMode.Single" Filterable="true">
         <ToolBarContent>
             <div class="d-flex flex-column w-100">
                 <div class="w-100 d-flex align-center">
@@ -25,7 +24,7 @@
                         <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search"]" Adornment="Adornment.End" Immediate="true"
                                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
                     }
-                    
+
                     @if (OnFiltering.HasDelegate && ShowFiltering)
                     {
                         <div Class="ms-2">
@@ -43,9 +42,9 @@
 
                         }
                     }
-                    
+
                     <MudItem>
-                        @if (ColumnsFilterApply.Count > 0 )
+                        @if (ColumnsFilterApply.Count > 0)
                         {
                             <MudGrid Justify="Justify.SpaceBetween" Class=" align-center ">
 
@@ -69,31 +68,49 @@
                     {
                         <MudItem>
                             <MudMenu Class="me-3" Label="@L["Export"]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
-                               
+
                                 <MudMenuItem OnClick="ExportToPDF">@L["PDF"] </MudMenuItem>
                                 <MudMenuItem OnClick="ExportToCSV">@L["CSV"]</MudMenuItem>
                                 <MudMenuItem OnClick="ExportToExcel">@L["Excel"]</MudMenuItem>
                             </MudMenu>
                         </MudItem>
-                
-                    }     
-                    
+
+                    }
+
                     @if (ShowMenue)
                     {
                         @foreach (var menu in Menus)
                         {
-                            <MudMenu Label="@L[@menu.Name]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
-                                @foreach (var item in menu.Items)
-                                {
-                                    if(!item.IsShow)
-                                        continue;
-                                     <MudMenuItem OnClick="@(()=> HandleMunue(@item.Label,@item.OnClick,menu.IsExport))">@L[@item.Label]</MudMenuItem>
-                                }
-                            </MudMenu>
+                            @if (@menu.IsMenueColumnVisible)
+                            {
+                                <MudMenu Dense Label="@L[@menu.Name]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
+                                    @foreach (var item in menu.Items)
+                                    {
+                                        <MudMenuItem OnClick="@(()=> HandleMunueColumnVisibility(@item.Label,@item.OnClick))">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                                <span>@item.Label</span>
+                                                <MudCheckBox T="bool" @bind-Value="@Data.Columns.FirstOrDefault(c => c.DisplayName == @item.Label).IsColumnVisible" />
+                                            </div>
+                                        </MudMenuItem>
+                                    }
+                                </MudMenu>
+
+                            }
+                            else if (!@menu.IsMenueColumnVisible)
+                            {
+                                <MudMenu Label="@L[@menu.Name]" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Class="me-3">
+                                    @foreach (var item in menu.Items)
+                                    {
+                                        @if (!item.IsShow)
+                                            continue;
+                                        <MudMenuItem OnClick="@(()=> HandleMunue(@item.Label,@item.OnClick,menu.IsExport))">@L[@item.Label]</MudMenuItem>
+                                    }
+                                </MudMenu>
+                            }
                         }
-                     
-                    }                   
-                    
+
+                    }
+
                     @if (OnAdd.HasDelegate && ShowAdd)
                     {
                         <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(()=>OnAdd.InvokeAsync())">
@@ -101,7 +118,7 @@
                             <MudIcon Icon="@Icons.Material.Filled.AddCircleOutline" Size="MudBlazor.Size.Small" Class="ms-1" />
                         </MudButton>
                     }
-                   
+
 
                 </div>
                 <div class="mt-3">
@@ -112,25 +129,25 @@
                             <MudItem sm="12" Class="d-flex flex-row flex-nowrap align-end">
                                 <MudItem>
                                     @L["Select Column"]:
-                                    <MudSelect  Variant="Variant.Outlined" T="string" ValueChanged="OnSelectColumn"  Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                    <MudSelect Variant="Variant.Outlined" T="string" ValueChanged="OnSelectColumn" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                                         @foreach (var column in Data.Columns)
                                         {
                                             @if (column.IsFilterable)
                                             {
-                                               
+
                                                 <MudSelectItem Value="@column.PropertyName">@column.DisplayName</MudSelectItem>
-                                                
+
                                             }
 
                                         }
                                     </MudSelect>
                                 </MudItem>
                                 @if (!SelectedColumn.IsNullOrEmpty() && IsShowValue)
-                                
+
                                 {
                                     <MudItem>
                                         @L["Operator"]:
-                                        <MudSelect  Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                        <MudSelect Clearable="true" Variant="Variant.Outlined" @bind-Value="@SelectOperator" Margin="MudBlazor.Margin.Dense" Placeholder="@L["Colmn name"]" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                                             @if (CultureInfo.CurrentCulture.Name == "en")
                                             {
                                                 @if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Text)
@@ -154,7 +171,7 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
-                                               
+
                                             }
                                             else
                                             {
@@ -179,12 +196,12 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
-                                                
+
                                             }
                                         </MudSelect>
                                     </MudItem>
                                 }
-                            @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date))
+                                @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date))
                                 {
                                     if (!IsShowValue)
                                     {
@@ -204,7 +221,7 @@
                                             <MudTextField @bind-Value="FilterValue" Placeholder="@L["Value"]" Variant="Variant.Outlined" Margin="MudBlazor.Margin.Dense" />
                                         </MudItem>
                                     }
-                                    
+
                                 }
 
                                 @if (SelectOperator.Value != null && (SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan") && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
@@ -229,21 +246,21 @@
                             </MudItem>
 
                             <!--Buttons Filter Button -->
-                
+
                         </MudGrid>
                     }
                 </div>
             </div>
         </ToolBarContent>
         <Columns>
-           
+
 
             @foreach (var header in Data.Columns)
             {
-                @if (header.Name=="Id")
+                @if (header.Name == "Id" || !header.IsColumnVisible)
                     continue;
 
-                <TemplateColumn >
+                <TemplateColumn>
                     <HeaderTemplate>
                         @header.DisplayName
                         @if (header.IsSortable)
@@ -262,7 +279,7 @@
 
                 @if (Data.Columns.Last().DisplayName == header.DisplayName)
                 {
-                    @if ((OnClickRowView.HasDelegate && ShowView) || (OnClickCar.HasDelegate && ShowAssignCar) || (OnClickRowEdit.HasDelegate&&ShowEdit) || (OnClickRowDelete.HasDelegate&&ShowDelete) || (OnClickAssign.HasDelegate&&ShowAssign))
+                    @if ((OnClickRowView.HasDelegate && ShowView) || (OnClickCar.HasDelegate && ShowAssignCar) || (OnClickRowEdit.HasDelegate && ShowEdit) || (OnClickRowDelete.HasDelegate && ShowDelete) || (OnClickAssign.HasDelegate && ShowAssign))
                     {
                         <TemplateColumn Title="@L["Actions"]" CellClass="d-flex justify-content-start align-items-center">
                             <CellTemplate>
@@ -277,7 +294,7 @@
                                                        Class="mx-1" />
                                     }
 
-                                   @if (OnClickCar.HasDelegate && ShowAssignCar &&!context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
+                                    @if (OnClickCar.HasDelegate && ShowAssignCar && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
                                         <MudIconButton OnClick="@(e => OnClickCar.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CarRental"
@@ -295,7 +312,7 @@
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
                                     }
-                                    
+
 
                                     @if (OnClickAssign.HasDelegate && ShowAssign && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
@@ -348,7 +365,7 @@
                             </CellTemplate>
                         </TemplateColumn>
                     }
-                   
+
                 }
             }
 

@@ -1,6 +1,7 @@
 ﻿using AraibcPdfUnicodeGlyphsResharper;
 using iText.IO.Font;
 using iText.IO.Image;
+using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -15,6 +16,7 @@ using SmartParking.DataTable;
 using System;
 using System.Collections.Generic;
 using System.Data;
+
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -35,6 +37,9 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
         {
             ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
             System.Data.DataTable table = new System.Data.DataTable();
+            string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+            string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/maen.jpg");
+            string title = Data.Name;
             foreach (var columns in Data.Columns)
             {
                 if (columns.Name == "Id")
@@ -42,6 +47,30 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
 
                 table.Columns.Add(columns.DisplayName, typeof(string));
             }
+            int columnCount = table.Columns.Count; 
+
+            int leftImageStart = 1;  
+
+            int rightImageStart = columnCount;  
+
+            int titleStart = leftImageStart + 1;  
+
+            worksheet.Cells[1, leftImageStart, 2, leftImageStart].Merge = true;
+
+            worksheet.Cells[1, rightImageStart, 2, rightImageStart].Merge = true;
+
+            worksheet.Cells[2, titleStart , 2, columnCount - 1].Merge = true;
+            worksheet.Cells[2, titleStart].Value = title;
+            worksheet.Cells[2, titleStart].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            worksheet.Cells[2, titleStart].Style.Font.Size = 20;
+            worksheet.Cells[2, titleStart].Style.Font.Bold = true;
+
+
+            worksheet.Row(1).Height = 25;
+            worksheet.Row(2).Height = 30;
+            
+
+            
 
             foreach (var row in Data.Rows)
             {
@@ -54,12 +83,40 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                 table.Rows.Add(dataRow);
             }
 
-            worksheet.Cells["A1"].LoadFromDataTable(table, true);
+            worksheet.Cells["A4"].LoadFromDataTable(table, true);
+
+           
 
             worksheet.Cells.AutoFitColumns();
 
+            
+            worksheet.Cells[4, 1, 4 + table.Rows.Count, columnCount ]
+               .Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+            using (var headerRange = worksheet.Cells[4, 1, 4, columnCount])
+            {
+                headerRange.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray); 
+                headerRange.Style.Font.Bold = true;
+            }
+
+            if (File.Exists(leftImagePath))
+            {
+                var leftImage = worksheet.Drawings.AddPicture("LeftImage", new FileInfo(leftImagePath));
+                leftImage.SetPosition(0, RowOffsetPixels: 5, leftImageStart - 1, 0); // Position at column 1
+                leftImage.SetSize(PixelWidth: (int)((worksheet.Column(1).Width * 7) + 5), 55);
+            }
+
+
+            if (File.Exists(rightImagePath))
+            {
+                var rightImage = worksheet.Drawings.AddPicture("RightImage", new FileInfo(rightImagePath));
+                rightImage.SetPosition(0, 5, rightImageStart - 1, ColumnOffsetPixels: 0); // Position at last 2 columns
+                rightImage.SetSize((int)((worksheet.Column(columnCount).Width * 7) + 5), 55);
+            }
             FileInfo excelFile = new FileInfo(pathFileName);
             package.SaveAs(excelFile);
+       
         }
     }
 
@@ -158,24 +215,18 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                         .SetFontSize(9)
                         .SetTextAlignment(TextAlignment.CENTER);
                 }
-
                 foreach (var row in Data.Rows)
                 {
-
                     foreach (var header in Data.Columns)
                     {
-
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id")
                         {
                             var txt = new Text(cellValue.ArabicWithFontGlyphsToPfd()).SetFontSize(9);
                             table.AddCell(new Cell().Add(new Paragraph(txt))).SetTextAlignment(TextAlignment.CENTER); 
                         }
-
-
                     }
-                }
-
+                }    
                 doc.Add(table);
 
                 doc.Close();
