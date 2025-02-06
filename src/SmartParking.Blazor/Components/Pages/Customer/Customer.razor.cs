@@ -88,14 +88,13 @@ public partial class Customer
         {
             CreatePackageMenue(),
            await CreateOrganizationMenue(),
-           CreateReportsMenue()
 
         };
 
         var MenuDatasOrganization = new List<MudMenuData>
         {
             CreatePackageMenue(),
-            CreateReportsMenue()
+            
         };
 
         if (currrentTenant.Id is null)
@@ -153,22 +152,7 @@ public partial class Customer
         };
     }
 
-    private MudMenuData CreateReportsMenue()
-    {
-        return new MudMenuData
-        {
-            Name = "Reports",
-            Label = @L[ValueOfMenue],
-            Items = new List<MenuItem>
-                {
-                   // new MenuItem {  MenueName = "Reports", Label = @L["TotalCustomersAndTheirTransactions"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectReportAsync("TotalCustomersAndTheirTransactions"))   },
-
-                }
-            ,
-            IsExport = true
-        };
-    }
-
+  
     private List<MudMenuData> CreateoragnizationMenue()
     {
         return new List<MudMenuData>
