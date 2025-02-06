@@ -9,7 +9,7 @@
 @inject ICurrentTenant CurrentTenant
 @inject IAuthorizationService AuthorizationService
 @inject NavigationManager Navigation
-<PageTitle>@L["Customers"] @L["Reports"]</PageTitle>
-<MudText Typo="Typo.h5" Class="mb-2">@L["Customers"] @L["Reports"]</MudText>
+<PageTitle>@L["BeneficiariesReports"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["BeneficiariesReports"]</MudText>
 
-<SPDataGrid PageName=@($"{@L["Customers"]} {@L["Reports"]}") ShowMenue="true" Menus="MenuDatas"  Data="@itemData" OnPageChanged="FetchData" ShowFiltering="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
+<SPDataGrid PageName=@($"{@L["BeneficiariesReports"]}") ShowMenue="true" Menus="MenuDatas"  Data="@itemData" OnPageChanged="FetchData" ShowFiltering="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
