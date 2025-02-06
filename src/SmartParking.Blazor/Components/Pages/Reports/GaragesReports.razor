@@ -8,7 +8,7 @@
 @inject IAnalysisAppService AnalysisAppService
 @inject ICurrentTenant CurrentTenant
 
-<PageTitle>@L["Garages"] @L["Reports"]</PageTitle>
-<MudText Typo="Typo.h5" Class="mb-2">@L["Garages"] @L["Reports"]</MudText>
+<PageTitle>@L["GaragesReports"] </PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["GaragesReports"]</MudText>
 
-<SPDataGrid PageName=@($"{@L["Garages"]} {@L["Reports"]}") ShowMenue="true" Data="@itemData" ShowFiltering="true" OnPageChanged="FetchData" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
+<SPDataGrid PageName=@($"{@L["GaragesReports"]}") ShowMenue="true" Data="@itemData" ShowFiltering="true" OnPageChanged="FetchData" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>

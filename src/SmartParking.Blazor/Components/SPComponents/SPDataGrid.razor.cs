@@ -21,6 +21,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using SmartParking.Utilities;
+using YamlDotNet.Core.Tokens;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -72,7 +73,7 @@ public partial class SPDataGrid
     private string SelectedColumn { get; set; }
 
     private bool IsShowValue  { get; set; } = true;
-
+    private ColumnDef SelectedColumnDef { get; set; } = new ColumnDef();
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
     private List<KeyValuePair<string, string>> SelectProprtyName { get; set; } = new List<KeyValuePair<string, string>>();
 
@@ -365,6 +366,13 @@ public partial class SPDataGrid
         if (!isExport)
             await dataGrid.ReloadServerData();
 
+    }
+    public async Task HandleMunueColumnVisibility(string columnSelect, EventCallback<string> action)
+    {
+
+        SelectedColumnDef = Data.Columns.FirstOrDefault(c => c.DisplayName == columnSelect);
+        await action.InvokeAsync(columnSelect);
+        await dataGrid.ReloadServerData();
     }
 }
 
