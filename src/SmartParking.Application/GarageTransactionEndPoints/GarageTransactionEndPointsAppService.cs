@@ -827,12 +827,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(result.Item1, customer);
         Customer exsitCustomer = await GetCustomer(customer);
-        return (exsitCustomer) switch
-        {
-            (null) => await CalculateInvoiceForCustomerWithoutPackage(result.Item2.AccurateTime.Value, totalHours, exsitCustomer, result.Item1, CustomerCategoryStatus.Customer),
-            (not null) => await CalculateInvoiceForCustomerPackage(result.Item2.AccurateTime.Value, org, exsitCustomer, packageDto, result.Item1, totalHours, packageDto.CustomerCategory),
-        };
 
+
+        return (packageDto, packageDto?.Package) switch
+        {
+            (null, _) or (not null, null) => await CalculateInvoiceForCustomerWithoutPackage(result.Item2.AccurateTime.Value, totalHours, exsitCustomer, result.Item1, CustomerCategoryStatus.Customer),
+            (not null, not null) => await CalculateInvoiceForCustomerPackage(result.Item2.AccurateTime.Value, org, exsitCustomer, packageDto, result.Item1, totalHours, packageDto.CustomerCategory),
+        };
     }
 }
 
