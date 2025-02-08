@@ -744,8 +744,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int garageTransactionId)
     {
+        return await CheckoutSequence(garageTransactionId);
+    }
+
+    private async Task<Result<InvoiceDto>> CheckoutSequence(int garageTransactionId)
+    {
         var result = await InitiateGarageTransaction(garageTransactionId);
-        if (result.Item2.CheckoutMobile != null)
+        var lstCheckout = result.Item2.CheckoutMobile.HasValue? result.Item2.CheckoutMobile.Value:DateTime.MinValue;
+        if (lstCheckout != DateTime.MinValue && lstCheckout.AddMinutes(result.Item2.Organization.Graceperiod) >= DateTime.Now)
         {
             throw new Exception("Transaction Already Checked-Out");
         }
@@ -755,6 +761,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return await SaveTransactionWithInvoice(invoice, result.Item1);
     }
 
+    public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
+    {
+        return await CheckoutSequence(garageTransactionId);
+    }
 
 
     private async Task<(CreateUpdateGarageTransactionDto,GarageTransaction)> InitiateGarageTransaction(int garageTransactionId)
@@ -777,19 +787,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
        };
         return (exitGarageTransaction, entryGarageTransaction);
     }
-    public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
-    {
-        var result = await InitiateGarageTransaction(garageTransactionId);
-        if (result.Item2.CheckoutMobile != null)
-        {
-            throw new Exception("Transaction Already Checked-Out");
-        }
-        var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
-        await UpdateEntryTransactionCheckouFromMobile(result.Item2);
-        var newinvoice = await SaveTransactionWithInvoice(invoice, result.Item1);
-        return newinvoice;
 
-    }
 
     private async Task UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction)
     {
