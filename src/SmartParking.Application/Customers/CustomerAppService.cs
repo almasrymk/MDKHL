@@ -271,12 +271,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 NationalId = c.NationalId,
                 _packageEnglishNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
-                               !customerCategory.HasValue || _.CustomerCategory == customerCategory)
+                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageEnglishName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
                 _packageArabicNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
-                               !customerCategory.HasValue || _.CustomerCategory == customerCategory)
+                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageArabicName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
                 OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)

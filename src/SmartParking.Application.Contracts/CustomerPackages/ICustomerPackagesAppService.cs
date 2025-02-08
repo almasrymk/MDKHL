@@ -19,7 +19,7 @@ namespace SmartParking.CustomerPackages
         CreateUpdateCustomerPackageDto
         >
     {
-        Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int orgID, string PlateNumber);
+        Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int orgID, string PlateNumber, DateTime ExitTransaction);
         Task<Result<List<PackageDto>>> GetPackageByCustomer();
         Task<Result> AssignPackageToCustomerAsync(int packageId,string ArabicPlateNumber,string EnglishPlateNumber);
 
