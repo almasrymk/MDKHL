@@ -69,21 +69,21 @@ public class CustomerPackagesAppService:
         
     }
     ///<inheritdoc/>
-    public  async Task<Result<List<PackageDto>>> GetPackageByCustomer()
+    public  async Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query = await _packageRepository.GetQueryableAsync();
-            query = query.Where(x => x.CustomerPackages.Any(c => c.Customer.IdentityUserId == CurrentUser.Id && c.PackageId != null));
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.Customer.IdentityUserId == CurrentUser.Id && c.PackageId != null);
 
             var result = await AsyncExecuter.ToListAsync(query);
 
             if (result.Count == 0)
             {
-                return Result<List<PackageDto>>.NotFound();
+                return Result<List<CustomerPackageDto>>.NotFound();
             }
-            var packageMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(result);
-            return Result<List<PackageDto>>.Success(packageMap);
+            var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
+            return Result<List<CustomerPackageDto>>.Success(packageMap);
         }
     }
 
@@ -91,8 +91,6 @@ public class CustomerPackagesAppService:
     [RemoteService(IsEnabled =false)]
     public  async Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
-        try
-        {
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 var customer = await GetCustomerAsync();
@@ -127,13 +125,6 @@ public class CustomerPackagesAppService:
 
                 return await InsertCustomerPackageAsync(customerPackage);
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-
-
     }
 
     private async Task<Customer> GetCustomerAsync()
@@ -143,7 +134,8 @@ public class CustomerPackagesAppService:
 
     private async Task<Package> GetPackageAsync(int packageId)
     {
-        return await _packageRepository.GetAsync(p => p.Id == packageId);
+            return await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
+       
     }
 
     private async Task<bool> CustomerPackageExistsAsync(int packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
@@ -265,8 +257,35 @@ public class CustomerPackagesAppService:
 
         if (customerPackage is null)
         {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
+            throw new EntityNotFoundException(typeof(CustomerPackage), id);
         }
+
+        int RelatedPackages = await CheckCountOfCustomerPackage(customerPackage);
+
+        if (RelatedPackages > 1)
+        {
+            await _repository.HardDeleteAsync(customerPackage);
+        }
+        else
+        {
+            ClearPackageDetails(customerPackage);
+
+            await _repository.UpdateAsync(customerPackage, true);
+        }
+    }
+
+    private async Task<int> CheckCountOfCustomerPackage(CustomerPackage? customerPackage)
+    {
+        var query = await _repository.GetQueryableAsync();
+        int RelatedPackages = await query.CountAsync(p =>
+            p.OrganizationId == customerPackage.OrganizationId &&
+            p.CustomerId == customerPackage.CustomerId &&
+            p.PackageId != null);
+        return RelatedPackages;
+    }
+
+    private void ClearPackageDetails(CustomerPackage customerPackage)
+    {
         customerPackage.PackageArabicName = null;
         customerPackage.PackageEnglishName = null;
         customerPackage.PackageId = null;
@@ -277,7 +296,6 @@ public class CustomerPackagesAppService:
         customerPackage.DectivationDateOfPackage = null;
         customerPackage.DescriptionOfPackage = null;
         customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
-        await _repository.UpdateAsync(customerPackage, true);
     }
 
     public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId,PagedAndSortedResultRequestDto input)
