@@ -279,8 +279,7 @@ public class CustomerPackagesAppService:
         var query = await _repository.GetQueryableAsync();
         int RelatedPackages = await query.CountAsync(p =>
             p.OrganizationId == customerPackage.OrganizationId &&
-            p.CustomerId == customerPackage.CustomerId &&
-            p.PackageId != null);
+            p.CustomerId == customerPackage.CustomerId);
         return RelatedPackages;
     }
 
