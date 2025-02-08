@@ -27,7 +27,7 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private string zatcaInvoices = "https://zatca.mazeedit.com/api/Invoices/V1/QRCode";
     private string zatcaLogin = "https://zatca.mazeedit.com/api/Auth/Login";
-    private string openGate = "http://ibrahimia.mazeedit.com/Barrierer/Open";
+    private string openGate = "http://mdkhl.mazeedit.com/Barrierer/Open";
     private readonly ILogger<InvoiceUtilityAppService> _logger;
     private readonly IGarageTransactionsAppService GarageTransactionAppService;
     private readonly ICamerasAppService CameraAppService;
