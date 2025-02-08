@@ -208,9 +208,15 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         return (specialHours, normalHours);
     }
 
-    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime? PackageExpiryDate)
+    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto)
     {
         TimeValidation(entranceTime, exitTime);
+        entranceTime=RemoveSecondsFromTime(entranceTime.Value);
+        exitTime = RemoveSecondsFromTime(exitTime.Value);
+        packageDto.ExpiryDate = RemoveSecondsFromTime(packageDto.ExpiryDate);
+       
+
+
         if (packageDto.publishedOfPackage.Value)
         {
             return 0;
@@ -227,26 +233,26 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         {
             packageEnd = packageEnd.AddDays(1);
         }
-        DateTime minimumDate = MinDate(exitTime.Value, PackageExpiryDate.Value);
+        DateTime minimumDate = MinDate(exitTime.Value, packageDto.ExpiryDate);
         int _totalHoursOfStaying = (int)Math.Ceiling((minimumDate - entranceTime.Value).TotalHours);
         int _daysOfStaying = _totalHoursOfStaying / 24;
         _totalHoursOfStaying %= 24;
-        int _hoursOfPackage = (int)Math.Ceiling((MinDate(packageEnd, PackageExpiryDate.Value) - packageStart).TotalHours);
+        int _hoursOfPackage = (int)Math.Ceiling((MinDate(packageEnd, packageDto.ExpiryDate) - packageStart).TotalHours);
         int _hoursOutOfPackage = (24 - _hoursOfPackage) * _daysOfStaying;
         if (entranceTime.Value < packageStart)
         {
             if (minimumDate <= packageStart)
             {
-                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(minimumDate, entranceTime.Value) + HoursOfStayingOutsidePackageExpiration(PackageExpiryDate.Value, exitTime.Value) : 0);
+                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(minimumDate, entranceTime.Value) + HoursOfStayingOutsidePackageExpiration(packageDto.ExpiryDate, exitTime.Value) : 0);
             }
             else if (minimumDate > packageStart && minimumDate < packageEnd)
             {
-                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(packageStart, entranceTime.Value) + HoursOfStayingOutsidePackageExpiration(PackageExpiryDate.Value, exitTime.Value) : 0);
+                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(packageStart, entranceTime.Value) + HoursOfStayingOutsidePackageExpiration(packageDto.ExpiryDate, exitTime.Value) : 0);
 
             }
             else
             {
-                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(packageStart, entranceTime.Value) + (int)Math.Ceiling((decimal)Math.Abs((packageEnd.TimeOfDay - minimumDate.TimeOfDay).TotalHours)) + HoursOfStayingOutsidePackageExpiration(PackageExpiryDate.Value, exitTime.Value) : 0);
+                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(packageStart, entranceTime.Value) + CalculatesHoursBetweenTwoTimes(packageEnd, minimumDate) + HoursOfStayingOutsidePackageExpiration(packageDto.ExpiryDate, exitTime.Value) : 0);
 
             }
         }
@@ -258,15 +264,23 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
             }
             else
             {
-                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(minimumDate, packageEnd) + HoursOfStayingOutsidePackageExpiration(PackageExpiryDate.Value, exitTime.Value) : 0);
+                _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(minimumDate, packageEnd) + HoursOfStayingOutsidePackageExpiration(packageDto.ExpiryDate, exitTime.Value) : 0);
             }
 
         }
         else if (entranceTime.Value > packageEnd)
         {
-            _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(minimumDate, entranceTime.Value) + HoursOfStayingOutsidePackageExpiration(PackageExpiryDate.Value, exitTime.Value) : 0);
+            _hoursOutOfPackage += (_totalHoursOfStaying > 0 ? CalculatesHoursBetweenTwoTimes(minimumDate, entranceTime.Value) + HoursOfStayingOutsidePackageExpiration(packageDto.ExpiryDate, exitTime.Value) : 0);
         }
         return _hoursOutOfPackage;
+    }
+
+    private static DateTime RemoveSecondsFromTime(DateTime myDate)
+    {
+        myDate = myDate.AddSeconds(-myDate.Second);
+        myDate = myDate.AddMilliseconds(-myDate.Millisecond);
+        myDate = myDate.AddMicroseconds(-myDate.Microsecond);
+        return myDate;
     }
 
     private static void TimeValidation(DateTime? entranceTime, DateTime? exitTime)
@@ -275,11 +289,12 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         {
             throw new BusinessException("Leaving date can't be befor entrance date");
         }
+
     }
 
     private static int CalculatesHoursBetweenTwoTimes(DateTime PackageStartTime, DateTime PackageEndTime)
     {
-        return ((Math.Abs((PackageEndTime - PackageStartTime).Hours) + ((Math.Abs((PackageEndTime - PackageStartTime).Minutes)) > 0 ? 1 : 0)));
+        return (int)Math.Ceiling((decimal)Math.Abs((PackageEndTime.TimeOfDay - PackageStartTime.TimeOfDay).TotalHours));
     }
     private int HoursOfStayingOutsidePackageExpiration(DateTime ExpiryDate, DateTime ExitTime)
     {
