@@ -154,7 +154,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         CustomerPackageDto packg = null;
         if (Id != null)
         {
-            packg = await CheckActivePackageForPlateNumber(input.PlateNumber, GarageTransaction.OrganizationID);
+            packg = await CheckActivePackageForPlateNumber(input.PlateNumber, GarageTransaction.OrganizationID,input.AccurateTime.Value);
         }
         return packg is not null ? packg.CustomerCategory : CustomerCategoryStatus.Customer;
     }
@@ -349,7 +349,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
           return await GenrateInvoiceNumberAndInitiateInvoice(EntranceTime, customer, GarageTransaction, totalHours, 0, false);
 
         }
-        var packageDto = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID);
+        var packageDto = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID,GarageTransaction.AccurateTime.Value);
 
         return packageDto switch
         {
@@ -499,7 +499,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         CustomerPackageDto package = null;
         if (customer != null)
         {
-            package = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID);
+            package = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID,GarageTransaction.AccurateTime.Value);
             GarageTransaction.CustomerCategory = package is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), package.Package == null ? CustomerCategoryStatus.Customer.ToString() : package.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
 
         }
@@ -606,9 +606,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return CustomerId.ToString();
         }
     }
-    private async Task<CustomerPackageDto> CheckActivePackageForPlateNumber(string PlateNumber, int organizationId)
+    private async Task<CustomerPackageDto> CheckActivePackageForPlateNumber(string PlateNumber, int organizationId,DateTime ExitTransaction)
     {
-        var customerPackage = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(organizationId, PlateNumber);
+        var customerPackage = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(organizationId, PlateNumber, ExitTransaction);
         if (customerPackage == null)
         {
             _logger.LogError($"{DateTime.Now} ====>  customerPackage not found");

@@ -124,7 +124,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
         Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
 
-        if (subscription == null || subscription.NumberOfUsers < usersActive.Count + 1)
+        if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
         }
