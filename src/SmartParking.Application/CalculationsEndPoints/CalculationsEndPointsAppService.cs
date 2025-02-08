@@ -217,11 +217,11 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         }
         DateTime packageStart = entranceTime.Value.Date
          .AddHours(packageDto.PublishFromOfPackage.Value.Hour)
-         .AddMinutes(packageDto.Package.PublishFrom.Minute);
+         .AddMinutes(packageDto.PublishFromOfPackage.Value.Minute);
 
         DateTime packageEnd = entranceTime.Value.Date
            .AddHours(packageDto.PublishToOfPackage.Value.Hour)
-           .AddMinutes(packageDto.Package.PublishTo.Minute);
+           .AddMinutes(packageDto.PublishToOfPackage.Value.Minute);
 
         if (packageEnd < packageStart)
         {

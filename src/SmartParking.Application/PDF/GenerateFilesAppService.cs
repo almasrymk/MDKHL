@@ -103,16 +103,16 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
             if (File.Exists(leftImagePath))
             {
                 var leftImage = worksheet.Drawings.AddPicture("LeftImage", new FileInfo(leftImagePath));
-                leftImage.SetPosition(0, RowOffsetPixels: 5, leftImageStart - 1, 0); // Position at column 1
-                leftImage.SetSize(PixelWidth: (int)((worksheet.Column(1).Width * 7) + 5), 55);
+                leftImage.SetPosition(0, RowOffsetPixels: 0, leftImageStart - 1, 0); // Position at column 1
+                leftImage.SetSize(PixelWidth: (int)((worksheet.Column(1).Width * 7)+3) , (int)(55 * 1.33));
             }
 
 
             if (File.Exists(rightImagePath))
             {
                 var rightImage = worksheet.Drawings.AddPicture("RightImage", new FileInfo(rightImagePath));
-                rightImage.SetPosition(0, 5, rightImageStart - 1, ColumnOffsetPixels: 0); // Position at last 2 columns
-                rightImage.SetSize((int)((worksheet.Column(columnCount).Width * 7) + 5), 55);
+                rightImage.SetPosition(0, 0, rightImageStart - 1, ColumnOffsetPixels: 0); // Position at last 2 columns
+                rightImage.SetSize((int)((worksheet.Column(columnCount).Width * 7) + 3) , (int)(55 * 1.33));
             }
             FileInfo excelFile = new FileInfo(pathFileName);
             package.SaveAs(excelFile);
