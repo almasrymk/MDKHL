@@ -24,7 +24,10 @@
 <MudGrid>
 
 	<MudItem sm="7" Class="d-flex flex-column">
-		<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
+		<MudItem sm="12" Class="d-flex flex-row justify-content-between">
+			<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["LastInvoice"]</MudText>
+			<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Inherit" OnClick="Refresh"><MudIcon Icon="@Icons.Material.Filled.Refresh" /></MudButton>
+		</MudItem>
 
 		<MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center">
 			<CarImageDetails Date="@(Invoice.EntranceTime.HasValue ?Invoice.EntranceTime.Value : DateTime.Now)" Image="@Invoice?.EntryTransactionImage" Title="@L["EntranceImage"]" />
@@ -115,7 +118,10 @@
 		SnackBar.ShowSnackbar(Snackbar, @L["Done"] + " " + @L["Delete"] + " " + @L["Invoice"], MudBlazor.Severity.Success);
 		await Task.Delay(1000);
 		Navigation.Refresh(true);
+	}
 
+	private void Refresh(){
+		Navigation.Refresh(true);
 
 	}
 }
