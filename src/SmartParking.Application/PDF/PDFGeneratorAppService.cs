@@ -458,7 +458,7 @@ img[style*='width:120px;'] {
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(15).Add(organization.TaxIdentificationNumber);
 
-        Paragraph RecieptPayemntDetails = new Paragraph($"This is the receipt for payment of This is the receipt for payment of {invoice.InvoicePrice} SAR")
+        Paragraph RecieptPayemntDetails = new Paragraph($"This is the receipt for payment of {invoice.InvoicePrice} SAR")
             .AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.LEFT)
          .SetFontSize(15);
