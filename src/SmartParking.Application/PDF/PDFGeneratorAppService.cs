@@ -429,25 +429,31 @@ img[style*='width:120px;'] {
           AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(20);
-        Table tableimages = new Table(2).UseAllAvailableWidth();
+        Table tableimages = new Table(3).UseAllAvailableWidth();
 
         iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
             .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
             .SetWidth(120);
-        
         iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
             .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
             .SetWidth(120);
+      
 
         tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
             .SetBorder(Border.NO_BORDER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT)); 
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT));
 
         tableimages.AddCell(new Cell().Add(OrgLogo)
             .SetBorder(Border.NO_BORDER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
-            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)); 
+            .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+
+        Paragraph paymentNumber = new Paragraph("Invoice Number : ")
+         .AddStyle(styleBold)
+      .SetTextAlignment(TextAlignment.CENTER)
+      .SetFontSize(15).Add(payment.PaymentNumber);
 
         Paragraph subheader = new Paragraph(" * **Simplified tax invoice***")
          .SetTextAlignment(TextAlignment.CENTER)
@@ -460,81 +466,85 @@ img[style*='width:120px;'] {
 
         Paragraph RecieptPayemntDetails = new Paragraph($"This is the receipt for payment of {invoice.InvoicePrice} SAR")
             .AddStyle(styleBold)
-         .SetTextAlignment(TextAlignment.LEFT)
+         .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(15);
-        Table table = new Table(2).SetWidth(UnitValue.CreatePercentValue(100));
+        Table table = new Table(5).SetWidth(UnitValue.CreatePercentValue(100));
+
+        
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Payment Number:")));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{payment.PaymentNumber}")));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Hotel Name:")));
         table.AddCell(new Cell(1, 1)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .SetBorder(Border.NO_BORDER)
-            .Add(new Paragraph($"{invoice.OrganizationArabicName}")));
+            .Add(new Paragraph($"{invoice.OrganizationEnglishName}")));
+        table.AddCell(new Cell(1,1).Add(new Paragraph(" "))).SetBorder(Border.NO_BORDER);
+        table.AddCell(new Cell(1, 1)
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.LEFT)
+            .Add(new Paragraph("Organization Address:")));
+        table.AddCell(new Cell(1, 1)
+            .SetTextAlignment(TextAlignment.RIGHT)
+            .SetBorder(Border.NO_BORDER)
+            .Add(new Paragraph($"{invoice.OrganizationAddress}")));
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Customer Name:")));
         table.AddCell(new Cell(1, 1)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .SetBorder(Border.NO_BORDER)
             .Add(new Paragraph($"{invoice.CustomerEnName ?? "Unkown"}")));
+        table.AddCell(new Cell(1,1).Add(new Paragraph(" "))).SetBorder(Border.NO_BORDER);
+
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Cashier No.:")));
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph($"{invoice.GarageEnglishName}")));
 
         table.AddCell(new Cell(1, 1)
              .SetBorder(Border.NO_BORDER)
-             .SetTextAlignment(TextAlignment.CENTER)
+             .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Payment Date:")));
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph(payment.CreationTime.ToString())));
+        table.AddCell(new Cell(1,1).Add(new Paragraph(" "))).SetBorder(Border.NO_BORDER);
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Plate Number:")));
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph($"{invoice.PlateNumber}"))).SetBorder(Border.NO_BORDER);
 
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Entry Date:")));
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph($"{invoice.EntranceTime.ToString()}")));
-
+        table.AddCell(new Cell(1,1).Add(new Paragraph(" "))).SetBorder(Border.NO_BORDER);
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph("Exit Date:")))
             .AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph($"{invoice.InvoiceTime.ToString()}")));
 
 
@@ -544,7 +554,7 @@ img[style*='width:120px;'] {
             .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-        .Add(new Paragraph("Hour").SetFontSize(14).SimulateBold()));
+            .Add(new Paragraph("Subscription\n" + " Hour").SetFontSize(14).SimulateBold()));
 
 
         table1.AddCell(new Cell(1, 1)
@@ -554,9 +564,12 @@ img[style*='width:120px;'] {
             .Add(new Paragraph("Interval\n" + invoice.TotalHours + " Hour").SetFontSize(14).SimulateBold()));
 
 
-        Table table2 = new Table(2).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(25);
+        Table table2 = new Table(2).UseAllAvailableWidth().SetMarginTop(25).SetBorder(Border.NO_BORDER);
+        Table table21 = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER);
+        Table table22 = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER);
 
-        Cell textCell1 = new Cell()
+
+        Cell textCell1 = new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
             .AddStyle(styleBold)
             .SetTextAlignment(TextAlignment.LEFT)
@@ -564,7 +577,7 @@ img[style*='width:120px;'] {
             .Add(new Paragraph("Total Pre VAT: " + invoice.InvoicePrice.ToString("F2") + " SAR")
                 .SetFontSize(12));
 
-        Cell textCell2 = new Cell()
+        Cell textCell2 = new Cell(1,1)
             .SetBorder(Border.NO_BORDER)
             .AddStyle(styleBold)
             .SetTextAlignment(TextAlignment.LEFT)
@@ -572,7 +585,7 @@ img[style*='width:120px;'] {
             .Add(new Paragraph("VAT 15%: " + (Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " SAR")
                 .SetFontSize(12));
 
-        Cell textCell3 = new Cell()
+        Cell textCell3 = new Cell(1,1)
             .SetBorder(Border.NO_BORDER)
             .AddStyle(styleBold)
             .SetTextAlignment(TextAlignment.LEFT)
@@ -581,29 +594,31 @@ img[style*='width:120px;'] {
                 .SetFontSize(12));
 
         // Add text cells to the first column (stacked under each other)
-        table2.AddCell(textCell1);
-        table2.AddCell(textCell2);
-        table2.AddCell(textCell3);
+        table21.AddCell(textCell1);
+        table21.AddCell(textCell2);
+        table21.AddCell(textCell3);
 
         // Column 2: Image (Using rowspan to match height of text cells)
         iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
           .SetWidth(120);
         
-        Cell imageCell = new Cell(3, 1) 
+        Cell imageCell = new Cell(1,1) 
             .SetBorder(Border.NO_BORDER)
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .Add(QrCodeImage);
 
-        table2.AddCell(imageCell);
+        table22.AddCell(imageCell);
 
 
-
+        table2.AddCell(table21);
+        table2.AddCell(table22);
 
 
 
         document.Add(header);
+        document.Add(paymentNumber);
         document.Add(tableimages);
         document.Add(subheader);
         document.Add(Vat);
