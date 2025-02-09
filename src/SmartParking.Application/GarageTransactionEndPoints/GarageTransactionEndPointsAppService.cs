@@ -376,28 +376,49 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return true;
         }
         return false;
-
+    }
+    private async Task ChangeCategoryForEntryTransaction(GarageTransactionDto EntryTransaction)
+    {
+        var createUpdateTransactionDto = ObjectMapper.Map<GarageTransactionDto, CreateUpdateGarageTransactionDto>(EntryTransaction);
+        await _garageTransactionsAppService.UpdateAsync(EntryTransaction.Id, createUpdateTransactionDto);
+    }
+    private async Task<bool> CheckForCategoriesInTransactionsHasBeenChanged(CreateUpdateGarageTransactionDto ExitTransaction, GarageTransactionDto EntryTransaction , Garage garage)
+    {
+        if(EntryTransaction.CustomerCategory != ExitTransaction.CustomerCategory)
+        {
+            EntryTransaction.CustomerCategory = ExitTransaction.CustomerCategory;
+            await ChangeCategoryForEntryTransaction(EntryTransaction);
+            return true;
+        }
+        return false;
 
     }
     private async Task<bool> HandleCamersExit(int garageId, int organizationId, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         bool flag = false;
-        var EntranceTime = await FindEntranceTime(GarageTransaction.PlateNumber);
-        if (EntranceTime is null || EntranceTime>GarageTransaction.AccurateTime)
+        var EntryTransaction = await FindEntranceTime(GarageTransaction.PlateNumber);
+        var EntranceTime = EntryTransaction?.AccurateTime;
+
+        if (EntranceTime is null || EntranceTime > GarageTransaction.AccurateTime)
         {
             await InVailedCasesForTransacrion(GarageTransaction, EntranceTime);
             return await Task.FromResult(false);
         }
         var organization = await GetOrganization(GarageTransaction.OrganizationID);
         var customer = await CheckVehicle(GarageTransaction.PlateNumber);
-        var garage = await GetGarage(garageId);
+        var lstCategory = EntryTransaction.CustomerCategory;
         CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
-        Customer exsitCustomer =customer is not null? await GetCustomer(customer):null;
+        GarageTransaction.CustomerCategory = packageDto is null ? CustomerCategoryStatus.Customer : packageDto.CustomerCategory;
+
+        var garage = await GetGarage(garageId);
+        var _categoryHasChanged = await CheckForCategoriesInTransactionsHasBeenChanged(GarageTransaction, EntryTransaction, garage);
+        Customer exsitCustomer = customer is not null ? await GetCustomer(customer) : null;
 
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);
         if (CheckIfLoggedOutFromMobile)
         {
-            await FreeSlots(garage, packageDto is null ? null : packageDto.CustomerCategory);
+            await CheckForCategoryChangement(EntryTransaction, garage, _categoryHasChanged, lstCategory);
+
             return await CheckGracePeriodScenarios(organizationId, GarageTransaction, EntranceTime, organization, customer, garage, packageDto, exsitCustomer);
         }
 
@@ -407,21 +428,33 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             return await ExitsInFreeMinutesPeriod(GarageTransaction);
         }
-
-        //has plate number => Is Registered
-        flag = (customer) switch
+        switch (customer)
         {
-           (not null)=>    await CalculationForRegisteredCustomer(GarageTransaction, flag, EntranceTime, organization, garage, packageDto, exsitCustomer, totalHours),
-           (null)=>  await CalculationForUnRegisteredCustomer(GarageTransaction, flag, EntranceTime, garage, exsitCustomer, totalHours),
+            case not null:
+                flag = await CalculationForRegisteredCustomer(GarageTransaction, flag, EntranceTime, organization, garage, packageDto, exsitCustomer, totalHours);
+                await CheckForCategoryChangement(EntryTransaction, garage, _categoryHasChanged, lstCategory);
+                break;
+            case null:
+                await CalculationForUnRegisteredCustomer(GarageTransaction, flag, EntranceTime, garage, exsitCustomer, totalHours);
+                break;
         };
-
-        
-
         await CloseEntryTransaction(GarageTransaction.PlateNumber);
         await CurrentUnitOfWork.SaveChangesAsync();
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {flag}");
 
         return flag;
+    }
+
+    private async Task CheckForCategoryChangement(GarageTransactionDto? EntryTransacrion, Garage garage, bool _categoryHasChanged,CustomerCategoryStatus lstCategory)
+    {
+        if (_categoryHasChanged )
+        {
+            await FreeSlots(garage, lstCategory);
+        }
+        else
+        {
+            await FreeSlots(garage, EntryTransacrion.CustomerCategory);
+        }
     }
 
     private async Task<bool> CalculationForUnRegisteredCustomer(CreateUpdateGarageTransactionDto GarageTransaction, bool flag, DateTime? EntranceTime, Garage garage, Customer exsitCustomer, int totalHours)
@@ -438,7 +471,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var invoiceCreateUpdateDto = await CalculateStayingHoursForCustomer(EntranceTime.Value, GarageTransaction, exsitCustomer, organization, totalHours, packageDto);
         var resultedInvoice = await SaveTransactionWithInvoice(invoiceCreateUpdateDto, GarageTransaction);
         flag = resultedInvoice.InvoicePrice > 0 ? false : true;
-        await FreeSlots(garage, packageDto is null ? null : packageDto.CustomerCategory);
         return flag;
     }
 
@@ -507,7 +539,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (customer != null)
         {
             package = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID,GarageTransaction.AccurateTime.Value);
-            GarageTransaction.CustomerCategory = package is not null ? (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), package.Package == null ? CustomerCategoryStatus.Customer.ToString() : package.Package.CustomerCategory) : CustomerCategoryStatus.Customer;
+            GarageTransaction.CustomerCategory = package is null ? CustomerCategoryStatus.Customer : package.CustomerCategory;
 
         }
 
@@ -622,7 +654,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         return customerPackage;
     }
-    private async Task<DateTime?> FindEntranceTime(string? plateNumber)
+    private async Task<GarageTransactionDto?> FindEntranceTime(string? plateNumber)
     {
         // Get the list of transactions for the provided plate number
         using (DataFilter.Disable<IMultiTenant>())
@@ -635,7 +667,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     .OrderByDescending(gt => gt.AccurateTime) 
                     .FirstOrDefault();
 
-            return latestTransaction?.AccurateTime;
+            return ObjectMapper.Map<GarageTransaction,GarageTransactionDto>(latestTransaction);
         }
     }
     private async Task<string> FindEntranceImage(string? plateNumber)
@@ -798,6 +830,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         entryGarageTransaction.CheckoutMobile = DateTime.Now;
         entryGarageTransaction.IsPending = true;
+        entryGarageTransaction.CanCheckout = false;
         await _garageTransactionRepoistory.UpdateAsync(entryGarageTransaction,true);
 
     }
