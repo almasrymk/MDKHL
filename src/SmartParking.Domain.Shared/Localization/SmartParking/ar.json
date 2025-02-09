@@ -656,7 +656,7 @@
     "Ok": "تأكيد",
     "Cashier No": "رقم الكاشير",
     "Range": "في خلال",
-    "UpgradeSubscriptionValidationUser": " اشتراكك الحالي لا يسمح بإضافة مستخدم جديد",
+    "UpgradeSubscriptionValidationUser": " اشتراكك الحالي لا يسمح باإضافة مستخدم جديد",
     "Minutes": "دقائق",
     "PackageReports": "الباقات",
     "Subscription": "الاشتراك",
@@ -688,7 +688,8 @@
     "PackagePaymentReports": "تقارير الباقات و الفواتير",
     "PaymentReports": "تقارير الفواتير",
     "ColumnVisibility": "اختيار الحقل",
-    "UpgradeSubscriptionValidationCustomer": "اشتراكك الحالي لا يسمح بإضافة مستفيد جديد"
+    "UpgradeSubscriptionValidationCustomer": "اشتراكك الحالي لا يسمح بإضافة مستفيد جديد",
+    "GetPdf": "تصدير بي دي اف"
 
 
   }
