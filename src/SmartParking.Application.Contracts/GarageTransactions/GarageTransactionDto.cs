@@ -28,6 +28,7 @@ namespace SmartParking.GarageTransactions
         public DateTime? RemainingTime { get; set; }
         public bool? IsPending { get; set; }
         public CustomerCategoryStatus CustomerCategory { get; set; }
+        public bool CanCheckout { get; set; }
 
 
     }
