@@ -469,6 +469,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("CameraType")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("CanCheckout")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("CheckoutMobile")
                         .HasColumnType("timestamp without time zone");
 
