@@ -415,6 +415,7 @@ img[style*='width:120px;'] {
         var organization =await _organizationPdfAppService.GetOrganizationForCurrentTenatAsync();
         var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
         string currentPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
+        string QRCodePath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{image.Value}");
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
@@ -585,7 +586,7 @@ img[style*='width:120px;'] {
         table2.AddCell(textCell3);
 
         // Column 2: Image (Using rowspan to match height of text cells)
-        iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(image))
+        iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
           .SetWidth(120);
         

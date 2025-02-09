@@ -13,6 +13,7 @@ using iText.Layout.Properties;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
+using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,8 +27,11 @@ using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.PDF;
 
-public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDependency
+public class GenerateFilesAppService (IOrganizationsAppService organizationsAppService) : IGenerateFilesAppService, ITransientDependency
 {
+    private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
+
+   
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
         await Task.Yield();
@@ -38,7 +42,10 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
             ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
             System.Data.DataTable table = new System.Data.DataTable();
             string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-            string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/maen.jpg");
+
+            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+            string rightImagePath = organization != null ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                                                         : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
             string title = Data.Name;
             foreach (var columns in Data.Columns)
             {
@@ -62,8 +69,9 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
             worksheet.Cells[2, titleStart , 2, columnCount - 1].Merge = true;
             worksheet.Cells[2, titleStart].Value = title;
             worksheet.Cells[2, titleStart].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-            worksheet.Cells[2, titleStart].Style.Font.Size = 20;
+            worksheet.Cells[2, titleStart].Style.Font.Size = 12;
             worksheet.Cells[2, titleStart].Style.Font.Bold = true;
+            worksheet.Cells[2, titleStart].Style.WrapText = true;
 
 
             worksheet.Row(1).Height = 25;
@@ -143,7 +151,7 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                 doc.SetFontProvider(new FontProvider(set));
                 Table headerTable = new Table(3);
                 headerTable.SetWidth(UnitValue.CreatePercentValue(100));
-
+               
                 // Left image
                 string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
                 Image leftImage = new Image(ImageDataFactory.Create(leftImagePath))
@@ -175,9 +183,9 @@ public class GenerateFilesAppService : IGenerateFilesAppService, ITransientDepen
                                             .SetTextAlignment(TextAlignment.CENTER)
                                             .SetBorder(Border.NO_BORDER);
                 headerTable.AddCell(centerCell);
-
-                //// Right image
-                string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/maen.jpg");
+                var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+                string rightImagePath = organization != null ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                                                             : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
                 Image rightImage = new Image(ImageDataFactory.Create(rightImagePath))
                     .SetHeight(75)
                     .SetWidth(75)
