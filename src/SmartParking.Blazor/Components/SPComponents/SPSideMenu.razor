@@ -35,7 +35,7 @@
         @* <div style="flex: 0 0 250px;  z-index: 1000"> *@
 
 
-        <MudDrawer Elevation="0" @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
+        <MudDrawer Elevation="0"  @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
                 @* <MudNavMenu Style="height: 100vh; overflow-y: auto; overflow-x: hidden;"> *@
                 <MudNavMenu>
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
@@ -167,7 +167,7 @@
             
         </MudDrawer>
         @* </div> *@
-        <MudButton OnClick="@ToggleDrawer" class="side-menu-toggler" StartIcon="@(_open ? Icons.Material.Filled.ChevronLeft : Icons.Material.Filled.ChevronRight)">
+        <MudButton style="z-index: 1001" OnClick="@ToggleDrawer" class="side-menu-toggler" StartIcon="@(_open ? Icons.Material.Filled.ChevronLeft : Icons.Material.Filled.ChevronRight)">
 
         </MudButton>
     </MudDrawerContainer>
