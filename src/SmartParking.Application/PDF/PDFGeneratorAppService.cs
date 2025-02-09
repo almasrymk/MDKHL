@@ -414,14 +414,13 @@ img[style*='width:120px;'] {
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
         var organization =await _organizationPdfAppService.GetOrganizationForCurrentTenatAsync();
         var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
+        string currentPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
 
         Style styleBold = new Style();
-        //TODO: set font weight
-        //styleBold.
 
         Style Center = new Style();
 
@@ -435,7 +434,7 @@ img[style*='width:120px;'] {
             .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
             .SetWidth(120);
         
-        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create("wwwroot"+organization.OrganizationPicture))
+        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
             .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
             .SetWidth(120);
 
@@ -556,23 +555,47 @@ img[style*='width:120px;'] {
 
         Table table2 = new Table(2).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(25);
 
-        table2.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER) // No border
-            .SetTextAlignment(TextAlignment.LEFT)
-            .SetVerticalAlignment(VerticalAlignment.TOP)
-        .Add(new Paragraph("Total Pre VAT: " + invoice.InvoicePrice.ToString("F2") + " SAR").SetFontSize(12).SimulateBold()));
-
-        table2.AddCell(new Cell(1, 1)
+        Cell textCell1 = new Cell()
             .SetBorder(Border.NO_BORDER)
+            .AddStyle(styleBold)
             .SetTextAlignment(TextAlignment.LEFT)
             .SetVerticalAlignment(VerticalAlignment.TOP)
-        .Add(new Paragraph("VAT 15%: " + (Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " SAR").SetFontSize(12).SimulateBold()));
+            .Add(new Paragraph("Total Pre VAT: " + invoice.InvoicePrice.ToString("F2") + " SAR")
+                .SetFontSize(12));
 
-        table2.AddCell(new Cell(1, 1)
+        Cell textCell2 = new Cell()
             .SetBorder(Border.NO_BORDER)
+            .AddStyle(styleBold)
             .SetTextAlignment(TextAlignment.LEFT)
             .SetVerticalAlignment(VerticalAlignment.TOP)
-            .Add(new Paragraph("Total Include VAT: " + (Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + " SAR").SetFontSize(12).SimulateBold()));
+            .Add(new Paragraph("VAT 15%: " + (Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " SAR")
+                .SetFontSize(12));
+
+        Cell textCell3 = new Cell()
+            .SetBorder(Border.NO_BORDER)
+            .AddStyle(styleBold)
+            .SetTextAlignment(TextAlignment.LEFT)
+            .SetVerticalAlignment(VerticalAlignment.TOP)
+            .Add(new Paragraph("Total Include VAT: " + (Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + " SAR")
+                .SetFontSize(12));
+
+        // Add text cells to the first column (stacked under each other)
+        table2.AddCell(textCell1);
+        table2.AddCell(textCell2);
+        table2.AddCell(textCell3);
+
+        // Column 2: Image (Using rowspan to match height of text cells)
+        iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(image))
+          .SetHorizontalAlignment(HorizontalAlignment.LEFT)
+          .SetWidth(120);
+        
+        Cell imageCell = new Cell(3, 1) 
+            .SetBorder(Border.NO_BORDER)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+            .Add(QrCodeImage);
+
+        table2.AddCell(imageCell);
 
 
 
@@ -580,7 +603,7 @@ img[style*='width:120px;'] {
 
 
         document.Add(header);
-document.Add(tableimages);
+        document.Add(tableimages);
         document.Add(subheader);
         document.Add(Vat);
         document.Add(RecieptPayemntDetails);
