@@ -72,7 +72,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
-
             await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
@@ -91,9 +90,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             UserDto userCreated;
             if (input.IsUser)
+            {
+                
                 userCreated = await AddUser(input);
+            }
             else
-                userCreated = await AddUser(input, customer);
+            {
+                
+                userCreated = await AddUserForCustomer(input);
+            }
             customer.IdentityUserId = userCreated.Id;
             var customerAdd = await _repository.InsertAsync(customer, true);
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
@@ -109,7 +114,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <param name="input">The DTO containing customer details for user creation.</param>
     /// <param name="customer">The customer entity to associate with the new user.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    private async Task<UserDto> AddUser(CreateUpdateCustomerDto input, Customer customer)
+    private async Task<UserDto> AddUserForCustomer(CreateUpdateCustomerDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
