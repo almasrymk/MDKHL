@@ -660,7 +660,8 @@
         "PackagesReports": "Packages Reports",
         "PackagePaymentReports": "Package Payments Reports",
         "PaymentReports": "Payments Reports",
-        "ColumnVisibility": "Column Visibility"
+        "ColumnVisibility": "Column Visibility",
+        "GetPdf":  "Get PDF"
 
 
 

@@ -13,10 +13,7 @@
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
 @inject IOrganizationsAppService OrganizationService
 <div class="mud-modal">
-    <div class=" d-flex justify-content-center align-items-center">
-
-        <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank">Get PDF</a>
-    </div>
+  
     <div class="title-content d-flex justify-content-center align-items-center">
 
     <InvoiceDetailsPopupHeader Title="@L[@title]" Description="@description" />
@@ -67,6 +64,17 @@
                                 </div>
                             </div>
                         </div>
+                    <div class=" d-flex justify-content-end align-items-center mt-3">
+
+                        <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank"
+                           style="display: inline-flex; align-items: center; justify-content: center;
+                             background-color: #3A7398; color: white; text-decoration: none;
+                             font-size: 16px; font-weight: bold; padding: 10px 20px;
+                             border-radius: 8px; transition: all 0.3s ease-in-out;">
+                            <span style="margin-right: 8px;">📄</span> @L["GetPdf"]
+
+                        </a>
+                    </div>
                     </div>
                 </div>
             </div>

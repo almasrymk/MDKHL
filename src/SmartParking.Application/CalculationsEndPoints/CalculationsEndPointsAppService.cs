@@ -19,25 +19,14 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
 
     public int CalculateTime(DateTime startTime, DateTime endTime, int FreeMinutes)
     {
-
-
         // Calculate the time difference
         TimeSpan timeDifference = endTime - startTime;
-
-
-
         if ((int)timeDifference.TotalHours == 0 && timeDifference.Minutes <= FreeMinutes)
         {
             return 0;
-
         }
-
         int hoursDiff = (int)timeDifference.TotalHours;
-
-
         hoursDiff += (timeDifference.Minutes > 0 ? 1 : 0);
-
-
         return  hoursDiff;
     }
 
@@ -214,8 +203,6 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         entranceTime=RemoveSecondsFromTime(entranceTime.Value);
         exitTime = RemoveSecondsFromTime(exitTime.Value);
         packageDto.ExpiryDate = RemoveSecondsFromTime(packageDto.ExpiryDate);
-       
-
 
         if (packageDto.publishedOfPackage.Value)
         {
