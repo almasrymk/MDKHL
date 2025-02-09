@@ -687,7 +687,9 @@
         "PackagesReports": "تقارير الباقات",
         "PackagePaymentReports": "تقارير الباقات و الفواتير",
         "PaymentReports": "تقارير الفواتير",
-        "ColumnVisibility": "اختيار الحقل"
+        "ColumnVisibility": "اختيار الحقل",
+        "GetPdf": "تصدير بي دي اف"
+
 
     }
 }
