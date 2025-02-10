@@ -16,12 +16,14 @@ public partial class PaymentReport
     public int CurrentPage { get; set; } = 1;
     public int RowPerPage { get; set; } = 10;
     private TableData itemData = new TableData();
+    private TableData itemDataIsExport = new TableData();
     private int TotalItem;
     private SPReportResult sPReportResult { get; set; } = new SPReportResult();
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     public string sordColumn { get; private set; }
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     public string ColumnVisibility { get; private set; }
+    public bool IsEnter { get; set; }
     public PaymentReport(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
@@ -82,13 +84,17 @@ public partial class PaymentReport
         };
         var payments = await AnalysisAppService.ReportCustomerPayment(input, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
-       
-        if (!ColumnVisibility.IsNullOrWhiteSpace())
+        if (paged.IsExport)
+        {
+            itemDataIsExport.Columns = itemData.Columns;
+            itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            itemData.Columns = itemDataIsExport.Columns;
+        }
+        else if (!ColumnVisibility.IsNullOrWhiteSpace() || (IsEnter && paged.IsExport == false))
         {
             itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible = !itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible;
-
         }
-        else
+        else if (!IsEnter)
         {
             itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
         }
