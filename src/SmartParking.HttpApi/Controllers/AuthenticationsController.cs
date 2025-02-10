@@ -52,7 +52,7 @@ public class AuthenticationsController : ControllerBase
             return Result<LoginResultDto>.Invalid(new Results.ValidationError
             {
                 ErrorCode = "403",
-                ErrorMessage = "This user not found",
+                ErrorMessage = "Invalid credentials."
             });
         }
         

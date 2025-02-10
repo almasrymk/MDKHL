@@ -205,6 +205,22 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         }
         
 
+    }   
+    
+    public async Task<Result<VehicleDto>> GetAsync(int vehicleId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var vehicle = await _vehicleRepository.FirstOrDefaultAsync(v => v.Id == vehicleId);
+           if(vehicle == null)
+                return Result<VehicleDto>.NotFound("vehicle not found");
+            
+            var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
+            return vehicleDto;
+           
+        }
+        
+
     }
 
     public async Task<VehicleDto> GetVehicleByPlateNumberAsync(string plateNumber)
