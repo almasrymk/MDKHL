@@ -182,6 +182,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             vehicle.VehicleModelId = model.Id;
             vehicle.VehicleBrandId = brand.Id;
             vehicle.CustomerId = customer.Id;
+            vehicle.ModelYear = input.Year;
             var vehicleUpdate = await _vehicleRepository.UpdateAsync(vehicle, autoSave: true);
 
             var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicleUpdate);
