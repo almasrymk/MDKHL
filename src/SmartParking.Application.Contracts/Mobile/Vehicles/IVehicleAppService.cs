@@ -19,6 +19,6 @@ public interface IVehicleAppService : IApplicationService
     Task<Result<VehicleDto>> DeleteAsync(int vehicleId);
     Task<Result<List<VehicleDto>>> GetListAsync();
     Task<VehicleDto> GetVehicleByPlateNumberAsync(string plateNumber);
-
+    Task<Result<VehicleDto>> GetAsync(int vehicleId);
 
 }

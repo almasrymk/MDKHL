@@ -321,7 +321,7 @@ public static class CreateTableHelper
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.FullName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CreationTime"), payment.CreationTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.CreationTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
             tableData.Rows.Add(rowDef);
