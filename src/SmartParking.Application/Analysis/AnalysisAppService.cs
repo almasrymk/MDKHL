@@ -177,6 +177,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 NumberOfEmployeeParking = query.Sum(c => c.CurrnetCapacityEmployees),
                 NumberOfVisitorParking = query.Sum(c => c.CurrnetCapacityForFree),
                 NumberOfVisitorEmptyParking = query.Sum(c => c.MaxSlotsForFree - c.CurrnetCapacityForFree),
+                NumberOfCustomerReservedParking = query.Sum(c => c.MaxSlotsForCustomers),
+                NumberOfEmployeeReservedParking = query.Sum(c => c.MaxSlotsForEmployess),
+                NumberOfVistiorReservedParking = query.Sum(c => c.MaxSlotsForFree),
+
             };
 
             return result;
