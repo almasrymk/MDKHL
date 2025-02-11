@@ -249,41 +249,39 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<bool> CheckAvailableSlots(Garage garage, CustomerCategoryStatus customer)
     {
         bool flag = false;
-        if ((customer == null || customer == Enums.CustomerCategoryStatus.Customer))
+        switch (customer)
         {
-            if (garage.CurrnetCapacityForCustomers + 1 <= garage.MaxSlotsForCustomers)
-            {
-                garage.CurrnetCapacityForCustomers++;
-                flag = true;
-            }
+            case CustomerCategoryStatus.Customer:
+                if (garage.CurrnetCapacityForCustomers + 1 <= garage.MaxSlotsForCustomers)
+                    garage.CurrnetCapacityForCustomers++;
+                break;
+
+            case CustomerCategoryStatus.Employee:
+                if (garage.CurrnetCapacityEmployees + 1 <= garage.MaxSlotsForEmployess)
+                    garage.CurrnetCapacityEmployees++;
+                break;
+
+            case CustomerCategoryStatus.Visitor:
+                if (garage.CurrnetCapacityForFree + 1 <= garage.MaxSlotsForFree)
+                    garage.CurrnetCapacityForFree++;
+                break;
+
+            default:
+                if (garage.CurrnetCapacityForCustomers + 1 <= garage.MaxSlotsForCustomers)
+                    garage.CurrnetCapacityForCustomers++;
+                break;
 
         }
-        else if (customer == Enums.CustomerCategoryStatus.Employee)
+        if (garage.CurrnetCapicity + 1 <= garage.MaxCapacity)
         {
-
-            if (garage.CurrnetCapacityEmployees + 1 <= garage.MaxSlotsForEmployess)
-            {
-                garage.CurrnetCapacityEmployees++;
-                flag = true;
-
-            }
-
+            garage.CurrnetCapicity++;
+            flag = true;
         }
-        else
-        {
-            if (garage.CurrnetCapacityForFree + 1 <= garage.MaxSlotsForFree)
-            {
-                garage.CurrnetCapacityForFree++;
-                flag = true;
-
-            }
-
-        }
-        if(flag)
-          garage.CurrnetCapicity++;
         return await Task.FromResult(flag);
 
     }
+
+
     private async Task<CreateUpdateInvoiceDto> CalculateInvoiceForCustomerWithoutPackage(DateTime EntranceTime, int totalHours, Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction,CustomerCategoryStatus customerCategoryStatus)
     {
         decimal price = await CalculateInvoiceCases(EntranceTime, totalHours, GarageTransaction);

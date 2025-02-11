@@ -236,13 +236,16 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateBannerDto, Banner>();
 
         CreateMap<GarageTransaction, GarageTransactionDto>()
-       .ForMember(d => d.RemainingTime,
-        src =>
-        {
+         .ForMember(d => d.RemainingTime,
+            src =>
+            {
             src.PreCondition(o => o.CheckoutMobile.HasValue);
             src.MapFrom(o => CalculateRemainingTimeWithGrace(o.CheckoutMobile, o.Organization.Graceperiod));
-        })
-        .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false)).ReverseMap();
+            })
+        .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false))
+        .ForMember(d => d.CanCheckout, s => s.MapFrom(d => d.IsPending.HasValue&&d.IsPending.Value==false ? true:false))
+        
+        .ReverseMap();
 
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();        
