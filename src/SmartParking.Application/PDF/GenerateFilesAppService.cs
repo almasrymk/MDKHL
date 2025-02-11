@@ -217,7 +217,17 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                 {
                     if (columns.Name == "Id")
                         continue;
-                    var txt = new Text(columns.DisplayName.ArabicWithFontGlyphsToPfd());
+                    var txt = new Text("");
+                    if (CultureInfo.CurrentCulture.Name=="ar")
+                    {
+                        txt = new Text(columns.DisplayName.ArabicWithFontGlyphsToPfd());
+
+                    }
+                    else
+                    {
+                        txt = new Text(columns.DisplayName);
+
+                    }
                     table.AddHeaderCell(new Cell().Add(new Paragraph(txt)))
                          .AddStyle(styleBold.SimulateBold())
                         .SetFontSize(9)
@@ -230,7 +240,16 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id")
                         {
-                            var txt = new Text(cellValue.ArabicWithFontGlyphsToPfd()).SetFontSize(9);
+                            var txt = new Text("");
+                            if (CultureInfo.CurrentCulture.Name == "ar")
+                            {
+                                txt = new Text(cellValue.ArabicWithFontGlyphsToPfd()).SetFontSize(9);
+
+                            }
+                            else
+                            {
+                                txt = new Text(cellValue).SetFontSize(9);
+                            }
                             table.AddCell(new Cell().Add(new Paragraph(txt))).SetTextAlignment(TextAlignment.CENTER); 
                         }
                     }
