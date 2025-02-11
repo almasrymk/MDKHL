@@ -1,10 +1,12 @@
-﻿using AraibcPdfUnicodeGlyphsResharper;
+﻿
+using AraibcPdfUnicodeGlyphsResharper;
 using iText.IO.Font;
 using iText.IO.Image;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
@@ -13,6 +15,7 @@ using iText.Layout.Properties;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
@@ -31,7 +34,6 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 {
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
 
-   
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
         await Task.Yield();
@@ -252,9 +254,34 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                             table.AddCell(new Cell().Add(new Paragraph(txt))).SetTextAlignment(TextAlignment.CENTER); 
                         }
                     }
-                }    
+                }
                 doc.Add(table);
+                doc.Add(element: new Paragraph("\n"));
+                Table footerTable = new Table(2).SetWidth(UnitValue.CreatePercentValue(100))
+                    .SetBorder(Border.NO_BORDER)
+                    .SetBorderTop(new SolidBorder(2))
+                    .SetMarginLeft(50);
+                if(CultureInfo.CurrentCulture.Name == "en")
+                {
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Email: it@maienalmadina.com")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {organization?.PhoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {organization?.Address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 60))
+                .Add(footerTable);
+                }
+                else
+                {
+                    footerTable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"رقم التواصل: {organization?.PhoneNum}".ArabicWithFontGlyphsToPfd())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"البريد الالكتروني: it@maienalmadina.com ".ArabicWithFontGlyphsToPfd())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph(text: " ")).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"العنوان: {organization?.Address}".ArabicWithFontGlyphsToPfd())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 85))
+                      .Add(footerTable);
 
+                }
+                //doc.Add(footerTable);
+                
                 doc.Close();
             }
         }
