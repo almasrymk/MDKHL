@@ -17,6 +17,7 @@ using SmartParking.Localization;
 using SmartParking.Permissions.PaymentsPermissions;
 using SmartParking.Permissions.Reports;
 using SmartParking.Results;
+using System.Composition;
 using System.Globalization;
 using Volo.Abp.MultiTenancy;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -28,10 +29,11 @@ partial class BeneficiariesReport
     public int CurrentPage { get; set; } = 1; 
     public int RowPerPage { get; set; } = 10;
     private TableData itemData = new TableData();
+    private TableData itemDataIsExport = new TableData();
     private int TotalItem;
     private SPReportResult sPReportResult { get; set; } = new SPReportResult();
     public string ColumnVisibility { get; private set; }
-
+    public bool IsEnter { get; set; }
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     public BeneficiariesReport(IStringLocalizer<SmartParkingResource> localizer)
@@ -97,15 +99,21 @@ partial class BeneficiariesReport
         };
         var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(input,CurrentTenant.Id);
         TotalItem = (int)garageTransactionAnalyses.TotalCount;
-        
-        if (!ColumnVisibility.IsNullOrWhiteSpace())
+
+        if (paged.IsExport)
+        {
+            itemDataIsExport.Columns = itemData.Columns;
+            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
+            itemData.Columns = itemDataIsExport.Columns;
+        }
+        else if (!ColumnVisibility.IsNullOrWhiteSpace() || (IsEnter && paged.IsExport == false))
         {
             itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible=!itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible;
-
         }
-        else
+        else if (!IsEnter)
         {
             itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
+            IsEnter = true;
         }
         await CreateMenue(itemData.Columns);
 

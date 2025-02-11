@@ -17,14 +17,14 @@ public class GarageTransactionAnalysis
     public Vehicle  Vehicle { get; set; }
     public Customer Customer { get; set; }
     public Garage Garage { get; set; }
-    public string GarageName { get; set; }
+    public string GarageName{ get; set; }
+    public string GarageNameAr { get; set; }
     public string UserName { get; set; }
     public CameraType CameraType { get; set; }
     public string PlateNumber { get; set; }
     public DateTime? AccurateTime { get; set; }
     public string OrganizationName { get; set; }
-
+    public string OrganizationNameAr{ get; set; }
     public string ArabicName { get; set; }
-
     public Guid CustomerId { get; set; }
 }
