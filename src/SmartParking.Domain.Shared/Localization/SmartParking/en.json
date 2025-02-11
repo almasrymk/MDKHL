@@ -662,7 +662,10 @@
     "PaymentReports": "Payments Reports",
     "ColumnVisibility": "Column Visibility",
     "GetPdf": "Get PDF",
-    "GarageTransactionAnalysis": "Garage Transaction Analysis"
+    "GarageTransactionAnalysis": "Garage Transaction Analysis",
+    "CustomerAndTransactionReport": "Customer And Transaction Report",
+    "EmployeeAndTransactionReport": "Employee And Transaction Report",
+    "VisitorAndTransactionReport": "Visitor And Transaction Report"
 
 
 
