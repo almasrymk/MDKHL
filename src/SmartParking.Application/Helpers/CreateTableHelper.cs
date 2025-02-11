@@ -20,7 +20,7 @@ public static class CreateTableHelper
     {
         var tableData = new TableData()
         {
-            Name = "GarageTransactionAnalysis",
+            Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis"),
             ShowHeader = true
         };
 
@@ -42,21 +42,28 @@ public static class CreateTableHelper
         foreach (var item in data)
         {
             var rowDef = new RowDef();
-
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CameraType"), item.CameraType.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), item.PlateNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageNameAr));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageName));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CameraType"),LocalizationHelper.GetLocalizedString(item.CameraType.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), item.PlateNumber));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString()));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ArabicName"), item.ArabicName));
             }
             else
             {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), item.UserName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), item.GarageTransaction.CustomerCategory.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), LocalizationHelper.GetLocalizedString(item.GarageTransaction.CustomerCategory.ToString())));
 
             tableData.Rows.Add(rowDef);
         }
@@ -69,7 +76,7 @@ public static class CreateTableHelper
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "TotalCustomresAndTheirTransactions",
+            Name = LocalizationHelper.GetLocalizedString("TotalCustomersAndTheirTransactions"),
             ShowHeader = true
         };
 
@@ -92,13 +99,29 @@ public static class CreateTableHelper
         foreach (var item in data)
         {
             var rowDef = new RowDef();
-
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CameraType"), item.CameraType.ToString()));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageNameAr));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageName));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CameraType"), LocalizationHelper.GetLocalizedString(item.CameraType.ToString())));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), item.PlateNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString())); 
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), item.GarageTransaction.CustomerCategory.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AccurateTime"), item.AccurateTime.ToString()));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationNameAr));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationName));
+
+            }
+
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"),LocalizationHelper.GetLocalizedString(item.GarageTransaction.CustomerCategory.ToString())));
 
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
@@ -120,7 +143,7 @@ public static class CreateTableHelper
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Payment Collected Money Daily And Monthly",
+            Name =LocalizationHelper.GetLocalizedString("PaymentReports"),
             ShowHeader = true
         };
 
@@ -153,7 +176,7 @@ public static class CreateTableHelper
     {
         var tableData = new TableData()
         {
-            Name = "Garages Data",
+            Name =LocalizationHelper.GetLocalizedString("GaragesReports"),
             ShowHeader = true
         };
 
@@ -202,7 +225,7 @@ public static class CreateTableHelper
     {
         var tableData = new TableData()
         {
-            Name = "Customer Packages Data",
+            Name = LocalizationHelper.GetLocalizedString("PackagesReports"),
             ShowHeader = true
         };
         if (CultureInfo.CurrentCulture.Name == "en")
@@ -256,7 +279,7 @@ public static class CreateTableHelper
     {
         var tableData = new TableData()
         {
-            Name = "Payments Data",
+            Name = LocalizationHelper.GetLocalizedString("PaymentReports"),
             ShowHeader = true
         };
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
@@ -311,7 +334,7 @@ public static class CreateTableHelper
     {
         var tableData = new TableData()
         {
-            Name = LocalizationHelper.GetLocalizedString("PackagePaymentsData"),
+            Name = LocalizationHelper.GetLocalizedString("PackagePaymentReports"),
             ShowHeader = true
         };
 
