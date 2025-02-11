@@ -665,7 +665,8 @@
     "GarageTransactionAnalysis": "Garage Transaction Analysis",
     "CustomerAndTransactionReport": "Customer And Transaction Report",
     "EmployeeAndTransactionReport": "Employee And Transaction Report",
-    "VisitorAndTransactionReport": "Visitor And Transaction Report"
+    "VisitorAndTransactionReport": "Visitor And Transaction Report",
+    "Reserved": "Reserved"
 
 
 

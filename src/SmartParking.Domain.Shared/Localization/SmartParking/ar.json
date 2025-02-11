@@ -693,7 +693,8 @@
     "GarageTransactionAnalysis": "تقرير بحركات المواقف",
     "CustomerAndTransactionReport": "تقرير العملاء و حركة سيارتهم",
     "EmployeeAndTransactionReport": "تقرير الموظفين و حركة سيارتهم",
-    "VisitorAndTransactionReport": "تقرير الزوار و حركة سيارتهم"
+    "VisitorAndTransactionReport": "تقرير الزوار و حركة سيارتهم",
+    "Reserved": "محجوز"
 
 
   }
