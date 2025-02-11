@@ -1,10 +1,12 @@
-﻿using AraibcPdfUnicodeGlyphsResharper;
+﻿
+using AraibcPdfUnicodeGlyphsResharper;
 using iText.IO.Font;
 using iText.IO.Image;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
@@ -13,6 +15,7 @@ using iText.Layout.Properties;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
@@ -31,7 +34,6 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 {
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
 
-   
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
         await Task.Yield();
@@ -49,44 +51,55 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             string title = Data.Name;
             foreach (var columns in Data.Columns)
             {
-                if (columns.Name == "Id")
+                if (columns.Name == "Id" || !columns.IsColumnVisible)
                     continue;
 
                 table.Columns.Add(columns.DisplayName, typeof(string));
             }
-            int columnCount = table.Columns.Count; 
 
-            int leftImageStart = 1;  
+            int columnCount = table.Columns.Count;
+            if (columnCount < 4)
+            {
+                columnCount = 4;
+            }
+            int leftImageStart = 1;
 
-            int rightImageStart = columnCount;  
+            int rightImageStart = columnCount;
 
-            int titleStart = leftImageStart + 1;  
+            int titleStart = leftImageStart + 1;
+           
+
+         
+
 
             worksheet.Cells[1, leftImageStart, 2, leftImageStart].Merge = true;
 
-            worksheet.Cells[1, rightImageStart, 2, rightImageStart].Merge = true;
+            worksheet.Cells[FromRow: 1, rightImageStart, 2, rightImageStart].Merge = true;
 
-            worksheet.Cells[2, titleStart , 2, columnCount - 1].Merge = true;
-            worksheet.Cells[2, titleStart].Value = title;
-            worksheet.Cells[2, titleStart].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-            worksheet.Cells[2, titleStart].Style.Font.Size = 12;
-            worksheet.Cells[2, titleStart].Style.Font.Bold = true;
-            worksheet.Cells[2, titleStart].Style.WrapText = true;
-
-
-            worksheet.Row(1).Height = 25;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Merge = true;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Value = title;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center; 
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.Font.Size = 12;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.Font.Bold = true;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.WrapText = true;
+            worksheet.Row(1).Height = 30;
             worksheet.Row(2).Height = 30;
             
+           
 
             
 
             foreach (var row in Data.Rows)
             {
                 var dataRow = table.NewRow();
+
                 foreach (var cell in row.Cells)
                 {
-                    if (cell.Key == "Id") continue;
-                    dataRow[cell.Key] = cell.Value;
+                    if (cell.Key == "Id" || !Data.Columns.FirstOrDefault(_ => _.DisplayName == cell.Key).IsColumnVisible) 
+                        continue;
+                    
+                    dataRow[cell.Key] = cell.Value ?? string.Empty;
                 }
                 table.Rows.Add(dataRow);
             }
@@ -97,11 +110,11 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
             worksheet.Cells.AutoFitColumns();
 
-            
+            // Can Error ! 
             worksheet.Cells[4, 1, 4 + table.Rows.Count, columnCount ]
                .Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
-            using (var headerRange = worksheet.Cells[4, 1, 4, columnCount])
+            using (var headerRange = worksheet.Cells[4, 1, 4, table.Columns.Count])
             {
                 headerRange.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                 headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray); 
@@ -111,16 +124,23 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             if (File.Exists(leftImagePath))
             {
                 var leftImage = worksheet.Drawings.AddPicture("LeftImage", new FileInfo(leftImagePath));
-                leftImage.SetPosition(0, RowOffsetPixels: 0, leftImageStart - 1, 0); // Position at column 1
-                leftImage.SetSize(PixelWidth: (int)((worksheet.Column(1).Width * 7)+3) , (int)(55 * 1.33));
+                var width = worksheet.Column(leftImageStart).Width;
+                worksheet.Column(leftImageStart).Width = Math.Max(width, 10);
+                double leftColWidthPixels = worksheet.Column(leftImageStart).Width * 7;
+                leftImage.SetSize(60,(int)(50 * 1.33));
+                int leftOffsetX = (int)((leftColWidthPixels - 60) / 2);
+                leftImage.SetPosition(0, 6, leftImageStart - 1, leftOffsetX);
             }
 
 
             if (File.Exists(rightImagePath))
             {
                 var rightImage = worksheet.Drawings.AddPicture("RightImage", new FileInfo(rightImagePath));
-                rightImage.SetPosition(0, 0, rightImageStart - 1, ColumnOffsetPixels: 0); // Position at last 2 columns
-                rightImage.SetSize((int)((worksheet.Column(columnCount).Width * 7) + 3) , (int)(55 * 1.33));
+                worksheet.Column(rightImageStart).Width = Math.Max(worksheet.Column(rightImageStart).Width, 10);
+                double rightColWidthPixels = worksheet.Column(rightImageStart).Width * 7;
+                rightImage.SetSize(60, (int)(50 * 1.33));
+                int rightOffsetX = (int)((rightColWidthPixels - 60) / 2);
+                rightImage.SetPosition(0, RowOffsetPixels: 6, rightImageStart - 1, rightOffsetX);
             }
             FileInfo excelFile = new FileInfo(pathFileName);
             package.SaveAs(excelFile);
@@ -199,7 +219,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                 doc.Add(headerTable);
                 doc.SetBottomMargin(15);
                
-                int NumberOfColumns = Data.Columns.Count;
+                int NumberOfColumns = Data.Columns.Where(_ => _.IsColumnVisible).Count();
                 if (Data?.Columns?.FirstOrDefault()?.Name == "Id")
                     NumberOfColumns--;
                 Table table = new Table(NumberOfColumns);
@@ -215,9 +235,19 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                 
                 foreach (var columns in Data.Columns)
                 {
-                    if (columns.Name == "Id")
+                    if (columns.Name == "Id" || !columns.IsColumnVisible)
                         continue;
-                    var txt = new Text(columns.DisplayName.ArabicWithFontGlyphsToPfd());
+                    var txt = new Text("");
+                    if (CultureInfo.CurrentCulture.Name=="ar")
+                    {
+                        txt = new Text(columns.DisplayName.ArabicWithFontGlyphsToPfd());
+
+                    }
+                    else
+                    {
+                        txt = new Text(columns.DisplayName);
+
+                    }
                     table.AddHeaderCell(new Cell().Add(new Paragraph(txt)))
                          .AddStyle(styleBold.SimulateBold())
                         .SetFontSize(9)
@@ -228,15 +258,49 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                     foreach (var header in Data.Columns)
                     {
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
-                        if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id")
+                        if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
-                            var txt = new Text(cellValue.ArabicWithFontGlyphsToPfd()).SetFontSize(9);
+                            var txt = new Text("");
+                            if (CultureInfo.CurrentCulture.Name == "ar")
+                            {
+                                txt = new Text(cellValue.ArabicWithFontGlyphsToPfd()).SetFontSize(9);
+
+                            }
+                            else
+                            {
+                                txt = new Text(cellValue).SetFontSize(9);
+                            }
                             table.AddCell(new Cell().Add(new Paragraph(txt))).SetTextAlignment(TextAlignment.CENTER); 
                         }
                     }
-                }    
+                }
                 doc.Add(table);
+                doc.Add(element: new Paragraph("\n"));
+                Table footerTable = new Table(2).SetWidth(UnitValue.CreatePercentValue(100))
+                    .SetBorder(Border.NO_BORDER)
+                    .SetBorderTop(new SolidBorder(2))
+                    .SetMarginLeft(50);
+                if(CultureInfo.CurrentCulture.Name == "en")
+                {
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Email: it@maienalmadina.com")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {organization?.PhoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {organization?.Address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 60))
+                .Add(footerTable);
+                }
+                else
+                {
+                    footerTable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"رقم التواصل: {organization?.PhoneNum}".ArabicWithFontGlyphsToPfd())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"البريد الالكتروني: it@maienalmadina.com ".ArabicWithFontGlyphsToPfd())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph(text: " ")).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"العنوان: {organization?.Address}".ArabicWithFontGlyphsToPfd())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 85))
+                      .Add(footerTable);
 
+                }
+                //doc.Add(footerTable);
+                
                 doc.Close();
             }
         }

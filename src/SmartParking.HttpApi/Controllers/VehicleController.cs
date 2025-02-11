@@ -56,6 +56,13 @@ public class VehicleController : AbpController
     public async Task<Result<List<VehicleDto>>> GetAllVehicles()
     {
         return await _vehicleAppService.GetListAsync();
+    }      
+    
+    [HttpGet("{vehicleId}")]
+    [Authorize]
+    public async Task<Result<VehicleDto>> GetVehicles([FromRoute]int vehicleId)
+    {
+        return await _vehicleAppService.GetAsync(vehicleId);
     }    
     
 

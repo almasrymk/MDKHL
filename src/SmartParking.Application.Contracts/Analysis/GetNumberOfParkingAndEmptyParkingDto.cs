@@ -16,4 +16,7 @@ public class GetNumberOfParkingAndEmptyParkingDto
     public int NumberOfEmployeeEmptyParking { get; set; }
     public int NumberOfVisitorEmptyParking { get; set; }
     public int NumberOfVisitorParking { get; set; }
+    public int NumberOfCustomerReservedParking { get; set; }
+    public int NumberOfEmployeeReservedParking { get; set; }
+    public int NumberOfVistiorReservedParking { get; set; }
 }

@@ -134,6 +134,7 @@ public partial class SPDataGrid
         ["يساوي"] = "Equals"
     };
     private string FilterValue { get; set; }
+    public bool IsExport { get; private set; }
 
     protected override Task OnInitializedAsync()
     {
@@ -251,7 +252,9 @@ public partial class SPDataGrid
             RowsPerPage = state.PageSize,
             SortColumn = sortString,
             SearchTerm = _searchString,
-            Filters = ColumnsFilter
+            Filters = ColumnsFilter,
+            IsExport = IsExport
+
         };
 
         await OnPageChanged.InvokeAsync(pageArgs);
@@ -280,6 +283,7 @@ public partial class SPDataGrid
         {
             GridState<RowDef> state = new GridState<RowDef>();
             state.PageSize = 500;
+            IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
@@ -307,6 +311,7 @@ public partial class SPDataGrid
         {
             GridState<RowDef> state = new GridState<RowDef>();
             state.PageSize = 500;
+            IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
@@ -337,6 +342,7 @@ public partial class SPDataGrid
         {
             GridState<RowDef> state = new GridState<RowDef>();
             state.PageSize = 500;
+            IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");

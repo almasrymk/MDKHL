@@ -100,19 +100,19 @@
 
         <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
         HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
-        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfCustomerEmptyParking"
+        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfCustomerReservedParking"
         HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
         ExportModel="@L["Excel"]"></SpCardDashbard>
 
         <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
         BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
-        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfEmployeeEmptyParking"
+        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfEmployeeReservedParking"
         HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
         ExportModel="@L["Excel"]"></SpCardDashbard>
 
         <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
         BodyText1="@getNumberOfParking.NumberOfVisitorParking"
-        HeaderText2="@L["CustomersEmptyParking"]" BodyText2="@getNumberOfParking.NumberOfVisitorEmptyParking"
+        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfVistiorReservedParking"
         HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
         ExportModel="@L["Excel"]"></SpCardDashbard>
 

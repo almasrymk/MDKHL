@@ -197,8 +197,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 {
                     return Result<LoginResultDto>.Invalid(new Results.ValidationError
                     {
-                        ErrorCode = "400",
-                        ErrorMessage = "Account is In Active"
+                        ErrorCode = "403",
+                        ErrorMessage = "Invalid credentials."
                     });
                 }
                 if (!user.PhoneNumberConfirmed)
@@ -226,7 +226,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 return Result<LoginResultDto>.Invalid(new Results.ValidationError
                 {
                     ErrorCode = "403",
-                    ErrorMessage = ex.Message
+                    ErrorMessage = "Invalid credentials."
                 });
             }
             }

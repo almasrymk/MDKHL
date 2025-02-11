@@ -9,4 +9,5 @@ public class PageChangeEventArgs
     public string SortColumn { get; set; }
     public string SearchTerm { get; set; }
     public List<FilterRequestDto> Filters { get; set; } = new List<FilterRequestDto>();
+    public bool IsExport { get; set; }
 }
