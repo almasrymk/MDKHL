@@ -45,7 +45,9 @@ partial class BeneficiariesReport
     {
         var MenuDatasTable = new List<MudMenuData>
         {
-           await CreateColumnVisibilityMenue(columns),
+           await CreateReportsMenue() ,  
+           await CreateColumnVisibilityMenue(columns)
+           
 
         };
             MenuDatas = MenuDatasTable;
@@ -68,13 +70,31 @@ partial class BeneficiariesReport
             IsMenueColumnVisible = true
         };
     }
+    private async Task<MudMenuData> CreateReportsMenue()
+    {
+        var items = new List<MenuItem>();
+        items.Add(new MenuItem { MenueName = "Customer Report", Label = "Customer Report", ISColumnVisibility = true });
+        items.Add(new MenuItem { MenueName = "Employee Report", Label = "Employee Report", ISColumnVisibility = true});
+        items.Add(new MenuItem { MenueName = "Visitor Report", Label = "Visitor Report", ISColumnVisibility = true});
 
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["Reports"],
+            Label = L["Reports"],
+            Items = items,
+            IsMenueColumnVisible = true
+        };
+    }
     private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
     {
         ColumnVisibility = valueOfMenue;
         await Task.Yield();
     }
-
+    private async Task HandleSelectReportsAsync(string selectvalue)
+    {
+         
+    }
     protected async override Task OnInitializedAsync()
     {
 
@@ -106,11 +126,11 @@ partial class BeneficiariesReport
             itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
             itemData.Columns = itemDataIsExport.Columns;
         }
-        else if (!ColumnVisibility.IsNullOrWhiteSpace() || (IsEnter && paged.IsExport == false))
+        else if (!ColumnVisibility.IsNullOrWhiteSpace() && (IsEnter && paged.IsExport == false))
         {
             itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible=!itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible;
         }
-        else if (!IsEnter)
+        else
         {
             itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
             IsEnter = true;
