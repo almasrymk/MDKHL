@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Organizations;
@@ -41,8 +42,8 @@ public partial class PackagePayment
     {
         var MenuDatasTable = new List<MudMenuData>
         {
-           await CreateColumnVisibilityMenue(columns),
-
+           await CreateReportsMenue(),
+           await CreateColumnVisibilityMenue(columns)
         };
         MenuDatas = MenuDatasTable;
 
@@ -64,7 +65,53 @@ public partial class PackagePayment
             IsMenueColumnVisible = true
         };
     }
+    private async Task<MudMenuData> CreateReportsMenue()
+    {
+        var itemsInMenue = new List<MenuItem>
+        {
 
+            new MenuItem { MenueName = "Reports",
+                Label = LocalizationHelper.GetLocalizedString("PackagePaymentReports"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync())
+            }
+        };
+
+        
+
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["Reports"],
+            Label = L["Reports"],
+            Items = itemsInMenue,
+            IsMenueColumnVisible = false,
+            IsExport = true
+
+        };
+    }
+
+    private async Task PackageReportsAsync()
+    {
+        try
+        {
+            var request = new PagedAndSortedAndFilteredResultRequestDto
+            {
+                MaxResultCount = 500,
+                SkipCount = 0,
+                Sorting = "Package.Id",
+                SearchingTerm = "",
+                filters = new List<FilterRequestDto>()
+            };
+            var packagePayment = await AnalysisAppService.ReportPackagePaymentAsync(request, CurrentTenant.Id);
+            var items =await CreateTableHelper.CreateDataTablePackagePayments(packagePayment.Items.ToList());
+            await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+    }
     private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
     {
         ColumnVisibility = valueOfMenue;
