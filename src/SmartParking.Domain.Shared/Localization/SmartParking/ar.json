@@ -690,12 +690,15 @@
     "ColumnVisibility": "اختيار الحقل",
     "UpgradeSubscriptionValidationCustomer": "اشتراكك الحالي لا يسمح بإضافة مستفيد جديد",
     "GetPdf": "تصدير بي دي اف",
-    "Visitor" : "زائر",
+    "Visitor": "زائر",
     "GarageTransactionAnalysis": "تقرير بحركات المواقف",
     "CustomerAndTransactionReport": "تقرير العملاء و حركة سيارتهم",
     "EmployeeAndTransactionReport": "تقرير الموظفين و حركة سيارتهم",
     "VisitorAndTransactionReport": "تقرير الزوار و حركة سيارتهم",
-    "Reserved": "محجوز"
+    "Reserved": "محجوز",
+    "CustomerAndPaymentReport": "تقرير بالفواتير لفئةالعملاء",
+    "CustomerPackageReport": "تقرير بالباقات لفئة العملاء",
+    "PaymentMehtodReport" :  " تقرير بالفواتير للتحويل البنكي"
 
 
   }
