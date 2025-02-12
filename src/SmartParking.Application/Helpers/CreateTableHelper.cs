@@ -75,7 +75,7 @@ public static class CreateTableHelper
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), item.Customer.IdentityUser.Name) );
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), item.Customer?.IdentityUser?.Name ?? " "));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), LocalizationHelper.GetLocalizedString(item.GarageTransaction.CustomerCategory.ToString())));
 
