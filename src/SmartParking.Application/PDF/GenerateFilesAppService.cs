@@ -44,9 +44,9 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
             System.Data.DataTable table = new System.Data.DataTable();
             string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-
+            
             var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-            string rightImagePath = string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+            string rightImagePath = organization != null  && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
                                                          : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
             string title = Data.Name;
             foreach (var columns in Data.Columns)
@@ -209,9 +209,14 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                                             .SetTextAlignment(TextAlignment.CENTER)
                                             .SetBorder(Border.NO_BORDER);
                 headerTable.AddCell(centerCell);
+
+
                 var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-                string rightImagePath = organization != null ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                string rightImagePath = organization != null  && !string.IsNullOrEmpty(organization.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
                                                              : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+                var contactMail = organization == null ? "it@maienalmadina.com" : organization.ContactMail;
+                var phoneNum = organization == null ? "0104593681" : organization.PhoneNum;
+                var address = organization == null ? "عائشه بنت ابي بكر , 3111 ,حي بني خذره ,المدينة,42311, 6119" : organization.Address;
                 Image rightImage = new Image(ImageDataFactory.Create(System.IO.Path.Combine(Directory.GetCurrentDirectory() , "wwwroot/images/logo/MDHKL_01.png")))
                     .SetHeight(75)
                     .SetWidth(75)
@@ -278,19 +283,19 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                     .SetMarginLeft(50);
                 if(CultureInfo.CurrentCulture.Name == "en")
                 {
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"Email: it@maienalmadina.com")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {organization?.PhoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {organization?.Address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Email: {contactMail}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {phoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
                     new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 60))
                 .Add(footerTable);
                 }
                 else
                 {
                     footerTable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"رقم التواصل : {organization?.PhoneNum}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"البريد الالكتروني : it@maienalmadina.com ".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"رقم التواصل : {phoneNum}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"البريد الالكتروني :  {contactMail}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
                     footerTable.AddCell(new Cell().Add(new Paragraph(text: " ")).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"العنوان : {organization?.Address}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+                    footerTable.AddCell(new Cell().Add(new Paragraph($"العنوان : {address}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
                     new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 85))
                       .Add(footerTable);
 
