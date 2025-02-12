@@ -477,24 +477,24 @@ img[style*='width:120px;'] {
             .SetHorizontalAlignment(HorizontalAlignment.CENTER));
 
 
-        Paragraph paymentNumber = new Paragraph(CultureInfo.CurrentCulture.Name == "ar" ? $"{payment.PaymentNumber}{" "}{InvoiceNumber.ArabicWithFontGlyphsToPfd()}" : $"{InvoiceNumber}{" "}{payment.PaymentNumber}")
+        Paragraph paymentNumber = new Paragraph(CultureInfo.CurrentCulture.Name == "ar" ? $"{payment.PaymentNumber}{" "}{InvoiceNumber.ArabicWithFontGlyphsToPDF()}" : $"{InvoiceNumber}{" "}{payment.PaymentNumber}")
       .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
       .SetFontSize(15);
 
         Paragraph subheader = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"***{SimplifiedTaxInvoice.ArabicWithFontGlyphsToPfd()}***"
+            ? $"***{SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
             : $"***{SimplifiedTaxInvoice}***")
     .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
     .SetFontSize(15);
 
         Paragraph Vat = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"{organization.TaxIdentificationNumber.ArabicWithFontGlyphsToPfd()}:{Vats.ArabicWithFontGlyphsToPfd()}"
+            ? $"{organization.TaxIdentificationNumber.ArabicWithFontGlyphsToPDF()}:{Vats.ArabicWithFontGlyphsToPDF()}"
             : $"{Vats}: {organization.TaxIdentificationNumber}")
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(15);
 
         Paragraph RecieptPayemntDetails = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"{Sar.ArabicWithFontGlyphsToPfd()}{(Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2))}{" "}{HeaderVatReceiptPayment.ArabicWithFontGlyphsToPfd()}"
+            ? $"{Sar.ArabicWithFontGlyphsToPDF()}{(Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2))}{" "}{HeaderVatReceiptPayment.ArabicWithFontGlyphsToPDF()}"
             : $"{HeaderVatReceiptPayment} {(Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2))}{Sar}")
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(15);
@@ -522,22 +522,22 @@ img[style*='width:120px;'] {
                 .SetFont(font)
                 .SetBorder(Border.NO_BORDER)
                 .SetTextAlignment(TextAlignment.RIGHT)
-                .Add(new Paragraph($"{invoice.OrganizationArabicName.ArabicWithFontGlyphsToPfd()}")));
+                .Add(new Paragraph($"{invoice.OrganizationArabicName.ArabicWithFontGlyphsToPDF()}")));
             table.AddCell(new Cell(1, 1)
                 .SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($":{OrganizationName.ArabicWithFontGlyphsToPfd()}").SimulateBold()));
+                 .Add(new Paragraph($":{OrganizationName.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($"{invoice.GarageArabicName.ArabicWithFontGlyphsToPfd()}")));
+                 .Add(new Paragraph($"{invoice.GarageArabicName.ArabicWithFontGlyphsToPDF()}")));
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .SetBorder(Border.NO_BORDER)
-                 .Add(new Paragraph($":{CashierNo.ArabicWithFontGlyphsToPfd()}").SimulateBold()));
+                 .Add(new Paragraph($":{CashierNo.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
@@ -547,17 +547,17 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .SetBorder(Border.NO_BORDER)
-                 .Add(new Paragraph($":{PlateNumber.ArabicWithFontGlyphsToPfd()}").SimulateBold()));
+                 .Add(new Paragraph($":{PlateNumber.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($"{invoice.OrganizationAddress.ArabicWithFontGlyphsToPfd()}")));
+                 .Add(new Paragraph($"{invoice.OrganizationAddress.ArabicWithFontGlyphsToPDF()}")));
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($":{OrganizationAddress.ArabicWithFontGlyphsToPfd()}").SimulateBold()));
+                 .Add(new Paragraph($":{OrganizationAddress.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
@@ -566,7 +566,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($":{ExitTime.ArabicWithFontGlyphsToPfd()}").SimulateBold()));
+                 .Add(new Paragraph($":{ExitTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
             table.AddCell(new Cell(1, 1).SetFont(font)
@@ -576,7 +576,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($":{EntranceTime.ArabicWithFontGlyphsToPfd()}").SimulateBold()));
+                 .Add(new Paragraph($":{EntranceTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopLeftRadius(new BorderRadius(10))
             .SetBorderBottomLeftRadius(new BorderRadius(10))
@@ -584,7 +584,7 @@ img[style*='width:120px;'] {
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .SetFont(font)
-             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPfd()}\n {Hours.ArabicWithFontGlyphsToPfd()}{invoice.TotalHours}").SetFontSize(14)));
+             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {Hours.ArabicWithFontGlyphsToPDF()}{invoice.TotalHours}").SetFontSize(14)));
 
 
             table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopRightRadius(new BorderRadius(10))
@@ -593,7 +593,7 @@ img[style*='width:120px;'] {
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPfd()}\n {Hour.ArabicWithFontGlyphsToPfd()}").SetFontSize(14)));
+                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPDF()}\n {Hour.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
             iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
            .SetHorizontalAlignment(HorizontalAlignment.LEFT)
            .SetWidth(120);
@@ -611,8 +611,8 @@ img[style*='width:120px;'] {
       .SetTextAlignment(TextAlignment.RIGHT)
       .SetVerticalAlignment(VerticalAlignment.TOP)
       .Add(new Paragraph()
-          .Add(new Text($"{Sar.ArabicWithFontGlyphsToPfd()} {invoice.InvoicePrice.ToString("F2")}"))
-          .Add(new Text($": {TotalPreVAT.ArabicWithFontGlyphsToPfd()}").SimulateBold())
+          .Add(new Text($"{Sar.ArabicWithFontGlyphsToPDF()} {invoice.InvoicePrice.ToString("F2")}"))
+          .Add(new Text($": {TotalPreVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
           .SetFontSize(12)));
 
             table21.AddCell(new Cell()
@@ -621,8 +621,8 @@ img[style*='width:120px;'] {
                 .SetTextAlignment(TextAlignment.RIGHT)
                 .SetVerticalAlignment(VerticalAlignment.TOP)
                 .Add(new Paragraph()
-                    .Add(new Text($"{Sar.ArabicWithFontGlyphsToPfd()} {Math.Round((invoice.InvoicePrice * 0.15m), 2).ToString("F2")}"))
-                    .Add(new Text($": 15% {Vats.ArabicWithFontGlyphsToPfd()}").SimulateBold())
+                    .Add(new Text($"{Sar.ArabicWithFontGlyphsToPDF()} {Math.Round((invoice.InvoicePrice * 0.15m), 2).ToString("F2")}"))
+                    .Add(new Text($": 15% {Vats.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                     .SetFontSize(12)));
 
             table21.AddCell(new Cell()
@@ -631,8 +631,8 @@ img[style*='width:120px;'] {
                 .SetTextAlignment(TextAlignment.RIGHT)
                 .SetVerticalAlignment(VerticalAlignment.TOP)
                 .Add(new Paragraph()
-                    .Add(new Text($"{Sar.ArabicWithFontGlyphsToPfd()} {Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2).ToString("F2")}"))
-                    .Add(new Text($": {TotalIncludeVAT.ArabicWithFontGlyphsToPfd()}").SimulateBold())
+                    .Add(new Text($"{Sar.ArabicWithFontGlyphsToPDF()} {Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2).ToString("F2")}"))
+                    .Add(new Text($": {TotalIncludeVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                     .SetFontSize(12)));
 
             table2.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(table22));
@@ -704,7 +704,7 @@ img[style*='width:120px;'] {
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPfd()}\n {Hour.ArabicWithFontGlyphsToPfd()}").SetFontSize(14)));
+                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPDF()}\n {Hour.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
 
 
 
@@ -714,7 +714,7 @@ img[style*='width:120px;'] {
             .SetTextAlignment(TextAlignment.LEFT)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .SetFont(font)
-             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPfd()}\n {invoice.TotalHours}{" "}{Hours.ArabicWithFontGlyphsToPfd()}").SetFontSize(14)));
+             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {invoice.TotalHours}{" "}{Hours.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
 
             table21.AddCell(new Cell()
              .SetBorder(Border.NO_BORDER)
