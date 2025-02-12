@@ -166,6 +166,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var query = await _garageRepository.GetQueryableAsync();
             query = query
                 .Where(_ => _.OrganizationId == organizationId);
+            query = query.Where(_ => _.Status == Status.Active);
             // Calculate sums
             var result = new GetNumberOfParkingAndEmptyParkingDto
             {
@@ -667,4 +668,20 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
     }
 
+
+    public async Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var filterExpression = BuildExpression<PaymentAnalysis>.BuildFilterExpression(input.filters);
+
+            var result = await _paymentAnalysisRepository.GetPaymentForKeeper(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            return new PagedResultDto<PaymentAnalysis>
+            {
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
+            };
+        }
+
+    }
 }
