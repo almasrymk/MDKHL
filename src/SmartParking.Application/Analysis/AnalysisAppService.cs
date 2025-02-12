@@ -496,6 +496,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Where(_ => _.CustomerId != null);
             query = CheckTenantPayment(tenantId, query);
             query = ApplySortPayment(input, query);
             query = ApplyFilterPayment(input, query);
