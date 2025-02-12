@@ -182,7 +182,7 @@ namespace AraibcPdfUnicodeGlyphsResharper
 
             return string.Join(' ', xWords);
         }
-        public static string ArabicWithFontGlyphsToPfd(this string source)
+        public static string ArabicWithFontGlyphsToPDF(this string source)
         {
             return source.GetUnShapedUnicode().DecodeEncodedNonAsciiCharacters().ReverseString();
         }
