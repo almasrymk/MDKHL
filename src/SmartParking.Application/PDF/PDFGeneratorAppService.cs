@@ -584,7 +584,7 @@ img[style*='width:120px;'] {
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .SetFont(font)
-             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {Hours.ArabicWithFontGlyphsToPDF()}{invoice.TotalHours}").SetFontSize(14)));
+             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {Hours.ArabicWithFontGlyphsToPDF()}{" "}{invoice.TotalHours}").SetFontSize(14)));
 
 
             table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopRightRadius(new BorderRadius(10))
@@ -644,7 +644,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1)
                   .SetBorder(Border.NO_BORDER)
                   .SetTextAlignment(TextAlignment.LEFT)
-                  .Add(new Paragraph("Cashier Number:")).SimulateBold());
+                  .Add(new Paragraph($"{CashierNo}:")).SimulateBold());
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -654,7 +654,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph("Organization Name:")).SimulateBold());
+                 .Add(new Paragraph($"{OrganizationName}:")).SimulateBold());
             table.AddCell(new Cell(1, 1)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .SetBorder(Border.NO_BORDER)
@@ -663,7 +663,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph("Organization Address:")).SimulateBold());
+                 .Add(new Paragraph($"{OrganizationAddress}:")).SimulateBold());
             table.AddCell(new Cell(1, 1)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .SetBorder(Border.NO_BORDER)
@@ -673,7 +673,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph("Plate Number:")).SimulateBold());
+                 .Add(new Paragraph($"{PlateNumber}:")).SimulateBold());
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -682,7 +682,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph("Entry Date:")).SimulateBold());
+                 .Add(new Paragraph($"{EntranceTime}:")).SimulateBold());
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -692,7 +692,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph("Exit Date:")).SimulateBold());
+                 .Add(new Paragraph($"{ExitTime}:")).SimulateBold());
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -704,7 +704,7 @@ img[style*='width:120px;'] {
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPDF()}\n {Hour.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
+                .Add(new Paragraph($"{Subscription}\n {Hour}").SetFontSize(14)));
 
 
 
@@ -714,15 +714,15 @@ img[style*='width:120px;'] {
             .SetTextAlignment(TextAlignment.LEFT)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .SetFont(font)
-             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {invoice.TotalHours}{" "}{Hours.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
+             .Add(new Paragraph($"{Duration}\n {invoice.TotalHours}{" "}{Hours}").SetFontSize(14)));
 
             table21.AddCell(new Cell()
              .SetBorder(Border.NO_BORDER)
              .SetTextAlignment(TextAlignment.LEFT)
              .SetVerticalAlignment(VerticalAlignment.TOP)
               .Add(new Paragraph()
-                .Add(new Text("Total Pre VAT: ").SimulateBold())
-                .Add(new Text(invoice.InvoicePrice.ToString("F2") + " SAR"))
+                .Add(new Text($"{TotalPreVAT}: ").SimulateBold())
+                .Add(new Text(invoice.InvoicePrice.ToString("F2") + $"{Sar} "))
                 .SetFontSize(12)));
 
             table21.AddCell(new Cell()
@@ -730,8 +730,8 @@ img[style*='width:120px;'] {
                 .SetTextAlignment(TextAlignment.LEFT)
                 .SetVerticalAlignment(VerticalAlignment.TOP)
                 .Add(new Paragraph()
-                    .Add(new Text("VAT 15%: ").SimulateBold())
-                    .Add(new Text((Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " SAR"))
+                    .Add(new Text($"{Vats} 15%: ").SimulateBold())
+                    .Add(new Text((Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + $"{Sar}"))
                     .SetFontSize(12)));
 
             table21.AddCell(new Cell()
@@ -739,8 +739,8 @@ img[style*='width:120px;'] {
                 .SetTextAlignment(TextAlignment.LEFT)
                 .SetVerticalAlignment(VerticalAlignment.TOP)
                 .Add(new Paragraph()
-                    .Add(new Text("Total Include VAT: ").SimulateBold())
-                    .Add(new Text((Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + " SAR"))
+                    .Add(new Text($"{TotalIncludeVAT}: ").SimulateBold())
+                    .Add(new Text((Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + $" {Sar}"))
                     .SetFontSize(12)));
             iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
         .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
