@@ -351,7 +351,7 @@ public partial class Customer
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
         var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId);
-        var data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+        var data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis , currrentTenant.Id);
 
         await DownloadExcel(data, row.Cells[1].Value);
 
