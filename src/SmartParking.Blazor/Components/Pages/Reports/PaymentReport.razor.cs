@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Organizations;
 using SmartParking.Helpers;
 using SmartParking.Localization;
+using SmartParking.PDF;
 using SmartParking.Permissions.Reports;
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
@@ -42,7 +44,8 @@ public partial class PaymentReport
     {
         var MenuDatasTable = new List<MudMenuData>
     {
-       await CreateColumnVisibilityMenue(columns),
+       await CreateReportsMenue() ,
+       await CreateColumnVisibilityMenue(columns)
 
     };
         MenuDatas = MenuDatasTable;
@@ -65,7 +68,79 @@ public partial class PaymentReport
             IsMenueColumnVisible = true
         };
     }
+    private async Task<MudMenuData> CreateReportsMenue()
+    {
+        var itemsInMenue = new List<MenuItem>
+        {
+            new MenuItem { MenueName = "Reports",
+                Label = LocalizationHelper.GetLocalizedString("CustomerAndPaymentReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async () => await CustomerAndPaymentReportsAsync())
+            } ,
+              new MenuItem { MenueName = "Reports",
+                Label = LocalizationHelper.GetLocalizedString("PaymentMehtodReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async () => await PaymentMehtodReportsAsync())
+            }
 
+        };
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["Reports"],
+            Label = L["Reports"],
+            Items = itemsInMenue,
+            IsMenueColumnVisible = false,
+            IsExport = true
+
+        };
+    }
+   
+    private async Task PaymentMehtodReportsAsync()
+    {
+        try
+        {
+            var request = new PagedAndSortedAndFilteredResultRequestDto
+            {
+                MaxResultCount = 500,
+                SkipCount = 0,
+                Sorting = "",
+                SearchingTerm = "",
+                filters = new List<FilterRequestDto>(),
+                
+            };
+
+            var payments = await AnalysisAppService.ReportCustomerPayment(request, CurrentTenant.Id);
+            var items = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+    }//CustomerAndPaymentReportsAsync
+    private async Task CustomerAndPaymentReportsAsync()
+    {
+        try
+        {
+            var request = new PagedAndSortedAndFilteredResultRequestDto
+            {
+                MaxResultCount = 500,
+                SkipCount = 0,
+                Sorting = "Id",
+                SearchingTerm = "",
+                filters = new List<FilterRequestDto>()   
+            };
+
+            var payments = await AnalysisAppService.ReportCustomerPayment(request, CurrentTenant.Id);
+            var items = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+    }
     private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
     {
         ColumnVisibility = valueOfMenue;
@@ -82,7 +157,7 @@ public partial class PaymentReport
             SearchingTerm = paged.SearchTerm
 
         };
-        var payments = await AnalysisAppService.ReportCustomerPayment(input, CurrentTenant.Id);
+        var payments = await AnalysisAppService.ReportPayment(input, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
         if (paged.IsExport)
         {

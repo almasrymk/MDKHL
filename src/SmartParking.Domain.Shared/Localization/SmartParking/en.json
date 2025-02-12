@@ -667,7 +667,11 @@
     "CustomerAndTransactionReport": "Customer And Transaction Report",
     "EmployeeAndTransactionReport": "Employee And Transaction Report",
     "VisitorAndTransactionReport": "Visitor And Transaction Report",
-    "Reserved": "Reserved"
+    "Reserved": "Reserved",
+    "CustomerAndPaymentReport": " Report payment for customers",
+    "CustomerPackageReport": "Report packages for customers",
+    "PaymentMehtodReport" :  "Report payment for bank transfer"
+
 
 
 

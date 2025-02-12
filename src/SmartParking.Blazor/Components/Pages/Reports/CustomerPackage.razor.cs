@@ -46,7 +46,8 @@ public partial class CustomerPackage
     {
         var MenuDatasTable = new List<MudMenuData>
         {
-           await CreateColumnVisibilityMenue(columns),
+           await CreateReportsMenue() ,
+           await CreateColumnVisibilityMenue(columns)
 
         };
         MenuDatas = MenuDatasTable;
@@ -70,6 +71,60 @@ public partial class CustomerPackage
         };
     }
 
+
+    private async Task<MudMenuData> CreateReportsMenue()
+    {
+        var itemsInMenue = new List<MenuItem>
+        {
+            new MenuItem { MenueName = "Reports",
+                Label = LocalizationHelper.GetLocalizedString("CustomerPackageReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerPackageReportsAsync("Customer"))
+            }
+        };
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["Reports"],
+            Label = L["Reports"],
+            Items = itemsInMenue,
+            IsMenueColumnVisible = false,
+            IsExport = true
+
+        };
+    }
+    private async Task CustomerPackageReportsAsync(string selectvalue)
+    {
+        try
+        {
+
+            var request = new PagedAndSortedAndFilteredResultRequestDto
+            {
+                MaxResultCount = 500,
+                SkipCount = 0,
+                Sorting = "PackageEnglishName",
+                SearchingTerm = "",
+                filters = new List<FilterRequestDto>
+                {
+                    new FilterRequestDto
+                    {
+                        FilterProperty ="CustomerCategory",
+                         FilterValue = selectvalue,
+                         IsNot = false,
+                         TypeFilter = TypeFilter.Enum
+                    }
+                },
+            };
+            var customerPackages = await AnalysisAppService.ReportCustomerPackage(request, CurrentTenant.Id);
+            var items = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
+            items.Name += selectvalue;
+            await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+    }
     private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
     {
         ColumnVisibility = valueOfMenue;
