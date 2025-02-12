@@ -166,6 +166,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var query = await _garageRepository.GetQueryableAsync();
             query = query
                 .Where(_ => _.OrganizationId == organizationId);
+            query = query.Where(_ => _.Status == Status.Active);
             // Calculate sums
             var result = new GetNumberOfParkingAndEmptyParkingDto
             {
@@ -424,7 +425,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisCustomerId(CustomerId);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
             return result;
         }
 
@@ -490,12 +490,54 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
         return query;
     }
+    public async Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _paymentRepository.GetQueryableAsync();
+            query = CheckTenantPayment(tenantId, query);
+            query = ApplySortPayment(input, query);
+            query = ApplyFilterPayment(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(query);
+            var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = paymentMap,
+                TotalCount = totalCount
+            };
+        }
 
+    }
     public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Where(_ => _.CustomerId != null);
+            query = CheckTenantPayment(tenantId, query);
+            query = ApplySortPayment(input, query);
+            query = ApplyFilterPayment(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(query);
+            var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = paymentMap,
+                TotalCount = totalCount
+            };
+        }
+
+    }
+    
+    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
             query = CheckTenantPayment(tenantId, query);
             query = ApplySortPayment(input, query);
             query = ApplyFilterPayment(input, query);
@@ -626,4 +668,20 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
     }
 
+
+    public async Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var filterExpression = BuildExpression<PaymentAnalysis>.BuildFilterExpression(input.filters);
+
+            var result = await _paymentAnalysisRepository.GetPaymentForKeeper(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            return new PagedResultDto<PaymentAnalysis>
+            {
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
+            };
+        }
+
+    }
 }

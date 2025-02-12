@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Entities.Payments;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace SmartParking.Entities.Analysis;
 
 public class PaymentAnalysis
 {
+    public Payment Payment { get; set; }
     public string KeeperName { get; set; }
     public double AmountDaily { get; set; }
     public double AmountMonthly { get; set; }

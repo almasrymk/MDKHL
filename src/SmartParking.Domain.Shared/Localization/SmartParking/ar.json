@@ -575,7 +575,7 @@
     "User": "المستخدم",
     "NationIdValidation": "أرقام الهوية / الإقامة يجب ان تكون عشرة أرقام",
     "PassportValidation": "جواز السفر يجب ان يحتوي علي أرقام من 6 ال 9 و حرف واحد",
-    "Customer": "العميل",
+    "Customer": "عميل",
     "Vehicle": "مركبة",
     "RangeValidation": "يجب ان يكون عدده",
     "assigned": "تعيين",
@@ -690,11 +690,15 @@
     "ColumnVisibility": "اختيار الحقل",
     "UpgradeSubscriptionValidationCustomer": "اشتراكك الحالي لا يسمح بإضافة مستفيد جديد",
     "GetPdf": "تصدير بي دي اف",
+    "Visitor": "زائر",
     "GarageTransactionAnalysis": "تقرير بحركات المواقف",
     "CustomerAndTransactionReport": "تقرير العملاء و حركة سيارتهم",
     "EmployeeAndTransactionReport": "تقرير الموظفين و حركة سيارتهم",
     "VisitorAndTransactionReport": "تقرير الزوار و حركة سيارتهم",
-    "Reserved": "محجوز"
+    "Reserved": "محجوز",
+    "CustomerAndPaymentReport": "تقرير بالفواتير لفئةالعملاء",
+    "CustomerPackageReport": "تقرير بالباقات لفئة العملاء",
+    "PaymentMehtodReport" :  " تقرير بالفواتير للتحويل البنكي"
 
 
   }

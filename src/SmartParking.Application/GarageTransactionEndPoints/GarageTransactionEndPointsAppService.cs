@@ -377,8 +377,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     private async Task ChangeCategoryForEntryTransaction(GarageTransactionDto EntryTransaction)
     {
-        var createUpdateTransactionDto = ObjectMapper.Map<GarageTransactionDto, CreateUpdateGarageTransactionDto>(EntryTransaction);
-        await _garageTransactionsAppService.UpdateAsync(EntryTransaction.Id, createUpdateTransactionDto);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var createUpdateTransactionDto = ObjectMapper.Map<GarageTransactionDto, CreateUpdateGarageTransactionDto>(EntryTransaction);
+            await _garageTransactionsAppService.UpdateAsync(EntryTransaction.Id, createUpdateTransactionDto);
+        }
     }
     private async Task<bool> CheckForCategoriesInTransactionsHasBeenChanged(CreateUpdateGarageTransactionDto ExitTransaction, GarageTransactionDto EntryTransaction , Garage garage)
     {

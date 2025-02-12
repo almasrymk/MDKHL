@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Analysis
 @using SmartParking.Localization
+@using SmartParking.PDF
 @using Volo.Abp.MultiTenancy
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IDialogService Dialog
@@ -9,6 +10,9 @@
 @inject ICurrentTenant CurrentTenant
 @inject NavigationManager Navigation
 @inject IAuthorizationService AuthorizationService
+@inject IGenerateFilesAppService GenerateFilesAppService
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 <PageTitle>@L["PackagePaymentReports"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["PackagePaymentReports"] </MudText>
 <SPDataGrid PageName=@($"{@L["PackagePaymentReports"]}") ShowMenue="true" Data="@itemData" Menus="@MenuDatas" ShowFiltering="true" OnPageChanged="FetchData" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
