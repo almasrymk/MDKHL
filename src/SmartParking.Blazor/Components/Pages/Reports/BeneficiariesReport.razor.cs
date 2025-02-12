@@ -133,7 +133,7 @@ partial class BeneficiariesReport
             };
 
             var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
-            var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
+            var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList() , CurrentTenant.Id);
             items.Name+=selectvalue;
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
@@ -172,7 +172,7 @@ partial class BeneficiariesReport
         if (paged.IsExport)
         {
             itemDataIsExport.Columns = itemData.Columns;
-            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
+            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
             itemData.Columns = itemDataIsExport.Columns;
         }
         else if (!ColumnVisibility.IsNullOrWhiteSpace() && (IsEnter && paged.IsExport == false))
@@ -181,7 +181,7 @@ partial class BeneficiariesReport
         }
         else
         {
-            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
+            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
             IsEnter = true;
         }
         await CreateMenue(itemData.Columns);

@@ -102,13 +102,13 @@ public partial class PaymentReport
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "",
+                Sorting = "Id",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>(),
                 
             };
 
-            var payments = await AnalysisAppService.ReportCustomerPayment(request, CurrentTenant.Id);
+            var payments = await AnalysisAppService.ReportCustomerPaymentForPaymentMethod(request, CurrentTenant.Id);
             var items = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }

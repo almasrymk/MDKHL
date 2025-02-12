@@ -370,14 +370,14 @@
             if(currenttenant.Id == null)
             {
                 var garageTransactionAnalysis  = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category,null);
-                data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+                data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis, currenttenant.Id);
 
 
             }
             else
             {
                 var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category, currenttenant.Id);
-                data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis);
+                data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis, currenttenant.Id);
 
             }
             data.Name = category.ToString() + "Transactions";
