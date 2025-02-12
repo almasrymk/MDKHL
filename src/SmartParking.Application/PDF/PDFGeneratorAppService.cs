@@ -458,23 +458,60 @@ img[style*='width:120px;'] {
          .SetFontSize(20);
         Table tableimages = new Table(3).UseAllAvailableWidth();
 
-        iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT)
-            .SetWidth(120);
-        iText.Layout.Element.Image OrgLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
-            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
-            .SetWidth(120);
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
+           .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+           .SetWidth(120);
+
+            iText.Layout.Element.Image OrgLogo = (File.Exists(currentPath)
+          ? new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
+          : new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf)))
+              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.LEFT)
+              .SetWidth(120);
 
 
-        tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT));
 
-        tableimages.AddCell(new Cell().Add(OrgLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+
+            tableimages.AddCell(new Cell().Add(OrgLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
+
+
+        }
+        else
+        {
+            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
+           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
+           .SetWidth(120);
+
+            iText.Layout.Element.Image OrgLogo = (File.Exists(currentPath)
+          ? new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
+          : new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf)))
+              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT)
+              .SetWidth(120);
+
+
+
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+
+            tableimages.AddCell(new Cell().Add(OrgLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+        }
 
 
         Paragraph paymentNumber = new Paragraph(CultureInfo.CurrentCulture.Name == "ar" ? $"{payment.PaymentNumber}{" "}{InvoiceNumber.ArabicWithFontGlyphsToPDF()}" : $"{InvoiceNumber}{" "}{payment.PaymentNumber}")
