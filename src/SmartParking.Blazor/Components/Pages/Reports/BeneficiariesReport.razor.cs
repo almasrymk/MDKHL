@@ -24,6 +24,7 @@ using SmartParking.Utilities;
 using System.Composition;
 using System.Globalization;
 using Volo.Abp.MultiTenancy;
+using static QRCoder.PayloadGenerator;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
@@ -134,33 +135,13 @@ partial class BeneficiariesReport
             var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
             var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList());
             items.Name+=selectvalue;
-            await ExportExcel(items);
+            await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch
         {
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
         }
-    }
-
-    private async Task ExportExcel(TableData items)
-    {
-        var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
-        string file = System.IO.Path.Combine(folderName, $"{items.Name}.xlsx");
-
-        await GenerateFilesAppService.ExportToExcel(items, file);
-
-        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
-
-        await Task.Delay(1000);
-        await OpenNewBlank($"Folders/Excel/{items.Name}.xlsx");
-    }
-
-    private async Task OpenNewBlank(string url)
-    {
-
-        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
     }
     protected async override Task OnInitializedAsync()
     {
