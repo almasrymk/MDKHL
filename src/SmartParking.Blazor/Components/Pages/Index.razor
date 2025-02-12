@@ -181,9 +181,6 @@
         <MudItem sm="7" Style="flex: 0 0 60%; display: flex; flex-direction: column; height: 100%; padding: 16px; margin: 0;">
             <MudPaper Style="height: 100%; padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
                 <MudItem Style="display: flex; align-items: flex-start; justify-content: flex-end;">
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Filled">
-                        <MudMenuItem OnClick="ExportPaymentAnalysisToExcel">@L["Excel"]</MudMenuItem>
-                    </MudMenu>
                 </MudItem>
                 @if (Series != null && Series.Any(s => s.Data != null && s.Data.Any(d => d > 0))) 
                 {
