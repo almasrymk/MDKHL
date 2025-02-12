@@ -291,6 +291,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         existingGarage.Status = Enums.Status.Inactive;
         organization.ActiveGarages--;
         organization.UsedSlots -= existingGarage.MaxCapacity;
+        existingGarage.CurrnetCapacityEmployees = existingGarage.CurrnetCapacityForFree = existingGarage.CurrnetCapacityForCustomers = existingGarage.CurrnetCapicity = 0;
         var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
         await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
         organization.ActiveCameras -= cameras.Count;
@@ -875,7 +876,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             {
                 queryable = queryable.OrderBy(input.Sorting);
             }
-
         }
 
         return queryable;
