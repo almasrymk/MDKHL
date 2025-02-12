@@ -490,7 +490,26 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
         return query;
     }
+    public async Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _paymentRepository.GetQueryableAsync();
+            query = CheckTenantPayment(tenantId, query);
+            query = ApplySortPayment(input, query);
+            query = ApplyFilterPayment(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(query);
+            var paymentMap = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(result);
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = paymentMap,
+                TotalCount = totalCount
+            };
+        }
 
+    }
     public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
