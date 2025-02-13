@@ -425,7 +425,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisCustomerId(CustomerId);
-            var dataTable = CreateTableHelper.CreateDataTableForGarageTransactionCustomer(result);
             return result;
         }
 

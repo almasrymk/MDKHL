@@ -61,7 +61,7 @@ namespace SmartParking.Repositories
                             GarageName = garageTransaction.Garage.NameEn,
                             OrganizationName = garageTransaction.Organization.EnglishName,
                             ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
-                            UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName
+                            UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.Name : v1.Customer.IdentityUser.Name
 
                         };
             query = query.Where(filterRequests);

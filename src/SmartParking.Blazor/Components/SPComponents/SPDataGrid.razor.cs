@@ -295,6 +295,7 @@ public partial class SPDataGrid
 
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/Excel/{Data.Name}.xlsx");
+            IsExport = false;
         }
         catch
         {
@@ -322,6 +323,8 @@ public partial class SPDataGrid
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
+            IsExport = false;
+
         }
         catch
         {
@@ -352,6 +355,8 @@ public partial class SPDataGrid
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
+            IsExport = false;
+
         }
         catch
         {
@@ -371,6 +376,8 @@ public partial class SPDataGrid
         await action.InvokeAsync(value);
         if (!isExport)
             await dataGrid.ReloadServerData();
+        else
+            IsClickMenu = false;
 
     }
     public async Task HandleMunueColumnVisibility(string columnSelect, EventCallback<string> action)

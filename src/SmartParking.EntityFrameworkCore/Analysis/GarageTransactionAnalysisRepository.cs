@@ -269,7 +269,7 @@ public class GarageTransactionAnalysisRepository
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         OrganizationNameAr = garageTransaction.Organization.ArabicName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
-                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.Name : v1.Customer.IdentityUser.Name,
                         CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId
                     };
 
@@ -311,7 +311,7 @@ public class GarageTransactionAnalysisRepository
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         OrganizationNameAr = garageTransaction.Organization.ArabicName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
-                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.Name : v1.Customer.IdentityUser.Name
 
                     };
         query = query.Where(filterRequests);
