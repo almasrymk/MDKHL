@@ -258,10 +258,14 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                     var txt = CultureInfo.CurrentCulture.Name == "ar" ?
                                                    new Text(columns.DisplayName.ArabicWithFontGlyphsToPDF())
                                                    :new Text(columns.DisplayName);
-                    table.AddHeaderCell(new Cell().Add(new Paragraph(txt)))
-                         .AddStyle(styleBold.SimulateBold())
-                        .SetFontSize(9)
-                        .SetTextAlignment(TextAlignment.CENTER);
+                  
+                    var headerCell = new Cell()
+                            .Add(new Paragraph(txt))
+                            .AddStyle(styleBold.SimulateBold())
+                            .SetFontSize(10)
+                            .SetTextAlignment(TextAlignment.CENTER)
+                            .SetBackgroundColor(new DeviceRgb(211, 211, 211));
+                    table.AddHeaderCell(headerCell);
                 }
                 foreach (var row in Data.Rows)
                 {
@@ -315,16 +319,16 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             if ((header.PropertyName.Contains("Date") == true || header.PropertyName.Contains("Time") == true))
             {
                 return new Text(cellValue)
-                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFontSize(9);
+                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFontSize(12);
 
             }
             else
             {
-                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFontSize(9);
+                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFontSize(12);
             }
 
         }
-        return new Text(cellValue).SetFontSize(9);
+        return new Text(cellValue).SetFontSize(12);
                                 
     }
 }
