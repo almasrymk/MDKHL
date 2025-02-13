@@ -57,6 +57,11 @@ public static class BreadCrumbsRoutes
             "edit-profile" => LocalizationHelper.GetLocalizedString("Edit Profile") ,
             "roles/mdkhl" => LocalizationHelper.GetLocalizedString("Roles") ,
             "add-user" => LocalizationHelper.GetLocalizedString("Users") +" / "+ LocalizationHelper.GetLocalizedString("Add NEW"),
+            "beneficiariesreport" => LocalizationHelper.GetLocalizedString("BeneficiariesReports"),
+            "customerpackage/reports" => LocalizationHelper.GetLocalizedString("PackagesReports"),
+            "garagesreport" => LocalizationHelper.GetLocalizedString("GaragesReports"),
+            "packagepayment/reports" => LocalizationHelper.GetLocalizedString("PackagePaymentReports"),
+            "paymentsreports" => LocalizationHelper.GetLocalizedString("PaymentReports"),
             "roles" => LocalizationHelper.GetLocalizedString("Roles"),
             _ => LocalizationHelper.GetLocalizedString("Dashboard") // Default title if no match found
         };
