@@ -133,8 +133,17 @@ partial class BeneficiariesReport
             };
 
             var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
-            var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList() , CurrentTenant.Id);
-            items.Name+=selectvalue;
+            var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                items.Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis") + " " + "ل"+LocalizationHelper.GetLocalizedString(selectvalue);
+
+            }
+            else
+            {
+                items.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis");
+
+            }
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch
