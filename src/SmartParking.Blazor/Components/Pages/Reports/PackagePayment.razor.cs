@@ -71,7 +71,7 @@ public partial class PackagePayment
         {
 
             new MenuItem { MenueName = "Reports",
-                Label = LocalizationHelper.GetLocalizedString("PackagePaymentReports"), ISColumnVisibility = false,
+                Label = LocalizationHelper.GetLocalizedString("PackagePaymentsData"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync())
             }
         };
