@@ -692,13 +692,13 @@
     "GetPdf": "تصدير بي دي اف",
     "Visitor": "زائر",
     "GarageTransactionAnalysis": "تقرير بحركات المواقف",
-    "CustomerAndTransactionReport": "تقرير العملاء و حركة سيارتهم",
-    "EmployeeAndTransactionReport": "تقرير الموظفين و حركة سيارتهم",
-    "VisitorAndTransactionReport": "تقرير الزوار و حركة سيارتهم",
+    "CustomerAndTransactionReport": "العملاء و حركة سيارتهم",
+    "EmployeeAndTransactionReport": "الموظفين و حركة سيارتهم",
+    "VisitorAndTransactionReport": "الزوار و حركة سيارتهم",
     "Reserved": "محجوز",
-    "CustomerAndPaymentReport": "تقرير بالفواتير لفئةالعملاء",
-    "CustomerPackageReport": "تقرير بالباقات لفئة العملاء",
-    "PaymentMehtodReport" :  " تقرير بالفواتير للتحويل البنكي"
+    "CustomerAndPaymentReport": "الفواتير لفئة العملاء",
+    "CustomerPackageReport": "الباقات لفئة العملاء",
+    "PaymentMehtodReport" :  "الفواتير للتحويل البنكي"
 
 
   }
