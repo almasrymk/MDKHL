@@ -92,7 +92,7 @@ partial class BeneficiariesReport
 
         if (await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager))
             itemsInMenue.Add(new MenuItem { MenueName = "Reports", Label = "VisitorAndTransactionReport", ISColumnVisibility = false, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerAndTransactionReportsAsync("Visitor")) });
-
+        
         await Task.Yield();
         return new MudMenuData
         {

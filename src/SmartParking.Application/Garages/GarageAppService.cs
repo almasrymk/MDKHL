@@ -892,7 +892,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             List<Garage> garages = await ApplyPaged(input, queryable);
             var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
-            Console.WriteLine(garagesDto.Count);
             return new PagedResultDto<GarageDto>(
                 totalCount,
                 garagesDto
