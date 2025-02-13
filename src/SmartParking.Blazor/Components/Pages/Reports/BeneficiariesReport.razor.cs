@@ -20,6 +20,7 @@ using SmartParking.PDF;
 using SmartParking.Permissions.PaymentsPermissions;
 using SmartParking.Permissions.Reports;
 using SmartParking.Results;
+using SmartParking.StringLocalizer;
 using SmartParking.Utilities;
 using System.Composition;
 using System.Globalization;
@@ -136,7 +137,7 @@ partial class BeneficiariesReport
             var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
-                items.Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis") + " " + "ل"+LocalizationHelper.GetLocalizedString(selectvalue);
+                items.Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
 
             }
             else

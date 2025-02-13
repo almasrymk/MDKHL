@@ -14,7 +14,9 @@ using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.Permissions.Reports;
+using SmartParking.StringLocalizer;
 using Volo.Abp.Application.Dtos;
+
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
 
@@ -121,7 +123,7 @@ public partial class CustomerPackage
             items = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
             if(CultureInfo.CurrentCulture.Name=="ar")
             {
-                items.Name = LocalizationHelper.GetLocalizedString("PackagesReports") + " " + "ل" + LocalizationHelper.GetLocalizedString(selectvalue);
+                items.Name = LocalizationHelper.GetLocalizedString("PackagesReports") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
 
             }
             else
