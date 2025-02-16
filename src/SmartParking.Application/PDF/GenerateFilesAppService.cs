@@ -368,7 +368,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         {
             footerTable.AddCell(new Cell().Add(new Paragraph($"Email: {contactMail}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
             footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {phoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
-            footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+            footerTable.AddCell(new Cell().Add(new Paragraph( $"Address: {address.ArabicWithFontGlyphsToPDF()}")).SetFont(font).SetBorder(Border.NO_BORDER).SetFont(font).SetTextAlignment(TextAlignment.LEFT));
             footerTable.AddCell(new Cell().Add(new Paragraph($" {pageNumber}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
         }
         else
