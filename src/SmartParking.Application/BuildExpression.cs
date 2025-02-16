@@ -144,8 +144,12 @@ public static class BuildExpression<T>
         {
             case "GreaterThan":
                 return BuildDateGreaterThanCondition(property, filter);
+            case "GreaterThanOrEqual":
+                return BuildDateGreaterThanOrEqualCondition(property, filter);
             case "LessThan":
                 return BuildDateLessThanCondition(property, filter);
+            case "LessThanOrEqual":
+                return BuildDateLessThanOrEqualCondition(property, filter);
             default:
                 return BuildDateBetweenCondition(property, filter);
         }
@@ -167,19 +171,31 @@ public static class BuildExpression<T>
     private static Expression BuildDateGreaterThanCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
        
-        ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
-       
-        return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
-    }    
-    private static Expression BuildDateLessThanCondition(Expression property, FilterRequestDto filter)
+        return Expression.GreaterThan(DateNonNullableProperty, DateValueExpression);
+    }
+    private static Expression BuildDateGreaterThanOrEqualCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
 
         ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
+
+        return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
+    }
+    private static Expression BuildDateLessThanCondition(Expression property, FilterRequestDto filter)
+    {
+        Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
+        return Expression.LessThan(DateNonNullableProperty, DateValueExpression);
+    }
+    private static Expression BuildDateLessThanOrEqualCondition(Expression property, FilterRequestDto filter)
+    {
+        Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
         return Expression.LessThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
-
     private static Expression BuildStringCondition(Expression property, FilterRequestDto filter, ConstantExpression value)
     {
         if (filter.FilterOperator.IsNullOrWhiteSpace())
