@@ -98,7 +98,7 @@ public partial class PackagePayment
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "Package.Id",
+                Sorting = "Package.CustomerCategory",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>()
             };
@@ -123,7 +123,7 @@ public partial class PackagePayment
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn == "Id" ? "Package.Id" : paged.SortColumn,
+            Sorting = paged.SortColumn == "Id" ? "Package.CustomerCategory" : paged.SortColumn,
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 

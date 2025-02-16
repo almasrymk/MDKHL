@@ -182,11 +182,15 @@ public static class BuildExpression<T>
 
     private static Expression BuildStringCondition(Expression property, FilterRequestDto filter, ConstantExpression value)
     {
-        
         if (filter.FilterOperator.IsNullOrWhiteSpace())
         {
             return Expression.Equal(property, value);
         }
+
+        MethodInfo toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes);
+        Expression propertyToLower = Expression.Call(property, toLowerMethod);
+        Expression valueToLower = Expression.Call(value, toLowerMethod);
+
         MethodInfo containsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
         Expression condition;
 
@@ -194,15 +198,16 @@ public static class BuildExpression<T>
         {
             condition = filter.FilterOperator == "IsNullOrEmpty"
                 ? Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property))
-                : Expression.Not(Expression.Call(property, containsMethod, value));
+                : Expression.Not(Expression.Call(propertyToLower, containsMethod, valueToLower));
         }
         else
         {
             condition = filter.FilterOperator == "IsNullOrEmpty"
                 ? Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property)
-                : Expression.Call(property, containsMethod, value);
+                : Expression.Call(propertyToLower, containsMethod, valueToLower);
         }
 
         return condition;
     }
+
 }
