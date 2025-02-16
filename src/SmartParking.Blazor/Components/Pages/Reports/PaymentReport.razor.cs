@@ -153,7 +153,7 @@ public partial class PaymentReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn,
+            Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name": paged.SortColumn,
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 
