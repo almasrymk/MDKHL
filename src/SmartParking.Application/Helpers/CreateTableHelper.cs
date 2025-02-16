@@ -33,12 +33,29 @@ public static class CreateTableHelper
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Name"), Name = "Name", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "UserName", IsFilterable = true });
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "PlateNumber",IsFilterable=true });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "GarageName", IsFilterable=true});
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "GarageName", IsFilterable = true });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "GarageNameAr", IsFilterable = true });
+
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Enum  , IsSortable = true,EnumType = typeof(CameraType),IsFilterable=true, PropertyName = "CameraType" });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Date , IsSortable = true, PropertyName = "AccurateTime",IsFilterable=true });
         if(currentTenant == null)
         {
+            if(CultureInfo.CurrentCulture.Name == "en")
+            {
+
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "OrganizationName" , IsFilterable = true });
+            }
+            else
+            {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "OrganizationNameAr", IsFilterable = true });
+
+            }
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("customer category"), Name = "CustomerCategory", TypeFilter = TypeFilter.Enum, IsSortable = true, PropertyName = "GarageTransaction.CustomerCategory", IsFilterable = true, EnumType = typeof(CustomerCategoryStatus) });
         foreach (var item in data)
