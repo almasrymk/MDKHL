@@ -187,7 +187,6 @@ public static class BuildExpression<T>
             return Expression.Equal(property, value);
         }
 
-        // Convert both property and value to lowercase
         MethodInfo toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes);
         Expression propertyToLower = Expression.Call(property, toLowerMethod);
         Expression valueToLower = Expression.Call(value, toLowerMethod);
