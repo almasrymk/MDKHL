@@ -157,7 +157,7 @@ public static class BuildExpression<T>
         Expression endDateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
 
         ConstantExpression startDateValueExpression = Expression.Constant(filter.StartDate, typeof(DateTime));
-        ConstantExpression endDateValueExpression = Expression.Constant(filter.EndDate, typeof(DateTime));
+        ConstantExpression endDateValueExpression = Expression.Constant(filter.EndDate.AddDays(1), typeof(DateTime));
         var greaterThan = Expression.GreaterThanOrEqual(startDateNonNullableProperty, startDateValueExpression);
         var lessThan = Expression.LessThanOrEqual(endDateNonNullableProperty, endDateValueExpression);
         return Expression.AndAlso(greaterThan, lessThan);
