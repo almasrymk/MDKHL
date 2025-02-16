@@ -15,6 +15,7 @@ using iText.Layout.Properties;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
+using SmartParking.Entities.Organizations;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
@@ -170,161 +171,229 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                 string fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/fonts/NotoNaskhArabic-Regular.ttf");
                 PdfFont font = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
                 FontSet set = new FontSet();
-
                 set.AddFont(fontPath);
                 Style styleBold = new Style();
                 styleBold.SetFont(font);
                 doc.SetFontProvider(new FontProvider(set));
-                Table headerTable = new Table(3);
-                headerTable.SetWidth(UnitValue.CreatePercentValue(100));
-               
-                // Left image
-                string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-                Image leftImage = new Image(ImageDataFactory.Create(leftImagePath))
-                    .SetHeight(75)
-                    .SetWidth(75)
-                    .SetMarginLeft(20)
-                    .SetHorizontalAlignment(HorizontalAlignment.LEFT);
-                Cell leftCell = new Cell().Add(leftImage)
-                                          .SetBorder(Border.NO_BORDER);
-                headerTable.AddCell(leftCell);
-                string displayTitle = "";
-                // Centered title
-                if (CultureInfo.CurrentCulture.Name == "en")
-                {
-                    displayTitle = Data.Name;
-                }
-                else
-                {
-                    displayTitle = Data.Name.ArabicWithFontGlyphsToPDF();
-                }
-                    Paragraph title = new Paragraph(displayTitle) // Report Title in Arabic
-                    .SetTextAlignment(TextAlignment.CENTER)
-                    .SetFont(font)
-                    .SetFontSize(25)
-                    .SimulateBold()
-                    .SetMarginTop(20);
-                 
-                Cell centerCell = new Cell().Add(title)
-                                            .SetTextAlignment(TextAlignment.CENTER)
-                                            .SetBorder(Border.NO_BORDER);
-                headerTable.AddCell(centerCell);
-
-
                 var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-                string rightImagePath = organization != null  && !string.IsNullOrEmpty(organization.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
-                                                             : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
                 var contactMail = organization == null ? "it@maienalmadina.com" : organization.ContactMail;
                 var phoneNum = organization == null ? "0104593681" : organization.PhoneNum;
                 var address = organization == null ? "عائشه بنت ابي بكر , 3111 ,حي بني خذره ,المدينة,42311, 6119" : organization.Address;
-                Image rightImage = new Image(ImageDataFactory.Create(System.IO.Path.Combine(Directory.GetCurrentDirectory() , "wwwroot/images/logo/MDHKL_01.png")))
-                    .SetHeight(75)
-                    .SetWidth(75)
-                    .SetMarginRight(20)
-                    .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
-                if (File.Exists(rightImagePath))
-                {
-                     rightImage = new Image(ImageDataFactory.Create(rightImagePath))
-                    .SetHeight(75)
-                    .SetWidth(75)
-                    .SetMarginRight(20)
-                    .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
-                }
-                Cell rightCell = new Cell().Add(rightImage)
-                                           .SetBorder(Border.NO_BORDER);
-                headerTable.AddCell(rightCell);
-
+                Table headerTable = CreateHeaderTable(Data, font, organization);
                 // Add the header table to the document
-                doc.Add(headerTable);
                 doc.SetBottomMargin(15);
-               
                 int NumberOfColumns = Data.Columns.Where(_ => _.IsColumnVisible).Count();
                 if (Data?.Columns?.FirstOrDefault()?.Name == "Id")
                     NumberOfColumns--;
-                Table table = new Table(NumberOfColumns);
+                Table columntable = GetColumnHeader(Data, font, styleBold, NumberOfColumns);
+                int pageNumber = 1;
 
-                table.SetWidth(UnitValue.CreatePercentValue(100));
-
+                Table footerTable = AddFooter(pdfDoc, font, contactMail, phoneNum, address, pageNumber);
+                int rowOfTable = 0;
+                doc.Add(headerTable);
+                int maxRows = 27;
                 if (CultureInfo.CurrentCulture.Name == "ar")
                 {
-                    table.SetTextAlignment(TextAlignment.RIGHT);
-                    table.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
+                    maxRows = 22;
                     Data.Columns.Reverse();
                 }
-                foreach (var columns in Data.Columns)
-                {
-                    if (columns.Name == "Id" || !columns.IsColumnVisible)
-                        continue;
-                    var txt = CultureInfo.CurrentCulture.Name == "ar" ?
-                                                   new Text(columns.DisplayName.ArabicWithFontGlyphsToPDF())
-                                                   :new Text(columns.DisplayName);
-                  
-                    var headerCell = new Cell()
-                            .Add(new Paragraph(txt))
-                            .AddStyle(styleBold.SimulateBold())
-                            .SetFontSize(10)
-                            .SetTextAlignment(TextAlignment.CENTER)
-                            .SetBackgroundColor(new DeviceRgb(211, 211, 211));
-                    table.AddHeaderCell(headerCell);
-                }
+                Table table = GetColumnHeader(Data, font, styleBold, NumberOfColumns);
                 foreach (var row in Data.Rows)
                 {
+
+                    if (rowOfTable == maxRows)
+                    {
+                        rowOfTable = 0;
+                        doc.Add(table);
+                        table = new Table(NumberOfColumns);
+                        table.SetWidth(UnitValue.CreatePercentValue(100));
+                        table = GetColumnHeader(Data, font, styleBold, NumberOfColumns);
+                        if (CultureInfo.CurrentCulture.Name == "en")
+                        {
+                            new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 60))
+                            .Add(footerTable);
+                        }
+                        else
+                        {
+                            new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 85))
+                                .Add(footerTable);
+                        }
+                        doc.Add(areaBreak: new AreaBreak());
+                        doc.Add(headerTable);
+                        pageNumber++;
+                        footerTable = AddFooter(pdfDoc, font, contactMail, phoneNum, address, pageNumber);
+                    }
+
                     foreach (var header in Data.Columns)
                     {
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
-                            Text txt = CellStyling(header, cellValue);
-                            table.AddCell(new Cell().Add(new Paragraph(txt))).SetTextAlignment(TextAlignment.CENTER);
+                            Text txt = CellStyling(header, cellValue, font);
+                            if (CultureInfo.CurrentCulture.Name == "ar")
+                            {
+                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(22).SetTextAlignment(TextAlignment.CENTER));
+
+                            }
+                            else
+                            {
+
+                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(18).SetTextAlignment(TextAlignment.CENTER));
+                            }
                         }
                     }
+                    rowOfTable++;
                 }
-                doc.Add(table);
-                doc.Add(element: new Paragraph("\n"));
-                Table footerTable = new Table(2).SetWidth(UnitValue.CreatePercentValue(100))
-                    .SetBorder(Border.NO_BORDER)
-                    .SetBorderTop(new SolidBorder(2))
-                    .SetMarginLeft(50);
-                if(CultureInfo.CurrentCulture.Name == "en")
+                if (rowOfTable < maxRows)
                 {
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"Email: {contactMail}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {phoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 60))
-                .Add(footerTable);
+                    doc.Add(table);
+                    if (CultureInfo.CurrentCulture.Name == "en")
+                    {
+                        new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 60))
+                        .Add(footerTable);
+                    }
+                    else
+                    {
+                        new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 85))
+                          .Add(footerTable);
+                    }
                 }
-                else
-                {
-                    footerTable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"رقم التواصل : {phoneNum}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"البريد الالكتروني :  {contactMail}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph(text: " ")).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
-                    footerTable.AddCell(new Cell().Add(new Paragraph($"العنوان : {address}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
-                    new Canvas(pdfDoc.GetLastPage(), new Rectangle(850, 85))
-                      .Add(footerTable);
-
-                }
-                //doc.Add(footerTable);
-                
                 doc.Close();
             }
+
         }
 
     }
 
-    private static Text CellStyling(ColumnDef header, string cellValue)
+    private static Table CreateHeaderTable(TableData Data, PdfFont font, Organization? organization)
+    {
+        Table headerTable = new Table(3);
+        headerTable.SetWidth(UnitValue.CreatePercentValue(100));
+
+        // Left image
+        string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+        Image leftImage = new Image(ImageDataFactory.Create(leftImagePath))
+            .SetHeight(75)
+            .SetWidth(75)
+            .SetMarginLeft(20)
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT);
+        Cell leftCell = new Cell().Add(leftImage)
+                                  .SetBorder(Border.NO_BORDER);
+        headerTable.AddCell(leftCell);
+        string displayTitle = "";
+        // Centered title
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            displayTitle = Data.Name;
+        }
+        else
+        {
+            displayTitle = Data.Name.ArabicWithFontGlyphsToPDF();
+        }
+        Paragraph title = new Paragraph(displayTitle) // Report Title in Arabic
+        .SetTextAlignment(TextAlignment.CENTER)
+        .SetFont(font)
+        .SetFontSize(25)
+        .SimulateBold()
+        .SetMarginTop(20);
+
+        Cell centerCell = new Cell().Add(title)
+                                    .SetTextAlignment(TextAlignment.CENTER)
+                                    .SetBorder(Border.NO_BORDER);
+        headerTable.AddCell(centerCell);
+
+
+        string rightImagePath = organization != null && !string.IsNullOrEmpty(organization.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                                                     : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+
+        Image rightImage = new Image(ImageDataFactory.Create(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png")))
+            .SetHeight(75)
+            .SetWidth(75)
+            .SetMarginRight(20)
+            .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+        if (File.Exists(rightImagePath))
+        {
+            rightImage = new Image(ImageDataFactory.Create(rightImagePath))
+           .SetHeight(75)
+           .SetWidth(75)
+           .SetMarginRight(20)
+           .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+        }
+        Cell rightCell = new Cell().Add(rightImage)
+                                   .SetBorder(Border.NO_BORDER);
+        headerTable.AddCell(rightCell);
+        return headerTable;
+    }
+
+    private static Table GetColumnHeader(TableData Data, PdfFont font, Style styleBold, int NumberOfColumns)
+    {
+        Table columntable = new Table(NumberOfColumns);
+        columntable.SetWidth(UnitValue.CreatePercentValue(100));
+
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            columntable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);  
+        }
+
+        foreach (var columns in Data.Columns)
+        {
+            if (columns.Name == "Id" || !columns.IsColumnVisible)
+                continue;
+            var txt = CultureInfo.CurrentCulture.Name == "ar" ?
+                                           new Text(columns.DisplayName.ArabicWithFontGlyphsToPDF()).SetFont(font)
+                                           : new Text(columns.DisplayName);
+
+            var headerCell = new Cell()
+                    .Add((new Paragraph(txt))
+                    .SetFont(font)
+                    .AddStyle(styleBold.SimulateBold())
+                    .SetFontSize(10)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    )
+                    .SetBackgroundColor(new DeviceRgb(211, 211, 211));
+            
+            columntable.AddHeaderCell(headerCell);
+        }
+
+        return columntable;
+    }
+
+    private static Table AddFooter(PdfDocument pdfDoc, PdfFont font, string contactMail, string phoneNum, string address, int pageNumber)
+    {
+        Table footerTable = new Table(2).SetWidth(UnitValue.CreatePercentValue(100))
+            .SetBorder(Border.NO_BORDER)
+            .SetBorderTop(new SolidBorder(2))
+            .SetMarginLeft(36);
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            footerTable.AddCell(new Cell().Add(new Paragraph($"Email: {contactMail}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {phoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {address}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($" {pageNumber}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+        }
+        else
+        {
+            footerTable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
+            footerTable.AddCell(new Cell().Add(new Paragraph($"رقم التواصل : {phoneNum}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($"البريد الالكتروني :  {contactMail}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($" {pageNumber}".ArabicWithFontGlyphsToPDF()).SetFont(font)).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($"العنوان : {address}".ArabicWithFontGlyphsToPDF())).SetFont(font).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
+        }
+        return footerTable;
+    }
+    private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font)
     {
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            if ((header.PropertyName.Contains("Date") == true || header.PropertyName.Contains("Time") == true))
+            
+            if ((header.PropertyName.ToLower().Contains("date") == true || header.PropertyName.ToLower().Contains("time") == true) || header.PropertyName.ToLower().Contains("Published") == true || header.Name.ToLower().Contains("code") )
             {
                 return new Text(cellValue)
-                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFontSize(12);
-
+                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFontSize(9);
             }
             else
             {
-                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFontSize(12);
+                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(9);
             }
 
         }
