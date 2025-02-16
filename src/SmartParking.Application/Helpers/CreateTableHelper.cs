@@ -1,4 +1,5 @@
-﻿using SmartParking.CustomerPackages;
+﻿using Microsoft.CodeAnalysis.Host.Mef;
+using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Organizations;
@@ -268,10 +269,17 @@ public static class CreateTableHelper
             Name = LocalizationHelper.GetLocalizedString("PackagesReports"),
             ShowHeader = true
         };
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageArabicName", IsFilterable = true });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Customer.ArabicName", IsFilterable = true });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageEnglishName", IsFilterable = true });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Customer.IdentityUser.Name", IsFilterable = true });
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageEnglishName", IsFilterable=true});
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Customer.IdentityUser.Name", IsFilterable = true });
-
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PriceOfPackage"), Name = "PriceOfPackage", TypeFilter = TypeFilter.Number  , IsSortable = true, PropertyName = "PriceOfPackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageDuration"), Name = "PackageDuration", TypeFilter = TypeFilter.Number  , IsSortable = true , PropertyName = "DurationOfPackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ActivationDate"), Name = "ActivationDateOfPackage", TypeFilter = TypeFilter.Date , IsSortable = true, PropertyName = "ActivationDateOfPackage", IsFilterable = true });
