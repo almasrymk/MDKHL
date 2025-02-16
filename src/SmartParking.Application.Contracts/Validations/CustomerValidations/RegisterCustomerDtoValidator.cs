@@ -20,10 +20,13 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
         _stringLocalizer = stringLocalizer;
 
         RuleFor(x => x.ArabicName)
-        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+           .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+          .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
         RuleFor(x => x.FullName)
-            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
+
 
         RuleFor(x => x.Email)
             .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
@@ -38,6 +41,7 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
             .Matches(x=>x.RepeatPassword)
             .WithMessage(LocalizationHelper.GetLocalizedString("WrongPassword"));
         RuleFor(x => x.RepeatPassword).Matches(x=>x.Password).WithMessage("Repeat Password" + LocalizationHelper.GetLocalizedString("WrongPassword"));
+
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
             .Matches(@"(05\d{8}|\+9665\d{8})$")  
