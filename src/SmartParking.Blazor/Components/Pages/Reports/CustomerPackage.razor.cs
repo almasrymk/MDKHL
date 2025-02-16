@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using OfficeOpenXml.ConditionalFormatting.Contracts;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
@@ -12,7 +14,9 @@ using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.Permissions.Reports;
+using SmartParking.StringLocalizer;
 using Volo.Abp.Application.Dtos;
+
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
 
@@ -101,13 +105,13 @@ public partial class CustomerPackage
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "PackageEnglishName",
+                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customer.ArabicName" : "Customer.IdentityUser.Name",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>
                 {
                     new FilterRequestDto
                     {
-                        FilterProperty ="CustomerCategory",
+                         FilterProperty ="CustomerCategory",
                          FilterValue = selectvalue,
                          IsNot = false,
                          TypeFilter = TypeFilter.Enum
@@ -115,8 +119,18 @@ public partial class CustomerPackage
                 },
             };
             var customerPackages = await AnalysisAppService.ReportCustomerPackage(request, CurrentTenant.Id);
-            var items = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
-            items.Name += selectvalue;
+            TableData items = new TableData();
+            items = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
+            if(CultureInfo.CurrentCulture.Name=="ar")
+            {
+                items.Name = LocalizationHelper.GetLocalizedString("PackagesReports") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+
+            }
+            else
+            {
+                items.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("PackagesReports");
+
+            }
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch
@@ -136,7 +150,7 @@ public partial class CustomerPackage
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn,
+            Sorting = paged.SortColumn= CultureInfo.CurrentCulture.Name == "ar" ? "Customer.ArabicName" : "Customer.IdentityUser.Name",
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
             

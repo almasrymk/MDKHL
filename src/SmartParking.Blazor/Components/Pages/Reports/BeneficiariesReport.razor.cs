@@ -20,6 +20,7 @@ using SmartParking.PDF;
 using SmartParking.Permissions.PaymentsPermissions;
 using SmartParking.Permissions.Reports;
 using SmartParking.Results;
+using SmartParking.StringLocalizer;
 using SmartParking.Utilities;
 using System.Composition;
 using System.Globalization;
@@ -118,7 +119,7 @@ partial class BeneficiariesReport
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "GarageName",
+                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "ArabicName" : "UserName",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>
                 {
@@ -133,8 +134,17 @@ partial class BeneficiariesReport
             };
 
             var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
-            var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList() , CurrentTenant.Id);
-            items.Name+=selectvalue;
+            var items = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                items.Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+
+            }
+            else
+            {
+                items.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis");
+
+            }
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch
@@ -161,7 +171,7 @@ partial class BeneficiariesReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn == "Id" ? "GarageName" : paged.SortColumn,
+            Sorting = paged.SortColumn=CultureInfo.CurrentCulture.Name == "ar" ? "ArabicName" :"UserName",
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
@@ -102,7 +103,7 @@ public partial class PaymentReport
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "Id",
+                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>(),
                 
@@ -126,7 +127,7 @@ public partial class PaymentReport
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "Id",
+                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>()   
             };
@@ -152,7 +153,7 @@ public partial class PaymentReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn ,
+            Sorting = paged.SortColumn= CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name",
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 
