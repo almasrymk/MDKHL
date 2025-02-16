@@ -119,7 +119,7 @@ partial class BeneficiariesReport
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = "GarageName",
+                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "ArabicName" : "UserName",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>
                 {
@@ -171,7 +171,7 @@ partial class BeneficiariesReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn == "Id" ? "GarageName" : paged.SortColumn,
+            Sorting = paged.SortColumn=CultureInfo.CurrentCulture.Name == "ar" ? "ArabicName" :"UserName",
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 
