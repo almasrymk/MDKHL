@@ -171,7 +171,7 @@ partial class BeneficiariesReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn == "Id" ? "GarageName" : paged.SortColumn,
+            Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "ArabicName" : "UserName": paged.SortColumn,
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
 
