@@ -3680,6 +3680,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("UserName");
 
+                    b.Property<int>("UserTypeCategory")
+                        .HasColumnType("integer");
+
                     b.Property<int>("UserTypeId")
                         .HasMaxLength(500000)
                         .HasColumnType("integer");
