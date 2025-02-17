@@ -9,9 +9,14 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Shifts;
 
-public class Shift : FullAuditedEntity<int>, IMultiTenant, IBaseEntity
+public class Shift : BaseEntity
 {
+    public string Description { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public int GarageId { get; set; }
+    public int OrganizationId { get; set; }
 
-    public Guid? TenantId { get; set; }
-    public Status Status { get; set; }
 }
