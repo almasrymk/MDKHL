@@ -171,20 +171,21 @@ partial class Shifts
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["Name"], item.EnglishName.Truncate(10)));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["GarageName"], item.GarageEnglishName.Truncate(10)));
-
-
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["Name"], Truncate(item.EnglishName, 10)));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["GarageName"], Truncate(item.GarageEnglishName, 10)));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["OrganizationName"], Truncate(item.OrganizationEnglishName, 10)));
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["Name"], item.ArabicName.Truncate(10)));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["GarageName"], item.GarageArabicName.Truncate(10)));
-
-
-
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["Name"], Truncate(item.ArabicName, 10)));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["GarageName"], Truncate(item.GarageArabicName, 10)));
+                if (CurrentTenant.Id == null)
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(L["OrganizationName"], Truncate(item.OrganizationArabicName, 10)));
+                }
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Description"], item.Description.Truncate(15)));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Description"], Truncate(item.Description, 15)));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartDate"], item.StartDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndDate"], item.EndDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartTime"], item.StartTime.ToString()));
@@ -198,7 +199,9 @@ partial class Shifts
 
     private Task OpenDialogAsync()
     {
-        return Dialog.ShowAsync<AddShiftDialog>("Add Shift", options);
+
+        return CurrentTenant.Id != null ? Dialog.ShowAsync<AddShiftDialog>("Add Shift", options): Dialog.ShowAsync<AddShiftDialogForMDKHL>("Add Shift", options);
+
     }
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
@@ -219,79 +222,41 @@ partial class Shifts
             EndTime = shiftDto.EndTime,
             TenantId = shiftDto.TenantId,
             Description = shiftDto.Description,
+            
         };
         var parameters = new DialogParameters
         {
-            ["Camera"] = createUpdateCamera,
+            ["Shift"] = createUpdateCamera,
             ["UpdatedId"] = id
         };
 
 
-        return await Dialog.ShowAsync<EditCamera>("Edit Camera", parameters);
+        return await Dialog.ShowAsync<EditShiftDialog>("Edit Shift", parameters);
 
     }
 
-    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    //private async Task<IDialogReference> OnClickRowView(RowDef row)
+    //{
+    //    var id = int.Parse(row.Cells[0].Value);
+
+    //    var shiftDto = await ShiftAppService.GetAsync(id);
+
+    //    var parameters = new DialogParameters
+    //    {
+    //        ["Camera"] = shiftDto,
+    //        ["UpdatedId"] = id
+
+    //    };
+
+
+    //    return await Dialog.ShowAsync<ViewCameraDialog>("CameraView", parameters);
+    //}
+
+
+    public string Truncate(string str, int maxLength)
     {
-        var id = int.Parse(row.Cells[0].Value);
-
-        var shiftDto = await ShiftAppService.GetAsync(id);
-
-        var parameters = new DialogParameters
-        {
-            ["Camera"] = shiftDto,
-            ["UpdatedId"] = id
-
-        };
-
-
-        return await Dialog.ShowAsync<ViewCameraDialog>("CameraView", parameters);
-    }
-
-    private async Task OnClickRowDelete(RowDef row)
-    {
-        var id = int.Parse(row.Cells[0].Value);
-        var Name = L["Camera with Mac Address : "] + row.Cells[2].Value;
-        var parameters = new DialogParameters
-        {
-            ["Name"] = Name,
-
-        };
-
-        var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteCamera", parameters);
-        var result = await dialog.Result;
-        try
-        {
-            if (!result.Canceled)
-            {
-                await ShiftAppService.DeleteAsync(id);
-                SnackBar.ShowSnackbar(Snackbar, $"{Name} {L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-                await Task.Delay(1000);
-                Navigation.NavigateTo("/shifts", forceLoad: true);
-            }
-        }
-        catch (AbpValidationException validationException)
-        {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
-            }
-        }
-        catch (BusinessException ex)
-        {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
-        }
-        catch (AuthenticationException ex)
-        {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
-        }
-        catch (Exception ex)
-        {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
-        }
-
+        if (string.IsNullOrEmpty(str)) return str;
+        return str.Length > maxLength ? str.Substring(0, maxLength) + "..." : str;
     }
 
 }
