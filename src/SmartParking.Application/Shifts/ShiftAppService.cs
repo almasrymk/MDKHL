@@ -143,7 +143,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var shifts = from Shifts in _shiftQueryable
                      join Garages in _garageQueryable
                      on Shifts.GarageId equals Garages.Id
-                     from Organizations in _organizationQueryable
                      join organization in _organizationQueryable 
                      on Shifts.OrganizationId equals organization.Id
                      where tenantId.HasValue ? organization.TenantId == tenantId : true
