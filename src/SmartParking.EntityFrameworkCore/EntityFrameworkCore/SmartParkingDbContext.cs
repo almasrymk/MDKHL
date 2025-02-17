@@ -11,6 +11,7 @@ using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Entities.Shifts;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Localization;
@@ -103,6 +104,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<CameraModel> CameraModels { get; set; }
     public DbSet<CameraBrand> CameraBrands { get; set; }
     public DbSet<CameraMainType> CameraMainTypes { get; set; }
+    public DbSet<KeeperShift> keeperShifts { get; set; }
 
 
     #endregion
