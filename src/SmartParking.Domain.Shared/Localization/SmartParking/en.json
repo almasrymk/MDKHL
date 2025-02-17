@@ -671,18 +671,11 @@
     "CustomerAndPaymentReport": "Customers Payments",
     "CustomerPackageReport": "Customers Packages",
     "PaymentMehtodReport": "Bank Transfers Payments",
-    "keeper": "Keeper"
-
-
-
-
-
-
-
-
-
-
-
-
+    "keeper": "Keeper",
+    "RequestTime": "Request Time",
+    "KeeperShiftRequestType": "Request Type",
+    "DailyShifts": "Daily Shifts",
+    "StartShift": "Start Shift",
+    "EndShift": "End Shift"
   } 
 }
