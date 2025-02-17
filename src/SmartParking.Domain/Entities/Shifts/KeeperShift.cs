@@ -9,9 +9,8 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Shifts
 {
-    public class KeeperShift : IBaseEntity
+    public class KeeperShift : BaseEntity
     {
-        public Status Status { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
         public TimeOnly StartTime { get; set; }
