@@ -1,0 +1,25 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.DailyShifts
+@using SmartParking.GarageTransactions
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Permissions.GarageTransactionPermissions
+@using Volo.Abp.MultiTenancy
+@inject IGarageTransactionsAppService GarageTransactionsAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IAuthorizationService AuthorizationService
+@inject IDailyShiftAppService DailyShiftAppService
+@inject IOrganizationsAppService OrganizationAppService
+@page "/dailyshifs"
+@* @attribute [Authorize(GarageTransactionPermissions.Default)] *@
+<PageTitle>@L["DailyShifts"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["DailyShifts"]</MudText>
+
+<SPDataGrid PageName=@L["DailyShifts"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" ShowDelete="false" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => CreateDailyShift(_backdropClick))" ShowAdd="false" ShowEdit="false" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+
+
+
