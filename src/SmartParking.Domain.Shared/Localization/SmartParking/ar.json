@@ -704,7 +704,12 @@
     "KeeperShiftRequestType": "نوع التسجيل",
     "DailyShifts": "الورديات اليوميه",
     "StartShift": "استلام الورديه",
-    "EndShift": "انهاء الورديه"
+    "EndShift": "انهاء الورديه" ,
+    
+    "PaymentMehtodReport": "الفواتير للتحويل البنكي",
+    "Shifts": "الورديات",
+    "StartTime": "وقت البداية",
+    "EndTime": "وقت النهاية"
 
 
   }

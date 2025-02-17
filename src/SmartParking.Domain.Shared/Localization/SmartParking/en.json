@@ -671,11 +671,29 @@
     "CustomerAndPaymentReport": "Customers Payments",
     "CustomerPackageReport": "Customers Packages",
     "PaymentMehtodReport": "Bank Transfers Payments",
-    "keeper": "Keeper",
     "RequestTime": "Request Time",
     "KeeperShiftRequestType": "Request Type",
     "DailyShifts": "Daily Shifts",
     "StartShift": "Start Shift",
-    "EndShift": "End Shift"
+    "EndShift": "End Shift" ,
+    "keeper": "Keeper" ,
+    "PaymentMehtodReport": "Bank Transfers Payments",
+    "Shifts": "Shifts",
+    "StartTime": "Start Time",
+    "EndTime": "End Time"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   } 
 }
