@@ -144,8 +144,12 @@ public static class BuildExpression<T>
         {
             case "GreaterThan":
                 return BuildDateGreaterThanCondition(property, filter);
+            case "GreaterThanOrEqual":
+                return BuildDateGreaterThanOrEqualCondition(property, filter);
             case "LessThan":
                 return BuildDateLessThanCondition(property, filter);
+            case "LessThanOrEqual":
+                return BuildDateLessThanOrEqualCondition(property, filter);
             default:
                 return BuildDateBetweenCondition(property, filter);
         }
@@ -157,7 +161,7 @@ public static class BuildExpression<T>
         Expression endDateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
 
         ConstantExpression startDateValueExpression = Expression.Constant(filter.StartDate, typeof(DateTime));
-        ConstantExpression endDateValueExpression = Expression.Constant(filter.EndDate, typeof(DateTime));
+        ConstantExpression endDateValueExpression = Expression.Constant(filter.EndDate.AddDays(1), typeof(DateTime));
         var greaterThan = Expression.GreaterThanOrEqual(startDateNonNullableProperty, startDateValueExpression);
         var lessThan = Expression.LessThanOrEqual(endDateNonNullableProperty, endDateValueExpression);
         return Expression.AndAlso(greaterThan, lessThan);
@@ -167,26 +171,42 @@ public static class BuildExpression<T>
     private static Expression BuildDateGreaterThanCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
        
-        ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
-       
-        return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
-    }    
-    private static Expression BuildDateLessThanCondition(Expression property, FilterRequestDto filter)
+        return Expression.GreaterThan(DateNonNullableProperty, DateValueExpression);
+    }
+    private static Expression BuildDateGreaterThanOrEqualCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
 
         ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
+
+        return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
+    }
+    private static Expression BuildDateLessThanCondition(Expression property, FilterRequestDto filter)
+    {
+        Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
+        return Expression.LessThan(DateNonNullableProperty, DateValueExpression);
+    }
+    private static Expression BuildDateLessThanOrEqualCondition(Expression property, FilterRequestDto filter)
+    {
+        Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
+        ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
         return Expression.LessThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
-
     private static Expression BuildStringCondition(Expression property, FilterRequestDto filter, ConstantExpression value)
     {
-        
         if (filter.FilterOperator.IsNullOrWhiteSpace())
         {
             return Expression.Equal(property, value);
         }
+
+        MethodInfo toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes);
+        Expression propertyToLower = Expression.Call(property, toLowerMethod);
+        Expression valueToLower = Expression.Call(value, toLowerMethod);
+
         MethodInfo containsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
         Expression condition;
 
@@ -194,15 +214,16 @@ public static class BuildExpression<T>
         {
             condition = filter.FilterOperator == "IsNullOrEmpty"
                 ? Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property))
-                : Expression.Not(Expression.Call(property, containsMethod, value));
+                : Expression.Not(Expression.Call(propertyToLower, containsMethod, valueToLower));
         }
         else
         {
             condition = filter.FilterOperator == "IsNullOrEmpty"
                 ? Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property)
-                : Expression.Call(property, containsMethod, value);
+                : Expression.Call(propertyToLower, containsMethod, valueToLower);
         }
 
         return condition;
     }
+
 }

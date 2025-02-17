@@ -224,7 +224,7 @@
 
                                 }
 
-                                @if (SelectOperator.Value != null && (SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan") && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
+                                @if (SelectOperator.Value != null && (SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan" || SelectOperator.Value == "LessThanOrEqual" || SelectOperator.Value == "GreaterThanOrEqual") && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
                                 {
                                     <MudItem>
                                         <MudDatePicker Label="@L["Date"]" Editable="true" @bind-Date="@Date" Placeholder="Select Date" />

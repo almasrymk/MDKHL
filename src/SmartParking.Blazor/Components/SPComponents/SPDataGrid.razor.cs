@@ -98,7 +98,9 @@ public partial class SPDataGrid
     public Dictionary<string, string> DateOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["greater than"] = "GreaterThan",
+        ["greater than or equal"] = "GreaterThanOrEqual",
         ["less than"] = "LessThan",
+        ["less than or equal"] = "LessThanOrEqual",
         ["between"] = "Between",
     };
     
@@ -123,7 +125,9 @@ public partial class SPDataGrid
     public Dictionary<string, string> DateOperatorAR { get; set; } = new Dictionary<string, string>
     {
         ["اكبر من"] = "GreaterThan",
+        ["اكبر من او يساوي"] = "GreaterThanOrEqual",
         ["اقل من"] = "LessThan",
+        [" اقل من او يساوي"] = "LessThanOrEqual",
         ["بين"] = "Between",
     };
     

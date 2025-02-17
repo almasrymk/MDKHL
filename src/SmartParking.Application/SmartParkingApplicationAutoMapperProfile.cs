@@ -243,7 +243,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             src.MapFrom(o => CalculateRemainingTimeWithGrace(o.CheckoutMobile, o.Organization.Graceperiod));
             })
         .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false))
-        .ForMember(d => d.CanCheckout, s => s.MapFrom(d => d.IsPending.HasValue&&d.IsPending.Value==false ? true:false))
+        .ForMember(d => d.CanCheckout, s => s.MapFrom((d => d.CheckoutMobile.HasValue==false && d.RemainingTime.HasValue && d.RemainingTime.Value > DateTime.MinValue&&d.IsMapped==false ? false :true)))
         
         .ReverseMap();
 
