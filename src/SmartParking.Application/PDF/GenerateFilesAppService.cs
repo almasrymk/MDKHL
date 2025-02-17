@@ -397,6 +397,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             }
 
         }
+        else if(CultureInfo.CurrentCulture.Name == "en" && header.PropertyName.Contains("ArabicName"))
+        {
+            return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(7);
+        }
         return new Text(cellValue).SetFontSize(12);
                                 
     }
