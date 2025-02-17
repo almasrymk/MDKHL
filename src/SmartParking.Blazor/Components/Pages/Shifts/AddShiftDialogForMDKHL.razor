@@ -1,0 +1,269 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Garages
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Shifts
+@using System.Globalization
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Validation
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IShiftAppService ShiftAppService
+@inject IGarageAppService GaragesAppService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject ICurrentTenant CurrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+<PageTitle>@L["Add NEW"]</PageTitle>
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                <MudGrid>
+
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="shiftDto.ArabicName"
+                        For="@(() => shiftDto.ArabicName)"
+                        Variant="Variant.Text"
+                        Class="w-100"
+                        Placeholder=@L["Type Here"]
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Label=@L["ArabicName"] />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="shiftDto.EnglishName"
+                        For="@(() => shiftDto.EnglishName)"
+                        Variant="Variant.Text"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Class="w-100"
+                        Placeholder=@L["Type Here"]
+                        Label=@L["EnglishName"] />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudDatePicker Variant="Variant.Text"
+                        Class="w-100"
+                        @bind-Date="_startDateTime"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        PickerVariant="PickerVariant.Dialog"
+                        Label="@L["StartDate"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudDatePicker Variant="Variant.Text"
+                        Class="w-100"
+                        @bind-Date="_endDateTime"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        PickerVariant="PickerVariant.Dialog"
+                        Label="@L["EndDate"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTimePicker Variant="Variant.Text"
+                        Class="w-100"
+                        @bind-Time="_timeSpanStart"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        PickerVariant="PickerVariant.Dialog"
+                        Label="@L["StartTime"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTimePicker Variant="Variant.Text"
+                        Class="w-100"
+                        @bind-Time="_timeSpanEnd"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        PickerVariant="PickerVariant.Dialog"
+                        Label="@L["EndTime"]" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudSelect T="int"
+                        ValueChanged="ChangeOrganization"
+                        Variant="Variant.Text"
+                        Label="@L["Organization"]"
+                        HelperText=@L["Helper Text"]
+                        Placeholder=@L["Choose"]
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            @foreach (var organization in Organizations)
+                            {
+                                if (organization.Status != Enums.Status.Active)
+                                    continue;
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                }
+
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudSelect @bind-Value="@shiftDto.GarageId"
+                                   Variant="Variant.Text"
+                                   Label="@L["Garage"]"
+                                   HelperText=@L["Helper Text"]
+                                   Placeholder=@L["Choose"]
+                                   Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            @foreach (var garage in Garages)
+                            {
+                                if (garage.Status != Enums.Status.Active)
+                                    continue;
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
+                                }
+
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem sm="12">
+                        <MudTextField @bind-Value="shiftDto.Description"
+                        For="@(() => shiftDto.Description)"
+                        Variant="Variant.Outlined"
+                        Class="w-100"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Lines="5"
+                        Placeholder=@L["Type Here"]
+                        Label="@L["Description"]" />
+
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+            ButtonTwoColor="MudBlazor.Color.Primary"
+            ButtonOneLabel="@L["Back"]"
+            ButtonTwoLabel="@L["SaveAsDraft"]"
+            ButtonOneClick="Cancel"
+            ButtonTwoClick="Submit"
+            ButtonOneVariant="MudBlazor.Variant.Filled"
+            ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+    border-radius: 0 20px 0 20px;
+    }
+</style>
+
+
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    public List<OrganizationDto> Organizations { get; set; } = new List<OrganizationDto>();
+    public IReadOnlyList<GarageDto> Garages { get; set; } = new List<GarageDto>();
+
+    private CreateUpdateShiftDto shiftDto = new CreateUpdateShiftDto();
+
+    private TimeSpan? _timeSpanStart
+    {
+        get => shiftDto.StartTime.ToTimeSpan();
+        set => shiftDto.StartTime = TimeOnly.FromTimeSpan(value.Value);
+    }
+    private TimeSpan? _timeSpanEnd
+    {
+        get => shiftDto.EndTime.ToTimeSpan();
+        set => shiftDto.EndTime = TimeOnly.FromTimeSpan(value.Value);
+    }
+    private DateTime? _startDateTime
+    {
+        get => shiftDto.StartDate == default ? (DateTime?)null : shiftDto.StartDate.ToDateTime(new TimeOnly(0, 0)); // Convert DateOnly to DateTime
+        set => shiftDto.StartDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default; // Convert DateTime to DateOnly
+    }
+    private DateTime? _endDateTime
+    {
+        get => shiftDto.EndDate == default ? (DateTime?)null : shiftDto.EndDate.ToDateTime(new TimeOnly(0, 0)); // Convert DateOnly to DateTime
+        set => shiftDto.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default; // Convert DateTime to DateOnly
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                MaxResultCount = 100,
+                SkipCount = (1 - 1) * 100
+            });
+        Organizations = result.Items.ToList();
+        await base.OnInitializedAsync();
+    }
+
+    private async void ChangeOrganization(int OrganizationId){
+        shiftDto.GarageId = 0;
+        var result = await GaragesAppService.GetGarageByOrganization(new PagedAndSortedResultRequestDto
+            {
+                MaxResultCount = 100,
+                SkipCount = (1 - 1) * 100
+            }, OrganizationId);
+        Garages = result.Items;
+    }
+    private async Task Submit()
+    {
+
+        try
+        {
+            shiftDto.TenantId = CurrentTenant.Id;
+            shiftDto.Status = Enums.Status.Inactive;
+            await ShiftAppService.CreateAsync(shiftDto);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {shiftDto.ArabicName}", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/shifts", true);
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+        }
+
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+
+
+
+
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+
+
+}
