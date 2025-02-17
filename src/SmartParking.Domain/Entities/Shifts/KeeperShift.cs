@@ -7,21 +7,19 @@ using SmartParking.Enums;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
-namespace SmartParking.Entities.Shifts
+namespace SmartParking.Entities.Shifts;
+
+public class KeeperShift : BaseEntity
 {
-    public class KeeperShift : IBaseEntity
-    {
-        public Status Status { get; set; }
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
-        public int GarageId { get; set; }
-        public int OrganizationId { get; set; }
-        public Guid KeeperId { get; set; }
-        public int ShiftId {  get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public int GarageId { get; set; }
+    public int OrganizationId { get; set; }
+    public Guid KeeperId { get; set; }
+    public int ShiftId {  get; set; }
 
 
 
-    }
 }
