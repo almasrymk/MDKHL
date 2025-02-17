@@ -671,8 +671,7 @@
     "CustomerAndPaymentReport": "Customers Payments",
     "CustomerPackageReport": "Customers Packages",
     "PaymentMehtodReport": "Bank Transfers Payments",
-    "keeper": "Keeper"
-    "PaymentMehtodReport": "Bank Transfers Payments",
+    "keeper": "Keeper",
     "Shifts": "Shifts",
     "StartTime": "Start Time",
     "EndTime": "End Time"
