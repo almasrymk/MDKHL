@@ -46,6 +46,8 @@ using SmartParking.Localization;
 using SmartParking.Entities.Authentication;
 using SmartParking.Results;
 using SmartParking.Mobile.Invoices;
+using SmartParking.Entities.Shifts;
+using SmartParking.DailyShifts;
 
 namespace SmartParking;
 
@@ -256,6 +258,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
+
+        CreateMap<DailyShift, DailyShiftDto>();
+        CreateMap<CreateUpdateDailyShiftDto , DailyShift>();
 
         CreateMap<IdentityUser, UserDto>();
 
