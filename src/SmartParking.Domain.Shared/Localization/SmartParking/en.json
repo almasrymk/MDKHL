@@ -18,7 +18,7 @@
     "Add Organization": "Add Organization",
     "Main Data": "Main Data",
     "Type Here": "Type Here",
-    "ArabicName": "Ar Name",
+    "ArabicName": "Arabic Name",
     "EnglishName": "Name",
     "English Name": "Name",
     "CommercialRegistrationNumber": "CR Number",
@@ -675,11 +675,13 @@
     "KeeperShiftRequestType": "Request Type",
     "DailyShifts": "Daily Shifts",
     "StartShift": "Start Shift",
-    "EndShift": "End Shift" ,
-    "keeper": "Keeper" ,
+    "EndShift": "End Shift",
+    "keeper": "Keeper",
     "Shifts": "Shifts",
     "StartTime": "Start Time",
-    "EndTime": "End Time"
+    "EndTime": "End Time",
+    "Garage": "Garage"
+
 
 
 
