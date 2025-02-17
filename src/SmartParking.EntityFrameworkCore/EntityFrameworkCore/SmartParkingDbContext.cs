@@ -104,6 +104,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<CameraModel> CameraModels { get; set; }
     public DbSet<CameraBrand> CameraBrands { get; set; }
     public DbSet<CameraMainType> CameraMainTypes { get; set; }
+    public DbSet<Shift> Shifts { get; set; }
     public DbSet<KeeperShift> keeperShifts { get; set; }
 
 
