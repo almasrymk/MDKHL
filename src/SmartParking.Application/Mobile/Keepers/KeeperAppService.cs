@@ -195,7 +195,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto input)
     {
 
-        if (input.PhoneNumber is null)
+        if (input.PhoneNumber.IsNullOrWhiteSpace())
         {
             return Result.Invalid(new Results.ValidationError
             {
@@ -204,7 +204,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber || u.UserName == input.PhoneNumber);
             
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, input.Password))
@@ -234,8 +234,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
             var roles = await _userManager.GetRolesAsync(user);
-
-            if (!roles.Contains(RolesType.Keeper.ToString()))
+           
+            if (user.GetProperty<UserTypeCategory>("UserTypeCategory") == 0)
                 return Result<LoginResponseDto>.Unauthorized();
             CurrentTenant.Change(user?.TenantId ?? null);
            
