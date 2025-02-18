@@ -92,54 +92,6 @@ public partial class DailyShift
             await CreateTable(dailyShiftDto);
         }
     }
-    private async Task<Task> OnClickRowDelete(RowDef row)
-    {
-        ShowSnackbar("Service Not Allowed", Severity.Warning);
-        Navigation.NavigateTo("/dailyshifts");
-        return Task.CompletedTask;
-
-
-    }
-    private async Task HandleFilter(PageChangeEventArgs pageInfo)
-    {
-        termSearch = pageInfo.SearchTerm;
-        CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
-        sortColumn = pageInfo.SortColumn;
-        string sort;
-        if (pageInfo.SortColumn == "Id")
-            sort = "KeeperName DESC";
-        else
-            sort = pageInfo.SortColumn;
-
-        CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
-        // Create a request object for paged and sorted data
-        var input = new PagedAndSortedAndSearchResultRequestDto
-        {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = sort,
-            SearchingTerm = pageInfo.SearchTerm
-
-        };
-        if (CurrentTenant.Id == null)
-        {
-            // Retrieve the list of organizations from the server
-            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(input, null);
-            TotalItem = (int)dailyShiftDto.TotalCount;
-            await CreateTable(dailyShiftDto);
-        }
-
-        else
-        {
-            var tenantId = CurrentTenant.Id;
-            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(input, tenantId);
-            TotalItem = (int)dailyShiftDto.TotalCount;
-            await CreateTable(dailyShiftDto);
-        }
-    }
-
     private async Task CreateTable(PagedResultDto<DailyShiftDto> dailyShiftDto)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
@@ -206,13 +158,7 @@ public partial class DailyShift
         itemData = tableData;
         await Task.Yield();
     }
-    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
-    {
-        ShowSnackbar("Not Working", Severity.Warning);
-        return null;
 
-
-    }
 
     private async Task CreateMenue()
     {
@@ -267,28 +213,10 @@ public partial class DailyShift
         var dailyShiftDto = await DailyShiftAppService.GetAsync(id);
         var parameters = new DialogParameters
         {
-            ["DailyShift"] = dailyShiftDto,
+            ["DailyShiftDto"] = dailyShiftDto,
         };
 
-        return await Dialog.ShowAsync<ViewGarageTransaction>("View DailyShift", parameters);
+        return await Dialog.ShowAsync<ViewDailyShift>("View DailyShift", parameters);
     }
-    private Task CreateDailyShift(DialogOptions options)//Add 
-    {
-        ShowSnackbar("Not Working", Severity.Warning);
 
-        return Task.CompletedTask;
-
-        //return Dialog.ShowAsync<GarageTransaction>("Add GarageTransaction", options);
-    }
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
 }
