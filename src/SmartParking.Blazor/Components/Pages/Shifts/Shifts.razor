@@ -1,0 +1,19 @@
+﻿@page "/shifts"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Shifts
+@using Volo.Abp.Application.Dtos
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IDialogService Dialog
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IShiftAppService ShiftAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inherits AbpCrudPageBase<IShiftAppService, ShiftDto, int, PagedAndSortedResultRequestDto, CreateUpdateShiftDto>
+
+
+<PageTitle>@L["Shifts"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Shifts"]</MudText>
+<SPDataGrid PageName=@L["Shifts"] Data="@itemData" Menus="@MenuDatas" ShowAdd="true" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="true" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit"  OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="OpenDialogAsync"></SPDataGrid>
+

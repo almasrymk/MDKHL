@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking;
 
@@ -24,12 +25,12 @@ public static class BuildExpression<T>
 
             Expression property = GetPropertyExpression(param, filter.FilterProperty);
             ConstantExpression value = Expression.Constant(filter.FilterValue);
-
             combinedExpression = Expression.AndAlso(combinedExpression, BuildCondition(property, filter, value));
         }
 
         return Expression.Lambda<Func<T, bool>>(combinedExpression, param);
     }
+
 
     private static Expression GetPropertyExpression(Expression param, string filterProperty)
     {
@@ -167,13 +168,13 @@ public static class BuildExpression<T>
         return Expression.AndAlso(greaterThan, lessThan);
 
     }
-    
+
     private static Expression BuildDateGreaterThanCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
-        
+
         ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
-       
+
         return Expression.GreaterThan(DateNonNullableProperty, DateValueExpression);
     }
     private static Expression BuildDateGreaterThanOrEqualCondition(Expression property, FilterRequestDto filter)
@@ -196,34 +197,55 @@ public static class BuildExpression<T>
         ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
         return Expression.LessThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
+
     private static Expression BuildStringCondition(Expression property, FilterRequestDto filter, ConstantExpression value)
     {
-        if (filter.FilterOperator.IsNullOrWhiteSpace())
+        if (string.IsNullOrWhiteSpace(filter.FilterOperator))
         {
             return Expression.Equal(property, value);
         }
-
-        MethodInfo toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes);
-        Expression propertyToLower = Expression.Call(property, toLowerMethod);
-        Expression valueToLower = Expression.Call(value, toLowerMethod);
-
-        MethodInfo containsMethod = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
-        Expression condition;
-
-        if (filter.IsNot)
+        MethodInfo? toLowerMethodInfo;
+        MethodCallExpression propertyToLower;
+        ToLowerMethod(property, out toLowerMethodInfo, out propertyToLower);
+        //Where(_ => sortings.Contains(_.PlateNumber));
+        if (filter.FilterValues.Any())
         {
-            condition = filter.FilterOperator == "IsNullOrEmpty"
-                ? Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property))
-                : Expression.Not(Expression.Call(propertyToLower, containsMethod, valueToLower));
-        }
-        else
-        {
-            condition = filter.FilterOperator == "IsNullOrEmpty"
-                ? Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property)
-                : Expression.Call(propertyToLower, containsMethod, valueToLower);
+            return BuildInMethod(filter, propertyToLower);
         }
 
+        var valueToLower = Expression.Call(value, toLowerMethodInfo);
+        var containsMethodInfo = typeof(string).GetMethod(filter.FilterOperator, new[] { typeof(string) });
+        var condition = filter.IsNot
+            ? GetNegatedCondition(property, propertyToLower, valueToLower, containsMethodInfo, filter)
+            : GetPositiveCondition(property, propertyToLower, valueToLower, containsMethodInfo, filter);
         return condition;
+    }
+    private static void ToLowerMethod(Expression property, out MethodInfo? toLowerMethodInfo, out MethodCallExpression propertyToLower)
+    {
+        toLowerMethodInfo = typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes);
+        propertyToLower = Expression.Call(property, toLowerMethodInfo);
+    }
+    private static Expression BuildInMethod(FilterRequestDto filter, MethodCallExpression propertyToLower)
+    {
+        var lowerValues = filter.FilterValues.Select(s => s.ToLower()).ToList();
+        var valuesConstant = Expression.Constant(lowerValues);
+        var containsMethod = typeof(List<string>).GetMethod("Contains", new[] { typeof(string) });
+        var anyMethod = Expression.Call(valuesConstant, containsMethod, propertyToLower);
+        return anyMethod;
+    }
+
+    private static Expression GetNegatedCondition(Expression property, Expression propertyToLower, Expression valueToLower, MethodInfo containsMethodInfo, FilterRequestDto filter)
+    {
+        return filter.FilterOperator == "IsNullOrEmpty"
+            ? Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property))
+            : Expression.Not(Expression.Call(propertyToLower, containsMethodInfo, valueToLower));
+    }
+
+    private static Expression GetPositiveCondition(Expression property, Expression propertyToLower, Expression valueToLower, MethodInfo containsMethodInfo, FilterRequestDto filter)
+    {
+        return filter.FilterOperator == "IsNullOrEmpty"
+            ? Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, property)
+            : Expression.Call(propertyToLower, containsMethodInfo, valueToLower);
     }
 
 }

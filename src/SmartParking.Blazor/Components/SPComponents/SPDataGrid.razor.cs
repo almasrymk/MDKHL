@@ -92,7 +92,8 @@ public partial class SPDataGrid
         ["starts with"] = "StartsWith",
         ["ends with"] = "EndsWith",
         ["is empty"] = "IsNullOrEmpty",
-        ["is not empty"] = "IsNullOrEmpty"
+        ["is not empty"] = "IsNullOrEmpty",
+        ["in"] = "In"
     };    
     
     public Dictionary<string, string> DateOperatorEn { get; set; } = new Dictionary<string, string>
@@ -119,7 +120,8 @@ public partial class SPDataGrid
         ["يبدأ بـ"] = "StartsWith",
         ["لا يبدأ بـ"] = "EndsWith",
         ["فارغـًا"] = "IsNullOrEmpty",
-        ["لا يكون فارغـًا"] = "IsNullOrEmpty"
+        ["لا يكون فارغـًا"] = "IsNullOrEmpty",
+        ["في"] = "In"
     };
     
     public Dictionary<string, string> DateOperatorAR { get; set; } = new Dictionary<string, string>
@@ -193,6 +195,7 @@ public partial class SPDataGrid
             if (IsShowValue && (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))  )
                 IsNot = true;
             var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
+            
             FilterRequestDto filterEventArgs = new FilterRequestDto()
             {
                 FilterProperty = SelectedColumn,
@@ -204,6 +207,13 @@ public partial class SPDataGrid
                 EndDate = EndDate ?? DateTime.MinValue,
                 StartDate = StartDate ?? DateTime.MinValue
             };
+            if (IsShowValue && SelectOperator.Value.Contains("In"))
+            {
+                var values = FilterValue.Split(',')
+                                .Select(x => x.Trim())
+                                .ToList();
+                filterEventArgs.FilterValues = values;
+            }
             ColumnsFilter.Add(filterEventArgs);
             ColumnsFilterApply.Add(DisplayFilter.Name);
             SelectProprtyName.Add(new KeyValuePair<string, string>(DisplayFilter.Name, filterEventArgs.FilterProperty));

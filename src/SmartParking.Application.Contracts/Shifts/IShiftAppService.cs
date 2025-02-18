@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Cameras;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,4 +11,13 @@ namespace SmartParking.Shifts;
 
 public interface IShiftAppService : ICrudAppService<ShiftDto,int,PagedAndSortedResultRequestDto,CreateUpdateShiftDto>
 {
+
+    Task<ShiftDto> CreateAsync(CreateUpdateShiftDto shift);
+    Task<PagedResultDto<ShiftDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
+    Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input);
+
+
+
+
 }

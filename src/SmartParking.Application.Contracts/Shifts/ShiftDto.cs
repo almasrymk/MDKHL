@@ -15,6 +15,10 @@ public class ShiftDto : BaseDto
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
     public int GarageId { get; set; }
+    public string  GarageArabicName { get; set; }
+    public string  GarageEnglishName { get; set; }
+    public string  OrganizationEnglishName { get; set; }
+    public string OrganizationArabicName { get; set; }
     public int OrganizationId { get; set; }
     public Status Status { get; set; }
 }
