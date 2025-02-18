@@ -286,78 +286,111 @@
                                 <MudItem Class="d-flex justify-content-start align-items-center">
                                     @if (OnClickRowView.HasDelegate && ShowView)
                                     {
+                                        <MudTooltip Text=@L["View Details"]>
+
                                         <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Info"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Primary"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+                                        </MudTooltip>
+
                                     }
 
                                     @if (OnClickCar.HasDelegate && ShowAssignCar && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
+
                                         <MudIconButton OnClick="@(e => OnClickCar.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CarRental"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Secondary"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+
                                     }
                                     @if (OnClickRowEdit.HasDelegate && ShowEdit)
                                     {
+                                        <MudTooltip Text=@L["Edit"]>
+
                                         <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Edit"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Secondary"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+                                        </MudTooltip>
+
                                     }
 
 
                                     @if (OnClickAssign.HasDelegate && ShowAssign && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
+                                        <MudTooltip Text=@L["Assign"]>
+
                                         <MudIconButton OnClick="@(e => OnClickAssign.InvokeAsync(context.Item.Cells[0].Value))"
                                                        Icon="@Icons.Material.Filled.AssignmentTurnedIn"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Tertiary"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+                                        </MudTooltip>
+
                                     }
                                     @if (OnClickButton.HasDelegate && ShowButton)
                                     {
+                                        <MudTooltip Text=@L["Permissions"]>
+
                                         <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.AdminPanelSettings"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Tertiary"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+                                        </MudTooltip>
+
+
                                     }
                                     @if (ShowCustomerTransactionsMethod.HasDelegate && ShowCustomerTransactions)
                                     {
-                                        <MudIconButton OnClick="@(e => ShowCustomerTransactionsMethod.InvokeAsync(context.Item))"
-                                                       Icon="@Icons.Material.Filled.CompareArrows"
-                                                       Variant="Variant.Filled"
-                                                       Color="MudBlazor.Color.Tertiary"
-                                                       Size="MudBlazor.Size.Small"
-                                                       Class="mx-1" />
+                                        <MudTooltip Text=@L["Export"]>
+
+                                                <MudIconButton OnClick="@(e => ShowCustomerTransactionsMethod.InvokeAsync(context.Item))"
+                                                 Icon="@Icons.Material.Filled.CompareArrows"
+                                                    Variant="Variant.Filled"
+                                                 Color="MudBlazor.Color.Tertiary"
+                                                  Size="MudBlazor.Size.Small"
+                                                Class="mx-1" />
+                                        </MudTooltip>
+
+
                                     }
                                     @if (ShowVehicleTransactionsMethod.HasDelegate && ShowVehicleTransactions)
                                     {
-                                        <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))"
+                                        <MudTooltip Text=@L["Export"]>
+
+                                            <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CompareArrows"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Tertiary"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+                                        </MudTooltip>
+
+
                                     }
                                     @if (OnClickRowDelete.HasDelegate && ShowDelete && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
+                                        <MudTooltip Text=@L["Delete"]>
+
                                         <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Delete"
                                                        Variant="Variant.Filled"
                                                        Color="MudBlazor.Color.Error"
                                                        Size="MudBlazor.Size.Small"
                                                        Class="mx-1" />
+                                        </MudTooltip>
+
                                     }
 
                                 </MudItem>
