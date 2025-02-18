@@ -10,4 +10,5 @@ public class VehicleModel:BaseEntity
 {
 	public int VehiclesBrandId { get; set; }
 	public virtual VehicleBrand VehiclesBrand { get; set; }
+    public string Image { get; set; }
 }

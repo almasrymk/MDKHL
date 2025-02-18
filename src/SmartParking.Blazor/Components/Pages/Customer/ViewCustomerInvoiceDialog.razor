@@ -9,16 +9,15 @@
 @inject NavigationManager Navigation
 <PageTitle>@L["CustomerInvoice"]</PageTitle>
 <div class="modal-wrapper ">
-    <MudDialog class="mud-modal ">
+    <MudDialog class="mud-modal w-100" Style="min-width:fit-content !important">
         <TitleContent>
             <MudText Class="fw-bold">@L["CustomerInvoice"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["CustomerInvoice"] Data="@itemData" OnPageChanged="FetchTableData" ></SPDataGrid>
+            <SPDataGrid PageName=@L["CustomerInvoice"] Data="@itemData" TotalItemsInTable="@TotalItem" OnPageChanged="FetchTableData" OnFiltering="HandleFilter"></SPDataGrid>
         </DialogContent>
         <DialogActions>
-
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>
@@ -26,5 +25,6 @@
 <style>
     .mud-modal {
         border-radius: 0 20px 0 20px;
+
     }
 </style>

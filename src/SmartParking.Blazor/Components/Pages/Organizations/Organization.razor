@@ -2,13 +2,17 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.OrganizationPermissions
+@using Volo.Abp.Application.Dtos
 @inject ISnackbar Snackbar
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
-
+@inject IAuthorizationService AuthorizationService
+@* @attribute [Authorize(OrganizationPermissions.Default)] *@
+@inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
 <PageTitle>@L["Organizations"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Organizations"]</MudText>
 
-<SPDataGrid PageName=@L["Organizations"] OnAdd="HandleAdd" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnClickRowView="HandleView" OnClickRowDelete="HandleDelete" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+<SPDataGrid PageName=@L["Organizations"] OnAdd="HandleAdd" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnClickRowView="HandleView" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>

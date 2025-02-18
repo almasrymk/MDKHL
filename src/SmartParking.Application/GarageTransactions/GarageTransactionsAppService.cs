@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Http;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -13,9 +15,11 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
@@ -48,12 +52,41 @@ public class GarageTransactionsAppService :
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
     }
-    public override async Task<PagedResultDto<GarageTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<GarageTransactionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = ApplyFilterTenant(tenantId, queryable);
+            queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            List<GarageTransaction> garageTransactions = await ApplyPaged(input, queryable);
+            var garageTransactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransactions);
+            return new PagedResultDto<GarageTransactionDto>(
+                totalCount,
+                garageTransactionsDto
+            );
+        }
 
-        var queryable = await _repository.GetQueryableAsync();
+    }
 
+    private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(t => t.TenantId == tenantId);
+        return queryable;
+    }
 
+    private async Task<List<GarageTransaction>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var garageTransactions = await AsyncExecuter.ToListAsync(queryable);
+        return garageTransactions;
+    }
+
+    private static IQueryable<GarageTransaction> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
         if (!input.Sorting.IsNullOrEmpty())
         {
             // Determine if the sorting should be ascending or descending
@@ -69,14 +102,9 @@ public class GarageTransactionsAppService :
             }
         }
 
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var transactions = await base.GetListAsync(input);
-
-            return transactions;
-        }
-
+        return queryable;
     }
+
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
 
@@ -107,16 +135,23 @@ public class GarageTransactionsAppService :
         // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
         // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        queryable = ApplySearch(input, queryable);
+        if (!input.Sorting.IsNullOrEmpty())
         {
+            // Determine if the sorting should be ascending or descending
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
 
-            queryable = queryable.Where(or =>
-                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())
+                queryable = queryable.OrderBy(input.Sorting);
+            }
 
-            ); ;
         }
+        queryable = queryable.OrderByDescending(x => x.Id);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -133,6 +168,23 @@ public class GarageTransactionsAppService :
             garageTransactionsDto
         );
     }
+
+    private static IQueryable<GarageTransaction> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
+                or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
+                or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
+    }
+
     public async Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -147,10 +199,27 @@ public class GarageTransactionsAppService :
                 queryable = queryable.Where(or =>
                     or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.AccurateTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
-                    or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower())
-
-                ); ;
+                    or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
+                    or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                ); 
             }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                // Determine if the sorting should be ascending or descending
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+            }
+            queryable = queryable.OrderByDescending(x => x.Id);
+
             // Get the total count of filtered records
             var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -207,7 +276,6 @@ public class GarageTransactionsAppService :
 
         // Map the garages entities to garagesDto objects
         var transactionsDto = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
-        Console.WriteLine(transactionsDto.Count);
         // Return the paginated result
         return new PagedResultDto<GarageTransactionDto>(
             totalCount,
@@ -260,20 +328,40 @@ public class GarageTransactionsAppService :
 
     public override async Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input)
     {
-        input.VehiclePicture = SaveBase64Image(input) ?? "";
+        input.VehiclePicture = SaveBase64Image(input) ?? input.VehiclePicture;
         var result = await base.CreateAsync(input);
 
         return result;
     }
     public async override Task DeleteAsync(int id)
     {
-
+        var transactionDto=await GetAsync(id);
+        if (transactionDto == null)
+        {
+           throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") +" "+LocalizationHelper.GetLocalizedString("NotFoundValidation")); 
+        }
+        if (transactionDto.CameraType == CameraType.Exit)
+        {
+            await UnMappingEntryTransactionForDeletedExit(transactionDto.PlateNumber);
+        }
         await base.DeleteAsync(id);
     }
-
-    // Function to convert base64 string to image and save it
-    private string SaveBase64Image(CreateUpdateGarageTransactionDto input)
+    private async Task UnMappingEntryTransactionForDeletedExit(string plateNumber)
     {
+        var query = await _repository.GetQueryableAsync();
+
+        var latestTransaction = query
+                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == false && gt.IsMapped==true)
+                .OrderByDescending(gt => gt.AccurateTime) 
+                .FirstOrDefault();
+        latestTransaction.IsIn = true;
+        latestTransaction.IsMapped = false;
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
+    // Function to convert base64 string to image and save it
+    public string SaveBase64Image(CreateUpdateGarageTransactionDto input)
+    {
+     
         string base64Image = input.VehiclePicture;
         try
         {
@@ -359,11 +447,13 @@ public class GarageTransactionsAppService :
     }
 
     /// <inheritdoc/>
-	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
+	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         var queryable = await _repository.GetQueryableAsync();
 
         queryable = queryable.Where(t => t.TenantId == tenantId);
+
+        queryable = ApplySearch(input, queryable);
 
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -424,5 +514,15 @@ public class GarageTransactionsAppService :
             return Result.Success(transactionsDtos);
 
         }
+    }
+
+    public async Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId)
+    {
+        var garagetransaction=await _repository.FindAsync(garageTransactionId);
+        if (garagetransaction == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        }
+        return garagetransaction.CameraId;
     }
 }

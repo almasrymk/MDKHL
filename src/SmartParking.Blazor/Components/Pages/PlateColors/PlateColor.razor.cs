@@ -19,6 +19,7 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.PlateColors;
 
@@ -133,16 +134,16 @@ public partial class PlateColor
 		// Initialize table data to be displayed, setting the table's name and whether to show the header
 		var tableData = new TableData()
 		{
-			Name = "PlateColors",
+			Name = L["PlateColors"],
 			ShowHeader = true
 		};
 
 
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
-		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
 		foreach (var item in plateColors.Items)
 		{
 			var rowDef = new RowDef();
@@ -238,7 +239,7 @@ public partial class PlateColor
 			if (!result.Canceled)
             {
                 await PlateColorsAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                ShowSnackbar(successedMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/platecolors", forceLoad: true);
@@ -247,19 +248,26 @@ public partial class PlateColor
 
 
         }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 

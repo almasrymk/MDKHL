@@ -13,5 +13,7 @@ namespace SmartParking.CustomerPackages
         public int PackageId { get; set; }
         public CustomerPackageStatus CustomerPackageStatus { get; set; }
         public Guid? TenantId { get; set; }
+        public string EnPlateNumber { get; set; }
+        public string ArPlateNumber { get; set; }
     }
 }

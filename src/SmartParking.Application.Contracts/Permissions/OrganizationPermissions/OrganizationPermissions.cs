@@ -14,4 +14,5 @@ public class OrganizationPermissions
     public const string Create = Default + SmartParkingPermissions.Create;
     public const string Edit = Default + SmartParkingPermissions.Edit;
     public const string Delete = Default + SmartParkingPermissions.Delete;
+    public const string ChanageStatus = Default + SmartParkingPermissions.ChanageStatus;
 }

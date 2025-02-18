@@ -8,64 +8,66 @@ using Volo.Abp.MultiTenancy;
 using System;
 using Volo.Abp.Users;
 using SmartParking.Enums;
-
+using MudBlazor;
+using Microsoft.AspNetCore.Identity;
+using IdentityUser =Volo.Abp.Identity.IdentityUser;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Localization;
+using System.Text.RegularExpressions;
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
 [ApiController]
 public class AccountsController : ControllerBase
 {
     private readonly IAuthenticationAppService _authenticationApp;
-    private readonly ITenantAppService _tenantAppService;
     private readonly ICurrentTenant currentTenant;
-    private readonly ICurrentUser _currentuser;
+    private readonly SignInManager<IdentityUser> _signInManager;
 
     public AccountsController(
         IAuthenticationAppService authenticationApp,
-        ITenantAppService tenantAppService,
         ICurrentTenant currentTenant,
-        ICurrentUser currentuser
+        SignInManager<IdentityUser> signInManager
         )
     {
         _authenticationApp = authenticationApp;
-        _tenantAppService = tenantAppService;
         this.currentTenant = currentTenant;
-        _currentuser = currentuser;
+        _signInManager = signInManager;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Login(string username , string password)
+    [HttpGet("/logIn/{token}")]
+    public async Task<IActionResult> Login(string token)
     {
-        
-        var tenant =await _authenticationApp.GetTenantByNameDtoAsync(username);
-        currentTenant.Change(tenant?.Id??null);
-        LoginInputDto loginInputDto = new LoginInputDto()
+        try
         {
-            Username = username,
-            Password = password
-        };
-       var userLogin= await _authenticationApp.LoginForWebAsync(loginInputDto);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
 
-        if (_currentuser.IsInRole(RolesType.Customer.ToString())) {
-
-           return await Logout();
-        
-        }
-        if (userLogin is not null)
-        {
-            return LocalRedirect("/");
+            var claimsIdentity = new ClaimsIdentity(jwtToken.Claims, "Bearer");
+            var userId = claimsIdentity.FindFirst("userId")?.Value;
+            var user = await _authenticationApp.IsUserFoundAsync(userId);
+            currentTenant.Change(user.TenantId);
             
+            if (user.TenantId.HasValue)
+            {
+                Response.Cookies.Append(TenantResolverConsts.DefaultTenantKey, user.TenantId.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1) });
+            }
+            await _signInManager.SignInAsync(user, false);
+            return LocalRedirect("/");
         }
-        
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return LocalRedirect("/login");
-        
+        catch
+        {
+           return LocalRedirect($"/Account/Login");
+        }
     }
 
     [HttpGet("/logOut")]
     public async Task<ActionResult> Logout()
     {
         await _authenticationApp.LogOutAsync();
-        return LocalRedirect("/login");
+        return LocalRedirect($"/Account/Login"); 
     }
 
 

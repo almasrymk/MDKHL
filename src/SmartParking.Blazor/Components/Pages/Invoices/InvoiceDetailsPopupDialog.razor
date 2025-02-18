@@ -1,0 +1,75 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Invoices
+@using System.Globalization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+<div class="invoice-body d-flex flex-column justify-content-center">
+
+    <div class="row ">
+        <div class="col-md-12 d-flex justify-content-center ">
+
+            <div class="col-md-7">
+                <p><strong>@L["Cashier No"].:</strong>
+                    @if(CultureInfo.CurrentCulture.Name== "ar")
+                      {
+                          @Invoice.GarageArabicName
+                      }
+                      else
+                      {
+                          @Invoice.GarageEnglishName
+                      }
+                </p>
+            </div>
+
+            <div class="col-md-5">
+                <p><strong>@L["OrganizationNameInvoicePopUp"]:</strong>
+                    @if(CultureInfo.CurrentCulture.Name== "ar")
+                      {
+                        @Invoice.OrganizationArabicName
+                      }
+                      else
+                      {
+                        @Invoice.OrganizationEnglishName
+                      }
+                      
+                  </p>
+            </div>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center " >
+
+            <div class="col-md-7">
+                <p><strong>@L["OrganizationAddressInvoicePopUp"]:</strong> @OrganizationAddress</p>
+            </div>         
+            <div class="col-md-5">
+                <p><strong>@L["PlateNumber"]:</strong> @Invoice.PlateNumber</p>
+            </div>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center ">
+                <div class="col-md-7">
+                    <p><strong>@L["EntranceTime"]: </strong> @Invoice.EntranceTime.ToString()</p>
+                </div>
+
+                <div class="col-md-5">
+                    <p><strong>@L["ExitTime"]:</strong> @Invoice.InvoiceTime.ToString()</p>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class=" d-flex justify-content-center align-items-center flex-row col-md-12 " style="background-color: beige; margin-top: 2rem; border-radius: 15px;">
+    <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+        <h5>@L["Subscription"]</h5>
+        <h5>@L["Hour"]</h5>
+    </div>
+    <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+        <h5>@L["TotalHours"]</h5>
+        <h5>@Invoice.TotalHours @L["Hours"]</h5>
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter] public string OrganizationAddress { get; set; }
+    [Parameter] public InvoiceDto? Invoice { get; set; }
+}

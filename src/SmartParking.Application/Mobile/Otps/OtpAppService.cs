@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
     private readonly IHttpContextAccessor _httpContext;
     private readonly HttpClient _httpClient;
     private readonly IDataFilter _dataFilter;
+    private readonly SignInManager<Volo.Abp.Identity.IdentityUser> _signInManager;
+    private readonly IAuthenticationUtility _authenticationUtility;
     private readonly TaqnyatSmsOptionsDto _options;
 
     public OtpAppService(IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
@@ -44,7 +47,9 @@ public class OtpAppService : ApplicationService, IOtpAppService
         IHttpContextAccessor httpContext,
         IOptions<TaqnyatSmsOptionsDto> options,
         HttpClient httpClient,
-        IDataFilter dataFilter
+        IDataFilter dataFilter,
+        SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
+        IAuthenticationUtility authenticationUtility
         )
     {
         //_userManager = userManager;
@@ -56,6 +61,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
         _options = options.Value;
         _httpClient = httpClient;
         _dataFilter = dataFilter;
+        _signInManager = signInManager;
+        _authenticationUtility = authenticationUtility;
     }
 
     /// <inheritdoc/>
@@ -87,11 +94,11 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
                 user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
 
-                await SendSms(phoneNumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
+                await SendSms(phoneNumber, "رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو " + otp);
                 // Update the user with OTP in the database
                 await _userRepository.UpdateAsync(user);
 
-                return Result.Success(" رمز التحقق لدخول نظام مدخل هو" + otp);
+                return Result.Success("رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو" + otp);
             }
             catch (Exception ex)
             {
@@ -132,12 +139,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
                 user?.SetProperty("OtpCode", null);
                 user?.SetProperty("OtpExpirationDate", DateTime.Now);
                 await _userRepository.UpdateAsync(user);
-
+                
                 // Return success result with true
                 return Result.Success(
                 new VerifyOtpDto
                 {
-                    AccessToken = await GenerateTokenAsync(user) ?? null,
+                    AccessToken =  await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
                 }, "Verfiy Otp Successfully");
             }
             else
@@ -173,7 +180,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
             user.SetProperty("OtpCode", otp);
             user?.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(OtpValidityMinutes));
             var phonenumber = user?.PhoneNumber;
-            await SendSms(phonenumber, "رمز التحقق لدخول نظام مدخل هو " + otp);
+            await SendSms(phonenumber, "رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو" + otp);
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
 
@@ -207,44 +214,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
     }
 
-    /// <summary>
-    /// Generates a JWT token for the specified user.
-    /// </summary>
-    /// <param name="user">The user for whom the token will be generated.</param>
-    /// <returns>A string representing the generated JWT token.</returns>
-    private async Task<string> GenerateTokenAsync(Volo.Abp.Identity.IdentityUser user)
-    {
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var claims = new List<Claim>()
-        {
-            new Claim("userId", user.Id.ToString()),
-            new Claim("given_name", user.UserName),
-            new Claim("email", user.Email),
-            new Claim("role", string.Join(",", roles)),
-            new Claim("tenantid", user.TenantId?.ToString() ?? ""),
-            new Claim("scope", "address email phone roles profile offline_access SmartParking") //replace Qa with yours
-
-        };
-        var options = _openIddictOptions.CurrentValue;
-        var descriptor = new SecurityTokenDescriptor
-        {
-            Audience = "SmartParking", // replace with yours,
-            EncryptingCredentials = options.DisableAccessTokenEncryption
-                ? null
-                : options.EncryptionCredentials.First(),
-            Expires = null,
-            Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
-            IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", // replace with yours,
-            SigningCredentials = options.SigningCredentials.First(),
-            TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
-        };
-
-        var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
-
-        return accessToken;
-    }
+  
 
     /// <summary>
     /// function that send sms 

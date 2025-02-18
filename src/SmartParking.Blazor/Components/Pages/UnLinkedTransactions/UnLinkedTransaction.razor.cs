@@ -14,6 +14,9 @@ using SmartParking.Subscriptions;
 using SmartParking.Blazor.Components.SPComponents;
 using System.Security.Authentication;
 using Volo.Abp;
+using System.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.UnLinkedTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.UnLinkedTransactions;
 
@@ -38,6 +41,16 @@ public partial class UnLinkedTransaction
     public UnLinkedTransaction(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(UnLinkedTransactionPermission.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
     }
 
     /// <summary>
@@ -126,12 +139,12 @@ public partial class UnLinkedTransaction
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "UnLinkedTransactions",
+            Name = L["UnLinkedTransaction"],
             ShowHeader = true
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyName = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyName = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });

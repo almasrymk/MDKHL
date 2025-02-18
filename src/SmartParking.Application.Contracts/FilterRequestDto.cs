@@ -13,4 +13,8 @@ public class FilterRequestDto
     public string FilterOperator { get; set; }
     public bool IsNot { get; set; }
     public TypeFilter TypeFilter { get; set; }
+    public DateTime StartDate { get; set; }  = DateTime.MinValue;
+    public DateTime EndDate { get; set; } = DateTime.MaxValue;
+    public DateTime Date { get; set; } = DateTime.MinValue;
+
 }

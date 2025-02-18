@@ -1,24 +1,19 @@
 ﻿
+
+using SmartParking.Entities;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Authentication;
 
 public interface IUsersAppService:  IApplicationService
 {
-    /// <summary>
-    /// Asynchronously creates a new user based on the provided user creation data.
-    /// </summary>
-    /// <param name="input">The data for the new user to be created, encapsulated in a <see cref="UserCreateDto"/> object.</param>
-    /// <returns>A task representing the asynchronous operation, containing the created <see cref="UserDto"/> of the newly created user.</returns>
-    /// <remarks>
-    /// This method creates a new user in the system using the information provided in the <paramref name="input"/> parameter. 
-    /// Upon successful creation, it returns the <see cref="UserDto"/> representing the newly created user, including its ID and other details.
-    /// </remarks>
-    Task<UserDto> CreateAsync(UserCreateDto input);
+ 
     /// <summary>
     /// Asynchronously retrieves a list of users associated with a specific organization ID.
     /// </summary>
@@ -47,16 +42,28 @@ public interface IUsersAppService:  IApplicationService
     /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
     /// the total number of users available, allowing clients to handle pagination easily.
     /// </remarks>
-    Task<PagedResultDto<UserDto>> GetListAsync(PagedResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
+    /// <summary>
+    /// Asynchronously retrieves a paginated list of users based on the provided input.
+    /// </summary>
+    /// <param name="input">The pagination and filtering criteria for retrieving the users.</param>
+    /// <returns>A task representing the asynchronous operation, containing a <see cref="PagedResultDto{UserDto}"/> result with the list of users and pagination metadata.</returns>
+    /// <remarks>
+    /// This method returns a <see cref="PagedResultDto{UserDto}"/> that includes the list of user DTOs and information about 
+    /// the total number of users available, allowing clients to handle pagination easily.
+    /// </remarks>
+    Task<PagedResultDto<UserWithRole>> GetListForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
     /// <summary>
     /// Searches for a paged and sorted list of users based on the specified input parameters.
     /// </summary>
     /// <param name="input">The search criteria, including pagination, sorting, and search filters.</param>
     /// <returns>A <see cref="PagedResultDto{UserDto}"/> containing a list of users matching the search criteria, along with pagination details.</returns>
-    Task<PagedResultDto<UserDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
 
     Task<PagedResultDto<UserDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+    Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input);
 
     /// <summary>
     /// Updates an existing user with the specified ID using the provided input data.
@@ -67,10 +74,36 @@ public interface IUsersAppService:  IApplicationService
     /// A task that represents the asynchronous operation.
     /// The task result contains the updated <see cref="UserDto"/> object.
     /// </returns>
-    Task<UserDto> UpdateAsync(Guid id, UpdateUserDto input);
+    Task<UserDto> UpdateUserWithRoleChangeAsync(Guid? id, UpdateUserDto input);
+    Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input);
+    Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input);
+    Task<Result<UserDataDto>> UpdateProfileDataMobileAsync(Guid? id, UserDataDto input);
 
     Task<UserDto> GetAsync(Guid? id);
 
     Task<UserDto> AssignRoleToUser(Guid userId,string roleName);
     Task<UserDto> UpdateImageAsync(Guid? id, string Image);
+
+    /// <summary>
+    /// Asynchronously creates a new user based on the provided user creation data.
+    /// </summary>
+    /// <param name="input">The data for the new user to be created, encapsulated in a <see cref="UserCreateDto"/> object.</param>
+    /// <returns>A task representing the asynchronous operation, containing the created <see cref="UserDto"/> of the newly created user.</returns>
+    /// <remarks>
+    /// This method creates a new user in the system using the information provided in the <paramref name="input"/> parameter. 
+    /// Upon successful creation, it returns the <see cref="UserDto"/> representing the newly created user, including its ID and other details.
+    /// </remarks>
+    Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId);
+    Task<IdentityRole> FindRoleByTenantIdAsync(string roleName,Guid? tenantId);
+    Task<UserDto> CheckPhoneIsUnique(string phone);
+    Task<IdentityUser?> IsUserFound(Guid? userId);
+    Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
+    Task RemoveRoleMdkhl(Guid UserId, Guid RoleId);
+    Task<UserDto> UpdateUserWithoutRoleChangeAsync(Guid? id, UpdateUserDto input);
+
+    Task<IdentityUser> AddAndValidateUserAsync(UserCreateDto input);
+    Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input);
+    Task<string?> GetImage(Guid? userId);
+
+    Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId);
 }

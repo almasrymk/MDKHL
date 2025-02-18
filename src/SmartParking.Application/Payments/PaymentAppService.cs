@@ -21,6 +21,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -39,13 +40,14 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Package, int> _packageRepo;
     private readonly HttpClient _httpClient;
-    private readonly IInvoiceUtility _invoiceUtility;
+    private readonly IInvoiceUtilityAppService _invoiceUtility;
     private const string EntityId = "8ac7a4ca9244f53c01924741733e0327";
     private const string Currency = "SAR";
     private const string PaymentType = "DB";
     private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
     private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
     private const string tokenType = "Bearer";
+
 
     private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
     {
@@ -59,7 +61,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
-        IInvoiceUtility invoiceUtility)
+        IInvoiceUtilityAppService invoiceUtility)
     : base(repository)
     {
 
@@ -129,6 +131,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         // add QrCode
         // var token = await _invoiceUtility.GetTokenAsync();
+        paymentCheckoutRequest.PaymentNumber = await GeneratePaymentNumberAsync(paymentCheckoutRequest.OrganizationId);
         var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
         Payment payment = new Payment
         {
@@ -143,7 +146,10 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             EntityId = entityId,
             CustomerId = customerId,
             PaymentStatus = paymentStatus,
-            QrCodeInvoice = qrCode.QRCode
+            QrCodeInvoice = qrCode.QRCode,
+            PaymentNumber = paymentCheckoutRequest.PaymentNumber,
+            ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
+            EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
         };
 
         payment = await _repository.InsertAsync(payment);
@@ -157,7 +163,10 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             PaymentMethod = payment.PaymentMethod,
             EntityId = payment.EntityId,
             TokenId = token,
-            QrCodeInvoice = qrCode.QRCode
+            QrCodeInvoice = qrCode.QRCode,
+            PaymentNumber = payment.PaymentNumber,
+            
+
         };
 
 
@@ -205,7 +214,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         };
     }
 
-    public async Task<PaymentDto> GetPaymentStatus(string input, string entityId)
+    public async Task<PaymentDto> GetPaymentStatus(string input, string entityId,string ArabicPlateNumber , string EnglishPlateNumber)
     {
         var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
 
@@ -242,7 +251,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
                 if (payment != null)
                 {
-                    if (payment.PaymentCategory == PaymentCategory.Invoice)
+                    if (payment.PaymentCategory == PaymentCategory.PaymentParking)
                     {
 
                         var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
@@ -259,7 +268,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         {
                             //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
                             //await _packageRepo.UpdateAsync(package);
-                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId);
+                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId,ArabicPlateNumber,EnglishPlateNumber);
                             if (!assignStatus)
                             {
                                 throw new Exception("Can't assign package to customer");
@@ -316,6 +325,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 PayementTime = payement.CreationTime,
                 Price = package.Price,
                 Description = package.Description,
+                
 
 
             };
@@ -340,11 +350,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentCheckoutDto> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
         var paymentCheckoutDto= await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
-       await UpdatePaymentStatusAsync(paymentCheckoutRequest.InvoiceId);
+       await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
         return paymentCheckoutDto;
     }
 
-    private async Task<Result<bool>> UpdatePaymentStatusAsync(int? InvoiceId)
+    private async Task<Result<bool>> UpdateInvoiceStatusAsync(int? InvoiceId)
     {
         using (dataFilter.Disable<IMultiTenant>())
         {
@@ -354,6 +364,49 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             await _invoiceRepo.UpdateAsync(invoice);
             return Result.Success(true);
 
+        }
+    }
+
+    [RemoteService(IsEnabled = false)]
+
+    private async Task<string> GeneratePaymentNumberAsync(int organizationId)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+           var organization = await organizationsAppService.GetAsync(organizationId);
+
+            var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
+            var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
+
+            // Fetch the last invoice for the current year and organization
+            var invoices = await _repository.GetListAsync(i => i.OrganizationId == organizationId);
+
+            var lastInvoice = invoices
+            .Where(i => i.CreationTime.Year == DateTime.Now.Year && i.OrganizationId == organization.Id)
+            .OrderByDescending(i => i.PaymentNumber)
+            .FirstOrDefault();
+
+
+            int nextInvoiceSequence = 1;
+
+            if (lastInvoice != null)
+            {
+                if (lastInvoice.PaymentNumber != null)
+                {
+                    var lastSequenceString = lastInvoice.PaymentNumber[^5..];
+                    if (int.TryParse(lastSequenceString, out int lastSequence))
+                    {
+                        nextInvoiceSequence = lastSequence + 1;
+                    }
+                }
+               
+            }
+
+            // Format the sequence as a three-digit number with leading zeros
+            var formattedSequence = nextInvoiceSequence.ToString().PadLeft(7, '0');
+
+            // Combine all parts to form the final invoice number
+            return $"{prefix}{currentYearSuffix}{formattedSequence}";
         }
     }
 }

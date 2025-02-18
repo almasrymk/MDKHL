@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Organizations;
 
-public class OrganizationDto
+public class OrganizationDto :AuditedEntityDto<int>
 {
-    public int Id { get; set; }
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
     public string CommercialRegistrationNumber { get; set; }
@@ -65,5 +65,7 @@ public class OrganizationDto
     public int ParkingSlots { get; set; }
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
-   
+    public string TaxNumber { get; set; }
+
+
 }

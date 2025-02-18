@@ -1,11 +1,13 @@
 ﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Payments;
 
-public class Payment : FullAuditedEntity<Guid>
+public class Payment : FullAuditedEntity<Guid> , IMultiTenant
 {
     public int OrganizationId { get; set; }
     public string? EntityId { get; set; }
@@ -23,4 +25,13 @@ public class Payment : FullAuditedEntity<Guid>
     public virtual Customer Customers { get; set; }
     public string QrCodeInvoice { get; set; }
 
+    public string? PaymentName { get; set; }
+
+    public string PaymentNumber { get; set; }
+
+    public virtual Invoice? Invoice { get; set; }
+
+    public Guid? TenantId { get; set; }
+    public string? EnPlateNumber { get; set; }
+    public string? ArPlateNumber { get; set; }
 }

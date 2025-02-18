@@ -1,4 +1,5 @@
-﻿using SmartParking.Results;
+﻿using SmartParking.Entities.Invoices;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -42,7 +43,6 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <returns>InvoiceDto</returns>
     public Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
     public  Task DeleteAsync(int id);
-    Task<string> GenerateInvoiceNumberAsync(int organizationId);
     Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId);
     Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId);
 
@@ -54,10 +54,14 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
 	/// <returns>PagedResultDto of Invoice Dto</returns>
 	public Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input,Guid? tenantId);
 
-    Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(Guid customerId,int OrganizationId,int GarageId);
+    Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber,int OrganizationId,int GarageId);
 
-    Task<List<InvoiceDto>> GetInvoiceForCustomer(Guid customerId);
+    Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId, PagedResultRequestDto input);
     Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber);
+    Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto);
 
-    
+    Task<InvoiceDto?> GetLatestInvoiceForOrganization();
+
+
+
 }

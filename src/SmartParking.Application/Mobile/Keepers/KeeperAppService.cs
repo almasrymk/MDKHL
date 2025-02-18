@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
@@ -10,9 +11,12 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Mobile.Invoices;
+using SmartParking.Mobile.Vehicles;
 using SmartParking.Payments;
 using SmartParking.Repositories;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +45,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IMyUserRepository _myUserRepository;
     private readonly IRepository<Tenant,Guid> _tenantRepository;
     private readonly IPaymentAppService _paymentAppService;
+    private readonly IInvoiceAppService _invoiceAppService;
+    private readonly IAuthenticationUtility _authenticationUtility;
+    private readonly IVehicleAppService _vehicleAppService;
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
@@ -53,7 +60,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IRepository<Organization, int> organizationRepoistory,
          IMyUserRepository myUserRepository,
          IRepository<Tenant, Guid> tenantRepository,
-         IPaymentAppService paymentAppService)
+         IPaymentAppService paymentAppService,
+         IInvoiceAppService invoiceAppService,
+         IAuthenticationUtility authenticationUtility,
+         IVehicleAppService vehicleAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -66,6 +76,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _myUserRepository = myUserRepository;
         _tenantRepository = tenantRepository;
         _paymentAppService = paymentAppService;
+        _invoiceAppService = invoiceAppService;
+        this._authenticationUtility = authenticationUtility;
+        _vehicleAppService = vehicleAppService;
     }
 
     /// <inheritdoc/>
@@ -168,26 +181,14 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     /// <inheritdoc/>
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
     {
-        List<Invoice> unPaidInvoices = new List<Invoice>();
-
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-             unPaidInvoices = await _invoiceRepository.GetListAsync(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid );
-
-        }
-
-        var sortedInvoices = unPaidInvoices
-            .OrderByDescending(invo => invo.InvoiceTime)
-            .ToList();
-
-        var unpaidInvoicesMap = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(sortedInvoices);
-
-        if (unpaidInvoicesMap.Count < 0)
-        {
-            return Result<List<InvoiceDto>>.NotFound("Invoice Not Found");
-        }
-
-        return Result<List<InvoiceDto>>.Success(unpaidInvoicesMap);
+        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
+        return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
+    }    
+    
+    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId)
+    {
+        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId && inv.InvoiceType == InvoiceType.Paid).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
+        return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
     }
 
 	/// <inheritdoc/>
@@ -203,8 +204,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
         using (DataFilter.Disable<IMultiTenant>())
         {
-            // Step 1: Validate the user's credentials
             var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
+            
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, input.Password))
             {
@@ -223,71 +224,46 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     ErrorMessage = "Account is Inactive"
                 });
             }
+            var orgId = user.GetProperty<int>("OrganizationId");
+            var organizationEntity=await _organizationRepoistory.FirstOrDefaultAsync(u => u.Id == orgId);
+            if (organizationEntity is null) {
+                return Result<LoginResponseDto>.Invalid(new Results.ValidationError
+                {
+                    ErrorCode = "400",
+                    ErrorMessage = "User has no organization"
+                });
+            }
+            var roles = await _userManager.GetRolesAsync(user);
 
-            // Sign in the user
+            if (!roles.Contains(RolesType.Keeper.ToString()))
+                return Result<LoginResponseDto>.Unauthorized();
+            CurrentTenant.Change(user?.TenantId ?? null);
+           
             await _signInManager.SignInAsync(user, isPersistent: false);
-
-            // Re-enable tenant context for tenant-specific properties
             var tenantId = user.TenantId.ToString();
 
-            var roles = await _userManager.GetRolesAsync(user);
+            
 
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
-                AccessToken = await GenerateTokenAsync(user) ?? string.Empty,
+                AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
                 Role = roles.FirstOrDefault(),
                 Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
                 TenantId = tenantId,
                 UserId = user.Id.ToString(),
-                OrganizationId = user.GetProperty<int>("OrganizationId")
+                OrganizationId = organizationEntity.Id,
+                GracePeriod = organizationEntity.Graceperiod
 
             });
         }
-    }
-
-    /// <summary>
-    /// Generates a JWT token for the specified user.
-    /// </summary>
-    /// <param name="user">The user for whom the token will be generated.</param>
-    /// <returns>A string representing the generated JWT token.</returns>
-    private async Task<string> GenerateTokenAsync(Volo.Abp.Identity.IdentityUser user)
-    {
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var claims = new List<Claim>()
-        {
-            new Claim("userId", user.Id.ToString()),
-            new Claim("given_name", user.UserName),
-            new Claim("email", user.Email),
-            new Claim("role", string.Join(",", roles)),
-            new Claim("tenantid", user.TenantId?.ToString() ?? ""),
-            new Claim("scope", "address email phone roles profile offline_access SmartParking") //replace Qa with yours
-
-        };
-        var options = _openIddictOptions.CurrentValue;
-        var descriptor = new SecurityTokenDescriptor
-        {
-            Audience = "SmartParking", // replace with yours,
-            EncryptingCredentials = options.DisableAccessTokenEncryption
-                ? null
-                : options.EncryptionCredentials.First(),
-            Expires = null,
-            Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
-            IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", // replace with yours,
-            SigningCredentials = options.SigningCredentials.First(),
-            TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
-        };
-
-        var accessToken = options.JsonWebTokenHandler.CreateToken(descriptor);
-
-        return accessToken;
     }
 
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId,Guid userId)
     {
         Volo.Abp.Identity.IdentityUser? user;
         List<GarageTransaction> existingTransactions = new List<GarageTransaction>();
+        List<GarageTransaction> entranceTransactions = new List<GarageTransaction>();
+
 
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -301,21 +277,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 });
             }
 
-            var entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn);
-
-            // Fetch all transactions with IsIn == false (exits)
-            var exitTransactions = await _garageTransactionRepository.GetListAsync(t => !t.IsIn);
-
-            // Filter to keep only entrance transactions that do not have a corresponding exit
-            existingTransactions = entranceTransactions
-                .Where(entrance =>
-                    !exitTransactions.Any(exit =>
-                        exit.PlateNumber == entrance.PlateNumber)) // Exit occurs after entry
-                .ToList();
+             entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn &&t.CameraType==CameraType.Entry);
 
         }
 
-        var sortedTransaction = existingTransactions.OrderByDescending(t => t.AccurateTime).ToList();
+        var sortedTransaction = entranceTransactions.OrderByDescending(t => t.AccurateTime).ToList();
 
         var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
         
@@ -335,21 +301,87 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<PaymentCheckoutDto>> PayCashAsync(int invoiceId)
+    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            if (CheckIfInvoiceIsPaid(invoice))
+            {
+                return Result.Error("InvoiceIsAlreadyPaid");
+
+            }
+
             var paymentRequest = new PaymentCheckoutRequestDto
             {
-                PaymentCategory=PaymentCategory.Invoice,
+                PaymentCategory=PaymentCategory.PaymentParking,
                 PaymentMethod=PaymentMethod.Cash,
                 Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
                 CustomerId=invoice.CustomerId,
                 OrganizationId=invoice.OrganizationId,
                 InvoiceId=invoiceId,
+                PaymentName= PaymentMethod.Cash.ToString()
             };
-            return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+
+            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var image = await _invoiceAppService.GetImage(invoice, result.QrCodeInvoice);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
+            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
+            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
+            return invoiceDto;
         }
     }
+    public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+
+            var paymentRequest = new PaymentCheckoutRequestDto
+            {
+                PaymentCategory = PaymentCategory.PaymentParking,
+                PaymentMethod = PaymentMethod.Cash,
+                Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+                CustomerId = invoice.CustomerId,
+                OrganizationId = invoice.OrganizationId,
+                InvoiceId = invoiceId,
+                PaymentName = PaymentType,
+                
+            };
+            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var image =await _invoiceAppService.GetImage(invoice,result.QrCodeInvoice);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
+            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
+            invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
+            return invoiceDto;
+        }
+    }
+
+    private static bool CheckIfInvoiceIsPaid(Invoice invoice)
+    {
+        if (invoice.InvoiceType == InvoiceType.Paid)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _invoiceRepository.GetQueryableAsync();
+           
+            var invoice = await AsyncExecuter.FirstOrDefaultAsync(
+                query.Where(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid)
+                .OrderByDescending(invo => invo.InvoiceTime));
+            return ObjectMapper.Map<Invoice, InvoiceDto>(invoice); 
+
+        }
+    }
+
 }

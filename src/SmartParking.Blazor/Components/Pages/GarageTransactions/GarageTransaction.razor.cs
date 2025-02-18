@@ -8,22 +8,31 @@ using Volo.Abp.Application.Dtos;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
 using SmartParking.Entities.GarageTransactions;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.GarageTransactionPermissions;
+using Microsoft.AspNetCore.Components;
+using System.Globalization;
+using SmartParking.Cameras;
 
 namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 {
 	public partial class GarageTransaction
 	{
 		private List<GarageTransactionDto> garageTransactions = new List<GarageTransactionDto>();
+        private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+        public Guid? TenantId { get; private set; }
+        private string sortColumn;
+        private string ValueOfMenue = "";
+        private TableData itemData = new TableData();
 
-
-		private int currentPage = 1;
+        private int currentPage = 1;
 		private int pageSize = 100;
 
 		private int TotalItem;
 		public int CurrentPage { get; set; } = 1; // Default current page value is 10
 		public int RowPerPage { get; set; } = 10; // Default value is 10
 
-		private TableData itemData = new TableData();
 
 		private string termSearch;
 
@@ -33,6 +42,18 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
         public GarageTransaction(IStringLocalizer<SmartParkingResource> localizer)
         {
             _localizer = localizer;
+        }
+
+        protected async override Task OnInitializedAsync()
+        {
+            if (!await AuthorizationService.IsGrantedAsync(GarageTransactionPermissions.Default))
+            {
+
+                Navigation.NavigateTo("/Account/AccessDenied", true);
+            }
+            await CreateMenue();
+            await base.OnInitializedAsync();
+
         }
 
         /// <summary>
@@ -46,7 +67,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 			// Create a new search input object with pagination, sorting, and search term parameters
 			var input = new PagedAndSortedAndFilteredResultRequestDto
-			{
+            {
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
 				Sorting = pageInfo.SortColumn,
@@ -61,7 +82,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 				// Calculate the total number of pages required to display all results
 				TotalItem = (int)garageTransactionDto.TotalCount;
-				CreateTable(garageTransactionDto);
+				await CreateTable(garageTransactionDto);
 			}
 			else
 			{
@@ -71,7 +92,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
                 // Calculate the total number of pages required to display all results
                 TotalItem = (int)garageTransactionDto.TotalCount;
-                CreateTable(garageTransactionDto);
+                await CreateTable(garageTransactionDto);
             }
 
 
@@ -105,7 +126,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 				// Calculate the total number of pages required to display all results
 				TotalItem = (int)garageTransactionsDto.TotalCount;
-				CreateTable(garageTransactionsDto);
+				await CreateTable(garageTransactionsDto);
 			}
 			else
 			{
@@ -115,7 +136,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
                 // Calculate the total number of pages required to display all results
                 TotalItem = (int)garageTransactionsDto.TotalCount;
-                CreateTable(garageTransactionsDto);
+                await CreateTable(garageTransactionsDto);
             }
 		}
 		/// <summary>
@@ -125,7 +146,11 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		private async Task FetchTableData(PageChangeEventArgs pageInfo)
 		{
-			string sort ;
+            termSearch = pageInfo.SearchTerm;
+            CurrentPage = pageInfo.PageNumber;
+            RowPerPage = pageInfo.RowsPerPage;
+            sortColumn = pageInfo.SortColumn;
+            string sort ;
 			if (pageInfo.SortColumn == "Id")
 				sort = "AccurateTime DESC";
 			else
@@ -133,20 +158,21 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
             CurrentPage = pageInfo.PageNumber;
 			RowPerPage = pageInfo.RowsPerPage;
-			Console.WriteLine(RowPerPage);
 			// Create a request object for paged and sorted data
-			var input = new PagedAndSortedResultRequestDto
+			var input = new PagedAndSortedAndSearchResultRequestDto
 			{
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-				Sorting = sort
+				Sorting = sort,
+				SearchingTerm= pageInfo.SearchTerm
+				
             };
 			if(CurrentTenant.Id == null)
 			{
 				// Retrieve the list of organizations from the server
-				var garageTransactionsDto = await GarageTransactionsAppService.GetListAsync(input);
+				var garageTransactionsDto = await GarageTransactionsAppService.GetAllListAsync(input,null);
 				TotalItem = (int)garageTransactionsDto.TotalCount;
-				CreateTable(garageTransactionsDto);
+				await CreateTable(garageTransactionsDto);
 			}
 
 			else
@@ -154,26 +180,74 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				var tenantId = CurrentTenant.Id;	
 				var garageTransactionDto = await GarageTransactionsAppService.GetAllTransactionsByOrganizationAsync(input,tenantId);
 				TotalItem = (int)garageTransactionDto.TotalCount;
-				CreateTable(garageTransactionDto);
+				await CreateTable(garageTransactionDto);
 			}
 		}
+        public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+        {
+            TenantId = tenantId;
+            ValueOfMenue = selectedValue;
+            var request = new PagedAndSortedAndSearchResultRequestDto
+            {
+                MaxResultCount = RowPerPage,
+                SkipCount = (CurrentPage - 1) * RowPerPage,
+                Sorting = sortColumn,
+                SearchingTerm = termSearch
+            };
 
-		private void CreateTable(PagedResultDto<GarageTransactionDto> garageTransactions)
+            PagedResultDto<GarageTransactionDto> garageTransactionDto = await GarageTransactionsAppService.GetAllListAsync(request, TenantId);
+
+            TotalItem = (int)garageTransactionDto.TotalCount;
+            await CreateTable(garageTransactionDto);
+        }
+        private async Task CreateMenue()
+        {
+            var itemsOrganizations = new List<MenuItem>();
+            var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+            itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                foreach (var org in organizations.Items)
+                {
+                    itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+                }
+            }
+            else
+            {
+                foreach (var org in organizations.Items)
+                {
+                    itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+                }
+            }
+
+            MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = @L["Organizations"],
+            Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+        }
+
+        private async Task CreateTable(PagedResultDto<GarageTransactionDto> garageTransactions)
 		{
 			// Initialize table data to be displayed, setting the table's name and whether to show the header
 			var tableData = new TableData()
 			{
-				Name = "GarageTransactions",
+				Name = L["GarageTransactions"],
 				ShowHeader = true
 			};
 
 
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyName = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyName = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyName = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = true, PropertyName = "CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Mapped"], Name = "Mapped", IsFilterable = true, PropertyName = "IsMapped", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 			foreach (var item in garageTransactions.Items)
 			{
@@ -184,6 +258,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"],_localizer[$"{item.CameraType.ToString()}"]));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"],_localizer[$"{item.CustomerCategory.ToString()?? "NotCustomer"}"]));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Mapped"],_localizer[$"{item.IsMapped.ToString()}"]));
 
                 //rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));
 
@@ -191,9 +266,10 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                 tableData.Rows.Add(rowDef);
 			}
 			itemData = tableData;
-		}
+            await Task.Yield();
+        }
 
-		private Task CreateGarageTransaction(DialogOptions options)//Add 
+        private Task CreateGarageTransaction(DialogOptions options)//Add 
 		{
             ShowSnackbar("Not Working", Severity.Warning);
 
@@ -212,33 +288,12 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
 		private async Task<IDialogReference> OnClickRowView(RowDef row)
 		{
-           
-            Console.WriteLine("View Button");
-
 			var id = int.Parse(row.Cells[0].Value);
-			Console.WriteLine(id);
-
 			var garageTransactionDto = await GarageTransactionsAppService.GetAsync(id);
-
-			var createUpdateGarageTransaction = new CreateUpdateGarageTransactionDto
-            {
-				AccurateTime=garageTransactionDto.AccurateTime,
-				SnapTime=garageTransactionDto.SnapTime,
-				PlateNumber=garageTransactionDto.PlateNumber,
-				VehiclePicture=garageTransactionDto.VehiclePicture,
-				//Type=garageTransactionDto.Type,
-				CameraType=garageTransactionDto.CameraType,
-				CameraId=garageTransactionDto.CameraId,
-				GarageId=garageTransactionDto.GarageId,
-				OrganizationID=garageTransactionDto.OrganizationID,
-				CustomerCategory=garageTransactionDto.CustomerCategory
-			};
-
 			var parameters = new DialogParameters
 			{
-				["GarageTransaction"] = createUpdateGarageTransaction,
+				["GarageTransaction"] = garageTransactionDto,
 			};
-
 
 			return await Dialog.ShowAsync<ViewGarageTransaction>("View GarageTransaction", parameters);
 		}

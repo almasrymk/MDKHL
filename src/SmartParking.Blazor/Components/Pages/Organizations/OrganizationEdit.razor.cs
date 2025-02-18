@@ -1,14 +1,20 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using SmartParking.Organizations;
+using SmartParking.Permissions.OrganizationPermissions;
 using SmartParking.Subscriptions;
+using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Authentication;
@@ -74,7 +80,10 @@ public partial class OrganizationEdit
     public string ViewSubscriptionArabicName { get; set; }
     public  int FreeMinutes { get; set; }
     public  int Graceperiod { get; set; }
+    public string TaxIdentificationNumber { get; set; }
 
+    private bool HasChangeStatusPermission;
+    private bool IsPictureChanged;
 
 
 
@@ -145,11 +154,11 @@ public partial class OrganizationEdit
             CityId = int.Parse(CitySelectValue),
             RegionId = int.Parse(RegionSelectValue),
             StateId = int.Parse(StateSelectValue),
-            ContactMail = ContactMail,
+            Email = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
-            PhoneNum = PhoneNum,
+            PhoneNumber = PhoneNum,
             WhatsAppNum = WhatsAppNum,
             FirstHourPrice = FirstHourPrice,
             SecondHourPrice = SecondHourPrice,
@@ -172,54 +181,47 @@ public partial class OrganizationEdit
             Graceperiod= Graceperiod,
             SubscriptionId= SubscriptionId,
             TenantId=orgTenant,
+            TaxNumber= TaxIdentificationNumber,
         };
 
 
         try
         {
+            createUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(IsClose, createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
 
-
+            if (IsPictureChanged)
+                createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
             var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
-            if (SubscriptionId != int.Parse(SubscriptionSelectValue))
-            {
-                await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(SubscriptionSelectValue));
+            //if (SubscriptionId != int.Parse(SubscriptionSelectValue))
+            //{
+            //    await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(SubscriptionSelectValue));
 
-            }
+            //}
             Navigation.NavigateTo("/organizations");
-            ShowSnackbar(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {createUpdateOrganiztion.ArabicName}", Severity.Success);
+
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-    }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
     private void Cancel()
     {
@@ -243,10 +245,22 @@ public partial class OrganizationEdit
         {
             Status = false;
         }
+        if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            CityNameEdit = organization.CityName;
+            CountryNameEdit = organization.CountryName;
+            RegionNameEdit = organization.RegionName;
+            StateNameEdit = organization.StateName;
+
+        }
+        else
+        {
+            CityNameEdit = organization.CityNameAr;
+            CountryNameEdit = organization.CountryNameAr;
+            RegionNameEdit = organization.RegionNameAr;
+            StateNameEdit = organization.StateNameAr;
+        }
         MaxCapacity = organization.MaxCapacity;
-        CountryNameEdit = organization.CountryName;
-        CityNameEdit = organization.CityName;
-        RegionNameEdit = organization.RegionName;
         StateSelectValue = organization.StateId.ToString();
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
@@ -286,6 +300,7 @@ public partial class OrganizationEdit
         Parkingslot = SelectedSubscription.ParkingSlot;
         Graceperiod = Graceperiod;
         code = organization.Code;
+        TaxIdentificationNumber= organization.TaxNumber;
 
     }
     private async Task GetRegions()
@@ -318,6 +333,7 @@ public partial class OrganizationEdit
     }
     protected override async Task OnInitializedAsync()
     {
+        HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(OrganizationPermissions.ChanageStatus);
         await FetchData();
 
         countries = await CountriesAppService.GetCountryLookupAsync();
@@ -402,68 +418,10 @@ public partial class OrganizationEdit
         var imageFile = file;
         if (imageFile != null)
         {
-            // Save the image and get the file path
-            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
+            IsPictureChanged = true;
             StateHasChanged();
         }
     }
-    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
-    {
-        // Ensure directory structure
-        var imageDirectoryPath = CreateImageDirectory();
-
-        // Generate a unique file name with the original file extension
-        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-        // Save the image to the specified path
-        using (var fileStream = new FileStream(fullPath, FileMode.Create))
-        {
-            // Copy the image data from the IBrowserFile stream to the file stream
-            await imageFile.OpenReadStream().CopyToAsync(fileStream);
-        }
-
-        // Return the relative path for storing in the database
-        return $"/OrganizationImages/{fileName}";
-    }
-    private string CreateImageDirectory()
-    {
-        // Define the path where the image will be saved
-        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
-
-        // Ensure the directory exists
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-            Directory.CreateDirectory(imageDirectoryPath);
-        }
-        return imageDirectoryPath;
-    }
-    private string ValidateSecondaryNumber(int value)
-    {
-        if (value < 1111)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidatePostalCode(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidateBuildingNumber(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-
+ 
 }

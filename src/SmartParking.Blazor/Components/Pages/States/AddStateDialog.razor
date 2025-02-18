@@ -16,7 +16,7 @@
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["NewState"]</MudText>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
         </TitleContent>
         <DialogContent>
 
@@ -50,6 +50,7 @@
                                    Placeholder="@L["Choose"]"
                                    Clearable="true"
                                    @bind-Value="input.RegionId">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var region in regions)
                             {
                                 @if(CultureInfo.CurrentCulture.Name == "en")
@@ -80,7 +81,7 @@
         </DialogContent>
 
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
             <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>

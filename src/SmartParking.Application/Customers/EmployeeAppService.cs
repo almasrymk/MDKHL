@@ -55,7 +55,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         try
         {
-            var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+            var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
 
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -120,7 +120,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <inheritdoc/>
     public async override Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        var organization = await _organizationAppService.GetOrganizationForCurrentTenat();
+        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
@@ -369,7 +369,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         customer.TenantId = null;
         customer.IdentityUser.Name = input.FullName;
         var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-        await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.MobileNumber);
+        await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.PhoneNumber);
         if (!createdUser.Succeeded)
         {
             throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
@@ -419,7 +419,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             throw new Exception("There is no customer related to that id");
         }
-        await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(customer);
 
     }
     public override async Task<CustomerDto> GetAsync(Guid id)

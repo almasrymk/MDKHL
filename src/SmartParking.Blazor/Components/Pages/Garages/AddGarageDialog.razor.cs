@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazorise;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.AlertMessages;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,15 +26,12 @@ public partial class AddGarageDialog
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
 
     private MudForm form;
-    private bool isSlotsReadOnly = true;
-
-
-    TimeEditMode editMode = new TimeEditMode();
 
     protected override async Task OnInitializedAsync()
     {
         createUpdateGarage = new CreateUpdateGarageDto();
-        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString())||currrentUser.IsInRole("admin"))
+        createUpdateGarage.Status = Enums.Status.Active;
+        if (!currrentTenant.Id.HasValue)
         {
 
             var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
@@ -39,9 +40,6 @@ public partial class AddGarageDialog
     }
     private async void SubmitCreate()
     {
-		var successedMessage = L["GarageCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateGarage"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 		try
         {
             if (currrentUser.TenantId != null)
@@ -55,38 +53,36 @@ public partial class AddGarageDialog
             var garage = await GarageAppService.CreateAsync(createUpdateGarage);
             if (garage != null)
             {
-                ShowSnackbar($"{successedMessage}", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{garage.NameEn} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 NavigationManager.NavigateTo("/garages",true);
             }
             else
             {
-                ShowSnackbar($"{errorMessage}", Severity.Error);
-
-
+                SnackBar.ShowSnackbar(Snackbar,$"{garage.NameEn} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}", Severity.Error);
             }
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
 
@@ -98,31 +94,9 @@ public partial class AddGarageDialog
         MudDialogAdd.Cancel();
 
     }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-
-    private string validateNumber(int value)
-    {
-        if (value < 0)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
     private void HandleMaxCapacityChange(int maxCapacity)
     {
         createUpdateGarage.MaxCapacity = maxCapacity;
-
-        // Reset all slots to zero to start fresh
         createUpdateGarage.MaxSlotsForEmployess = 0;
         createUpdateGarage.MaxSlotsForCustomers = 0;
         createUpdateGarage.MaxSlotsForFree = 0;
@@ -131,160 +105,32 @@ public partial class AddGarageDialog
     private void HandleEmployeeSlotsChange(int maxSlotsForEmployees)
     {
         createUpdateGarage.MaxSlotsForEmployess = maxSlotsForEmployees;
-        DistributeRemainingCapacity();
+        Disrtibute();
     }
 
     private void HandleCustomerSlotsChange(int maxSlotsForCustomers)
     {
         createUpdateGarage.MaxSlotsForCustomers = maxSlotsForCustomers;
-        DistributeRemainingCapacity();
+        Disrtibute();
     }
 
     private void HandleFreeSlotsChange(int maxSlotsForFree)
     {
         createUpdateGarage.MaxSlotsForFree = maxSlotsForFree;
-        DistributeRemainingCapacity();
+        Disrtibute();
     }
 
-    private void DistributeRemainingCapacity()
+    private void Disrtibute()
     {
-        int totalAllocated = createUpdateGarage.MaxSlotsForEmployess
-                           + createUpdateGarage.MaxSlotsForCustomers
-                           + createUpdateGarage.MaxSlotsForFree;
-
-        int remainingCapacity = createUpdateGarage.MaxCapacity - totalAllocated;
-
-        if (remainingCapacity < 0)
-        {
-            // If total slots exceed MaxCapacity, reset to prevent overflow
-            createUpdateGarage.MaxSlotsForEmployess = 0;
-            createUpdateGarage.MaxSlotsForCustomers = 0;
-            createUpdateGarage.MaxSlotsForFree = 0;
-        }
-        else
-        {
-            // Distribute remaining slots dynamically
-            if (createUpdateGarage.MaxSlotsForEmployess > 0)
-            {
-                if(createUpdateGarage.MaxSlotsForCustomers > 0)
-                {
-                    if (createUpdateGarage.MaxSlotsForFree > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            // If total slots exceed MaxCapacity, reset to prevent overflow
-                            createUpdateGarage.MaxSlotsForEmployess = 0;
-                            createUpdateGarage.MaxSlotsForCustomers = 0;
-                            createUpdateGarage.MaxSlotsForFree = 0;
-                        }
-                    }
-                    else
-                    {
-                        createUpdateGarage.MaxSlotsForFree = createUpdateGarage.MaxCapacity- createUpdateGarage.MaxSlotsForEmployess- createUpdateGarage.MaxSlotsForCustomers;
-
-                    }
-
-                }
-                else if (createUpdateGarage.MaxSlotsForFree>0)
-                {
-                    if (createUpdateGarage.MaxSlotsForCustomers > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            createUpdateGarage.MaxSlotsForEmployess = 0;
-                            createUpdateGarage.MaxSlotsForCustomers = 0;
-                            createUpdateGarage.MaxSlotsForFree = 0;
-                        }
-
-                    }
-                    else
-                    {
-
-                        createUpdateGarage.MaxSlotsForCustomers=createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForEmployess - createUpdateGarage.MaxSlotsForFree;
-                    }
-
-                }
-            }
-            else if (createUpdateGarage.MaxSlotsForCustomers > 0)
-            {
-                if (createUpdateGarage.MaxSlotsForFree > 0)
-                {
-                    if (createUpdateGarage.MaxSlotsForEmployess > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            createUpdateGarage.MaxSlotsForEmployess = 0;
-                            createUpdateGarage.MaxSlotsForCustomers = 0;
-                            createUpdateGarage.MaxSlotsForFree = 0;
-                        }
-
-                    }
-                    else
-                    {
-
-                      createUpdateGarage.MaxSlotsForEmployess = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForCustomers - createUpdateGarage.MaxSlotsForFree;
-                    }
-                }
-                else if (createUpdateGarage.MaxSlotsForEmployess > 0)
-                {
-                    if (createUpdateGarage.MaxSlotsForFree > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            createUpdateGarage.MaxSlotsForEmployess = 0;
-                            createUpdateGarage.MaxSlotsForCustomers = 0;
-                            createUpdateGarage.MaxSlotsForFree = 0;
-                        }
-
-                    }
-                    else
-                    {
-                       createUpdateGarage.MaxSlotsForFree = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForEmployess - createUpdateGarage.MaxSlotsForCustomers;
-
-                    }
-
-                }
-            }
-            else if(createUpdateGarage.MaxSlotsForFree > 0)
-            {
-                if (createUpdateGarage.MaxSlotsForEmployess > 0)
-                {
-                    if (createUpdateGarage.MaxSlotsForCustomers > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            createUpdateGarage.MaxSlotsForEmployess = 0;
-                            createUpdateGarage.MaxSlotsForCustomers = 0;
-                            createUpdateGarage.MaxSlotsForFree = 0;
-                        }
-
-                    }
-                    else
-                    {
-                    createUpdateGarage.MaxSlotsForCustomers = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForEmployess - createUpdateGarage.MaxSlotsForFree;
-
-                    }
-                }
-                else if (createUpdateGarage.MaxSlotsForCustomers > 0)
-                {
-                    if (createUpdateGarage.MaxSlotsForEmployess > 0)
-                    {
-                        if (remainingCapacity < 0)
-                        {
-                            createUpdateGarage.MaxSlotsForEmployess = 0;
-                            createUpdateGarage.MaxSlotsForCustomers = 0;
-                            createUpdateGarage.MaxSlotsForFree = 0;
-                        }
-
-                    }
-                    else
-                    {
-
-                    createUpdateGarage.MaxSlotsForEmployess = createUpdateGarage.MaxCapacity - createUpdateGarage.MaxSlotsForFree - createUpdateGarage.MaxSlotsForCustomers;
-                    }
-
-                }
-            }
-        }
+        int MaxSlotsForEmployess =  createUpdateGarage.MaxSlotsForEmployess;
+        int MaxSlotsForCustomers = createUpdateGarage.MaxSlotsForCustomers;
+        int MaxSlotsForFree = createUpdateGarage.MaxSlotsForFree;
+        NumbersValidations.DistributeRemainingCapacity(ref MaxSlotsForEmployess,ref MaxSlotsForCustomers,ref MaxSlotsForFree,createUpdateGarage.MaxCapacity);
+        createUpdateGarage.MaxSlotsForEmployess= MaxSlotsForEmployess;
+        createUpdateGarage.MaxSlotsForFree= MaxSlotsForFree;
+        createUpdateGarage.MaxSlotsForCustomers= MaxSlotsForCustomers;
     }
+
+
+
 }

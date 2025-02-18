@@ -1,0 +1,20 @@
+﻿<MudItem sm="@grid">
+    <MudPaper  class="custom-rounded mud-width-full px-4 py-2 bg-white d-flex justify-content-between align-items-center">
+        <div>
+            <MudText Class="fw-bold" Typo="Typo.h4">
+                @Number
+            </MudText>
+            <MudText>
+                @Type
+            </MudText>
+        </div>
+        <MudImage Src=@icon />
+    </MudPaper>
+</MudItem>
+@code {
+    [Parameter] public string Number { get; set; }
+    [Parameter] public string Type { get; set; }
+    [Parameter] public int grid { get; set; }
+    [Parameter] public string icon { get;set; }
+
+}

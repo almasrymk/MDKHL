@@ -3,6 +3,7 @@ using MudBlazor;
 using System.Threading.Tasks;
 using System;
 using System.Globalization;
+using SmartParking.Subscriptions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -46,6 +47,15 @@ public partial class OrganizationView
     public int NumberOfMobileCustomers { get; set; }
     public int NumberOfOrganizations { get; set; }
     public int SubscriptionSlotNumber { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+    public decimal FirstHourPrice { get; set; }
+    public decimal SecondHourPrice { get; set; }
+    public decimal ThirdHourPrice { get; set; }
+    public decimal AdditionalHourPrice { get; set; }
+    public decimal FullDayPrice { get; set; }
+    public int FreeMinutes { get; set; }
+    public int Graceperiod { get; set; }
+
 
     private async Task FetchData()
     {
@@ -53,7 +63,7 @@ public partial class OrganizationView
         var organization = await OrganizationsAppService.GetAsync(id);
         EnglishName = organization.EnglishName;
         ArabicName = organization.ArabicName;
-        NumOfActiveCameras = organization.NumOfCameras;
+        NumOfActiveCameras = organization.ActiveCameras;
         CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
         
         OrganizationPicture = organization.OrganizationPicture;
@@ -75,7 +85,7 @@ public partial class OrganizationView
              RegionName = organization.RegionName;
              StateName=organization.StateName;
              CityName = organization.CityName;
-            Address = organization.Address + organization.CityName;
+             Address = organization.Address + organization.CityName;
         }
         else
         {
@@ -86,12 +96,11 @@ public partial class OrganizationView
             CityName = organization.CityNameAr;
             Address = organization.Address + organization.CityNameAr;
         }
-        NumOfActiveGarages = organization.MaxCapacity;
+        NumOfActiveGarages = organization.ActiveGarages;
         ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         PhoneNum = organization.PhoneNum;
-        WhatsAppNum = organization.WhatsAppNum;
-        StateName=organization.StateName;
+        WhatsAppNum = organization.WhatsAppNum; 
         Code = organization.Code;
         BuildingNumber = organization.BuildingNumber;
         StreetName = organization.StreetName;
@@ -106,23 +115,54 @@ public partial class OrganizationView
         NumberOfUsers= organization.NumberOfUsers;
         SubscriptionArName = organization.SubscriptionArabicName;
         SubscriptionEnName= organization.SubscriptionEnglishName;
-        
+        TaxIdentificationNumber=organization.TaxNumber;
+        FirstHourPrice = organization.FirstHourPrice;
+        SecondHourPrice = organization.SecondHourPrice;
+        ThirdHourPrice = organization.ThirdHourPrice;
+        FullDayPrice = organization.FullDayPrice;
+        AdditionalHourPrice = organization.AdditionalHourPrice;
+        FreeMinutes = organization.FreeMinutes;
+        Graceperiod = organization.Graceperiod;
 
     }
     protected override async Task OnInitializedAsync()
     {
         await FetchData();
-
-
-
-
         await base.OnInitializedAsync();
-
-
     }
     private void Back()
     {
         Navigation.NavigateTo("/organizations");
+    }
+    private async Task ViewCategories()
+    {
+        var id = int.Parse(Id);
+        var parameters = new DialogParameters
+        {
+            ["organizationId"] = id
+        };
+        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
+    }
+    private async Task ViewSubscription()
+    {
+        var id = int.Parse(Id);
+        var org = await OrganizationsAppService.GetAsync(id);
+        var subscription = new SubscriptionDto();
+        if (org.SubscriptionId != 0)
+        {
+            subscription = await SunscriptionAppService.GetAsync(org.SubscriptionId);
+
+        }
+        else
+        {
+            subscription = null;
+        }
+
+        var parameters = new DialogParameters
+        {
+            ["subscription"] = subscription
+        };
+        await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
     }
 
 

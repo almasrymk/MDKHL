@@ -1,4 +1,5 @@
-﻿using SmartParking.CustomerPackages;
+﻿
+using SmartParking.CustomerPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Packages;
@@ -8,12 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Cutomers;
 
-public class CustomerDto
+public class CustomerDto:AuditedEntityDto<Guid>
 {
-    public Guid Id { get; set; }
     public string FullName { get; set; }
     public string UserName { get; set; }
     public string ArabicName { get; set; }
@@ -28,5 +29,30 @@ public class CustomerDto
     public bool isActive { get; set; }
     public string CustomerCategory { get; set; }
     public int PackageId { get; set; }
+    public Guid IdentityId { get; set; }
+    public string _packageEnglishNames;
+    public string _packageArabicNames;
+
+    public string PackageEnglishNames
+    {
+        get => CleanCommas(_packageEnglishNames);
+        set => _packageEnglishNames = value;
+    }
+
+    public string PackageArabicNames
+    {
+        get => CleanCommas(_packageArabicNames);
+        set => _packageArabicNames = value;
+    }
+
+    private string CleanCommas(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input; 
+
+        return input.Trim().Trim(',');
+    }
+
 }
+
 

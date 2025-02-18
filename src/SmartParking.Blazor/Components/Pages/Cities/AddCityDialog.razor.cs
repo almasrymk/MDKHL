@@ -8,6 +8,9 @@ using Volo.Abp.Validation;
 using System.Linq;
 using System;
 using SmartParking.Lookups.State;
+using SmartParking.Lookups.CameraBrands;
+using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
@@ -34,58 +37,58 @@ public partial class AddCityDialog
     }
     private async Task Submit()
     {
-        var successedMessage = L["CityCreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateCity"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-        
-            // Call your service to create the city
-            try
+       
+        try
+        {
+            CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
             {
-                CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
-                {
-                    ArabicName = input.ArabicName,
-                    EnglishName = input.EnglishName,
-                    StateId = input.StateId,
-                };
+                ArabicName = input.ArabicName,
+                EnglishName = input.EnglishName,
+                StateId = input.StateId,
+            };
 
-                var city = await CitiesAppService.CreateAsync(createUpdateCityDto);
-                if (city != null)
-                {
-                    Snackbar.Add(successedMessage, Severity.Success);
-                    MudDialog.Close(DialogResult.Ok(true));
-				    await Task.Delay(1000);
-				    Navigation.NavigateTo("/cities", forceLoad: true);
-			    }
-
-                else
-                {
-                    Snackbar.Add(errorMessage, Severity.Error);
-
-                }
-            }
-            catch (AbpValidationException validationException)
+            var city = await CitiesAppService.CreateAsync(createUpdateCityDto);
+        if (city != null)
             {
-                foreach (var validationError in validationException.ValidationErrors)
-                {
-                    Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-                }
-            }
-            catch (BusinessException ex)
+            SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCityDto.ArabicName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+				await Task.Delay(1000);
+				Navigation.NavigateTo("/cities", forceLoad: true);
+			}
+
+            else
             {
-                Snackbar.Add($"{errorMessage} {ex.Code}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}  {L[AlertMessages.AlertMessages.ADD]} {createUpdateCityDto.ArabicName}", Severity.Error);
 
             }
-            catch (Exception ex)
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
             {
-                Snackbar.Add($"{errorMessage} {ex.Message} ", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
 
 
     }
-        
-        
-    
+
+
+
     private void Cancel()
     {
         MudDialog.Cancel();

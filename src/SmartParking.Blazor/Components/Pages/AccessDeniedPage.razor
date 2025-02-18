@@ -1,0 +1,14 @@
+﻿@page "/Account/AccessDenied"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+<MudItem class="d-flex flex-column align-content-center gap-4 p-5">
+    <MudImage Src="images/AccessDenied.png" Class="" Width="100" Style="width:1000px display: block; margin-left: auto; margin-right: auto;" Height="100" Alt="Access Denied Image" />
+</MudItem>
+<MudItem Class="text-center fs-1">
+    <Text Class="text-lg-center">403</Text>
+    <Text Class="text-lg-center">@L["Unauthorized"]</Text>
+</MudItem>
+@code {
+
+}

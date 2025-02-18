@@ -1,59 +1,88 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Organizations;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using System.Linq;
+﻿using Blazorise.DataGrid;
+using Humanizer.Localisation;
+using iText.Html2pdf;
+using iText.IO.Font;
+using iText.Kernel.Font;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Annot;
+using iText.Kernel.Pdf.Canvas;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Font;
+using iText.Layout.Properties;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
+using MudBlazor;
+using OfficeOpenXml;
+using Polly;
+using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
+using SmartParking.Utilities;
+using YamlDotNet.Core.Tokens;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
 public partial class SPDataGrid
 {
+    [Parameter] public List<MudMenuData> Menus { get; set; } = new List<MudMenuData>();
     [Parameter] public string PageName { get; set; }
     [Parameter] public TableData Data { get; set; } = new TableData();
+    public IList<RowDef> Rows { get; set; } = new List<RowDef>();
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public bool ShowAdd { get; set; } = true;
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
     [Parameter] public bool ShowSearching { get; set; } = true;
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }
-    [Parameter] public bool ShowFiltering { get; set; } = true;
+    [Parameter] public bool ShowFiltering { get; set; } = false;
+    [Parameter] public bool ShowCustomerTransactions { get; set; } = false;
+    [Parameter] public bool ShowVehicleTransactions { get; set; } = false;
+    [Parameter] public EventCallback<RowDef> ShowCustomerTransactionsMethod { get; set; }
+    [Parameter] public EventCallback<RowDef> ShowVehicleTransactionsMethod { get; set; }
     [Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickButton { get; set; }
     [Parameter] public bool ShowEdit { get; set; } = true;
+    [Parameter] public bool ShowButton { get; set; } = true;
+    [Parameter] public bool ShowExport { get; set; } = true;
+    [Parameter] public bool ShowMenue { get; set; } = false;
     [Parameter] public EventCallback<RowDef> OnClickCar { get; set; }
     [Parameter] public bool ShowAssignCar { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowView { get; set; }
-    [Parameter]  public  bool ShowView { get; set; } = true;
+    [Parameter] public bool ShowView { get; set; } = true;
     [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
-    public bool ShowDelete { get; set; } = true;
+    [Parameter] public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
-    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
-    {
-        _stringLocalizer = stringLocalizer;
-    }
+    [Parameter] public EventCallback<string> HandleCategory { get; set; }
 
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
-    private string _searchString;
+    public string _searchString;
     private string sort;
-    MudDataGrid<RowDef> dataGrid;
+    public MudDataGrid<RowDef> dataGrid { get; set; }
     private bool _ascending = true;
     public string sortString = "Id";
     public bool ClickFilter { get; set; } = false;
     private string SelectedColumn { get; set; }
+
+    private bool IsShowValue  { get; set; } = true;
+    private ColumnDef SelectedColumnDef { get; set; } = new ColumnDef();
     private KeyValuePair<string, string> SelectOperator { get; set; } = new KeyValuePair<string, string>();
+    private List<KeyValuePair<string, string>> SelectProprtyName { get; set; } = new List<KeyValuePair<string, string>>();
 
     private bool IsNot = false;
+    private bool IsClickMenu = false;
+    private string ValueOfMenue { get; set; } = "All";
+    public DateTime? Date { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
@@ -64,6 +93,22 @@ public partial class SPDataGrid
         ["ends with"] = "EndsWith",
         ["is empty"] = "IsNullOrEmpty",
         ["is not empty"] = "IsNullOrEmpty"
+    };    
+    
+    public Dictionary<string, string> DateOperatorEn { get; set; } = new Dictionary<string, string>
+    {
+        ["greater than"] = "GreaterThan",
+        ["greater than or equal"] = "GreaterThanOrEqual",
+        ["less than"] = "LessThan",
+        ["less than or equal"] = "LessThanOrEqual",
+        ["between"] = "Between",
+    };
+    
+    public Dictionary<string, string> NumberOperatorEn { get; set; } = new Dictionary<string, string>
+    {
+        ["greater than"] = "GreaterThan",
+        ["less than"] = "LessThan",
+        ["equals"] = "Equals"
     };
     public Dictionary<string, string> StringOperatorAR { get; set; } = new Dictionary<string, string>
     {
@@ -76,12 +121,48 @@ public partial class SPDataGrid
         ["فارغـًا"] = "IsNullOrEmpty",
         ["لا يكون فارغـًا"] = "IsNullOrEmpty"
     };
-    private string FilterValue { get; set; }
-        public async Task ClearItem(string key)
+    
+    public Dictionary<string, string> DateOperatorAR { get; set; } = new Dictionary<string, string>
     {
+        ["اكبر من"] = "GreaterThan",
+        ["اكبر من او يساوي"] = "GreaterThanOrEqual",
+        ["اقل من"] = "LessThan",
+        [" اقل من او يساوي"] = "LessThanOrEqual",
+        ["بين"] = "Between",
+    };
+    
+    public Dictionary<string, string> NumberOperatorAR { get; set; } = new Dictionary<string, string>
+    {
+        ["اكبر من"] = "GreaterThan",
+        ["اقل من"] = "LessThan",
+        ["يساوي"] = "Equals"
+    };
+    private string FilterValue { get; set; }
+    public bool IsExport { get; private set; }
 
+    protected override Task OnInitializedAsync()
+    {
+        Rows = Data.Rows;
+        return base.OnInitializedAsync();
+    }
+    public SPDataGrid(IStringLocalizer<SmartParkingResource> stringLocalizer)
+    {
+        dataGrid = new MudDataGrid<RowDef>();
+        _stringLocalizer = stringLocalizer;
+    }
 
+    public void OnSelectColumn(string selectColumn)
+    {
+        SelectedColumn = selectColumn;
+        if(Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
+        IsShowValue = false;
+
+    }
+    public async Task ClearItem(string key)
+    {
+        var removeItem = SelectProprtyName.FirstOrDefault(c => c.Key == key); ;
         ColumnsFilterApply.Remove(key);
+        ColumnsFilter.Remove(ColumnsFilter.FirstOrDefault(x => x.FilterProperty == removeItem.Value));
         if (ColumnsFilterApply.Count == 0)
         {
 
@@ -94,6 +175,7 @@ public partial class SPDataGrid
     {
 
         ColumnsFilter.Clear();
+        ColumnsFilterApply.Clear();
         ClickFilter = false;
         await dataGrid.ReloadServerData();
     }
@@ -106,44 +188,34 @@ public partial class SPDataGrid
 
     public async Task ApplyFilter()
     {
-        if(Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Number || Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Enum)
+        if (!SelectedColumn.IsNullOrEmpty())
         {
-            SelectOperator = new KeyValuePair<string, string>(SelectedColumn, FilterValue);
-        }
-          //if (SelectedColumn.Contains("Status")  )
-          //SelectOperator = new KeyValuePair<string, string>("Status", FilterValue);
-          //if(SelectedColumn.Contains("CameraType"))
-          //SelectOperator = new KeyValuePair<string, string>("CameraType", FilterValue);
-
-		//if (SelectedColumn.Contains("InvoiceType"))
-		//	SelectOperator = new KeyValuePair<string, string>("InvoiceType", FilterValue);
-
-		if (!SelectOperator.Key.IsNullOrEmpty()  && !SelectedColumn.IsNullOrEmpty() && (SelectOperator.Value.Contains("IsNullOrEmpty") ||!FilterValue.IsNullOrEmpty()))
-        {
-            if (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))
+            if (IsShowValue && (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))  )
                 IsNot = true;
             var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
             FilterRequestDto filterEventArgs = new FilterRequestDto()
             {
                 FilterProperty = SelectedColumn,
                 FilterValue = FilterValue,
-                FilterOperator = SelectOperator.Value,
+                FilterOperator = SelectOperator.Value??"",
                 IsNot = IsNot,
-                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter
+                TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter,
+                Date = Date ?? DateTime.MinValue,
+                EndDate = EndDate ?? DateTime.MinValue,
+                StartDate = StartDate ?? DateTime.MinValue
             };
             ColumnsFilter.Add(filterEventArgs);
             ColumnsFilterApply.Add(DisplayFilter.Name);
-
+            SelectProprtyName.Add(new KeyValuePair<string, string>(DisplayFilter.Name, filterEventArgs.FilterProperty));
             ClickFilter = false;
-			SelectedColumn = "";
-			FilterValue = "";
-			SelectOperator = default;
-			IsNot = false;
-			await dataGrid.ReloadServerData();
-            
+            SelectedColumn = "";
+            FilterValue = "";
+            SelectOperator = default;
+            IsNot = false;
+            IsShowValue = true;
+            await dataGrid.ReloadServerData();
         }
-           
-      
+
     }
     private void OnClickFilter()
     {
@@ -174,7 +246,6 @@ public partial class SPDataGrid
         var sorting = $"{sort} {sortDirection}";
 
         sortString = sorting;
-        Console.WriteLine(sortString);
         await dataGrid.ReloadServerData();
     }
     private async Task<GridData<RowDef>> ServerReload(GridState<RowDef> state)
@@ -185,10 +256,14 @@ public partial class SPDataGrid
             RowsPerPage = state.PageSize,
             SortColumn = sortString,
             SearchTerm = _searchString,
-            Filters = ColumnsFilter
+            Filters = ColumnsFilter,
+            IsExport = IsExport
+
         };
+
         await OnPageChanged.InvokeAsync(pageArgs);
-        if (!_searchString.IsNullOrEmpty())
+
+        if (!_searchString.IsNullOrEmpty() && !IsClickMenu)
         {
             await OnSearching.InvokeAsync(pageArgs);
         }
@@ -196,15 +271,125 @@ public partial class SPDataGrid
         {
             await OnFiltering.InvokeAsync(pageArgs);
         }
+        if (IsClickMenu)
+        {
+            await HandleCategory.InvokeAsync(ValueOfMenue);
+        }
         return new GridData<RowDef>
         {
             TotalItems = TotalItemsInTable,
             Items = Data.Rows
         };
     }
-    protected override Task OnParametersSetAsync()
+    public async Task ExportToExcel()
     {
-        return base.OnParametersSetAsync();
+        try
+        {
+            GridState<RowDef> state = new GridState<RowDef>();
+            state.PageSize = 500;
+            IsExport = true;
+            await ServerReload(state);
+            var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.xlsx");
+
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/Excel/{Data.Name}.xlsx");
+            IsExport = false;
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+
     }
 
+    private async Task ExportToCSV()
+    {
+        try
+        {
+            GridState<RowDef> state = new GridState<RowDef>();
+            state.PageSize = 500;
+            IsExport = true;
+            await ServerReload(state);
+            var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.csv");
+
+            await GenerateFilesAppService.ExportToExcel(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
+            IsExport = false;
+
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+    }
+
+    private async Task OpenNewBlank(string url)
+    {
+
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
+    private async Task ExportToPDF()
+    {
+        try
+        {
+            GridState<RowDef> state = new GridState<RowDef>();
+            state.PageSize = 500;
+            IsExport = true;
+            await ServerReload(state);
+            var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
+            string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
+            await GenerateFilesAppService.ExportToPdf(Data, file);
+
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            await Task.Delay(1000);
+            await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
+            IsExport = false;
+
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+
+    }
+
+    public async Task HandleMunue(string value, EventCallback<string> action, bool isExport)
+    {
+        HandleCategory = action;
+        IsClickMenu = true;
+        ValueOfMenue = value;
+
+        await action.InvokeAsync(value);
+        if (!isExport)
+            await dataGrid.ReloadServerData();
+        else
+            IsClickMenu = false;
+
+    }
+    public async Task HandleMunueColumnVisibility(string columnSelect, EventCallback<string> action)
+    {
+
+        SelectedColumnDef = Data.Columns.FirstOrDefault(c => c.DisplayName == columnSelect);
+        await action.InvokeAsync(columnSelect);
+        await dataGrid.ReloadServerData();
+    }
 }
+

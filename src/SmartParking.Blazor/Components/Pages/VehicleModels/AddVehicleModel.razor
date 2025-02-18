@@ -1,10 +1,15 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Pages.VehicleBrands
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
 @using SmartParking.Lookups.VehicleModel
 @using System.Globalization
+@using SmartParking.Utilities
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -12,61 +17,77 @@
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["New VehicleModel"]</MudText>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
         </TitleContent>
         <DialogContent>
-           
-                    <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
-                        <MudGrid>
 
-                            <MudItem sm="6">
-                                <MudSelect @bind-Value="@vehicleModelDto.VehiclesBrandId"
-                                           Variant="Variant.Text"
-                                           Label="@L["VehiclesBrand Name"]"
-                                   HelperText=@L["Helper Text"]
-                                   Placeholder=@L["Choose"]
-                                   Required="true"
-                                           Clearable="_clearable">
-                                    @foreach (var vehicleBrand in VehicleBrands)
-                                    {
-                                        @if (CultureInfo.CurrentCulture.Name == "en")
-                                        {
-                                            <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
-                                        }
-                                        else
-                                        {
-                                            <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.ArabicName</MudSelectItem>       
-                                        }
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
 
-                                    }   
-                                </MudSelect>
-                            </MudItem>
+                    <MudItem sm="6">
+                        <MudSelect @bind-Value="@vehicleModelDto.VehiclesBrandId"
+                        Variant="Variant.Text"
+                        Label="@L["VehiclesBrand Name"]"
+                        HelperText=@L["Helper Text"]
+                        Placeholder=@L["Choose"]
+                        Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            @foreach (var vehicleBrand in VehicleBrands)
+                            {
+                                @if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.EnglishName</MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem Value="vehicleBrand.Id">@vehicleBrand.ArabicName</MudSelectItem>       
+                                }
 
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="vehicleModelDto.ArabicName"
-                                              For="@(() => vehicleModelDto.ArabicName)"
-                                              Immediate="true"
-                                              Required="true"
-                                      Placeholder=@L["Type Here"]
-                                      Label="@L["ArabicName"]" />
-                            </MudItem>
+                            }   
+                        </MudSelect>
+                    </MudItem>
 
-                            <MudItem sm="4">
-                                <MudTextField @bind-Value="vehicleModelDto.EnglishName"
-                                              For="@(() => vehicleModelDto.EnglishName)"
-                                              Immediate="true"
-                                              Required="true"
-                                      Placeholder=@L["Type Here"]
-                                      Label="@L["EnglishName"]" />
-                            </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="vehicleModelDto.ArabicName"
+                        For="@(() => vehicleModelDto.ArabicName)"
+                        Immediate="true"
+                        Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Placeholder=@L["Type Here"]
+                                      Label="@L["ModelArabicName"]" />
+                    </MudItem>
 
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="vehicleModelDto.EnglishName"
+                        For="@(() => vehicleModelDto.EnglishName)"
+                        Immediate="true"
+                        Required="true"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Placeholder=@L["Type Here"]
+                                      Label="@L["ModelEnglishName"]" />
+                    </MudItem>
 
-                        </MudGrid>
-                    </MudForm>
-         
+                    <MudItem sm="6">
+                       
+                            <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+                                <MudImage Src="@ModelPicture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["ModelPicture"]" />
+                                <MudFileUpload  T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+                                    <ActivatorContent>
+                                        <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </div>
+                    </MudItem>
+
+                </MudGrid>
+            </MudForm>
+
         </DialogContent>
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
             <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
 
@@ -76,7 +97,12 @@
 
 <style>
     .mud-modal {
-        border-radius: 0 20px 0 20px;
+    border-radius: 0 20px 0 20px;
+    }
+
+    .bg_w_foto {
+        background: url(iModelPicture) no-repeat center center;
+        background-size:cover;
     }
 </style>
 
@@ -90,6 +116,7 @@
     private CreateUpdateVehicleModelDto vehicleModelDto = new CreateUpdateVehicleModelDto();
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
+    private string ModelPicture { get; set; }
     bool _clearable;
 
     protected override async Task OnInitializedAsync()
@@ -102,38 +129,59 @@
         VehicleBrands = result.Items.ToList();
         await base.OnInitializedAsync();
     }
+    private async Task OnImageUpload(IBrowserFile file)
+    {
+        var imageFile = file;
+        if (imageFile != null)
+        {
+            // Save the image and get the file path
+            ModelPicture = await ImageHelper.GetImageBase64Async(imageFile);
+            StateHasChanged();
+        }
+    }
     private async Task Submit()
     {
-        var successedMessage = L["VehicleModelCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-        if (form.IsValid)
-        {
-            // Call your service to create the camera
+      
+        
             try
             {
+                vehicleModelDto.Image = await FileHelper.SaveImageFromBase64Async(ModelPicture, PathHelper.ModelFolder);
                 await VehicleModelsAppService.CreateAsync(vehicleModelDto);
-                Snackbar.Add(successedMessage, Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {vehicleModelDto.ArabicName} ", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/vehicleModels", true);
             }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
-
-
-        }
-        else
+        
+        catch (AbpValidationException validationException)
         {
-            Snackbar.Add(errorMessage, Severity.Error);
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
         }
-    }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+        }
+
+
+
+ 
+        }
     private void Cancel()
     {
         MudDialog.Cancel();
     }
 }
+

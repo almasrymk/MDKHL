@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Entities.Invoices;
+using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
-using SmartParking.Payments;
+using SmartParking.MobileInvoices;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using UserDataDto = SmartParking.Mobile.Keepers.UserDataDto;
 
 namespace SmartParking.Controllers;
 
@@ -22,16 +27,24 @@ public class KeeperController : AbpController
 {
     private readonly IKeeperAppService _keeperAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
-	private readonly ICurrentTenant _currentTenant;
-	private readonly ICurrentUser _currentUser;
+    private readonly IUsersAppService _usersAppService;
+    private readonly ICurrentTenant _currentTenant;
+    private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService)
+    private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
+    private readonly IGarageTransactionsAppService _garageTransactionsAppService;
+    private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, IInvoiceUtilityAppService invoiceUtilityAppService = null, IGarageTransactionsAppService garageTransactionsAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
         _currentTenant = currentTenant;
         _invoiceAppService = invoiceAppService;
+        _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
+        _usersAppService = usersAppService;
+        _invoiceUtilityAppService = invoiceUtilityAppService;
+        _garageTransactionsAppService = garageTransactionsAppService;
     }
 
     [HttpPost("login")]
@@ -40,17 +53,28 @@ public class KeeperController : AbpController
 
     public async Task<Result<LoginResponseDto>> Login(LoginRequestDto input)
     {
-        var tenant = await _keeperAppService.GetTenantByPhoneNumberDtoAsync(input.PhoneNumber);
-        _currentTenant.Change(tenant?.Id ?? null);
-        if (_currentUser.IsAuthenticated)
+        try
         {
-            return Result<LoginResponseDto>.Invalid(new ValidationError
+            
+            if (_currentUser.IsAuthenticated)
             {
-                ErrorCode = "400",
-                ErrorMessage = "You are already logged in."
+                return Result<LoginResponseDto>.Invalid(new ValidationError
+                {
+                    
+                    ErrorCode = "400",
+                    ErrorMessage = "You are already logged in."
+                });
+            }
+            return await _keeperAppService.LoginAsync(input);
+        }
+        catch
+        {
+            return Result<LoginResponseDto>.Invalid(new Results.ValidationError
+            {
+                ErrorCode = "403",
+                ErrorMessage = "This user not found",
             });
         }
-        return await _keeperAppService.LoginAsync(input);
     }
 
     [HttpGet("invoice")]
@@ -58,47 +82,116 @@ public class KeeperController : AbpController
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
     {
         return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
+    }    
+    
+    [HttpGet("paid/invoice")]
+    [Authorize]
+    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationPaidId([FromQuery] int organizationId)
+    {
+        return await _keeperAppService.GetAllInvoicesByOrganizationIdPaidAsync(organizationId);
+    }
+    [HttpGet("lastinvoice")]
+    [Authorize]
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationId([FromQuery] int organizationId)
+    {
+        return await _keeperAppService.GetLastInvoiceByOrganizationIdAsync(organizationId);
     }
 
     [HttpGet("garageTransactionWithoutPlateNumber")]
     [Authorize]
-	public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId, Guid userId)
-	{
-		return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId,userId);
-	}
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId, Guid userId)
+    {
+        return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId, userId);
+    }
 
     [HttpGet("garageTransaction")]
     [Authorize]
-    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions([FromQuery] int organizationId , Guid userId)
+    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactions([FromQuery] int organizationId, Guid userId)
     {
-        return await _keeperAppService.GetAllGarageTransactionsAsync(organizationId , userId);
+        return await _keeperAppService.GetAllGarageTransactionsAsync(organizationId, userId);
     }
 
     [HttpPut("correctTransaction")]
-	[Authorize]
-	public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId , string plateNumber)
-	{
-		return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
-	}
+    [Authorize]
+    public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId, string plateNumber)
+    {
+        return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
+    }
 
     [HttpGet("existingTransaction")]
     [Authorize]
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId)
     {
-        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId,userId);
+        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId, userId);
     }
-    
-    [HttpGet("payInvoice")]
+
+    [HttpGet("PayAtExitCamera")]
     [Authorize]
-    public async Task<Result<PaymentCheckoutDto>> PayInvoice(int InvoiceId)
+    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId)
     {
-        return await _keeperAppService.PayCashAsync(InvoiceId);
+        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId);
+        var openGate=invoice.IsSuccess&& await _invoiceUtilityAppService.SendRequestToOpenGate(invoice.Value.GarageTransactionExitId);
+        return invoice;
     }
-    
+    [HttpPut("cancelinvoiceandmapping")]
+    [Authorize]
+    public async Task<Result<bool>> RemoveInvoiceAndUnMappEntryTransaction(int InvoiceId,int ExitTransactionId)
+    {
+        try
+        {
+            await _invoiceAppService.DeleteAsync(InvoiceId);
+            await _garageTransactionsAppService.DeleteAsync(ExitTransactionId);
+            return Result.Success();
+        }
+        catch (Exception ex) {
+            return Result<bool>.Invalid(new ValidationError
+            {
+                ErrorCode = "404",
+                ErrorMessage = ex.Message
+            });
+
+        }
+    }
+
     [HttpGet("GetUnpaidInvoicesForPlateNumber")]
     [Authorize]
-    public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoicesForPlateNumber(int OrganizationId , string PlateNumber)
+    public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoicesForPlateNumber(int OrganizationId, string PlateNumber)
     {
         return await _invoiceAppService.GetUnpaidInvoiceForKeeperInHisOrganization(OrganizationId, PlateNumber);
     }
+
+    [HttpGet("PayInvoiceByCustomerRequest")]
+    [Authorize]
+    public async Task<Result<InvoiceMobileDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType)
+    {
+        return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId, PaymentType);
+
+    }
+    [HttpGet("KeeperCheckout")]
+    [Authorize]
+    public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType)
+    {
+        var invoice = await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+        return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType);
+    }
+
+
+    [HttpGet("KeeperPreCheckout")]
+    [Authorize]
+    public async Task<Result<CreateUpdateInvoiceDto>> KeeperPreCheckoutForTransaction(int transactionId)
+    {
+        var invoice = await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
+        invoice.Value.InvoiceTime = invoice.Value.InvoiceTime.Value.AddHours(3);
+        return invoice;
+    }
+
+    [HttpPost("changeImage")]
+    [Authorize]
+    [IgnoreAntiforgeryToken]
+    public async Task<Result<string>> ChangeImage([FromBody] string image)
+    {
+        var user = await _usersAppService.UpdateImageAsync(_currentUser.Id, image);
+        return Result.Success(user.Image);
+    }
+
 }

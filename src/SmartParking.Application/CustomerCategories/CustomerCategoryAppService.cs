@@ -92,8 +92,7 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
 
         }
 
-        customerCategory.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.HardDeleteAsync(customerCategory);
         //await base.DeleteAsync(id);
     }
 

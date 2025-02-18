@@ -2,6 +2,7 @@
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
 @using System.Globalization
+@using SmartParking.Blazor.Components.Shared
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
@@ -9,17 +10,8 @@
 
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
-		<TitleContent>
-			@if (CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @subscriptionType.TypeEn</MudText>
-
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @subscriptionType.TypeAr</MudText>
-
-			}
+		<TitleContent>		
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
@@ -30,7 +22,8 @@
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Placeholder=@L["Type Here"]
-									  Label=@L["TypeEn"] />
+									  Label=@L["TypeEn"] 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6">
 						<MudTextField @bind-Value="subscriptionType.TypeAr"
@@ -38,7 +31,8 @@
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Placeholder=@L["Type Here"]
-									  Label=@L["TypeAr"] />
+									  Label=@L["TypeAr"] 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 
@@ -51,9 +45,17 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Save"]</MudButton>
-		</DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark" 
+        ButtonTwoColor="MudBlazor.Color.Primary" 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonTwoLabel="@L["Save"]" 
+        ButtonOneClick="Cancel" 
+        ButtonTwoClick="Save" 
+        ButtonOneVariant="MudBlazor.Variant.Filled" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
+
 	</MudDialog>
 
 </MudItem>

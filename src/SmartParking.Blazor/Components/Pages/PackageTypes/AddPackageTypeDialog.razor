@@ -11,7 +11,7 @@
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-                <MudText Typo="Typo.h6">@L["NewPackageType"]</MudText>
+                <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
         </TitleContent>
         <DialogContent>
 
@@ -48,7 +48,7 @@
         </DialogContent>
 
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
             <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
         </DialogActions>
     </MudDialog>

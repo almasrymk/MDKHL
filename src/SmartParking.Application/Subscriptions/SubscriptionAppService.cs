@@ -111,13 +111,61 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
    
     }
     /// <inheritdoc/>
-    public override async Task<PagedResultDto<SubscriptionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<SubscriptionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
-       
-            using (_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _subscriptionRepository.GetQueryableAsync();
+            queryable = ApplyFilterTenant(tenantId, queryable);
+            queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            List<Subscription> subscriptions = await ApplyPaged(input, queryable);
+            var subscriptionsDto = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
+            return new PagedResultDto<SubscriptionDto>(
+                totalCount,
+                subscriptionsDto
+            );
+        }
+
+
+
+    }
+
+    private static IQueryable<Subscription> ApplyFilterTenant(Guid? tenantId, IQueryable<Subscription> queryable)
+    {
+        if (tenantId.HasValue)
+        {
+            queryable = queryable.Where(x => x.TenantId == tenantId);
+        }
+
+        return queryable;
+    }
+
+    public async Task<List<Subscription>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var subscriptions = await AsyncExecuter.ToListAsync(queryable);
+        return subscriptions;
+    }
+
+    private static IQueryable<Subscription> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
             {
-                return await base.GetListAsync(input);
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
             }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return queryable;
     }
 
     /// <inheritdoc/>
@@ -131,10 +179,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         }
 
 
-        //await base.DeleteAsync(id);
-
-        subscription.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _subscriptionRepository.HardDeleteAsync(subscription);
     }
 
     /// <inheritdoc/>
@@ -184,15 +229,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         // Get the IQueryable<camera> from the repository
         var queryable = await _subscriptionRepository.GetQueryableAsync();
         // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(or =>
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                 or.SubscriptionDescription.ToLower().Contains(input.SearchingTerm.ToLower()) 
-            );
-        }
+        queryable = ApplySearch(input, queryable);
         if (!input.Sorting.IsNullOrEmpty())
         {
             if (input.Sorting.Contains("DESC"))
@@ -223,6 +260,26 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             subscriptionsDto
         );
     }
+
+    private static IQueryable<Subscription> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.SubscriptionPrice.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.SubscriptionType.TypeAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.SubscriptionType.TypeEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                 or.SubscriptionDescription.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                 or.StatusSubscription.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
+    }
+
     [RemoteService(IsEnabled =false)]
     public async Task<List<SubscriptionDto>> GetAllAsync()
     {

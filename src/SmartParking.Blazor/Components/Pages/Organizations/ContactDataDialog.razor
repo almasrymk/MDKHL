@@ -4,18 +4,18 @@
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IContactInfoAppService ContactInfoAppService
-<PageTitle>@L["Organization - Contact Data"]</PageTitle>
+<PageTitle>@L["Organization"]-@L["Contact Data"]</PageTitle>
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal ">
         <TitleContent>
-            <MudText Class="fw-bold">@L["Organization Contact Data"]</MudText>
+            <MudText Class="fw-bold">@L["Organization"]-@L["Contact Data"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["Organization Contact Data"] Data="@itemData" TotalItemsInTable="TotalItem"  OnPageChanged="FetchTableData" ></SPDataGrid>
+            <SPDataGrid PageName=@L["Contact Data"] Data="@itemData" TotalItemsInTable="TotalItem"  OnPageChanged="FetchTableData" ></SPDataGrid>
         </DialogContent>
         <DialogActions>
 
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" class="mx-3 mt-5" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

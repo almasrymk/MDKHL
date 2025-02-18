@@ -1,12 +1,20 @@
-﻿@inject MudBlazor.IDialogService DialogService
+﻿
 @page "/"
 @page "/dashboard"
 @using Microsoft.Extensions.Localization
+@using MudBlazor.Components.Chart.Models
 @using SmartParking.Analysis
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cutomers
+@using SmartParking.Enums
 @using SmartParking.Garages
+@using SmartParking.Helpers
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using System.Globalization
+@using SmartParking.PDF
+@using SmartParking.Utilities
+@using MudBlazor
 @using Volo.Abp.MultiTenancy
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -17,55 +25,109 @@
 @inject ICustomerAppService CustomerAppService
 @inject ICurrentTenant currenttenant
 @inject IAnalysisAppService AnalysisAppService
+@inject IJSRuntime JSRuntime
+@inject IGenerateFilesAppService GenerateFilesAppService
+@inject ISnackbar Snackbar
 
+@attribute [Authorize]
 
 <PageTitle>@L["Dashboard"]</PageTitle>
 
 <MudGrid>
     @if (currenttenant.Id == null)
     {
+        <SpCardInfo grid="totalGrid"
+        Number="@_organizationsCount.ToString()"
+        Type="@L["Organizations"]"
+        icon=" images/dashboard/organizations.png"></SpCardInfo>
+
+
+
+    }  
+    <SpCardInfo grid="grid"
+    Number="@_garagesCount.ToString()"
+    Type="@L["Garages"]"
+    icon="images/dashboard/garage.png"></SpCardInfo>
+    <SpCardInfo grid="grid"
+    Number="@_customersCount.ToString()"
+    Type="@L["Customers"]"
+    icon="images/dashboard/customers.png"></SpCardInfo>
+    @if (currenttenant.Id is not null)
+    {
+        <SpCardStatistics grid="grid"
+        Header="@L["TotalSlots"]"
+        HeaderText1="@L["CustomersParking"]"
+        BodyText1="@totalOfParking.ToString()"
+        HeaderText2="@L["CustomersEmptyParking"]"
+        BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
+    }
+    <MudItem sm="12" Class="row">
+        <MudItem Class="col">
+            <SpCardInfo Number="@data[0].ToString()"
+                        Type="@L["Beneficiaries"]"
+                        icon="images/dashboard/customers.png"></SpCardInfo>
+        </MudItem>
+        <MudItem Class="col">
+            <SpCardInfo Number="@data[1].ToString()"
+                        Type="@L["Employees"]"
+                        icon="images/dashboard/customers.png"></SpCardInfo>
+        </MudItem>
+        <MudItem Class="col">
+           
+            <SpCardInfo 
+                        Number="@data[2].ToString()"
+                        Type="@L["Visitors"]"
+                        icon="images/dashboard/customers.png"></SpCardInfo>
+        </MudItem>
+            @if (currenttenant.Id is null)
+            {
+            <MudItem Class="col">
+                    <SpCardInfo 
+                                Number="@data[3].ToString()"
+                                Type="@L["NoPackages"]"
+                                icon="images/dashboard/customers.png"></SpCardInfo>
+            </MudItem>
+            }
         
-    <MudItem sm="@grid">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_organizationsCount
-                </MudText>
-                <MudText>
-                    @L["Organizations"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/organizations.png" />
-        </MudPaper>
     </MudItem>
-    }        
-    <MudItem sm="@grid">
     
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_garagesCount
-                </MudText>
-                <MudText>
-                    @L["Garages"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/garage.png" />
-        </MudPaper>
-    </MudItem>
-    <MudItem sm="@grid">
-        <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
-            <div>
-                <MudText Class="fw-bold" Typo="Typo.h4">
-                    @_customersCount
-                </MudText>
-                <MudText>
-                    @L["Customers"]
-                </MudText>
-            </div>
-            <MudImage Src="images/dashboard/customers.png" />
-        </MudPaper>
-    </MudItem>
+    
+
+
+
+    @if(currenttenant.Id is not null)
+    {
+
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
+        HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
+        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfCustomerReservedParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
+        BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
+        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfEmployeeReservedParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+
+        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
+        BodyText1="@getNumberOfParking.NumberOfVisitorParking"
+        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfVistiorReservedParking"
+        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
+        ExportModel="@L["Excel"]"></SpCardDashbard>
+
+
+
+    }
+    <SpCardStatistics 
+    grid="12"
+    Header="@L["CollectedMoneyToday"]"
+    HeaderText1="@L["Day"]"
+    BodyText1="@Day"
+    HeaderText2="@L["Collected"]"
+    BodyText2=@collectedMoneyToday
+    ></SpCardStatistics>
+
     <MudItem sm="6">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
             <MudImage Src="images/dashboard/car.png" />
@@ -102,63 +164,52 @@
             <Image Source="images/dashboard/discount.png" Fluid Class="w-100" />
         </MudPaper>
     </MudItem>
-    <MudItem sm="4">
-        @if (currenttenant.Id == null)
-        {
-            
-        <MudPaper Class="custom-rounded p-3">
-            <MudSelect T="string"
-                       ValueChanged="ChangeSelect"
-                       Placeholder="@L[ "Choose"]"
-                       AdornmentColor="MudBlazor.Color.Primary"
-                       Class="mb-3" 
-                       Immediate="true"
-                       Value="_pieChartValue"
-            
-            >
-                <MudSelectItem Value="@("OrganizationsCustomers")">Organizations Customers</MudSelectItem>
-                <MudSelectItem Value="@("PackagesOrganizations")">Packages Organizations</MudSelectItem>
-            </MudSelect>
-            <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
-
-                <MudChart 
-                    ChartType="ChartType.Pie" 
-                    InputData="@data" 
-                    InputLabels="@labels" 
-                    Width="300px" 
-                    Height="300px" 
-                    ChartOptions="@options"
-                    SelectedIndexChanged="handleindexChartChange"
-                    
-                    
-                    
-                    />
-          </MudTooltip>
-            </MudPaper>
-
-        }
-        else
-        {
-            <MudPaper Class="custom-rounded p-3">
+    <div style="display: flex; gap: 16px; width: 100%; padding: 16px; box-sizing: border-box;">
+        <MudItem sm="5" Style="flex: 0 0 40%; display: flex; flex-direction: column; height: 100%; padding: 16px; margin: 0;">
+            <MudPaper Style="height: 100%; padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
                 <MudTooltip Text="@msg" Color="MudBlazor.Color.Tertiary" Arrow="true">
-
                     <MudChart ChartType="ChartType.Pie"
                               InputData="@data"
                               InputLabels="@labels"
                               Width="300px"
                               Height="300px"
-                              ChartOptions="@options"
-                              />
+                              ChartOptions="@options" />
                 </MudTooltip>
             </MudPaper>
+        </MudItem>
 
-        }
-    </MudItem>
-    <MudItem sm="8">
-        <MudPaper Class="custom-rounded p-3">
-            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="_barIndex" XAxisLabels="@XAxisLabels" Width="100%"></MudChart>
-        </MudPaper>
-    </MudItem>
+        <MudItem sm="7" Style="flex: 0 0 60%; display: flex; flex-direction: column; height: 100%; padding: 16px; margin: 0;">
+            <MudPaper Style="height: 100%; padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <MudItem Style="display: flex; align-items: flex-start; justify-content: flex-end;">
+                </MudItem>
+                @if (Series != null && Series.Any(s => s.Data != null && s.Data.Any(d => d > 0))) 
+                {
+                  @if (CultureInfo.CurrentCulture.Name == "en")               
+                  {
+                      <MudItem Style="margin-left: 32px;font-size: 12px; margin-bottom: 4px;">
+                      @L["SAR"]
+                      </MudItem>
+                  }
+                  else
+                  {
+                      <MudItem Style="text-align:left ; font-size: 12px; margin-bottom: 4px;">
+                          @L["SAR"]
+                      </MudItem>
+
+                  }
+                }
+                <MudChart ChartType="ChartType.Bar"
+                          ChartSeries="@Series"
+                          @bind-SelectedIndex="index"
+                          XAxisLabels="@XAxisLabels"
+                          Width="100%"
+                          Height="300px"
+                          Style="max-width: 100%; margin: 0 auto;" />
+            </MudPaper>
+        </MudItem>
+
+    </div>
+
 </MudGrid>
 
 
@@ -168,104 +219,203 @@
     ChartOptions options = new ChartOptions();
     AnalysisNamesCountDto value = new AnalysisNamesCountDto();
     public EventCallback<string> SelectValueChanged { get; set; }
-
-
-
     private int _organizationsCount;
     private int _garagesCount;
     private int _customersCount;
     private int grid;
-    private string _pieChartValue = "OrganizationsCustomers";
+    private int totalGrid;
+    private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
+    double[] data= { 0,0,0,0};
 
-    double[] data= { 20,77,35};
-    private int _index = -1;
-    string[] labels = { "Carlos","Robert","Chevorlet"} ;
+    string[] labels = { "Customers", "Employees" , "Visitors","NoPackage"};
     string msg;
+    private List<OrganizationDto> Organizations = new List<OrganizationDto>();
+    public string[] XAxisLabels = { " " };
+    private int index = -1; 
 
+    public List<ChartSeries> Series = new List<ChartSeries>();
 
+    private string[] inputLabels { get; set; } = { " " };
+    private double[] inputData { get; set; } = { 0 };
+    private string? Day = default;
+    private string collectedMoneyToday ;
+
+    int totalOfParking;
+    int totalEmptyOfParking;
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Save the authentication state ID to local storage
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authentication-state-id", CurrentUser.Id);
+        }
+
+        // You can call the base method if needed (but it's optional)
+         await base.OnAfterRenderAsync(firstRender);
+    }
     protected async override Task OnInitializedAsync()
     {
-         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
-         _garagesCount = await GarageAppService.GetAllGaragesCount();
+
+        // Fetch the data from backend
 
 
+        _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
+        _garagesCount = await GarageAppService.GetAllGaragesCount();
 
+        var name = CurrentUser.UserName;
         if (currenttenant.Id == null)
         {
-            var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
-            value.Count = result.Count;
-            value.Names = result.Names;
-            data = value.Count.ToArray();
-            labels = value.Names.ToArray();
-
+            var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
-             _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
+            totalGrid = 4;
+            _customersCount = await CustomerAppService.GetCountCustomersCountForMDKHL();
+
+            var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyMdkhlAsync();
+            showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts, dataForSeries.InvoiceTotalAmounts, dataForSeries.PackageTotalAmounts);
+
+            var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
+            Day = dataForToday.Day;
+            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts,2).ToString()} {@L["SAR"]}" ;
         }
         else
         {
-            grid = 6;
+            
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            await GetNumberOfParkingAndEmptyAsync(organization.Id);
+            var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
+            ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
+            grid = 4;
+            totalGrid = 6;
             _customersCount = await CustomerAppService.GetCountCustomersCountForOrganization(currenttenant.Id);
+            var dataForSeries = await AnalysisAppService.CalculateWeeklyCollectedMoneyOrganizationAsync(organization.Id);
+            showDataGraph(dataForSeries.Days, dataForSeries.AllTotalAmounts,dataForSeries.InvoiceTotalAmounts,dataForSeries.PackageTotalAmounts);
 
+            var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
+            Day = dataForToday.Day;
+            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()} {@L["SAR"]}";
         }
 
-        string[] colors = { "#0D5480", "#16B7D3", "#CE3333" };
+        string[] colors = { "#0D5480", "#16B7D3", "#CE3333", "#ca06e1" };
         options.ChartPalette = colors;
         options.ShowLegend = true;
-        options.LineStrokeWidth = 10;
-
-
-        //   return await base.OnInitializedAsync();
+        options.LineStrokeWidth = 20;
     }
 
-
-
-    private async Task ChangeSelect(string PieChartValue)
+    private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees , int? NumberOfNoPackage)
     {
-        _pieChartValue = PieChartValue;
+        data[0] = NumberOfCustomers;
+        data[1] = NumberOfEmployees;
+        data[2] = NumberOfVisitors;
+        labels[0] = $"{LocalizationHelper.GetLocalizedString("Beneficiaries")} {NumberOfCustomers}";
+        labels[1] = $"{LocalizationHelper.GetLocalizedString("Employees")} {NumberOfEmployees}";
+        labels[2] = $"{LocalizationHelper.GetLocalizedString("Visitors")} {NumberOfVisitors}";
 
-        if (PieChartValue == "OrganizationsCustomers")
+        if(NumberOfNoPackage is not null)
         {
-            var result = await AnalysisAppService.GetNumberOfCustomerForOrganizations();
-            value.Count = result.Count;
-            value.Names = result.Names;
-
+            data[3] = (double)NumberOfNoPackage;
+            labels[3] = $"{LocalizationHelper.GetLocalizedString("NoPackages")} {NumberOfNoPackage}";
         }
-        else if (PieChartValue == "PackagesOrganizations")
-        {
+          
 
-            var result = await AnalysisAppService.GetPackageAndNumberOfOrganizationsThatSubscribed();
-            value.Count = result.Count;
-            value.Names = result.Names;
-
-        }
-        data = value.Count.ToArray();
-        labels = value.Names.ToArray();
+        
 
     }
 
-    public void handleindexChartChange (int index) {
-        if (index != -1)
-        {
-            if (_pieChartValue == "OrganizationsCustomers")
-            {
-
-                msg = "Customers in organization " + labels[index]+ " are " + data[index].ToString();
-            }
-            else if (_pieChartValue == "PackagesOrganizations")
-            {
-                
-                msg = "Organizations in Package " + labels[index] + " are " + data[index].ToString();
-
-            }
-
-        }
-
-    }
-    private int _barIndex = -1;
-    public List<ChartSeries> Series = new List<ChartSeries>()
+    private async Task GetNumberOfParkingAndEmptyAsync(int organizationId)
     {
-        new ChartSeries() {  Data = new double[] { 40, 20, 25, 27, 46, 60, 48 } },
-        new ChartSeries() {  Data = new double[] { 19, 24, 35, 13, 28, 15, 13 } },
-    };
-    public string[] XAxisLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+        getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organizationId);
+        totalOfParking = getNumberOfParking.NumberOfParking;
+        totalEmptyOfParking = getNumberOfParking.NumberOfEmptyParking;
+
+
+    }
+
+    private void showDataGraph(string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts)
+    {
+        XAxisLabels = days;
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("TotalCollectedMoney"), Data =  allTotalAmounts},
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("InvoiceCollectedMoney"), Data =  invoiceTotalAmounts},
+            new ChartSeries() { Name = LocalizationHelper.GetLocalizedString("PackageCollectedMoney"), Data =  packageTotalAmounts}
+        };
+    }
+
+
+    private async Task ExportData (TableData data )
+    {
+        var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
+
+        string file = System.IO.Path.Combine(folderName, $"{data.Name}.xlsx");
+
+        await GenerateFilesAppService.ExportToExcel(data, file);
+
+        SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+
+        await Task.Delay(1000);
+        await OpenNewBlank($"Folders/Excel/{data.Name}.xlsx");
+    }
+
+    private async Task ExportToExcel(CustomerCategoryStatus category)
+    {
+        try
+        {
+
+            TableData data;
+            if(currenttenant.Id == null)
+            {
+                var garageTransactionAnalysis  = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category,null);
+                data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis, currenttenant.Id);
+
+
+            }
+            else
+            {
+                var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionMdkhlAsync(category, currenttenant.Id);
+                data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis, currenttenant.Id);
+
+            }
+            data.Name = category.ToString() + "Transactions";
+            await ExportData(data);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+
+    }
+    
+    private async Task ExportPaymentAnalysisToExcel()
+    {
+        try
+        {
+            TableData data;
+            if(currenttenant.Id == null)
+            {
+                 data = await AnalysisAppService.ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+            }
+            else
+            {
+                data = await AnalysisAppService.ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
+            }
+            await ExportData(data);
+        }
+        catch
+        {
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
+        }
+
+
+    }
+    private async Task OpenNewBlank(string url)
+    {
+
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+    
 }

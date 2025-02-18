@@ -1,7 +1,10 @@
 ﻿@page "/contact-data"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.ContactPermissions
+@using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @inject IDialogService Dialog
 @inject IStringLocalizer<SmartParkingResource> L
@@ -11,7 +14,10 @@
 @inject IDialogService Dialog
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@* @attribute [Authorize(ContactPermissions.Default)] *@
+@inherits AbpCrudPageBase<IContactInfoAppService, ContactInfoDto, int, PagedAndSortedResultRequestDto, ContactInfoCreateUpdateDto>
+
 <PageTitle>@L["Contact Data"]</PageTitle>
 
-<SPDataGrid PageName=@L["Organization Contact Data"] Data="@itemData" OnClickRowDelete="DeleteContactData" OnClickRowView="ViewContactData" OnClickRowEdit="UpdateContactData" OnAdd="CreateContactData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnFiltering="HandleFilter" OnSearching="HandleSearch"></SPDataGrid>
+<SPDataGrid PageName=@L["Organization Contact Data"] Data="@itemData" ShowAdd="HasCreatePermission" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" OnClickRowDelete="DeleteContactData" OnClickRowView="ViewContactData" OnClickRowEdit="UpdateContactData" OnAdd="CreateContactData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnFiltering="HandleFilter" OnSearching="HandleSearch" />
        

@@ -7,149 +7,189 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp;
 using SmartParking.Authentication;
-using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Volo.Abp.Validation;
 using SmartParking.Enums;
-using SmartParking.Entities.Organizations;
-using Microsoft.Extensions.Localization;
+using Volo.Abp.Identity;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Authorization;
+using FluentValidation.Validators;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
 public partial class AddUser
 {
     public UserCreateDto userCreate { get; set; }
-    private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-    private string userRole { get; set; }
-    private string[] Roles = new string[1];
+    private List<IdentityRoleDto> Roles = new List<IdentityRoleDto>();
     private MudForm form;
+    private IdentityRoleDto role;
+    private bool IsOrganization { get; set; }
+    private bool IsSelectOrganization { get; set; } = true;
+    private MudTextField<string> textField;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await textField.FocusAsync();
+        }
+    }
+    private async Task HandleBlur()
+    {
+      var user = await UsersAppService.CheckPhoneIsUnique(textField.Value);
+        if (user != null) {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
+            Snackbar.Add(LocalizationHelper.GetLocalizedString("User") + " " +
+                LocalizationHelper.GetLocalizedString("DuplicateValidation") + " , " +
+                LocalizationHelper.GetLocalizedString("MessageEdit"), MudBlazor.Severity.Normal, config =>
+                    {
+                        config.Action = LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE);
+                        config.ActionColor = Color.Primary;
+                        config.Onclick = snackbar =>
+                        {
+                            HandleEdit(user);
+                            return Task.CompletedTask;
+                        };
+                    });
+        }
 
-    TimeEditMode editMode = new TimeEditMode();
-
+    }
+    public async Task<IDialogReference> HandleEdit(UserDto userData)
+    {
+        var userUpdate = new UpdateUserDto
+        {
+            Name = userData.Name,
+            Email = userData.Email,
+            Surname = userData.Surname,
+            PhoneNumber = userData.PhoneNumber,
+            UserName = userData.UserName,
+            TenantId = userData.TenantId,
+            RoleId = userData.RoleId,
+            ConcurrencyStamp = userData.ConcurrencyStamp,
+            IsActive = userData.IsActive,
+            NationalId = userData.NationalId,
+            IdentificationTypes = userData.IdentificationTypes
+        };
+        var parameters = new DialogParameters
+        {
+            ["updateUserDto"] = userUpdate,
+            ["userId"] = userData.Id.ToString()
+        };
+        return await DialogService.ShowAsync<EditUserDialog>("User Edit", parameters);
+    }
     protected override async Task OnInitializedAsync()
     {
-        userCreate = new UserCreateDto();
-        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+        if(!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Create))
         {
-
-             Organizations = await OrganizationAppService.GetAllMobileAsync();
-           
+            NavigationManager.NavigateTo("/Account/AccessDenied", true);
         }
+        userCreate = new UserCreateDto();
+        Roles = await RoleAppService.GetListByTenant(null);
+       await GetOrganizationDetailsAsync();
+
+    }
+    private async Task IsMdkhlSelect(bool isOrganization)
+    {
+        IsOrganization = isOrganization;
+        IsSelectOrganization = !isOrganization;
+        if (isOrganization)
+        {
+            Organizations = await OrganizationAppService.GetAllMobileAsync();
+        }
+        Roles = await RoleAppService.GetListByTenant(null);
+
+    }    
+    private async Task SelectOrganization(int organizationId)
+    {
+        IsSelectOrganization = true;
+        var orag = await OrganizationAppService.GetAsync(organizationId);
+        userCreate.OrganizationId = organizationId;
+        userCreate.TenantId = orag.TenantId;
+        Roles = await RoleAppService.GetListByTenant(orag.TenantId);
     }
     private async void SubmitCreate()
     {
-        int orgId = 0;
-        Guid? TenantId = null;
-        if (currrentTenant.Id is not null)
-        {
-            var org = await OrganizationAppService.GetOrganizationForCurrentTenat();
-            orgId = org.Id;
-            TenantId = org.TenantId;
-        }
-        if(userRole == RolesType.Organization.ToString())
-        {
-            var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
-            orgId = org.Id;
-            TenantId = org.TenantId;
-        }
-        if (userRole == RolesType.Keeper.ToString())
-        {
-            var org = await OrganizationAppService.GetAsync(userCreate.OrganizationId);
-            orgId = org.Id;
-            TenantId = org.TenantId;
-        }
-        var successedMessage = L["UserCreatedSuccessfully"];
-        var errorMessage = L["Can'tCreateUser"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        await AddUserAsync(orgId, TenantId, successedMessage, errorMessage, validationErrorMessage);
+        
+
+        await AddUserAsync();
     }
 
-    private async Task AddUserAsync(int orgId, Guid? TenantId, LocalizedString successedMessage, LocalizedString errorMessage, LocalizedString validationErrorMessage)
+    private async Task<(int orgId, Guid? tenantId)> GetOrganizationDetailsAsync()
+    {
+        int orgId = 0;
+        Guid? tenantId = null;
+
+        if (currrentTenant.Id is not null)
+        {
+            var org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            Roles = await RoleAppService.GetListByTenant(org.TenantId);
+            userCreate.OrganizationId = org.Id;
+            userCreate.TenantId = org.TenantId;
+        }
+
+        return (orgId, tenantId);
+    }
+    private void CheckUser()
+    {
+        userCreate.Password = "P@ssw0rd";
+        userCreate.UserName = userCreate.PhoneNumber;
+        if(role == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("UserRole") +" "+LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+
+        userCreate.UserType = role?.Name switch
+        {
+            var name when name == RolesType.Organization.ToString() => 1,
+            var name when name == RolesType.Keeper.ToString() => 4,
+            _ => 5
+        };
+    }
+    private async Task AddUserAsync()
     {
         try
         {
-            CheckUser(orgId, TenantId);
-
-            var user = await UsersAppService.CreateAsync(userCreate);
-            if (user != null)
-            {
-                ShowSnackbar($"{successedMessage}", Severity.Success);
-                Task.Delay(1000);
-                NavigationManager.NavigateTo("/users", true);
-            }
-            else
-            {
-                ShowSnackbar($"{errorMessage}", Severity.Error);
-
-
-            }
+            await GetOrganizationDetailsAsync();
+            CheckUser();
+            var user = await UsersAppService.CreateWithRoleAsync(userCreate,role.Id);
+            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+            LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+            LocalizationHelper.GetLocalizedString("User"), Severity.Success);
+            await Task.Delay(1000); // Awaiting the delay to ensure it completes before navigation
+            NavigationManager.NavigateTo("/users", true);
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
 
-    private void CheckUser(int orgId, Guid? TenantId)
+  
+    public void CancelAdd()
     {
-        if (userRole == RolesType.Mdkhl.ToString())
-        {
-            userCreate.TenantId = TenantId;
-            userCreate.UserType = 0;
-        }
-        else if (userRole == RolesType.Organization.ToString() )
-        {
-            userCreate.OrganizationId = orgId;
-            userCreate.TenantId = TenantId;
-            userCreate.UserType = 1;
-            userRole = RolesType.Organization.ToString();
-        }
-        else if(userRole == RolesType.Keeper.ToString())
-        {
-            userCreate.OrganizationId = orgId;
-            userCreate.TenantId = TenantId;
-            userCreate.UserType = 4;
-            userRole = RolesType.Keeper.ToString();
-        }
+        NavigationManager.NavigateTo("/users", true);
 
-        userCreate.Password = "P@ssw0rd";
-        Roles[0] = userRole;
-        userCreate.RoleNames = Roles;
-        userCreate.UserName = userCreate.PhoneNumber;
     }
-
-
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
-
 
 
 

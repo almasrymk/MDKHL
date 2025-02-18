@@ -6,6 +6,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Permissions.PackagePermissions;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,7 @@ using Volo.Abp.MultiTenancy;
 namespace SmartParking.DefaultPackages;
 
 [Authorize]
-public class PackagesAppService : CrudAppService<
-            Package,
-            PackageDto,
-            int,
-            PagedAndSortedResultRequestDto,
-            CreateUpdatePackageDto
-            >, IPackagesAppService
+public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAndSortedResultRequestDto,CreateUpdatePackageDto> , IPackagesAppService 
 {
     private readonly IRepository<Package, int> _repository;
     private readonly IRepository<Customer, Guid> _customerRepository;
@@ -41,6 +36,12 @@ public class PackagesAppService : CrudAppService<
         _customerRepository = customerRepository;
         _dataFilter = dataFilter;
         _organizations = organizations;
+        GetPolicyName = PackagePermissions.Default;
+        GetListPolicyName = PackagePermissions.Default;
+        CreatePolicyName = PackagePermissions.Create;
+        UpdatePolicyName = PackagePermissions.Edit;
+        DeletePolicyName = PackagePermissions.Delete;
+
     }
 
 
@@ -52,7 +53,7 @@ public class PackagesAppService : CrudAppService<
             var customer = await _customerRepository.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
             var query = await _repository.GetQueryableAsync();
             var pakages = await query.Where(_ => _.OrganizationId == organizationId &&
-            _.PackageStatus == SubscriptionStatus.Active && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
+            _.Status == Status.Active && _.CustomerCategory == CustomerCategoryStatus.Customer).ToListAsync();
             var pakagesMap = ObjectMapper.Map<List<Package>, List<PackageDto>>(pakages);
             if (pakages.Count == 0)
             {
@@ -62,11 +63,16 @@ public class PackagesAppService : CrudAppService<
         }
 
     }
-    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<PackageDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
     {
-        // Get the IQueryable<camera> from the repository
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
+        queryable = SearchCriteria(input, queryable);
+        queryable = SortingCriteria(input, queryable);
+        return await ProcessDataToMapDto(input, queryable);
+
+    }
+
+    private static IQueryable<Package> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
 
@@ -75,26 +81,52 @@ public class PackagesAppService : CrudAppService<
                 or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PackageType.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PackageType.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
-        // Get the total count of filtered records
+
+        return queryable;
+    }
+
+    public async Task<PagedResultDto<PackageDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable , Guid? TenantId = null)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            if (TenantId != null)
+                queryable = queryable.Where(p => p.TenantId == TenantId);
+            queryable = SearchCriteria(input, queryable);
+            queryable = SortingCriteria(input, queryable);
+            return await ProcessDataToMapDto(input, queryable);
+        }
+    }
+
+    private async Task<PagedResultDto<PackageDto>> ProcessDataToMapDto(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable)
+    {
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of camera entities
         var packages = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to cameraDto objects
         var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-        // Return the paginated result
         return new PagedResultDto<PackageDto>(
             totalCount,
             packagesDto
         );
+    }
+
+    public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = queryable.Include(x => x.Organization);
+
+        return CurrentTenant.Id switch
+        {
+            (null) => await SearchMdkhl(input, queryable,TenantId),
+            (not null)=> await SearchOrganization(input, queryable)
+        };
+
+
     }
     public async Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -145,46 +177,74 @@ public class PackagesAppService : CrudAppService<
             throw new EntityNotFoundException(typeof(VehicleModel), id);
         }
 
-        package.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        //await base.DeleteAsync(id);
+        await _repository.HardDeleteAsync(package);
     }
     ///<inheritdoc/>
-    public override async Task<PagedResultDto<PackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<PackageDto>> GetAllListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
 
+        IQueryable<Package> queryable = await IntializeGetListQuery();
+        queryable = SearchCriteria(input, queryable);
+        queryable = SortingCriteria(input, queryable);
+        return await MapToGetListDto(input, queryable);
+
+    }
+
+    private async Task<PagedResultDto<PackageDto>> MapToGetListDto(PagedAndSortedResultRequestDto input,  IQueryable<Package> queryable)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(queryable);
+        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+
+        return new PagedResultDto<PackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
+
+    public async Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
+    {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var queryable = await _repository.GetQueryableAsync();
-            queryable = queryable.Include(p => p.PackageType);
-
-            queryable = queryable.Where(p => p.TenantId == CurrentTenant.Id);
-
-            if (!string.IsNullOrEmpty(input.Sorting))
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var packages = await AsyncExecuter.ToListAsync(queryable);
-            var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-
-            return new PagedResultDto<PackageDto>(
-                totalCount,
-                packagesDto
-            );
+            IQueryable<Package> queryable = await IntializeGetListQuery();
+           if(TenantId != null)
+                queryable=queryable.Where(p=>p.TenantId == TenantId );
+            queryable = SearchCriteria(input, queryable);
+            queryable = SortingCriteria(input, queryable);
+            return await MapToGetListDto(input,  queryable);
         }
+
     }
+
+    private async Task<IQueryable<Package>> IntializeGetListQuery()
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = queryable.Include(p => p.PackageType);
+        queryable = queryable.Include(p => p.CustomerPackages);
+        return queryable;
+    }
+
+    private static IQueryable<Package> SortingCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
+        if (!string.IsNullOrEmpty(input.Sorting))
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return queryable;
+    }
+
     ///<inheritdoc/>
     public async Task<List<PackageDto>> GetAllMdkhlAsync(int organizationId, CustomerCategoryStatus customerCategory)
     {
@@ -193,7 +253,7 @@ public class PackagesAppService : CrudAppService<
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(p => p.PackageType);
-            queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory);
+            queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory && x.Status==Status.Active);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             var packages = await AsyncExecuter.ToListAsync(queryable);
             var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
@@ -206,7 +266,7 @@ public class PackagesAppService : CrudAppService<
     ///<inheritdoc/>
     public async Task<List<PackageDto>> GetAllOrganizationAsync(CustomerCategoryStatus customerCategory)
     {
-        var organization = await _organizations.GetOrganizationForCurrentTenat();
+        var organization = await _organizations.GetOrganizationForCurrentTenatAsync();
         var queryable = await _repository.GetQueryableAsync();
         queryable = queryable.Include(p => p.PackageType);
         queryable = queryable.Where(x => x.CustomerCategory == customerCategory && x.OrganizationId == organization.Id);
@@ -220,4 +280,32 @@ public class PackagesAppService : CrudAppService<
 
         return packagesDto;
     }
+
+    public override async Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
+    {
+
+      var packageDto = await _repository.GetAsync(id);
+      if (packageDto.Status == Status.Active && input.Status==Status.Inactive) {
+          input.DeactivationDate=DateTime.Now;
+      }else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
+      {
+          input.ActivationDate = DateTime.Now;
+      }
+      return await base.UpdateAsync(id, input);
+        
+    }
+    public override Task<PackageDto> GetAsync(int id)
+    {
+        if (CurrentTenant.Id == null)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return base.GetAsync(id);
+            }
+        }
+        return base.GetAsync(id);
+
+    }
+
+
 }

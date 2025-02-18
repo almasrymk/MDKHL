@@ -1,6 +1,7 @@
 ﻿using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Mobile.Invoices;
 using SmartParking.Payments;
 using SmartParking.Results;
 using System;
@@ -25,6 +26,13 @@ public interface IKeeperAppService
     /// <param name="organizationId">id of specific organization</param>
     /// <returns>list of InvoiceDto</returns>
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId);
+
+    /// <summary>
+    /// Retrieves Last invoice by organization id asynchronously.
+    /// </summary>
+    /// <param name="organizationId">id of specific organization</param>
+    /// <returns> InvoiceDto</returns>
+    Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId);
 
     /// <summary>
     /// Retrieves a list of all garage transaction with no plate number  asynchronously.
@@ -52,5 +60,8 @@ public interface IKeeperAppService
 
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 
-    Task<Result<PaymentCheckoutDto>> PayCashAsync(int invoiceId);
+    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId);
+    Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType);
+
+    Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
 }

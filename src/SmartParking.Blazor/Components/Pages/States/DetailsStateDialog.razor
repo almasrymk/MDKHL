@@ -12,25 +12,11 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@state.EnglishName</MudText>
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@state.ArabicName</MudText>
-
-			}
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
 				<MudGrid>
-
-
-
 					<MudItem sm="6">
 						<MudTextField @bind-Value="state.ArabicName"
 									  For="@(() => state.ArabicName)"
@@ -49,14 +35,28 @@
 									  Disabled/>
 					</MudItem>
 
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
 					<MudItem sm="6">
 						<MudTextField @bind-Value="state.RegionEnglishName"
 									  For="@(() => state.RegionEnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["Region English Name"]"
+									  Label="@L["Region"]"
 									  Disabled />
 					</MudItem>
+					}
+					else 
+					{
+					<MudItem sm="6">
+						<MudTextField @bind-Value="state.RegionArabicName"
+									  For="@(() => state.RegionArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["Region"]"
+									  Disabled />
+					</MudItem>
+					}
 
 					<MudItem sm="6" >
 						<MudTextField @bind-Value="state.Status"
@@ -74,7 +74,7 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
 		</DialogActions>
 
 	</MudDialog>

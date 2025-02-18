@@ -3,11 +3,11 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
 @using SmartParking.Localization
+@using SmartParking.Utilities
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IAuthenticationAppService AuthenticationAppService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
-
 
 
 
@@ -17,11 +17,11 @@
 <MudText Class="w-50 text-center">
     @L["we send the OTP to"] <a >
         <MudTextField T="string"  Typo="Typo.h6"
-        Label=@L["Email Address / User Name"] @bind-Value="Email" />
+        Label=@L["Mobile/User Name"] @bind-Value="UserName" />
 
     </a>
 </MudText>
-<MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Send">@L["Send"]</MudButton>
+<MudButton Class="mx-auto w-50 my-5" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Send">@L["Send"]</MudButton>
 
 
 
@@ -32,58 +32,48 @@
 <div>
     <MudForm @ref="otpForm">
         <MudGrid Justify="Justify.Center" Class="my-5">
-            @for (int i = 0; i < 4; i++)
-            {
-                <MudItem xs="2">
-                    <MudNumericField @bind-Value="_otp[i]"
-                    HideSpinButtons="true"
-                    MaxLength="1"
-                    OnKeyDown="@(e => MoveNext(e, i))"
-                    Variant="Variant.Text"
-                    Typo="Typo.h5"
-                    />
-                </MudItem>
-            }
+            <MudItem xs="8">
+                <MudTextField @bind-Value="Otp"
+                MaxLength="4"
+                Variant="Variant.Text"
+                Typo="Typo.h5"
+                />
+            </MudItem>
+
+
         </MudGrid>
-        <MudText Class="text-center my-5">@L["Didn't receive the code .."]<MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">@L["Resend"]</MudLink></MudText>
+        <MudText Class="text-center my-5">@L["Didn't receive the code .."]<MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold" OnClick="Send">@L["Resend"]</MudLink></MudText>
         <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["VERIFY"]</MudButton>
     </MudForm>
 </div>
-<MudText Class="text-center mt-5">@L["WrongEmail"] <MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold">@L["Back"]</MudLink></MudText>
+<MudText Class="text-center mt-5">@L["WrongEmail"] <MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Href="/Account/Login" Class="fw-bold">@L["Back"]</MudLink ></MudText>
 @code {
-    public string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-    public string Email;
-
-
-    private string[] _otp = new string[5];
-    private MudTextField<string>[] _otpRefs = new MudTextField<string>[5];
+    public string UserName;
+    string Otp;
     private MudForm otpForm;
-    private async void MoveNext(KeyboardEventArgs e, int index)
-    {
-        await _otpRefs[(index + 1)%4].FocusAsync();
-    }
+
 
     private async void Send(){
 
         try{
-
-        var result=await AuthenticationAppService.GenerateTokeForUser(Email);
+            var result=await AuthenticationAppService.GenerateOTPForUser(UserName);
         }catch(Exception ex){
             Snackbar.Add(ex.Message, Severity.Error);
 
         }
     }
     private async void Submit(){
-        string OTP = "";
-        foreach(var x in _otpRefs){
-            OTP += x;
-        }
-       var result = await AuthenticationAppService.VerifyOtp(Email, OTP);
-       if(result){
-            Snackbar.Add("OTP Verified correctly", Severity.Success);
+
+        var result = await AuthenticationAppService.VerifyOtp(UserName, Otp);
+        if(result){
+            var Name = await AuthenticationAppService.GetUserNameByPhoneNumber(UserName);
+            Snackbar.Add(@L["OTPCorrect"], Severity.Success);
             await Task.Delay(1000);
-            Navigation.NavigateTo("/change-password");
-       }
+            Navigation.NavigateTo($"/change-password/{UserName}");
+        }
+        else{
+            Snackbar.Add(@L["OTPIncorrect"], Severity.Error);
+        }
 
     }
 }

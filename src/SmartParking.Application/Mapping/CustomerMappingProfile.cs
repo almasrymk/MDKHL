@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SmartParking.Authentication;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Mapping;
 
@@ -14,6 +16,16 @@ public class CustomerMappingProfile : Profile
 {
     public CustomerMappingProfile()
     {
+        CreateMap<CreateUpdateCustomerDto,UpdateUserDto>()
+            .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.FullName))
+            .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.UserName))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))           
+            .ForPath(dest => dest.Surname, opt => opt.MapFrom(src => src.ArabicName))            
+            .ForPath(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId))            
+            .ForPath(dest => dest.IdentificationTypes, opt => opt.MapFrom(src => src.IdentificationType))            
+            .ReverseMap();
         // Map Customer -> CustomerDto
         CreateMap<Customer, CustomerDto>()
             .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.IdentityUser.Name))
@@ -21,6 +33,7 @@ public class CustomerMappingProfile : Profile
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.IdentityUser.NormalizedEmail))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.IdentityUser.Email))
             .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.IdentityUser.PhoneNumber))
+            .ForPath(dest => dest.IdentityId, opt => opt.MapFrom(src => src.IdentityUser.Id))
             .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.IdentityUser.UserName))
             .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId))
             .ForMember(dest => dest.identificationTypes, opt => opt.MapFrom(src => src.IdentificationTypes))
@@ -34,23 +47,16 @@ public class CustomerMappingProfile : Profile
 
         // Map RegisterCustomerDto -> Customer (reverse mapping)
         CreateMap<CreateUpdateCustomerDto, Customer>()
-            .ForPath(dest => dest.IdentityUser.Name, opt => opt.MapFrom(src => src.FullName))
-            .ForPath(dest => dest.IdentityUser.PhoneNumber, opt => opt.MapFrom(src => src.UserName))
-            .ForPath(dest => dest.IdentityUser.UserName, opt => opt.MapFrom(src => src.UserName))
-            .ForPath(dest => dest.IdentityUser.NormalizedEmail, opt => opt.MapFrom(src => src.Email))
-            .ForPath(dest => dest.IdentityUser.Email, opt => opt.MapFrom(src => src.Email))
-            .ForPath(dest => dest.IdentityUser.PhoneNumber, opt => opt.MapFrom(src => src.MobileNumber))
-            .ForPath(dest => dest.IdentityUser.IsActive, opt => opt.MapFrom(src => src.isActive))
             .ForPath(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId)).ReverseMap();
 
         // Map RegisterCustomerDto -> CustomerDto (reverse mapping)
         CreateMap<CreateUpdateCustomerDto, CustomerDto>()
             .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
-            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.MobileNumber))
+            .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForPath(dest => dest.ArabicName, opt => opt.MapFrom(src => src.ArabicName))
-            .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.MobileNumber))
+            .ForPath(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForPath(dest => dest.isActive, opt => opt.MapFrom(src => src.isActive))
             .ForPath(dest => dest.identificationTypes, opt => opt.MapFrom(src => src.IdentificationType))
             .ForPath(dest => dest.NationalId, opt => opt.MapFrom(src => src.NationalId)).ReverseMap();

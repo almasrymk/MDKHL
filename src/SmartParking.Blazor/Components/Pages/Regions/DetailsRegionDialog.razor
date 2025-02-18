@@ -13,16 +13,7 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@region.EnglishName</MudText>
-
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@region.ArabicName</MudText>
-
-			}
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -31,30 +22,42 @@
 
 					<MudItem sm="6">
 						<MudTextField @bind-Value="region.ArabicName"
-									  For="@(() => region.ArabicName)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["ArabicName"]"
-									  Disabled/>
+						For="@(() => region.ArabicName)"
+						Immediate="true"
+						Variant="Variant.Text"
+						Label="@L["ArabicName"]"
+						Disabled/>
 					</MudItem>
 
 					<MudItem sm="6">
 						<MudTextField @bind-Value="region.EnglishName"
-									  For="@(() => region.EnglishName)"
-									  Immediate="true"
-									  Variant="Variant.Text"
-									  Label="@L["EnglishName"]"
-									  Disabled/>
+						For="@(() => region.EnglishName)"
+						Immediate="true"
+						Variant="Variant.Text"
+						Label="@L["EnglishName"]"
+						Disabled/>
 					</MudItem>
 
-					<MudItem sm="6">
-						<MudTextField @bind-Value="region.CountryEnglishName"
-									  For="@(() => region.CountryEnglishName)"
-									  Immediate="true"
-									  Disabled
-									  Label="@L["Country English Name"]" />
-					</MudItem>
-
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
+						<MudItem sm="6">
+							<MudTextField @bind-Value="region.CountryEnglishName"
+							For="@(() => region.CountryEnglishName)"
+							Immediate="true"
+							Disabled
+							Label="@L["Country"]" />
+						</MudItem>
+					}
+					else
+					{
+						<MudItem sm="6">
+							<MudTextField @bind-Value="region.CountryArabicName"
+										  For="@(() => region.CountryArabicName)"
+										  Immediate="true"
+										  Disabled
+										  Label="@L["Country"]" />
+						</MudItem>
+					}
 
 					<MudItem sm="6">
 						<MudTextField @bind-Value="region.Status"
@@ -72,7 +75,7 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
 		</DialogActions>
 	</MudDialog>
 

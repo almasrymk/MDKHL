@@ -5,34 +5,92 @@
 @inject IUsersAppService UsersAppService
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject IRoleAppService RoleAppService
 
 <PageTitle>@L["Update User"]</PageTitle>
 
 <div class="modal-wrapper">
-    <MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+    <MudDialog class="mud-modal" >
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Update User"]</MudText>
+            <MudText Typo="Typo.h6">@L["Edit"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
                 <MudGrid>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.UserName" Label="@L["UserName"]" Required />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Email" Label="@L["Email"]" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Email" Label="@L["Email"]" Required />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" ReadOnly="true" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" />
+                    </MudItem>
+
+                    <MudItem sm="6" Class="d-inline-flex">
+                        <MudItem Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@updateUserDto.IdentificationTypes"
+                                           Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalIdSwitch"]</MudRadio>
+                                <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                            </MudRadioGroup>
+                        </MudItem>
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="updateUserDto.PhoneNumber" Required />
+                        <MudTextField T="string" Placeholder="@L["Type Here"]"
+                                      Label="@L["NationalId"]" @bind-Value="updateUserDto.NationalId" />
                     </MudItem>
+                   
+
+                    <MudItem sm="6" md="6">
+                        
+                            <div class="d-flex flex-row justify-content-between">
+                                <MudCheckBox  @bind-Value="@updateUserDto.ISNoRole" Color="MudBlazor.Color.Primary">@L["NoRole"]</MudCheckBox>
+                            </div>
+                        
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField T="string"  Disabled
+                                      Label="@L["Role"]" @bind-Value="UserRole" />
+                    </MudItem>
+
+                    @if (!updateUserDto.ISNoRole)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect T="string"
+                                       ValueChanged="ChangeRole"
+                                       Label="@L["UserRole"]"
+                                       Placeholder="@L[ "Choose"]"
+                                       HelperText=@L["Helper Text"]
+                                       Required>
+                            <MudSelectItem Value="@("Choose")" Disabled="true">@L["Choose"]</MudSelectItem>
+
+                                @foreach (var role in Roles)
+                                {
+                                    <MudSelectItem Value="@role.Id.ToString()">
+                                        @role.Name
+                                    </MudSelectItem>
+
+                                }
+                            </MudSelect>
+
+                        </MudItem>
+                        <MudItem sm="12" md="12" >
+                            <div class="d-flex align-items-center">
+                                <MudRadioGroup @bind-Value="@updateUserDto.IsActive" Class="d-inline-flex align-content-center ">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                        <MudRadio Value="false" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                                    </div>
+                                </MudRadioGroup>
+                            </div>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudForm>
         </DialogContent>
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
             <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
         </DialogActions>
 

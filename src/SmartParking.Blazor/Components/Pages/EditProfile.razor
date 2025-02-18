@@ -1,48 +1,69 @@
 ﻿@page "/edit-profile"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using System.IO
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Account
 @using Volo.Abp.Users
+@using Volo.Abp.Validation
 @layout Shared.ProfileLayout
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IUsersAppService UsersAppService
 @inject ICurrentUser CurrentUser
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 <PageTitle>@L["Edit Profile"]</PageTitle>
 <div class="w-100">
     <MudPaper Class="p-5 d-flex flex-column align-items-center justify-content-center w-100 main-layout-paper" Style="background-color: #F2F2F2;">
         <MudForm Class="d-flex flex-column gap-4" @ref="form" OnValidSubmit="SaveChanges">
             <div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
-                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" Style="border-radius:50% ; width:300px;height:280px" />
-                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
+                <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" Class="bg_w_foto " Width="200" Height="200" />
+                <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg, .gif, .bmp, .webp" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
                     <ActivatorContent>
                         <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
                     </ActivatorContent>
                 </MudFileUpload>
             </div>
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="Profile.UserName" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="Profile.Name" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="Profile.Email" Required="true" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="Profile.PhoneNumber" Required="true" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="OldProfile.UserName" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="OldProfile.Name" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="OldProfile.PhoneNumber" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["NationalId"] @bind-Value="OldProfile.NationalId" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+             <MudRadioGroup @bind-Value="@OldProfile.IdentificationTypes"
+                            Class="d-inline-flex align-content-center">
+                 <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                 <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+             </MudRadioGroup>
+
 
             <div class="d-flex align-items-center gap-3 mt-4">
-                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href="/change-password">@L["CHANGE PASSWORD"]</MudButton>
+                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href=@($"/change-password/{OldProfile.UserName}")>@L["CHANGE PASSWORD"]</MudButton>
                 <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() =>  SaveChanges())">@L["Save"]</MudButton>
             </div>
         </MudForm>
     </MudPaper>
 </div>
+<style>
+    .bg_w_foto {
+        background: url(images/cities/<?php echo $city_name;
+        ?>) no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>
 
 @code {
     private MudForm form;
     private string ProfilePictureUrl =  ""; // Default profile picture
-    private UpdateProfileDto Profile = new UpdateProfileDto(); // Profile object for binding
-
-    // Inject the profile service and snackbar
-    [Inject] private IProfileAppService ProfileAppService { get; set; }
+    private string NewProfilePictureUrl =  ""; 
+    private UpdateUserDto OldProfile = new UpdateUserDto(); // Profile object for binding
+    private UpdateUserDto Profile = new UpdateUserDto(); // Profile object for binding
     [Inject] private ISnackbar Snackbar { get; set; }
     private string ImageBase64 { get; set; }
 
@@ -56,23 +77,21 @@
 
     private async Task GetProfile()
     {
-        try
-        {
+
             var profile = await UsersAppService.GetAsync(CurrentUser.Id);
 
-            Profile.Name = profile.Name;
-            Profile.Email = profile.Email;
-            Profile.PhoneNumber = profile.PhoneNumber;
-            Profile.UserName = profile.UserName;
+            OldProfile.Name = Profile.Name = profile.Name;
+            OldProfile.Email = Profile.Email= profile.Email;
+            OldProfile.PhoneNumber = Profile.PhoneNumber= profile.PhoneNumber;
+            OldProfile.UserName = Profile.UserName= profile.UserName;
+            OldProfile.NationalId = profile.NationalId = profile.NationalId;
+            OldProfile.IdentificationTypes = profile.IdentificationTypes;
+            OldProfile.ConcurrencyStamp = profile.ConcurrencyStamp;
 
-            ProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "images/profile-avatar.png" : profile.Image;
 
-        }
+            ProfilePictureUrl = NewProfilePictureUrl = string.IsNullOrWhiteSpace(profile.Image) ? "" : profile.Image;
 
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading profile: {ex.Message}", Severity.Error);
-        }
+       
     }
 
     private async Task SaveChanges()
@@ -80,39 +99,60 @@
         try
         {
 
-            await form.Validate();
 
-            if (form.IsValid)
-            {
-                await ProfileAppService.UpdateAsync(Profile);
-               
-                Snackbar.Add("Profile updated successfully!", Severity.Success);
+           
+                bool updated = false;
+                if(IfChanged(OldProfile,Profile)){
+                    await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, OldProfile);
+                    updated = true;
+
+                }
+                if (NewProfilePictureUrl != ProfilePictureUrl){
+                    await UsersAppService.UpdateImageAsync(CurrentUser.Id, ProfilePictureUrl);
+                    updated = true;
+      
+                }
+                if(updated){
+
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Profile"]}", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
-            }
-            else
+                }
+            
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
             {
-                Snackbar.Add("Form validation failed. Please check the fields.", Severity.Warning);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error updating profile: {ex.Message}", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
 
     private async Task UploadFiles(IBrowserFile file)
     {
-        using var stream = file.OpenReadStream(2 * 1024 * 1024); 
-        using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-        byte[] imageBytes = memoryStream.ToArray();
-         ImageBase64 = Convert.ToBase64String(imageBytes);
-        await UsersAppService.UpdateImageAsync(CurrentUser.Id, ImageBase64);
-        Snackbar.Add("Profile updated successfully!", Severity.Success);
-        await Task.Delay(1000);
-        Navigation.Refresh(true);
-
-
+        ProfilePictureUrl = await ImageHelper.GetImageBase64Async(file);
+        StateHasChanged();
+    }
+    private bool IfChanged(UpdateUserDto OldProfile, UpdateUserDto NewProfile)
+    {
+        if (OldProfile != Profile){
+            return true;
+        }
+        return false;
     }
 }

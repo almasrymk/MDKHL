@@ -195,9 +195,7 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
         if (packageType == null)
             throw new EntityNotFoundException(typeof(PackageType), id);
 
-        //await base.DeleteAsync(id);
-        packageType.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _packageTypeRepository.HardDeleteAsync(packageType);
     }
 
     public override Task<PagedResultDto<PackageTypeDto>> GetListAsync(PagedAndSortedResultRequestDto input)

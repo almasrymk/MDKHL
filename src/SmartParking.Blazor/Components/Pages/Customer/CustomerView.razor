@@ -1,5 +1,6 @@
 ﻿@page "/customers/view/{customerId}"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Localization
@@ -17,35 +18,35 @@
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
 @inject IDialogService DialogService
+@inject IUsersAppService UsersAppService
+@inject IAuthorizationService AuthorizationService
 
 <PageTitle>@L["Details Of Customer"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="8">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                <h3 Color="fw-bold">@L["Details Of Customer"]</h3>
+                <h3 Color="fw-bold">@L["Details"]</h3>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
 
-                        <MudItem sm="6">
+                        <MudItem sm="4" Class="mb-12">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.FullName" Label="@L["EnglishName"]" Required />
                         </MudItem>
-                        <MudItem sm="6">
+                        <MudItem sm="4"Class="mb-12">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.ArabicName" Label="@L["ArabicName"]" Required />
                         </MudItem>
-                        <MudItem sm="6">
+
+                        <MudItem sm="4"Class="mb-12">
+                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="customerDataDto.PhoneNumber" Required />
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.Email" Label="@L["Email"]" Required />
                         </MudItem>
-                        <MudItem sm="6">
-                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.UserName" Label="@L["UserName"]" Required />
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="customerDataDto.MobileNumber" Required />
-                        </MudItem>
-                        <MudItem sm="6">
+                        <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="customerDataDto.NationalId" Required />
                         </MudItem>
-                        <MudItem sm="6" Class="d-inline-flex justify-content-center">
+                        <MudItem sm="4" Class="d-inline-flex justify-content-center">
                             <MudItem Class="d-flex flex-row justify-content-between">
                                 <MudRadioGroup @bind-Value="@customerDataDto.IdentificationType" Class="d-inline-flex align-content-center">
                                     @if (customerDataDto.IdentificationType == Enums.IdentificationTypes.NationalID){
@@ -61,7 +62,7 @@
                         </MudItem>
 
                     </MudGrid>
-                    <div class="d-flex justify-content-between mt-auto">
+                    <div class="d-flex justify-content-end mt-auto">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="CancelView">@L["Back"]</MudButton>
                        
                     </div>
@@ -70,19 +71,19 @@
             </MudPaper>
         </MudItem>
         <MudItem sm="4">
-            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
+            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column align-items-center justify-content-between" Style="background-color: #F2F2F2;">
                
-                <div class="d-flex flex-column align-content-center gap-4 p-5">
-                    <MudImage Src="@Picture" Class="bg_w_foto " Width="200" Height="200" />
+                <div class="d-flex flex-column align-content-center mt-5">
+                    <MudImage Src="@Picture" Class="bg_w_foto " onerror="this.src='images/users/149071.png'" Width="200" Height="200" />
                     <div class="d-flex flex-column align-items-center">
-                        <MudText Class="fw-bold">@currentUser.Name</MudText>
-                        <MudText>@currentUser.Email</MudText>
+                        <MudText Class="fw-bold">@(CultureInfo.CurrentCulture.Name == "en"?customerDataDto.FullName:customerDataDto.ArabicName)</MudText>
+                        <MudText>@(customerDataDto.Email is null ? customerDataDto.PhoneNumber : customerDataDto.Email)</MudText>
                     </div>
                 </div>
                 <MudGrid Class="mt-3">
                     @if(CurrentTenant.Id is not null)
                     {
-                        <MudItem sm="6">
+                        <MudItem sm="12">
                             <MudPaper class="text-center p-2">
                                 <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewInvoice">@L["Invoices"]</MudLink>
                             </MudPaper>

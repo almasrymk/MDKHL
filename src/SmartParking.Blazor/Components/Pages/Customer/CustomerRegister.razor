@@ -1,4 +1,6 @@
 ﻿@page "/customers/register"
+@using SmartParking.Authentication
+@using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @layout Shared.ProfileLayout
 @inject ICustomerAppService CustomerAppService
@@ -14,6 +16,7 @@
 @using SmartParking.Organizations
 @using System.Globalization
 @using SmartParking.Packages
+@using SmartParking.Validations
 @using SmartParking.Vehicles
 @using SmartParking.Vehicles.LookUps
 @using Volo.Abp.MultiTenancy
@@ -29,40 +32,54 @@
 @inject IVehicleBrandsAppService VehicleBrandAppService
 @inject IVehicleModelsAppService VehicleModelAppService
 @inject IVehiclesAppService VehicleAppService
-
+@inject IRoleAppService RoleAppService
+@inject IAuthorizationService AuthorizationService
+@inject ICustomerPackagesAppService CustomerPackagesAppService
 <PageTitle>@L["Register"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="showVehicle?7:12">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                <h3 Color="fw-bold">@L["Register"]</h3>
-                <MudForm Class="flex-grow-1 mt-4" @ref="form">
-                    <MudGrid>
-                                            
+                <h3 Color="fw-bold">@L["Add NEW"]</h3>
+                <MudForm Class="flex-grow-1 mt-4" >
+                    <MudGrid Class="mb-5">
+
                         <MudItem sm="6">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]"  @bind-Value="createUpdateCustomerDto.FullName" Label="@L["EnglishName"]" Required />
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
+                            @bind-Value="createUpdateCustomerDto.FullName" Label="@L["EnglishName"]" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem> 
                         <MudItem sm="6">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="createUpdateCustomerDto.ArabicName" Label="@L["ArabicName"]" Required />
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
+                            @bind-Value="createUpdateCustomerDto.ArabicName" Label="@L["ArabicName"]" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="createUpdateCustomerDto.UserName" Label="@L["UserName"]" Required />
-                        </MudItem>
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
+                            InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.PhoneNumber" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        </MudItem>                        
+                        
                         <MudItem sm="6">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone"  Label="@L["MobileNumber"]" @bind-Value="createUpdateCustomerDto.MobileNumber" Required />
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
+                            InputType="InputType.Text" Label="@L["Email"]" @bind-Value="createUpdateCustomerDto.Email" />
                         </MudItem>
-                        <MudItem sm="6">
-                            <MudTextField T="string"  Placeholder="@L["Type Here"]" Label="@L["NationalIdLbl"]" @bind-Value="createUpdateCustomerDto.NationalId" Required/>
-                        </MudItem>
-                        <MudItem sm="6" Class="d-inline-flex justify-content-center">
+
+                        <MudItem sm="6" Class="d-inline-flex">
                             <MudItem Class="d-flex flex-row justify-content-between">
-                                <MudRadioGroup @bind-Value="@createUpdateCustomerDto.IdentificationType" Class="d-inline-flex align-content-center">
-                                    <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                                <MudRadioGroup @bind-Value="@createUpdateCustomerDto.IdentificationType" Required="false" ReadOnly="showVehicle"
+                                               Class="d-inline-flex align-content-center">
+                                    <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalIdSwitch"]</MudRadio>
                                     <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
                                 </MudRadioGroup>
                             </MudItem>
                         </MudItem>
-                        @if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+                        <MudItem sm="6">
+                            <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
+                            Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        </MudItem>
+                        @if (createUpdateCustomerDto.IsUser && CurrentTenant.Id is null)
                         {
                             <MudItem sm="6" md="6">
                                 <MudSelect T="int"
@@ -71,8 +88,9 @@
                                            Placeholder=@L["Choose"]
                                            HelperText=@L["Helper Text"]
                                            Required
-                                           @bind-Value="createUpdateCustomerDto.OrganizationId">
-                                    <MudSelectItem Value="0"></MudSelectItem>
+                                           ReadOnly="showVehicle"
+                                           ValueChanged="CheckIsUser">
+                                    <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                     @foreach (var organization in Organizations)
                                     {
                                         if (organization.Status != Enums.Status.Active)
@@ -94,65 +112,38 @@
 
 
                         }
-                        @if (createUpdateCustomerDto.OrganizationId != 0 || CurrentTenant.Id is not null)
+                       
+                        <MudItem sm="6">
+                            <MudCheckBox T="bool" @bind-Value="createUpdateCustomerDto.IsUser"  Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
+                        </MudItem>
+                        @if (createUpdateCustomerDto.IsUser && createUpdateCustomerDto.OrganizationId > 0)
                         {
                             <MudItem sm="6" md="6">
-                                <MudSelect T="CustomerCategoryStatus"
-                                           Label="@L["customer category"]"
+                                <MudSelect @bind-Value="@RoleId"
+                                           Label="@L["UserRole"]"
                                            Placeholder="@L[ "Choose"]"
                                            HelperText=@L["Helper Text"]
-                                           Required="true"
-                                           ValueChanged="getPackage">
-
-                                    @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                                           Required>
+                                    <MudSelectItem Value="@("Choose")">@L["Choose"]</MudSelectItem>
+                                    @foreach (var role in Roles)
                                     {
-                                        <MudSelectItem Value="@category">
 
-                                            @category.ToString()
+                                        <MudSelectItem Value="@role.Id.ToString()">
+                                            @role.Name
                                         </MudSelectItem>
-                                    }
-                                </MudSelect>
-
-                            </MudItem>
-                        }
-
-
-                        @if (packages.Count >0)
-                        {
-                            <MudItem sm="6" md="6">
-                                <MudSelect @bind-Value="createUpdateCustomerDto.PackageId"
-                                           Label="@L["Package"]"
-                                           Placeholder="@L[ "Choose"]"
-                                           HelperText=@L["Helper Text"]
-                                           Required="true">
-
-                                    @foreach (var package in packages)
-                                    {
-                                        @if (CultureInfo.CurrentCulture.Name == "ar")
-                                        {
-                                            <MudSelectItem Value="@package.Id">
-                                                @package.ArabicName
-                                            </MudSelectItem>
-                                        }
-                                        else
-                                        {
-                                            <MudSelectItem Value="@package.Id">
-                                                @package.EnglishName
-                                            </MudSelectItem>
-                                        }
 
                                     }
                                 </MudSelect>
 
                             </MudItem>
                         }
-
-
                     </MudGrid>
-                    <div class="d-flex justify-content-between mt-auto">
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="HandleCancel">@L["Cancel"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit" Disabled="@(form == null || !form.IsValid)">@L["Create"]</MudButton>
-                    </div>
+                        @if(!showVehicle){
+                            <div class="d-flex justify-content-between mt-auto">
+                                <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="HandleCancel">@L["Cancel"]</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="HandleSubmit" >@L["Create"]</MudButton>
+                            </div>
+                        }
                 </MudForm>
 
             </MudPaper>
@@ -164,18 +155,20 @@
                 <MudForm Model="createUpdateVehicle" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                     <MudGrid>
 
-                        <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateLetter"]" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
-                        </MudItem>
-                        <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
-                        </MudItem>
-                        <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateLetter"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
-                        </MudItem>
-                        <MudItem sm="6" md="6">
-                            <MudTextField T="string" InputType="InputType.Text" Label="@L["EnPlateNumber"]" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
-                        </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateLetters"]" MaxLength="3" OnBlur="HandleKeyUpLettersArabic" @bind-Value="createUpdateVehicle.ArPlateLetters" Placeholder="@L["Type Here"]" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic"  InputType="InputType.Text" Label="@L["ArPlateNumber"]" MaxLength="4" @bind-Value="createUpdateVehicle.ArPlateNumber" Placeholder="@L["Type Here"]" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish"  InputType="InputType.Text" MaxLength="3" Label="@L["EnPlateLetters"]" @bind-Value="createUpdateVehicle.EnPlateLetters" Placeholder="@L["Type Here"]" />
+                            </MudItem>
+                            <MudItem sm="6" md="6">
+                                <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true"  Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish" MaxLength="4" @bind-Value="createUpdateVehicle.EnPlateNumber" Placeholder="@L["Type Here"]" />
+                            </MudItem>
+
+
                         <MudItem sm="6" md="6">
                             <MudSelect @bind-Value="@createUpdateVehicle.LicenceTypeId"
                                        Variant="Variant.Text"
@@ -184,6 +177,7 @@
                                        HelperText=@L["Helper Text"]
                                        Required="true"
                                        Clearable="true">
+                                    <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var licenceType in LicenceTypes)
                                 {
                                     @if (CultureInfo.CurrentCulture.Name == "en")
@@ -207,6 +201,7 @@
                                        Required="true"
                                        Clearable="true"
                                        ValueChanged="SelectBrand">
+                                    <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var vehiclebrand in VehicleBrands)
                                 {
                                     @if (CultureInfo.CurrentCulture.Name == "en")
@@ -222,31 +217,34 @@
                                 }
                             </MudSelect>
                         </MudItem>
-                        <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="@createUpdateVehicle.VehicleModelId"
-                                       Variant="Variant.Text"
-                                       Label="@L["VehicleModel"]"
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Required="true"
-                                       Clearable="true">
-                                @foreach (var vehiclemodel in VehicleModels)
-                                {
-                                    @if (CultureInfo.CurrentCulture.Name == "en")
-                                    {
-                                        <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
-                                    }
-                                    else
-                                    {
-                                        <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.ArabicName</MudSelectItem>
-                                    }
+                            @if(createUpdateVehicle.VehicleBrandId != 0)
+                            {
+                                <MudItem sm="6" md="6">
+                                    <MudSelect @bind-Value="@createUpdateVehicle.VehicleModelId"
+                                               Variant="Variant.Text"
+                                               Label="@L["VehicleModel"]"
+                                               Placeholder=@L["Choose"]
+                                               HelperText=@L["Helper Text"]
+                                               Required="true"
+                                               Clearable="true">
+                                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                        @foreach (var vehiclemodel in VehicleModels)
+                                        {
+                                            @if (CultureInfo.CurrentCulture.Name == "en")
+                                            {
+                                                <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
+                                            }
+                                            else
+                                            {
+                                                <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.ArabicName</MudSelectItem>
+                                            }
 
-                                }
-                            </MudSelect>
-                        </MudItem>
-
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                        }
                         <MudItem sm="6" md="6">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
+                                <MudTextField Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" Validation="VehicleValidation.ValidateYear" MaxLength="4" InputType="InputType.Text" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
                         </MudItem>
 
                         <MudItem sm="6" md="6">
@@ -257,11 +255,13 @@
                             <MudSwitch Label="@L["BelongToCompany"]" LabelPosition="LabelPosition.Start" @bind-Value="createUpdateVehicle.BelongToCompany" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudItem sm="6" md="6">
-                                <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
+                                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="CancelCreate">@L["Back"]</MudButton>
                         </MudItem>
                         <MudItem sm="6" md="6">
                         <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitCreate">@L["Create"]</MudButton>
                         </MudItem>
+                          
+                          
                     </MudGrid>
                 </MudForm>
                 </MudPaper>

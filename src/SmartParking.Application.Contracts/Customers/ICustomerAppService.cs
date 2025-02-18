@@ -1,5 +1,6 @@
 ﻿using SmartParking.Cameras;
 using SmartParking.Entities.Customers;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Vehicles;
 using System;
@@ -24,7 +25,7 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// <param name="input">Customer create dto</param>
     /// <returns>A dto for created customer</returns>
     /// <exception cref="UserFriendlyException">Throws exception when error occurs while saving customer</exception>
-    Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);    
+    //Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input);    
 
     /// <summary>
     /// Method  to add customer for Mdkhl Admin to database
@@ -43,9 +44,9 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <param name="input">Input used for pagination</param>
     /// <returns>Paged Result of Customers</returns>
-    Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input);
 
-    Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
 	/// <summary>
 	/// Method used to get customer by id 
 	/// </summary>
@@ -53,21 +54,21 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 	/// <returns>CustomerDto</returns>
 	Task<CustomerDto> GetAsync(Guid customerId);
     //Task<bool> SendOtpAsync(string mobileNumber);
-    
+
     /// <summary>
     /// Method used to get vehicles for specific customer
     /// </summary>
     /// <param name="customerId">Customer Id</param>
     /// <returns>list of vehichles</returns>
-    Task<List<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId);    
+    Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId, PagedAndSortedResultRequestDto input);
 
 
-	/// <summary>
-	/// abstract method to search of customers
-	/// </summary>
-	/// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
-	/// <returns>customer Dto</returns>
-	public Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    /// <summary>
+    /// abstract method to search of customers
+    /// </summary>
+    /// <param name="input">specifies max number of customer and if it sorted or not and search term</param>
+    /// <returns>customer Dto</returns>
+    public Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
     /// <summary>
     /// abstract method to search of customers for MDKHL
@@ -106,5 +107,10 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// </summary>
     /// <returns>Count of Customers</returns>
     Task<int> GetCountCustomersCountForOrganization(Guid ?CurrentTenantId);
+
+    Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input);
+
+    Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId, Guid? tenantId);
+    Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId, Guid? tenantId);
 
 }

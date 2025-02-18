@@ -36,16 +36,18 @@ namespace SmartParking.Vehicles.LookUps
         ///<inheritdoc/>
         public override async Task DeleteAsync(int id)
         {
-            var vehicleBrand = await _repository.FindAsync(id);
+            
+                var vehicleBrand = await _repository.FindAsync(id);
 
-            if (vehicleBrand is null)
-            {
-                throw new EntityNotFoundException(typeof(VehicleBrand), id);
-            }
+                if (vehicleBrand is null)
+                {
+                    throw new EntityNotFoundException(typeof(VehicleBrand), id);
+                }
 
-            vehicleBrand.Status = Status.Deleted;
-            await CurrentUnitOfWork.SaveChangesAsync();
-            // await base.DeleteAsync(id);
+                await _repository.HardDeleteAsync(vehicleBrand);
+                //await CurrentUnitOfWork.SaveChangesAsync();
+            
+             
         }
 
         ///<inheritdoc/>
@@ -171,11 +173,15 @@ namespace SmartParking.Vehicles.LookUps
         [RemoteService(IsEnabled =false)]
         public async Task<Result<List<VehicleBrandDto>>> GetbrandsAsync()
         {
-            var brands = await _repository.GetListAsync();
-            if (brands.Count == 0)
-                return Result<List<VehicleBrandDto>>.NotFound();
-            var brandsMap = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
-            return Result<List<VehicleBrandDto>>.Success(brandsMap);
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var brands = await _repository.GetListAsync();
+                if (brands.Count == 0)
+                    return Result<List<VehicleBrandDto>>.NotFound();
+                var brandsMap = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
+                return Result<List<VehicleBrandDto>>.Success(brandsMap);
+            }
+            
         }
 
         public async Task<List<VehicleBrandDto>> GetAllVehicleBrandsAsync()

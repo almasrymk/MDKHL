@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups;
 using System;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
@@ -19,9 +21,7 @@ public partial class EditCountryDialog
 
     private async Task Save()
     {
-		var successedMessage = L["CountryUpdatedSuccessfully"];
-		var errorMessage = L["Can'tUpdateCountry"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		
 		try
 		{
 			// Create the input object for update
@@ -40,35 +40,40 @@ public partial class EditCountryDialog
 
 			if (countries != null)
 			{
-				Snackbar.Add(successedMessage, Severity.Success);
-				MudDialog.Close(DialogResult.Ok(true));
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/countries");
             }
 
 			else
 			{
-				Snackbar.Add(errorMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName}", Severity.Success);
 
-			}
+            }
 		}
-		catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				Snackbar.Add($"{errorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
-			Snackbar.Add($"{errorMessage} {ex.Code}", Severity.Error);
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-		}
-		catch (Exception ex)
-		{
-			Snackbar.Add($"{errorMessage} {ex.Message}", Severity.Error);
-		}
-		
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+
     }
 
 

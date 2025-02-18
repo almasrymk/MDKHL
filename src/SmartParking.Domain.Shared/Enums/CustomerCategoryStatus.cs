@@ -8,7 +8,7 @@ namespace SmartParking.Enums;
 
 public enum CustomerCategoryStatus
 {
-    visitor,
     Employee,
+    Visitor,
     Customer
 }

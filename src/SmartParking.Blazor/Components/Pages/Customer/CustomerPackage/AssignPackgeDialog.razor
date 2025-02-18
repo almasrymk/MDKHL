@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Enums
@@ -6,6 +7,7 @@
 @using SmartParking.Organizations
 @using SmartParking.Packages
 @using System.Globalization
+@using SmartParking.Vehicles
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
@@ -17,28 +19,28 @@
 @inject ICurrentTenant CurrentTenant
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
-
+@inject IVehiclesAppService VehiclesAppService
 <PageTitle>@L["Assign Package"]</PageTitle>
 
-<div class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+<div class="modal-wrapper w-100">
+	<MudDialog class="mud-modal w-100" Style="min-width:fit-content !important">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["Assign Package"]</MudText>
 		</TitleContent>
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-					@if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
+					@if (CurrentTenant.Id is null)
 					{
 						<MudItem sm="12" md="12">
 							<MudSelect T="int"
-									   Variant="Variant.Text"
-									   Label=@L["Organizations"]
-									   Placeholder=@L["Choose"]
-									   HelperText=@L["Helper Text"]
-									   Required
-									   @bind-Value="organizationId">
-								<MudSelectItem Value="0"></MudSelectItem>
+							Variant="Variant.Text"
+							Label=@L["Organizations"]
+							Placeholder=@L["Choose"]
+							HelperText=@L["Helper Text"]
+							Required
+							@bind-Value="organizationId">
+								<MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 								@foreach (var organization in Organizations)
 								{
 									if (organization.Status != Enums.Status.Active)
@@ -63,16 +65,16 @@
 					@if (organizationId != 0 || CurrentTenant.Id is not null)
 					{
 						<MudItem sm="12" md="12">
-							<MudSelect T="CustomerCategoryStatus"
-									   Label="@L["customer category"]"
-									   Placeholder="@L[ "Choose"]"
-									   HelperText=@L["Helper Text"]
-									   Required="true"
-									   ValueChanged="getPackage">
+							<MudSelect T="string"
+							Label="@L["customer category"]"
+							Placeholder="@L[ "Choose"]"
+							HelperText=@L["Helper Text"]
+							Required="true"
+							ValueChanged="getPackage">
 
 								@foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
 								{
-									<MudSelectItem Value="@category">
+									<MudSelectItem Value="@category.ToString()">
 
 										@category.ToString()
 									</MudSelectItem>
@@ -86,15 +88,16 @@
 					@if (Packages.Count > 0)
 					{
 						<MudItem sm="12">
-							<MudSelect @bind-Value="@CustomerPackage.PackageId"
-									   Variant="Variant.Text"
-									   Label="@L["EnglishName"]"
-									   Placeholder=@L["Choose"]
-									   HelperText=@L["Helper Text"]
-									   Clearable="_clearable">
+							<MudSelect T="int"
+							ValueChanged="PackageValueChanged"
+							Variant="Variant.Text"
+							Label="@L["EnglishName"]"
+							Placeholder=@L["Choose"]
+							HelperText=@L["Helper Text"]
+							Clearable="_clearable">
 								@foreach (var package in Packages)
 								{
-									if (package.PackageStatus != SubscriptionStatus.Active)
+									if (package.PackageStatus != SubscriptionStatus.Active && package.Status!=Status.Active)
 										continue;
 									if (CultureInfo.CurrentCulture.Name == "en")
 									{
@@ -110,48 +113,85 @@
 							</MudSelect>
 						</MudItem>
 					}
-					
+
+
 
 				</MudGrid>
+				<MudTable T="PackageDto" Items="selectedPackageDto" Style="width:100%">
+					<HeaderContent>
+						<MudTh>@L["Name"]</MudTh>
+						<MudTh>@L["Package Type"]</MudTh>
+						<MudTh>@L["Price"]</MudTh>
+						<MudTh>@L["Publish From"]</MudTh>
+						<MudTh>@L["Publish To"]</MudTh>
+						<MudTh>@L["TotalHours"]</MudTh>
+					</HeaderContent>
+					<RowTemplate>
+						@if (CultureInfo.CurrentCulture.Name == "en")
+						{
+							<MudTd>@context.EnglishName</MudTd>
+						}
+						else
+						{
+							<MudTd>@context.ArabicName</MudTd>
+						}
+
+						<MudTd>@context.PackageTypeEnglishName</MudTd>
+						<MudTd>@context.Price</MudTd>
+						<MudTd>@context.PublishFrom</MudTd>
+						<MudTd>@context.PublishTo</MudTd>
+						<MudTd>@context.DurationOfPackage</MudTd>
+					</RowTemplate>
+				</MudTable>
+
 			</MudForm>
-
-
-
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Assign"]</MudButton>
+			<DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+								   ButtonTwoColor="MudBlazor.Color.Primary"
+								   ButtonOneLabel="@L["Back"]"
+								   ButtonTwoLabel="@L["Assign"]"
+								   ButtonOneClick="CancelEdit"
+								   ButtonTwoClick="SubmitEdit"
+								   ButtonOneVariant="MudBlazor.Variant.Filled"
+								   ButtonTwoVariant="MudBlazor.Variant.Filled" />
 		</DialogActions>
 
+
 	</MudDialog>
+
 
 </div>
 
 <style>
 	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	border-radius: 0 20px 0 20px;
 	}
 </style>
 
 @code {
 	[CascadingParameter]
 	private MudDialogInstance MudDialogAdd { get; set; }
-	public CreateUpdateCustomerPackageDto CustomerPackage = new CreateUpdateCustomerPackageDto();
+	public PackageDto CustomerPackage = new PackageDto();
 	[Parameter]
 	public CustomerDto Customer { get; set; }
+	[Parameter] public int VehicleId { get; set; }
+	public CustomerCategoryStatus Customercategory { get; set; }
 	private int organizationId;
 	private IReadOnlyList<OrganizationDto> Organizations = new List<OrganizationDto>();
-	
+
 	public List<PackageDto> Packages { get; set; } = new List<PackageDto>();
 	bool _clearable;
 	private MudForm form;
+	public List<PackageDto> selectedPackageDto { get; set; } = new List<PackageDto>();
 
-	private async Task getPackage(CustomerCategoryStatus customerCategory)
+	private async Task getPackage(string customerCategory)
 	{
+		Customercategory = (CustomerCategoryStatus) Enum.Parse(typeof(CustomerCategoryStatus),customerCategory);
 		if (CurrentTenant.Id is null)
-			Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, customerCategory);
+			Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, Customercategory);
 		else
-			Packages = await PackagesAppService.GetAllOrganizationAsync(customerCategory);
+			Packages = await PackagesAppService.GetAllOrganizationAsync(Customercategory);
 
 	}
 	protected override async Task OnInitializedAsync()
@@ -164,20 +204,34 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["CustomerPackageAssignedSuccessfully"];
+		
+		if(CustomerPackage.CustomerCategory!=Customercategory.ToString()){
+			SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Package")} , " +
+			$"{LocalizationHelper.GetLocalizedString("customer category")} "+
+			$"{LocalizationHelper.GetLocalizedString("NotSameType")} ", Severity.Error);
+			return;
+
+		}
 		try
 		{
-			var assignPackage =  await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.PackageId, Customer.Id);
+			var vehicle = await VehiclesAppService.GetAsync(VehicleId);
+			var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id, vehicle.ArPlateNumber,vehicle.EnPlateNumber);
 			if (!assignPackage)
-				throw new Exception("can't assign package for this customer");
-			Snackbar.Add(successedMessage, Severity.Success);
+				throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " "+
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+				LocalizationHelper.GetLocalizedString("Package") + " ");
+
+			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+			LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD)+" "+
+			LocalizationHelper.GetLocalizedString("Package"),Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/customers", forceLoad: true);
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+			
 		}
 	}
 
@@ -187,6 +241,16 @@
 
 
 	}
+
+	private async Task PackageValueChanged(int value)
+	{
+		selectedPackageDto.Clear();
+		selectedPackageDto.Add( Packages.Find(x => x.Id == value));
+		CustomerPackage = Packages.Find(x => x.Id == value);
+
+	}
+
+
 
 
 }

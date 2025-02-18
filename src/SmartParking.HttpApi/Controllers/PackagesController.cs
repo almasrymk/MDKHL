@@ -23,21 +23,29 @@ public class PackagesController : ControllerBase
     }
     [HttpGet("{oragnizationId}")]
     [Authorize]
-    public Task<Result<List<PackageDto>>> GetAllPakageByOrganization(int oragnizationId)
+    public async Task<Result<List<PackageDto>>> GetAllPakageByOrganization(int oragnizationId)
     {
-        return _packages.GetListPackageByOrganizationId(oragnizationId);
+        return await _packages.GetListPackageByOrganizationId(oragnizationId);
     }    
-    [HttpGet("mypakages")]
+    [HttpGet("mypackages")]
     [Authorize]
-    public Task<Result<List<PackageDto>>> GetPackagesCustomer()
+    public async Task<Result<List<CustomerPackageDto>>> GetPackagesCustomer()
     {
-        return _customerPackagesApp.GetPackageByCustomer();
+        return await _customerPackagesApp.GetPackageByCustomer();
     }    
     
     [HttpGet("assignpackage")]
     [Authorize]
-    public Task<Result> AssignPackageToCustomer(int packageId)
+    public async Task<Result> AssignPackageToCustomer(int packageId,string ArabicNumber , string EnglishPlateNumber)
     {
-        return _customerPackagesApp.AssignPackageToCustomerAsync(packageId);
+        return await _customerPackagesApp.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
+    } 
+    
+    [HttpPut("removepackage")]
+    [Authorize]
+    public async Task<Result> CancelPackage(int packageId)
+    {
+        await _customerPackagesApp.DeleteAsync(packageId);
+        return Result.Success();
     }
 }

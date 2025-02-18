@@ -2,16 +2,19 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Invoices
 @using SmartParking.Localization
+@using SmartParking.Permissions.InvoicesPermissions
 @using Volo.Abp.Application.Dtos
 @inherits AbpCrudPageBase<IInvoiceAppService, InvoiceDto, int, PagedAndSortedResultRequestDto, CreateUpdateInvoiceDto>
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
+@inject IAuthorizationService AuthorizationService
 
 
+@attribute [Authorize]
 
 <PageTitle>@L["Invoices"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Invoices"]</MudText>
-<SPDataGrid PageName="@L["Invoices"]" Data="@itemData" TotalItemsInTable="TotalItem" ShowAdd="false" OnAdd="HandleAdd" OnFiltering="HandleFilter" OnClickRowView="HandleView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
+<SPDataGrid PageName="@L["Invoices"]" Data="@itemData" TotalItemsInTable="TotalItem" ShowAdd="false" OnAdd="HandleAdd" OnFiltering="HandleFilter" ShowView="AuthorizationService.IsGrantedAsync(InvoicePermission.Default).Result" OnClickRowView="HandleView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 

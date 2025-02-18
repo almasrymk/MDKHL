@@ -9,6 +9,10 @@ using Volo.Abp.Application.Dtos;
 using Microsoft.AspNetCore.Components;
 using SmartParking.Cutomers;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Garages;
+using SmartParking.OrganizationsGarages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -85,8 +89,7 @@ public partial class CustomerDialog
 	/// <returns>Returns a task that represents the asynchronous operation.</returns>
 	private async Task HandleSearch(PageChangeEventArgs pageInfo)
 	{
-		// Log the search term to the console for debugging purposes
-		Console.WriteLine(pageInfo.SearchTerm);
+
 
 		// Update the term used for searching with the provided search term
 		termSearch = pageInfo.SearchTerm;
@@ -154,10 +157,10 @@ public partial class CustomerDialog
 
 
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "IdentityUser.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = true, PropertyName = "IdentityUser.PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "IdentityUser.UserName", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "IdentityUser.Email", IsSortable = false, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MobileNumber"], Name = "MobileNumber", IsFilterable = true, PropertyName = "IdentityUser.PhoneNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
 
 		foreach (var item in Customers .Items)
 		{
@@ -172,5 +175,10 @@ public partial class CustomerDialog
 		}
 		itemData = tableData;
 	}
+    public void HandleEdit(RowDef row)
+    {
+        var customerId = Guid.Parse(row.Cells[0].Value);
 
+        Navigation.NavigateTo($"/customers/edit/{customerId}", true);
+    }
 }

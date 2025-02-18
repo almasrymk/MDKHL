@@ -10,6 +10,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Blazor.Components.Pages.Garages;
 using System.Globalization;
+using SmartParking.OrganizationsGarages;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -32,16 +33,6 @@ public partial class GarageDialog
     public GarageDialog(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
-    }
-
-    private Task CreateGarage()
-    {
-       
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = organizationId
-        };
-        return Dialog.ShowAsync<AddGarageDialogInOrganization>("AddGarageDialogInOrganization", parameters);
     }
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
@@ -77,8 +68,6 @@ public partial class GarageDialog
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
 
         // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
@@ -93,7 +82,7 @@ public partial class GarageDialog
         };
 
         // Call the service to perform the search based on the input parameters
-        var garagessDto = await GarageAppService.Search(input);
+     var garagessDto = await GarageAppService.Search(input);
 
         // Calculate the total number of pages required to display all results
         TotalItem = (int)garagessDto.TotalCount;
@@ -109,7 +98,6 @@ public partial class GarageDialog
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -136,19 +124,19 @@ public partial class GarageDialog
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = false, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnGarageName"], Name = "EnGarageName", IsFilterable = true, PropertyName = "NameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "NameEn", IsSortable = false, TypeFilter = TypeFilter.Text });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "ArGarageName", IsFilterable = true, PropertyName = "NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "NameAr", IsSortable = false, TypeFilter = TypeFilter.Text });
 
         }
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Max Capacity"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlot"], Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();
@@ -156,19 +144,51 @@ public partial class GarageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.Code));
             if (CultureInfo.CurrentCulture.Name == "en")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnGarageName"], item.NameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.NameEn));
             }
             else
             {
 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArGarageName"], item.NameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.NameAr));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], item.Status.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Max Capacity"], item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlot"], item.MaxCapacity.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[item.Status.ToString()]));
 
 
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+    }
+    private async Task<IDialogReference> OnClickRowEdit(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+
+        var garageDto = await GarageAppService.GetAsync(id);
+
+        var createUpdateGarage = new CreateUpdateGarageDto
+        {
+            NameEn = garageDto.NameEn,
+            NameAr = garageDto.NameAr,
+            Code = garageDto.Code,
+            Status = garageDto.Status,
+            MaxCapacity = garageDto.MaxCapacity,
+            ClosingHours = garageDto.ClosingHours,
+            OrganizationId = garageDto.OrganizationId,
+            MaxSlotsForCustomers = garageDto.MaxSlotsForCustomers,
+            MaxSlotsForEmployess = garageDto.MaxSlotsForEmployess,
+            MaxSlotsForFree = garageDto.MaxSlotsForFree,
+        };
+
+
+
+        var parameters = new DialogParameters
+        {
+            ["Garage"] = createUpdateGarage,
+            ["UpdatedId"] = id
+        };
+
+
+        return await Dialog.ShowAsync<UpdateGarageDialog>("Edit Garage", parameters);
+
     }
 }

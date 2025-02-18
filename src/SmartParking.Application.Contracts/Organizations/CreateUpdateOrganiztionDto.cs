@@ -19,9 +19,9 @@ public class CreateUpdateOrganiztionDto
     public int RegionId { get; set; }
     public int StateId { get; set; }
     public int CityId { get; set; }
-    public string PhoneNum { get; set; }
+    public string PhoneNumber { get; set; }
     public string WhatsAppNum { get; set; }
-    public string ContactMail { get; set; }
+    public string Email { get; set; }
     public int? SubscriptionId { get; set; }
     public Status? Status { get; set; }
     public decimal FirstHourPrice { get; set; }
@@ -34,7 +34,7 @@ public class CreateUpdateOrganiztionDto
     public bool IsClose { get; set; }
     public TimeOnly? ClosingHoursStart { get; set; }
     public TimeOnly? ClosingHoursEnd { get; set; }
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
     public string Address { get; set; }
     public string OrganizationPicture { get; set; }
     public int BuildingNumber { get; set; }
@@ -45,6 +45,11 @@ public class CreateUpdateOrganiztionDto
     public Guid TenantId { get; set; }
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
+
+    public string TaxNumber { get; set; }
+
+    public string? NationalId { get; set; }
+
 
 
 

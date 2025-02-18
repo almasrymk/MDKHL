@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace SmartParking.Entities.Subscriptions;
 
-public class SubscriptionType : FullAuditedEntity<int> , IBseEntity
+public class SubscriptionType : FullAuditedEntity<int> , IBaseEntity
 {
 	public string TypeAr { get; set; }
 	public string TypeEn { get; set; }

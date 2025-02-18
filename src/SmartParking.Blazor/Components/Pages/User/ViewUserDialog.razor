@@ -11,28 +11,67 @@
 <div class="modal-wrapper">
     <MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["View User"]</MudText>
+            <MudText Typo="Typo.h6">@L["Details"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="userDto">
                 <MudGrid>
-                    <MudItem sm="6">
-                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.UserName" Label="@L["UserName"]"  />
-                    </MudItem>
                     <MudItem sm="6">
                         <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.Name" Label="@L["Name"]" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" @bind-Value="userDto.Email" Label="@L["Email"]" />
                     </MudItem>
-                    <MudItem sm="6">
-                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Telephone" Label="@L["MobileNumber"]" @bind-Value="userDto.PhoneNumber" />
+                    <MudItem sm="4">
+                        <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="userDto.PhoneNumber" />
+                    </MudItem>
+
+                    <MudItem sm="4" Class="d-inline-flex justify-content-center">
+                        <MudItem Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@userDto.IdentificationTypes" Class="d-inline-flex align-content-center">
+                                @if (userDto.IdentificationTypes == Enums.IdentificationTypes.NationalID)
+                                {
+                                    <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                                }
+                                else
+                                {
+                                    <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                                }
+
+                            </MudRadioGroup>
+                        </MudItem>
+                    </MudItem>
+
+                    <MudItem sm="4">
+                        <MudTextField ReadOnly T="string" Placeholder="@L["Type Here"]"
+                                      Label="@L["NationalId"]" @bind-Value="userDto.NationalId" />
+                    </MudItem>
+                    @if(!string.IsNullOrEmpty(RoleName))
+                    {
+                        <MudItem sm="6">
+                            <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["Role"]" Value="RoleName" />
+                        </MudItem>
+                    }
+                    <MudItem sm="4">
+                        <Label>@L["Status"]</Label>
+                        <Div Style=@($"background-color: {(userDto.IsActive? "#b8efb0" : "#f20707")};border:none;color:{(userDto.IsActive? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
+                            @if (userDto.IsActive)
+                            {
+                                <MudText>@L["Active"]</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@L["InActive"]</MudText>
+
+                            }
+
+                        </Div>
                     </MudItem>
                 </MudGrid>
             </MudForm>
         </DialogContent>
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
             
         </DialogActions>
 

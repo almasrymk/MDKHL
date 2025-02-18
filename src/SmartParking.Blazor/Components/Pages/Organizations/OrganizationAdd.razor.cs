@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
@@ -8,6 +9,8 @@ using SmartParking.Lookups.State;
 using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using SmartParking.Subscriptions;
+using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,6 +69,9 @@ public partial class OrganizationAdd
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
     private string NewAddress { get; set; }
+    public string TaxIdentificationNumber { get; set; }
+    public string NationalId { get; set; }
+
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -134,18 +140,11 @@ public partial class OrganizationAdd
             NumberOfCustomers = 0;
             SubscriptionSlotNumber = 0;
         }
-
-        // Trigger UI update
         StateHasChanged();
-    
-
     }
 
     private async Task Save()
     {
-		var successedMessage = L["OrganiztionCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateOrganiztion"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
 		Status StatusValue;
         if (Status)
@@ -167,11 +166,11 @@ public partial class OrganizationAdd
             CityId = int.Parse(CitySelectValue),
             RegionId = int.Parse(RegionSelectValue),
             StateId = int.Parse(StateSelectValue),
-            ContactMail = ContactMail,
+            Email = ContactMail,
             CountryId = int.Parse(CountrySelectValue),
             CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
             Status = StatusValue,
-            PhoneNum = PhoneNum,
+            PhoneNumber = PhoneNum,
             IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
             IsClose = IsClose,
             WhatsAppNum = WhatsAppNum,
@@ -193,131 +192,62 @@ public partial class OrganizationAdd
             BuildingNumber = BuildingNumber,
             PostalCode = PostalCode,
             SecondaryNumber = SecondaryNumber,
-            OrganizationPicture = OrganizationPicture,
+            OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder),
             FreeMinutes = FreeMinutes,
             Address = NewAddress,
             Graceperiod = Graceperiod,
+            TaxNumber=TaxIdentificationNumber,
+            SubscriptionId= int.Parse(PackageSelectValue),
+            NationalId=NationalId,
+            
 
         };
        
         
         try
         {
-           
-             
+            createUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(IsClose, createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
             var oragnization =  await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
             await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id,int.Parse(PackageSelectValue));
-            ShowSnackbar($"{successedMessage} You Can Login Your Password Is P@ssw0rd", Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Organization"]} {oragnization.ArabicName}", Severity.Success);
             Navigation.NavigateTo("/organizations");
         }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage}: {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
-       
-            ShowSnackbar($"{errorMessage}: {ex.Code} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} : : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage}: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-    }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
     private void Cancel()
     {
         Navigation.NavigateTo("/organizations");
     }
+
     private async Task OnImageUpload(IBrowserFile file)
     {
         var imageFile = file;
         if (imageFile != null)
         {
             // Save the image and get the file path
-            OrganizationPicture = await SaveImageAndReturnPathAsync(imageFile);
+            OrganizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
             StateHasChanged();
         }
-    }
-    private async Task<string> SaveImageAndReturnPathAsync(IBrowserFile imageFile)
-    {
-        // Ensure directory structure
-        var imageDirectoryPath = CreateImageDirectory();
-
-        // Generate a unique file name with the original file extension
-        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-        // Save the image to the specified path
-        using (var fileStream = new FileStream(fullPath, FileMode.Create))
-        {
-            // Copy the image data from the IBrowserFile stream to the file stream
-            await imageFile.OpenReadStream().CopyToAsync(fileStream);
-        }
-
-        // Return the relative path for storing in the database
-        return $"/OrganizationImages/{fileName}";
-    }
-    private string CreateImageDirectory()
-    {
-        // Define the path where the image will be saved
-        string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OrganizationImages");
-
-        // Ensure the directory exists
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-            Directory.CreateDirectory(imageDirectoryPath);
-        }
-        return imageDirectoryPath;
-    }
-
-    private void UpdateAddress()
-    {
-        NewAddress = $"{BuildingNumber}, {StreetName}, {SecondaryNumber}, {District}, {PostalCode}";
-    }
-    private string ValidateSecondaryNumber(int value)
-    {
-        if (value < 1111)
-            return "The value not valid.";
-        if (value > 9999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidatePostalCode(int value)
-    {
-        if (value < 11111)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
-    }
-    private string ValidateBuildingNumber(int value)
-    {
-        if (value < 0)
-            return "The value not valid.";
-        if (value > 99999)
-            return "The value not valid.";
-
-        return null; // No error
     }
 
 }

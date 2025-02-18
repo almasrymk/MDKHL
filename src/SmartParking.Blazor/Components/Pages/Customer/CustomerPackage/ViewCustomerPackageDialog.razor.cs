@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp;
 using SmartParking.CustomerPackages;
+using SmartParking.Blazor.Components.Shared;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
@@ -22,7 +24,7 @@ public partial class ViewCustomerPackageDialog
     private MudDialogInstance MudDialog { get; set; }
     [Parameter] public string CustomerId { get; set; }
     private void Cancel() => MudDialog.Cancel();
-
+    private int TotalItem;
     private TableData itemData = new TableData();
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
@@ -38,19 +40,25 @@ public partial class ViewCustomerPackageDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        List<CustomerPackageDto> customerPackageDto;
+        var input = new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = pageInfo.RowsPerPage,
+            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
+            Sorting = pageInfo.SortColumn
+        };
+        PagedResultDto<CustomerPackageDto> customerPackageDto;
         if (CurrentTenant.Id == null)
         {
-            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerMdkl(Guid.Parse(CustomerId));
+            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerMdkl(Guid.Parse(CustomerId), input);
         }
         else
         {
-            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerOrganization(Guid.Parse(CustomerId));
+            customerPackageDto = await CustomerPackagesAppService.GetListPackagesByCustomerOrganization(Guid.Parse(CustomerId), input);
         }
+        TotalItem =(int) customerPackageDto.TotalCount;
 
 
-
-        CreateTable(customerPackageDto);
+        CreateTable(customerPackageDto.Items.ToList());
 
     }
 
@@ -59,7 +67,7 @@ public partial class ViewCustomerPackageDialog
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "customer package Data",
+            Name = L["CustomerPackageHeader"],
             ShowHeader = true
         };
 
@@ -75,7 +83,11 @@ public partial class ViewCustomerPackageDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PriceOfPackage"], Name = "PriceOfPackage", IsFilterable = false, PropertyName = "PriceOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageDuration"], Name = "DurationOfPackage", IsFilterable = false, PropertyName = "DurationOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ActivationDate"], Name = "ActivationDate", IsFilterable = false, PropertyName = "ActivationDate", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ExpiryDate"], Name = "ExpiryDate", IsFilterable = false, PropertyName = "ExpiryDate", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+        
         foreach (var item in customerPackages)
         {
             var rowDef = new RowDef();
@@ -92,7 +104,21 @@ public partial class ViewCustomerPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.CustomerCategory.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PriceOfPackage"], item.PriceOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageDuration"], item.DurationOfPackage.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item.ActivationDateOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item.ExpiryDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], (bool)item.publishedOfPackage ? 24 + _localizer[$"Hour"] : $" {item.PublishFromOfPackage} " + " - " + $" {item.PublishToOfPackage}"));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"],item.ArPlateNumber));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"],item.EnPlateNumber));
+
+
+            }
+
+
 
 
             tableData.Rows.Add(rowDef);
@@ -100,23 +126,9 @@ public partial class ViewCustomerPackageDialog
         itemData = tableData;
     }
 
-    private async Task<IDialogReference> HandleAdd()
-    {
-
-        var customer = await CustomerAppService.GetAsync(Guid.Parse(CustomerId));
-        var parameters = new DialogParameters
-        {
-            ["Customer"] = customer,
-        };
-
-
-        return await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
-    }
-
     private async Task HandleDelete(RowDef row)
     {
-        var successMessage = _localizer["PackageDeletedSuccessfully"];
-
+        
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
@@ -133,7 +145,10 @@ public partial class ViewCustomerPackageDialog
             if (!result.Canceled)
             {
                 await CustomerPackagesAppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS)+" "+
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE)+ " "+
+                    LocalizationHelper.GetLocalizedString("Package"), Severity.Success);
+
                 await Task.Delay(1000);
 
                 Navigation.Refresh(true);
@@ -145,34 +160,17 @@ public partial class ViewCustomerPackageDialog
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete vehicle : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-
-    }
-    /// <summary>
-    /// Displays a snackbar notification with the specified message and severity.
-    /// </summary>
-    /// <param name="message">The message to display in the snackbar.</param>
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
 }

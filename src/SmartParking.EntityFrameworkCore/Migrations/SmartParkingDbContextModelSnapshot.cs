@@ -19,7 +19,7 @@ namespace SmartParking.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.PostgreSql)
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -148,12 +148,18 @@ namespace SmartParking.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -370,7 +376,8 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdentityUserId");
+                    b.HasIndex("IdentityUserId")
+                        .IsUnique();
 
                     b.ToTable("Customers");
                 });
@@ -462,6 +469,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("CameraType")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("CanCheckout")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("CheckoutMobile")
                         .HasColumnType("timestamp without time zone");
 
@@ -496,6 +506,12 @@ namespace SmartParking.Migrations
                     b.Property<bool>("IsIn")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsMapped")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPending")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationTime");
@@ -509,6 +525,9 @@ namespace SmartParking.Migrations
 
                     b.Property<string>("PlateNumber")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("RemainingTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("SnapTime")
                         .HasColumnType("timestamp without time zone");
@@ -627,6 +646,12 @@ namespace SmartParking.Migrations
 
                     b.Property<DateTime?>("EntranceTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EntryTransactionImage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExitTransactionImage")
+                        .HasColumnType("text");
 
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
@@ -1038,6 +1063,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1220,6 +1248,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("EnglishName")
                         .HasColumnType("text");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1392,6 +1423,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("ActivationDateOfPackage")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("ArPlateNumber")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1425,6 +1459,9 @@ namespace SmartParking.Migrations
 
                     b.Property<int?>("DurationOfPackage")
                         .HasColumnType("integer");
+
+                    b.Property<string>("EnPlateNumber")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("timestamp without time zone");
@@ -1740,6 +1777,9 @@ namespace SmartParking.Migrations
                     b.Property<int?>("SubscriptionId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("TaxIdentificationNumber")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
@@ -2039,6 +2079,9 @@ namespace SmartParking.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("ArPlateNumber")
+                        .HasColumnType("text");
+
                     b.Property<string>("CheckoutId")
                         .HasColumnType("text");
 
@@ -2063,6 +2106,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EnPlateNumber")
+                        .HasColumnType("text");
 
                     b.Property<string>("EntityId")
                         .HasColumnType("text");
@@ -2099,15 +2145,27 @@ namespace SmartParking.Migrations
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PaymentName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PaymentNumber")
+                        .HasColumnType("text");
+
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
 
                     b.Property<string>("QrCodeInvoice")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TenantId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("InvoiceId");
 
                     b.ToTable("Payments");
                 });
@@ -3175,9 +3233,13 @@ namespace SmartParking.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("text")
+                        .HasColumnName("ExtraProperties");
+
                     b.Property<string>("IpAddresses")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<DateTime?>("LastAccessed")
                         .HasColumnType("timestamp without time zone");
@@ -3262,6 +3324,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
 
+                    b.Property<int>("IdentificationTypes")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
@@ -3305,6 +3370,9 @@ namespace SmartParking.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("Name");
+
+                    b.Property<string>("NationalId")
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .IsRequired()
@@ -3777,40 +3845,10 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("DeletionTime");
-
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
 
                     b.Property<string>("Properties")
                         .HasColumnType("text");
@@ -3936,22 +3974,6 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("DeletionTime");
-
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -3959,20 +3981,6 @@ namespace SmartParking.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
 
                     b.Property<string>("Payload")
                         .HasColumnType("text");
@@ -4298,31 +4306,31 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "BrandName")
                         .WithMany()
                         .HasForeignKey("BrandNameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
                         .HasForeignKey("GarageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.CameraMainType", "MainType")
                         .WithMany()
                         .HasForeignKey("MainTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.CameraModel", "Model")
                         .WithMany()
                         .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("Cameras")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BrandName");
@@ -4341,7 +4349,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.State", "State")
                         .WithMany("Cities")
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("State");
@@ -4350,9 +4358,9 @@ namespace SmartParking.Migrations
             modelBuilder.Entity("SmartParking.Entities.Customers.Customer", b =>
                 {
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne()
+                        .HasForeignKey("SmartParking.Entities.Customers.Customer", "IdentityUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("IdentityUser");
@@ -4389,7 +4397,8 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
                         .WithMany("Invoices")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
@@ -4415,7 +4424,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "CameraBrand")
                         .WithMany()
                         .HasForeignKey("CameraBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CameraBrand");
@@ -4426,7 +4435,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "CameraBrand")
                         .WithMany("Models")
                         .HasForeignKey("CameraBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CameraBrand");
@@ -4437,7 +4446,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Country", "Country")
                         .WithMany("Regions")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -4459,7 +4468,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", "PlateColor")
                         .WithMany("Types")
                         .HasForeignKey("PlateColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PlateColor");
@@ -4470,7 +4479,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", "VehiclesBrand")
                         .WithMany("Models")
                         .HasForeignKey("VehiclesBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("VehiclesBrand");
@@ -4481,7 +4490,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Organization", null)
                         .WithMany("organizationContactInfos")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -4501,16 +4510,18 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
                         .WithMany("CustomerPackages")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("Customers")
-                        .HasForeignKey("OrganizationId");
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SmartParking.Entities.Organizations.Package", "Package")
                         .WithMany("CustomerPackages")
-                        .HasForeignKey("PackageId");
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
 
@@ -4524,7 +4535,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("OrganizationGarages")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -4535,7 +4546,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Garage", null)
                         .WithMany("GarageCategories")
                         .HasForeignKey("GarageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -4544,30 +4555,31 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.Region", "Region")
                         .WithMany("Organizations")
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Subscriptions.Subscription", "Subscription")
                         .WithMany("Organizations")
-                        .HasForeignKey("SubscriptionId");
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("City");
 
@@ -4585,13 +4597,13 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
                         .WithMany("organizationPackages")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.PackageType", "PackageType")
                         .WithMany()
                         .HasForeignKey("PackageTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -4622,9 +4634,16 @@ namespace SmartParking.Migrations
                 {
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customers")
                         .WithMany("Payments")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SmartParking.Entities.Invoices.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId");
 
                     b.Navigation("Customers");
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Subscriptions.Subscription", b =>
@@ -4632,7 +4651,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Subscriptions.SubscriptionType", "SubscriptionType")
                         .WithMany("Subscriptions")
                         .HasForeignKey("SubscriptionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("SubscriptionType");
@@ -4643,31 +4662,31 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.LicenceType", "LicenceType")
                         .WithMany()
                         .HasForeignKey("LicenceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.PlateColor", "PlateColor")
                         .WithMany()
                         .HasForeignKey("PlateColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleBrand", "VehicleBrand")
                         .WithMany()
                         .HasForeignKey("VehicleBrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SmartParking.Entities.Lookups.VehiclesLookups.VehicleModel", "VehicleModel")
                         .WithMany()
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");

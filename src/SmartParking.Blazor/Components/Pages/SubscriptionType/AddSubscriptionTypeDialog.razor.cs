@@ -9,12 +9,14 @@ using Volo.Abp;
 using SmartParking.SubscriptionTypes;
 using System.Linq;
 using Volo.Abp.Validation;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
+using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
 public partial class AddSubscriptionTypeDialog
 {
-	private MudForm form;
 	public CreateUpdateSubscriptionTypeDto input = new CreateUpdateSubscriptionTypeDto();
 
 	[CascadingParameter]
@@ -25,12 +27,6 @@ public partial class AddSubscriptionTypeDialog
 	private async Task Submit()
 	{
 
-		var successedMessage = L["SubscriptionTypeCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateSubscriptionType"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
-
-		// Call your service to create the packageType
 		try
 		{
 
@@ -38,37 +34,37 @@ public partial class AddSubscriptionTypeDialog
 			var subscriptionTypes = await SubscriptionTypeAppService.CreateAsync(input);
 			if (subscriptionTypes != null)
 			{
-				Snackbar.Add(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+				LocalizationHelper.GetLocalizedString("SubscriptionType"), Severity.Success);
 				MudDialog.Close(DialogResult.Ok(true));
 				await Task.Delay(1000);
 				Navigation.NavigateTo("/subscriptiontypes", true);
 			}
-
-			else
-			{
-				Snackbar.Add(errorMessage, Severity.Error);
-
-			}
 		}
-		catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				Snackbar.Add($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
-			Snackbar.Add($"Failed to add package type: {ex.Code} + ", Severity.Error);
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
 
-		}
-		catch (Exception ex)
-		{
-			Snackbar.Add($"Failed to package type {ex.Message} + ", Severity.Error);
-		}
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
 
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
 
-	}
+    }
 	private void Cancel()
 	{
 		MudDialog.Cancel();

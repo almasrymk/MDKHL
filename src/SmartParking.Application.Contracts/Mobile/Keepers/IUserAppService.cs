@@ -8,12 +8,6 @@ namespace SmartParking.Mobile.Keepers;
 
 public interface IUserAppService : IApplicationService
 {
-    /// <summary>
-    /// Change password for user 
-    /// </summary>
-    /// <param name="input">The login input containing username and password.</param>
-    /// <returns>message</returns>
-    Task<Result> SetNewPasswordAsync(ChangePasswordDto input);
 
     /// <summary>
     /// Change password for user 
@@ -21,7 +15,7 @@ public interface IUserAppService : IApplicationService
     /// <param name="phoneNumber">phoneNumber for user</param>
     /// <param name="password">password of user</param>
     /// <returns>UserDataDto</returns>
-    Task<Result<UserDataDto>> UpdateUserAsync(string phoneNumber, string password);
+    Task<Result<UserDataDto>> UpdateUserAsync(string FullName, string phoneNumber, string password, string email, string image);
 
     /// <summary>
     /// Retrieves the user data for the currently logged-in user.

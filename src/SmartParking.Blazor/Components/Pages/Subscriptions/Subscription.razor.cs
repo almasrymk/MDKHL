@@ -15,6 +15,11 @@ using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
 using System.Globalization;
+using SmartParking.Permissions.PackagePermissions;
+using SmartParking.Permissions.SubsctriptionPermissions;
+using SmartParking.Blazor.Components.Shared;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -34,6 +39,17 @@ public partial class Subscription
     public Subscription(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+        CreatePolicyName = SubscriptionPermissions.Create;
+        UpdatePolicyName = SubscriptionPermissions.Edit;
+        DeletePolicyName = SubscriptionPermissions.Delete;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(SubscriptionPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -128,11 +144,11 @@ public partial class Subscription
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Subscriptions",
+            Name = L["Subscriptions"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         { 
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "English Name", IsFilterable = false, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -145,9 +161,10 @@ public partial class Subscription
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeAr", IsFilterable = true, PropertyName = "Subscription.TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionDescription"], Name = "SubscriptionDescription", IsFilterable = false, PropertyName = "SubscriptionDescription", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionPrice"], Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef()
+        {
+            DisplayName = $"{_localizer["SubscriptionPrice"]} ({_localizer["SAR"]})", Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 
 
@@ -167,8 +184,8 @@ public partial class Subscription
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionDescription"], item.SubscriptionDescription));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SubscriptionPrice"], item.SubscriptionPrice.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["SubscriptionPrice"]} ({_localizer["SAR"]})", $"{item.SubscriptionPrice.ToString()}"
+            ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
@@ -237,10 +254,7 @@ public partial class Subscription
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["SubscriptionDeletedSuccessfully"];
-		var errorMessage = L["Can'tDeleteSubscription"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
+       
 		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
@@ -257,7 +271,7 @@ public partial class Subscription
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/subscriptions", forceLoad: true);
@@ -269,37 +283,20 @@ public partial class Subscription
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
     }
 
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
+ 
 }

@@ -2,6 +2,7 @@
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using System.Globalization
+@using SmartParking.Blazor.Components.Shared
 @using Volo.Abp.Application.Dtos
 @inject ICountriesAppService CountriesAppService
 @inject ISnackbar Snackbar
@@ -12,16 +13,7 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 			<TitleContent>
-				@if (CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @country.EnglishName</MudText>
-
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @country.ArabicName</MudText>
-
-			}
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
@@ -31,7 +23,9 @@
 									  For="@(() => country.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-								      Label="@L["ArabicName"]" />
+								      Label="@L["ArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6" md="6">
@@ -39,20 +33,26 @@
 									  For="@(() => country.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									 Label="@L["EnglishName"]" />
+									 Label="@L["EnglishName"]" 
+									 Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="country.ArabicCapital"
 									  For="@(() => country.ArabicCapital)"
 									  Immediate="true"
-									  Label="@L["Arabic Capital"]" />
+									  Label="@L["Arabic Capital"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="country.EnglishCapital"
 									  For="@(() => country.EnglishCapital)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["English Capital"]" />
+									  Label="@L["English Capital"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 				</MudGrid>
@@ -63,9 +63,17 @@
 		</DialogContent>
 
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Save"]</MudButton>
-		</DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="Cancel"
+        ButtonTwoClick="Save"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
+
 	</MudDialog>
 
 </MudItem>

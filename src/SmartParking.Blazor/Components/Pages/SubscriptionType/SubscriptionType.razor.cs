@@ -15,6 +15,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using SmartParking.SubscriptionTypes;
 using System.Globalization;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
@@ -128,26 +129,28 @@ public partial class SubscriptionType
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "SubscriptionType",
+            Name = L["SubscriptionType"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
        
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = false, TypeFilter = TypeFilter.Enum });
         if(CultureInfo.CurrentCulture.Name == "ar")
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyName = "TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         else
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Type"], Name = "Type", IsFilterable = true, PropertyName = "TypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 		foreach (var item in subscriptionType.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 			if (CultureInfo.CurrentCulture.Name == "ar")
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.TypeAr));
             else
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Type"], item.TypeEn));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
+
 
 			tableData.Rows.Add(rowDef);
         }
@@ -206,10 +209,7 @@ public partial class SubscriptionType
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["PackageTypeDeletedSuccessfully"];
-        var errorMessage = L["Can'tDeletePackageType"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
+      
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
 
@@ -226,7 +226,7 @@ public partial class SubscriptionType
             if (!result.Canceled)
             {
                 await SubscriptionTypeAppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/subscriptiontypes", forceLoad: true);
@@ -238,36 +238,19 @@ public partial class SubscriptionType
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
-
     }
 
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
 }

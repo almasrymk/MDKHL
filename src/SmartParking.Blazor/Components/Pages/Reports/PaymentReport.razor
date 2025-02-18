@@ -1,0 +1,19 @@
+﻿@page "/paymentsreports"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Analysis
+@using SmartParking.Localization
+@using SmartParking.PDF
+@using Volo.Abp.MultiTenancy
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IDialogService Dialog
+@inject IAnalysisAppService AnalysisAppService
+@inject ICurrentTenant CurrentTenant
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager Navigation
+@inject IGenerateFilesAppService GenerateFilesAppService
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+<PageTitle>@L["PaymentReports"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["PaymentReports"]</MudText>
+
+<SPDataGrid PageName=@($"{@L["PaymentReports"]}") ShowMenue="true" Menus="@MenuDatas" Data="@itemData" ShowFiltering="true" OnPageChanged="FetchData" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>

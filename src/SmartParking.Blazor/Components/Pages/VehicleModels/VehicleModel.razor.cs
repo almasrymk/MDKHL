@@ -16,6 +16,7 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.VehicleModels;
 
@@ -129,25 +130,25 @@ public partial class VehicleModel
 		// Initialize table data to be displayed, setting the table's name and whether to show the header
 		var tableData = new TableData()
 		{
-			Name = "VehicleModelس",
+			Name = L["VehicleModel"],
 			ShowHeader = true
 		};
 
 
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelEnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandArabicName"], Name = "VehicleBrandArabicName", IsFilterable = true, PropertyName = "VehiclesBrand.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["VehicleBrandEnglishName"], Name = "VehicleBrandEnglishName", IsFilterable = true, PropertyName = "VehiclesBrand.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Notes", Name = "Notes", IsFilterable = true, PropertyNmae = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
-		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
+		//tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
 		foreach (var item in vehicleModels.Items)
 		{
 			var rowDef = new RowDef();
 			rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelArabicName"], item.ArabicName));
+			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelEnglishName"], item.EnglishName));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandArabicName"], item.VehiclesBrand.ArabicName));
 			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["VehicleBrandEnglishName"],item.VehiclesBrand.EnglishName));
 
@@ -174,7 +175,8 @@ public partial class VehicleModel
 		{
 			ArabicName = vehicleModelDto.ArabicName,
 			EnglishName = vehicleModelDto.EnglishName,
-			VehiclesBrandId = vehicleModelDto.VehiclesBrandId
+			VehiclesBrandId = vehicleModelDto.VehiclesBrandId,
+			Image = vehicleModelDto.Image,
 
 		};
 
@@ -203,6 +205,7 @@ public partial class VehicleModel
 			ArabicName = vehicleModelDto.ArabicName,
 			EnglishName = vehicleModelDto.EnglishName,
 			VehiclesBrandId = vehicleModelDto.VehiclesBrandId,
+			Image = vehicleModelDto.Image
 
 		};
 
@@ -217,9 +220,7 @@ public partial class VehicleModel
 
 	private async Task OnClickRowDelete(RowDef row)
 	{
-		var successedMessage = L["VehicleModelDeletedSuccessfully"];
-		var errorMessage = L["Can'tDeleteVehicleModel"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+		
 
 		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
@@ -237,7 +238,7 @@ public partial class VehicleModel
             if (!result.Canceled)
             {
                 await VehicleModelsAppService.DeleteAsync(id);
-                ShowSnackbar(successedMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name} ", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/vehiclemodels", forceLoad: true);
@@ -246,38 +247,31 @@ public partial class VehicleModel
 
 
         }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"{errorMessage} {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
 
+
     }
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-	{
-		Snackbar.Clear();
-		Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-	}
+  
 }

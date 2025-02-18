@@ -9,6 +9,10 @@ using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
 using System.Collections.Generic;
+using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Permissions.MyAccount;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.MyAccount;
 
@@ -57,12 +61,21 @@ public partial class ViewMyAccount
     private string CountryName { get; set; }
     private string RegionName { get; set; }
     private string StateName { get; set; }
+    public int Graceperiod { get; set; }
+
+    public string TaxIdentificationNumber { get; set; }
+
     public int Status { get; set; } = 1;
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
+
+    public ViewMyAccount()
+    {
+        UpdatePolicyName = MyAccountPermissions.Edit;
+    }
     private async Task FetchData()
     {
         var tenant = currenttenant.Id;
@@ -132,13 +145,23 @@ public partial class ViewMyAccount
         Code = organization.Code;
         Address = organization.Address;
         FreeMinutes = organization.FreeMinutes;
-
+        TaxIdentificationNumber = organization.TaxNumber;
+        Graceperiod = organization.Graceperiod;
 
     }
 
 
     protected override async Task OnInitializedAsync()
     {
+    
+        if (!await AuthorizationService.IsGrantedAsync(MyAccountPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
+   
         states = await StateAppService.GetStateLookupAsync();
         regions = await StateAppService.GetRegionLookupAsync();
         countries = await CountriesAppService.GetCountryLookupAsync();
@@ -186,7 +209,7 @@ public partial class ViewMyAccount
     }
     private async Task ViewSubscription()
     {
-        var Org = await OrganizationAppService.GetOrganizationForCurrentTenat();
+        var Org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
         int? subsId = Org.SubscriptionId;
 
         var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId ?? 0);

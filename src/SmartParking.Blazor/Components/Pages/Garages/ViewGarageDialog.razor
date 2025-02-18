@@ -1,15 +1,15 @@
-﻿
+﻿@using SmartParking.Blazor.Components.Shared;
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
 
-<PageTitle>@L["Details for Garage"]</PageTitle>
+<PageTitle>@L["Details"]</PageTitle>
 <div class="modal-wrapper">
     <MudDialog Class="mud-modal">
 
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Details for Garage"]</MudText>
+            <MudText Typo="Typo.h6">@L["Details"]</MudText>
         </TitleContent>
         <DialogContent>
             
@@ -35,17 +35,7 @@
                                               Label="@L["ArGarageName"]"
                                                />
                             </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.MaxCapacity"
-                                              For="@(() => Garage.MaxCapacity)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                      ReadOnly="true"
-                                      Immediate="true"
-                                              Placeholder="@L["Type Here"]"
-                                              Label="@L["Garage Max Capacity"]"
-                                               />
-                            </MudItem>
+                           
                             <MudItem sm="6" md="6">
                                 <MudTextField @bind-Value="Garage.Code"
                                               For="@(() => Garage.Code)"
@@ -97,17 +87,6 @@
                                       Immediate="true"
                                       Label="@L["Max Slots For Free"]" />
                             </MudItem>
-                            <MudItem sm="6" md="6">
-                                <MudTextField @bind-Value="Garage.ClosingHours"
-                                              For="@(() => Garage.ClosingHours)"
-                                              Variant="Variant.Text"
-                                              Class="w-100"
-                                      ReadOnly="true"
-                                      Immediate="true"
-                                              Placeholder="@L["Type Here"]"
-                                              Label="@L["Closing Hours"]"
-                                               />
-                            </MudItem>
                     <MudItem sm="6" md="6">
                         <Label>@L["Status"]</Label>
                         <Div Style=@($"background-color: {(Garage.Status.ToString()=="Active" ? "#b8efb0" : "#f20707")};border:none;color:{(Garage.Status.ToString()=="Active" ? "#2c5e45" : "#820707")};border-radius:0.4rem;height:2rem;display:flex;justify-content:center;align-items:center;")>
@@ -142,8 +121,14 @@
 
 
         <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-        </DialogActions>
+    <DialogActionComponent 
+        ButtonTwoColor="MudBlazor.Color.Dark" 
+        ButtonTwoLabel="@L["Back"]" 
+        ButtonTwoClick="OnCloseViewOnly" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" 
+    />
+</DialogActions>
+
     </MudDialog>
 
 

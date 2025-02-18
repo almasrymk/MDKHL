@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.City
@@ -17,16 +18,7 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			@if (CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @city.EnglishName</MudText>
-
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @city.ArabicName</MudText>
-
-			}
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
@@ -36,7 +28,9 @@
 									  For="@(() => city.ArabicName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["ArabicName"]" />
+									  Label="@L["ArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6" >
@@ -44,7 +38,9 @@
 									  For="@(() => city.EnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["EnglishName"]" />
+									  Label="@L["EnglishName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="6">
@@ -52,7 +48,10 @@
 								   Label="@L["State"]"
 								   Placeholder="@L["Choose"]"
 								   Clearable="true"
+								   Required
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
 								   @bind-Value="city.StateId">
+							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
 							@foreach (var state in states)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -70,9 +69,18 @@
 			</MudForm>
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await Save())">@L["Save"]</MudButton>
-		</DialogActions>
+    <DialogActionComponent 
+		ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary" 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonTwoLabel="@L["Save"]" 
+        ButtonOneClick="Cancel" 
+        ButtonTwoClick="@(async () => await Save())" 
+        ButtonOneVariant="MudBlazor.Variant.Filled" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" 
+    />
+</DialogActions>
+
 
 		
 	</MudDialog>

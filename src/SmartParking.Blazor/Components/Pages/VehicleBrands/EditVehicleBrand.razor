@@ -1,6 +1,10 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
+@using System.Security.Authentication
+@using Volo.Abp
+@using Volo.Abp.Validation
 @inject IVehicleBrandsAppService VehicleBrandsAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
@@ -9,7 +13,7 @@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@L["Edit"] @VehicleBrand.EnglishName</MudText>
+			<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -23,7 +27,8 @@
 									  For="@(() => VehicleBrand.ArabicName)"
 									  Immediate="true"
 									  Required="true"
-									  Label="@L["ArabicName"]" />
+									  Label="@L["ArabicName"]" 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
 					<MudItem sm="4">
@@ -31,7 +36,8 @@
 									  For="@(() => VehicleBrand.EnglishName)"
 									  Immediate="true"
 									  Required="true"
-									  Label="@L["EnglishName"]" />
+									  Label="@L["EnglishName"]" 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 				</MudGrid>
 			</MudForm>
@@ -40,10 +46,18 @@
 
 		</DialogContent>
 
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-		</DialogActions>
+				<DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="CancelEdit"
+        ButtonTwoClick="SubmitEdit"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled"
+    />
+</DialogActions>
 
 	</MudDialog>
 
@@ -72,21 +86,38 @@
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["VehicleBrandUpdatedSuccessfully"];
-
+		
 		try
 		{
 
 			await VehicleBrandsAppService.UpdateAsync(UpdatedId, VehicleBrand);
-			Snackbar.Add(successedMessage, Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {VehicleBrand.ArabicName}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/vehicleBrands", true);
 
 		}
-		catch (Exception e)
+		
+		catch (AbpValidationException validationException)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+			}
+		}
+		catch (BusinessException ex)
+		{
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+		}
+		catch (AuthenticationException ex)
+		{
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+		}
+		catch (Exception ex)
+		{
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
 		}
 	}
 

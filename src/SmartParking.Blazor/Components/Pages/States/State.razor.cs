@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cities;
 using SmartParking.Blazor.Components.Pages.Regions;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using SmartParking.Lookups;
 using SmartParking.Lookups.Region;
@@ -130,15 +131,15 @@ public partial class State
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "States",
+            Name = L["States"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "RegionArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionEnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "RegionEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "Region.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RegionEnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "Region.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         foreach (var item in states.Items)
@@ -217,7 +218,7 @@ public partial class State
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/states", forceLoad: true);
@@ -229,16 +230,16 @@ public partial class State
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete State : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete State : {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
         catch (Exception ex)
-        {
-
-            ShowSnackbar($"Failed to delete State : {ex.Message} + ", Severity.Error);
+        {           
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
 
 

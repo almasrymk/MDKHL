@@ -215,9 +215,8 @@ public class CitiesAppService : CrudAppService<City, CityDto,
         if (city == null)
             throw new EntityNotFoundException(typeof(City), id);
 
-        // await base.DeleteAsync(id);
-        city.Status = Status.Deleted;
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.HardDeleteAsync(city);
+
     }
     public async Task<List<CityLookupDto>> GetCityByState(int stateId)
     {

@@ -1,6 +1,7 @@
 ﻿@page "/subscriptions"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using SmartParking.Permissions.SubsctriptionPermissions
 @using SmartParking.Subscriptions
 @using Volo.Abp.Application.Dtos
 @inherits AbpCrudPageBase<ISubscriptionAppService, SubscriptionDto, int, PagedAndSortedResultRequestDto, CreateUpdateSubscriptionDto>
@@ -8,7 +9,8 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@* @attribute [Authorize(SubscriptionPermissions.Default)] *@
 <PageTitle>@L["Subscriptions"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2" >@L["Subscriptions"]</MudText>
-<SPDataGrid PageName="@L["Subscriptions"]" Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowDelete="OnClickRowDelete" OnClickRowEdit="OnClickRowEdit" OnAdd="CreateSubscription" OnClickRowView="OnClickRowView" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
+<SPDataGrid PageName="@L["Subscriptions"]" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" TotalItemsInTable="TotalItem" OnClickRowDelete="OnClickRowDelete" OnClickRowEdit="OnClickRowEdit" OnAdd="CreateSubscription" OnClickRowView="OnClickRowView" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 

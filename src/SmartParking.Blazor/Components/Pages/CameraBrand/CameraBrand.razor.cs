@@ -12,6 +12,8 @@ using System;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using SmartParking.Lookups.CameraBrands;
+using SmartParking.Blazor.Components.Shared;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.CameraBrand;
 
@@ -105,11 +107,11 @@ partial class CameraBrand
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "CameraBrands",
+            Name = L["CameraBrands"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "Brand Arabic Name", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "Brand English Name", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
@@ -178,7 +180,7 @@ partial class CameraBrand
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["BrandDeletedSuccessfully"];
+       
 
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
@@ -196,7 +198,7 @@ partial class CameraBrand
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name} ", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/Camerabrands", forceLoad: true);
@@ -205,44 +207,31 @@ partial class CameraBrand
 
 
         }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete camera Brand : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete camera Brand: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to delete camera Brand: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
 
 
-    }
-
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
 
     }
+
 
 }

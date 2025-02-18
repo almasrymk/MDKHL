@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactionEndPoints;
@@ -35,13 +36,22 @@ public class GarageTransactionController : ControllerBase
 
     }
 
-    [HttpGet("transactioncheckout")]
+    [HttpGet("CustomerCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> CheckoutForTransaction(int transactionDto)
+    public async Task<Result<InvoiceDto>> CustomerCheckoutForTransaction(int transactionId)
     {
-        return await _garageTransactionEndPointsAppService.CheckoutMobile(transactionDto);
+        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromHisMobile(transactionId);
 
     }
+    
+    [HttpGet("CustomerPreCheckout")]
+    [Authorize]
+    public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutForTransaction(int transactionId)
+    {
+      return await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromHisMobile(transactionId);
+
+    }
+
 
 
 

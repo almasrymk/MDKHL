@@ -9,7 +9,7 @@ using Volo.Abp.Application.Services;
 
 namespace SmartParking.Cameras;
 
-public interface ICamerasAppService:
+public interface ICamerasAppService :
      ICrudAppService<
         CameraDto,
         int,
@@ -18,13 +18,14 @@ public interface ICamerasAppService:
         >
 {
 
-        Task<CameraDto> CreateAsync(CreateUpdateCameraDto input);
+    Task<CameraDto> CreateAsync(CreateUpdateCameraDto input);
 
-        Task<PagedResultDto<CameraDto>> GetListAsync(PagedAndSortedResultRequestDto input);
-        Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input);
+    Task<PagedResultDto<CameraDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<CameraDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
+    Task<CameraDto> UpdateAsync(int id, CreateUpdateCameraDto input);
 
-        Task<CameraDto> GetAsync(int id);
-        Task DeleteAsync(int id);
+    Task<CameraDto> GetAsync(int id);
+    Task DeleteAsync(int id);
 
     /// <summary>
     /// abstract method to search of camera
@@ -58,12 +59,14 @@ public interface ICamerasAppService:
     /// </summary>
     /// <param name="input">specifies max number of camera and if it sorted or not</param>
     /// <returns>cameraDto List</returns>
-    Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
+   // Task<PagedResultDto<CameraDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
     /// <summary>
     /// method used to get list of cameraes for MDKHL
     /// </summary>
     /// <param name="input">specifies max number of camera and if it filtered or not</param>
     /// <returns>cameraeDto List</returns>
     Task<PagedResultDto<CameraDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
+
+    Task<CameraDto> GetCameraIPByCameraId(int cameraId);
 
 }

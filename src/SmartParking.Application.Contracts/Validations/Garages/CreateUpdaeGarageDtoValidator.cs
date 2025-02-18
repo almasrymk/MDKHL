@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
@@ -13,24 +14,32 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
     public CreateUpdaeGarageDtoValidator()
     {
         RuleFor(x => x.NameEn)
-            .NotEmpty()
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .MaximumLength(100)
             .Matches(@"^[a-zA-Z][a-zA-Z0-9\s.,\-\\_]*$")
-            .WithMessage("Name must start with a letter and can include English letters, numbers, spaces, and special characters such as ، / . \\ ,.");
+            .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
         
         RuleFor(x => x.NameAr)
-            .NotEmpty()
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .MaximumLength(100)
-            .Matches(@"^[\u0621-\u064A\s،./\\_\-]+$")
-            .WithMessage("Name must contain only Arabic letters, spaces, and special characters such as ، / . \\.");
+            .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
+
 
         RuleFor(x => x.ClosingHours.ToString("HH:mm"))
-           .Matches(@"^([01]?[0-9]|2[0-3]):[0-5][0-9]$")
-           .WithMessage("Time must be in the format HH:MM.").NotEmpty();
-        RuleFor(x=>x.MaxCapacity).NotEmpty().GreaterThan(0).LessThan(9999);
-        RuleFor(x => x.OrganizationId).NotEmpty().GreaterThan(0);
-        RuleFor(x => x.Status)         
-            .Must(value => Enum.IsDefined(typeof(Enums.Status), value))
-         .WithMessage("The value must be between 0 and 2.");
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+           .Matches(@"^([01]?[0-9]|2[0-3]):[0-5][0-9]$").WithMessage(LocalizationHelper.GetLocalizedString("TimeOnlyValidation"));
+
+        RuleFor(x=>x.MaxCapacity)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
+            .LessThan(9999).WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+
+        RuleFor(x => x.OrganizationId)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"));
+
+        RuleFor(x => x.Status)
+          .Must(value => Enum.IsDefined(typeof(Enums.Status), value))
+         . WithMessage("The value must be between 0 and 2.");
     }
 }

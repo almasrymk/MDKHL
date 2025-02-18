@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
 using SmartParking.Localization;
 using SmartParking.Lookups;
+using SmartParking.Lookups.CameraBrands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,15 +126,15 @@ public partial class City
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Cities",
+            Name = L["Cities"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "City Arabic Name", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "City English Name", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StateArabicName"], Name = "State Arabic Name", IsFilterable = true, PropertyName = "StateArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StateEnglishName"], Name = "State English Name", IsFilterable = true, PropertyName = "StateEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StateArabicName"], Name = "State Arabic Name", IsFilterable = true, PropertyName = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StateEnglishName"], Name = "State English Name", IsFilterable = true, PropertyName = "State.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
 		foreach (var item in cities.Items)
@@ -202,7 +204,7 @@ public partial class City
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["CityDeletedSuccessfully"];
+    
 
         var id = int.Parse(row.Cells[0].Value);
         var Name =  row.Cells[2].Value;
@@ -220,7 +222,7 @@ public partial class City
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name} ", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/cities", forceLoad: true);
@@ -231,43 +233,22 @@ public partial class City
         }
         catch (BusinessException ex)
         {
-
-            ShowSnackbar($"Failed to delete City : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
         catch (Exception ex)
         {
-
-            ShowSnackbar($"Failed to delete City: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
 
 
     }
 
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
+   
 
 
 

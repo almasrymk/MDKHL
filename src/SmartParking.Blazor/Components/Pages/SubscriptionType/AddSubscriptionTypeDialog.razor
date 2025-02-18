@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
+@using SmartParking.Blazor.Components.Shared
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
@@ -11,12 +12,12 @@
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["NewSubscriptionType"]</MudText>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
         </TitleContent>
         <DialogContent>
 
 
-            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
                 <MudGrid>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="input.TypeEn"
@@ -26,7 +27,8 @@
                                       Variant="Variant.Text"
                                       InputType="InputType.Text"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["TypeEn"] />
+                                      Label=@L["TypeEn"] 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="input.TypeAr"
@@ -36,7 +38,8 @@
                                       Variant="Variant.Text"
                                       InputType="InputType.Text"
                                       Placeholder=@L["Type Here"]
-                                      Label=@L["TypeAr"] />
+                                      Label=@L["TypeAr"] 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="9" md="9">
@@ -54,10 +57,17 @@
 
         </DialogContent>
 
-        <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
-        </DialogActions>
+      <DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark" 
+        ButtonTwoColor="MudBlazor.Color.Primary" 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonTwoLabel="@L["Create"]" 
+        ButtonOneClick="Cancel" 
+        ButtonTwoClick="Submit" 
+        ButtonOneVariant="MudBlazor.Variant.Filled" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
     </MudDialog>
 
 </MudItem>

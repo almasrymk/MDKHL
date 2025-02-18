@@ -5,7 +5,9 @@
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.Payments
+@using SmartParking.Permissions.InvoicesPermissions
 @using SmartParking.Vehicles
+@using System.Globalization
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @inject IInvoiceAppService InvoiceAppService
@@ -18,86 +20,107 @@
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject IPaymentAppService PaymentAppSerivce
+@inject IAuthorizationService AuthorizationService
 
 <PageTitle>@L["InvoiceDetails"]</PageTitle>
 
 <MudItem>
     <MudGrid>
-        <MudItem sm="8">
+        <MudItem sm="7">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                <MudText Typo="Typo.h3" Class="fw-bold">@L["InvoiceDetails"]</MudText>
+                <MudText Typo="Typo.h6" Class="fw-bold">@L["Details"]</MudText>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="InvoiceNumber"
-                                          For="@(() => InvoiceNumber)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["InvoiceNumber"]"
-                                          Disabled />
-                        </MudItem>
-                        
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="TotalHours"
-                             For="@(() => TotalHours)"
+                         <MudItem sm="4">
+                            <MudTextField @bind-Value="Id"
+                            For="@(() => Id)"
                             Immediate="true"
                             Variant="Variant.Text"
-                            Label="@L["TotalHours"]"
+                            Label="@L["InvoiceId"]"
+                            Disabled />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="TotalHours"
+                            For="@(() => TotalHours)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@($"{L["TotalHours"]} ({L["Hours"]})")"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField @bind-Value="InvoicePrice"
-                                          For="@(() => InvoicePrice)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["InvoicePrice"]"
-                                          Disabled />
+                            For="@(() => InvoicePrice)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@($"{L["InvoicePrice"]} ({L["SAR"]})")"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField @bind-Value="InvoiceType"
-                                          For="@(() =>InvoiceType)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["InvoiceType"]"
-                                          Disabled />
+                            <MudTextField @bind-Value="LocalizedInvoiceType"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["InvoiceType"]"
+                            Disabled />
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="OrganizationArabicName"
-                                          For="@(() => OrganizationArabicName)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["OrganizationArabicName"]"
-                                          Disabled />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField @bind-Value="GarageName"
-                                          For="@(() => GarageName)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["Garage Name"]"
-                                          Disabled />
-                        </MudItem>
+
+                          @if (CultureInfo.CurrentCulture.Name == "ar")
+                          {
+                            <MudItem sm="4">
+
+                                <MudTextField @bind-Value="OrganizationArabicName"
+                                Immediate="true"
+                                Variant="Variant.Text"
+                                Label="@L["OrganizationName"]"
+                                Disabled />
+                                </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="GarageArabicName"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["Garage Name"]"
+                                              Disabled />
+                            </MudItem>
+                          }else{
+
+                            <MudItem sm="4">
+
+                                <MudTextField @bind-Value="OrganizationEnglishName"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["OrganizationName"]"
+                                              Disabled />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="GarageEnglishName"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["Garage Name"]"
+                                              Disabled />
+                            </MudItem>
+                          }
+                        
+                        
                         <MudItem sm="4">
                             <MudTextField @bind-Value="PlateNumber"
-                                          For="@(() => PlateNumber)"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["PlateNumber"]"
-                                          Disabled />
+                            For="@(() => PlateNumber)"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["PlateNumber"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField Value="EntranceTime.ToString()"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["EntranceTime"]"
-                                          Disabled />
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["EntranceTime"]"
+                            Disabled />
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField Value="InvoiceTime.ToString()"
-                                          Immediate="true"
-                                          Variant="Variant.Text"
-                                          Label="@L["ExitTime"]"
-                                          Disabled />
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["ExitTime"]"
+                            Disabled />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
@@ -105,61 +128,15 @@
 
                     </MudGrid>
 
-                    <MudItem class="d-flex justify-content-between mt-auto">
+                    <MudItem class="d-flex justify-content-end mt-auto">
                         <MudButton OnClick="@Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@ViewInvoiceDetails" >@L["Print"]</MudButton>
                     </MudItem>
                 </MudForm>
 
             </MudPaper>
         </MudItem>
 
-        <MudItem sm="4">
-            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-
-                <MudItem>
-
-                </MudItem>
-                <MudText Class="mb-3 mt-3" Typo="Typo.h5">@L["Summary"]</MudText>
-
-                <MudGrid>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.h6">@L["DueValue"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">@InvoicePrice @L["SAR"]</MudText>
-                    </MudItem>
-
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.h6">@L["VAT"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6">@($"{ Math.Round((InvoicePrice * 0.15m),2)} {L["SAR"]}")</MudText>
-                    </MudItem>
-                   
-                    <MudItem xs="6">
-                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
-                            @($"{Math.Round((InvoicePrice + (InvoicePrice * 0.15m)),2)} {L["SAR"]}")
-                        </MudText>
-                    </MudItem>
-                </MudGrid>
-
-                <MudGrid Class="mt-4">
-                    <MudItem xs="12" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ?L["Paid"] :L["CONFIRM"])  </MudButton>
-                    </MudItem>
-                    <MudItem xs="12" Class="text-center mt-2">
-                        <MudButton FullWidth="true" Variant="Variant.Text" Color="MudBlazor.Color.Dark" OnClick="Back">@L["CANCEL"]</MudButton>
-                    </MudItem>
-                </MudGrid>
-
-
-            </MudPaper>
-        </MudItem>
-
+        <PriceSummaryComponent ComponentSize="5" ConfirmSize="12" InvoicePrice="@InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false"/>
     </MudGrid>
 </MudItem>
 

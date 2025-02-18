@@ -7,17 +7,11 @@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@LicenceType.EnglishName</MudText>
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-
-				
-					
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="LicenceType.ArabicName"
 									  For="@(() => LicenceType.ArabicName)"
@@ -25,13 +19,20 @@
 									  Disabled=true
 									  Label="@L["ArabicName"]" />
 					</MudItem>
-
 					<MudItem sm="4">
 						<MudTextField @bind-Value="LicenceType.EnglishName"
 									  For="@(() => LicenceType.EnglishName)"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["EnglishName"]" />
+					</MudItem>
+					<MudItem sm="12">
+
+						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+							<MudImage Src="@LicenceType.Image" Class="bg_w_foto " Width="150" Height="100" Alt="@L["Picture"]" />
+
+						</div>
 					</MudItem>
 				</MudGrid>
 			</MudForm>
@@ -40,7 +41,7 @@
 
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
 		</DialogActions>
 
 	</MudDialog>

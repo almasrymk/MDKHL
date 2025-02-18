@@ -8,20 +8,25 @@
 @inject IUsersAppService UsersAppService
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using Volo.Abp.Data
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager NavigationManager
 @inject ICurrentUser currrentUser
 @inject ICurrentTenant currrentTenant
+@inject IRoleAppService RoleAppService
+@inject IDialogService DialogService
+@inject IAuthorizationService AuthorizationService
 
-<PageTitle>@L["Add New User"]</PageTitle>
+<PageTitle>@L["CREATE NEW"]</PageTitle>
 <div class="modal-wrapper">
+        <h3 Color="fw-bold">@L["Add NEW"]</h3>
+
+        <MudForm Model="userCreate" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 
 
-
-    <MudForm Model="userCreate" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
-                <MudGrid>
+                <MudGrid Class="mt-2">
                     <MudItem sm="6" md="6">
                     <MudTextField @bind-Value="userCreate.Name"
                               For="@(() => userCreate.Name)"
@@ -29,59 +34,69 @@
                                       Required
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["Name"]" />
+                                      Label="@L["Name"]"
+                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                     <MudTextField @bind-Value="userCreate.Email"
                               For="@(() => userCreate.Email)"
                                       Variant="Variant.Text"
-                                      Required
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
                               Label="@L["Email"]" />
                     </MudItem>
                           
                     <MudItem sm="6" md="6">
-                    <MudTextField @bind-Value="userCreate.PhoneNumber"
-                              For="@(() => userCreate.PhoneNumber)"
+                    <MudTextField @ref="textField"
+                                   @bind-Value="userCreate.PhoneNumber"
+                                   For="@(() => userCreate.PhoneNumber)"
                                       Variant="Variant.Text"
                                       Class="w-100"
+                                      OnBlur="HandleBlur"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["PhoneNumber"]"/>
+                                      Label="@L["PhoneNumber"]"
+                                      Required
+                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
-                    @if (currrentTenant.Id is null)
+            <MudItem sm="6" Class="d-inline-flex">
+                <MudItem Class="d-flex flex-row justify-content-between">
+                    <MudRadioGroup @bind-Value="@userCreate.IdentificationTypes"
+                                   Class="d-inline-flex align-content-center">
+                        <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                        <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            </MudItem>
+
+            <MudItem sm="6">
+                <MudTextField T="string" Placeholder="@L["Type Here"]" 
+                              Label="@L["NationalId"]" @bind-Value="userCreate.NationalId" />
+            </MudItem>
+            
+
+                @if (currrentTenant.Id is null)
+                {
+                <MudItem sm="6">
+                    <MudRadioGroup Required="false" T="bool"  ValueChanged="IsMdkhlSelect">
+                            <MudRadio Value="true"  Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
+                            <MudRadio Value="false" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
+                        </MudRadioGroup>
+                </MudItem>
+                }
+                <MudItem sm="6">
+                <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
+                </MudItem>
+                
+                    @if (IsOrganization)
                     {
-                        <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="@userRole"
-                                       Label="@L["UserRole"]"
-                                       Placeholder="@L[ "Choose"]"
-                                       HelperText=@L["Helper Text"]
-                                       Required>
-
-                                @foreach (var role in Enum.GetValues(typeof(RolesType)))
-                                {
-                                    if (role.ToString() == Enums.RolesType.Mdkhl.ToString() || role.ToString() == Enums.RolesType.Organization.ToString() || role.ToString() == Enums.RolesType.Keeper.ToString())
-                                    {
-                                            <MudSelectItem Value="@role.ToString()">
-                                                @role.ToString()
-                                            </MudSelectItem>
-                                    }
-                                }
-                            </MudSelect>
-
-                        </MudItem>
-                    }
-
-            @if (userRole == RolesType.Organization.ToString() || userRole == RolesType.Keeper.ToString())
-                    {
 
                         <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@userCreate.OrganizationId"
+                    <MudSelect ValueChanged="SelectOrganization" T="int"
                                        Label="@L["OrganizationName"]"
                                        Placeholder="@L[ "Choose"]"
                                        HelperText=@L["Helper Text"]
                                        Required>
-
+                        <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                                 @foreach (var organization in Organizations)
                                 {
                                    if (organization.Status != Status.Active)
@@ -95,28 +110,41 @@
 
                         </MudItem>
                     }
+                @if (IsSelectOrganization)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect @bind-Value="@role"
+                                Label="@L["UserRole"]"
+                                Placeholder="@L[ "Choose"]"
+                                HelperText=@L["Helper Text"]
+                                Required>
 
+                                    @foreach (var role in Roles)
+                                    {
+
+                                    <MudSelectItem Value="@role">
+                                        @role.Name
+                                    </MudSelectItem>
+
+                                        }
+                            </MudSelect>
+
+                        </MudItem>
+                    }
             
-                    <MudItem sm="9" md="9">
-
-
-                <MudRadioGroup @bind-Value="@userCreate.IsActive" Class="d-inline-flex align-content-center">
-                            <div class="d-flex flex-row justify-content-between">
-                                <MudRadio Value="true" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
-                                <MudRadio Value="false" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
-                            </div>
-                        </MudRadioGroup>
-                    </MudItem>
 
                 </MudGrid>
-                <MudItem sm="4" Class="mt-5">
+                <MudItem sm="12" Class="mt-5">
 
-                    <div class="d-flex justify-content-between ">
-                      
-                <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(form == null || !form.IsValid)" OnClick="SubmitCreate">@L["Create"]</MudButton>
+                    <div class="d-flex justify-content-between "> 
+                       <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="CancelAdd">@L["Back"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitCreate">@L["Create"]</MudButton>
+
                     </div>
                 </MudItem>
-            </MudForm>
+
+        </MudForm>
+
 
       
 </div>

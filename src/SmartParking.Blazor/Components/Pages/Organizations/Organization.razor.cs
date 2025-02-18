@@ -11,6 +11,11 @@ using SmartParking.Blazor.Components.SPComponents;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
 using System.Globalization;
+using SmartParking.Permissions.GaragePermissions;
+using SmartParking.Permissions.OrganizationPermissions;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authorization;
+using SmartParking.Permissions.GarageTransactionPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -23,13 +28,28 @@ public partial class Organization
     private TableData itemData = new TableData();
 
     private string termSearch;
+    private bool HasChangeStatusPermission;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
     public Organization(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+        CreatePolicyName = OrganizationPermissions.Create;
+        UpdatePolicyName = OrganizationPermissions.Edit;
+        DeletePolicyName = OrganizationPermissions.Delete;
+        
     }
 
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(OrganizationPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await base.OnInitializedAsync();
+
+    }
     private async Task HandleDelete(RowDef row)
     {
         var successMessage = L["OrganizationDeletedSuccessfully"];
@@ -188,12 +208,12 @@ public partial class Organization
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Organization",
+            Name = L["Organizations"],
             ShowHeader = true
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = false, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {
@@ -213,10 +233,10 @@ public partial class Organization
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["City Name"], Name = "CityName", IsFilterable = true, PropertyName = "City.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumOfGarages"], Name = "NumOfGarages", IsFilterable = true, IsSortable = true, PropertyName = "Subscription.NumbersOfGarages", TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlots"], Name = "ParkingSlots", IsFilterable = true,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", IsFilterable = false, IsSortable = false, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumOfGarages"], Name = "NumOfGarages", IsFilterable = false, IsSortable = true, PropertyName = "Subscription.NumbersOfGarages", TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ParkingSlot"], Name = "ParkingSlots", IsFilterable = false,PropertyName= "Subscription.ParkingSlot", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Num Of Cameras"], Name = "NumOfCameras", PropertyName = "Subscription.NumberOfCameras", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
         foreach (var item in organizations.Items)
         {
             var rowDef = new RowDef();
@@ -239,7 +259,7 @@ public partial class Organization
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["State Name"], item.StateNameAr));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["City Name"], item.CityNameAr));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlots"], item.ParkingSlots.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ParkingSlot"], item.ParkingSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumOfGarages"], item.NumbersOfGarages.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Num Of Cameras"], item.NumberOfCameras.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));

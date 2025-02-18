@@ -13,15 +13,8 @@
 <div>
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxHeigth="85vh" MaxWidth="MaxWidth.Medium" FullWidth="true">
-		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@subscription.EnglishName</MudText>
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@subscription.ArabicName</MudText>
-			}
+		<TitleContent>	
+				<MudText Typo="Typo.h6">@L["Details"]</MudText>
 			</TitleContent>
 		<DialogContent>
 
@@ -76,21 +69,14 @@
 									  For="@(() => subscription.SubscriptionPrice)"
 									  Immediate="true"
 									  Disabled
-									  Label="@L["SubscriptionPrice"]" />
-					</MudItem>
+									  Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")" />
+						</MudItem>
 
 					<MudItem sm="6">
 							<MudTextField Disabled Label=@L["ParkingSlot"] @bind-Value="subscription.ParkingSlot" Variant="Variant.Text" />
 
 					</MudItem>
-						<MudItem sm="6">
-							<MudTextField @bind-Value="subscription.SubscriptionSlotNumber"
-										  For="@(() => subscription.SubscriptionSlotNumber)"
-										  Immediate="true"
-										  Variant="Variant.Text"
-										  Label="@L["SubscriptionSlotNumber"]"
-										  Disabled />
-						</MudItem>
+				
 					<MudItem sm="12">
 						<MudTextField @bind-Value="subscription.SubscriptionDescription"
 									  For="@(() => subscription.SubscriptionDescription)"
@@ -107,7 +93,7 @@
 									  For="@(() => subscription.CreationTime)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label="@L["CreationTime"]"
+										  Label="@L["CreationTimeSubView"]"
 									  Disabled />
 					</MudItem>
 					
@@ -135,7 +121,7 @@
 						}
 					
 								
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.NumberOfUsers"
 									  For="@(() => subscription.NumberOfUsers)"
 									  Immediate="true"
@@ -144,7 +130,7 @@
 									  Disabled />
 					</MudItem>
 					
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.NumbersOfGarages"
 									  For="@(() => subscription.NumbersOfGarages)"
 									  Immediate="true"
@@ -152,7 +138,7 @@
 									  Label="@L["NumbersOfGarages"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.NumberOfCameras"
 									  For="@(() => subscription.NumberOfCameras)"
 									  Immediate="true"
@@ -160,7 +146,7 @@
 									  Label="@L["NumberOfCameras"]"
 									  Disabled />
 					</MudItem>
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="subscription.NumberOfCustomers"
 									  For="@(() => subscription.NumberOfCustomers)"
 									  Immediate="true"
@@ -171,6 +157,15 @@
 
 					</MudItem>
 
+					<MudItem sm="8">
+						<MudTextField @bind-Value="subscription.Status"
+										For="@(() => subscription.Status)"
+										Immediate="true"
+										Variant="Variant.Text"
+										  Label="@L["SubscriptionStatus"]"
+										Disabled />
+					</MudItem>
+					
 					</MudGrid>
 			</MudForm>
 
@@ -178,9 +173,13 @@
 
 		</DialogContent>
 
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-		</DialogActions>
+			<DialogActions>
+				<DialogActionComponent ButtonTwoLabel="@L["Back"]"
+									   ButtonTwoClick="Cancel"
+									   ButtonTwoVariant="MudBlazor.Variant.Filled"
+									   ButtonTwoColor="MudBlazor.Color.Dark"/>
+			</DialogActions>
+
 	</MudDialog>
 
 </MudItem>

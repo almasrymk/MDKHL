@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Localization;
 using SmartParking.Lookups;
@@ -119,12 +120,12 @@ public partial class Country
         // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = "Countries",
+            Name = L["Countries"],
             ShowHeader = true
         };
 
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Arabic Capital"], Name = "ArabicCapital", IsFilterable = true, PropertyName = "ArabicCapital", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -197,8 +198,7 @@ public partial class Country
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["CountryDeletedSuccessfully"];
-
+       
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
@@ -215,7 +215,7 @@ public partial class Country
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                ShowSnackbar(successMessage, Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/countries", forceLoad: true);
@@ -227,41 +227,18 @@ public partial class Country
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to delete Country : {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to delete Country : {ex.Message} + ", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
         catch (Exception ex)
         {
-
-            ShowSnackbar($"Failed to delete Country : {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
 
-
     }
 
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
-    }
-  
 }

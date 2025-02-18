@@ -1,10 +1,15 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Lookups.PlateColor
+@using SmartParking.Utilities
 @using SmartParking.Vehicles.LookUps
 @using System.Globalization
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 @inject IPlateColorsAppService PlateColorsAppService
 @inject ILicenceTypesAppService LicenceTypesAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -14,17 +19,8 @@
 <PageTitle>@L["Edit LicenceType"]</PageTitle>
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
-		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.EnglishName</MudText>
-
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @LicenceType.ArabicName</MudText>
-
-			}
+		<TitleContent>			
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -34,18 +30,19 @@
 				<MudGrid>
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@LicenceType.PlateColorId"
-								   Variant="Variant.Text"
-								   Label="@L["PlateColor Name"]"
-								   Placeholder=@L["Choose"]
-								   HelperText=@L["Helper Text"]
-								   Required="true"
-								   Clearable="_clearable">
+						Variant="Variant.Text"
+						Label="@L["PlateColor Name"]"
+						Placeholder=@L["Choose"]
+						HelperText=@L["Helper Text"]
+						Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+						Clearable="_clearable">
 							@foreach (var platecolor in plateColors)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
 								{
 									<MudSelectItem Value="platecolor.Id">@platecolor.EnglishName</MudSelectItem>
-									
+
 								}
 								else
 								{
@@ -57,19 +54,35 @@
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="LicenceType.ArabicName"
-									  For="@(() => LicenceType.ArabicName)"
-									  Immediate="true"
-									  Placeholder=@L["Type Here"]
-									  Label="@L["ArabicName"]" />
+						For="@(() => LicenceType.ArabicName)"
+						Immediate="true"
+						Placeholder=@L["Type Here"]
+						Label="@L["ArabicName"]" 
+						Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="LicenceType.EnglishName"
-									  For="@(() => LicenceType.EnglishName)"
-									  Immediate="true"
-									  Required="true"
-									  Placeholder=@L["Type Here"]
-									  Label="@L["EnglishName"]" />
+						For="@(() => LicenceType.EnglishName)"
+						Immediate="true"
+						Required="true"
+						Placeholder=@L["Type Here"]
+						Label="@L["EnglishName"]"
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+					</MudItem>
+					<MudItem sm="6">
+
+						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+							<MudImage Src="@Picture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["ModelPicture"]" />
+							<MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+								<ActivatorContent>
+									<MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
+								</ActivatorContent>
+							</MudFileUpload>
+						</div>
+
 					</MudItem>
 				</MudGrid>
 			</MudForm>
@@ -77,11 +90,18 @@
 
 
 		</DialogContent>
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-		</DialogActions>
-
+			<DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="CancelEdit"
+        ButtonTwoClick="SubmitEdit"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled"
+    />
+</DialogActions>
 
 	</MudDialog>
 
@@ -90,7 +110,7 @@
 
 <style>
 	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	border-radius: 0 20px 0 20px;
 	}
 </style>
 
@@ -102,9 +122,22 @@
 	[Parameter]
 	public int UpdatedId { get; set; }
 	bool _clearable;
+	bool IsPictureChanged;
 	private MudForm form;
 	IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
+	private string Picture { get; set; }
 
+	private async Task OnImageUpload(IBrowserFile file)
+	{
+		var imageFile = file;
+		if (imageFile != null)
+		{
+			// Save the image and get the file path
+			Picture = await ImageHelper.GetImageBase64Async(imageFile);
+			IsPictureChanged = true;
+			StateHasChanged();
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -114,25 +147,45 @@
 				SkipCount = (1 - 1) * 100
 			});
 		plateColors = result.Items.ToList();
+		Picture = LicenceType.Image;
+		
 		await base.OnInitializedAsync();
 	}
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["LicenceTypeUpdatedSuccessfully"];
 		
 		try
 		{
-
+			if (IsPictureChanged)
+				LicenceType.Image = await FileHelper.SaveImageFromBase64Async(Picture, PathHelper.LicenceTypeFolder);
 			await LicenceTypesAppService.UpdateAsync(UpdatedId, LicenceType);
-			Snackbar.Add(successedMessage, Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {LicenceType.ArabicName}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/licenceTypes", forceLoad: true);
 		}
-		catch (Exception e)
+		
+		catch (AbpValidationException validationException)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+			}
+		}
+		catch (BusinessException ex)
+		{
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+		}
+		catch (AuthenticationException ex)
+		{
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+		}
+		catch (Exception ex)
+		{
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
 		}
 	}
 

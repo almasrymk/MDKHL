@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.Results;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Controllers;
 
@@ -15,14 +17,17 @@ namespace SmartParking.Controllers;
 public class AuthenticationsController : ControllerBase
 {
     private readonly IAuthenticationAppService _authenticationApp;
+    private readonly IUsersAppService _usersAppService;
     private readonly ICurrentUser _user;
     private readonly ICurrentTenant _currentTenant;
 
-    public AuthenticationsController(IAuthenticationAppService authentication,ICurrentUser user, ICurrentTenant currentTenant)
+
+    public AuthenticationsController(IAuthenticationAppService authentication, ICurrentUser user, ICurrentTenant currentTenant, IUsersAppService usersAppService)
     {
         _authenticationApp = authentication;
         _user = user;
         _currentTenant = currentTenant;
+        _usersAppService = usersAppService;
     }
     [HttpPost("login")]
     [AllowAnonymous]
@@ -47,7 +52,7 @@ public class AuthenticationsController : ControllerBase
             return Result<LoginResultDto>.Invalid(new Results.ValidationError
             {
                 ErrorCode = "403",
-                ErrorMessage = "This user not found",
+                ErrorMessage = "Invalid credentials."
             });
         }
         
@@ -58,6 +63,14 @@ public class AuthenticationsController : ControllerBase
     {
        
         return await _authenticationApp.UpdateUser(phone,password);
+    }
+    [HttpPost("update/profile")]
+    [Authorize]
+    public async Task<Result<UserDataDto>> UpdateUserMobile(UserDataDto input)
+    {
+
+        return await _usersAppService.UpdateProfileDataMobileAsync(_user.Id, input);
+
     }
 
     [HttpPost("register")]
@@ -101,5 +114,30 @@ public class AuthenticationsController : ControllerBase
     public async Task<Result> SetNewPassword(ChangePasswordInputDto input)
     {
         return await _authenticationApp.SetNewPassword(input);
+    }   
+    
+    [HttpPost("changeImage")]
+    [Authorize]
+    [IgnoreAntiforgeryToken]
+    public async Task<Result<string>> ChangeImage([FromBody]string image)
+    {
+        var user =  await _usersAppService.UpdateImageAsync(_user.Id, image);
+        return Result.Success(user.Image);
+    }    
+    
+    [HttpGet("GetImage")]
+    [Authorize]
+    public async Task<Result<string?>> GetImage()
+    {
+        try
+        {
+            var user = await _usersAppService.GetImage(_user.Id);
+            return Result.Success(user);
+        }
+        catch (Exception ex)
+        {
+            return Result.Error(ex.Message);
+        }
+        
     }
 }

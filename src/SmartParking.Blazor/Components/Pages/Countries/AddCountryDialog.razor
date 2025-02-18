@@ -3,6 +3,7 @@
 @using SmartParking.Lookups
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using SmartParking.Blazor.Components.Shared
 @inject ICountriesAppService CountriesAppService
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
@@ -12,7 +13,7 @@
 <MudItem class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-                <MudText Typo="Typo.h6">@L["NewCountry"]</MudText>
+                <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
         </TitleContent>
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
@@ -25,7 +26,8 @@
                                       Variant="Variant.Text"
                                       Label="@L["ArabicName"]"
                                       InputType="InputType.Text"
-                                      Placeholder="@L["Type Here"]" />
+                                      Placeholder="@L["Type Here"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="6" >
@@ -36,7 +38,8 @@
                                       Variant="Variant.Text"
                                       Label="@L["EnglishName"]"
                                       InputType="InputType.Text"
-                                      Placeholder="@L["Type Here"]" />
+                                      Placeholder="@L["Type Here"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" >
                         <MudTextField @bind-Value="input.ArabicCapital"
@@ -45,7 +48,8 @@
                                       Required
                                       Label="@L["Arabic Capital"]" 
                                       InputType="InputType.Text" 
-                                      Placeholder="@L["Type Here"]" />
+                                      Placeholder="@L["Type Here"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" >
                         <MudTextField @bind-Value="input.EnglishCapital"
@@ -55,7 +59,8 @@
                                       Variant="Variant.Text"
                                       Label="@L["English Capital"]"
                                       InputType="InputType.Text" 
-                                      Placeholder="@L["Type Here"]" />
+                                      Placeholder="@L["Type Here"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                 
                   
@@ -64,10 +69,18 @@
 
         </DialogContent>
 
-        <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
-        </DialogActions>
+       <DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Create"]"
+        ButtonOneClick="Cancel"
+        ButtonTwoClick="Submit"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
+
     </MudDialog>
 
 </MudItem>

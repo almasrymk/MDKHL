@@ -8,7 +8,7 @@
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@VehicleModel.EnglishName</MudText>
+			<MudText Typo="Typo.h6">@L["Details"] </MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -24,7 +24,7 @@
 									  For="@(() => VehicleModel.ArabicName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["ArabicName"]" />
+									  Label="@L["ModelArabicName"]" />
 					</MudItem>
 
 					<MudItem sm="4">
@@ -32,18 +32,26 @@
 									  For="@(() => VehicleModel.EnglishName)"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["EnglishName"]" />
+									  Label="@L["ModelEnglishName"]" />
+					</MudItem>
+					<MudItem sm="6">
+
+						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+							<MudImage Src="@VehicleModel.Image" Class="bg_w_foto " Width="150" Height="100" Alt="@L["ModelPicture"]" />
+
+						</div>
 					</MudItem>
 				</MudGrid>
 			</MudForm>
 
+			
 
 
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+			<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
 		</DialogActions>
-
 	</MudDialog>
 
 </div>

@@ -1,9 +1,14 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.VehicleBrand
 @using SmartParking.Lookups.VehicleModel
 @using System.Globalization
+@using SmartParking.Utilities
+@using System.Security.Authentication
+@using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
 
 @inject IVehicleModelsAppService VehicleModelsAppService
 @inject IVehicleBrandsAppService VehiclesBrandsAppService
@@ -12,30 +17,20 @@
 @inject NavigationManager Navigation
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
-		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @VehicleModel.EnglishName</MudText>
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @VehicleModel.ArabicName</MudText>
-
-			}
+		<TitleContent>			
+				<MudText Typo="Typo.h6">@L["Edit"] </MudText>	
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 					<MudItem sm="6">
 						<MudSelect @bind-Value="@VehicleModel.VehiclesBrandId"
-								   Variant="Variant.Text"
-								   Label="@L["VehiclesBrand Name"]"
-								   Placeholder="Choose"
-								   Required="true"
-								   Clearable="_clearable">
+						Variant="Variant.Text"
+						Label="@L["VehiclesBrand Name"]"
+						Placeholder="Choose"
+						Required="true"
+								   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+						Clearable="_clearable">
 							@foreach (var vehicleBrand in VehicleBrands)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -54,29 +49,55 @@
 					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="VehicleModel.ArabicName"
-									  For="@(() => VehicleModel.ArabicName)"
-									  Immediate="true"
-									  Label="@L["ArabicName"]" />
+						For="@(() => VehicleModel.ArabicName)"
+						Immediate="true"
+									  Label="@L["ModelArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
 
-					<MudItem sm="4">
+					<MudItem sm="6">
 						<MudTextField @bind-Value="VehicleModel.EnglishName"
-									  For="@(() => VehicleModel.EnglishName)"
-									  Immediate="true"
-									  Required="true"
-									  Label="@L["EnglishName"]" />
+						For="@(() => VehicleModel.EnglishName)"
+						Immediate="true"
+						Required="true"
+									  Label="@L["ModelEnglishName"]" 
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+					</MudItem>
+
+					<MudItem sm="6">
+
+						<div class="d-flex flex-column align-items-center px-5 position-relative pb-6">
+
+							<MudImage Src="@ModelPicture" Class="bg_w_foto " Width="150" Height="100" Alt="@L["Picture"]" />
+							<MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="OnImageUpload" MaximumFileCount="1">
+								<ActivatorContent>
+									<MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Small" Class="rounded-circle" />
+								</ActivatorContent>
+							</MudFileUpload>
+						</div>
+
 					</MudItem>
 				</MudGrid>
 			</MudForm>
 
 
 
+
 		</DialogContent>
 
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Save"]</MudButton>
-		</DialogActions>
+			<DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="CancelEdit"
+        ButtonTwoClick="SubmitEdit"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled"
+    />
+</DialogActions>
 
 
 	</MudDialog>
@@ -86,7 +107,7 @@
 
 <style>
 	.mud-modal {
-		border-radius: 0 20px 0 20px;
+	border-radius: 0 20px 0 20px;
 	}
 </style>
 
@@ -98,10 +119,22 @@
 	[Parameter]
 	public int UpdatedId { get; set; }
 	bool _clearable;
+	bool IsPictureChanged;
 	private MudForm form;
 	IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
+	private string ModelPicture { get; set; }
 
-
+	private async Task OnImageUpload(IBrowserFile file)
+	{
+		var imageFile = file;
+		if (imageFile != null)
+		{
+			// Save the image and get the file path
+			ModelPicture = await ImageHelper.GetImageBase64Async(imageFile);
+			IsPictureChanged = true;
+			StateHasChanged();
+		}
+	}
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await VehiclesBrandsAppService.GetListAsync(new PagedAndSortedResultRequestDto
@@ -110,27 +143,47 @@
 				SkipCount = (1 - 1) * 100
 			});
 		VehicleBrands = result.Items.ToList();
+		ModelPicture = VehicleModel.Image;
 		await base.OnInitializedAsync();
 	}
 
 	private async Task SubmitEdit()
 	{
-		var successedMessage = L["VehicleModelUpdatedSuccessfully"];
 		
 
 		try
 		{
-
+			if (IsPictureChanged)
+			VehicleModel.Image = await FileHelper.SaveImageFromBase64Async(ModelPicture, PathHelper.ModelFolder);
 			await VehicleModelsAppService.UpdateAsync(UpdatedId, VehicleModel);
-			Snackbar.Add(successedMessage, Severity.Success);
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {VehicleModel.ArabicName} ", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			await Task.Delay(1000);
 			Navigation.NavigateTo("/vehicleModels", true);
 		}
-		catch (Exception e)
+		
+		catch (AbpValidationException validationException)
 		{
-			Snackbar.Add(e.Message, Severity.Error);
+			foreach (var validationError in validationException.ValidationErrors)
+			{
+				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+			}
 		}
+		catch (BusinessException ex)
+		{
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+		}
+		catch (AuthenticationException ex)
+		{
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+		}
+		catch (Exception ex)
+		{
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+		}
+
 	}
 
 	private async Task CancelEdit()

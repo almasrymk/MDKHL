@@ -1,0 +1,95 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using System.Globalization
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject IRoleAppService RoleAppService
+@inject ICurrentTenant CurrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+@inject ICurrentUser currentuser
+@inject ICurrentTenant CurrentTenant
+
+<PageTitle>@L["AddRole"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    @if (CurrentTenant.Id is null)
+                    {
+
+                    <MudItem sm="6">
+                        <MudSwitch @bind-Value="_addForMdkhl" Label="MDKHL" Color="MudBlazor.Color.Success" />
+                    </MudItem>
+                    }
+                    @if ((currentuser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentuser.IsInRole("admin")) && !_addForMdkhl)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect T="int"
+                                       Variant="Variant.Text"
+                                       Label=@L["Organizations"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       ValueChanged="OrganizationValueChanged">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                @foreach (var organization in organizationList)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
+
+
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+
+
+                    }
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.Name"
+                                      For="@(() => input.Name)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["Name"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["Type Here"]" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+
+</MudItem>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

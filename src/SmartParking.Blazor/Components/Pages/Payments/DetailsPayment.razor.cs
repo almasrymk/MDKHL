@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Invoices;
+using SmartParking.Enums;
+using SmartParking.Invoices;
 using SmartParking.Payments;
 using System;
 using System.Threading.Tasks;
@@ -12,16 +16,49 @@ public partial class DetailsPayment
     private PaymentGetResponseDto Payment {  get; set; } = new PaymentGetResponseDto();
     private string CreationTime { get; set; }
     private string Amount { get; set; }
+    private string LocalizedPaymentCategory{ get; set; }
+    private string LocalizedPaymentMethod{ get; set; }
+    private string LocalizedPaymentStatus{ get; set; }
+    private string LocalizedPaymentCurrency{ get; set; }
+    private string LocalizedPaymentInvoiceType{ get; set; }
+    
     private async Task FetchPayment()
     {
-        Guid id = Guid.Parse(Id);
-        Payment = await PaymentWebAppService.GetMdkhlAsync(id);
+        Payment = await PaymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
         CreationTime = Payment.CreationTime.ToString();
         Amount = Payment.Amount.ToString();
+        LocalizedPaymentCategory= L[Payment.PaymentCategory];
+        LocalizedPaymentMethod=L[Payment.PaymentMethod];
+        LocalizedPaymentStatus=L[Payment.PaymentStatus];
+        LocalizedPaymentCurrency = L[Payment.Currency];
+        LocalizedPaymentInvoiceType = L[Payment.Invoice.InvoiceType];
+
     }
     protected override async Task OnInitializedAsync()
     {
        await FetchPayment();
         
+    }
+    private Task ViewInvoiceDetails()
+    {
+
+        
+        var parameters = new DialogParameters
+        {
+
+            ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice:null,
+            ["ID"] = Payment.Invoice is not null ? Payment.Invoice.Id : null,
+            ["Package"]= Payment.Package is not null ? Payment.Package : null,
+            ["CommercialRegisteration"] = Payment.Organization.TaxNumber,
+            ["OrganizationAddress"] = Payment.Organization.Address,
+            ["Code"] = Payment.PaymentNumber??"",
+        };
+        return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
+
+
+    }
+    private void Back()
+    {
+        Navigation.NavigateTo("/payments");
     }
 }

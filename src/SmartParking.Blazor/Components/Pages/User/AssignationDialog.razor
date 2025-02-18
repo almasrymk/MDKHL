@@ -1,9 +1,11 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
+@using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @inject NavigationManager Navigation
@@ -13,41 +15,36 @@
 @inject IUsersAppService UsersAppService
 @inject ICurrentTenant currentTenant
 @inject IOrganizationsAppService OrganizationAppService
+@inject IRoleAppService RolesAppService
 
-<PageTitle>@L["Assign Role"]</PageTitle>
+<PageTitle>@L["AssignRole"]</PageTitle>
 
 <div class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+	<MudDialog class="mud-modal" Style="min-width:fit-content !important">
 		<TitleContent>
-			<MudText Typo="Typo.h6">@L["Assign Role"]</MudText>
+			<MudText Typo="Typo.h6">@L["AssignRole"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-					@if (currentTenant.Id is null)
-					{
-						<MudItem sm="12" md="12">
-							<MudSelect @bind-Value="@userRole"
-							Label="@L["UserRole"]"
-							Placeholder="@L[ "Choose"]"
-							HelperText=@L["Helper Text"]
-							Required>
+					<MudItem sm="12" md="12">
+						<MudSelect T="string"
+						ValueChanged="ChooseRole"
+						Label="@L["UserRole"]"
+						Placeholder="@L[ "Choose"]"
+						HelperText=@L["Helper Text"]
+						Required>
+							@foreach (var role in identityRoles)
+							{
+								<MudSelectItem Value="role.Id.ToString()">
+									@role.Name
+								</MudSelectItem>
+							}
 
-								@foreach (var role in Enum.GetValues(typeof(RolesType)))
-								{
+						</MudSelect>
 
-									<MudSelectItem Value="@role.ToString()">
-										@role.ToString()
-									</MudSelectItem>
+					</MudItem>
 
-								}
-							</MudSelect>
-
-						</MudItem>
-					}
 
 
 				</MudGrid>
@@ -57,8 +54,14 @@
 
 		</DialogContent>
 		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitEdit">@L["Assign"]</MudButton>
+			<MudItem sm="12">
+
+				<div class="d-flex justify-content-between align-items-center">
+
+					<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="CancelEdit">@L["Back"]</MudButton>
+					<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="SubmitAssign">@L["Assign"]</MudButton>
+				</div>
+			</MudItem>
 		</DialogActions>
 
 	</MudDialog>
@@ -77,34 +80,45 @@
 	private MudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] 
 	public Guid Id { get; set; }
-	private string userRole { get; set; }
+	private Guid userRoleId { get; set; }
+	private List<IdentityRoleDto> identityRoles { get; set; } = new();
 
-
-	private async Task SubmitEdit()
+	protected override async Task OnInitializedAsync()
 	{
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-		var successedMessage = L["Role Added to User Successfully"];
+		identityRoles = await RolesAppService.GetListByTenant(currentTenant.Id);
+		await base.OnInitializedAsync();
+	}
 
+
+	private async Task SubmitAssign()
+	{
+	
 		try
 		{
 
+			 await RolesAppService.AssignRole(Id, userRoleId);
+			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+				LocalizationHelper.GetLocalizedString("Role"), Severity.Success);
 
-			var garage = await UsersAppService.AssignRoleToUser(Id, userRole);
-
-			Snackbar.Add($"{successedMessage}", Severity.Success);
 			MudDialogAdd.Close(DialogResult.Ok(true));
 			Navigation.NavigateTo("/users");
 
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			Snackbar.Add($"{validationErrorMessage}: {e.Message}", Severity.Error);
+
+			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
 		}
 	}
 
 	private async Task CancelEdit()
 	{
 		MudDialogAdd.Cancel();
+	}
+	private async Task ChooseRole(string Value)
+	{
+		userRoleId = Guid.Parse(Value);
 	}
 
 

@@ -1,15 +1,19 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups.CameraBrands
 @using SmartParking.Lookups.CameraModel
 @using System.Globalization
+@using System.Security.Authentication
+@using Volo.Abp
+@using Volo.Abp.Validation
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
-            <MudText Typo="Typo.h6">@L["Edit CameraModel"]</MudText>
+            <MudText Typo="Typo.h6">@L["Edit"]</MudText>
         </TitleContent>
         <DialogContent>
 
@@ -24,7 +28,8 @@
                                       Immediate="true"
                                       Required="true"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["ArabicName"]" />
+                                      Label="@L["ArabicName"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
 
                     <MudItem sm="4">
@@ -33,15 +38,17 @@
                                       Immediate="true"
                                       Required="true"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["EnglishName"]" />
+                                      Label="@L["EnglishName"]" 
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
                         <MudSelect @bind-Value="@cameraModel.CameraBrandId"
                                    Variant="Variant.Text"
-                                   Label="@L["CamerBrandName"]"
+                                   Label="@L["BrandName"]"
                                    HelperText=@L["Helper Text"]
                                    Placeholder=@L["Choose"]
                                    Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                    Clearable="_clearable">
                             @foreach (var vehicleBrand in CameraBrands)
                             {
@@ -62,10 +69,18 @@
             </MudForm>
 
         </DialogContent>
-        <DialogActions>
-            <MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" Disabled="@(form == null || !form.IsValid)" OnClick="Submit">@L["Create"]</MudButton>
-        </DialogActions>
+      				<DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="Cancel"
+        ButtonTwoClick="Submit"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled"
+    />
+</DialogActions>
 
 
     </MudDialog>
@@ -100,31 +115,39 @@
     }
     private async Task Submit()
     {
-        var successedMessage = L["CameraModelCreatedSuccessfully"];
-        var errorMessage = L["FillRequriedItems"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-        if (form.IsValid)
+       
+        try
         {
-            // Call your service to create the camera
-            try
+            await CameraModelsAppService.UpdateAsync(Id,cameraModel);
+            SnackBar.ShowSnackbar(Snackbar, $"{cameraModel.ArabicName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            await Task.Delay(1000);
+            MudDialog.Close(DialogResult.Ok(true));
+            Navigation.NavigateTo("/Cameramodels", true);
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
             {
-                await CameraModelsAppService.UpdateAsync(Id,cameraModel);
-                Snackbar.Add(successedMessage, Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                Navigation.NavigateTo("/Cameramodels", true);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
-            catch (Exception e)
-            {
-                Snackbar.Add(errorMessage, Severity.Error);
-                return;
-            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
 
 
-        }
-        else
-        {
-            Snackbar.Add(errorMessage, Severity.Error);
-        }
+       
     }
     private void Cancel()
     {

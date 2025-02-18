@@ -12,6 +12,20 @@ namespace SmartParking.Vehicles
 		public int VehicleModelId { get; set; }
         public string ArPlateLetters { get; set; } = "";
         public string EnPlateLetters { get; set; } = "";
+        public string FullEnPlate
+        {
+            get {
+               return EnPlateNumber.Replace(" ", string.Empty)+ EnPlateLetters.Replace(" ", string.Empty);
+            }
+        }
+
+        public string FullArPlate
+        {
+            get
+            {
+                return ArPlateLetters.Replace(" ", string.Empty)+ ArPlateNumber.Replace(" ", string.Empty);
+            }
+        }
         public string ArPlateNumber { get; set; } = "";
         public string EnPlateNumber { get; set; } = "";
         public Guid CustomerId { get; set; }

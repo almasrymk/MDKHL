@@ -3,107 +3,82 @@
 @using SmartParking.Organizations
 @using SmartParking.PDF
 @using System.IO
+@using SmartParking.Packages
 @using Volo.Abp.MultiTenancy
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
 @inject IInvoiceAppService InvoiceAppService
 @inject ICurrentTenant currentTenant
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
 @inject IOrganizationsAppService OrganizationService
 <div class="mud-modal">
-    <div class=" d-flex justify-content-center align-items-center">
-
-    <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank">Get PDF</a>
-    </div>
-
+  
     <div class="title-content d-flex justify-content-center align-items-center">
-        <h2 class="fw-bold">Invoice @Invoice.InvoiceNumber</h2>
+
+    <InvoiceDetailsPopupHeader Title="@L[@title]" Description="@description" />
     </div>
+
+
+
     <div class="dialog-content">
         <div class="main-layout-paper d-flex flex-column p-3" style="width: 100%; height: 100%; margin-top: 20px;">
-            <div class="d-flex justify-content-between align-items-center" style="margin-top: 20px;">
+            <div class="d-flex justify-content-around align-items-center" style="margin-top: 20px;">
                 <div style="width: 120px;">
-                    <img src="images/logo/MDHKL_01.png" alt="Logo" />
+                    <img src="images/logo/MDHKL_01.png" width="200" alt="Logo" />
                 </div>
                 <div style="width: 120px;">
-                    <img src="@OrganizationPicture" alt="Logo" />
+                    <img src="@OrganizationPicture" width="200" alt="Logo" /> 
                 </div>
-
             </div>
-
             <div class="invoice-header d-flex flex-column flex-grow-1 h-100 p-3 justify-content-center align-items-center">
-                <h3>***Simplified tax invoice***</h3>
+                <h3>*** @L["SimplifiedTaxInvoice"] ***</h3>
                 <div class="d-flex flex-row">
-                    <h5 class="fw-bold">VAT:</h5>
+                    <h5 class="fw-bold">@L["VAT"]:</h5>
                     <h5>@CommercialRegisteration</h5>
                 </div>
-            </div>
-
-            <div class="invoice-body d-flex flex-column justify-content-between">
-                <h4>
-                    This is the receipt for payment of This is the receipt for payment of  @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2)} ") SAR
-
-                </h4>
-                <div class="row">
-                    <div class="col-md-6 d-flex flex-column">
-                    </div>
-                    <div class="col-md-6 d-flex flex-column align-items-center">
-                        <strong>Hotel Name:</strong><p> @Invoice.OrganizationArabicName</p>
-                    </div>
-                    <div class="col-md-6 d-flex flex-column">
-                        <strong>Cashier No.:</strong><p> @Invoice.GarageName - </p>
-                    </div>
-                    <div class="col-md-6 d-flex flex-column align-items-center">
-                        <strong>Hotel Address:</strong>
-                        <p> @OrganizationAddress</p>
-                    </div>
-                    <div class="col-md-12 d-flex flex-column">
-                        <strong>Plate Number:</strong> <p>@Invoice.PlateNumber</p>
-                    </div>
-                    <div class="col-md-6 d-flex flex-column">
-                        <strong>Entry Date:</strong> <p>@Invoice.EntranceTime.ToString()</p>
-                    </div>
-                    <div class="col-md-6 d-flex flex-column align-items-center">
-                        <strong>Exit Date:</strong><p>@Invoice.InvoiceTime.ToString() </p>
-                    </div>
+                <div class="align-items-center justify-content-center">
+                    <h4 class="text-center">
+                        @L["HeaderVatReceiptPayment"]  @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2)} ") @L["SAR"]
+                    </h4>
                 </div>
             </div>
 
-            <div class=" d-flex justify-content-center align-items-center flex-row" style="background-color: beige; margin-top: 2rem; border-radius: 15px;">
-                <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
-                    <h5>Subscription</h5>
-                    <h5>Hour</h5>
-                </div>
-                <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
-                    <h5>Interval</h5>
-                    <h5>@Invoice.TotalHours Hour(s)</h5>
-                </div>
-            </div>
+                <div class="d-flex justify-content-center align-items-center col-md-10 flex-column m-auto ">
+                @if(Invoice is not null){
+                    <InvoiceDetailsPopupDialog Invoice="@Invoice" OrganizationAddress="@OrganizationAddress"/>
+                }else{
+                    <PackageDetailsPopupDialog Package="@Package" OrganizationAddress="@OrganizationAddress"/>
+                }
 
-            <div class="total-info" style="margin-top: 2rem;">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="d-flex flex-row">
-                            <p><strong>Total Pre VAT:</strong> @Invoice.InvoicePrice SAR</p>
-                        </div>
-                        <div class="d-flex flex-row">
-                            <p><strong>VAT 15%:</strong> @($"{Math.Round((Invoice.InvoicePrice * 0.15m),2)} ") SAR</p>
-                        </div>
-                        <div class="d-flex flex-row">
-                            <p>
-                                <strong>Total Include VAT:</strong>
-                                @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)),2)} ") SAR
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex flex-row justify-content-end">
-                            <div style="width: 120px;">
-                                <img src="@imagepath" alt="UnPaid" style="width:120px;" />
+         
+                    <div class="total-info col-md-12" style="margin-top: 2rem;">
+                        <div class="row">
+
+                            <PriceDetailsComponentPopup Price="@price" />
+                            <div class="col-md-6">
+                                <div class="d-flex flex-row justify-content-end">
+                                    <div style="width: 120px;">
+                                        <img src="@imagepath" alt="UnPaid" style="width:120px;" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    <div class=" d-flex justify-content-end align-items-center mt-3">
+
+                        <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank"
+                           style="display: inline-flex; align-items: center; justify-content: center;
+                             background-color: #3A7398; color: white; text-decoration: none;
+                             font-size: 16px; font-weight: bold; padding: 10px 20px;
+                             border-radius: 8px; transition: all 0.3s ease-in-out;">
+                            <span style="margin-right: 8px;">📄</span> @L["GetPdf"]
+
+                        </a>
+                    </div>
                     </div>
                 </div>
             </div>
-        </div>
+
     </div>
 </div>
 
@@ -113,15 +88,32 @@
     }
 </style>
 @code {
-    [Parameter] public InvoiceDto Invoice { get; set; } 
+    [Parameter] public InvoiceDto? Invoice { get; set; } 
+    [Parameter] public PackageDto? Package { get; set; }
     [Parameter] public string CommercialRegisteration { get; set; }
     [Parameter] public int ID { get; set; }
     [Parameter] public string OrganizationAddress { get; set; }
+    [Parameter] public string Code { get; set; }
     public string imagepath { get; set; }
     public string OrganizationPicture { get; set; }
+    public decimal price { get; set; }
+    public string title { get; set; }
+    public string description { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        if(Invoice is not null ){
+            price = Invoice.InvoicePrice;
+            title = "Invoice";
+            description = Code;
+        }
+        else{
+
+            price = Package.Price;
+            title = "Package";
+            description = Code;
+        }
+
         if (currentTenant.Id == null)
         {
 
@@ -132,8 +124,8 @@
             imagepath = await InvoiceAppService.GetInvoiceQRCodeForOrganization(ID);
             OrganizationPicture = await OrganizationService.GetOrganizationPictureByOrganizationTenant(currentTenant.Id);
 
-        }        
-        await base.OnInitializedAsync();
+        }
+        StateHasChanged();
 
 
     }

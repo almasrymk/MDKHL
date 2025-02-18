@@ -20,34 +20,37 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
         _stringLocalizer = stringLocalizer;
 
         RuleFor(x => x.ArabicName)
-    .NotEmpty();
-    //.Matches(@"^([\u0600-\u06FF]+\s+){2}[\u0600-\u06FF]+$")
-    //.WithMessage(_stringLocalizer["ArabicName must contain at least three Arabic words."])
-    //.MinimumLength(10)
-    //.WithMessage(_stringLocalizer["ArabicName must be at least 10 characters long."]);
+           .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+          .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
         RuleFor(x => x.FullName)
-            .NotEmpty();
-            //.Matches(@"^([a-zA-Z]+\s+){2}[a-zA-Z]+$")
-            //.WithMessage(_stringLocalizer["FullName must contain at least three English words."])
-            //.MinimumLength(10)
-            //.WithMessage(_stringLocalizer["FullName must be at least 10 characters long."]);
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
+
 
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email is required.")
-            .EmailAddress().WithMessage("Email is not valid.")
-            .Must(NotContainArabicLetters).WithMessage("Email should not contain Arabic letters.")
-            .Must(HaveContentAfterAt).WithMessage("Email should contain content after '@'.")
-            .Must(EndWithLetter).WithMessage("Email should end with a letter.");
+            .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+            .Must(NotContainArabicLetters).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+            .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+            .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
 
-        RuleFor(x => x.Password).Matches(x=>x.RepeatPassword).WithMessage("Password must match repeat password");
-        RuleFor(x => x.RepeatPassword).Matches(x=>x.Password).WithMessage("RepeatPassword must match Password");
-        RuleFor(x => x.MobileNumber).NotEmpty().Matches(@"^\d{10,15}$");
+       RuleFor(x => x.NationalId)
+         .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+        RuleFor(x => x.Password)
+            .Matches(x=>x.RepeatPassword)
+            .WithMessage(LocalizationHelper.GetLocalizedString("WrongPassword"));
+        RuleFor(x => x.RepeatPassword).Matches(x=>x.Password).WithMessage("Repeat Password" + LocalizationHelper.GetLocalizedString("WrongPassword"));
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty()
+            .Matches(@"(05\d{8}|\+9665\d{8})$")  
+            .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         RuleFor(x => x.isActive)
             .Must(value => value == true || value == false)
-            .WithMessage("The IsActive field must be either true (1) or false (0).");
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
         RuleFor(x=>x.IdentificationType).Must(value => Enum.IsDefined(typeof(Enums.IdentificationTypes), value))
-             .WithMessage("The value must be NationalID(1) or Passport(0).");
+             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         
     }

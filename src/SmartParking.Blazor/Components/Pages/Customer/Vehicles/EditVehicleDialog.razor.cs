@@ -15,11 +15,17 @@ using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
 using System.Linq;
+using Microsoft.AspNetCore.Components.Web;
+using System.Text;
+using System.Globalization;
+using SmartParking.Validations;
+using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
 public partial class EditVehicleDialog
 {
+    private MudForm form;
     [Parameter]
     public int VehicleId { get; set; }
     [Parameter]
@@ -31,10 +37,21 @@ public partial class EditVehicleDialog
     bool _clearable;
     [CascadingParameter]
     private MudDialogInstance MudDialogAdd { get; set; }
-
+    private string plateLetters = "";
+    private string plateNumbers = "";
 
     protected override async Task OnInitializedAsync()
     {
+        if(CultureInfo.CurrentCulture.Name == "ar")
+        {
+            plateLetters = Vehicle.ArPlateLetters;
+            plateNumbers = Vehicle.ArPlateNumber;
+        }
+        else
+        {
+            plateLetters = Vehicle.EnPlateLetters;
+            plateNumbers = Vehicle.EnPlateNumber;
+        }
         var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
         plateColors = resultplate;
 
@@ -53,8 +70,7 @@ public partial class EditVehicleDialog
     }
     private async void SubmitEdit()
     {
-        var successedMessage = L["VehichleWasUpdatedSuccessfully"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+  
         try
         {
             Vehicle.CustomerId = Vehicle.CustomerId;
@@ -63,7 +79,7 @@ public partial class EditVehicleDialog
             if (vehichle != null)
             {
 
-                ShowSnackbar(successedMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
 
                 await Task.Delay(1000);
@@ -77,23 +93,74 @@ public partial class EditVehicleDialog
         {
             foreach (var validationError in validationException.ValidationErrors)
             {
-                ShowSnackbar($"{validationErrorMessage} {validationError.MemberNames.First()} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
         catch (BusinessException ex)
         {
 
-            ShowSnackbar($"Failed to edit vehicle: {ex.Code} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
         {
-            ShowSnackbar($"Failed to edit vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
 
-            ShowSnackbar($"Failed to edit vehicle: {ex.Message} + ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
+
+    }
+    private void HandleKeyUpLettersArabic(FocusEventArgs e)
+    {
+        HandleKeyUpLetters(Vehicle.ArPlateLetters);
+
+    }
+    private void HandleKeyUpLettersEnglish(FocusEventArgs e)
+    {
+        HandleKeyUpLetters(Vehicle.EnPlateLetters);
+
+
+    }
+    private void HandleKeyUpLetters(string e)
+    {
+        try
+        {
+            (Vehicle.EnPlateLetters, Vehicle.ArPlateLetters) = VehicleValidation.HandleKeyUpLetters(e);
+        }
+        catch (Exception ex)
+        {
+            Vehicle.EnPlateLetters = Vehicle.ArPlateLetters = "";
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
+        }
+
+    }
+
+    private void HandleKeyUpArabic(FocusEventArgs e)
+    {
+        HandleKeyUp(Vehicle.ArPlateNumber);
+
+    }
+    private void HandleKeyUpEnglish(FocusEventArgs e)
+    {
+        HandleKeyUp(Vehicle.EnPlateNumber);
+
+
+    }
+
+    private void HandleKeyUp(string PlateNumber)
+    {
+        try
+        {
+            (Vehicle.EnPlateNumber, Vehicle.ArPlateNumber) = VehicleValidation.HandleKeyUp(PlateNumber);
+        }
+        catch (Exception ex)
+        {
+            Vehicle.EnPlateNumber = Vehicle.ArPlateNumber = "";
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
+        }
+
 
     }
 
@@ -103,10 +170,5 @@ public partial class EditVehicleDialog
         MudDialogAdd.Cancel();
 
     }
-    void ShowSnackbar(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-    }
+
 }

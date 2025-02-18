@@ -8,6 +8,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject ICurrentTenant currentTenant
+@inject NavigationManager Navigation
 
 <div class="modal-wrapper ">
 
@@ -18,11 +19,11 @@
             <MudText Class="fw-bold">@L["Organization Customers"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["Organization Customers"] Data="@itemData" TotalItemsInTable="TotalItem"  OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="HandleSearch"></SPDataGrid>
+            <SPDataGrid PageName=@L["Organization Customers"] Data="@itemData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnClickRowEdit="HandleEdit"></SPDataGrid>
         </DialogContent>
         <DialogActions>
 
-            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

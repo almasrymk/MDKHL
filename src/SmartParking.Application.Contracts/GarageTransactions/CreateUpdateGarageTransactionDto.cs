@@ -20,7 +20,12 @@ namespace SmartParking.GarageTransactions
 		public CameraType CameraType { get; set; }
 		public Guid? TenantId { get; set; }
         public bool IsIn { get; set; }
-		public CustomerCategoryStatus CustomerCategory { get; set; } = CustomerCategoryStatus.Customer;
+        public bool IsMapped { get; set; }
+        public DateTime? RemainingTime { get; set; }
+        public bool? IsPending { get; set; }
+        public CustomerCategoryStatus CustomerCategory { get; set; } = CustomerCategoryStatus.Customer;
+		public bool CanCheckout { get; set; } = true;
+
 
 
 

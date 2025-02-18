@@ -2,6 +2,7 @@
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,27 +71,21 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
             if (!nationalIdPattern.IsMatch(input.NationalId))
             {
-                throw new UserFriendlyException("Nation Id must be 10 digits");
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationIdValidation"));
             }
         }
         else if (input.IdentificationType == IdentificationTypes.Passport)
         {
-            var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
+            var passportPattern = new Regex(@"^(?=(?:\d*[a-zA-Z]){1}\d*$)[a-zA-Z0-9]{6,9}$");
             if (!passportPattern.IsMatch(input.NationalId))
             {
-                throw new UserFriendlyException("Passport must be from 6 - 9 digits and atmost one character");
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("PassportValidation"));
             }
-        }
-        var result1 = await CheckIfPhoneNumberIsUnique(input.MobileNumber);
-        if (!result1)
-        {
-            throw new Exception("Phone Number is used");
-
         }
         var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
         if (!result2)
         {
-            throw new Exception("National Id is already exist !");
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("NationalId") +" "+LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
         }
     }

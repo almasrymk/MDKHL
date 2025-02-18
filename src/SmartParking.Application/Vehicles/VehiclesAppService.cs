@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Localization;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,10 +52,20 @@ public class VehiclesAppService:
 
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 
-        input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-        input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+        //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+        //input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+        if(!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
+        {
+            input.ArPlateNumber = input.EnPlateNumber=null;
+            throw new InvalidOperationException("Plate Numbers are Missing");
+        }
+        
+        if(VehicleValidation.ValidateYear(input.ModelYear) is not null)
+        {
+            throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
+        }
         await CheckVehicleIfFound(input);
-        // LicenceType is plate type is found 
+
         LicenceType licenceType;
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -65,12 +77,7 @@ public class VehiclesAppService:
             throw new InvalidOperationException("licence type not found");
 
         }
-        var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.ArPlateNumber || x.EnPlateNumber == input.EnPlateNumber);
         input.PlateColorId = licenceType.PlateColorId;
-        if (existingPlatNumber != null)
-        {
-            throw new InvalidOperationException("PlatNumber already exists");
-        }
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -81,12 +88,11 @@ public class VehiclesAppService:
         else
             return await base.CreateAsync(input);
     }
-
     private async Task CheckVehicleIfFound(CreateUpdateVehicleDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var existVehicle = await _repository.FirstOrDefaultAsync(_ => (_.ArPlateNumber == input.ArPlateNumber || _.EnPlateNumber == input.EnPlateNumber));
+            var existVehicle = await _repository.FirstOrDefaultAsync(_ => (_.ArPlateNumber == input.FullArPlate || _.EnPlateNumber == input.FullEnPlate));
             if (existVehicle is not null)
             {
                 throw new InvalidOperationException("this vehicle is exist");
@@ -110,9 +116,13 @@ public class VehiclesAppService:
 	{
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-            input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-            
+            //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
+           // input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
+            if (!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
+            {
+                input.ArPlateNumber = input.EnPlateNumber = null;
+                throw new InvalidOperationException("Plate Numbers are Missing");
+            }
             var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
 
             if (licenceType == null)
@@ -120,9 +130,13 @@ public class VehiclesAppService:
                 throw new InvalidOperationException("licence type not found");
 
             }
-            var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.ArPlateNumber && x.EnPlateNumber == input.EnPlateNumber);
+            if (VehicleValidation.ValidateYear(input.ModelYear) is not null)
+            {
+                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
+            }
+            var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.FullArPlate && x.EnPlateNumber == input.FullEnPlate);
             input.PlateColorId = licenceType.PlateColorId;
-            if (existingPlatNumber != null && existingPlatNumber.LicenceTypeId == input.LicenceTypeId && existingPlatNumber.PlateColorId == input.PlateColorId && existingPlatNumber.VehicleBrandId == input.VehicleBrandId && existingPlatNumber.BelongToCompany == input.BelongToCompany && existingPlatNumber.CompanyName == input.CompanyName)
+            if (existingPlatNumber != null&& existingPlatNumber.Id != id && existingPlatNumber.LicenceTypeId == input.LicenceTypeId && existingPlatNumber.PlateColorId == input.PlateColorId && existingPlatNumber.VehicleBrandId == input.VehicleBrandId && existingPlatNumber.BelongToCompany == input.BelongToCompany && existingPlatNumber.CompanyName == input.CompanyName)
             {
                 throw new InvalidOperationException("PlatNumber already exists");
             }
@@ -134,22 +148,26 @@ public class VehiclesAppService:
     public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
     {
         
-        await Task.Yield(); 
+        await Task.Yield();
 
-        var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
+        // Regex to capture groups of Arabic/English letters and numbers
+        var matches = Regex.Matches(plate, @"[\d]+|[\p{L}]+");
 
-        string letters, numbers;
+        string letters = "";
+        string numbers = "";
 
-        if (match.Success)
+        foreach (Match match in matches)
         {
-            letters = match.Groups["letters"].Value;
-            numbers = match.Groups["numbers"].Value;
+            if (Regex.IsMatch(match.Value, @"^[\p{L}]+$")) // Letters
+            {
+                letters += match.Value; // Append letters
+            }
+            else if (Regex.IsMatch(match.Value, @"^\d+$")) // Numbers
+            {
+                numbers += match.Value; // Append numbers
+            }
         }
-        else
-        {
-            letters = "";
-            numbers = plate;
-        }
+
 
         return (numbers, letters);
     }
@@ -180,11 +198,11 @@ public class VehiclesAppService:
 
 	public override async Task DeleteAsync(int id)
 	{
-		var vehicle = await _repository.FindAsync(id);
-		if (vehicle == null )
-			throw new EntityNotFoundException(typeof(Vehicle), id);
             using (_dataFilter.Disable<IMultiTenant>())
 			{
+		        var vehicle = await _repository.FindAsync(id);
+		        if (vehicle == null )
+		        	throw new EntityNotFoundException(typeof(Vehicle), id);
 
                 await base.DeleteAsync(id);
             }

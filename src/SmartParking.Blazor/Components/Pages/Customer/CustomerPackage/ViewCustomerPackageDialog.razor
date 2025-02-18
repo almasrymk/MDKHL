@@ -12,17 +12,16 @@
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
 <PageTitle>@L["CustomerPackages"]</PageTitle>
-<div class="modal-wrapper ">
-    <MudDialog class="mud-modal ">
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal w-100">
         <TitleContent>
             <MudText Class="fw-bold">@L["CustomerPackages"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["CustomerPackages"] Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
+            <SPDataGrid PageName=@L["CustomerPackages"] TotalItemsInTable="@TotalItem" Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete"></SPDataGrid>
         </DialogContent>
         <DialogActions>
-
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>
 </div>

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
@@ -14,14 +15,7 @@
 <MudItem class="modal-wrapper">
 	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
 		<TitleContent>
-			@if(CultureInfo.CurrentCulture.Name == "en")
-            {
-				<MudText Typo="Typo.h6">@L["Edit"] @state.EnglishName</MudText>
-			}
-			else
-			{
-				<MudText Typo="Typo.h6">@L["Edit"] @state.ArabicName</MudText>
-			}
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
 		</TitleContent>
 		<DialogContent>
 
@@ -86,10 +80,17 @@
 
 		</DialogContent>
 
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
-			<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Save">@L["Save"]</MudButton>
-		</DialogActions>
+			<DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="Cancel"
+        ButtonTwoClick="Save"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
 	</MudDialog>
 
 </MudItem>

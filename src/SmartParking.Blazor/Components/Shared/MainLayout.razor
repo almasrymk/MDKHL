@@ -7,6 +7,8 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.MyAccount
+@using SmartParking.StringLocalizer
 @using Volo.Abp.Localization
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.SettingManagement
@@ -16,21 +18,25 @@
 @inject ICurrentUser CurrentUser
 @inject ICurrentTenant currenttenant
 @inject IOrganizationsAppService OrganizationAppService
-<MudDialogProvider />
+@inject IAuthorizationService AuthorizationService
+@inject IJSRuntime Js
+
+<MudDialogProvider FullWidth="true"
+                   MaxWidth="MaxWidth.Medium" />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="SPCustomTheme" />
 <MudPopoverProvider />
 
 <div class="main-layout-gradient d-flex flex-column">
 
-    <header class="bg-transparent px-5 py-10 d-flex">
+    <header id="header" class="px-5 py-10 d-flex fixed" style="top: 0; left: 0; width: 100%;">
 
         <MudItem Style="width:240px">
             <MudLink Href="#">
-            <Image Source="images/logo/logo.png" />
+                <Image Source="images/logo/logo.png" />
             </MudLink>
         </MudItem>
-        <MudItem Class="text-white d-flex justify-content-between gap-2 flex-1">
+        <MudItem  Class="text-white d-flex justify-content-between gap-2 flex-1">
             <div class="d-flex flex-column justify-center">
                 <h2 >
                     @GetTitleForCurrentUri()
@@ -45,7 +51,7 @@
                             <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                         </div>
                     </ActivatorContent>
-   @*                  <ChildContent>
+                    @*                  <ChildContent>
                         <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
                             <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                         </div>
@@ -58,22 +64,29 @@
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
                         <p class="mb-0 fw-bold">@UserName </p>
-
-                        <Link Class="text-white border-bottom text-decoration-none"
-                              href=@(currenttenant.Id != null ? "/view-my-account" : "/edit-profile")>
+                        @if (hasPermission)
+                        {
+                            <a Class="text-white border-bottom text-decoration-none"
+                            href=@("/view-my-account" )>
                             @L["Profile Details"]
-                        </Link>
-                    </div>
+                            </a>
+                        }
+
                     </div>
                 </div>
-            </MudItem>
+            </div>
+        </MudItem>
 
-        </header>
-        <div Class="d-flex me-5 flex-grow-1">
-            <SPSideMenu />
+    </header>
+    <div Class="d-flex me-5 flex-grow-1" style="margin-top: 25vh;">
+        <div id="sideMenu">
+            <SPSideMenu/>
+        </div>
+        <div style="flex-grow: 1; height: 100vh; overflow-y: auto;">
             <MudPaper Class="p-3 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl w-100 main-layout-paper">
                 @Body
-        </MudPaper>
+            </MudPaper>
+        </div>
     </div>
     <footer class="text-center text-white my-5">
         @L["All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles"]
@@ -82,12 +95,12 @@
 
 <style>
     .bg_w_foto {
-        background: url(images/cities/<?php echo $city_name;
-        ?>) no-repeat center center;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
+    background: url(images/cities/<?php echo $city_name;
+    ?>) no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     }
 </style>
 @code {
@@ -98,26 +111,16 @@
 
     @inject IUsersAppService UsersAppService
     private string UserName { get; set; }
+    private bool hasPermission;
 
+    
     protected async override Task OnInitializedAsync()
     {
         UserName = CurrentUser.Name;
         var user = await UsersAppService.GetAsync(CurrentUser.Id);
-        if (currenttenant.Id == null)
-        {
-            //UserName += " MDKHAL";
-            Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
-        }
-        else
-        {
-
-            //UserName += " Organization";
-            Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(currenttenant.Id);
-        }
-
-
-         base.OnInitializedAsync();
-
+        Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
+        hasPermission = currenttenant.Id != null && AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result;
+        base.OnInitializedAsync();
     }
     protected override void OnParametersSet()
     {
@@ -132,37 +135,12 @@
 
     private string GetTitleForCurrentUri()
     {
-        // Customize titles based on the current URI
-        return CurrentURI switch
-        {
-            "dashboard" => L["Dashboard"],
-            "organizations" => L["Organizations"],
-            "garages" => L["Garages"],
-            "cameras" => @L["Cameras"],
-            "cities" => @L["Cities"],
-            "contact-data" => @L["Contact Data"],
-            "countries" => @L["Countries"],
-            "customers" => @L["Customers"],
-            "garageTransactions" => @L["GarageTransactions"],
-            "invoices" => @L["Invoices"],
-            "licencetypes" => @L["LicenceTypes"],
-            "subscription" => @L["Organization Subscription"],
-            "packages" => @L["Packages"],
-            "packagetypes" => @L["PackageTypes"],
-            "platecolors" => @L["PlateColors"],
-            "regions" => @L["Regions"],
-            "states" => @L["States"],
-            "subscriptions" => @L["Subscriptions"],
-            "subscriptiontypes" => @L["SubscriptionType"],
-            "vehiclebrands" => @L["VehicleBrands"],
-            "vehiclemodels" => @L["VehicleModel"],
-            "profile" => @L["Profile"],
-            "customers/register" => @L["Customers"] + "/" + @L["Add NEW"],
-            _ => L["Dashboard"] // Default title if no match found
-        };
+        return BreadCrumbsRoutes.GetCueerntURLRoute(CurrentURI);
+
     }
     private void ChangeLanguage()
     {
+        
         Navigation.NavigateTo($"api/SetLanguage?returnUrl={Navigation.Uri}", true);
     }
     private string LocaleImgSrc()
@@ -183,4 +161,5 @@
                 White = "FFFFFF"
             },
         };
+
 }

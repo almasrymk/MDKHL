@@ -24,6 +24,13 @@ using iText.Kernel.Pdf.Colorspace;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using static QRCoder.SvgQRCode;
+using System.Drawing;
+using SmartParking.Payments;
+using SmartParking.Localization;
+using System.Globalization;
+using AraibcPdfUnicodeGlyphsResharper;
+using iText.IO.Font;
+using iText.Kernel.Font;
 
 
 
@@ -33,16 +40,18 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
 {
     private readonly IInvoiceAppService _invoicePdfAppService;
     private readonly IOrganizationsAppService _organizationPdfAppService;
+    private readonly IPaymentWebAppService _paymentWebAppService;
     
     private string folderInvoiceImage = "Invoice";
     private string folderPdfs = "PDFs";
     private string imageDirectoryPath = null;
 
-    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService)
+    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService, IPaymentWebAppService paymentWebAppService)
     {
         _invoicePdfAppService = invoicePdfAppService;
         imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
         _organizationPdfAppService = organizationPdfAppService;
+        _paymentWebAppService = paymentWebAppService;
     }
     [RemoteService(isEnabled:false)]
     public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
@@ -87,7 +96,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
                         <h4>Hotel Name:</h4><p>{invoice.OrganizationArabicName}</p>
                     </div>
                     <div class=""col-md-6 d-flex flex-column"">
-                        <h4>Cashier No.:</h4><p>{invoice.GarageName}</p>
+                        <h4>Cashier No.:</h4><p>{invoice.GarageArabicName}</p>
                     </div>
                     <div class=""col-md-6 d-flex flex-column align-items-center"">
                         <h4>Hotel Address:</h4>
@@ -400,7 +409,7 @@ img[style*='width:120px;'] {
         return fullPath;
 
     }
-    [RemoteServiceAttribute(isEnabled:true)]
+    [RemoteServiceAttribute(isEnabled: true)]
     public async Task<Stream> SaveInvoicePdf(int invoiceId)
     {
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
@@ -408,174 +417,401 @@ img[style*='width:120px;'] {
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
-        string OrganizationLogo = await _organizationPdfAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
+        var organization = await _organizationPdfAppService.GetOrganizationForCurrentTenatAsync();
+        var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
+        string currentPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
+        string QRCodePath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{image.Value}");
+        string InvoiceNumber = LocalizationHelper.GetLocalizedString("Invoice");
+        string SimplifiedTaxInvoice = LocalizationHelper.GetLocalizedString("SimplifiedTaxInvoice");
+        string HeaderVatReceiptPayment = LocalizationHelper.GetLocalizedString("HeaderVatReceiptPayment");
+        string Vats = LocalizationHelper.GetLocalizedString("VAT");
+        string Sar = LocalizationHelper.GetLocalizedString("SAR");
+        string CashierNo = LocalizationHelper.GetLocalizedString("Cashier No");
+        string OrganizationName = LocalizationHelper.GetLocalizedString("OrganizationName");
+        string OrganizationAddress = LocalizationHelper.GetLocalizedString("OrganizationAddressInvoicePopUp");
+        string PlateNumber = LocalizationHelper.GetLocalizedString("PlateNumber");
+        string EntranceTime = LocalizationHelper.GetLocalizedString("EntranceTime");
+        string ExitTime = LocalizationHelper.GetLocalizedString("ExitTime");
+        string Subscription = LocalizationHelper.GetLocalizedString("Subscription");
+        string Hour = LocalizationHelper.GetLocalizedString("Hour");
+        string Duration = LocalizationHelper.GetLocalizedString("TotalHours");
+        string Hours = LocalizationHelper.GetLocalizedString("Hours");
+        string TotalPreVAT = LocalizationHelper.GetLocalizedString("TotalPreVAT");
+        string TotalIncludeVAT = LocalizationHelper.GetLocalizedString("TotalIncludeVAT");
 
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
-
+        string fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot//fonts//NotoNaskhArabic-Regular.ttf");
+        PdfFont font = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
+        FontSet set = new FontSet();
+        set.AddFont(fontPath);
         Style styleBold = new Style();
-        styleBold.SetBold();
 
         Style Center = new Style();
+
 
         Paragraph header = new Paragraph(invoice.InvoiceNumber.ToString()).
           AddStyle(styleBold)
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(20);
-        Table tableimages = new Table(2).UseAllAvailableWidth(); 
+        Table tableimages = new Table(3).UseAllAvailableWidth();
 
-        Image imageMdkhlLogo = new Image(ImageDataFactory.Create(imageDirectoryPdf))
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT) 
-            .SetWidth(120);
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
+           .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+           .SetWidth(120);
 
-        Image OrgLogo = new Image(ImageDataFactory.Create(OrganizationLogo ?? imageDirectoryPdf))
-            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
-            .SetWidth(120);
-
-        tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT)); 
-
-        tableimages.AddCell(new Cell().Add(OrgLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE) 
-            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)); 
-
-        Paragraph subheader = new Paragraph(" * **Simplified tax invoice***")
-         .SetTextAlignment(TextAlignment.CENTER)
-         .SetFontSize(15);
-
-        Paragraph Vat = new Paragraph("VAT : ")
-            .AddStyle(styleBold)
-         .SetTextAlignment(TextAlignment.CENTER)
-         .SetFontSize(15).Add(@"1230000000");
-
-        Paragraph RecieptPayemntDetails = new Paragraph($"This is the receipt for payment of This is the receipt for payment of {invoice.InvoicePrice} SAR")
-            .AddStyle(styleBold)
-         .SetTextAlignment(TextAlignment.LEFT)
-         .SetFontSize(15);
-        Table table = new Table(2).SetWidth(UnitValue.CreatePercentValue(100));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Payment Number:")));
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.InvoiceNumber}")));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Hotel Name:")));
-        table.AddCell(new Cell(1, 1)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .SetBorder(Border.NO_BORDER)
-            .Add(new Paragraph($"{invoice.OrganizationArabicName}")));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Customer Name:")));
-        table.AddCell(new Cell(1, 1)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .SetBorder(Border.NO_BORDER)
-            .Add(new Paragraph($"{invoice.CustomerEnName ?? "Unkown"}")));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Cashier No.:")));
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.GarageName}")));
-
-        table.AddCell(new Cell(1, 1)
-             .SetBorder(Border.NO_BORDER)
-             .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Payment Date:")));
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph(DateTime.UtcNow.ToString())));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Plate Number:")));
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.PlateNumber}"))).SetBorder(Border.NO_BORDER);
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Entry Date:")));
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.EntranceTime.ToString()}")));
-
-        table.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph("Exit Date:")))
-            .AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.CENTER)
-            .Add(new Paragraph($"{invoice.InvoiceTime.ToString()}")));
+            iText.Layout.Element.Image OrgLogo = (File.Exists(currentPath)
+          ? new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
+          : new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf)))
+              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.LEFT)
+              .SetWidth(120);
 
 
+
+
+
+            tableimages.AddCell(new Cell().Add(OrgLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
+
+
+        }
+        else
+        {
+            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
+           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
+           .SetWidth(120);
+
+            iText.Layout.Element.Image OrgLogo = (File.Exists(currentPath)
+          ? new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
+          : new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf)))
+              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT)
+              .SetWidth(120);
+
+
+
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+
+            tableimages.AddCell(new Cell().Add(OrgLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+        }
+
+
+        Paragraph paymentNumber = new Paragraph(CultureInfo.CurrentCulture.Name == "ar" ? $"{payment.PaymentNumber}{" "}{InvoiceNumber.ArabicWithFontGlyphsToPDF()}" : $"{InvoiceNumber}{" "}{payment.PaymentNumber}")
+      .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+      .SetFontSize(15);
+
+        Paragraph subheader = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
+            ? $"***{SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
+            : $"***{SimplifiedTaxInvoice}***")
+    .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+    .SetFontSize(15);
+
+        Paragraph Vat = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
+            ? $"{organization.TaxIdentificationNumber.ArabicWithFontGlyphsToPDF()}:{Vats.ArabicWithFontGlyphsToPDF()}"
+            : $"{Vats}: {organization.TaxIdentificationNumber}")
+            .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+            .SetFontSize(15);
+
+        Paragraph RecieptPayemntDetails = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
+            ? $"{Sar.ArabicWithFontGlyphsToPDF()}{(Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2))}{" "}{HeaderVatReceiptPayment.ArabicWithFontGlyphsToPDF()}"
+            : $"{HeaderVatReceiptPayment} {(Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2))}{Sar}")
+            .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+            .SetFontSize(15);
+
+        Table table = new Table(5).SetWidth(UnitValue.CreatePercentValue(100));
         Table table1 = new Table(3).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(25);
 
+        Table table2 = new Table(2)
+            .UseAllAvailableWidth()
+            .SetMarginTop(25)
+            .SetBorder(Border.NO_BORDER);
 
-        table1.AddCell(new Cell(1, 1)
+        Table table21 = new Table(1)
+            .UseAllAvailableWidth()
+             .SetMarginTop(25)
+            .SetBorder(Border.NO_BORDER);
+
+        Table table22 = new Table(1)
+            .UseAllAvailableWidth()
+            .SetBorder(Border.NO_BORDER);
+
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            table.AddCell(new Cell(1, 1)
+                .SetFont(font)
+                .SetBorder(Border.NO_BORDER)
+                .SetTextAlignment(TextAlignment.RIGHT)
+                .Add(new Paragraph($"{invoice.OrganizationArabicName.ArabicWithFontGlyphsToPDF()}")));
+            table.AddCell(new Cell(1, 1)
+                .SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($":{OrganizationName.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.RIGHT)
+                 .Add(new Paragraph($"{invoice.GarageArabicName.ArabicWithFontGlyphsToPDF()}")));
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .SetBorder(Border.NO_BORDER)
+                 .Add(new Paragraph($":{CashierNo.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.RIGHT)
+                 .Add(new Paragraph($"{invoice.PlateNumber}")));
+
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .SetBorder(Border.NO_BORDER)
+                 .Add(new Paragraph($":{PlateNumber.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.RIGHT)
+                 .Add(new Paragraph($"{invoice.OrganizationAddress.ArabicWithFontGlyphsToPDF()}")));
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($":{OrganizationAddress.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.RIGHT)
+                 .Add(new Paragraph($"{invoice.InvoiceTime.ToString()}")));
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($":{ExitTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.RIGHT)
+                 .Add(new Paragraph($"{invoice.EntranceTime.ToString()}")));
+            table.AddCell(new Cell(1, 1).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($":{EntranceTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+
+            table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopLeftRadius(new BorderRadius(10))
+            .SetBorderBottomLeftRadius(new BorderRadius(10))
             .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .Add(new Paragraph("Subscription\nHour").SetFontSize(14).SetBold()));
+            .SetFont(font)
+             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {Hours.ArabicWithFontGlyphsToPDF()}{" "}{invoice.TotalHours}").SetFontSize(14)));
 
 
-        table1.AddCell(new Cell(1, 1)
+            table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopRightRadius(new BorderRadius(10))
+                .SetBorderBottomRightRadius(new BorderRadius(10))
+                .SetFont(font)
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPDF()}\n {Hour.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
+            iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
+           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
+           .SetWidth(120);
+
+            table22.AddCell(new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .Add(QrCodeImage));
+
+
+            table21.AddCell(new Cell()
+      .SetBorder(Border.NO_BORDER)
+      .SetFont(font)
+      .SetTextAlignment(TextAlignment.RIGHT)
+      .SetVerticalAlignment(VerticalAlignment.TOP)
+      .Add(new Paragraph()
+          .Add(new Text($"{Sar.ArabicWithFontGlyphsToPDF()} {invoice.InvoicePrice.ToString("F2")}"))
+          .Add(new Text($": {TotalPreVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
+          .SetFontSize(12)));
+
+            table21.AddCell(new Cell()
+                .SetBorder(Border.NO_BORDER)
+                .SetFont(font)
+                .SetTextAlignment(TextAlignment.RIGHT)
+                .SetVerticalAlignment(VerticalAlignment.TOP)
+                .Add(new Paragraph()
+                    .Add(new Text($"{Sar.ArabicWithFontGlyphsToPDF()} {Math.Round((invoice.InvoicePrice * 0.15m), 2).ToString("F2")}"))
+                    .Add(new Text($": 15% {Vats.ArabicWithFontGlyphsToPDF()}").SimulateBold())
+                    .SetFontSize(12)));
+
+            table21.AddCell(new Cell()
+                .SetBorder(Border.NO_BORDER)
+                .SetFont(font)
+                .SetTextAlignment(TextAlignment.RIGHT)
+                .SetVerticalAlignment(VerticalAlignment.TOP)
+                .Add(new Paragraph()
+                    .Add(new Text($"{Sar.ArabicWithFontGlyphsToPDF()} {Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2).ToString("F2")}"))
+                    .Add(new Text($": {TotalIncludeVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
+                    .SetFontSize(12)));
+
+            table2.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(table22));
+            table2.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(table21));
+        }
+
+        else
+        {
+            table.AddCell(new Cell(1, 1)
+                  .SetBorder(Border.NO_BORDER)
+                  .SetTextAlignment(TextAlignment.LEFT)
+                  .Add(new Paragraph($"{CashierNo}:")).SimulateBold());
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{invoice.GarageEnglishName}")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{OrganizationName}:")).SimulateBold());
+            table.AddCell(new Cell(1, 1)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .SetBorder(Border.NO_BORDER)
+                 .Add(new Paragraph($"{invoice.OrganizationEnglishName}")));
+
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{OrganizationAddress}:")).SimulateBold());
+            table.AddCell(new Cell(1, 1)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .SetBorder(Border.NO_BORDER)
+                 .Add(new Paragraph($"{invoice.OrganizationAddress}")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{PlateNumber}:")).SimulateBold());
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{invoice.PlateNumber}")));
+
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{EntranceTime}:")).SimulateBold());
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{invoice.EntranceTime.ToString()}")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{ExitTime}:")).SimulateBold());
+            table.AddCell(new Cell(1, 1)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.LEFT)
+                 .Add(new Paragraph($"{invoice.InvoiceTime.ToString()}")));
+
+            table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopLeftRadius(new BorderRadius(10))
+                .SetBorderBottomLeftRadius(new BorderRadius(10))
+                .SetFont(font)
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .Add(new Paragraph($"{Subscription}\n {Hour}").SetFontSize(14)));
+
+
+
+            table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopRightRadius(new BorderRadius(10))
+            .SetBorderBottomRightRadius(new BorderRadius(10))
             .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
-            .SetTextAlignment(TextAlignment.CENTER)
+            .SetTextAlignment(TextAlignment.LEFT)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .Add(new Paragraph("Interval\n" + invoice.TotalHours + " Hour").SetFontSize(14).SetBold()));
+            .SetFont(font)
+             .Add(new Paragraph($"{Duration}\n {invoice.TotalHours}{" "}{Hours}").SetFontSize(14)));
+
+            table21.AddCell(new Cell()
+             .SetBorder(Border.NO_BORDER)
+             .SetTextAlignment(TextAlignment.LEFT)
+             .SetVerticalAlignment(VerticalAlignment.TOP)
+              .Add(new Paragraph()
+                .Add(new Text($"{TotalPreVAT}: ").SimulateBold())
+                .Add(new Text(invoice.InvoicePrice.ToString("F2") + $"{Sar} "))
+                .SetFontSize(12)));
+
+            table21.AddCell(new Cell()
+                .SetBorder(Border.NO_BORDER)
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetVerticalAlignment(VerticalAlignment.TOP)
+                .Add(new Paragraph()
+                    .Add(new Text($"{Vats} 15%: ").SimulateBold())
+                    .Add(new Text((Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + $"{Sar}"))
+                    .SetFontSize(12)));
+
+            table21.AddCell(new Cell()
+                .SetBorder(Border.NO_BORDER)
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetVerticalAlignment(VerticalAlignment.TOP)
+                .Add(new Paragraph()
+                    .Add(new Text($"{TotalIncludeVAT}: ").SimulateBold())
+                    .Add(new Text((Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + $" {Sar}"))
+                    .SetFontSize(12)));
+            iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
+        .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+        .SetWidth(120);
+
+            table22.AddCell(new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
+                .SetTextAlignment(TextAlignment.RIGHT)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .Add(QrCodeImage));
+
+            table2.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(table21));
+            table2.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(table22));
+
+        }
 
 
-        Table table2 = new Table(2).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(25);
-
-        table2.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER) // No border
-            .SetTextAlignment(TextAlignment.LEFT)
-            .SetVerticalAlignment(VerticalAlignment.TOP)
-            .Add(new Paragraph("Total Pre VAT: " + invoice.InvoicePrice.ToString("F2") + " SAR").SetFontSize(12).SetBold()));
-
-        table2.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.LEFT)
-            .SetVerticalAlignment(VerticalAlignment.TOP)
-            .Add(new Paragraph("VAT 15%: " + (Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " SAR").SetFontSize(12).SetBold()));
-
-        table2.AddCell(new Cell(1, 1)
-            .SetBorder(Border.NO_BORDER)
-            .SetTextAlignment(TextAlignment.LEFT)
-            .SetVerticalAlignment(VerticalAlignment.TOP)
-            .Add(new Paragraph("Total Include VAT: " + (Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2)).ToString("F2") + " SAR").SetFontSize(12).SetBold()));
 
 
+
+      
+
+
+
+
+
+         
 
 
 
 
         document.Add(header);
-document.Add(tableimages);
+        document.Add(paymentNumber);
+        document.Add(tableimages);
         document.Add(subheader);
         document.Add(Vat);
         document.Add(RecieptPayemntDetails);

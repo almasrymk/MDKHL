@@ -3,16 +3,18 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.SubsctriptionPermissions
 @using Volo.Abp.MultiTenancy
 @inject IOrganizationsAppService OrganizationAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentTenant currentTenant
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager Navigation
+@* @attribute [Authorize(SubscriptionPermissions.Default)] *@
 
-
-
-<PageTitle>@L["Organization Subscription"]</PageTitle>
+<PageTitle>@L["Subscriptions"]</PageTitle>
 <div class="d-flex justify-content-between align-items-center my-5 flex-column">
-    <MudText Class="fw-bold mt-5 align-self-lg-start" Typo="Typo.h6">@L["Organization Subscription"]</MudText>
+    <MudText Class="fw-bold mt-5 align-self-lg-start" Typo="Typo.h6">@L["Subscriptions"]</MudText>
 
     <MudGrid Class="mt-5">
 
@@ -76,6 +78,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(SubscriptionPermissions.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+
         var orgId = await OrganizationAppService.GetOrganizationIdByTenant(currentTenant.Id);
         var Organization =await OrganizationAppService.GetAsync(orgId);
 

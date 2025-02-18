@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -15,12 +16,16 @@ using MudBlazor;
 using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
+using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Results;
+using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -44,6 +49,7 @@ using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.Blazor.Server;
@@ -111,6 +117,7 @@ public class SmartParkingBlazorModule : AbpModule
             Configure<RazorPagesOptions>(options =>
             {
                 options.Conventions.AuthorizePage("/Login");
+               
             });
             PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
             {
@@ -126,6 +133,7 @@ public class SmartParkingBlazorModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+       
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
 
@@ -166,11 +174,21 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
     {
+        
+        context.Services.Configure<IdentityOptions>(options =>
+        {
+            options.User.RequireUniqueEmail = false;
+
+        });
 
         context.Services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = ".AspNetCore.Identity.Application";
-
+            var currentTenant = context.Services.GetRequiredService<ICurrentTenant>();
+            if (currentTenant.IsAvailable)
+            {
+                options.Cookie.Name += $"__tenant";
+            }
             options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
             options.SlidingExpiration = true;
 
@@ -182,15 +200,14 @@ public class SmartParkingBlazorModule : AbpModule
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.ContentType = "application/json";
-                    var result = Result.Unauthorized(); // Assuming Result.Unauthorized() returns a proper message
-                    // Serialize the result object to JSON
+                    var result = Result.Unauthorized(); 
+                   
                     var resultJson = JsonSerializer.Serialize(result);
-                    // Write the result to the response body
+                    
                     await context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(resultJson));
                     await Task.CompletedTask;
                 }
-                //"\"error\": \"Unauthorized access - token is invalid or expired.\"}"
-                // If no Bearer token, allow redirect to login page
+                
                 context.Response.Redirect(context.RedirectUri);
 
                 await Task.CompletedTask;
@@ -257,6 +274,9 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureSwaggerServices(IServiceCollection services)
     {
+        LocalizationHelper.Configure(services.BuildServiceProvider());
+        FileUtilitiy.Configure(services.BuildServiceProvider());
+
         services.AddAbpSwaggerGen(
             options =>
             {
@@ -344,6 +364,7 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseHttpsRedirection();
         app.UseCorrelationId();
         app.UseStaticFiles();
+        app.MapAbpStaticAssets();
         var supportedCultures = new[]
             {
                 new CultureInfo("ar"),
@@ -361,9 +382,10 @@ public class SmartParkingBlazorModule : AbpModule
             };
         });
         app.UseRouting();
-        app.UseMiddleware<TokenCheckMiddleware>();
+
         app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints
         app.UseAuthorization();
+        app.UseMiddleware<TokenCheckMiddleware>();
         app.UseAbpOpenIddictValidation();
 
         if (MultiTenancyConsts.IsEnabled)

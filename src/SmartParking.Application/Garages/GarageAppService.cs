@@ -6,10 +6,12 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -60,15 +62,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         using (DataFilter.Disable<IMultiTenant>())
         {
             var organization = await GetAndValidateOrganizationAsync(input.OrganizationId);
-
             ValidateSlotCapacity(input);
-
-            var subscription = await CheckSubscriptionLimitsAsync(organization, input);
-
+            if(input.Status == Status.Active)
+            {
+                await CheckSubscriptionGarageLimitAsync(organization, input);
+                await CheckSubscriptionLimitsAsync(organization, input, organization.UsedSlots);
+                UpdateOrganizationUsage(organization, input);
+            }
             input.Code =await GenerateGarageCode(organization, input);
-
-            UpdateOrganizationUsage(organization, input);
-
             input.TenantId = organization.TenantId;
         //    await CurrentUnitOfWork.SaveChangesAsync();
             return await base.CreateAsync(input);
@@ -88,7 +89,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             throw new EntityNotFoundException(typeof(Organization), organizationId);
 
         if (organization.Status != Enums.Status.Active)
-            throw new Exception("Can't add garage to inactive organization.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("InActive")+ LocalizationHelper.GetLocalizedString("Organization"));
 
         return organization;
     }
@@ -98,28 +99,33 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     {
         if (input.MaxCapacity != input.MaxSlotsForCustomers + input.MaxSlotsForEmployess + input.MaxSlotsForFree)
         {
-            throw new Exception("Summation of slots is greater than maximum capacity !!");
+            throw new Exception(LocalizationHelper.GetLocalizedString("SummationValidation") +' '+ LocalizationHelper.GetLocalizedString("MaxCapacity"));
         }
     }
     [RemoteService(isEnabled: false)]
 
-    private async Task<Subscription> CheckSubscriptionLimitsAsync(Organization organization, CreateUpdateGarageDto input)
+    private async Task<Subscription> CheckSubscriptionLimitsAsync(Organization organization, CreateUpdateGarageDto input , int usedSots)
     {
-   
-            var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId&&x.Status==Enums.Status.Active);
-            var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
-
-            if (subscription == null || subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1 ||
-                organization.UsedSlots + input.MaxCapacity > subscription.ParkingSlot || input.MaxCapacity > subscription.ParkingSlot)
-            {
-                throw new Exception($"Upgrade subscription to add garage to organization valid slots less than {subscription?.ParkingSlot} ");
-            }
-
-            return subscription;
-        
+        var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId && x.Status == Enums.Status.Active);
+        if (subscription == null ||  (usedSots + input.MaxCapacity > subscription.ParkingSlot || input.MaxCapacity > subscription.ParkingSlot))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation") + input.MaxCapacity + LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUpdate") + (subscription.ParkingSlot - usedSots));
+        }
+        return subscription;
     }
-    
-    
+    private async Task<Subscription> CheckSubscriptionGarageLimitAsync(Organization organization, CreateUpdateGarageDto input)
+    {
+        var subscription = await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+        var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId && x.Status == Enums.Status.Active);
+
+        if (subscription == null || subscription.NumbersOfGarages < numberOfGaragesForOrganization.Count + 1)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("AddNewGarageValidation"));
+        }
+        return subscription;
+    }
+
     [RemoteService(isEnabled: false)]
 
     private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization,int camerasCout , Subscription subscription)
@@ -127,8 +133,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         
          if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
          {
-             throw new Exception("Upgrade subscription to add cameras to organization.");
-
+             throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
          }
 
         return true;
@@ -146,11 +151,17 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     private void UpdateOrganizationUsage(Organization organization, CreateUpdateGarageDto input)
     {
-        organization.UsedSlots += input.MaxCapacity;
         if (input.Status == Enums.Status.Active)
         {
+            organization.UsedSlots += input.MaxCapacity;
             organization.ActiveGarages++;
         }
+    }
+
+    private void UpdateOrganizationUsageDelete(Organization organization, int maxcapacity)
+    {
+        organization.UsedSlots -= maxcapacity;
+       
     }
     [RemoteService(isEnabled: false)]
 
@@ -165,7 +176,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     {
         if (input == 99)
         {
-            throw new BusinessException("Can't add more garages for that organization");
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
         }
         string Code = "-G-";
         if (input < 9)
@@ -200,14 +211,20 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             organization = await GetAndValidateOrganizationAsync(input.OrganizationId);
             garage = await GetAndValidateGarageAsync(id);
             input.TenantId = organization.TenantId;
-            numberOfGaragesInInputOrganization = await GetNumberOfGaragesInOrganizationAsync(input.OrganizationId);
-            await UpdateGarageDetailsAsync(input, organization, numberOfGaragesInInputOrganization, garage);
+            await UpdateGarageDetailsAsync(input, organization, garage);
         }
 
         await CurrentUnitOfWork.SaveChangesAsync();
 
         return await UpdateGarageAsync(id, input);
     }
+
+    private static void CheckSolt(CreateUpdateGarageDto input, Organization organization)
+    {
+        if (input.MaxCapacity > organization.Subscription.ParkingSlot)
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
+    }
+
     [RemoteService(isEnabled: false)]
 
     private async Task<Garage> GetAndValidateGarageAsync(int id)
@@ -229,48 +246,57 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     [RemoteService(isEnabled: false)]
     private async Task ChangeCameraStatusRelatedToGarage(Garage Garage,List<Camera> cameras)
     {
- 
             foreach (var camera in cameras) { 
-            
                 camera.Status=Garage.Status;
-            
-            }
-
-        
+            }   
     }
 
     [RemoteService(isEnabled: false)]
 
-    private async Task UpdateGarageDetailsAsync(CreateUpdateGarageDto input, Organization organization, int numberOfGarages, Garage existingGarage)
+    private async Task UpdateGarageDetailsAsync(CreateUpdateGarageDto input, Organization organization ,  Garage existingGarage)
     {
-        
-
-        
-
-        if (input.Status == Enums.Status.Inactive && existingGarage.Status == Enums.Status.Active)
+        await ((input.Status, existingGarage.Status) switch
         {
-            existingGarage.Status = Enums.Status.Inactive;
-            organization.ActiveGarages--;
-            organization.UsedSlots -= existingGarage.MaxCapacity;
-            
-            var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
-            await ChangeCameraStatusRelatedToGarage(existingGarage,cameras);
-            organization.ActiveCameras-=cameras.Count;
-        }
-        else if (input.Status == Enums.Status.Active && existingGarage.Status == Enums.Status.Inactive)
-        {
-            existingGarage.Status= Enums.Status.Active;
-            var subscription =await CheckSubscriptionLimitsAsync(organization, input);
-            var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
-            var result = CheckSubscriptionLimitsCamerasAsync(organization,cameras.Count, subscription);
-            await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
-
-            organization.ActiveGarages++;
-            organization.ActiveCameras += cameras.Count;
-            organization.UsedSlots += existingGarage.MaxCapacity;
-
-        }
+            (Status.Inactive, Status.Active) => UpdateGarageWhenNewInActiveOldActive(organization, existingGarage),
+            (Status.Active, Status.Inactive) => UpdateGarageWhenNewActiveOldInActive(input, organization, existingGarage),
+            (Status.Active, Status.Active) => UpdateGarageWhenNewOldActive(input, organization, existingGarage)
+        });
+       
     }
+
+    private async Task UpdateGarageWhenNewOldActive(CreateUpdateGarageDto input, Organization organization, Garage existingGarage)
+    {
+        int usedSlots = organization.UsedSlots - existingGarage.MaxCapacity;
+        var subscription = await CheckSubscriptionLimitsAsync(organization, input, usedSlots);
+        organization.UsedSlots -= existingGarage.MaxCapacity;
+        organization.UsedSlots += input.MaxCapacity;
+    }
+
+    private async Task UpdateGarageWhenNewActiveOldInActive(CreateUpdateGarageDto input, Organization organization, Garage existingGarage)
+    {
+        await CheckSubscriptionGarageLimitAsync(organization, input);
+        existingGarage.Status = Enums.Status.Active;
+        var subscription = await CheckSubscriptionLimitsAsync(organization, input, organization.UsedSlots);
+        var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
+        var result = CheckSubscriptionLimitsCamerasAsync(organization, cameras.Count, subscription);
+        await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
+
+        organization.ActiveGarages++;
+        organization.ActiveCameras += cameras.Count;
+        organization.UsedSlots += input.MaxCapacity;
+    }
+
+    private async Task UpdateGarageWhenNewInActiveOldActive(Organization organization, Garage existingGarage)
+    {
+        existingGarage.Status = Enums.Status.Inactive;
+        organization.ActiveGarages--;
+        organization.UsedSlots -= existingGarage.MaxCapacity;
+        existingGarage.CurrnetCapacityEmployees = existingGarage.CurrnetCapacityForFree = existingGarage.CurrnetCapacityForCustomers = existingGarage.CurrnetCapicity = 0;
+        var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
+        await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
+        organization.ActiveCameras -= cameras.Count;
+    }
+
     [RemoteService(isEnabled: false)]
 
     private async Task<GarageDto> UpdateGarageAsync(int id, CreateUpdateGarageDto input)
@@ -298,9 +324,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+				or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower())||
+				or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
                 
 			);
         }
@@ -327,7 +352,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         // Map the hotel entities to hotelDto objects
         var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
-        Console.WriteLine(garagesDto.Count);
         // Return the paginated result
         return new PagedResultDto<GarageDto>(
             totalCount,
@@ -342,19 +366,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             // Get the IQueryable<garage> from the repository
             var queryable = await _repository.GetQueryableAsync();
             // Apply search filtering
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-
-                queryable = queryable.Where(or =>
-                    or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-			        or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				    or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				    or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
-
-				);
-			}
+            queryable = ApplySearch(input, queryable);
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -385,6 +397,25 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 garagesDto
             );
         }
+    }
+
+    private static IQueryable<Garage> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Garage> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.NameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.MaxCapacity.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
     }
 
 
@@ -435,9 +466,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            // Get the IQueryable<garage> from the repository
             var queryable = await _repository.GetQueryableAsync();
-            // Apply filtering
             var filterExpression = BuildExpression<Garage>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
@@ -499,7 +528,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     /// <inheritdoc/>
     public async override Task<PagedResultDto<GarageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (_currentTenant.Id==null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -530,18 +559,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task DeleteAsync(int id)
     {
-        
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+
+        if (!CurrentTenant.Id.HasValue)
         {
 
             using (DataFilter.Disable<IMultiTenant>())
             {
 				Garage garage;
-				using (DataFilter.Disable<IMultiTenant>())
-				{
+				
 					garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
-
-				}
 
 				if (garage == null)
 				{
@@ -558,10 +584,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 					throw new Exception("Can't Delete an deleted Garage");
 
 				}
-				garage.Status = Status.Deleted;
-                
-                await CurrentUnitOfWork.SaveChangesAsync();
-                //await base.DeleteAsync(id);
+                UpdateOrganizationUsageDelete(org,garage.MaxCapacity);
+                await _repository.HardDeleteAsync(garage);
             }
 
         }
@@ -698,15 +722,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
 		if (NewOrganization.Subscription.NumberOfCameras < NewOrganization.ActiveCameras + totalActive)
 		{
-			throw new Exception("UPGRADE subscription to add cameras to organization.");
+			throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 		}
 		NewOrganization.ActiveCameras += totalActive;
 		if (NewOrganization.Subscription.NumbersOfGarages < NewOrganization.ActiveGarages + 1)
 		{
-			throw new Exception("UPGRADE subscription to add garage to organization.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
-		}
-		NewOrganization.ActiveGarages++;
+        }
+        NewOrganization.ActiveGarages++;
 		NewGarage.OrganizationId = NewOrganization.Id;
         NewGarage.TenantId = TenantId;
 		await CurrentUnitOfWork.SaveChangesAsync();
@@ -745,7 +769,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
     public override async Task<GarageDto> GetAsync(int id)
     {
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        if (CurrentTenant.Id==null)
         {
 
             using (DataFilter.Disable<IMultiTenant>())
@@ -772,18 +796,18 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
                 var org = await query.FirstOrDefaultAsync(x => x.Id == garage.OrganizationId);
 
                 if (org == null || org.Subscription == null) {
-                    throw new Exception("Organization must have subscription.");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
                 }
 
                 if (org.Subscription.NumberOfCameras < org.ActiveCameras + NumOfActiveCamera)
                 {
-                    throw new Exception("UPGRADE subscription to add cameras to organization.");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
                 }
                 org.ActiveCameras += NumOfActiveCamera;
                 if (org.Subscription.NumbersOfGarages < org.ActiveGarages + 1)
                 {
-                    throw new Exception("UPGRADE subscription to add garage to organization.");
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
 
                 }
                 if (NumOfActiveCamera > 0)
@@ -815,5 +839,70 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         }
 
+    }
+
+    public async Task<PagedResultDto<GarageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = ApplySearch(input, queryable);
+        queryable = ApplySort(input, queryable);
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        List<Garage> garages = await ApplyPaged(input, queryable);
+        var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+        Console.WriteLine(garagesDto.Count);
+        return new PagedResultDto<GarageDto>(
+            totalCount,
+            garagesDto
+        );
+    }
+
+    private async Task<List<Garage>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Garage> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var garages = await AsyncExecuter.ToListAsync(queryable);
+        return garages;
+    }
+
+    private static IQueryable<Garage> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Garage> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+        }
+
+        return queryable;
+    }
+
+    public async Task<PagedResultDto<GarageDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = ApplyFilterTenant(tenantId, queryable);
+            queryable = ApplySearch(input, queryable);
+            queryable = ApplySort(input, queryable);
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            List<Garage> garages = await ApplyPaged(input, queryable);
+            var garagesDto = ObjectMapper.Map<List<Garage>, List<GarageDto>>(garages);
+            return new PagedResultDto<GarageDto>(
+                totalCount,
+                garagesDto
+            );
+        }
+    }
+
+    private static IQueryable<Garage> ApplyFilterTenant(Guid? tenantId, IQueryable<Garage> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(x => x.TenantId == tenantId);
+        return queryable;
     }
 }

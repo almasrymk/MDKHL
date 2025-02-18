@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Cameras
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Garages
 @using SmartParking.Localization
@@ -10,20 +11,33 @@
 
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-@* <PageTitle>@L["View Camera"]</PageTitle>
- *@
+
 <div class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+	<MudDialog class="mud-modal" >
 		<TitleContent>
-			<MudText Typo="Typo.h6">@Camera.Name</MudText>
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
 		</TitleContent>
 		<DialogContent>
-
-
-
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 
+					<MudItem sm="12" md="12">
+						<MudText Class="text-bold">@L["CameraAccessData"]</MudText>
+					</MudItem>					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.UserName"
+									  Immediate="true"
+									  Disabled=true
+									  Placeholder="@L["UserName"]"
+									  Label="@L["UserName"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="Camera.Password"
+									  Immediate="true"
+									  Disabled=true
+									  Placeholder="@L["Password"]"
+									  Label="@L["Password"]" />
+					</MudItem>
+					<MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.Name"
 									  For="@(() => Camera.Name)"
@@ -41,31 +55,31 @@
 					@if (CultureInfo.CurrentCulture.Name == "en")
 					{
 						<MudItem sm="6" md="6">
-							<MudTextField @bind-Value="Camera.Model.EnglishName"
-										  Immediate="true"
-										  Disabled=true
-										  Label="@L["Model"]" />
-						</MudItem>
-						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.BrandName.EnglishName"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["BrandName"]" />
 						</MudItem>
-					}
-					else
-					{
 						<MudItem sm="6" md="6">
-							<MudTextField @bind-Value="Camera.Model.ArabicName"
+							<MudTextField @bind-Value="Camera.Model.EnglishName"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["Model"]" />
 						</MudItem>
+					}
+					else
+					{
 						<MudItem sm="6" md="6">
 							<MudTextField @bind-Value="Camera.BrandName.ArabicName"
 										  Immediate="true"
 										  Disabled=true
 										  Label="@L["BrandName"]" />
+						</MudItem>
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Model.ArabicName"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["Model"]" />
 						</MudItem>
 					}
 
@@ -86,24 +100,40 @@
 									  Disabled=true
 									  Label="@L["MacAddress"]" />
 					</MudItem>
+					@if (CultureInfo.CurrentCulture.Name == "ar")
+					{
+					<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Garage.NameAr"
+										  For="@(() => Camera.Garage.NameAr)"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["GarageName"]" />
+						</MudItem>
+					}
+					else
+					{
 
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="Camera.Garage.NameEn"
+										  For="@(() => Camera.Garage.NameEn)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["GarageName"]" />
+						</MudItem>
+
+					}
+					
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.GarageId"
-									  For="@(() => Camera.GarageId)"
+						<MudTextField T="string"
+									  Value="@L[$"{Camera.CameraType}"]"
 									  Immediate="true"
 									  Disabled=true
-									  Label="@L["GarageId"]" />
+									  Label="@L["CameraType"]" />
 					</MudItem>
 					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.CameraType"
-									  For="@(() => Camera.CameraType)"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["Type"]" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="Camera.Status"
-									  For="@(() => Camera.Status)"
+						<MudTextField
+									T="string"
+									 Value="@L[$"{Camera.Status}"]"
 									  Immediate="true"
 									  Disabled=true
 									  Label="@L["Status"]" />
@@ -114,9 +144,14 @@
 
 
 		</DialogContent>
-		<DialogActions>
-			<MudButton Style="@($" background:{Colors.Gray.Lighten4};")" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-		</DialogActions>
+		    <DialogActions>
+    <DialogActionComponent 
+        ButtonTwoColor="MudBlazor.Color.Dark" 
+        ButtonTwoLabel="@L["Back"]" 
+        ButtonTwoClick="OnCloseViewOnly" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" 
+    />
+</DialogActions>
 
 
 	</MudDialog>
