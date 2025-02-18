@@ -1,4 +1,5 @@
-﻿using NuGet.Protocol.Core.Types;
+﻿using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
@@ -48,6 +49,8 @@ public class DailyShiftAppService :
     }
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
+        if (!input.TenantId.HasValue)
+            input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
     }
     public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
@@ -58,9 +61,42 @@ public class DailyShiftAppService :
     {
         return  base.DeleteAsync(id);
     }
-    public override async Task<DailyShiftDto> GetAsync(int id)
+    public override async Task<DailyShiftDto?> GetAsync(int id)
     {
-        return await base.GetAsync(id);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryDailyShift = await _repository.GetQueryableAsync();
+            var queryGarge = await _garageRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var IsFounddailyShift = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
+            if (IsFounddailyShift is null)
+                throw new Exception("NotFoundValidation"); 
+            var result = from dailyShift in queryDailyShift
+                         where dailyShift.Id == id
+                         join user in queryUser
+                         on dailyShift.KeeperId equals user.Id
+                         join organization in queryOrganization
+                         on dailyShift.OrganizationId equals organization.Id
+                         join garage in queryGarge
+                         on dailyShift.GarageId equals garage.Id
+
+                         select new DailyShiftDto
+                         {
+                             Id = dailyShift.Id,
+                             KeeperId = dailyShift.KeeperId,
+                             OrganizationId = dailyShift.OrganizationId,
+                             OrganizationNameAr = organization.ArabicName,
+                             OrganizationNameEn = organization.EnglishName,
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             RequestTime = dailyShift.RequestTime,
+                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
+                             KeeperName = user.Name,
+                         };
+            return await result.FirstOrDefaultAsync();
+        }
+        
     }
     public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync (PagedAndSortedAndSearchResultRequestDto input ,Guid?  TenantId )
     {
@@ -105,6 +141,45 @@ public class DailyShiftAppService :
         }
     }
 
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryDailyShift = await _repository.GetQueryableAsync();
+            var queryGarge = await _garageRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+
+            var result = from dailyShift in queryDailyShift
+                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         join user in queryUser
+                         on dailyShift.KeeperId equals user.Id
+                         join garage in queryGarge
+                         on dailyShift.GarageId equals garage.Id
+                         select new DailyShiftDto
+                         {
+                             Id = dailyShift.Id,
+                             KeeperId = dailyShift.KeeperId,
+                             OrganizationId = dailyShift.OrganizationId,
+                             OrganizationNameAr = string.Empty,
+                             OrganizationNameEn = string.Empty,
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             RequestTime = dailyShift.RequestTime,
+                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
+                             KeeperName = user.Name,
+                         };
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+            result = ApplySort(input, result);
+            result = ApplySearch(input, result);
+            var total = result.Count();
+            return new PagedResultDto<DailyShiftDto>
+            {
+                TotalCount = total,
+                Items = result.ToList()
+            };
+        }
+    }
     private static IQueryable<DailyShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto> result)
     {
         var sorting = input.Sorting;

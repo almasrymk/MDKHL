@@ -19,7 +19,9 @@
 <PageTitle>@L["DailyShifts"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["DailyShifts"]</MudText>
 
-<SPDataGrid PageName=@L["DailyShifts"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" ShowDelete="false" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => CreateDailyShift(_backdropClick))" ShowAdd="false" ShowEdit="false" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["DailyShifts"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" ShowDelete="false" 
+TotalItemsInTable="TotalItem"  OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData"
+></SPDataGrid>
 
 
 
