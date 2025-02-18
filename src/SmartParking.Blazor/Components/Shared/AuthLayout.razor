@@ -17,9 +17,11 @@
                 <div class="d-flex gap-2">
                     <MudMenu>
                         <ActivatorContent>
+                            <MudTooltip Text=@L["ChangeLanguage"]>
                             <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
                                 <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                             </div>
+                            </MudTooltip>
                         </ActivatorContent>
                     </MudMenu>
                 </div>
