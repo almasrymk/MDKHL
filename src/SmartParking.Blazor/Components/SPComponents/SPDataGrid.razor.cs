@@ -263,7 +263,7 @@ public partial class SPDataGrid
         var pageArgs = new PageChangeEventArgs()
         {
             PageNumber = state.Page + 1,
-            RowsPerPage = state.PageSize,
+            RowsPerPage = state.PageSize-1,
             SortColumn = sortString,
             SearchTerm = _searchString,
             Filters = ColumnsFilter,
@@ -358,7 +358,7 @@ public partial class SPDataGrid
         try
         {
             GridState<RowDef> state = new GridState<RowDef>();
-            state.PageSize = int.MaxValue;
+            state.PageSize = int.MaxValue - 1;
             IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
