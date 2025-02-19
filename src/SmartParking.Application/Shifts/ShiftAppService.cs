@@ -21,6 +21,7 @@ using Abp.Localization;
 using SmartParking.Localization;
 using LocalizationHelper = SmartParking.Localization.LocalizationHelper;
 using System.Linq.Expressions;
+using SmartParking.Enums;
 namespace SmartParking.Shifts;
 
 [Authorize]
@@ -46,7 +47,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     public override async Task<ShiftDto> CreateAsync(CreateUpdateShiftDto input)
     {
         await CheckExistanceOfDependencies(input);
-        var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.GarageId);
+        var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime , input.StartDate, input.EndDate, input.GarageId);
         if (await HasOverlappingShift(_overlapExpression))
         {
             throw new Exception("Shift overlaps with an existing shift.");
@@ -90,13 +91,17 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     {
         return await repository.AnyAsync(expression);
     }
-    public Expression<Func<Shift, bool>> GetTimeOverlapExpression(TimeOnly startTime, TimeOnly endTime, int garageId)
+    public Expression<Func<Shift, bool>> GetTimeOverlapExpression(TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate , DateOnly EndDate, int garageId)
     {
         return s =>
              s.GarageId == garageId &&
-            (startTime >= s.StartTime && startTime < s.EndTime) ||
-            (endTime > s.StartTime && endTime <= s.EndTime) ||
-            (startTime <= s.StartTime && endTime >= s.EndTime);
+             s.StartDate <=  EndDate && 
+            s.EndDate >=  StartDate &&
+            (
+                (StartTime >= s.StartTime &&  StartTime < s.EndTime) || 
+                ( EndTime > s.StartTime &&  EndTime <= s.EndTime) ||  
+                ( StartTime <= s.StartTime &&  EndTime >= s.EndTime)  
+            )&&s.Status==Status.Active ; 
     }
     public Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
     {
@@ -266,7 +271,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     public async override Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input)
     {
         await CheckExistanceOfDependencies(input);
-        var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.GarageId);
+        var _overlapExpression  = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId);
         var _sameShiftExpression = NotSameEntityExpression(id);
         if (await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))
         {
@@ -312,6 +317,14 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             }
             return shiftDto;
 
+        }
+    }
+
+    public async Task<ShiftDto> CreateForMDKHLAsync(CreateUpdateShiftDto shift)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+          return await  CreateAsync(shift);
         }
     }
 }

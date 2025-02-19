@@ -136,7 +136,7 @@ public class SmartParkingBlazorModule : AbpModule
        
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
-
+        context.Services.AddSingleton<NotificationService>();
         // Define the supported cultures
         var supportedCultures = new[]
         {

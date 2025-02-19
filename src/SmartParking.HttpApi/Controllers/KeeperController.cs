@@ -181,7 +181,6 @@ public class KeeperController : AbpController
     public async Task<Result<CreateUpdateInvoiceDto>> KeeperPreCheckoutForTransaction(int transactionId)
     {
         var invoice = await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
-        invoice.Value.InvoiceTime = invoice.Value.InvoiceTime.Value.AddHours(3);
         return invoice;
     }
 

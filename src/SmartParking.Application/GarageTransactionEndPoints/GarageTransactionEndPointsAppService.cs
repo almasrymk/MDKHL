@@ -766,6 +766,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
             if (transaction != null)
             {
+                if (transaction.CheckoutMobile.HasValue)
+                {
+                    transaction.RemainingTime = CalculateRemainingTimeWithGrace(transaction.CheckoutMobile, transaction.Organization.Graceperiod);
+                }
                 return transaction;
             }
             throw new EntityNotFoundException($"Transaction with id {transaction} is not found");
@@ -808,6 +812,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<(CreateUpdateGarageTransactionDto ExitGarageTransaction, GarageTransaction EntryGarageTransaction)> InitiateGarageTransaction(int garageTransactionId)
     {
         var entryGarageTransaction = await GetTransactionById(garageTransactionId);
+        if (entryGarageTransaction.IsIn && entryGarageTransaction.IsPending == false && entryGarageTransaction.CanCheckout == true)
+        {
+            throw new EntityNotFoundException($"Transaction Already Checked-Out");
+
+        }
         var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
        var  exitGarageTransaction = new CreateUpdateGarageTransactionDto
         {
@@ -866,6 +875,24 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         Customer exsitCustomer = await GetCustomer(customer);
 
         return await CalculateStayingHoursForCustomer(result.EntryGarageTransaction.AccurateTime.Value, result.ExitGarageTransaction,exsitCustomer,org,totalHours,packageDto);
+    }
+
+    private DateTime CalculateRemainingTimeWithGrace(DateTime? checkoutMobile, int gracePeriod)
+    {
+        if (IfPassGracePeriod(checkoutMobile, gracePeriod))
+        {
+            return DateTime.MinValue;
+        }
+        return CalculateRemainingTime(checkoutMobile, gracePeriod);
+    }
+    private bool IfPassGracePeriod(DateTime? CheckoutMobile, int Graceperiod)
+    {
+        return (CheckoutMobile.Value.AddMinutes(Graceperiod) - DateTime.Now.AddHours(1)).Minutes < 0 ? true : false;
+    }
+
+    private DateTime CalculateRemainingTime(DateTime? MobileCheckout, int Graceperiod)
+    {
+        return DateTime.Now.Add(MobileCheckout.Value.AddMinutes(Graceperiod * 1.0) - DateTime.Now);
     }
 }
 
