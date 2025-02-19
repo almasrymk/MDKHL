@@ -115,11 +115,7 @@ partial class Shifts
             SearchingTerm = termSearch
         };
         PagedResultDto<ShiftDto> shiftsDto = new PagedResultDto<ShiftDto>();
-        if (CurrentTenant.Id is null)
-            shiftsDto = await ShiftAppService.GetListMdkhlAsync(input, null);
-        else
-            shiftsDto = await ShiftAppService.GetListOrganizationAsync(input);
-        TotalItem = (int)shiftsDto.TotalCount;
+        shiftsDto = await ShiftAppService.GetListMdkhlAsync(input, CurrentTenant.Id);
         await CreateTable(shiftsDto);
 
     }
@@ -235,22 +231,20 @@ partial class Shifts
 
     }
 
-    //private async Task<IDialogReference> OnClickRowView(RowDef row)
-    //{
-    //    var id = int.Parse(row.Cells[0].Value);
+    private async Task<IDialogReference> OnClickRowView(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
 
-    //    var shiftDto = await ShiftAppService.GetAsync(id);
+        var shiftDto = await ShiftAppService.GetShiftAsync(id,CurrentTenant.Id);
 
-    //    var parameters = new DialogParameters
-    //    {
-    //        ["Camera"] = shiftDto,
-    //        ["UpdatedId"] = id
-
-    //    };
+        var parameters = new DialogParameters
+        {
+            ["shiftDto"] = shiftDto,
+        };
 
 
-    //    return await Dialog.ShowAsync<ViewCameraDialog>("CameraView", parameters);
-    //}
+        return await Dialog.ShowAsync<ShiftViewDialog>("CameraView", parameters);
+    }
 
 
     public string Truncate(string str, int maxLength)
