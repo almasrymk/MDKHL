@@ -670,7 +670,8 @@
     "Reserved": "Reserved",
     "CustomerAndPaymentReport": "Customers Payments",
     "CustomerPackageReport": "Customers Packages",
-    "PaymentMehtodReport" :  "Bank Transfers Payments"
+    "PaymentMehtodReport": "Bank Transfers Payments",
+    "exportstarted": "Export process has started"
 
 
 
