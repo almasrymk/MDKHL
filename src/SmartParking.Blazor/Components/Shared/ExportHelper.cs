@@ -17,8 +17,8 @@ public static class ExportHelper
 
         await generateFilesAppService.ExportToExcel(items, filePath);
 
-        SnackBar.ShowSnackbar(snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                   LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+        //SnackBar.ShowSnackbar(snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+        //           LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
         await Task.Delay(1000);
         await jsRuntime.InvokeVoidAsync("window.open", $"Folders/Excel/{items.Name}.xlsx", "_blank");

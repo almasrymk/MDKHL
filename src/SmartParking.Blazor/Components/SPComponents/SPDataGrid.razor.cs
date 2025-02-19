@@ -355,8 +355,8 @@ public partial class SPDataGrid
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
             await GenerateFilesAppService.ExportToPdf(Data, file);
 
-            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            //SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+            //            LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
             IsExport = false;
