@@ -26,6 +26,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 
@@ -191,10 +192,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                 Table footerTable = AddFooter(pdfDoc, font, contactMail, phoneNum, address, pageNumber);
                 int rowOfTable = 0;
                 doc.Add(headerTable);
-                int maxRows = 27;
+                int maxRows = 21;
                 if (CultureInfo.CurrentCulture.Name == "ar")
                 {
-                    maxRows = 22;
+                    maxRows = 21;
                     Data.Columns.Reverse();
                 }
                 Table table = GetColumnHeader(Data, font, styleBold, NumberOfColumns);
@@ -215,7 +216,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         }
                         else
                         {
-                            new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 85))
+                            new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 75))
                                 .Add(footerTable);
                         }
                         doc.Add(areaBreak: new AreaBreak());
@@ -229,16 +230,16 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
-                            Text txt = CellStyling(header, cellValue, font);
+                            Text txt = CellStyling(header, cellValue, font ,  styleBold);
                             if (CultureInfo.CurrentCulture.Name == "ar")
                             {
-                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(22).SetTextAlignment(TextAlignment.CENTER));
+                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(24).SetTextAlignment(TextAlignment.CENTER));
 
                             }
                             else
                             {
 
-                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(18).SetTextAlignment(TextAlignment.CENTER));
+                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(24).SetTextAlignment(TextAlignment.CENTER));
                             }
                         }
                     }
@@ -381,27 +382,30 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
         return footerTable;
     }
-    private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font)
+    private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font, Style  styleBold )
     {
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            
-            if ((header.PropertyName.ToLower().Contains("date") == true || header.PropertyName.ToLower().Contains("time") == true) || header.PropertyName.ToLower().Contains("Published") == true || header.Name.ToLower().Contains("code") )
+            if ((header.PropertyName.ToLower().Contains("date") == true || header.PropertyName.ToLower().Contains("time") == true) || header.PropertyName.ToLower().Contains("Published") == true || header.Name.ToLower().Contains("code"))
             {
                 return new Text(cellValue)
-                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFontSize(9);
+                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFont(font).SetFontSize(10);
             }
             else
             {
-                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(9);
-            }
+                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(10);
 
+            }
         }
-        else if(CultureInfo.CurrentCulture.Name == "en" && header.PropertyName.Contains("ArabicName"))
+        else
         {
-            return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(7);
+            //Regex regex = new Regex(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$");
+            if (header.Name.Contains("ArabicName") || (header.Name.Contains("UserName") || header.Name.Contains("Description")))
+            {
+                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(10);
+            }
+            return new Text(cellValue).SetFont(font).SetFontSize(10);
         }
-        return new Text(cellValue).SetFontSize(12);
-                                
+
     }
 }
