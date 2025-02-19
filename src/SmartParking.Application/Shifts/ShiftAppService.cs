@@ -314,4 +314,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
         }
     }
+
+    public async Task<ShiftDto> CreateForMDKHLAsync(CreateUpdateShiftDto shift)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+          return await  CreateAsync(shift);
+        }
+    }
 }
