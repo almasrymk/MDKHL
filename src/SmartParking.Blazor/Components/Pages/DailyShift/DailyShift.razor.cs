@@ -87,7 +87,7 @@ public partial class DailyShift
         else
         {
             var tenantId = CurrentTenant.Id;
-            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(input, tenantId);
+            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsOrganizationAsync(input, tenantId);
             TotalItem = (int)dailyShiftDto.TotalCount;
             await CreateTable(dailyShiftDto);
         }
@@ -103,7 +103,7 @@ public partial class DailyShift
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "KeeperName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "UserName", IsFilterable = true, PropertyName = "KeeperName", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CurrentTenant.Id == null)
         {
             if (CultureInfo.CurrentCulture.Name == "ar")
@@ -118,11 +118,17 @@ public partial class DailyShift
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ShiftName"], Name = "ShiftName", IsFilterable = true, PropertyName = "ShiftNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
         else
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageNameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ShiftName"], Name = "ShiftName", IsFilterable = true, PropertyName = "ShiftNameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StartDate"], Name = "StartDate", IsFilterable = true, PropertyName = "StartDate", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EndDate"], Name = "EndDate", IsFilterable = true, PropertyName = "EndDate", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StartTime"], Name = "StartTime", IsFilterable = true, PropertyName = "StartTime", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EndTime"], Name = "EndTime", IsFilterable = true, PropertyName = "EndTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RequestTime"], Name = "RequestTime", IsFilterable = true, PropertyName = "RequestTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["KeeperShiftRequestType"], Name = "KeeperShiftRequestType", IsFilterable = true, PropertyName = "KeeperShiftRequestType", IsSortable = true, TypeFilter = TypeFilter.Enum });
         
@@ -146,11 +152,17 @@ public partial class DailyShift
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageNameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ShiftName"), item.ShiftNameAr));
             }
             else
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageNameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ShiftName"), item.ShiftNameEn));
             }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("StartDate"), item.StartDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndDate"), item.EndDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("StartTime"), item.StartTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndTime"), item.EndTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("RequestTime"), item.RequestTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("KeeperShiftRequestType"), LocalizationHelper.GetLocalizedString(item.KeeperShiftRequestType.ToString())));
             tableData.Rows.Add(rowDef);

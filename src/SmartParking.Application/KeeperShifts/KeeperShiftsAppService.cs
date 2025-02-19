@@ -53,9 +53,11 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("Shifts") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
 
+            await OverlappingValidation(input, shift);
+
             var keeperShift = new KeeperShift
             {
-                TenantId=input.TenantId,
+                TenantId = input.TenantId,
                 KeeperId = input.KeeperId,
                 OrganizationId = shift.OrganizationId,
                 GarageId = shift.GarageId,
@@ -66,8 +68,33 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                 EndTime = shift.EndTime
             };
 
-            await _keeperShiftRepository.InsertAsync(keeperShift,true);
+            await _keeperShiftRepository.InsertAsync(keeperShift, true);
             return true;
+        }
+    }
+
+    private async Task OverlappingValidation(CreateUpdateKeeperShiftDto input, Shift? shift)
+    {
+        bool isOverlapping = await _keeperShiftRepository.AnyAsync(ks =>
+         ks.KeeperId == input.KeeperId &&
+         ks.ShiftId != input.ShiftId &&  
+         (
+              (shift.StartDate == ks.StartDate && shift.EndDate == ks.EndDate) ||
+
+              (shift.StartDate >= ks.StartDate && shift.EndDate <= ks.EndDate) ||
+
+              (shift.StartDate <= ks.StartDate && shift.EndDate >= ks.StartDate)
+
+         ) &&
+         (
+             (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime) ||
+             (shift.StartTime == ks.StartTime && shift.EndTime == ks.EndTime) 
+         )
+     );
+
+        if (isOverlapping)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
         }
     }
 

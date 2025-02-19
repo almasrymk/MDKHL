@@ -22,4 +22,5 @@ public interface IDailyShiftAppService :
     Task DeleteAsync(int id);
     Task<DailyShiftDto> GetAsync(int id);
     Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? TenantId);
+    Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId);
 }

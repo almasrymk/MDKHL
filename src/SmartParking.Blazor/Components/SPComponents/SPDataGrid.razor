@@ -286,7 +286,7 @@
                                 <MudItem Class="d-flex justify-content-start align-items-center">
                                     @if (OnClickRowView.HasDelegate && ShowView)
                                     {
-                                        <MudTooltip Text=@L["View Details"]>
+                                        <MudTooltip Text=@L["View Details"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Info"
@@ -311,7 +311,7 @@
                                     }
                                     @if (OnClickRowEdit.HasDelegate && ShowEdit)
                                     {
-                                        <MudTooltip Text=@L["Edit"]>
+                                        <MudTooltip Text=@L["Edit"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickRowEdit.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Edit"
@@ -326,7 +326,7 @@
 
                                     @if (OnClickAssign.HasDelegate && ShowAssign && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
-                                        <MudTooltip Text=@L["Assign"]>
+                                        <MudTooltip Text=@L["Assign"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickAssign.InvokeAsync(context.Item.Cells[0].Value))"
                                                        Icon="@Icons.Material.Filled.AssignmentTurnedIn"
@@ -339,7 +339,7 @@
                                     }
                                     @if (OnClickButton.HasDelegate && ShowButton)
                                     {
-                                        <MudTooltip Text=@L["Permissions"]>
+                                        <MudTooltip Text=@L["Permissions"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickButton.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.AdminPanelSettings"
@@ -353,7 +353,7 @@
                                     }
                                     @if (ShowCustomerTransactionsMethod.HasDelegate && ShowCustomerTransactions)
                                     {
-                                        <MudTooltip Text=@L["Export"]>
+                                        <MudTooltip Text=@L["Export"] Color=MudBlazor.Color.Primary>
 
                                                 <MudIconButton OnClick="@(e => ShowCustomerTransactionsMethod.InvokeAsync(context.Item))"
                                                  Icon="@Icons.Material.Filled.CompareArrows"
@@ -367,7 +367,7 @@
                                     }
                                     @if (ShowVehicleTransactionsMethod.HasDelegate && ShowVehicleTransactions)
                                     {
-                                        <MudTooltip Text=@L["Export"]>
+                                        <MudTooltip Text=@L["Export"] Color=MudBlazor.Color.Primary>
 
                                             <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.CompareArrows"
@@ -381,7 +381,7 @@
                                     }
                                     @if (OnClickRowDelete.HasDelegate && ShowDelete && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
-                                        <MudTooltip Text=@L["Delete"]>
+                                        <MudTooltip Text=@L["Delete"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickRowDelete.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.Delete"

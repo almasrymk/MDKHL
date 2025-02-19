@@ -89,7 +89,7 @@
                 <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
                 </MudItem>
                 
-                    @if (IsOrganization)
+                    @if (IsOrganization && !currrentTenant.IsAvailable)
                     {
 
                         <MudItem sm="6" md="6">
