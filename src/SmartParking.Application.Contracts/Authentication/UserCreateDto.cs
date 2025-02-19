@@ -44,4 +44,5 @@ public class UserCreateDto
     public string NationalId { get; set; }
 
     public bool IsCustomer { get; set; }
+    public UserTypeCategory? UserTypeCategory { get; set; }
 }

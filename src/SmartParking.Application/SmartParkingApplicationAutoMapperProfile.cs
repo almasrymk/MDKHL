@@ -46,6 +46,10 @@ using SmartParking.Localization;
 using SmartParking.Entities.Authentication;
 using SmartParking.Results;
 using SmartParking.Mobile.Invoices;
+using SmartParking.Entities.Shifts;
+using SmartParking.KeeperShifts;
+using SmartParking.DailyShifts;
+using SmartParking.Shifts;
 
 namespace SmartParking;
 
@@ -229,6 +233,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdatePaymentDto, Payment>().ReverseMap();
 
         CreateMap<CreateUpdateInvoiceDto, Invoice>();
+        CreateMap<CreateUpdateShiftDto, Shift>().ReverseMap();
+        CreateMap<CreateUpdateKeeperShiftDto, KeeperShift>().ReverseMap();
+        CreateMap<ShiftDto, Shift>().ReverseMap();
+        CreateMap<KeeperShiftDto, KeeperShift>().ReverseMap();
 
 
 
@@ -256,6 +264,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
+
+        CreateMap<DailyShift, DailyShiftDto>();
+        CreateMap<CreateUpdateDailyShiftDto , DailyShift>();
 
         CreateMap<IdentityUser, UserDto>();
 

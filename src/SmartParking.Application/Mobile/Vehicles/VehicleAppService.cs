@@ -145,7 +145,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
                 vehicle.ArPlateNumber = input.ArPlateLetters + input.ArPlateNumber;
 
             }
-            else if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
+            if (!input.EnPlateLetters.IsNullOrEmpty() && !input.EnPlateNumber.IsNullOrEmpty())
             {
                 vehicle.EnPlateNumber = input.EnPlateLetters + input.EnPlateNumber;
             }
@@ -158,7 +158,6 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 
                 });
             }
-            // LicenceType is plate type is found 
             var plateType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.ArabicName == input.plateType || l.EnglishName == input.plateType);
             if (plateType == null)
             {

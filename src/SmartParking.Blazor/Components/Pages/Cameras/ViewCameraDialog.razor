@@ -173,18 +173,6 @@
 	bool _clearable;
 	private MudForm form;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
-			{
-				MaxResultCount = 100,
-				SkipCount = (1 - 1) * 100
-			});
-		await base.OnInitializedAsync();
-	}
-
-	
-
 	private void OnCloseViewOnly()
 	{
 		MudDialogAdd.Cancel();

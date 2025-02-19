@@ -28,6 +28,7 @@ public partial class AddUser
     private IdentityRoleDto role;
     private bool IsOrganization { get; set; }
     private bool IsSelectOrganization { get; set; } = true;
+    private bool IsKeeper { get; set; } = true;
     private MudTextField<string> textField;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -91,11 +92,28 @@ public partial class AddUser
        await GetOrganizationDetailsAsync();
 
     }
-    private async Task IsMdkhlSelect(bool isOrganization)
+    private async Task IsMdkhlSelect(string value)
     {
-        IsOrganization = isOrganization;
-        IsSelectOrganization = !isOrganization;
-        if (isOrganization)
+        switch(value)
+        {
+            case string v when v == "admin":
+                IsOrganization = true;
+                IsSelectOrganization = true;
+                break;            
+            
+            case string v when v == "mdkhl":
+                IsOrganization = false;
+                IsSelectOrganization = false;
+                break;           
+            
+            case string v when v == "keeper":
+                IsOrganization = true;
+                IsSelectOrganization = true;
+                userCreate.UserTypeCategory = UserTypeCategory.Keeper;
+                break;
+        };
+       
+        if (IsOrganization)
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
         }
@@ -136,7 +154,8 @@ public partial class AddUser
     {
         userCreate.Password = "P@ssw0rd";
         userCreate.UserName = userCreate.PhoneNumber;
-        if(role == null)
+
+        if (role == null)
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("UserRole") +" "+LocalizationHelper.GetLocalizedString("EmptyValidation"));
         }
@@ -158,7 +177,7 @@ public partial class AddUser
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
             LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
             LocalizationHelper.GetLocalizedString("User"), Severity.Success);
-            await Task.Delay(1000); // Awaiting the delay to ensure it completes before navigation
+            await Task.Delay(1000);
             NavigationManager.NavigateTo("/users", true);
         }
         catch (AbpValidationException validationException)

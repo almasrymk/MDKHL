@@ -24,7 +24,10 @@
                 <MudImage Src="@ProfilePictureUrl" Alt="@L["Profile Picture"]" Class="bg_w_foto " Width="200" Height="200" />
                 <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg, .gif, .bmp, .webp" FilesChanged="UploadFiles" Class="position-absolute bottom-0">
                     <ActivatorContent>
+                        <MudTooltip Text=@L["UploadImage"] Color=MudBlazor.Color.Primary>
                         <MudFab Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CameraAlt" Size="MudBlazor.Size.Medium" Class="rounded-circle" />
+                        </MudTooltip>
+
                     </ActivatorContent>
                 </MudFileUpload>
             </div>

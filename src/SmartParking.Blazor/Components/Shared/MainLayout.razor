@@ -44,19 +44,26 @@
                 <SPBreadcrumb URL="@CurrentURI" />
             </div>
             <div class="d-flex gap-3 align-center flex-wrap">
-                <MudImage Src="images/svgs/notification.svg" Width="24" Height="24" />
-                <MudMenu>   
+                <MudTooltip Text=@L["Notifications"] Color=MudBlazor.Color.Primary>
+                    <MudImage Src="images/svgs/notification.svg" Width="24" Height="24" />
+                </MudTooltip>
+
+                <MudMenu>
                     <ActivatorContent>
-                        <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
-                            <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
-                        </div>
+                        <MudTooltip Text=@L["ChangeLanguage"] Color=MudBlazor.Color.Primary>
+                            <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                                <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                            </div>
+                        </MudTooltip>
                     </ActivatorContent>
+                </MudMenu>
+
+
                     @*                  <ChildContent>
                         <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
                             <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                         </div>
                     </ChildContent> *@
-                </MudMenu>
                 <div class="d-flex align-center gap-2">
                     <MudAvatar Style="height:49px; width:49px;">
                         <MudImage Src="@(Picture ?? "images/MDHKL_04.png")" Width="100" Height="100" Class="bg_w_foto" Alt="@L["OrganizationLogo"]" />

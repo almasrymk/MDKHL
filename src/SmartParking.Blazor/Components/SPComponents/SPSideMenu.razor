@@ -57,6 +57,12 @@
 
                  }
 
+                 <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
+                 <MudNavLink Href="/dailyshifs" Icon="@Icons.Material.Filled.Check">@L["DailyShifts"]</MudNavLink>
+
+                
+                
+
                  @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result)
                  {
                      <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>

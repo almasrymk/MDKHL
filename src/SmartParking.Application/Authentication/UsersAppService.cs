@@ -120,16 +120,20 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     private async Task<Subscription> CheckSubscriptionUsersLimitsAsync(int organizationId)
     {
-        var organization = await _organizationsRepository.GetAsync(organizationId);
-        var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
-        Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
-
-        if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
-        }
+            var organization = await _organizationsRepository.GetAsync(organizationId);
+            var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
+            Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
 
-        return subscription;
+            if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
+            }
+
+            return subscription;
+        }
+        
     }
 
     private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
@@ -155,6 +159,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetProperty("OrganizationId", input.OrganizationId);
         user.SetProperty("IdentificationTypes", input.IdentificationTypes);
         user.SetProperty("NationalId", input.NationalId);
+        if(input.UserTypeCategory.HasValue)
+         user.SetProperty("UserTypeCategory", input.UserTypeCategory);
     }
 
     private async Task AddCustomer(IdentificationTypes identificationTypes, string NationalId,string ArabicName,Guid userId)
