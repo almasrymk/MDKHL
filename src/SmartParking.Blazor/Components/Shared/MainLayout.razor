@@ -44,13 +44,13 @@
                 <SPBreadcrumb URL="@CurrentURI" />
             </div>
             <div class="d-flex gap-3 align-center flex-wrap">
-                <MudTooltip Text=@L["Notifications"]>
+                <MudTooltip Text=@L["Notifications"] Color=MudBlazor.Color.Primary>
                     <MudImage Src="images/svgs/notification.svg" Width="24" Height="24" />
                 </MudTooltip>
 
                 <MudMenu>
                     <ActivatorContent>
-                        <MudTooltip Text=@L["ChangeLanguage"]>
+                        <MudTooltip Text=@L["ChangeLanguage"] Color=MudBlazor.Color.Primary>
                             <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
                                 <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
                             </div>
