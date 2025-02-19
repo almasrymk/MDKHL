@@ -87,7 +87,7 @@ public partial class DailyShift
         else
         {
             var tenantId = CurrentTenant.Id;
-            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(input, tenantId);
+            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsOrganizationAsync(input, tenantId);
             TotalItem = (int)dailyShiftDto.TotalCount;
             await CreateTable(dailyShiftDto);
         }
@@ -103,7 +103,7 @@ public partial class DailyShift
 
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "KeeperName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "UserName", IsFilterable = true, PropertyName = "KeeperName", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CurrentTenant.Id == null)
         {
             if (CultureInfo.CurrentCulture.Name == "ar")
