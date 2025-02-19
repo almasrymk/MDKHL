@@ -10,7 +10,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser _currentUser
-
+@inject ISnackbar Snackbar
+@inject NotificationService NotificationService
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="RouterOptions.Value.AdditionalAssemblies">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Shared.MainLayout)">
@@ -21,7 +22,10 @@
     </Found>
 </Router>
 @code {
-   
+    protected override async Task OnInitializedAsync()
+    {
+        await NotificationService.StartConnectionAsync(Navigation, Snackbar);
+        await base.OnInitializedAsync();
+    }
 
-    
 }
