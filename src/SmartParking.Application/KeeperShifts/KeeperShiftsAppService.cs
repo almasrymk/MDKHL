@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
@@ -112,8 +113,8 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                          where TenantId.HasValue ? keepershift.TenantId == TenantId : true
                          join organization in queryOrganization
                          on keepershift.OrganizationId equals organization.Id
-                         join garage in queryGarage
-                         on keepershift.GarageId equals garage.Id
+                         //join garage in queryGarage
+                         //on keepershift.GarageId equals garage.Id
                          join user in queryUser
                          on keepershift.KeeperId equals user.Id
                          join shift in queryShift
@@ -127,9 +128,9 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                              OrganizationId = keepershift.OrganizationId,
                              OrganizationNameAr = organization.ArabicName,
                              OrganizationNameEn = organization.EnglishName,
-                             GarageNameAr = garage.NameAr,
-                             GarageNameEn = garage.NameEn,
-                             GarageId = keepershift.GarageId,
+                             //GarageNameAr = garage.NameAr,
+                             //GarageNameEn = garage.NameEn,
+                             //GarageId = keepershift.GarageId,
                              ShiftId = keepershift.ShiftId,
                              StartDate = keepershift.StartDate,
                              EndDate = keepershift.EndDate,
@@ -160,13 +161,62 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
         result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
         return total;
     }
-    public Task<KeeperShiftDto> GetAsync(int id)
+    public async Task<KeeperShiftDto?> GetAsync(int id)
     {
-        throw new NotImplementedException();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            var queryGarage = await _garageRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var queryShift = await _shiftRepository.GetQueryableAsync();
+
+            var result = from keepershift in queryKeeperShift
+                         where keepershift.Id == id
+                         join organization in queryOrganization
+                         on keepershift.OrganizationId equals organization.Id
+                         //join garage in queryGarage
+                         //on keepershift.GarageId equals garage.Id
+                         join user in queryUser
+                         on keepershift.KeeperId equals user.Id
+                         join shift in queryShift
+                         on keepershift.ShiftId equals shift.Id
+
+                         select new KeeperShiftDto
+                         {
+                             Id = keepershift.Id,
+                             KeeperId = keepershift.KeeperId,
+                             KeeperName = user.Name,
+                             OrganizationId = keepershift.OrganizationId,
+                             OrganizationNameAr = organization.ArabicName,
+                             OrganizationNameEn = organization.EnglishName,
+                             //GarageNameAr = garage.NameAr,
+                             //GarageNameEn = garage.NameEn,
+                             //GarageId = keepershift.GarageId,
+                             ShiftId = keepershift.ShiftId,
+                             StartDate = keepershift.StartDate,
+                             EndDate = keepershift.EndDate,
+                             StartTime = keepershift.StartTime,
+                             EndTime = keepershift.EndTime,
+                             ArabicName = shift.ArabicName,
+                             EnglishName = shift.EnglishName
+                             
+                         };
+            return await result.FirstOrDefaultAsync();
+        }
     }
 
-    public Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var shift = await _keeperShiftRepository.FirstOrDefaultAsync(s => s.Id == id);
+            if (shift is null)
+            {
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+
+            await _keeperShiftRepository.HardDeleteAsync(shift,true);
+        }
     }
 }
