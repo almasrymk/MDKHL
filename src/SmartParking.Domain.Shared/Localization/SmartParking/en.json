@@ -684,7 +684,8 @@
         "Notifications": "Notifications",
         "ChangeLanguage": "Change Language",
         "Permissions": "Permissions",
-        "UploadImage": "Upload Image"
+        "UploadImage": "Upload Image", 
+        "ShiftName" :  "Shift Name"
 
 
 

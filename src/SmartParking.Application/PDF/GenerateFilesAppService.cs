@@ -399,7 +399,6 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
         else
         {
-            //Regex regex = new Regex(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$");
             if (header.Name.Contains("ArabicName") || (header.Name.Contains("UserName") || header.Name.Contains("Description")))
             {
                 return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(10);
