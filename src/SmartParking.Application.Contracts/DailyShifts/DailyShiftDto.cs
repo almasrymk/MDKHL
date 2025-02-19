@@ -17,5 +17,12 @@ public class DailyShiftDto : BaseDto
     public string GarageNameAr {  get; set; }
     public string GarageNameEn { get; set; }
     public DateTime RequestTime { get; set; }
+    public int ShiftId { get; set; }
+    public string ShiftNameAr { get; set; }
+    public string ShiftNameEn { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
     public KeeperShiftRequestType KeeperShiftRequestType { get; set; }
 }
