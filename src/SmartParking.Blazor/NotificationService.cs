@@ -13,34 +13,18 @@ public class NotificationService : IAsyncDisposable
 {
     private HubConnection? _hubConnection;
 
-    public async Task StartConnectionAsync(NavigationManager navigation,ISnackbar snackbar)
+    public async Task<HubConnection?> StartConnectionAsync(NavigationManager navigation,ISnackbar snackbar)
     {
-        
+        await Task.Yield();
         if (_hubConnection is not null && _hubConnection.State == HubConnectionState.Connected)
-            return;
+            return _hubConnection;
 
         _hubConnection = new HubConnectionBuilder()
                     .WithUrl(navigation.BaseUri + "notification")
                     .WithAutomaticReconnect()
                     .Build();
 
-        _hubConnection.On<string, string>("ReceiveExportNotification", (status, message) =>
-        {
-
-           
-            snackbar.Add(message, status == EventStatus.Complete.ToString() ? Severity.Success : Severity.Info);
-            //Console.WriteLine($"Received SignalR Event: Status={status}, Message={message}");
-        });
-
-        try
-        {
-            await _hubConnection.StartAsync();
-            Console.WriteLine("SignalR Connected!");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"SignalR Connection Failed: {ex.Message}");
-        }
+       return _hubConnection;
     }
 
     public async Task StopConnectionAsync()

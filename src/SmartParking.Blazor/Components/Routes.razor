@@ -1,4 +1,6 @@
-﻿@using SmartParking.Enums
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Enums
 @using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Routing
 @using Microsoft.Extensions.Options
@@ -10,7 +12,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser _currentUser
-@inject ISnackbar Snackbar
+@inject ISnackbar snackbar
 @inject NotificationService NotificationService
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="RouterOptions.Value.AdditionalAssemblies">
     <Found Context="routeData">
@@ -24,7 +26,24 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        await NotificationService.StartConnectionAsync(Navigation, Snackbar);
+        HubConnection? hub = await NotificationService.StartConnectionAsync(Navigation, snackbar);
+        hub.On<string, string>("ReceiveExportNotification", (status, message) =>
+            {
+               
+                SnackBar.ShowSnackbar(snackbar, message, status == EventStatus.Complete.ToString() ? Severity.Success : Severity.Info);
+
+                //Console.WriteLine($"Received SignalR Event: Status={status}, Message={message}");
+            });
+
+        try
+        {
+            await hub.StartAsync();
+            Console.WriteLine("SignalR Connected!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"SignalR Connection Failed: {ex.Message}");
+        }
         await base.OnInitializedAsync();
     }
 
