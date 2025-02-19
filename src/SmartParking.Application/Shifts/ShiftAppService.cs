@@ -24,14 +24,14 @@ using System.Linq.Expressions;
 namespace SmartParking.Shifts;
 
 [Authorize]
- 
+
 public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSortedResultRequestDto, CreateUpdateShiftDto>, IShiftAppService
 {
     private readonly IRepository<Shift, int> repository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IRepository<Garage, int> _garageRepository;
     private IDataFilter _dataFilter;
-    
+
 
 
     public ShiftAppService(IRepository<Shift, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationRepository, IRepository<Garage, int> garageRepository) : base(repository)
@@ -46,7 +46,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     public override async Task<ShiftDto> CreateAsync(CreateUpdateShiftDto input)
     {
         await CheckExistanceOfDependencies(input);
-        var _overlapExpression = GetTimeOverlapExpression(input.StartTime,input.EndTime,input.GarageId);
+        var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.GarageId);
         if (await HasOverlappingShift(_overlapExpression))
         {
             throw new Exception("Shift overlaps with an existing shift.");
@@ -68,8 +68,8 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
     public async Task<bool> CheckGarageExists(int GarageId)
     {
-        var garage= await _garageRepository.FindAsync(GarageId);
-        if(garage == null)
+        var garage = await _garageRepository.FindAsync(GarageId);
+        if (garage == null)
         {
             return false;
         }
@@ -78,19 +78,19 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     }
     public async Task<bool> CheckOrganizationExists(int OrganizationId)
     {
-        var organization= await _organizationRepository.FindAsync(OrganizationId);
-        if(organization == null)
+        var organization = await _organizationRepository.FindAsync(OrganizationId);
+        if (organization == null)
         {
             return false;
         }
         return true;
 
     }
-    public async Task<bool> HasOverlappingShift(Expression<Func<Shift,bool>> expression)
+    public async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
     {
         return await repository.AnyAsync(expression);
     }
-    public  Expression<Func<Shift, bool>> GetTimeOverlapExpression(TimeOnly startTime, TimeOnly endTime, int garageId )
+    public Expression<Func<Shift, bool>> GetTimeOverlapExpression(TimeOnly startTime, TimeOnly endTime, int garageId)
     {
         return s =>
              s.GarageId == garageId &&
@@ -98,11 +98,11 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             (endTime > s.StartTime && endTime <= s.EndTime) ||
             (startTime <= s.StartTime && endTime >= s.EndTime);
     }
-    public  Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
+    public Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
     {
         return s => s.Id != ShiftId;
     }
-            
+
 
     public async Task<PagedResultDto<ShiftDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -136,33 +136,34 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     public async Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
 
-        using (_dataFilter.Disable<IMultiTenant>()) { 
-        var _shiftQueryable = await repository.GetQueryableAsync();
-        var _garageQueryable = await _garageRepository.GetQueryableAsync();
-        var _organizationQueryable = await _organizationRepository.GetQueryableAsync();
-        var shifts = from Shifts in _shiftQueryable
-                     join Garages in _garageQueryable
-                     on Shifts.GarageId equals Garages.Id
-                     join organization in _organizationQueryable 
-                     on Shifts.OrganizationId equals organization.Id
-                     where tenantId.HasValue ? organization.TenantId == tenantId : true
-                     select new ShiftDto
-                     {
-                         Id = Shifts.Id,
-                         ArabicName = Shifts.ArabicName,
-                         EnglishName = Shifts.EnglishName,
-                         Description = Shifts.Description,
-                         StartDate = Shifts.StartDate,
-                         EndDate = Shifts.EndDate,
-                         StartTime = Shifts.StartTime,
-                         EndTime = Shifts.EndTime,
-                         Status = Shifts.Status,
-                         OrganizationId = Shifts.OrganizationId,
-                         GarageArabicName = Garages.NameAr,
-                         GarageEnglishName = Garages.NameEn,
-                         OrganizationArabicName = organization.ArabicName,
-                         OrganizationEnglishName = organization.EnglishName,
-                     };
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var _shiftQueryable = await repository.GetQueryableAsync();
+            var _garageQueryable = await _garageRepository.GetQueryableAsync();
+            var _organizationQueryable = await _organizationRepository.GetQueryableAsync();
+            var shifts = from Shifts in _shiftQueryable
+                         join Garages in _garageQueryable
+                         on Shifts.GarageId equals Garages.Id
+                         join organization in _organizationQueryable
+                         on Shifts.OrganizationId equals organization.Id
+                         where tenantId.HasValue ? organization.TenantId == tenantId : true
+                         select new ShiftDto
+                         {
+                             Id = Shifts.Id,
+                             ArabicName = Shifts.ArabicName,
+                             EnglishName = Shifts.EnglishName,
+                             Description = Shifts.Description,
+                             StartDate = Shifts.StartDate,
+                             EndDate = Shifts.EndDate,
+                             StartTime = Shifts.StartTime,
+                             EndTime = Shifts.EndTime,
+                             Status = Shifts.Status,
+                             OrganizationId = Shifts.OrganizationId,
+                             GarageArabicName = Garages.NameAr,
+                             GarageEnglishName = Garages.NameEn,
+                             OrganizationArabicName = organization.ArabicName,
+                             OrganizationEnglishName = organization.EnglishName,
+                         };
             var query = ApplySearchMDKHL(input, shifts);
             return ProcessingOnShiftsQuery(input, shifts);
         }
@@ -186,28 +187,29 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var _garageQueryable = await _garageRepository.GetQueryableAsync();
 
 
-            var shifts = from Shifts in _shiftQueryable
-                        join Garages in _garageQueryable
-                        on Shifts.GarageId equals Garages.Id 
-                        
-                        select new ShiftDto
-                        {
-                            Id = Shifts.Id,
-                            ArabicName=Shifts.ArabicName,
-                            EnglishName=Shifts.EnglishName,
-                            Description=Shifts.Description,
-                            StartDate=Shifts.StartDate,
-                            EndDate=Shifts.EndDate,
-                            StartTime=Shifts.StartTime,
-                            EndTime=Shifts.EndTime,
-                            Status=Shifts.Status,
-                            OrganizationId=Shifts.OrganizationId,
-                            GarageArabicName=Garages.NameAr,
-                            GarageEnglishName=Garages.NameEn,
-                        };
-            var query = ApplySearchOrganization(input, shifts);
-            return ProcessingOnShiftsQuery(input, query);
-        
+        var shifts = from Shifts in _shiftQueryable
+                     join Garages in _garageQueryable
+                     on Shifts.GarageId equals Garages.Id
+
+
+                     select new ShiftDto
+                     {
+                         Id = Shifts.Id,
+                         ArabicName = Shifts.ArabicName,
+                         EnglishName = Shifts.EnglishName,
+                         Description = Shifts.Description,
+                         StartDate = Shifts.StartDate,
+                         EndDate = Shifts.EndDate,
+                         StartTime = Shifts.StartTime,
+                         EndTime = Shifts.EndTime,
+                         Status = Shifts.Status,
+                         OrganizationId = Shifts.OrganizationId,
+                         GarageArabicName = Garages.NameAr,
+                         GarageEnglishName = Garages.NameEn,
+                     };
+        ApplySearchOrganization(input, ref shifts);
+        return ProcessingOnShiftsQuery(input, shifts);
+
 
     }
 
@@ -230,7 +232,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         return queryable;
     }
 
-    private IQueryable<ShiftDto> ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
+    private void ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, ref IQueryable<ShiftDto> queryable)
     {
         if (!input.SearchingTerm.IsNullOrEmpty())
         {
@@ -247,7 +249,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
         }
 
-        return queryable;
     }
     private IQueryable<ShiftDto> ApplySearchMDKHL(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
     {
@@ -255,9 +256,9 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         {
             queryable = queryable.Where(
               shift => shift.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-              shift.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+              shift.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
-            return ApplySearchOrganization(input, queryable);
+            ApplySearchOrganization(input, ref queryable);
         }
 
         return queryable;
@@ -273,7 +274,44 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         }
         return await base.UpdateAsync(id, input);
     }
+    public async Task<ShiftDto> GetShiftAsync(int id, Guid? tenantId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var _shiftQueryable = await repository.GetQueryableAsync();
+            var _garageQueryable = await _garageRepository.GetQueryableAsync();
+            var _organizationQueryable = await _organizationRepository.GetQueryableAsync();
+            var shift = from Shifts in _shiftQueryable
+                        join Garages in _garageQueryable
+                        on Shifts.GarageId equals Garages.Id
+                        join organization in _organizationQueryable
+                        on Shifts.OrganizationId equals organization.Id
+                        where tenantId.HasValue ? organization.TenantId == tenantId : true && Shifts.Id == id
 
+                        select new ShiftDto
+                        {
+                            Id = Shifts.Id,
+                            ArabicName = Shifts.ArabicName,
+                            EnglishName = Shifts.EnglishName,
+                            Description = Shifts.Description,
+                            StartDate = Shifts.StartDate,
+                            EndDate = Shifts.EndDate,
+                            StartTime = Shifts.StartTime,
+                            EndTime = Shifts.EndTime,
+                            Status = Shifts.Status,
+                            OrganizationId = Shifts.OrganizationId,
+                            GarageArabicName = Garages.NameAr,
+                            GarageEnglishName = Garages.NameEn,
+                            OrganizationArabicName = organization.ArabicName,
+                            OrganizationEnglishName = organization.EnglishName,
+                        };
+            var shiftDto = shift.FirstOrDefault();
+            if (shiftDto == null)
+            {
+                throw new Exception("NotFoundValidation");
+            }
+            return shiftDto;
 
-
+        }
+    }
 }
