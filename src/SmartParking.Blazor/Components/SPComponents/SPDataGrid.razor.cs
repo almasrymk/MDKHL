@@ -358,7 +358,7 @@ public partial class SPDataGrid
         try
         {
             GridState<RowDef> state = new GridState<RowDef>();
-            state.PageSize = 500;
+            state.PageSize = int.MaxValue;
             IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
