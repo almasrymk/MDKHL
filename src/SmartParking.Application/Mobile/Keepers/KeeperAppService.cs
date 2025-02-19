@@ -260,14 +260,23 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId,Guid userId)
     {
-        Volo.Abp.Identity.IdentityUser? user;
-        List<GarageTransaction> existingTransactions = new List<GarageTransaction>();
-        List<GarageTransaction> entranceTransactions = new List<GarageTransaction>();
+        var result = await CheckUserIsFound(organizationId, userId);
+        if(result is not null)
+        {
+            return result;
+        }
+        var entranceTransactionsQuery = await _garageTransactionRepository.GetQueryableAsync();
+        entranceTransactionsQuery = entranceTransactionsQuery.Where(t => t.IsIn).OrderByDescending(t => t.AccurateTime);
+        var sortedTransaction = entranceTransactionsQuery.ToList();
+        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
+        return mappedTransaction.Count == 0? Result<List<GarageTransactionDto>>.NotFound("Transaction not found") : Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+    }
 
-
+    private async Task<Result?> CheckUserIsFound(int organizationId, Guid userId)
+    {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+            var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
 
             if (user is null)
             {
@@ -276,24 +285,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     ErrorMessage = "User not found"
                 });
             }
-
-             entranceTransactions = await _garageTransactionRepository.GetListAsync(t => t.IsIn &&t.CameraType==CameraType.Entry);
-
         }
-
-        var sortedTransaction = entranceTransactions.OrderByDescending(t => t.AccurateTime).ToList();
-
-        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
-        
-        if (mappedTransaction.Count < 0)
-        {
-            return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
-        }
-
-        return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+        return null;
     }
-    
-	public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
+
+    public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
 	{
 		var query = await _tenantRepository.GetQueryableAsync();
 		query = query.Where(t => t.Name == phoneNum);
