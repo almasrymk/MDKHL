@@ -1,0 +1,28 @@
+﻿@page "/user/shifts"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.KeeperShifts
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using Volo.Abp.Identity
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.PermissionManagement
+@inject IDialogService DialogService
+@inject IKeeperShiftsAppService KeeperShiftsAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject ICurrentTenant currrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+@using Microsoft.AspNetCore.Authorization
+@* @inherits AbpCrudPageBase<IKeeperShiftsAppService, IdentityUserDto, int, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto> *@
+
+
+<PageTitle>@L["Users"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
+
+<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue"  ShowFiltering="false" ShowAssignCar="true" OnClickAssign="AssignShift" TotalItemsInTable="TotalItem" ShowAssign="false"  OnPageChanged="FetchTableData" OnSearching="FetchTableData"></SPDataGrid>
+
+
+
+@* <PermissionManagementModal @ref="PermissionManagementModal" /> *@

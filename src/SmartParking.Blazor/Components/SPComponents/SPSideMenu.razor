@@ -56,10 +56,11 @@
                      <MudNavLink Href="/lastinvoice" Icon="@Icons.Material.Filled.Check">@L["LastInvoice"]</MudNavLink>
 
                  }
-
-                 <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
-                 <MudNavLink Href="/dailyshifs" Icon="@Icons.Material.Filled.Check">@L["DailyShifts"]</MudNavLink>
-
+                <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
+                     <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
+                     <MudNavLink Href="/dailyshifs" Icon="@Icons.Material.Filled.Check">@L["DailyShifts"]</MudNavLink>
+                     <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanAssignShifts"]</MudNavLink>
+                </MudNavGroup>
                 
                 
 
