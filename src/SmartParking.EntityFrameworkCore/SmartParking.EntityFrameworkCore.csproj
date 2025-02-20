@@ -32,4 +32,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserShifts\" />
+  </ItemGroup>
+
 </Project>

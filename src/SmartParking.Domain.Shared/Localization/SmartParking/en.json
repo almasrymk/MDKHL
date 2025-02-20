@@ -686,7 +686,8 @@
     "Permissions": "Permissions",
     "UploadImage": "Upload Image",
     "exportstarted": "Export process has started",
-    "ShiftName": "Shift Name"
+    "ShiftName": "Shift Name",
+    "UsersCanAssignShifts": "Users Shifts"
 
 
 
