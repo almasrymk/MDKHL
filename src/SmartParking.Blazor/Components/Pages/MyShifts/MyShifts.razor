@@ -1,0 +1,22 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.KeeperShifts
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
+@using System.Globalization
+@inject IDialogService Dialog
+@inject ICurrentUser CurrentUser
+@inject ICurrentTenant CurrentTenant
+@inject IKeeperShiftsAppService KeeperShiftAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/myshifts"
+@* Get Active Shift and create PopUp for start Shift and End Shift 
+ *@
+<CurrentShift />
+<SPDataGrid PageName=@L["MyShifts"] Data="@itemData" ShowMenue=false ShowDelete="false"
+            TotalItemsInTable="TotalItem" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData"></SPDataGrid>
+
+
