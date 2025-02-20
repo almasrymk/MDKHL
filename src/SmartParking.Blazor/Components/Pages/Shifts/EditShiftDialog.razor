@@ -48,7 +48,7 @@
                         <MudDatePicker Variant="Variant.Text"
                         Class="w-100"
                         @bind-Date="_startDateTime"
-                        IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
+                       @*  IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)" *@
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         PickerVariant="PickerVariant.Dialog"
                         Label="@L["StartDate"]" />
@@ -169,7 +169,10 @@
         try
         {
             Shift.IsFullDay = Shift.IsFullDay || PackageValidations.CheckPackageTimeValiditity(Shift.StartTime, Shift.EndTime);
-            await ShiftAppService.UpdateAsync(UpdatedId, Shift);
+            if(CurrentTenant.Id != null)
+                await ShiftAppService.UpdateAsync(UpdatedId, Shift);
+            else
+                await ShiftAppService.UpdateMDKHLAsync(UpdatedId, Shift);
             MudDialogAdd.Close(DialogResult.Ok(true));
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Shift.ArabicName}", Severity.Success);
             await Task.Delay(1000);
