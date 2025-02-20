@@ -14,16 +14,16 @@
     <MudItem sm="12" md="12">
         @if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            <MudTextField @bind-Value="KeeperShiftDto.ShiftNameAr"
-                          For="@(() => KeeperShiftDto.ShiftNameAr)"
+            <MudTextField @bind-Value="KeeperShiftDto.ArabicName"
+                          For="@(() => KeeperShiftDto.ArabicName)"
                           Immediate="true"
                           Disabled=true
                           Label="@L["ShiftName"]" />
         }
         else
         {
-            <MudTextField @bind-Value="KeeperShiftDto.ShiftNameEn"
-                          For="@(() => KeeperShiftDto.ShiftNameEn)"
+            <MudTextField @bind-Value="KeeperShiftDto.EnglishName"
+                          For="@(() => KeeperShiftDto.EnglishName)"
                           Immediate="true"
                           Disabled=true
                           Label="@L["ShiftName"]" />
