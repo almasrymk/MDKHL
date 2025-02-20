@@ -180,11 +180,11 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
             var queryOrganization = await _organizationRepository.GetQueryableAsync();
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
-
+            var IsFoundKeeperShift = await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.Id == id);
+            if (IsFoundKeeperShift is null)
+                throw new Exception("NotFoundValidation");
             var result = from keepershift in queryKeeperShift
                          where keepershift.Id == id
-                         join organization in queryOrganization
-                         on keepershift.OrganizationId equals organization.Id
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser
@@ -198,8 +198,6 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
                              OrganizationId = keepershift.OrganizationId,
-                             OrganizationNameAr = organization.ArabicName,
-                             OrganizationNameEn = organization.EnglishName,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              GarageId = keepershift.GarageId,
@@ -294,46 +292,7 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                                     || user.UserName.ToLower().Contains(input.SearchingTerm.ToLower())
                                     || user.Email.ToLower().Contains(input.SearchingTerm.ToLower())
                                     : true;
-    public async Task<KeeperShiftDto?> GetAsync(int id)
-    {
-        var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
-        var queryGarage = await _garageRepository.GetQueryableAsync();
-        var queryOrganization = await _organizationRepository.GetQueryableAsync();
-        var queryUser = await _userRepository.GetQueryableAsync();
-        var queryShift = await _shiftRepository.GetQueryableAsync();
-        var IsFounddailyShift = await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.Id == id);
-        if (IsFounddailyShift is null)
-            throw new Exception("NotFoundValidation");
-       
-        var result = from keepershift in queryKeeperShift
-                     where keepershift.Id == id 
-                     join garage in queryGarage
-                     on keepershift.GarageId equals garage.Id
-                     join user in queryUser
-                     on keepershift.KeeperId equals user.Id
-                     join shift in queryShift
-                     on keepershift.ShiftId equals shift.Id
-                     select new KeeperShiftDto
-                     {
-                         Id = keepershift.Id,
-                         KeeperId = keepershift.KeeperId,
-                         KeeperName = user.Name,
-                         OrganizationId = keepershift.OrganizationId,
-                         GarageNameAr = garage.NameAr,
-                         GarageNameEn = garage.NameEn,
-                         GarageId = keepershift.GarageId,
-                         ShiftId = keepershift.ShiftId,
-                         StartDate = keepershift.StartDate,
-                         EndDate = keepershift.EndDate,
-                         StartTime = keepershift.StartTime,
-                         EndTime = keepershift.EndTime,
-                         ShiftNameAr = shift.ArabicName,
-                         ShiftNameEn = shift.EnglishName
-                     };
-
-        return await result.FirstOrDefaultAsync();
     }
-
     private static int ApplySortingForUser(PagedAndSortedResultRequestDto input, ref IQueryable<UserWithRole> result)
     {
         var sorting = input.Sorting;
