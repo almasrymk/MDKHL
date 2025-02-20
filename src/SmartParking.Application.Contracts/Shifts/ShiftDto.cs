@@ -20,5 +20,7 @@ public class ShiftDto : BaseDto
     public string  OrganizationEnglishName { get; set; }
     public string OrganizationArabicName { get; set; }
     public int OrganizationId { get; set; }
+    public bool IsFullDay { get; set; }
+
     public Status Status { get; set; }
 }

@@ -12,6 +12,7 @@ namespace SmartParking.Shifts;
 public interface IShiftAppService : ICrudAppService<ShiftDto,int,PagedAndSortedResultRequestDto,CreateUpdateShiftDto>
 {
 
+    Task<ShiftDto> CreateForMDKHLAsync(CreateUpdateShiftDto shift); 
     Task<ShiftDto> CreateAsync(CreateUpdateShiftDto shift);
     Task<PagedResultDto<ShiftDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
     Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);

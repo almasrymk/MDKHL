@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartParking.Entities;
 using SmartParking.KeeperShifts;
 using SmartParking.Vehicles;
 using Volo.Abp.Application.Dtos;
@@ -18,6 +19,8 @@ namespace SmartParking.KeeperShifts
         Task<KeeperShiftDto?> GetAsync(int id);
         Task DeleteAsync(int id);
 
+        Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+        Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsMdkhlAsync(Guid? tenantId, PagedAndSortedAndSearchResultRequestDto input);
     }
 
 

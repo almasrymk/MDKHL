@@ -16,6 +16,8 @@ public class CreateUpdateShiftDto : CreateUpdateBaseDto
     public TimeOnly EndTime { get; set; }
     public int GarageId { get; set; }
     public int OrganizationId { get; set; }
+    public bool IsFullDay { get; set; }
+
     public Status Status { get; set; }
 
 }
