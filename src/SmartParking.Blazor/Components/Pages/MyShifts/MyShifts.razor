@@ -1,0 +1,31 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.KeeperShifts
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
+@using System.Globalization
+@inject IDialogService Dialog
+@inject ICurrentUser CurrentUser
+@inject ICurrentTenant CurrentTenant
+@inject IKeeperShiftsAppService KeeperShiftAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@page "/myshifts"
+@* Get Active Shift and create PopUp for start Shift and End Shift 
+ *@
+@* <MudGrid Justify="Justify.Center"> *@
+@*     <MudItem xs="12" sm="6" md="8"> *@
+@*         <MudPaper Class="pa-4" Elevation="0"> *@
+@*             <CurrentShift /> *@
+@*         </MudPaper> *@
+@*     </MudItem> *@
+@* </MudGrid> *@
+<MudPaper Class="pa-4 mt-4" Elevation="0">
+    <SPDataGrid PageName="@L["MyShifts"]" Data="@itemData" ShowMenue="false" ShowDelete="false"
+                TotalItemsInTable="TotalItem" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData">
+    </SPDataGrid>
+</MudPaper>
+
+

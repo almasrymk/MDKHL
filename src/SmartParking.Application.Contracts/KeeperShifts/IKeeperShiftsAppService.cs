@@ -15,12 +15,10 @@ namespace SmartParking.KeeperShifts
     public interface IKeeperShiftsAppService : IApplicationService , ITransientDependency
     {
         Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input);
-
-        Task<PagedResultDto<KeeperShiftDto>> GetListKeeperShiftAsync(Guid? TenantId, PagedAndSortedResultRequestDto input);
-
-        Task<KeeperShiftDto> GetAsync(int id);
+        Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? TenantId, PagedAndSortedResultRequestDto input);
+        Task<KeeperShiftDto?> GetAsync(int id);
         Task DeleteAsync(int id);
-
+        Task<KeeperShiftDto?> GetActiveShiftForCurrentUser(Guid? userId);
         Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
         Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsMdkhlAsync(Guid? tenantId, PagedAndSortedAndSearchResultRequestDto input);
     }

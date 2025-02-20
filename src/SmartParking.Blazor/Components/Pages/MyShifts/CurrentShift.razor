@@ -1,0 +1,78 @@
+﻿@using System.Globalization
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IKeeperShiftsAppService KeeperShiftsAppService
+@using SmartParking.KeeperShifts
+<MudGrid>
+    <MudItem sm="12" md="6">
+        @if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            <MudTextField @bind-Value="KeeperShiftDto.ArabicName"
+            For="@(() => KeeperShiftDto.ArabicName)"
+            Immediate="true"
+            Disabled="true"
+            Label="@L["ShiftName"]" />
+        }
+        else
+        {
+            <MudTextField @bind-Value="KeeperShiftDto.EnglishName"
+            For="@(() => KeeperShiftDto.EnglishName)"
+            Immediate="true"
+            Disabled="true"
+            Label="@L["ShiftName"]" />
+        }
+    </MudItem>
+
+    <MudItem sm="12" md="12">
+        <MudGrid>
+            <MudItem sm="6" md="6">
+                <ReuseableItem Localize="StartDate" Value="@KeeperShiftDto.StartDate.ToString()" />
+            </MudItem>
+            <MudItem sm="6" md="6">
+                <ReuseableItem Localize="EndDate" Value="@KeeperShiftDto.EndDate.ToString()" />
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+
+    <MudItem sm="12" md="12">
+        <MudGrid>
+            <MudItem sm="6" md="6">
+                <ReuseableItem Localize="StartTime" Value="@KeeperShiftDto.StartTime.ToString()" />
+            </MudItem>
+            <MudItem sm="6" md="6">
+                <ReuseableItem Localize="EndTime" Value="@KeeperShiftDto.EndTime.ToString()" />
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+
+    <MudItem sm="12" md="12" class="d-flex justify-end">
+        <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled">@L["StartShift"]</MudButton>
+        @if(CultureInfo.CurrentCulture.Name=="ar")
+        {
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" class="mr-2">@L["EndShift"]</MudButton>
+
+        }
+        else
+        {
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" class="ml-2">@L["EndShift"]</MudButton>
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    public KeeperShiftDto KeeperShiftDto { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        KeeperShiftDto = await KeeperShiftsAppService.GetAsync(1);
+        await base.OnInitializedAsync();
+    }
+}
+

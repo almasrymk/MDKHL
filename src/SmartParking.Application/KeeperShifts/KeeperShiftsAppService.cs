@@ -97,7 +97,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    public async Task<PagedResultDto<KeeperShiftDto>> GetListKeeperShiftAsync(Guid? TenantId, PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -108,24 +108,19 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var queryShift = await _shiftRepository.GetQueryableAsync();
 
             var result = from keepershift in queryKeeperShift
-                         where TenantId.HasValue ? keepershift.TenantId == TenantId : true
-                         join organization in queryOrganization
-                         on keepershift.OrganizationId equals organization.Id
+                         where userId.HasValue ? keepershift.KeeperId == userId : true
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser
                          on keepershift.KeeperId equals user.Id
                          join shift in queryShift
                          on keepershift.ShiftId equals shift.Id
-
                          select new KeeperShiftDto
                          {
                              Id = keepershift.Id,
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
                              OrganizationId = keepershift.OrganizationId,
-                             OrganizationNameAr = organization.ArabicName,
-                             OrganizationNameEn = organization.EnglishName,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              GarageId = keepershift.GarageId,
@@ -133,11 +128,12 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              StartDate = keepershift.StartDate,
                              EndDate = keepershift.EndDate,
                              StartTime = keepershift.StartTime,
-                             EndTime = keepershift.EndTime
+                             EndTime = keepershift.EndTime , 
+                             ArabicName = shift.ArabicName,
+                             EnglishName = shift.EnglishName
                          };
 
             int total = ApplySorting(input, ref result);
-
             return new PagedResultDto<KeeperShiftDto>
             {
                 TotalCount = total,
@@ -159,6 +155,42 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
         return total;
     }
+
+    public async Task<KeeperShiftDto?> GetActiveShiftForCurrentUser(Guid? userId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var currentDate = DateOnly.FromDateTime(DateTime.Now);
+            var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+            var query = await _keeperShiftRepository.GetQueryableAsync();
+            var shifts = await query
+                            .Where(shift => shift.KeeperId == userId
+                                   && shift.StartDate <= currentDate
+                                   && shift.EndDate >= currentDate)
+                            .ToListAsync(); 
+
+            var result = shifts
+                .OrderBy(shift => Math.Abs((currentTime - shift.StartTime).Ticks)) // Now safe in memory
+                .FirstOrDefault();
+            if (result is null)
+                return null;
+            result = await GetShiftName(result);
+            return ObjectMapper.Map<KeeperShift, KeeperShiftDto>(result) ;
+        }
+    }
+    private async Task<KeeperShift> GetShiftName(KeeperShift result)
+    {
+       
+        var queryShift = await _shiftRepository.GetQueryableAsync();
+        var shift = await queryShift.FirstOrDefaultAsync(x => x.Id == result.ShiftId);
+        if (shift != null)
+        {
+            result.ArabicName = shift.ArabicName;
+            result.EnglishName = shift.EnglishName;
+        }
+        return result;
+    }
+
     public async Task<KeeperShiftDto?> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -168,11 +200,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var queryOrganization = await _organizationRepository.GetQueryableAsync();
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
-
+            var IsFoundKeeperShift = await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.Id == id);
+            if (IsFoundKeeperShift is null)
+                throw new Exception("NotFoundValidation");
             var result = from keepershift in queryKeeperShift
                          where keepershift.Id == id
-                         join organization in queryOrganization
-                         on keepershift.OrganizationId equals organization.Id
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser
@@ -186,8 +218,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
                              OrganizationId = keepershift.OrganizationId,
-                             OrganizationNameAr = organization.ArabicName,
-                             OrganizationNameEn = organization.EnglishName,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              GarageId = keepershift.GarageId,

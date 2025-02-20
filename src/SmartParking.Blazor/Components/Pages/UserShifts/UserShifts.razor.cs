@@ -21,8 +21,8 @@ public partial class UserShifts
     protected PermissionManagementModal PermissionManagementModal;
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; 
-    public int RowPerPage { get; set; } = 10; 
+    public int CurrentPage { get; set; } = 1;
+    public int RowPerPage { get; set; } = 10;
     public Guid? TenantId { get; private set; }
     private string sortColumn;
     private string ValueOfMenue = "";
@@ -88,10 +88,6 @@ public partial class UserShifts
             },
         };
     }
-    private Task AssignShift()
-    {
-
-    }
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
@@ -131,7 +127,7 @@ public partial class UserShifts
         if (currrentTenant.Id is not null)
             usersDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsOrganizationAsync(input);
         else
-            usersDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(null,input);
+            usersDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(null, input);
         TotalItem = (int)usersDto.TotalCount;
         await CreateTable(usersDto.Items);
 
@@ -144,7 +140,7 @@ public partial class UserShifts
 
     private async Task CreateTable(IReadOnlyList<UserWithRole> users)
     {
-        
+
         var tableData = new TableData()
         {
             Name = L["UsersCanAssignShifts"],
@@ -214,47 +210,12 @@ public partial class UserShifts
     //                        user.TenantId,
     //                        row.Cells[1].Value);
     //}
-   
-    public async  Task AssignShift(RowDef row)
-    {
-        var userId = Guid.Parse(row.Cells[0].Value);
-        var userData = await UsersAppService.GetAsync(userId);
-        var userUpdate = new UserDto
-        {
-            Name = userData.Name,
-            Email = userData.Email,
-            Surname = userData.Surname,
-            PhoneNumber = userData.PhoneNumber,
-            UserName = userData.UserName,
-            TenantId = userData.TenantId,
-            RoleId = userData.RoleId,
-            ConcurrencyStamp = userData.ConcurrencyStamp,
-            IsActive = userData.IsActive,
-            IdentificationTypes = userData.IdentificationTypes,
-            NationalId = userData.NationalId,
-        };
-        var parameters = new DialogParameters
-        {
-            ["userDto"] = userUpdate,
-            ["userId"] = userId.ToString()
-        };
 
-    //    return await DialogService.ShowAsync<ViewUserDialog>("User View", parameters);
-    //}
-
-    //private async Task OnClickRowDelete(RowDef row)
+    //public async Task AssignShift(RowDef row)
     //{
-    //    var successMessage = _localizer["UserDeletedSuccessfully"];
-
-    //    var id = Guid.Parse(row.Cells[0].Value);
-    //    var Name = row.Cells[2].Value;
-    //    var userData = await UsersAppService.GetAsync(id);
-    //    if (row.Cells[5].Value == null)
-    //        return;
-    //    var roleData = currrentTenant.Id == null ?
-    //        await RoleAppService.GetRoleByNameMdkhlAsync((row.Cells[5].Value).ToString())
-    //        : await RoleAppService.GetRoleByNameAsync((row.Cells[5].Value).ToString());
-    //    var userUpdate = new UpdateUserDto
+    //    var userId = Guid.Parse(row.Cells[0].Value);
+    //    var userData = await KeeperShiftsAppService.GetAsync();
+    //    var userUpdate = new UserDto
     //    {
     //        Name = userData.Name,
     //        Email = userData.Email,
@@ -262,61 +223,98 @@ public partial class UserShifts
     //        PhoneNumber = userData.PhoneNumber,
     //        UserName = userData.UserName,
     //        TenantId = userData.TenantId,
-    //        RoleId = roleData.Id,
+    //        RoleId = userData.RoleId,
     //        ConcurrencyStamp = userData.ConcurrencyStamp,
     //        IsActive = userData.IsActive,
-    //        NationalId = userData.NationalId,
     //        IdentificationTypes = userData.IdentificationTypes,
+    //        NationalId = userData.NationalId,
     //    };
     //    var parameters = new DialogParameters
     //    {
-    //        ["Name"] = Name,
-
+    //        ["userDto"] = userUpdate,
+    //        ["userId"] = userId.ToString()
     //    };
 
-    //    var dialog = await DialogService.ShowAsync<SPDialogDelete>("Delete user", parameters);
-    //    var result = await dialog.Result;
-    //    try
-    //    {
-    //        if (!result.Canceled)
-    //        {
+    //    //    return await DialogService.ShowAsync<ViewUserDialog>("User View", parameters);
+    //    //}
 
-    //            if (currrentTenant.Id != null)
-    //            {
-    //                await UsersAppService.UpdateUserWithNoRoleAsync(id, userUpdate);
-    //            }
-    //            else
-    //            {
-    //                await UsersAppService.RemoveRoleMdkhl(id, userUpdate.RoleId);
-    //            }
+    //    //private async Task OnClickRowDelete(RowDef row)
+    //    //{
+    //    //    var successMessage = _localizer["UserDeletedSuccessfully"];
 
-    //            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-    //                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
-    //                LocalizationHelper.GetLocalizedString("User") + " " + userData.Name, Severity.Success);
-    //            await Task.Delay(1000);
+    //    //    var id = Guid.Parse(row.Cells[0].Value);
+    //    //    var Name = row.Cells[2].Value;
+    //    //    var userData = await UsersAppService.GetAsync(id);
+    //    //    if (row.Cells[5].Value == null)
+    //    //        return;
+    //    //    var roleData = currrentTenant.Id == null ?
+    //    //        await RoleAppService.GetRoleByNameMdkhlAsync((row.Cells[5].Value).ToString())
+    //    //        : await RoleAppService.GetRoleByNameAsync((row.Cells[5].Value).ToString());
+    //    //    var userUpdate = new UpdateUserDto
+    //    //    {
+    //    //        Name = userData.Name,
+    //    //        Email = userData.Email,
+    //    //        Surname = userData.Surname,
+    //    //        PhoneNumber = userData.PhoneNumber,
+    //    //        UserName = userData.UserName,
+    //    //        TenantId = userData.TenantId,
+    //    //        RoleId = roleData.Id,
+    //    //        ConcurrencyStamp = userData.ConcurrencyStamp,
+    //    //        IsActive = userData.IsActive,
+    //    //        NationalId = userData.NationalId,
+    //    //        IdentificationTypes = userData.IdentificationTypes,
+    //    //    };
+    //    //    var parameters = new DialogParameters
+    //    //    {
+    //    //        ["Name"] = Name,
 
-    //            Navigation.NavigateTo("/users", forceLoad: true);
+    //    //    };
 
-    //        }
+    //    //    var dialog = await DialogService.ShowAsync<SPDialogDelete>("Delete user", parameters);
+    //    //    var result = await dialog.Result;
+    //    //    try
+    //    //    {
+    //    //        if (!result.Canceled)
+    //    //        {
+
+    //    //            if (currrentTenant.Id != null)
+    //    //            {
+    //    //                await UsersAppService.UpdateUserWithNoRoleAsync(id, userUpdate);
+    //    //            }
+    //    //            else
+    //    //            {
+    //    //                await UsersAppService.RemoveRoleMdkhl(id, userUpdate.RoleId);
+    //    //            }
+
+    //    //            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+    //    //                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
+    //    //                LocalizationHelper.GetLocalizedString("User") + " " + userData.Name, Severity.Success);
+    //    //            await Task.Delay(1000);
+
+    //    //            Navigation.NavigateTo("/users", forceLoad: true);
+
+    //    //        }
 
 
-    //    }
+    //    //    }
 
-    //    catch (BusinessException ex)
-    //    {
+    //    //    catch (BusinessException ex)
+    //    //    {
 
-    //        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
-    //    }
-    //    catch (AuthenticationException ex)
-    //    {
-    //        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
-    //    }
-    //    catch (Exception ex)
-    //    {
+    //    //        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+    //    //    }
+    //    //    catch (AuthenticationException ex)
+    //    //    {
+    //    //        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+    //    //    }
+    //    //    catch (Exception ex)
+    //    //    {
 
-    //        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Message} ", Severity.Error);
-    //    }
+    //    //        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Message} ", Severity.Error);
+    //    //    }
 
 
+    //    //}
+    
     //}
 }
