@@ -145,8 +145,8 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                              EndDate = keepershift.EndDate,
                              StartTime = keepershift.StartTime,
                              EndTime = keepershift.EndTime , 
-                             ShiftNameAr = shift.ArabicName,
-                             ShiftNameEn = shift.EnglishName
+                             ArabicName = shift.ArabicName,
+                             EnglishName = shift.EnglishName
                          };
 
             int total = ApplySorting(input, ref result);
