@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using SmartParking.Authentication;
 using SmartParking.Entities;
 using SmartParking.Entities.Customers;
-using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
@@ -171,6 +170,42 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
         result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
         return total;
     }
+
+    public async Task<KeeperShiftDto?> GetActiveShiftForCurrentUser(Guid? userId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var currentDate = DateOnly.FromDateTime(DateTime.Now);
+            var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+            var query = await _keeperShiftRepository.GetQueryableAsync();
+            var shifts = await query
+                            .Where(shift => shift.KeeperId == userId
+                                   && shift.StartDate <= currentDate
+                                   && shift.EndDate >= currentDate)
+                            .ToListAsync(); 
+
+            var result = shifts
+                .OrderBy(shift => Math.Abs((currentTime - shift.StartTime).Ticks)) // Now safe in memory
+                .FirstOrDefault();
+            if (result is null)
+                return null;
+            result = await GetShiftName(result);
+            return ObjectMapper.Map<KeeperShift, KeeperShiftDto>(result) ;
+        }
+    }
+    private async Task<KeeperShift> GetShiftName(KeeperShift result)
+    {
+       
+        var queryShift = await _shiftRepository.GetQueryableAsync();
+        var shift = await queryShift.FirstOrDefaultAsync(x => x.Id == result.ShiftId);
+        if (shift != null)
+        {
+            result.ArabicName = shift.ArabicName;
+            result.EnglishName = shift.EnglishName;
+        }
+        return result;
+    }
+
     public async Task<KeeperShiftDto?> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
