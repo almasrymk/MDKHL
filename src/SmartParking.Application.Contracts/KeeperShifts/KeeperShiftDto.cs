@@ -21,5 +21,6 @@ namespace SmartParking.KeeperShifts
         public string GarageNameAr { get; set; }
         public string GarageNameEn { get; set; }
         public string KeeperName { get; set; }
+        public bool IsFullDay { get; set; }
     }
 }
