@@ -2359,6 +2359,9 @@ namespace SmartParking.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsFullDay")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("KeeperId")
                         .HasColumnType("uuid");
 
@@ -2444,6 +2447,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsFullDay")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
