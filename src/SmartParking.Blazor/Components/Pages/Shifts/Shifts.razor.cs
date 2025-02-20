@@ -205,7 +205,7 @@ partial class Shifts
 
         var shiftDto = await ShiftAppService.GetShiftAsync(id,CurrentTenant.Id);
 
-        var createUpdateCamera = new CreateUpdateShiftDto
+        var createUpdateShift = new CreateUpdateShiftDto
         {
             ArabicName = shiftDto.ArabicName,
             EnglishName = shiftDto.EnglishName,
@@ -223,7 +223,7 @@ partial class Shifts
         };
         var parameters = new DialogParameters
         {
-            ["Shift"] = createUpdateCamera,
+            ["Shift"] = createUpdateShift,
             ["UpdatedId"] = id
         };
 
