@@ -184,8 +184,8 @@ partial class Shifts
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Description"], Truncate(item.Description, 15)));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartDate"], item.StartDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndDate"], item.EndDate.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartTime"], item.StartTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndTime"], item.EndTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartTime"], item.IsFullDay ? 24 + L[$"Hour"] : $" {item.StartTime}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndTime"], item.IsFullDay ? 24 + L[$"Hour"] : $" {item.EndTime}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{item.Status.ToString()}"]));
             tableData.Rows.Add(rowDef);
         }
@@ -203,7 +203,7 @@ partial class Shifts
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var shiftDto = await ShiftAppService.GetAsync(id);
+        var shiftDto = await ShiftAppService.GetShiftAsync(id,CurrentTenant.Id);
 
         var createUpdateCamera = new CreateUpdateShiftDto
         {
@@ -218,6 +218,7 @@ partial class Shifts
             EndTime = shiftDto.EndTime,
             TenantId = shiftDto.TenantId,
             Description = shiftDto.Description,
+            IsFullDay = shiftDto.IsFullDay,
             
         };
         var parameters = new DialogParameters

@@ -19,6 +19,8 @@ public class KeeperShift : BaseEntity
     public int OrganizationId { get; set; }
     public Guid KeeperId { get; set; }
     public int ShiftId {  get; set; }
+    public bool IsFullDay { get; set; }
+
 
 
 

@@ -48,7 +48,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     {
         await CheckExistanceOfDependencies(input);
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime , input.StartDate, input.EndDate, input.GarageId);
-        if (await HasOverlappingShift(_overlapExpression))
+        if (input.IsFullDay == false && await HasOverlappingShift(_overlapExpression))
         {
             throw new Exception("Shift overlaps with an existing shift.");
         }
@@ -168,6 +168,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                              GarageEnglishName = Garages.NameEn,
                              OrganizationArabicName = organization.ArabicName,
                              OrganizationEnglishName = organization.EnglishName,
+                             IsFullDay=Shifts.IsFullDay
                          };
             var query = ApplySearchMDKHL(input, shifts);
             return ProcessingOnShiftsQuery(input, shifts);
@@ -273,11 +274,11 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         await CheckExistanceOfDependencies(input);
         var _overlapExpression  = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId);
         var _sameShiftExpression = NotSameEntityExpression(id);
-        if (await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))
+        if (input.IsFullDay==false && await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))
         {
             throw new Exception("Shift overlaps with an existing shift.");
         }
-        return await base.UpdateAsync(id, input);
+        return await base.UpdateAsync(id, input); 
     }
     public async Task<ShiftDto> GetShiftAsync(int id, Guid? tenantId)
     {
@@ -287,11 +288,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             var _garageQueryable = await _garageRepository.GetQueryableAsync();
             var _organizationQueryable = await _organizationRepository.GetQueryableAsync();
             var shift = from Shifts in _shiftQueryable
+                        where Shifts.Id == id
                         join Garages in _garageQueryable
                         on Shifts.GarageId equals Garages.Id
                         join organization in _organizationQueryable
                         on Shifts.OrganizationId equals organization.Id
-                        where tenantId.HasValue ? organization.TenantId == tenantId : true && Shifts.Id == id
+                        where tenantId.HasValue ? organization.TenantId == tenantId : true 
 
                         select new ShiftDto
                         {
@@ -305,10 +307,17 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                             EndTime = Shifts.EndTime,
                             Status = Shifts.Status,
                             OrganizationId = Shifts.OrganizationId,
+                            GarageId = Shifts.GarageId,
                             GarageArabicName = Garages.NameAr,
                             GarageEnglishName = Garages.NameEn,
                             OrganizationArabicName = organization.ArabicName,
                             OrganizationEnglishName = organization.EnglishName,
+                            TenantId = Shifts.TenantId,
+                            LastModificationTime = Shifts.LastModificationTime,
+                            LastModifierId = Shifts.LastModifierId,
+                            CreationTime = Shifts.CreationTime,
+                            CreatorId = Shifts.CreatorId,
+                            IsFullDay=Shifts.IsFullDay
                         };
             var shiftDto = shift.FirstOrDefault();
             if (shiftDto == null)

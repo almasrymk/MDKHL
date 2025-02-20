@@ -18,5 +18,6 @@ public class Shift : BaseEntity
     public TimeOnly EndTime { get; set; }
     public int GarageId { get; set; }
     public int OrganizationId { get; set; }
+    public bool IsFullDay { get; set; }
 
 }
