@@ -63,23 +63,31 @@
                         PickerVariant="PickerVariant.Dialog"
                         Label="@L["EndDate"]" />
                     </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTimePicker Variant="Variant.Text"
-                        Class="w-100"
-                        @bind-Time="_timeSpanStart"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        PickerVariant="PickerVariant.Dialog"
-                        Label="@L["StartTime"]" />
+                    <MudItem sm="4" md="4">
+                        <MudSwitch T="bool"
+                        @bind-Value="shiftDto.IsFullDay"
+                        Label="@L["Published"]"
+                        LabelPosition="LabelPosition.Start"
+                        Color="MudBlazor.Color.Primary" />
                     </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTimePicker Variant="Variant.Text"
-                        Class="w-100"
-                        @bind-Time="_timeSpanEnd"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        PickerVariant="PickerVariant.Dialog"
-                        Label="@L["EndTime"]" />
-                    </MudItem>
-
+                    @if (shiftDto.IsFullDay == false)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                            Class="w-100"
+                            @bind-Time="_timeSpanStart"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            PickerVariant="PickerVariant.Dialog"
+                            Label="@L["StartTime"]" />
+                        </MudItem>                    <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                            Class="w-100"
+                            @bind-Time="_timeSpanEnd"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            PickerVariant="PickerVariant.Dialog"
+                            Label="@L["EndTime"]" />
+                        </MudItem>
+                    }
                     <MudItem sm="6">
                         <MudSelect T="int"
                         ValueChanged="ChangeOrganization"

@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Shifts
 @using System.Security.Authentication
+@using SmartParking.Validations
 @using Volo.Abp
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
@@ -24,7 +25,7 @@
 
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Shift.ArabicName"
-                                      For="@(() => Shift.ArabicName)"
+                        For="@(() => Shift.ArabicName)"
                         Variant="Variant.Text"
                         Class="w-100"
                         Placeholder=@L["Type Here"]
@@ -32,7 +33,8 @@
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Label=@L["ArabicName"] />
                     </MudItem>
-                    <MudItem sm="6" md="6">
+
+                    <MudItem sm="4" md="4">
                         <MudTextField @bind-Value="Shift.EnglishName"
                         For="@(() => Shift.EnglishName)"
                         Variant="Variant.Text"
@@ -46,6 +48,7 @@
                         <MudDatePicker Variant="Variant.Text"
                         Class="w-100"
                         @bind-Date="_startDateTime"
+                        IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         PickerVariant="PickerVariant.Dialog"
                         Label="@L["StartDate"]" />
@@ -54,28 +57,38 @@
                         <MudDatePicker Variant="Variant.Text"
                         Class="w-100"
                         @bind-Date="_endDateTime"
+                        IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         PickerVariant="PickerVariant.Dialog"
                         Label="@L["EndDate"]" />
                     </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTimePicker Variant="Variant.Text"
-                        Class="w-100"
-                        @bind-Time="_timeSpanStart"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        PickerVariant="PickerVariant.Dialog"
-                        Label="@L["StartTime"]" />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTimePicker Variant="Variant.Text"
-                        Class="w-100"
-                        @bind-Time="_timeSpanEnd"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        PickerVariant="PickerVariant.Dialog"
-                        Label="@L["EndTime"]" />
+                    <MudItem sm="4" md="4">
+                        <MudSwitch T="bool"
+                        @bind-Value="Shift.IsFullDay"
+                        Label="@L["Published"]"
+                        LabelPosition="LabelPosition.Start"
+                        Color="MudBlazor.Color.Primary" />
                     </MudItem>
 
-              
+                    @if (Shift.IsFullDay == false)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                            Class="w-100"
+                            @bind-Time="_timeSpanStart"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            PickerVariant="PickerVariant.Dialog"
+                            Label="@L["StartTime"]" />
+                        </MudItem>                    <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                            Class="w-100"
+                            @bind-Time="_timeSpanEnd"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            PickerVariant="PickerVariant.Dialog"
+                            Label="@L["EndTime"]" />
+                        </MudItem>
+                    }
+
                     <MudItem sm="12">
                         <MudTextField @bind-Value="Shift.Description"
                                       For="@(() => Shift.Description)"
@@ -155,7 +168,7 @@
 
         try
         {
-
+            Shift.IsFullDay = Shift.IsFullDay || PackageValidations.CheckPackageTimeValiditity(Shift.StartTime, Shift.EndTime);
             await ShiftAppService.UpdateAsync(UpdatedId, Shift);
             MudDialogAdd.Close(DialogResult.Ok(true));
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Shift.ArabicName}", Severity.Success);
