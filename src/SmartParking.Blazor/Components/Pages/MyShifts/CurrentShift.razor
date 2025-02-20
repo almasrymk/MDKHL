@@ -11,8 +11,7 @@
 @inject IKeeperShiftsAppService KeeperShiftsAppService
 @using SmartParking.KeeperShifts
 <MudGrid>
-<MudItem sm="10" md="10">
-    <MudItem  sm="12" md="12">
+    <MudItem sm="12" md="12">
         @if (CultureInfo.CurrentCulture.Name == "ar")
         {
             <MudTextField @bind-Value="KeeperShiftDto.ShiftNameAr"
@@ -32,26 +31,33 @@
     </MudItem>
     <MudItem sm="12" md="12">
         <MudGrid>
+            <MudItem sm="6" md="3">
                 <ReuseableItem Localize="StartDate" Value="@KeeperShiftDto.StartDate.ToString()" />
+            </MudItem>
+            <MudItem sm="6" md="3">
                 <ReuseableItem Localize="EndDate" Value="@KeeperShiftDto.EndDate.ToString()" />
+            </MudItem>
+            <MudItem sm="6" md="3">
                 <ReuseableItem Localize="StartTime" Value="@KeeperShiftDto.StartTime.ToString()" />
+            </MudItem>
+            <MudItem sm="6" md="3">
                 <ReuseableItem Localize="EndTime" Value="@KeeperShiftDto.EndTime.ToString()" />
+            </MudItem>
         </MudGrid>
     </MudItem>
-</MudItem>
-<MudItem md="2" sm="2">
-		<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled">@L["StartShift"]</MudButton>
-		<MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled">@L["EndShift"]</MudButton>
-	</MudItem>
+    <MudItem sm="12" md="12" class="d-flex justify-end">
+        <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled">@L["StartShift"]</MudButton>
+        <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" class="ml-2">@L["EndShift"]</MudButton>
+    </MudItem>
 </MudGrid>
 
-
 @code {
-	public KeeperShiftDto KeeperShiftDto { get; set; } = new();
-	protected override async Task OnInitializedAsync()
-	{
-		KeeperShiftDto = await KeeperShiftsAppService.GetAsync(1);
-		
-		await base.OnInitializedAsync();
+    public KeeperShiftDto KeeperShiftDto { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        KeeperShiftDto = await KeeperShiftsAppService.GetAsync(1);
+        await base.OnInitializedAsync();
     }
 }
+

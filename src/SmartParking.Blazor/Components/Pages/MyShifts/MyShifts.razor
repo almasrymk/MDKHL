@@ -15,8 +15,12 @@
 @page "/myshifts"
 @* Get Active Shift and create PopUp for start Shift and End Shift 
  *@
-<CurrentShift />
-<SPDataGrid PageName=@L["MyShifts"] Data="@itemData" ShowMenue=false ShowDelete="false"
-            TotalItemsInTable="TotalItem" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData"></SPDataGrid>
-
+<MudPaper Class="pa-4" Elevation="0">
+    <CurrentShift />
+</MudPaper>
+<MudPaper Class="pa-4 mt-4" Elevation="0">
+    <SPDataGrid PageName="@L["MyShifts"]" Data="@itemData" ShowMenue="false" ShowDelete="false"
+                TotalItemsInTable="TotalItem" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData">
+    </SPDataGrid>
+</MudPaper>
 
