@@ -17,6 +17,7 @@ public interface IShiftAppService : ICrudAppService<ShiftDto,int,PagedAndSortedR
     Task<PagedResultDto<ShiftDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
     Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
     Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input);
+    Task<ShiftDto> UpdateMDKHLAsync(int id, CreateUpdateShiftDto input);
 
     Task<ShiftDto> GetShiftAsync(int id, Guid? tenantId);
     
