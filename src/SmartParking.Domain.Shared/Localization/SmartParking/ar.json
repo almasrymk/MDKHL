@@ -713,7 +713,8 @@
     "ChangeLanguage": "تغيير اللغة",
     "Permissions": "الأذونات",
     "UploadImage": "اضافة صورة",
-    "ShiftName": "اسم الورديه"
+    "ShiftName": "اسم الورديه", 
+    "MyShifts" :  "وردياتي"
 
 
   }
