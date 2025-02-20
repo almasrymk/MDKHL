@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.Authentication;
 using SmartParking.Entities;
-using SmartParking.Entities.Customers;
-using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
-using SmartParking.Entities.Vehicles;
-using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Repositories;
-using SmartParking.Results;
-using SmartParking.Vehicles;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -25,36 +16,30 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
-using Volo.Abp.Users;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+
 namespace SmartParking.KeeperShifts;
 
-public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
+public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppService
 {
-    private readonly IRepository<KeeperShift> _keeperShiftRepository;
-    private readonly IRepository<Garage> _garageRepository;
-    private readonly IRepository<Organization> _organizationRepository;
-    private readonly IRepository<Shift> _shiftRepository;
+    private readonly IRepository<KeeperShift,int> _keeperShiftRepository;
+    private readonly IRepository<Garage,int> _garageRepository;
+    private readonly IRepository<Organization,int> _organizationRepository;
+    private readonly IRepository<Shift,int> _shiftRepository;
     private readonly IMyUserRepository _userRepository;
-    private readonly IRepository<IdentityRole, Guid> _roleRepository;
-    private IDataFilter _dataFilter;
-    private readonly ICurrentUser _currentUser;
+    private readonly IDataFilter _dataFilter;
 
-    public KeeperShiftsAppService(IRepository<KeeperShift, int> repository,
-       IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository ,IRepository<Organization, int> orgrepository,
+    public KeeperShiftsAppService(IRepository<KeeperShift, int> repository
+       ,  IRepository<Garage, int> garagerepository, IRepository<Organization, int> orgrepository,
        IRepository<Shift, int> shiftrepository, IMyUserRepository userrepository,
-       IRepository<IdentityRole, Guid> roleRepository)
-      
+        IDataFilter dataFilter)
+
     {
         _keeperShiftRepository = repository;
         _garageRepository = garagerepository;
         _organizationRepository = orgrepository;
         _shiftRepository = shiftrepository;
         _userRepository = userrepository;
-        _roleRepository = roleRepository;
         _dataFilter = dataFilter;
-        _currentUser = currentUser;
     }
 
     public  async Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input)
@@ -235,26 +220,11 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
 
     public async Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var users = await _userRepository.GetQueryableAsync();
-        var roles = await _roleRepository.GetQueryableAsync();
-
-        var query = from user in users
-                    where EF.Property<UserTypeCategory>(user, "UserTypeCategory") != 0
-                    from roleId in user.Roles.Select(r => r.RoleId)
-                    join role in roles on roleId equals role.Id
-                    where BuildExperssionSearchInUser(input, user, role)
-                    select new UserWithRole
-                    {
-                        User = user,
-                        Role = role
-
-                    };
-        int total = ApplySortingForUser(input, ref query);
-        var result = await AsyncExecuter.ToListAsync(query);
+        var users = await _userRepository.FindUserShiftsOrganizationAsync(input.SkipCount,input.MaxResultCount,input.Sorting,input.SearchingTerm);
         return new PagedResultDto<UserWithRole>
         {
-            TotalCount = total,
-            Items = result
+            TotalCount = users.PageSize,
+            Items = users.Queryable.ToList()
         };
     } 
     
@@ -263,27 +233,11 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
 
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var users = await _userRepository.GetQueryableAsync();
-            var roles = await _roleRepository.GetQueryableAsync();
-
-            var query = from user in users
-                        where (EF.Property<UserTypeCategory>(user, "UserTypeCategory") != 0) &&
-                        (tenantId.HasValue ? user.TenantId == tenantId : true)
-                        from roleId in user.Roles.Select(r => r.RoleId)
-                        join role in roles on roleId equals role.Id
-                        where BuildExperssionSearchInUser(input, user, role)
-                        select new UserWithRole
-                        {
-                            User = user,
-                            Role = role
-
-                        };
-            int total = ApplySortingForUser(input, ref query);
-            var result = await AsyncExecuter.ToListAsync(query);
+            var users = await _userRepository.FindUserShiftsMdkhlAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.SearchingTerm, tenantId);
             return new PagedResultDto<UserWithRole>
             {
-                TotalCount = total,
-                Items = result
+                TotalCount = users.PageSize,
+                Items = users.Queryable.ToList()
             };
         }
     }
@@ -299,7 +253,7 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
                                     : true;
     }
 
-    private static int ApplySortingForUser(PagedAndSortedResultRequestDto input, ref IQueryable<UserWithRole> result)
+    private static IQueryable<UserWithRole> ApplySortingForUser(PagedAndSortedResultRequestDto input, IQueryable<UserWithRole> result)
     {
         var sorting = input.Sorting;
         if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
@@ -308,9 +262,8 @@ public class KeeperShiftsAppService :ApplicationService, IKeeperShiftsAppService
             sorting = sortingSplit[0] + " descending";
         }
 
-        var total = result.Count();
         result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
-        return total;
+        return result;
     }
 
 }

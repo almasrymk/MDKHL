@@ -12,7 +12,7 @@ using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.KeeperShifts
 {
-    public interface IKeeperShiftsAppService : IApplicationService,ITransientDependency
+    public interface IKeeperShiftsAppService : IApplicationService , ITransientDependency
     {
         Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input);
 
