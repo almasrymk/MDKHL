@@ -108,12 +108,12 @@
                     </MudItem>
                     <MudItem sm="6">
                         <MudSelect @bind-Value="@shiftDto.GarageId"
-                                   Variant="Variant.Text"
-                                   Label="@L["Garage"]"
-                                   HelperText=@L["Helper Text"]
-                                   Placeholder=@L["Choose"]
-                                   Required="true"
-                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                        Variant="Variant.Text"
+                        Label="@L["Garage"]"
+                        HelperText=@L["Helper Text"]
+                        Placeholder=@L["Choose"]
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
                             <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var garage in Garages)
                             {
@@ -215,6 +215,7 @@
     }
 
     private async void ChangeOrganization(int OrganizationId){
+        shiftDto.OrganizationId = OrganizationId;
         shiftDto.GarageId = 0;
         var result = await GaragesAppService.GetGarageByOrganization(new PagedAndSortedResultRequestDto
             {
@@ -230,7 +231,7 @@
         {
             shiftDto.TenantId = CurrentTenant.Id;
             shiftDto.Status = Enums.Status.Inactive;
-            await ShiftAppService.CreateAsync(shiftDto);
+            await ShiftAppService.CreateForMDKHLAsync(shiftDto);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {shiftDto.ArabicName}", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);

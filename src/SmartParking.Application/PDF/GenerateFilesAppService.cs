@@ -16,6 +16,8 @@ using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using SmartParking.Events;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
@@ -29,12 +31,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.EventBus.Distributed;
 
 namespace SmartParking.PDF;
 
-public class GenerateFilesAppService (IOrganizationsAppService organizationsAppService) : IGenerateFilesAppService, ITransientDependency
+public class GenerateFilesAppService (IOrganizationsAppService organizationsAppService, IDistributedEventBus eventBus) : IGenerateFilesAppService, ITransientDependency
 {
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
+    private readonly IDistributedEventBus _eventBus = eventBus;
 
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
@@ -158,6 +162,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
     public async Task ExportToPdf(TableData Data, string fileName)
     {
+        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
 
         await Task.Yield();
         FileInfo file = new FileInfo(fileName);
@@ -263,6 +268,8 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             }
 
         }
+        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Complete.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
 
     }
 
@@ -399,7 +406,6 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
         else
         {
-            //Regex regex = new Regex(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$");
             if (header.Name.Contains("ArabicName") || (header.Name.Contains("UserName") || header.Name.Contains("Description")))
             {
                 return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(10);

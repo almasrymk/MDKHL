@@ -263,7 +263,7 @@ public partial class SPDataGrid
         var pageArgs = new PageChangeEventArgs()
         {
             PageNumber = state.Page + 1,
-            RowsPerPage = state.PageSize,
+            RowsPerPage = state.PageSize-1,
             SortColumn = sortString,
             SearchTerm = _searchString,
             Filters = ColumnsFilter,
@@ -358,15 +358,15 @@ public partial class SPDataGrid
         try
         {
             GridState<RowDef> state = new GridState<RowDef>();
-            state.PageSize = int.MaxValue;
+            state.PageSize = int.MaxValue - 1;
             IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
             await GenerateFilesAppService.ExportToPdf(Data, file);
 
-            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            //SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+            //            LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
             IsExport = false;
