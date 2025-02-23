@@ -56,10 +56,11 @@ public class DailyShiftAppService :
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
 
-        var result = await (input.KeeperShiftRequestType switch
+        await (input.KeeperShiftRequestType switch
         {
             KeeperShiftRequestType.StartShift => HandleStartShift(input),
-            KeeperShiftRequestType.EndShift => HandleEndShift(input)
+            KeeperShiftRequestType.EndShift => HandleEndShift(input),
+            _ => throw new InvalidOperationException()
         });
 
         if (!input.TenantId.HasValue)
@@ -68,26 +69,27 @@ public class DailyShiftAppService :
     }
     private async Task<bool> HandleStartShift (CreateUpdateDailyShiftDto input)
     {
+        KeeperShift? assignShift = await GetAssignShift(input) ?? throw new Exception(LocalizationHelper.GetLocalizedString("NotAssignShift"));
         
-        var assignShift = await _keeperShiftRepository.FirstOrDefaultAsync( _ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId );
-
-        if (assignShift is null)
-            throw new Exception(LocalizationHelper.GetLocalizedString(""));
-
-
-        var lastDailyShiftForCurrentUser = await _repository.LastOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
-        if (lastDailyShiftForCurrentUser is not null && lastDailyShiftForCurrentUser.KeeperShiftRequestType == KeeperShiftRequestType.StartShift)
-            throw new Exception(LocalizationHelper.GetLocalizedString(""));
-
-
-        if (DateOnly.FromDateTime(DateTime.Now) < assignShift.StartDate || DateOnly.FromDateTime(DateTime.Now) > assignShift.EndDate)
-            throw new Exception(LocalizationHelper.GetLocalizedString(""));
-
-        if(TimeOnly.FromDateTime(DateTime.Now) < assignShift.StartTime || TimeOnly.FromDateTime(DateTime.Now) >= assignShift.EndTime)
-            throw new Exception(LocalizationHelper.GetLocalizedString(""));
+        CheckStartShiftDateAndTime(assignShift);
 
         return true;
     }
+
+    private async Task<KeeperShift?> GetAssignShift(CreateUpdateDailyShiftDto input)
+    {
+        return await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
+    }
+
+    private void CheckStartShiftDateAndTime(KeeperShift assignShift)
+    {
+        if (DateOnly.FromDateTime(DateTime.Now) < assignShift.StartDate || DateOnly.FromDateTime(DateTime.Now) > assignShift.EndDate)
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
+
+        if (TimeOnly.FromDateTime(DateTime.Now) < assignShift.StartTime || TimeOnly.FromDateTime(DateTime.Now) >= assignShift.EndTime)
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
+    }
+
     private async Task<bool> HandleEndShift(CreateUpdateDailyShiftDto input)
     {
 

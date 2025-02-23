@@ -164,7 +164,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
     public async Task ExportToPdf(TableData Data, string fileName)
     {
-        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+        //await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
 
         await Task.Yield();
         FileInfo file = new FileInfo(fileName);

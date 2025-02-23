@@ -8,12 +8,14 @@
 @using SmartParking.PDF
 @using Volo.Abp.Application.Dtos
 @using MudBlazor
+@using Volo.Abp.EventBus.Distributed
 @inject IOrganizationsAppService OrganizationsAppService
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IGenerateFilesAppService GenerateFilesAppService
 @inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
+@inject IDistributedEventBus _eventBus
 <div>
     <MudDataGrid Elevation="0" @ref="dataGrid" T="RowDef" ServerData="ServerReload" Class="bg-transparent custom-data-grid" SortMode="SortMode.Single" Filterable="true">
         <ToolBarContent>
