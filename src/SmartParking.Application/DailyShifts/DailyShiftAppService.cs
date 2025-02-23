@@ -56,10 +56,11 @@ public class DailyShiftAppService :
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
 
-        var result = await (input.KeeperShiftRequestType switch
+        await (input.KeeperShiftRequestType switch
         {
             KeeperShiftRequestType.StartShift => HandleStartShift(input),
-            KeeperShiftRequestType.EndShift => HandleEndShift(input)
+            KeeperShiftRequestType.EndShift => HandleEndShift(input),
+            _ => throw new InvalidOperationException()
         });
 
         if (!input.TenantId.HasValue)
