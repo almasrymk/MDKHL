@@ -713,9 +713,11 @@
     "ChangeLanguage": "تغيير اللغة",
     "Permissions": "الأذونات",
     "UploadImage": "اضافة صورة",
-    "ShiftName": "اسم الورديه", 
-    "MyShifts" :  "وردياتي",
-    "UsersCanAssignShifts": "ورديات الموظفين"
+    "ShiftName": "اسم الورديه",
+    "MyShifts": "وردياتي",
+    "UsersCanAssignShifts": "ورديات الموظفين",
+    "startShift": "بدء الوردية",
+    "endShift": "إنهاء الوردية"
 
 
   }

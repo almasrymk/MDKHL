@@ -3,6 +3,8 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.DailyShift;
 using SmartParking.DailyShifts;
+using SmartParking.Enums;
+using SmartParking.Events;
 using SmartParking.KeeperShifts;
 using SmartParking.Localization;
 using System.Globalization;
@@ -27,7 +29,8 @@ public partial class MyShifts
     private string termSearch;
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
+    private bool IsStartShift { get; set; } = true;
+    private bool IsEndShift { get; set; } = false;
     public MyShifts(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
@@ -73,6 +76,7 @@ public partial class MyShifts
             ShowHeader = true
         };
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -91,6 +95,7 @@ public partial class MyShifts
         foreach (var item in keeperShiftDto.Items)
         {
             var rowDef = new RowDef();
+            rowDef.Index = keeperShiftDto.Items.ToList().IndexOf(item);
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
@@ -121,6 +126,25 @@ public partial class MyShifts
         };
 
         return await Dialog.ShowAsync<ViewMyShifts>("View MyShifts", parameters);
+    } 
+    
+    private async Task HandleStartShift(RowDef row)
+    {
+        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.StartShift));
+
+        IsStartShift = false;
+        IsEndShift = true;
+        StateHasChanged();
+        await Task.Yield();
+    }
+    
+    private async Task HandleEndShift(RowDef row)
+    {
+        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.EndShift));
+        IsStartShift = true;
+        IsEndShift = false;
+        StateHasChanged();
+        await Task.Yield();
     }
 
 

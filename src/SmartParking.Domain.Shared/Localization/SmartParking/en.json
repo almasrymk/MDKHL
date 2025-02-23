@@ -687,22 +687,11 @@
     "UploadImage": "Upload Image",
     "exportstarted": "Export process has started",
     "ShiftName": "Shift Name",
-    "MyShifts" :  "My Shifts",
-    "UsersCanAssignShifts": "Users Shifts"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    "MyShifts": "My Shifts",
+    "UsersCanAssignShifts": "Users Shifts",
+    "startShift": "Start Shift",
+    "endShift": "End Shift"
+   
 
 
   } 

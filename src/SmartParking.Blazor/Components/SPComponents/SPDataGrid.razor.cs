@@ -55,8 +55,12 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
     [Parameter] public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickStart { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickEnd { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
+    [Parameter] public bool ShowStart { get; set; } = true;
+    [Parameter] public bool ShowEnd { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
     [Parameter] public EventCallback<string> HandleCategory { get; set; }
