@@ -1,4 +1,5 @@
 ﻿using SmartParking.Enums;
+using SmartParking.KeeperShifts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,23 @@ namespace SmartParking.Events;
 
 public class ShiftEventHandler : IDistributedEventHandler<ShiftEvent>, ITransientDependency
 {
-    public Task HandleEventAsync(ShiftEvent eventData)
+    private readonly KeeperShiftSingletonService _keeperShiftSingleton;
+
+    public ShiftEventHandler(KeeperShiftSingletonService keeperShiftSingleton)
+    {
+        _keeperShiftSingleton = keeperShiftSingleton;
+    }
+
+    public async Task HandleEventAsync(ShiftEvent eventData)
     {
         switch(eventData.StatusShift)
         {
             case KeeperShiftRequestType.StartShift:
+               await _keeperShiftSingleton.GetKeeperShiftInstance(eventData.KeeperShiftId);
                 break;
             case KeeperShiftRequestType.EndShift:
+                _keeperShiftSingleton.RemoveKeeperShiftInstance();
                 break;
         }
-        return Task.CompletedTask;
     }
 }

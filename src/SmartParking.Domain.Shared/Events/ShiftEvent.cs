@@ -11,8 +11,10 @@ namespace SmartParking.Events;
 public class ShiftEvent
 {
     public KeeperShiftRequestType StatusShift { get; set; }
-    public ShiftEvent(KeeperShiftRequestType status)
+    public int KeeperShiftId { get; set; }
+    public ShiftEvent(KeeperShiftRequestType status, int keeperShiftId)
     {
         StatusShift = status;
+        KeeperShiftId = keeperShiftId;
     }
 }

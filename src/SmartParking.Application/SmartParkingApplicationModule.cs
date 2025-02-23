@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SmartParking.Events;
+using SmartParking.KeeperShifts;
 using SmartParking.Utilities;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.ExceptionHandling;
@@ -32,6 +33,7 @@ public class SmartParkingApplicationModule : AbpModule
     {
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
         context.Services.AddTransient<ShiftEventHandler>();
+        context.Services.AddSingleton<KeeperShiftSingletonService>();
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<SmartParkingApplicationModule>();

@@ -9,10 +9,10 @@ namespace SmartParking.KeeperShifts;
 
 public sealed class KeeperShiftSingletonService
 {
-    private static KeeperShiftDto? instance;
+    public static KeeperShiftDto? instance;
     private readonly IKeeperShiftsAppService _keeperShiftsAppService;
 
-    private KeeperShiftSingletonService(IKeeperShiftsAppService keeperShiftsAppService)
+    public KeeperShiftSingletonService(IKeeperShiftsAppService keeperShiftsAppService)
     {
         _keeperShiftsAppService = keeperShiftsAppService;
     }
@@ -26,5 +26,10 @@ public sealed class KeeperShiftSingletonService
             }
             return instance;
         
+    }    
+    
+    public void RemoveKeeperShiftInstance()
+    {
+        instance = null;
     }
 }
