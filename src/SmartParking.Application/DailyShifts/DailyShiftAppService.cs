@@ -4,6 +4,8 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
+using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
@@ -53,9 +55,43 @@ public class DailyShiftAppService :
     }
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
+
+        var result = await (input.KeeperShiftRequestType switch
+        {
+            KeeperShiftRequestType.StartShift => HandleStartShift(input),
+            KeeperShiftRequestType.EndShift => HandleEndShift(input)
+        });
+
         if (!input.TenantId.HasValue)
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
+    }
+    private async Task<bool> HandleStartShift (CreateUpdateDailyShiftDto input)
+    {
+        
+        var assignShift = await _keeperShiftRepository.FirstOrDefaultAsync( _ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId );
+
+        if (assignShift is null)
+            throw new Exception(LocalizationHelper.GetLocalizedString(""));
+
+
+        var lastDailyShiftForCurrentUser = await _repository.LastOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
+        if (lastDailyShiftForCurrentUser is not null && lastDailyShiftForCurrentUser.KeeperShiftRequestType == KeeperShiftRequestType.StartShift)
+            throw new Exception(LocalizationHelper.GetLocalizedString(""));
+
+
+        if (DateOnly.FromDateTime(DateTime.Now) < assignShift.StartDate || DateOnly.FromDateTime(DateTime.Now) > assignShift.EndDate)
+            throw new Exception(LocalizationHelper.GetLocalizedString(""));
+
+        if(TimeOnly.FromDateTime(DateTime.Now) < assignShift.StartTime || TimeOnly.FromDateTime(DateTime.Now) >= assignShift.EndTime)
+            throw new Exception(LocalizationHelper.GetLocalizedString(""));
+
+        return true;
+    }
+    private async Task<bool> HandleEndShift(CreateUpdateDailyShiftDto input)
+    {
+
+        return true;
     }
     public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
     {
