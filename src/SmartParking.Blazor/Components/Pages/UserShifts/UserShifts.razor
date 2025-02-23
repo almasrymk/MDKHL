@@ -15,14 +15,7 @@
 @inject ICurrentTenant currrentTenant
 @inject IOrganizationsAppService OrganizationAppService
 @using Microsoft.AspNetCore.Authorization
-@* @inherits AbpCrudPageBase<IKeeperShiftsAppService, IdentityUserDto, int, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto> *@
-
-
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
 <SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue"  ShowFiltering="false" ShowAssignCar="true"  TotalItemsInTable="TotalItem" ShowAssign="false"  OnPageChanged="FetchTableData" OnSearching="FetchTableData"></SPDataGrid>
-
-
-
-@* <PermissionManagementModal @ref="PermissionManagementModal" /> *@
