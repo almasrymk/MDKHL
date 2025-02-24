@@ -151,6 +151,17 @@ public partial class UserShifts
         return await Dialog.ShowAsync<AssignShiftDialog>("Assign Shift", parameters);
 
     }
+    public async Task<IDialogReference> OnClickViewUserShifts(RowDef row)
+    {
+        
+        var parameters = new DialogParameters
+        {
+            ["UserId"] = Guid.Parse(row.Cells[0].Value)
+        };
+
+        return await Dialog.ShowAsync<ViewUserShiftsDialog>("View User Shifts", parameters);
+
+    }
 
     private async Task CreateTable(IReadOnlyList<UserWithRole> users)
     {
