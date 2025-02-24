@@ -16,6 +16,7 @@ namespace SmartParking.Blazor.Components.Pages.MyShifts;
 public partial class MyShifts
 {
     private List<KeeperShiftDto> KeeperShiftDto = new List<KeeperShiftDto>();
+    private KeeperShiftDto FirstItem = new KeeperShiftDto();
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     public Guid? TenantId { get; private set; }
     private string sortColumn;
@@ -37,8 +38,10 @@ public partial class MyShifts
     }
     protected async override Task OnInitializedAsync()
     {
+        
         await base.OnInitializedAsync();
     }
+    
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         termSearch = pageInfo.SearchTerm;
@@ -65,6 +68,14 @@ public partial class MyShifts
         var keeperShiftDto = await KeeperShiftAppService.GetMyShiftsForCurrentUser(CurrentUser.Id , input);
         TotalItem = (int)keeperShiftDto.TotalCount;
         await CreateTable(keeperShiftDto);
+         FirstItem = keeperShiftDto.Items.ToList().FirstOrDefault();
+        var state = await keeperShiftSingletonService.GetAsync(FirstItem.Id);
+        if (state != null)
+        {
+            IsStartShift = false;
+            IsEndShift = true;
+            StateHasChanged();
+        }
     }
 
 
@@ -130,21 +141,25 @@ public partial class MyShifts
     
     private async Task HandleStartShift(RowDef row)
     {
-        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.StartShift, int.Parse(row.Cells[0].Value)));
-
-        IsStartShift = false;
-        IsEndShift = true;
-        StateHasChanged();
-        await Task.Yield();
+        var state = await keeperShiftSingletonService.SetAsync(int.Parse(row.Cells[0].Value));
+        if (state != null)
+        {
+            await DailyShiftAppService.CreateAsync(DailyShiftAppService.CreateDailyShiftDto(FirstItem,KeeperShiftRequestType.StartShift));
+            IsStartShift = false;
+            IsEndShift = true;
+            StateHasChanged();
+        }
+            
+        
     }
     
     private async Task HandleEndShift(RowDef row)
     {
-        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.EndShift, int.Parse(row.Cells[0].Value)));
+         await keeperShiftSingletonService.DisposeAsync();
+         await DailyShiftAppService.CreateAsync(DailyShiftAppService.CreateDailyShiftDto(FirstItem, KeeperShiftRequestType.EndShift));
         IsStartShift = true;
         IsEndShift = false;
         StateHasChanged();
-        await Task.Yield();
     }
 
 
