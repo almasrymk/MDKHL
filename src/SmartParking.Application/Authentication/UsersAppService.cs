@@ -494,6 +494,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
             () => input.PhoneNumber
             );
         user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
+        if (input.UserTypeCategory.HasValue)
+            user.SetProperty("UserTypeCategory", input.UserTypeCategory);
+
     }
 
     private async Task CheckUpdatePhoneNumber(IdentityUser user, UpdateUserDto input)
@@ -703,7 +706,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
         user?.SetProperty("OrganizationId", value: 0);
-        
+       
+
         if (user.UserName != input.UserName)
         {
             await _userManager.SetUserNameAsync(user, input.UserName);
