@@ -301,9 +301,9 @@
                                     }
                                     @if (OnClickViewLogs.HasDelegate && ShowViewLogs)
                                     {
-                                        <MudTooltip Text=@L["View Details"] Color=MudBlazor.Color.Primary>
+                                        <MudTooltip Text=@L["UserLogs"] Color=MudBlazor.Color.Primary>
 
-                                            <MudIconButton OnClick="@(e => OnClickRowView.InvokeAsync(context.Item))"
+                                            <MudIconButton OnClick="@(e => OnClickViewLogs.InvokeAsync(context.Item))"
                                                            Icon="@Icons.Material.Filled.History"
                                                            Variant="Variant.Filled"
                                                            Color="MudBlazor.Color.Primary"
