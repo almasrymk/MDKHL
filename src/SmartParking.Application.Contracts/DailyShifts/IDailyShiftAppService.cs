@@ -1,4 +1,6 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Enums;
+using SmartParking.KeeperShifts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,4 +25,5 @@ public interface IDailyShiftAppService :
     Task<DailyShiftDto> GetAsync(int id);
     Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? TenantId, Guid? userId);
     Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId , Guid? userId );
+    public CreateUpdateDailyShiftDto CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType);
 }

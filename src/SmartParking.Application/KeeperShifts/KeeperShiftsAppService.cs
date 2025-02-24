@@ -204,10 +204,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            if (userId.HasValue)
+                queryKeeperShift = queryKeeperShift.Where(x => x.KeeperId == userId);
             var result = from keepershift in queryKeeperShift
                          where
                          tenantId.HasValue ? keepershift.TenantId == tenantId : true
-                         && userId.HasValue ? keepershift.KeeperId == userId : true
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser

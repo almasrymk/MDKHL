@@ -32,7 +32,6 @@ public class SmartParkingApplicationModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
-        context.Services.AddTransient<ShiftEventHandler>();
         context.Services.AddSingleton<KeeperShiftSingletonService>();
         Configure<AbpAutoMapperOptions>(options =>
         {

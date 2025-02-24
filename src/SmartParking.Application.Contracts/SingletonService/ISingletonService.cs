@@ -7,8 +7,8 @@ using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.SingletonService;
 
-public interface ISingletonService<T, TKey> : ISingletonDependency,IDisposable
+public interface ISingletonService<T, TKey> : ISingletonDependency,IAsyncDisposable
 {
-    Task<T> GetAsync();
+    Task<T> GetAsync(TKey key);
     Task<T> SetAsync(TKey key);
 }

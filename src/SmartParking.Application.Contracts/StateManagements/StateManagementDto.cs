@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.MultiTenancy;
+using Volo.Abp.Application.Dtos;
 
-namespace SmartParking.Entities.StateManagement;
+namespace SmartParking.StateManagements;
 
-public class StateManagement : FullAuditedEntity<int>, IMultiTenant
+public class StateManagementDto:FullAuditedEntityDto<int>
 {
     public Guid? TenantId { get; set; }
     public Guid UserId { get; set; }
