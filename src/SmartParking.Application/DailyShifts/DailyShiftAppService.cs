@@ -62,7 +62,7 @@ public class DailyShiftAppService :
             KeeperShiftRequestType.EndShift => HandleEndShift(input),
             _ => throw new InvalidOperationException()
         });
-
+        input.RequestTime = DateTime.Now;
         if (!input.TenantId.HasValue)
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
