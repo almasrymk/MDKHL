@@ -152,7 +152,7 @@ public class DailyShiftAppService :
         }
         
     }
-    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync (PagedAndSortedAndSearchResultRequestDto input ,Guid?  TenantId )
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync (PagedAndSortedAndSearchResultRequestDto input ,Guid?  TenantId ,Guid? userId )
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -163,7 +163,9 @@ public class DailyShiftAppService :
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
             var result = from dailyShift in queryDailyShift
-                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         where 
+                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true 
+                         && userId.HasValue ? dailyShift.KeeperId == userId : true 
                          join user in queryUser
                          on dailyShift.KeeperId equals user.Id
                          join organization in queryOrganization
@@ -208,7 +210,7 @@ public class DailyShiftAppService :
         }
     }
 
-    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId)
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId , Guid? userId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -219,7 +221,9 @@ public class DailyShiftAppService :
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
             var result = from dailyShift in queryDailyShift
-                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         where 
+                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         && userId.HasValue ? dailyShift.KeeperId == userId : true
                          join user in queryUser
                          on dailyShift.KeeperId equals user.Id
                          join garage in queryGarge
@@ -263,7 +267,7 @@ public class DailyShiftAppService :
     private static IQueryable<DailyShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto> result)
     {
         var sorting = input.Sorting;
-        if (sorting.Contains("DESC"))
+        if (sorting.Contains(value: "DESC"))
         {
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
