@@ -135,10 +135,6 @@ public partial class UserShifts
 
     }
 
-    private void HandleAdd()
-    {
-        Navigation.NavigateTo("/add-user", true);
-    }
     public async Task<IDialogReference> AssignShiftDialog(string userId)
     {
 
@@ -160,6 +156,20 @@ public partial class UserShifts
         };
 
         return await Dialog.ShowAsync<ViewUserShiftsDialog>("View User Shifts", parameters);
+
+    }
+
+    
+    public async Task<IDialogReference> ShowUserLogs(RowDef row)
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["userId"] = row.Cells[0].Value
+        };
+
+        return await Dialog.ShowAsync<ViewLogsDialog>("Logs Of User Shift Dialog", parameters);
 
     }
 

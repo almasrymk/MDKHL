@@ -18,7 +18,6 @@
 @using Microsoft.AspNetCore.Authorization
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
-
-<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue" ShowFiltering="false" ShowAssignCar="true" TotalItemsInTable="TotalItem" OnClickViewUserShifts="OnClickViewUserShifts" ShowUserShifts="true" ShowAssign="true" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnClickAssign="AssignShiftDialog"></SPDataGrid>
+<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue" ShowFiltering="false" OnClickViewLogs="ShowUserLogs" ShowAssignCar="true" TotalItemsInTable="TotalItem" ShowViewLogs="true" OnClickViewUserShifts="OnClickViewUserShifts" ShowUserShifts="true" ShowAssign="true" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnClickAssign="AssignShiftDialog"></SPDataGrid>
 
 
