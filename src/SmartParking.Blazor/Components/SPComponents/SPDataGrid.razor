@@ -314,7 +314,7 @@
                                     }
                                     @if (OnClickViewUserShifts.HasDelegate && ShowUserShifts)
                                     {
-                                        <MudTooltip Text=@L["View Details"] Color=MudBlazor.Color.Primary>
+                                        <MudTooltip Text=@L["UserShifts"] Color=MudBlazor.Color.Primary>
 
                                             <MudIconButton OnClick="@(e => OnClickViewUserShifts.InvokeAsync(context.Item))"
                                                            Icon="@Icons.Material.Filled.Work"
