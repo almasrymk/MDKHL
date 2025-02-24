@@ -694,8 +694,7 @@
     "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To Shift",
     "CannotEndShift": "Cannot End Shift Now",
     "Shift": "Shift",
-    "UserShifts" :  "User Shifts"
-    "Shift": "Shift",
+    "UserShifts" :  "User Shifts",
     "UserLogs": "User Activities"
 
 
