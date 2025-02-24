@@ -1,0 +1,166 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Localization
+@using SmartParking.Shifts
+@using System.Globalization
+@using Volo.Abp.MultiTenancy
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject ICurrentTenant CurrentTenant
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" >
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
+				<MudGrid>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="shiftDto.ArabicName"
+									  Disabled=true
+									  Label="@L["ArabicName"]" />
+					</MudItem>
+						<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="shiftDto.EnglishName"
+									  Disabled=true
+									  Label="@L["EnglishName"]" />
+					</MudItem>
+					
+					<MudItem sm="6" md="6">
+						<MudTextField Value="shiftDto.StartDate.ToString()"
+									  Disabled=true
+									  Label="@L["StartDate"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="shiftDto.EndDate.ToString()"
+									  Disabled=true
+									   Label="@L["EndDate"]" />
+					</MudItem>
+					@if (shiftDto.IsFullDay == true)
+					{
+						<MudItem sm="4" md="4">
+							<MudTextField T="string"
+										  Text="@(24+L["Hour"])"
+										  Immediate="true"
+										  Disabled=true
+										  Label=@L["Published"] />
+						</MudItem>
+
+
+					}
+					else{
+
+					
+						<MudItem sm="6" md="6">
+							<MudTextField Value="shiftDto.StartTime.ToString()"
+										  Disabled=true
+										   Label="@L["StartTime"]" />
+						</MudItem>
+						<MudItem sm="6" md="6">
+							<MudTextField Value="shiftDto.EndTime.ToString()"
+										  Disabled=true
+										   Label="@L["EndTime"]" />
+						</MudItem>
+					}
+					@if (CultureInfo.CurrentCulture.Name == "ar")
+					{
+					<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="shiftDto.GarageArabicName"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["GarageName"]" />
+						</MudItem>
+					}
+					else
+					{
+
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="shiftDto.GarageEnglishName"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["GarageName"]" />
+						</MudItem>
+
+					}
+					@if(CurrentTenant.Id is null){
+
+						@if (CultureInfo.CurrentCulture.Name == "ar")
+						{
+							<MudItem sm="6" md="6">
+								<MudTextField @bind-Value="shiftDto.OrganizationArabicName"
+											  Immediate="true"
+											  Disabled=true
+											  Label="@L["Organization"]" />
+							</MudItem>
+						}
+						else
+						{
+
+							<MudItem sm="6" md="6">
+								<MudTextField @bind-Value="shiftDto.OrganizationEnglishName"
+											  Immediate="true"
+											  Disabled=true
+											  Label="@L["Organization"]" />
+							</MudItem>
+
+						}
+
+
+					}
+
+					<MudItem sm="12" md="12">
+						<MudTextField
+									T="string"
+									 Value="@L[$"{shiftDto.Description}"]"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["Description"]" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField
+									T="string"
+									 Value="@L[$"{shiftDto.Status}"]"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["Status"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+		    <DialogActions>
+			<DialogActionComponent 
+				    ButtonTwoColor="MudBlazor.Color.Dark" 
+				    ButtonTwoLabel="@L["Back"]" 
+				    ButtonTwoClick="OnCloseViewOnly" 
+				    ButtonTwoVariant="MudBlazor.Variant.Filled" 
+			/>
+			</DialogActions>
+
+
+	</MudDialog>
+
+</div>
+
+<style>
+	.mud-modal {
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialog { get; set; }
+	[Parameter]
+	public ShiftDto shiftDto { get; set; }
+
+	private void OnCloseViewOnly()
+	{
+		MudDialog.Cancel();
+
+	}
+
+}

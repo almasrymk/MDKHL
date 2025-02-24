@@ -100,6 +100,15 @@ public static class SmartParkingEfCoreEntityExtensionMappings
                    propertyBuilder.HasDefaultValue(null);
                }
                );
+            
+            ObjectExtensionManager.Instance
+                   .MapEfCoreProperty<IdentityUser, UserTypeCategory>(
+                       "UserTypeCategory",
+                       (entityBuilder, propertyBuilder) =>
+                       {
+                           propertyBuilder.HasDefaultValue(null);
+                       }
+                       );
         });
     }
 }

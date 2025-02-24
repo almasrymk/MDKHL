@@ -294,7 +294,8 @@ public partial class User
             IsActive = userData.IsActive,
             NationalId = userData.NationalId,
             IdentificationTypes = userData.IdentificationTypes,
-            IsCustomer = userData.IsCustomer
+            IsCustomer = userData.IsCustomer,
+            UserTypeCategory = userData.UserTypeCategory,
         };
         var parameters = new DialogParameters
         {

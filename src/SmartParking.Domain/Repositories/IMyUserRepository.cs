@@ -22,5 +22,6 @@ public interface IMyUserRepository : IRepository<IdentityUser, Guid>
     Task<PagedResult<UserWithRole>> SearchUserWithRoleMdkhlAsync(int skipCount, int maxResultCount, string term, string Sorting);
     Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId);
 
-
+    Task<PagedResult<UserWithRole>> FindUserShiftsMdkhlAsync(int skipCount, int maxResultCount, string Sorting, string searchTerm, Guid? tenantId);
+    Task<PagedResult<UserWithRole>> FindUserShiftsOrganizationAsync(int skipCount, int maxResultCount, string Sorting, string searchTerm);
 }

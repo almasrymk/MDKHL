@@ -1,0 +1,30 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.DailyShifts
+@using SmartParking.KeeperShifts
+@using SmartParking.SingletonService
+@using Volo.Abp.EventBus.Distributed
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Users
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
+@using System.Globalization
+@inject IDialogService Dialog
+@inject ICurrentUser CurrentUser
+@inject ICurrentTenant CurrentTenant
+@inject IKeeperShiftsAppService KeeperShiftAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject ISingletonService<KeeperShiftDto,int> keeperShiftSingletonService
+@inject IDailyShiftAppService DailyShiftAppService
+@page "/myshifts"
+
+
+    <SPDataGrid PageName="@L["MyShifts"]" Data="@itemData" ShowMenue="false" ShowDelete="false"
+                TotalItemsInTable="TotalItem" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData"
+                OnSearching="FetchTableData" OnClickStart="HandleStartShift" ShowStart = "IsStartShift"
+                OnClickEnd="HandleEndShift" ShowEnd = "IsEndShift">
+    </SPDataGrid>
+
+
+

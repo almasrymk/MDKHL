@@ -18,7 +18,7 @@
     "Add Organization": "Add Organization",
     "Main Data": "Main Data",
     "Type Here": "Type Here",
-    "ArabicName": "Ar Name",
+    "ArabicName": "Arabic Name",
     "EnglishName": "Name",
     "English Name": "Name",
     "CommercialRegistrationNumber": "CR Number",
@@ -670,16 +670,38 @@
     "Reserved": "Reserved",
     "CustomerAndPaymentReport": "Customers Payments",
     "CustomerPackageReport": "Customers Packages",
-    "PaymentMehtodReport" :  "Bank Transfers Payments"
-
-
-
-
-
-
-
-
-
+    "PaymentMehtodReport": "Bank Transfers Payments",
+    "RequestTime": "Request Time",
+    "KeeperShiftRequestType": "Request Type",
+    "DailyShifts": "Daily Shifts",
+    "StartShift": "Start Shift",
+    "EndShift": "End Shift",
+    "keeper": "Keeper",
+    "Shifts": "Shifts",
+    "StartTime": "Start Time",
+    "EndTime": "End Time",
+    "Garage": "Garage",
+    "Notifications": "Notifications",
+    "ChangeLanguage": "Change Language",
+    "Permissions": "Permissions",
+    "UploadImage": "Upload Image",
+    "exportstarted": "Export process has started",
+    "ShiftName": "Shift Name",
+    "MyShifts": "My Shifts",
+    "UsersCanAssignShifts": "Users Shifts",
+    "NotAssignShift": "Not Assign to this Shift",
+    "CannotStartShift": "Cannot Start Shift Now",
+    "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To This Shift",
+    "CannotEndShift": "Cannot End Shift Now",
+    "Shift": "Shift",
+    "UserShifts": "User Shifts",
+    "UserLogs": "User Activities",
+    "Assign Shift": "Assign Shift",
+    "EndDateCannotBeBeforeStartDate": "End Date Cannot Be Before Start Date",
+    "ShiftNotActive": "This Shift is not Active",
+    "ShiftDateOutOfRange": "Shift Date Out Of Range",
+    "Start": "Start",
+    "End": "End"
 
 
 

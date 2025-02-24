@@ -19,6 +19,8 @@ using OfficeOpenXml;
 using Polly;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Enums;
+using SmartParking.Events;
 using SmartParking.Localization;
 using SmartParking.Utilities;
 using YamlDotNet.Core.Tokens;
@@ -55,8 +57,16 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
     [Parameter] public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickStart { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickEnd { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
+    [Parameter] public bool ShowStart { get; set; } = true;
+    [Parameter] public bool ShowEnd { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickViewLogs { get; set; }
+    [Parameter] public bool ShowViewLogs { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickViewUserShifts { get; set; }
+    [Parameter] public bool ShowUserShifts { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
     [Parameter] public EventCallback<string> HandleCategory { get; set; }
@@ -92,7 +102,8 @@ public partial class SPDataGrid
         ["starts with"] = "StartsWith",
         ["ends with"] = "EndsWith",
         ["is empty"] = "IsNullOrEmpty",
-        ["is not empty"] = "IsNullOrEmpty"
+        ["is not empty"] = "IsNullOrEmpty",
+        ["in"] = "In"
     };    
     
     public Dictionary<string, string> DateOperatorEn { get; set; } = new Dictionary<string, string>
@@ -119,7 +130,8 @@ public partial class SPDataGrid
         ["يبدأ بـ"] = "StartsWith",
         ["لا يبدأ بـ"] = "EndsWith",
         ["فارغـًا"] = "IsNullOrEmpty",
-        ["لا يكون فارغـًا"] = "IsNullOrEmpty"
+        ["لا يكون فارغـًا"] = "IsNullOrEmpty",
+        ["في"] = "In"
     };
     
     public Dictionary<string, string> DateOperatorAR { get; set; } = new Dictionary<string, string>
@@ -193,6 +205,7 @@ public partial class SPDataGrid
             if (IsShowValue && (SelectOperator.Key.Contains("not") || SelectOperator.Key.Contains("لا"))  )
                 IsNot = true;
             var DisplayFilter = Data.Columns.FirstOrDefault(c => c.PropertyName == SelectedColumn);
+            
             FilterRequestDto filterEventArgs = new FilterRequestDto()
             {
                 FilterProperty = SelectedColumn,
@@ -204,6 +217,13 @@ public partial class SPDataGrid
                 EndDate = EndDate ?? DateTime.MinValue,
                 StartDate = StartDate ?? DateTime.MinValue
             };
+            if (IsShowValue && SelectOperator.Value.Contains("In"))
+            {
+                var values = FilterValue.Split(',')
+                                .Select(x => x.Trim())
+                                .ToList();
+                filterEventArgs.FilterValues = values;
+            }
             ColumnsFilter.Add(filterEventArgs);
             ColumnsFilterApply.Add(DisplayFilter.Name);
             SelectProprtyName.Add(new KeyValuePair<string, string>(DisplayFilter.Name, filterEventArgs.FilterProperty));
@@ -253,7 +273,7 @@ public partial class SPDataGrid
         var pageArgs = new PageChangeEventArgs()
         {
             PageNumber = state.Page + 1,
-            RowsPerPage = state.PageSize,
+            RowsPerPage = state.PageSize-1,
             SortColumn = sortString,
             SearchTerm = _searchString,
             Filters = ColumnsFilter,
@@ -347,16 +367,18 @@ public partial class SPDataGrid
     {
         try
         {
+            await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
             GridState<RowDef> state = new GridState<RowDef>();
-            state.PageSize = 500;
+            state.PageSize = int.MaxValue - 1;
             IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/PDF");
             string file = System.IO.Path.Combine(folderName, $"{Data.Name}.pdf");
             await GenerateFilesAppService.ExportToPdf(Data, file);
 
-            SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
+            //SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+            //            LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
             IsExport = false;

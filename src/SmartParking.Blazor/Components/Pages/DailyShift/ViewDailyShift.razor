@@ -1,0 +1,169 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Cameras
+@using SmartParking.DailyShifts
+@using SmartParking.GarageTransactionEndPoints
+@using SmartParking.GarageTransactions
+@using SmartParking.Garages
+@using SmartParking.Localization
+@using SmartParking.Lookups.LicenceType
+@using SmartParking.Organizations
+@using System.Globalization
+@using Volo.Abp.MultiTenancy
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject IGarageAppService GaragesAppService
+@inject IOrganizationsAppService OrganizationsAppService
+@inject ICamerasAppService CamerasAppService
+@inject IGarageTransactionEndPointsAppService GarageTransactionAppService
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+
+<div class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+				<MudGrid>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="DailyShiftDto.KeeperName"
+									  For="@(() => DailyShiftDto.KeeperName)"
+						Disabled=true
+						Label="@L["Name"]" />
+					</MudItem>
+					@if (CurrentTenant.Id == null)
+					{
+						<MudItem sm="6" md="6">
+							@if (CultureInfo.CurrentCulture.Name == "ar")
+							{
+								<MudTextField @bind-Value="DailyShiftDto.OrganizationNameAr"
+								For="@(() => DailyShiftDto.OrganizationNameAr)"
+								Immediate="true"
+								Disabled=true
+								Label="@L["OrganizationName"]" />
+							}
+							else
+							{
+								<MudTextField @bind-Value="DailyShiftDto.OrganizationNameEn"
+								For="@(() => DailyShiftDto.OrganizationNameEn)"
+								Immediate="true"
+								Disabled=true
+								Label="@L["OrganizationName"]" />
+							}
+						</MudItem>
+					}
+					else
+					{
+						<MudItem sm="6" md="6">
+						</MudItem>
+					}
+					<MudItem sm="6" md="6">
+						@if (CultureInfo.CurrentCulture.Name == "ar")
+						{
+							<MudTextField @bind-Value="DailyShiftDto.GarageNameAr"
+							For="@(() => DailyShiftDto.GarageNameAr)"
+							Immediate="true"
+							Disabled=true
+							Label="@L["GarageName"]" />
+						}
+						else
+						{
+							<MudTextField @bind-Value="DailyShiftDto.GarageNameEn"
+							For="@(() => DailyShiftDto.GarageNameEn)"
+							Immediate="true"
+							Disabled=true
+							Label="@L["GarageName"]" />
+						}
+
+					</MudItem>
+					<MudItem sm="6" md="6">
+						@if (CultureInfo.CurrentCulture.Name == "ar")
+						{
+							<MudTextField @bind-Value="DailyShiftDto.ShiftNameAr"
+										  For="@(() => DailyShiftDto.ShiftNameAr)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["ShiftName"]" />
+						}
+						else
+						{
+							<MudTextField @bind-Value="DailyShiftDto.ShiftNameEn"
+										  For="@(() => DailyShiftDto.ShiftNameEn)"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["ShiftName"]" />
+						}
+
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="DailyShiftDto.StartDate.ToString()"
+									  Disabled=true
+									  Label="@L["StartDate"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="DailyShiftDto.EndDate.ToString()"
+									  Disabled=true
+									  Label="@L["EndDate"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="DailyShiftDto.StartTime.ToString()"
+									  Disabled=true
+									  Label="@L["StartTime"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="DailyShiftDto.EndTime.ToString()"
+									  Disabled=true
+									  Label="@L["EndTime"]" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField Value="DailyShiftDto.RequestTime.ToString()"
+						Immediate="true"
+						Disabled=true
+						Label="@L["RequestTime"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="@L[$"{KeeperShiftRequestType}"]"
+						Immediate="true"
+						Disabled=true
+						Label="@L["KeeperShiftRequestType"]" />
+					</MudItem>
+				</MudGrid>
+			</MudForm>
+		</DialogContent>
+		<DialogActions>
+			<div class="d-flex align-items-center justify-content-between">
+
+				<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+				@* @if (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true)
+				{
+					<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Checkout"> @L["Checkout"]</MudButton>
+				} *@
+			</div>
+		</DialogActions>
+
+
+	</MudDialog>
+
+</div>
+@code {
+	[CascadingParameter]
+	private MudDialogInstance MudDialogAdd { get; set; }
+	[Parameter] public DailyShiftDto DailyShiftDto { get; set; }
+	private MudForm form;
+	string KeeperShiftRequestType = "";
+
+	protected override Task OnInitializedAsync()
+	{
+		KeeperShiftRequestType = DailyShiftDto.KeeperShiftRequestType.ToString();
+		return base.OnInitializedAsync();
+	}
+
+	private void OnCloseViewOnly()
+	{
+		MudDialogAdd.Cancel();
+
+	}
+}

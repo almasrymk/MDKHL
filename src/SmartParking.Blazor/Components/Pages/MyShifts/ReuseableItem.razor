@@ -1,0 +1,13 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+<MudItem sm="3" md="3">
+	<MudTextField Value="@Value"
+				  Immediate="true"
+				  Disabled=true
+				  Label="@L[Localize]" />
+</MudItem>
+@code {
+	[Parameter] public string Value { get; set; }
+	[Parameter] public string Localize { get; set; }
+}

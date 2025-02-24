@@ -16,6 +16,8 @@ using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using SmartParking.Events;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using System;
@@ -26,17 +28,21 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.EventBus.Distributed;
 
 namespace SmartParking.PDF;
 
-public class GenerateFilesAppService (IOrganizationsAppService organizationsAppService) : IGenerateFilesAppService, ITransientDependency
+public class GenerateFilesAppService (IOrganizationsAppService organizationsAppService, IDistributedEventBus eventBus) : IGenerateFilesAppService, ITransientDependency
 {
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
+    private readonly IDistributedEventBus _eventBus = eventBus;
 
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
+        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
         await Task.Yield();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -151,12 +157,14 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             }
             FileInfo excelFile = new FileInfo(pathFileName);
             package.SaveAs(excelFile);
-       
+            await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Complete.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
         }
     }
 
     public async Task ExportToPdf(TableData Data, string fileName)
     {
+        //await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
 
         await Task.Yield();
         FileInfo file = new FileInfo(fileName);
@@ -191,10 +199,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                 Table footerTable = AddFooter(pdfDoc, font, contactMail, phoneNum, address, pageNumber);
                 int rowOfTable = 0;
                 doc.Add(headerTable);
-                int maxRows = 27;
+                int maxRows = 21;
                 if (CultureInfo.CurrentCulture.Name == "ar")
                 {
-                    maxRows = 22;
+                    maxRows = 21;
                     Data.Columns.Reverse();
                 }
                 Table table = GetColumnHeader(Data, font, styleBold, NumberOfColumns);
@@ -215,7 +223,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         }
                         else
                         {
-                            new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 85))
+                            new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 75))
                                 .Add(footerTable);
                         }
                         doc.Add(areaBreak: new AreaBreak());
@@ -229,16 +237,16 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
-                            Text txt = CellStyling(header, cellValue, font);
+                            Text txt = CellStyling(header, cellValue, font ,  styleBold);
                             if (CultureInfo.CurrentCulture.Name == "ar")
                             {
-                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(22).SetTextAlignment(TextAlignment.CENTER));
+                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(24).SetTextAlignment(TextAlignment.CENTER));
 
                             }
                             else
                             {
 
-                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(18).SetTextAlignment(TextAlignment.CENTER));
+                                table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(24).SetTextAlignment(TextAlignment.CENTER));
                             }
                         }
                     }
@@ -262,6 +270,8 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             }
 
         }
+        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Complete.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
 
     }
 
@@ -381,23 +391,29 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
         return footerTable;
     }
-    private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font)
+    private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font, Style  styleBold )
     {
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            
-            if ((header.PropertyName.ToLower().Contains("date") == true || header.PropertyName.ToLower().Contains("time") == true) || header.PropertyName.ToLower().Contains("Published") == true || header.Name.ToLower().Contains("code") )
+            if ((header.PropertyName.ToLower().Contains("date") == true || header.PropertyName.ToLower().Contains("time") == true) || header.PropertyName.ToLower().Contains("Published") == true || header.Name.ToLower().Contains("code"))
             {
                 return new Text(cellValue)
-                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFontSize(9);
+                    .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT).SetFont(font).SetFontSize(10);
             }
             else
             {
-                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(9);
-            }
+                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(10);
 
+            }
         }
-        return new Text(cellValue).SetFontSize(12);
-                                
+        else
+        {
+            if (header.Name.Contains("ArabicName") || (header.Name.Contains("UserName") || header.Name.Contains("Description")))
+            {
+                return new Text(cellValue.ArabicWithFontGlyphsToPDF()).SetFont(font).SetFontSize(10);
+            }
+            return new Text(cellValue).SetFont(font).SetFontSize(10);
+        }
+
     }
 }

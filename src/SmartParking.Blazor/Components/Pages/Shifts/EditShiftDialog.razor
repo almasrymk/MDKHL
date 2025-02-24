@@ -1,0 +1,213 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Localization
+@using SmartParking.Shifts
+@using System.Security.Authentication
+@using SmartParking.Validations
+@using Volo.Abp
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Validation
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IShiftAppService ShiftAppService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject ICurrentTenant CurrentTenant
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Edit"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                <MudGrid>
+
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Shift.ArabicName"
+                        For="@(() => Shift.ArabicName)"
+                        Variant="Variant.Text"
+                        Class="w-100"
+                        Placeholder=@L["Type Here"]
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Label=@L["ArabicName"] />
+                    </MudItem>
+
+                    <MudItem sm="4" md="4">
+                        <MudTextField @bind-Value="Shift.EnglishName"
+                        For="@(() => Shift.EnglishName)"
+                        Variant="Variant.Text"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Class="w-100"
+                        Placeholder=@L["Type Here"]
+                        Label=@L["EnglishName"] />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudDatePicker Variant="Variant.Text"
+                        Class="w-100"
+                        @bind-Date="_startDateTime"
+                       IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)" 
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        PickerVariant="PickerVariant.Dialog"
+                        Label="@L["StartDate"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudDatePicker Variant="Variant.Text"
+                        Class="w-100"
+                        @bind-Date="_endDateTime"
+                        IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        PickerVariant="PickerVariant.Dialog"
+                        Label="@L["EndDate"]" />
+                    </MudItem>
+                    <MudItem sm="4" md="4">
+                        <MudSwitch T="bool"
+                        @bind-Value="Shift.IsFullDay"
+                        Label="@L["Published"]"
+                        LabelPosition="LabelPosition.Start"
+                        Color="MudBlazor.Color.Primary" />
+                    </MudItem>
+
+                    @if (Shift.IsFullDay == false)
+                    {
+                        <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                            Class="w-100"
+                            @bind-Time="_timeSpanStart"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            PickerVariant="PickerVariant.Dialog"
+                            Label="@L["StartTime"]" />
+                        </MudItem>                    <MudItem sm="4" md="4">
+                            <MudTimePicker Variant="Variant.Text"
+                            Class="w-100"
+                            @bind-Time="_timeSpanEnd"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            PickerVariant="PickerVariant.Dialog"
+                            Label="@L["EndTime"]" />
+                        </MudItem>
+                    }
+
+                    <MudItem sm="12">
+                        <MudTextField @bind-Value="Shift.Description"
+                                      For="@(() => Shift.Description)"
+                        Variant="Variant.Outlined"
+                        Class="w-100"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        Lines="5"
+                        Placeholder=@L["Type Here"]
+                        Label="@L["Description"]" />
+
+                    </MudItem>
+                    <MudItem sm="12"  Class="d-inline-flex justify-content-center">
+                        <div Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@Shift.Status" Class="d-inline-flex align-content-center">
+
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
+                            </MudRadioGroup>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+        <DialogActionComponent 
+            ButtonOneColor="MudBlazor.Color.Dark" 
+            ButtonTwoColor="MudBlazor.Color.Primary" 
+            ButtonOneLabel="@L["Back"]"
+            ButtonTwoLabel="@L["Save"]"
+            ButtonOneClick="CancelEdit"
+            ButtonTwoClick="SubmitEdit"
+            ButtonOneVariant="MudBlazor.Variant.Filled" 
+            ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+    border-radius: 0 20px 0 20px;
+    }
+</style>
+@code {
+
+    [Parameter] public CreateUpdateShiftDto Shift { get; set; }
+    [Parameter] public int UpdatedId { get; set; }
+    [CascadingParameter]
+    private MudDialogInstance MudDialogAdd { get; set; }
+    private TimeSpan? _timeSpanStart
+    {
+        get => Shift.StartTime.ToTimeSpan();
+        set => Shift.StartTime = TimeOnly.FromTimeSpan(value.Value);
+    }
+    private TimeSpan? _timeSpanEnd
+    {
+        get => Shift.EndTime.ToTimeSpan();
+        set => Shift.EndTime = TimeOnly.FromTimeSpan(value.Value);
+    }
+    private DateTime? _startDateTime
+    {
+        get => Shift.StartDate == default ? (DateTime?)null : Shift.StartDate.ToDateTime(new TimeOnly(0, 0)); // Convert DateOnly to DateTime
+        set => Shift.StartDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default; // Convert DateTime to DateOnly
+    }
+    private DateTime? _endDateTime
+    {
+        get => Shift.EndDate == default ? (DateTime?)null : Shift.EndDate.ToDateTime(new TimeOnly(0, 0)); // Convert DateOnly to DateTime
+        set => Shift.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default; // Convert DateTime to DateOnly
+    }
+    private async Task SubmitEdit()
+    {
+
+        try
+        {
+            Shift.IsFullDay = Shift.IsFullDay || PackageValidations.CheckPackageTimeValiditity(Shift.StartTime, Shift.EndTime);
+            if(CurrentTenant.Id != null)
+                await ShiftAppService.UpdateAsync(UpdatedId, Shift);
+            else
+                await ShiftAppService.UpdateMDKHLAsync(UpdatedId, Shift);
+            MudDialogAdd.Close(DialogResult.Ok(true));
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Shift.ArabicName}", Severity.Success);
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/shifts", forceLoad: true);
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+    }
+
+    private async Task CancelEdit()
+    {
+        MudDialogAdd.Cancel();
+
+
+    }
+
+}

@@ -13,10 +13,12 @@ public static class AlertMessages
     public const string UPDATE = "Updated";
     public const string ADD = "Added";
     public const string DELETE = "Deletion";
-    public const string SUCCESS = "SUCCESS";
-    public const string FAILED = "FAILED";
-    public const string VAlIDATION_ERROR = "VaildtionError";
-    public const string ASSIGN = "assigned";
+    public const string SUCCESS = "Success";
+    public const string FAILED = "Failed";
+    public const string VAlIDATION_ERROR = "Vaildtion Error";
+    public const string ASSIGN = "Assigned";
     public const string EXPORT = "Export";
+    public const string START = "Start";
+    public const string END = "End";
 
 }

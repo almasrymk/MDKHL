@@ -120,16 +120,20 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     private async Task<Subscription> CheckSubscriptionUsersLimitsAsync(int organizationId)
     {
-        var organization = await _organizationsRepository.GetAsync(organizationId);
-        var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
-        Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
-
-        if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
-        }
+            var organization = await _organizationsRepository.GetAsync(organizationId);
+            var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
+            Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
 
-        return subscription;
+            if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
+            }
+
+            return subscription;
+        }
+        
     }
 
     private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
@@ -155,6 +159,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetProperty("OrganizationId", input.OrganizationId);
         user.SetProperty("IdentificationTypes", input.IdentificationTypes);
         user.SetProperty("NationalId", input.NationalId);
+        if(input.UserTypeCategory.HasValue)
+         user.SetProperty("UserTypeCategory", input.UserTypeCategory);
     }
 
     private async Task AddCustomer(IdentificationTypes identificationTypes, string NationalId,string ArabicName,Guid userId)
@@ -488,6 +494,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
             () => input.PhoneNumber
             );
         user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
+        if (input.UserTypeCategory.HasValue)
+            user.SetProperty("UserTypeCategory", input.UserTypeCategory);
+
     }
 
     private async Task CheckUpdatePhoneNumber(IdentityUser user, UpdateUserDto input)
@@ -640,6 +649,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             userDto.Image = user.GetProperty<string>("Image");
             userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
             userDto.NationalId = user.GetProperty<string>("NationalId");
+            userDto.UserTypeCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
             if (user.Roles.Any())
             {
                 userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
@@ -697,7 +707,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
         user?.SetProperty("OrganizationId", value: 0);
-        
+       
+
         if (user.UserName != input.UserName)
         {
             await _userManager.SetUserNameAsync(user, input.UserName);
@@ -720,10 +731,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<string?> GetImage(Guid? userId)
     {
-     using (_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(userId);
             return user?.GetProperty<string>("Image");
         }
+    }
+
+    public async Task<bool> IsCurrentUserHasShift()
+    {
+        IdentityUser? user = await IsUserFound(CurrentTenant.Id);
+        var userCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
+        return userCategory > 0?true:false;
     }
 }

@@ -27,7 +27,7 @@
 
 
                 <MudGrid Class="mt-2">
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="12" md="12">
                     <MudTextField @bind-Value="userCreate.Name"
                               For="@(() => userCreate.Name)"
                                       Variant="Variant.Text"
@@ -74,20 +74,22 @@
             </MudItem>
             
 
-                @if (currrentTenant.Id is null)
-                {
-                <MudItem sm="6">
-                    <MudRadioGroup Required="false" T="bool"  ValueChanged="IsMdkhlSelect">
-                            <MudRadio Value="true"  Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
-                            <MudRadio Value="false" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
-                        </MudRadioGroup>
+               
+                <MudItem sm="6" Class="d-flex flex-row">
+                    <MudRadioGroup Required="false"  T="string"  ValueChanged="IsMdkhlSelect">
+                    @if (currrentTenant.Id is null)
+                    {
+                        <MudRadio Value="@("admin")" Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
+                        <MudRadio Value="@("mdkhl")" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
+                    }
+                    <MudRadio Value="@("keeper")" Color="MudBlazor.Color.Primary">@L["keeper"]</MudRadio>
+                </MudRadioGroup>
                 </MudItem>
-                }
                 <MudItem sm="6">
                 <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
                 </MudItem>
                 
-                    @if (IsOrganization)
+                    @if (IsOrganization && !currrentTenant.IsAvailable)
                     {
 
                         <MudItem sm="6" md="6">

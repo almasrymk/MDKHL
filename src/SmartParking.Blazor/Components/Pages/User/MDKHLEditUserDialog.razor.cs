@@ -20,6 +20,7 @@ using static MudBlazor.CategoryTypes;
 using System.Security.Authentication;
 using System.Linq;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -124,7 +125,11 @@ public partial class MDKHLEditUserDialog
         }
         itemData = tableData;
     }
-
+    private void IsKeeprChecked(bool value)
+    {
+        if (value == true)
+            updateUserDto.UserTypeCategory = UserTypeCategory.Keeper;
+    }
 
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {

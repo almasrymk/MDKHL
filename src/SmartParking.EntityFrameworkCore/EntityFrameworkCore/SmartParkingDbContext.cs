@@ -11,6 +11,8 @@ using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Entities.Shifts;
+using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Localization;
@@ -73,6 +75,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<IdentityLinkUser> LinkUsers { get; set; }
     public DbSet<IdentityUserDelegation> UserDelegations { get; set; }
     public DbSet<IdentitySession> Sessions { get; set; }
+    public DbSet<StateManagement> StateManagements { get; set; }
     // Tenant Management
     public DbSet<Tenant> Tenants { get; set; }
     //  public DbSet<Volo.Abp.TenantManagement.TenantConnectionString> TenantConnectionStrings { get; set; }
@@ -103,6 +106,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<CameraModel> CameraModels { get; set; }
     public DbSet<CameraBrand> CameraBrands { get; set; }
     public DbSet<CameraMainType> CameraMainTypes { get; set; }
+    public DbSet<KeeperShift> KeeperShifts { get; set; }
+
+    public DbSet<Shift> Shifts { get; set; }
+    public DbSet<DailyShift> DailyShifts { get; set; }
 
 
     #endregion
