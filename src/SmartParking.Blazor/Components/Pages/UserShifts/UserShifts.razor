@@ -19,6 +19,6 @@
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
-<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue" ShowFiltering="false" ShowAssignCar="true" TotalItemsInTable="TotalItem" ShowAssign="true" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnClickAssign="AssignShiftDialog"></SPDataGrid>
+<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue" ShowFiltering="false" ShowAssignCar="true" TotalItemsInTable="TotalItem" ShowViewLogs="true" OnClickViewLogs="ShowUserLogs" ShowAssign="true" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnClickAssign="AssignShiftDialog"></SPDataGrid>
 
 
