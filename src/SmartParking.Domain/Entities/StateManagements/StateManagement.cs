@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
-namespace SmartParking.Entities.StateManagement;
+namespace SmartParking.Entities.StateManagements;
 
 public class StateManagement : FullAuditedEntity<int>, IMultiTenant
 {
