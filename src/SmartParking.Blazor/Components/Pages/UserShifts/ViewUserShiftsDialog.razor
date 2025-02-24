@@ -12,17 +12,16 @@
 @inject IJSRuntime JSRuntime;
 @inject IKeeperShiftsAppService KeeperShiftsAppService
 
-<PageTitle>@L["MyShifts"]</PageTitle>
+<PageTitle>@L["UserShifts"]</PageTitle>
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal w-100" Style="min-width:auto !important">
         <TitleContent>
-            <MudText Class="fw-bold">@L["MyShifts"]</MudText>
+            <MudText Class="fw-bold">@L["UserShifts"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["MyShifts"] Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnClickAssign="HandleAssign" ShowEdit="ShowEdit" OnPageChanged="FetchTableData" ShowVehicleTransactions="AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || !CurrentTenant.Id.HasValue" ShowVehicleTransactionsMethod="ShowCustomerTransactions" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid>
+            <SPDataGrid PageName=@L["UserShifts"] Data="@itemData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData"></SPDataGrid>
         </DialogContent>
         <DialogActions>
-
             <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
         </DialogActions>
     </MudDialog>

@@ -1,4 +1,4 @@
-﻿using Volo.Application.Services.Dto;
+﻿
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -14,17 +14,16 @@ namespace SmartParking.Blazor.Components.Pages.UserShifts;
 
 public partial class ViewUserShiftsDialog
 {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
     [Parameter]
     public Guid UserId { get; set; }
 
     private int TotalItem;
     public int CurrentPage { get; set; } = 1; 
     public int RowPerPage { get; set; } = 10;
-
     private TableData itemData = new TableData();
-
     private string termSearch;
-    private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private void Cancel() => MudDialog.Cancel();
     public ViewUserShiftsDialog()
     {
@@ -57,37 +56,79 @@ public partial class ViewUserShiftsDialog
 
         TotalItem = (int)keeperShiftDto.TotalCount;
 
-        CreateTable(keeperShiftDto.Items.ToList());
+        await CreateTable(keeperShiftDto);
 
     }
 
-    private void CreateTable(List<KeeperShiftDto> keeperShiftDtos)
+    private async Task CreateTable(PagedResultDto<KeeperShiftDto> keeperShiftDto)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
-            Name = L["KeeperShift"],
+            Name = L["UserShifts"],
             ShowHeader = true
         };
-
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
-        if (CultureInfo.CurrentCulture.Name == "ar")
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CurrentTenant.Id == null)
         {
-        }
-        foreach (var item in keeperShiftDtos)
-        {
-            var rowDef = new RowDef();
-            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = L["OrganizationName"], Name = "OrganizationName", IsFilterable = true, PropertyName = "OrganizationNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
             }
-             
+            else
+            {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = L["OrganizationName"], Name = "OrganizationName", IsFilterable = true, PropertyName = "OrganizationNameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            }
+        }
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = L["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = L["ShiftName"], Name = "ShiftName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = L["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageNameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = L["ShiftName"], Name = "ShiftName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["StartDate"], Name = "StartDate", IsFilterable = true, PropertyName = "StartDate", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["EndDate"], Name = "EndDate", IsFilterable = true, PropertyName = "EndDate", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["StartTime"], Name = "StartTime", IsFilterable = true, PropertyName = "StartTime", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["EndTime"], Name = "EndTime", IsFilterable = true, PropertyName = "EndTime", IsSortable = true, TypeFilter = TypeFilter.Text });
 
-            
+        foreach (var item in keeperShiftDto.Items)
+        {
+            var rowDef = new RowDef();
+            rowDef.Index = keeperShiftDto.Items.ToList().IndexOf(item);
+            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            if (CurrentTenant.Id == null)
+            {
+                if (CultureInfo.CurrentCulture.Name == "ar")
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationNameAr));
+                }
+                else
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationNameEn));
 
+                }
+            }
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageNameAr));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ShiftName"), item.ArabicName));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("GarageName"), item.GarageNameEn));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ShiftName"), item.EnglishName));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("StartDate"), item.StartDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndDate"), item.EndDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("StartTime"), item.StartTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndTime"), item.EndTime.ToString()));
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
+        await Task.Yield();
     }
 
 }
