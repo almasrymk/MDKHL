@@ -5,6 +5,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Enums;
+using SmartParking.KeeperShifts;
 using SmartParking.Localization;
 using SmartParking.Repositories;
 using System;
@@ -66,6 +67,18 @@ public class DailyShiftAppService :
         if (!input.TenantId.HasValue)
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
+    }
+    public CreateUpdateDailyShiftDto CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType)
+    {
+        return new CreateUpdateDailyShiftDto() 
+        { 
+            GarageId = input.GarageId,
+            KeeperId = input.KeeperId,
+            ShiftId = input.ShiftId,
+            KeeperShiftRequestType = keeperShiftRequestType,
+            TenantId = input.TenantId
+        };
+
     }
     private async Task<bool> HandleStartShift (CreateUpdateDailyShiftDto input)
     {
