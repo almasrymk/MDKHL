@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
@@ -30,11 +31,12 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     private readonly IRepository<Shift,int> _shiftRepository;
     private readonly IMyUserRepository _userRepository;
     private readonly IDataFilter _dataFilter;
+    private readonly IMapper _mapper;
 
     public KeeperShiftsAppService(IRepository<KeeperShift, int> repository
        ,  IRepository<Garage, int> garagerepository, IRepository<Organization, int> orgrepository,
        IRepository<Shift, int> shiftrepository, IMyUserRepository userrepository,
-        IDataFilter dataFilter)
+        IDataFilter dataFilter, IMapper mapper)
 
     {
         _keeperShiftRepository = repository;
@@ -43,6 +45,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         _shiftRepository = shiftrepository;
         _userRepository = userrepository;
         _dataFilter = dataFilter;
+        _mapper = mapper;
     }
 
     public  async Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input)
@@ -57,19 +60,12 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             CheckShiftStatus(shift);
             await CheckDupplicateShift(input);
             ValidateDate(input, shift);
-            var keeperShift = new KeeperShift
-            {
-                TenantId = input.TenantId,
-                KeeperId = input.KeeperId,
-                OrganizationId = shift.OrganizationId,
-                GarageId = shift.GarageId,
-                ShiftId = input.ShiftId,
-                StartDate = input.StartDate,
-                EndDate = input.EndDate,
-                StartTime = shift.StartTime,
-                EndTime = shift.EndTime
-            };
 
+            var keeperShift = _mapper.Map<KeeperShift>(input);
+            keeperShift.OrganizationId = shift.OrganizationId;
+            keeperShift.GarageId = shift.GarageId;
+            keeperShift.StartTime = shift.StartTime;
+            keeperShift.EndTime = shift.EndTime;
             await _keeperShiftRepository.InsertAsync(keeperShift, true);
             return true;
         }
