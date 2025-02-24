@@ -68,7 +68,7 @@ public class DailyShiftAppService :
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
     }
-    public CreateUpdateDailyShiftDto CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType)
+    public async Task<CreateUpdateDailyShiftDto> CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType)
     {
         return new CreateUpdateDailyShiftDto() 
         { 
@@ -76,7 +76,9 @@ public class DailyShiftAppService :
             KeeperId = input.KeeperId,
             ShiftId = input.ShiftId,
             KeeperShiftRequestType = keeperShiftRequestType,
-            TenantId = input.TenantId
+            TenantId = input.TenantId,
+            OrganizationId = input.OrganizationId,
+            RequestTime = DateTime.Now
         };
 
     }
