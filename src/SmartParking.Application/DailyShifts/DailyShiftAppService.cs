@@ -92,6 +92,14 @@ public class DailyShiftAppService :
 
     private async Task<bool> HandleEndShift(CreateUpdateDailyShiftDto input)
     {
+        if(!( _repository.GetQueryableAsync().Result.Where(x => x.ShiftId == input.ShiftId && x.KeeperShiftRequestType == KeeperShiftRequestType.StartShift && x.KeeperId == input.KeeperId).OrderByDescending(x=>x.CreationTime).Count()<1))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+        }
+        if (! _repository.GetQueryableAsync().Result.Any(x=>x.ShiftId==input.ShiftId && x.CreationTime >= DateTime.Now && x.KeeperShiftRequestType == KeeperShiftRequestType.StartShift && x.KeeperId != input.KeeperId))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+        }
 
         return true;
     }
