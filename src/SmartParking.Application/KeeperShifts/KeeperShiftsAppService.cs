@@ -177,7 +177,10 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              StartTime = keepershift.StartTime,
                              EndTime = keepershift.EndTime , 
                              ArabicName = shift.ArabicName,
-                             EnglishName = shift.EnglishName
+                             EnglishName = shift.EnglishName,
+                             TenantId = keepershift.TenantId, 
+                             IsFullDay = keepershift.IsFullDay
+
                          };
 
 
