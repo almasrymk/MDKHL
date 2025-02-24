@@ -1,4 +1,6 @@
-﻿using SmartParking.Entities.Shifts;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Entities.Shifts;
+using SmartParking.SingletonService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.KeeperShifts;
 
-public sealed class KeeperShiftSingletonService
+public sealed class KeeperShiftSingletonService : ISingletonService<KeeperShiftDto,int>
 {
     public static KeeperShiftDto? instance;
     private readonly IKeeperShiftsAppService _keeperShiftsAppService;
@@ -15,21 +17,28 @@ public sealed class KeeperShiftSingletonService
     public KeeperShiftSingletonService(IKeeperShiftsAppService keeperShiftsAppService)
     {
         _keeperShiftsAppService = keeperShiftsAppService;
+       
     }
 
-    public async Task<KeeperShiftDto?> GetKeeperShiftInstance(int keeperShiftId)
-    {
-       
-            if (instance == null)
-            {
-                instance = await _keeperShiftsAppService.GetAsync(keeperShiftId);
-            }
-            return instance;
-        
-    }    
-    
-    public void RemoveKeeperShiftInstance()
+    public void Dispose()
     {
         instance = null;
     }
+
+    public async Task<KeeperShiftDto> GetAsync()
+    {
+        await Task.Yield();
+        return instance;
+    }  
+
+    public async Task<KeeperShiftDto> SetAsync(int key)
+    {
+       
+        if (instance == null)
+        {
+            instance = await _keeperShiftsAppService.GetAsync(key);
+        }
+        return instance;
+    }
+  
 }

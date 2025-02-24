@@ -130,7 +130,7 @@ public partial class MyShifts
     
     private async Task HandleStartShift(RowDef row)
     {
-        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.StartShift));
+        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.StartShift, int.Parse(row.Cells[0].Value)));
 
         IsStartShift = false;
         IsEndShift = true;
@@ -140,7 +140,7 @@ public partial class MyShifts
     
     private async Task HandleEndShift(RowDef row)
     {
-        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.EndShift));
+        await _eventBus.PublishAsync(new ShiftEvent(KeeperShiftRequestType.EndShift, int.Parse(row.Cells[0].Value)));
         IsStartShift = true;
         IsEndShift = false;
         StateHasChanged();
