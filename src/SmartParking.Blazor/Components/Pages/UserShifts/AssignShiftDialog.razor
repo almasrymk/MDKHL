@@ -1,17 +1,17 @@
 ﻿@page "/assign-shift"
 @using SmartParking.Authentication
-@using SmartParking.Garages
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.KeeperShifts
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.Shifts
 @using Microsoft.Extensions.Localization
 @using System.Globalization
+@using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @inject NavigationManager Navigation
 @inject IOrganizationsAppService OrganizationsAppService
-@inject IGarageAppService GarageAppService
 @inject IShiftAppService ShiftAppService
 @inject IKeeperShiftsAppService KeeperShiftsAppService
 @inject IStringLocalizer<SmartParkingResource> L
@@ -21,28 +21,16 @@
 
 <PageTitle>@L["Assign Shift"]</PageTitle>
 <MudDialog Class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@L["Assign Shift"]</MudText>
+    </TitleContent>
     <DialogContent>
         <MudForm Model="@keeperShiftCreateDto" @ref="form">
             <MudGrid>
-                <MudItem sm="12" md="6">
-                    <MudSelect T="int" Label="@L["Garage"]" ValueChanged="OnGarageChanged">
-                        <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
-                        @foreach (var garage in Garages)
-                        {
-                            if (CultureInfo.CurrentCulture.Name != "ar")
-                            {
-                                <MudSelectItem Value="@garage.Id">@garage.NameEn</MudSelectItem>
-                            }
-                            else
-                            {
-                                <MudSelectItem Value="@garage.Id">@garage.NameAr</MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
-                </MudItem>
-
-                <MudItem sm="12" md="12">
-                    <MudSelect T="int" Label="@L["Shift"]" ValueChanged="OnShiftChanged">
+                <MudItem sm="6" md="6">
+                    <MudSelect T="int" Label="@L["Shift"]" ValueChanged="OnShiftChanged" 
+                               Required="true"
+                               RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
                         <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
                         @foreach (var shift in Shifts)
                         {
@@ -57,11 +45,11 @@
                         }
                     </MudSelect>
                 </MudItem>
-                <MudItem sm="12" md="6" >
-                    <MudDatePicker Label="@L["StartDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_startDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" />
+                <MudItem sm="12" md="12">
+                    <MudDatePicker Label="@L["StartDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_startDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"/>
                 </MudItem>
-                <MudItem sm="12" md="6">
-                    <MudDatePicker Label="@L["EndDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_endDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" />
+                <MudItem sm="12" md="12">
+                    <MudDatePicker Label="@L["EndDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_endDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -78,7 +66,6 @@
     [Parameter] public string UserId { get; set; }
 
     MudForm form;
-    List<GarageDto> Garages = new();
     List<ShiftDto> Shifts = new();
     CreateUpdateKeeperShiftDto keeperShiftCreateDto = new();
     DateOnly startDate;
@@ -104,27 +91,14 @@
         set => keeperShiftCreateDto.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
     }
 
-
     protected override async Task OnInitializedAsync()
     {
-
-        var input = new PagedAndSortedResultRequestDto();
         var user = await UsersAppService.GetAsync(Guid.Parse(UserId));
         var organizationId = await OrganizationsAppService.GetOrganizationIdByTenant(user.TenantId);
-        var garagesList = await GarageAppService.GetGarageByOrganization(input, organizationId);
-        Garages = garagesList.Items.ToList();
-        Shifts = new List<ShiftDto>(); 
+        var shiftsList = await ShiftAppService.GetListMdkhlAsync(new PagedAndSortedAndSearchResultRequestDto(), user.TenantId);
+        Shifts = shiftsList.Items.ToList();
         keeperShiftCreateDto.OrganizationId = organizationId;
         keeperShiftCreateDto.KeeperId = Guid.Parse(UserId);
-    }
-
-    private async Task OnGarageChanged(int garageId)
-    {
-        keeperShiftCreateDto.GarageId = garageId;
-        Shifts = new List<ShiftDto>();
-
-        var shiftsList = await ShiftAppService.GetListMdkhlAsync(new PagedAndSortedAndSearchResultRequestDto(), CurrentTenant.Id);
-        Shifts = shiftsList.Items.ToList();
     }
 
     private async Task OnShiftChanged(int shiftId)
@@ -135,18 +109,57 @@
         if (selectedShift != null)
         {
             startDate = selectedShift.StartDate;
-            endDate = selectedShift.EndDate;           
+            endDate = selectedShift.EndDate;
         }
     }
 
     private async Task SubmitCreate()
     {
-        bool success = await KeeperShiftsAppService.CreateAsync(keeperShiftCreateDto);
-        if (success)
+        try
         {
-            Snackbar.Add(L["Assigned"], Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+            bool success = await KeeperShiftsAppService.CreateAsync(keeperShiftCreateDto);
+            if (success)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                if (CultureInfo.CurrentCulture.Name == "ar")
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ASSIGN]}{" "} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                }
+                else
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $" {L[AlertMessages.AlertMessages.SUCCESS]}{" "}{L[AlertMessages.AlertMessages.ASSIGN]}", Severity.Success);
+
+                }
+
+            }
         }
+        catch (BusinessException ex)
+        {
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{" "}{L[AlertMessages.AlertMessages.ASSIGN]} : {ex.Code}", Severity.Error);
+
+            }
+            else
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ASSIGN]}{" "} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+                
+            }
+        }
+        catch (Exception ex)
+        {
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{" "}{L[AlertMessages.AlertMessages.ASSIGN]} : {ex.Message}", Severity.Error);
+
+            }
+            else
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ASSIGN]}{" "} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+
+            }
+        }
+        
     }
 
     private void Cancel()
@@ -154,4 +167,3 @@
         MudDialog.Cancel();
     }
 }
-

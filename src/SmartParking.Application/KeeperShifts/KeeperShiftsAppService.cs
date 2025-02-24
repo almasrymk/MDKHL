@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Repositories;
 using SmartParking.Results;
@@ -53,8 +54,9 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             {
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("Shifts") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
+            CheckShiftStatus(shift);
             await CheckDupplicateShift(input);
-            ValidateDate(input);
+            ValidateDate(input, shift);
             var keeperShift = new KeeperShift
             {
                 TenantId = input.TenantId,
@@ -73,13 +75,27 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    private static void ValidateDate(CreateUpdateKeeperShiftDto input)
+    private static void CheckShiftStatus(Shift? shift)
+    {
+        if (shift.Status != Status.Active)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftNotActive"));
+        }
+    }
+
+    private static void ValidateDate(CreateUpdateKeeperShiftDto input, Shift shift)
     {
         if (input.EndDate < input.StartDate)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("EndDateCannotBeBeforeStartDate"));
         }
+
+        if (input.StartDate < shift.StartDate || input.EndDate > shift.EndDate)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftDateOutOfRange"));
+        }
     }
+
 
     private async Task CheckDupplicateShift(CreateUpdateKeeperShiftDto input)
     {
