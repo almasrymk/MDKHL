@@ -106,4 +106,6 @@ public interface IUsersAppService:  IApplicationService
     Task<string?> GetImage(Guid? userId);
 
     Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId);
+
+    Task<bool> IsCurrentUserHasShift();
 }

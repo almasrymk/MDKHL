@@ -63,6 +63,10 @@ public partial class SPDataGrid
     [Parameter] public bool ShowAssign { get; set; } = true;
     [Parameter] public bool ShowStart { get; set; } = true;
     [Parameter] public bool ShowEnd { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickViewLogs { get; set; }
+    [Parameter] public bool ShowViewLogs { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnClickViewUserShifts { get; set; }
+    [Parameter] public bool ShowUserShifts { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
     [Parameter] public EventCallback<string> HandleCategory { get; set; }

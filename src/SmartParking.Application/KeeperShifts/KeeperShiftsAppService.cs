@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Repositories;
 using SmartParking.Results;
@@ -53,8 +54,9 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             {
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("Shifts") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
+            CheckShiftStatus(shift);
             await CheckDupplicateShift(input);
-            ValidateDate(input);
+            ValidateDate(input, shift);
             var keeperShift = new KeeperShift
             {
                 TenantId = input.TenantId,
@@ -73,13 +75,33 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    private static void ValidateDate(CreateUpdateKeeperShiftDto input)
+    private static void CheckShiftStatus(Shift? shift)
     {
+        if (shift.Status != Status.Active)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftNotActive"));
+        }
+    }
+
+    private static void ValidateDate(CreateUpdateKeeperShiftDto input, Shift shift)
+    {
+        if (input.StartDate == default || input.EndDate == default)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+
         if (input.EndDate < input.StartDate)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("EndDateCannotBeBeforeStartDate"));
         }
+
+        if (input.StartDate < shift.StartDate || input.EndDate > shift.EndDate)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftDateOutOfRange"));
+        }
+        
     }
+
 
     private async Task CheckDupplicateShift(CreateUpdateKeeperShiftDto input)
     {
@@ -177,7 +199,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? userId, Guid? tenantId , PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId , PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -186,10 +208,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            if (userId.HasValue)
+                queryKeeperShift = queryKeeperShift.Where(x => x.KeeperId == userId);
             var result = from keepershift in queryKeeperShift
                          where
                          tenantId.HasValue ? keepershift.TenantId == tenantId : true
-                         && userId.HasValue ? keepershift.KeeperId == userId : true
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser
@@ -238,10 +261,12 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var queryGarage = await _garageRepository.GetQueryableAsync();
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
+            if(userId.HasValue)
+                queryKeeperShift = queryKeeperShift.Where(x => x.KeeperId == userId);
+
             var result = from keepershift in queryKeeperShift
                          where
-                         tenantId.HasValue ? keepershift.TenantId == tenantId : true
-                         && userId.HasValue ? keepershift.KeeperId == userId : true
+                         tenantId == null ? keepershift.TenantId == tenantId : true
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser

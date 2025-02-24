@@ -731,10 +731,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     public async Task<string?> GetImage(Guid? userId)
     {
-     using (_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(userId);
             return user?.GetProperty<string>("Image");
         }
+    }
+
+    public async Task<bool> IsCurrentUserHasShift()
+    {
+        IdentityUser? user = await IsUserFound(CurrentTenant.Id);
+        var userCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
+        return userCategory > 0?true:false;
     }
 }

@@ -299,6 +299,32 @@
                                         </MudTooltip>
 
                                     }
+                                    @if (OnClickViewLogs.HasDelegate && ShowViewLogs)
+                                    {
+                                        <MudTooltip Text=@L["UserLogs"] Color=MudBlazor.Color.Primary>
+
+                                            <MudIconButton OnClick="@(e => OnClickViewLogs.InvokeAsync(context.Item))"
+                                                           Icon="@Icons.Material.Filled.History"
+                                                           Variant="Variant.Filled"
+                                                           Color="MudBlazor.Color.Primary"
+                                                           Size="MudBlazor.Size.Small"
+                                                           Class="mx-1" />
+                                        </MudTooltip>
+
+                                    }
+                                    @if (OnClickViewUserShifts.HasDelegate && ShowUserShifts)
+                                    {
+                                        <MudTooltip Text=@L["UserShifts"] Color=MudBlazor.Color.Primary>
+
+                                            <MudIconButton OnClick="@(e => OnClickViewUserShifts.InvokeAsync(context.Item))"
+                                                           Icon="@Icons.Material.Filled.Work"
+                                                           Variant="Variant.Filled"
+                                                           Color="MudBlazor.Color.Primary"
+                                                           Size="MudBlazor.Size.Small"
+                                                           Class="mx-1" />
+                                        </MudTooltip>
+
+                                    }
 
                                     @if (OnClickCar.HasDelegate && ShowAssignCar && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {

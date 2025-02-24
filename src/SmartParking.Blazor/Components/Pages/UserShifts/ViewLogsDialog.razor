@@ -1,0 +1,36 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.DailyShifts
+@using SmartParking.Localization
+@using Volo.Abp.MultiTenancy
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IAuthorizationService AuthorizationService
+@inject IJSRuntime JSRuntime;
+@inject IDailyShiftAppService DailyShiftsAppService
+
+
+<PageTitle>@L["UserLogs"]</PageTitle>
+<div class="modal-wrapper ">
+    <MudDialog class="mud-modal w-100" Style="min-width:auto !important">
+        <TitleContent>
+            <MudText Class="fw-bold">@L["UserLogs"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <SPDataGrid PageName=@L["UserLogs"] Data="@itemData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData"></SPDataGrid>
+        </DialogContent>
+        <DialogActions>
+
+            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

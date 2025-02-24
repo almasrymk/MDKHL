@@ -11,6 +11,7 @@ using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using System.Linq;
 using System.Security.Authentication;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -43,6 +44,11 @@ partial class EditUserDialog
     {
         updateUserDto.RoleId = Guid.Parse(roleId);
         UserRole = Roles.Find(x => x.Id == updateUserDto.RoleId).Name;
+    }
+    private void IsKeeprChecked(bool value)
+    {
+        if (value==true)
+            updateUserDto.UserTypeCategory = UserTypeCategory.Keeper;
     }
     public async Task SubmitEdit()
         {
