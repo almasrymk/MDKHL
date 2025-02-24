@@ -177,7 +177,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? userId, Guid? tenantId , PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId , PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
