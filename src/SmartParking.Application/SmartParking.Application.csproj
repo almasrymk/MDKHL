@@ -47,4 +47,8 @@
 		<None Include="C:\Users\Hagar Shaaban\source\repos\SmartParking\src\SmartParking.Application\.editorconfig" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Events\" />
+	</ItemGroup>
+
 </Project>
