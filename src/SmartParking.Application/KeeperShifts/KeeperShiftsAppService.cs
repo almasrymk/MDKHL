@@ -60,7 +60,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             CheckShiftStatus(shift);
             await CheckDupplicateShift(input);
             ValidateDate(input, shift);
-
+            await OverlappingValidation(input, shift);
             var keeperShift = _mapper.Map<KeeperShift>(input);
             keeperShift.OrganizationId = shift.OrganizationId;
             keeperShift.GarageId = shift.GarageId;
@@ -70,6 +70,27 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             return true;
         }
     }
+
+    private async Task OverlappingValidation(CreateUpdateKeeperShiftDto input, Shift? shift)
+    {
+        bool isOverlapping = await _keeperShiftRepository.AnyAsync(ks =>
+             ks.KeeperId == input.KeeperId &&
+             ks.ShiftId != input.ShiftId &&
+             (
+                 (shift.StartDate <= ks.EndDate && shift.EndDate >= ks.StartDate)
+             ) 
+             &&
+             (
+                 (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime)
+             )
+        );
+
+        if (isOverlapping)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("Shift overlaps with an existing shift."));
+        }
+    }
+
 
     private static void CheckShiftStatus(Shift? shift)
     {
@@ -110,32 +131,9 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
         }
     }
-   
 
-    //private async Task OverlappingValidation(CreateUpdateKeeperShiftDto input, Shift? shift)
-    //{
-    //    bool isOverlapping = await _keeperShiftRepository.AnyAsync(ks =>
-    //     ks.KeeperId == input.KeeperId &&
-    //     ks.ShiftId != input.ShiftId &&  
-    //     (
-    //          (shift.StartDate == ks.StartDate && shift.EndDate == ks.EndDate) ||
 
-    //          (shift.StartDate >= ks.StartDate && shift.EndDate <= ks.EndDate) ||
-
-    //          (shift.StartDate <= ks.StartDate && shift.EndDate >= ks.StartDate)
-
-    //     ) &&
-    //     (
-    //         (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime) ||
-    //         (shift.StartTime == ks.StartTime && shift.EndTime == ks.EndTime) 
-    //     )
-    // );
-
-    //    if (isOverlapping)
-    //    {
-    //        throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
-    //    }
-    //}
+  
 
     public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
