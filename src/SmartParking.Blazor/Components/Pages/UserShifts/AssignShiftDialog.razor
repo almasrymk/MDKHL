@@ -29,8 +29,8 @@
             <MudGrid>
                 <MudItem sm="6" md="6">
                     <MudSelect T="int" Label="@L["Shift"]" ValueChanged="OnShiftChanged" 
-                               Required="true"
-                               RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                    Required="true"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
                         <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
                         @foreach (var shift in Shifts)
                         {
@@ -105,11 +105,14 @@
     {
         keeperShiftCreateDto.ShiftId = shiftId;
 
-        var selectedShift = Shifts.FirstOrDefault(s => s.Id == shiftId);
-        if (selectedShift != null)
+        var selectedShift =  Shifts.Find(s => s.Id == shiftId);
+
+        if (selectedShift is not null)
         {
             startDate = selectedShift.StartDate;
             endDate = selectedShift.EndDate;
+            keeperShiftCreateDto.TenantId = selectedShift.TenantId.Value;
+
         }
     }
 
