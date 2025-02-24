@@ -691,13 +691,16 @@
         "UsersCanAssignShifts": "Users Shifts",
         "NotAssignShift": "Not Assign to this Shift",
         "CannotStartShift": "Cannot Start Shift Now",
-        "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To This Shift",
+        "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To Shift",
         "CannotEndShift": "Cannot End Shift Now",
         "Shift": "Shift",
+        "UserShifts": "User Shifts",
+        "UserLogs": "User Activities",
         "Assign Shift": "Assign Shift",
         "EndDateCannotBeBeforeStartDate": "End Date Cannot Be Before Start Date",
         "ShiftNotActive": "This Shift is not Active",
         "ShiftDateOutOfRange": "Shift Date Out Of Range"
+
 
 
     } 

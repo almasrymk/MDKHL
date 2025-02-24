@@ -649,6 +649,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             userDto.Image = user.GetProperty<string>("Image");
             userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
             userDto.NationalId = user.GetProperty<string>("NationalId");
+            userDto.UserTypeCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
             if (user.Roles.Any())
             {
                 userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
