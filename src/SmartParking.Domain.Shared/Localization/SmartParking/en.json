@@ -693,12 +693,8 @@
     "CannotStartShift": "Cannot Start Shift Now",
     "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To Shift",
     "CannotEndShift": "Cannot End Shift Now",
+    "Shift": "Shift"
 
-    "MyShifts": "My Shifts",
-    "UsersCanAssignShifts": "Users Shifts",
-    "startShift": "Start Shift",
-    "endShift": "End Shift"
-   
 
 
   } 

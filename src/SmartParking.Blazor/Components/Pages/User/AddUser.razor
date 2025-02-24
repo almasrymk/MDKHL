@@ -27,7 +27,7 @@
 
 
                 <MudGrid Class="mt-2">
-                    <MudItem sm="6" md="6">
+                    <MudItem sm="8" md="8">
                     <MudTextField @bind-Value="userCreate.Name"
                               For="@(() => userCreate.Name)"
                                       Variant="Variant.Text"
@@ -82,8 +82,8 @@
                         <MudRadio Value="@("admin")" Color="MudBlazor.Color.Primary">@L["admin"]</MudRadio>
                         <MudRadio Value="@("mdkhl")" Color="MudBlazor.Color.Primary">@L["mdkhl"]</MudRadio>
                     }
-                        <MudRadio Value="@("keeper")" Color="MudBlazor.Color.Primary">@L["keeper"]</MudRadio>
-                        </MudRadioGroup>
+                    <MudRadio Value="@("keeper")" Color="MudBlazor.Color.Primary">@L["keeper"]</MudRadio>
+                </MudRadioGroup>
                 </MudItem>
                 <MudItem sm="6">
                 <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>

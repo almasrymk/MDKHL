@@ -21,6 +21,6 @@ public interface IDailyShiftAppService :
     Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto dto);
     Task DeleteAsync(int id);
     Task<DailyShiftDto> GetAsync(int id);
-    Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? TenantId);
-    Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId);
+    Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? TenantId, Guid? userId);
+    Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId , Guid? userId );
 }

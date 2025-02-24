@@ -21,7 +21,7 @@ public partial class DailyShift
     private List<DailyShiftDto> dailyShiftDtos = new List<DailyShiftDto>();
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     public Guid? TenantId { get; private set; }
-    private string sortColumn;
+    private string sortColumn = "RequestTime DESC";
     private string ValueOfMenue = "";
     private TableData itemData = new TableData();
 
@@ -43,7 +43,8 @@ public partial class DailyShift
     }
     protected async override Task OnInitializedAsync()
     {
-       
+        await CreateMenue();
+
         await base.OnInitializedAsync();
 
     }
@@ -61,7 +62,7 @@ public partial class DailyShift
         sortColumn = pageInfo.SortColumn;
         string sort;
         if (pageInfo.SortColumn == "Id")
-            sort = "KeeperName DESC";
+            sort = "RequestTime DESC";
         else
             sort = pageInfo.SortColumn;
 
@@ -79,7 +80,7 @@ public partial class DailyShift
         if (CurrentTenant.Id == null)
         {
             // Retrieve the list of organizations from the server
-            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(input, null);
+            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(input, null , null);
             TotalItem = (int)dailyShiftDto.TotalCount;
             await CreateTable(dailyShiftDto);
         }
@@ -87,7 +88,7 @@ public partial class DailyShift
         else
         {
             var tenantId = CurrentTenant.Id;
-            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsOrganizationAsync(input, tenantId);
+            var dailyShiftDto = await DailyShiftAppService.GetListDailyShiftsOrganizationAsync(input, tenantId, null);
             TotalItem = (int)dailyShiftDto.TotalCount;
             await CreateTable(dailyShiftDto);
         }
@@ -206,15 +207,17 @@ public partial class DailyShift
     {
         TenantId = tenantId;
         ValueOfMenue = selectedValue;
+
+
         var request = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = RowPerPage,
             SkipCount = (CurrentPage - 1) * RowPerPage,
-            Sorting = sortColumn,
+            Sorting = "RequestTime Desc",
             SearchingTerm = termSearch
         };
-
-        PagedResultDto<DailyShiftDto> DailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(request, TenantId);
+       
+        PagedResultDto<DailyShiftDto> DailyShiftDto = await DailyShiftAppService.GetListDailyShiftsAsync(request, TenantId , null);
 
         TotalItem = (int)DailyShiftDto.TotalCount;
         await CreateTable(DailyShiftDto);
