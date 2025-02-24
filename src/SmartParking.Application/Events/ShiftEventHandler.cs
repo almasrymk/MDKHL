@@ -1,4 +1,5 @@
-﻿using SmartParking.Enums;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Enums;
 using SmartParking.KeeperShifts;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,10 @@ public class ShiftEventHandler : IDistributedEventHandler<ShiftEvent>, ITransien
         switch(eventData.StatusShift)
         {
             case KeeperShiftRequestType.StartShift:
-               await _keeperShiftSingleton.GetKeeperShiftInstance(eventData.KeeperShiftId);
+               await _keeperShiftSingleton.SetAsync(eventData.KeeperShiftId);
                 break;
             case KeeperShiftRequestType.EndShift:
-                _keeperShiftSingleton.RemoveKeeperShiftInstance();
+                _keeperShiftSingleton.Dispose();
                 break;
         }
     }
