@@ -85,6 +85,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
 
     private static void ValidateDate(CreateUpdateKeeperShiftDto input, Shift shift)
     {
+        if (input.StartDate == default || input.EndDate == default)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+
         if (input.EndDate < input.StartDate)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("EndDateCannotBeBeforeStartDate"));
@@ -94,6 +99,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftDateOutOfRange"));
         }
+        
     }
 
 
