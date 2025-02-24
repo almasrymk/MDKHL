@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.DailyShifts
 @using SmartParking.Localization
 @using Volo.Abp.MultiTenancy
 @inject IDialogService Dialog
@@ -9,16 +10,17 @@
 @inject ICurrentTenant CurrentTenant
 @inject IAuthorizationService AuthorizationService
 @inject IJSRuntime JSRuntime;
+@inject IDailyShiftAppService DailyShiftsAppService
 
 
-<PageTitle>@L["DailyShifts"]</PageTitle>
+<PageTitle>@L["UserLogs"]</PageTitle>
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal w-100" Style="min-width:auto !important">
         <TitleContent>
-            <MudText Class="fw-bold">@L["DailyShifts"]</MudText>
+            <MudText Class="fw-bold">@L["UserLogs"]</MudText>
         </TitleContent>
         <DialogContent>
-            @* <SPDataGrid PageName=@L["DailyShifts"] Data="@itemData" TotalItemsInTable="TotalItem" OnClickRowEdit="HandleEdit" OnClickAssign="HandleAssign" ShowEdit="ShowEdit" OnPageChanged="FetchTableData" ShowVehicleTransactions="AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || !CurrentTenant.Id.HasValue" ShowVehicleTransactionsMethod="ShowCustomerTransactions" OnClickRowDelete="HandleDelete" OnAdd="HandleAdd"></SPDataGrid> *@
+            <SPDataGrid PageName=@L["UserLogs"] Data="@itemData" TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData"></SPDataGrid>
         </DialogContent>
         <DialogActions>
 
