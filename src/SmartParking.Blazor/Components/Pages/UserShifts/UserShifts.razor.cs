@@ -13,6 +13,9 @@ using Volo.Abp.Identity;
 using Volo.Abp.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using SmartParking.Blazor.Components.Pages.Cameras;
+using SmartParking.Cameras;
+using SmartParking.KeeperShifts;
 
 namespace SmartParking.Blazor.Components.Pages.UserShifts;
 
@@ -137,6 +140,18 @@ public partial class UserShifts
     {
         Navigation.NavigateTo("/add-user", true);
     }
+    public async Task<IDialogReference> AssignShiftDialog(string userId)
+    {
+
+
+        var parameters = new DialogParameters
+        {
+            ["UserId"] = userId
+        };
+
+        return await Dialog.ShowAsync<AssignShiftDialog>("Assign Shift", parameters);
+
+    }
 
     private async Task CreateTable(IReadOnlyList<UserWithRole> users)
     {
@@ -194,7 +209,6 @@ public partial class UserShifts
         itemData = tableData;
         await Task.Yield();
     }
-
     //protected override async Task SetPermissionsAsync()
     //{
     //    await base.SetPermissionsAsync();
@@ -315,6 +329,6 @@ public partial class UserShifts
 
 
     //    //}
-    
+
     //}
 }
