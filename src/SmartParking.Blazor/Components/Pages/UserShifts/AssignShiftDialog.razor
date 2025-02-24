@@ -1,0 +1,157 @@
+﻿@page "/assign-shift"
+@using SmartParking.Authentication
+@using SmartParking.Garages
+@using SmartParking.KeeperShifts
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Shifts
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject NavigationManager Navigation
+@inject IOrganizationsAppService OrganizationsAppService
+@inject IGarageAppService GarageAppService
+@inject IShiftAppService ShiftAppService
+@inject IKeeperShiftsAppService KeeperShiftsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject ICurrentTenant CurrentTenant
+@inject IUsersAppService UsersAppService
+
+<PageTitle>@L["Assign Shift"]</PageTitle>
+<MudDialog Class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+    <DialogContent>
+        <MudForm Model="@keeperShiftCreateDto" @ref="form">
+            <MudGrid>
+                <MudItem sm="12" md="6">
+                    <MudSelect T="int" Label="@L["Garage"]" ValueChanged="OnGarageChanged">
+                        <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
+                        @foreach (var garage in Garages)
+                        {
+                            if (CultureInfo.CurrentCulture.Name != "ar")
+                            {
+                                <MudSelectItem Value="@garage.Id">@garage.NameEn</MudSelectItem>
+                            }
+                            else
+                            {
+                                <MudSelectItem Value="@garage.Id">@garage.NameAr</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem sm="12" md="12">
+                    <MudSelect T="int" Label="@L["Shift"]" ValueChanged="OnShiftChanged">
+                        <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
+                        @foreach (var shift in Shifts)
+                        {
+                            if (CultureInfo.CurrentCulture.Name != "ar")
+                            {
+                                <MudSelectItem Value="@shift.Id">@shift.EnglishName</MudSelectItem>
+                            }
+                            else
+                            {
+                                <MudSelectItem Value="@shift.Id">@shift.ArabicName</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem sm="12" md="6" >
+                    <MudDatePicker Label="@L["StartDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_startDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" />
+                </MudItem>
+                <MudItem sm="12" md="6">
+                    <MudDatePicker Label="@L["EndDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_endDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="MudBlazor.Color.Dark" Variant="Variant.Filled">@L["Back"]</MudButton>
+        <MudButton OnClick="SubmitCreate" Color="MudBlazor.Color.Primary" Variant="Variant.Filled">@L["Assign"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string UserId { get; set; }
+
+    MudForm form;
+    List<GarageDto> Garages = new();
+    List<ShiftDto> Shifts = new();
+    CreateUpdateKeeperShiftDto keeperShiftCreateDto = new();
+    DateOnly startDate;
+    DateOnly endDate;
+    DateTime? _startDateTime
+    {
+        get => startDate == default ? (DateTime?)null : startDate.ToDateTime(new TimeOnly(0, 0));
+        set => startDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    DateTime? _endDateTime
+    {
+        get => endDate == default ? (DateTime?)null : endDate.ToDateTime(new TimeOnly(0, 0));
+        set => endDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    DateTime? _startDateTimeCreated
+    {
+        get => keeperShiftCreateDto.StartDate == default ? (DateTime?)null : keeperShiftCreateDto.StartDate.ToDateTime(new TimeOnly(0, 0));
+        set => keeperShiftCreateDto.StartDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    DateTime? _endDateTimeCreated
+    {
+        get => keeperShiftCreateDto.EndDate == default ? (DateTime?)null : keeperShiftCreateDto.EndDate.ToDateTime(new TimeOnly(0, 0));
+        set => keeperShiftCreateDto.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var input = new PagedAndSortedResultRequestDto();
+        var user = await UsersAppService.GetAsync(Guid.Parse(UserId));
+        var organizationId = await OrganizationsAppService.GetOrganizationIdByTenant(user.TenantId);
+        var garagesList = await GarageAppService.GetGarageByOrganization(input, organizationId);
+        Garages = garagesList.Items.ToList();
+        Shifts = new List<ShiftDto>(); 
+        keeperShiftCreateDto.OrganizationId = organizationId;
+        keeperShiftCreateDto.KeeperId = Guid.Parse(UserId);
+    }
+
+    private async Task OnGarageChanged(int garageId)
+    {
+        keeperShiftCreateDto.GarageId = garageId;
+        Shifts = new List<ShiftDto>();
+
+        var shiftsList = await ShiftAppService.GetListMdkhlAsync(new PagedAndSortedAndSearchResultRequestDto(), CurrentTenant.Id);
+        Shifts = shiftsList.Items.ToList();
+    }
+
+    private async Task OnShiftChanged(int shiftId)
+    {
+        keeperShiftCreateDto.ShiftId = shiftId;
+
+        var selectedShift = Shifts.FirstOrDefault(s => s.Id == shiftId);
+        if (selectedShift != null)
+        {
+            startDate = selectedShift.StartDate;
+            endDate = selectedShift.EndDate;           
+        }
+    }
+
+    private async Task SubmitCreate()
+    {
+        bool success = await KeeperShiftsAppService.CreateAsync(keeperShiftCreateDto);
+        if (success)
+        {
+            Snackbar.Add(L["Assigned"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+

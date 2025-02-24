@@ -285,43 +285,41 @@ public class MyUserRepository
 
     public async Task<PagedResult<UserWithRole>> FindUserShiftsOrganizationAsync(int skipCount, int maxResultCount, string Sorting, string searchTerm)
     {
-        var dbContext = await GetDbContextAsync();
-        var query = from user in dbContext.Users
-                    where EF.Property<UserTypeCategory>(user, "UserTypeCategory") != 0
-                    from roleId in user.Roles.Select(r => r.RoleId)
-                    join role in dbContext.Roles
-                        on roleId equals role.Id
-                    where BuildExperssionSearch(searchTerm, user, role)
-                    select new UserWithRole
-                    {
-                        User = user,
-                        Role = role
-
-                    };
-        var total = query.Count();
-        query = query.Skip(skipCount).Take(maxResultCount);
-        query = ApplySortForUserShift(Sorting, query);
-        var result = query.ToList();
-
-        return new PagedResult<UserWithRole>
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            PageSize = total,
-            Queryable = query,
-        };
-
-
-    }
-
-    private static bool BuildExperssionSearch(string searchTerm, IdentityUser user, IdentityRole role)
-    {
-        return !searchTerm.IsNullOrWhiteSpace() ?
+            var dbContext = await GetDbContextAsync();
+            var query = from user in dbContext.Users
+                        where EF.Property<UserTypeCategory>(user, "UserTypeCategory") != 0
+                        from roleId in user.Roles.Select(r => r.RoleId)
+                        join role in dbContext.Roles
+                            on roleId equals role.Id
+                        where !searchTerm.IsNullOrWhiteSpace() ?
                             user.Name.ToLower().Contains(searchTerm.ToLower())
                             || role.Name.ToLower().Contains(searchTerm.ToLower())
                             || user.PhoneNumber.ToLower().Contains(searchTerm.ToLower())
                             || user.UserName.ToLower().Contains(searchTerm.ToLower())
                             || user.Email.ToLower().Contains(searchTerm.ToLower())
-                            : true;
+                            : true
+                        select new UserWithRole
+                        {
+                            User = user,
+                            Role = role
+
+                        };
+            var total = query.Count();
+            query = query.Skip(skipCount).Take(maxResultCount);
+            query = ApplySortForUserShift(Sorting, query);
+            var result = query.ToList();
+
+            return new PagedResult<UserWithRole>
+            {
+                PageSize = total,
+                Queryable = query,
+            };
+        }
+
     }
+
 
     private static IQueryable<UserWithRole> ApplySortForUserShift(string Sorting, IQueryable<UserWithRole> query)
     {
