@@ -15,5 +15,9 @@ namespace SmartParking.KeeperShifts
         public int ShiftId { get; set; }
         public Guid TenantId { get; set; }
 
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+
+
     }
 }

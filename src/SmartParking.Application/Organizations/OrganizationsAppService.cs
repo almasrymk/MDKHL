@@ -381,7 +381,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
 
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(org => org.TenantId == CurrentTenant.Id);
+            query = query.Where(org => org.TenantId == tenantId);
             var org = await AsyncExecuter.FirstOrDefaultAsync(query);
             return org.Id;
 

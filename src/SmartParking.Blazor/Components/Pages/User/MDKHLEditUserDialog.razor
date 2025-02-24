@@ -22,7 +22,7 @@
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="updateUserDto">
                 <MudGrid>
-                    <MudItem sm="6">
+                    <MudItem sm="8">
                         <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="updateUserDto.Name" Label="@L["Name"]" Required RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
@@ -57,6 +57,12 @@
                                 </div>
                             </MudRadioGroup>
                         </div>
+
+                    </MudItem>
+                    <MudItem sm="5" Class="d-flex flex-row">
+                        <MudRadioGroup Required="false" T="bool" ValueChanged="IsKeeprChecked">
+                            <MudRadio Value="@(true)" Color="MudBlazor.Color.Primary">@L["keeper"]</MudRadio>
+                        </MudRadioGroup>
 
                     </MudItem>
                     <MudItem sm="12">
