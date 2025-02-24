@@ -713,9 +713,15 @@
     "ChangeLanguage": "تغيير اللغة",
     "Permissions": "الأذونات",
     "UploadImage": "اضافة صورة",
-    "ShiftName": "اسم الورديه", 
-    "MyShifts" :  "وردياتي",
-    "UsersCanAssignShifts": "ورديات الموظفين"
+    "ShiftName": "اسم الورديه",
+    "MyShifts": "وردياتي",
+    "UsersCanAssignShifts": "ورديات الموظفين",
+    "NotAssignShift": "ليس مسموح لك لهذه الورديه",
+    "CannotStartShift": "لا يمكن بدا الورديه الان",
+    "KeeperAlreadyAssignedToShift": "هذه الورديه معينه لهذا المستخدم",
+    "CannotEndShift": "لا يمكن انهاء الورديه الان", 
+    "Shift" :  "الورديه"
+
 
 
   }

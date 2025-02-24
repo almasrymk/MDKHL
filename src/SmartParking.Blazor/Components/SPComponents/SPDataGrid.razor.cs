@@ -19,6 +19,8 @@ using OfficeOpenXml;
 using Polly;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Enums;
+using SmartParking.Events;
 using SmartParking.Localization;
 using SmartParking.Utilities;
 using YamlDotNet.Core.Tokens;
@@ -55,8 +57,12 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<RowDef> OnClickRowDelete { get; set; }
     [Parameter] public bool ShowDelete { get; set; } = true;
     [Parameter] public EventCallback<string> OnClickAssign { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickStart { get; set; }
+    [Parameter] public EventCallback<RowDef> OnClickEnd { get; set; }
 
     [Parameter] public bool ShowAssign { get; set; } = true;
+    [Parameter] public bool ShowStart { get; set; } = true;
+    [Parameter] public bool ShowEnd { get; set; } = true;
     [Inject] public IStringLocalizer<SmartParkingResource> _stringLocalizer { get; set; }
 
     [Parameter] public EventCallback<string> HandleCategory { get; set; }
@@ -357,6 +363,8 @@ public partial class SPDataGrid
     {
         try
         {
+            await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
             GridState<RowDef> state = new GridState<RowDef>();
             state.PageSize = int.MaxValue - 1;
             IsExport = true;

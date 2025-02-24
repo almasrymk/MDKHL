@@ -42,6 +42,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
+        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
         await Task.Yield();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -156,13 +157,14 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             }
             FileInfo excelFile = new FileInfo(pathFileName);
             package.SaveAs(excelFile);
-       
+            await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Complete.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
         }
     }
 
     public async Task ExportToPdf(TableData Data, string fileName)
     {
-        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+        //await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
 
         await Task.Yield();
         FileInfo file = new FileInfo(fileName);

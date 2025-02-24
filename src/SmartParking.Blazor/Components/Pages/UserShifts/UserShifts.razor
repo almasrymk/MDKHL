@@ -16,14 +16,9 @@
 @inject IOrganizationsAppService OrganizationAppService
 @inject IDialogService Dialog
 @using Microsoft.AspNetCore.Authorization
-@* @inherits AbpCrudPageBase<IKeeperShiftsAppService, IdentityUserDto, int, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto> *@
-
-
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
 <SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue" ShowFiltering="false" ShowAssignCar="true" TotalItemsInTable="TotalItem" ShowAssign="true" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnClickAssign="AssignShiftDialog"></SPDataGrid>
 
 
-
-@* <PermissionManagementModal @ref="PermissionManagementModal" /> *@

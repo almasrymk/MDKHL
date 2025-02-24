@@ -687,21 +687,13 @@
     "UploadImage": "Upload Image",
     "exportstarted": "Export process has started",
     "ShiftName": "Shift Name",
-    "MyShifts" :  "My Shifts",
-    "UsersCanAssignShifts": "Users Shifts"
-
-
-
-
-
-
-
-
-
-
-
-
-
+    "MyShifts": "My Shifts",
+    "UsersCanAssignShifts": "Users Shifts",
+    "NotAssignShift": "Not Assign to this Shift",
+    "CannotStartShift": "Cannot Start Shift Now",
+    "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To Shift",
+    "CannotEndShift": "Cannot End Shift Now",
+    "Shift": "Shift"
 
 
 

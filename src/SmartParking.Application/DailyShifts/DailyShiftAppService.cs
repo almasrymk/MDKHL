@@ -4,6 +4,8 @@ using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
+using SmartParking.Enums;
+using SmartParking.Localization;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
@@ -53,9 +55,53 @@ public class DailyShiftAppService :
     }
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
+
+        await (input.KeeperShiftRequestType switch
+        {
+            KeeperShiftRequestType.StartShift => HandleStartShift(input),
+            KeeperShiftRequestType.EndShift => HandleEndShift(input),
+            _ => throw new InvalidOperationException()
+        });
+
         if (!input.TenantId.HasValue)
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
+    }
+    private async Task<bool> HandleStartShift (CreateUpdateDailyShiftDto input)
+    {
+        KeeperShift? assignShift = await GetAssignShift(input) ?? throw new Exception(LocalizationHelper.GetLocalizedString("NotAssignShift"));
+        
+        CheckStartShiftDateAndTime(assignShift);
+
+        return true;
+    }
+
+    private async Task<KeeperShift?> GetAssignShift(CreateUpdateDailyShiftDto input)
+    {
+        return await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
+    }
+
+    private void CheckStartShiftDateAndTime(KeeperShift assignShift)
+    {
+        if (DateOnly.FromDateTime(DateTime.Now) < assignShift.StartDate || DateOnly.FromDateTime(DateTime.Now) > assignShift.EndDate)
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
+
+        if (TimeOnly.FromDateTime(DateTime.Now) < assignShift.StartTime || TimeOnly.FromDateTime(DateTime.Now) >= assignShift.EndTime)
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
+    }
+
+    private async Task<bool> HandleEndShift(CreateUpdateDailyShiftDto input)
+    {
+        if(!( _repository.GetQueryableAsync().Result.Where(x => x.ShiftId == input.ShiftId && x.KeeperShiftRequestType == KeeperShiftRequestType.StartShift && x.KeeperId == input.KeeperId).OrderByDescending(x=>x.CreationTime).Count()<1))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+        }
+        if (! _repository.GetQueryableAsync().Result.Any(x=>x.ShiftId==input.ShiftId && x.CreationTime >= DateTime.Now && x.KeeperShiftRequestType == KeeperShiftRequestType.StartShift && x.KeeperId != input.KeeperId))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+        }
+
+        return true;
     }
     public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
     {
@@ -114,7 +160,7 @@ public class DailyShiftAppService :
         }
         
     }
-    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync (PagedAndSortedAndSearchResultRequestDto input ,Guid?  TenantId )
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync (PagedAndSortedAndSearchResultRequestDto input ,Guid?  TenantId ,Guid? userId )
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -125,7 +171,9 @@ public class DailyShiftAppService :
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
             var result = from dailyShift in queryDailyShift
-                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         where 
+                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true 
+                         && userId.HasValue ? dailyShift.KeeperId == userId : true 
                          join user in queryUser
                          on dailyShift.KeeperId equals user.Id
                          join organization in queryOrganization
@@ -170,7 +218,7 @@ public class DailyShiftAppService :
         }
     }
 
-    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId)
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId , Guid? userId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -181,7 +229,9 @@ public class DailyShiftAppService :
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
             var result = from dailyShift in queryDailyShift
-                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         where 
+                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         && userId.HasValue ? dailyShift.KeeperId == userId : true
                          join user in queryUser
                          on dailyShift.KeeperId equals user.Id
                          join garage in queryGarge
@@ -225,7 +275,7 @@ public class DailyShiftAppService :
     private static IQueryable<DailyShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto> result)
     {
         var sorting = input.Sorting;
-        if (sorting.Contains("DESC"))
+        if (sorting.Contains(value: "DESC"))
         {
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";

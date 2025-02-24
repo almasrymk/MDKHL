@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -9,6 +10,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Localization;
 using SmartParking.Repositories;
+using SmartParking.Results;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -117,18 +119,27 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     //    }
     //}
 
-    public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
             var queryGarage = await _garageRepository.GetQueryableAsync();
-            var queryOrganization = await _organizationRepository.GetQueryableAsync();
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
+            var currentDate = DateOnly.FromDateTime(DateTime.Now);
+            var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+            var currentDateTime = DateTime.Now; 
 
             var result = from keepershift in queryKeeperShift
                          where userId.HasValue ? keepershift.KeeperId == userId : true
+                         orderby
+                            keepershift.StartDate <= DateOnly.FromDateTime(DateTime.Now)
+                            && keepershift.EndDate >= DateOnly.FromDateTime(DateTime.Now)
+                            descending,
+                             keepershift.StartTime >= currentTime descending,
+                             keepershift.StartTime ascending,
+                             keepershift.EndTime ascending
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser
@@ -153,7 +164,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              EnglishName = shift.EnglishName
                          };
 
-            int total = ApplySorting(input, ref result);
+
+            //int total = ApplySorting(input, ref result);
+
+            var total = result.Count();
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
             return new PagedResultDto<KeeperShiftDto>
             {
                 TotalCount = total,
@@ -162,7 +177,106 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    private static int ApplySorting(PagedAndSortedResultRequestDto input, ref IQueryable<KeeperShiftDto> result)
+    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? userId, Guid? tenantId , PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            var queryGarage = await _garageRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var queryShift = await _shiftRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var result = from keepershift in queryKeeperShift
+                         where
+                         tenantId.HasValue ? keepershift.TenantId == tenantId : true
+                         && userId.HasValue ? keepershift.KeeperId == userId : true
+                         join garage in queryGarage
+                         on keepershift.GarageId equals garage.Id
+                         join user in queryUser
+                         on keepershift.KeeperId equals user.Id
+                         join org in queryOrganization
+                         on keepershift.OrganizationId equals org.Id
+                         join shift in queryShift
+                         on keepershift.ShiftId equals shift.Id
+                         select new KeeperShiftDto
+                         {
+                             Id = keepershift.Id,
+                             KeeperId = keepershift.KeeperId,
+                             KeeperName = user.Name,
+                             OrganizationId = keepershift.OrganizationId,
+                             OrganizationNameAr = org.ArabicName, 
+                             OrganizationNameEn =  org.EnglishName, 
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             GarageId = keepershift.GarageId,
+                             ShiftId = keepershift.ShiftId,
+                             StartDate = keepershift.StartDate,
+                             EndDate = keepershift.EndDate,
+                             StartTime = keepershift.StartTime,
+                             EndTime = keepershift.EndTime,
+                             ArabicName = shift.ArabicName,
+                             EnglishName = shift.EnglishName
+                         };
+            result = ApplySorting(input,  result);
+            var total = result.Count();
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+            return new PagedResultDto<KeeperShiftDto>
+            {
+                TotalCount = total,
+                Items = result.ToList()
+            };
+        }
+    }
+
+
+    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForOrganization(Guid? tenantId , Guid? userId , PagedAndSortedAndSearchResultRequestDto input )
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            var queryGarage = await _garageRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var queryShift = await _shiftRepository.GetQueryableAsync();
+            var result = from keepershift in queryKeeperShift
+                         where
+                         tenantId.HasValue ? keepershift.TenantId == tenantId : true
+                         && userId.HasValue ? keepershift.KeeperId == userId : true
+                         join garage in queryGarage
+                         on keepershift.GarageId equals garage.Id
+                         join user in queryUser
+                         on keepershift.KeeperId equals user.Id
+                         join shift in queryShift
+                         on keepershift.ShiftId equals shift.Id
+                         select new KeeperShiftDto
+                         {
+                             Id = keepershift.Id,
+                             KeeperId = keepershift.KeeperId,
+                             KeeperName = user.Name,
+                             OrganizationId = keepershift.OrganizationId,
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             GarageId = keepershift.GarageId,
+                             ShiftId = keepershift.ShiftId,
+                             StartDate = keepershift.StartDate,
+                             EndDate = keepershift.EndDate,
+                             StartTime = keepershift.StartTime,
+                             EndTime = keepershift.EndTime,
+                             ArabicName = shift.ArabicName,
+                             EnglishName = shift.EnglishName
+                         };
+            result = ApplySorting(input, result);
+            var total = result.Count();
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+            return new PagedResultDto<KeeperShiftDto>
+            {
+                TotalCount = total,
+                Items = result.ToList()
+            };
+        }
+    }
+
+    private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input,  IQueryable<KeeperShiftDto> result)
     {
         var sorting = input.Sorting;
         if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
@@ -170,33 +284,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
         }
-
-        var total = result.Count();
-        result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
-        return total;
-    }
-
-    public async Task<KeeperShiftDto?> GetActiveShiftForCurrentUser(Guid? userId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var currentDate = DateOnly.FromDateTime(DateTime.Now);
-            var currentTime = TimeOnly.FromDateTime(DateTime.Now);
-            var query = await _keeperShiftRepository.GetQueryableAsync();
-            var shifts = await query
-                            .Where(shift => shift.KeeperId == userId
-                                   && shift.StartDate <= currentDate
-                                   && shift.EndDate >= currentDate)
-                            .ToListAsync(); 
-
-            var result = shifts
-                .OrderBy(shift => Math.Abs((currentTime - shift.StartTime).Ticks)) // Now safe in memory
-                .FirstOrDefault();
-            if (result is null)
-                return null;
-            result = await GetShiftName(result);
-            return ObjectMapper.Map<KeeperShift, KeeperShiftDto>(result) ;
-        }
+        result = result.OrderBy(sorting);
+        return result;
     }
     private async Task<KeeperShift> GetShiftName(KeeperShift result)
     {
@@ -210,7 +299,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
         return result;
     }
-
     public async Task<KeeperShiftDto?> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
