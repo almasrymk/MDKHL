@@ -719,12 +719,9 @@
     "NotAssignShift": "ليس مسموح لك لهذه الورديه",
     "CannotStartShift": "لا يمكن بدا الورديه الان",
     "KeeperAlreadyAssignedToShift": "هذه الورديه معينه لهذا المستخدم",
-    "CannotEndShift": "لا يمكن انهاء الورديه الان",
-    "ShiftName": "اسم الورديه",
-    "MyShifts": "وردياتي",
-    "UsersCanAssignShifts": "ورديات الموظفين",
-    "startShift": "بدء الوردية",
-    "endShift": "إنهاء الوردية"
+    "CannotEndShift": "لا يمكن انهاء الورديه الان", 
+    "Shift" :  "الورديه"
+
 
 
   }
