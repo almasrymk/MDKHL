@@ -168,7 +168,10 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                              GarageEnglishName = Garages.NameEn,
                              OrganizationArabicName = organization.ArabicName,
                              OrganizationEnglishName = organization.EnglishName,
-                             IsFullDay=Shifts.IsFullDay
+                             IsFullDay=Shifts.IsFullDay,
+                             TenantId=Shifts.TenantId,
+                             GarageId=Shifts.GarageId,
+                             CreationTime=Shifts.CreationTime
                          };
             var query = ApplySearchMDKHL(input, shifts);
             return ProcessingOnShiftsQuery(input, shifts);
@@ -212,6 +215,11 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                          OrganizationId = Shifts.OrganizationId,
                          GarageArabicName = Garages.NameAr,
                          GarageEnglishName = Garages.NameEn,
+                         TenantId = Shifts.TenantId,
+                         GarageId = Shifts.GarageId,
+                         CreationTime = Shifts.CreationTime,
+                         IsFullDay=Shifts.IsFullDay,
+                         
                      };
         ApplySearchOrganization(input, ref shifts);
         return ProcessingOnShiftsQuery(input, shifts);
