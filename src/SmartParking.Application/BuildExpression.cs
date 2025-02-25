@@ -208,7 +208,7 @@ public static class BuildExpression<T>
         MethodCallExpression propertyToLower;
         ToLowerMethod(property, out toLowerMethodInfo, out propertyToLower);
         //Where(_ => sortings.Contains(_.PlateNumber));
-        if (filter.FilterValues.Any())
+        if (filter.FilterValues.Count>0)
         {
             return BuildInMethod(filter, propertyToLower);
         }
