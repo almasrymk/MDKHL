@@ -46,11 +46,28 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem sm="12" md="12">
-                    <MudDatePicker Label="@L["StartDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_startDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"/>
+                    <MudDatePicker Label="@L["StartDate"]"
+                                   PickerVariant="PickerVariant.Dialog"
+                                   ShowToolbar="false"
+                                   @bind-Date="_startDateTimeCreated"
+                                   MinDate="@( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime )"
+                                   MaxDate="_endDateTime"
+                                   Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                 </MudItem>
+
                 <MudItem sm="12" md="12">
-                    <MudDatePicker Label="@L["EndDate"]" PickerVariant="PickerVariant.Dialog" ShowToolbar="false" @bind-Date="_endDateTimeCreated" MinDate="_startDateTime" MaxDate="_endDateTime" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    <MudDatePicker Label="@L["EndDate"]"
+                                   PickerVariant="PickerVariant.Dialog"
+                                   ShowToolbar="false"
+                                   @bind-Date="_endDateTimeCreated"
+                                   MinDate="@( _startDateTimeCreated.HasValue ? _startDateTimeCreated.Value : ( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime ) )"
+                                   MaxDate="_endDateTime"
+                                   Required="true"
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                 </MudItem>
+
+
             </MudGrid>
         </MudForm>
     </DialogContent>
