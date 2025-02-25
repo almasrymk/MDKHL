@@ -699,7 +699,7 @@
     "CustomerAndPaymentReport": "الفواتير لفئة العملاء",
     "CustomerPackageReport": "الباقات لفئة العملاء",
     "PaymentMehtodReport": "الفواتير للتحويل البنكي",
-    "Keeper": "الحارس",
+    "Keeper": "يمكن ان يعين له وردية عمل",
     "RequestTime": "وقت التسجيل",
     "KeeperShiftRequestType": "نوع التسجيل",
     "DailyShifts": "الورديات اليوميه",
