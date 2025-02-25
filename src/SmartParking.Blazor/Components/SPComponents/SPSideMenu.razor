@@ -75,7 +75,7 @@
 
                         @if (AuthorizationService.IsGrantedAnyAsync(UserShiftPermission.Default).Result || currenttenant.Id == null)
                          {
-                            <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanAssignShifts"]</MudNavLink>
+                            <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanShift"]</MudNavLink>
                          }
 
                         @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result && usersService.IsCurrentUserHasShift().Result)
