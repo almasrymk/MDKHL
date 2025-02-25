@@ -1,0 +1,19 @@
+﻿@page "/customerspackage/reports"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Analysis
+@using SmartParking.Localization
+@using SmartParking.PDF
+@using Volo.Abp.MultiTenancy
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IDialogService Dialog
+@inject IAnalysisAppService AnalysisAppService
+@inject ICurrentTenant CurrentTenant
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager Navigation
+@inject IGenerateFilesAppService GenerateFilesAppService
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+<PageTitle>@L["CustomerPackageReport"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["CustomerPackageReport"]</MudText>
+
+<SPDataGrid PageName=@($"{@L["CustomerPackageReport"]}")  Data="@itemData" OnPageChanged="FetchData"  TotalItemsInTable="TotalItem"></SPDataGrid>
