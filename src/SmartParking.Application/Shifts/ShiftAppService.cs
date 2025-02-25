@@ -140,7 +140,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
     public async Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
-
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var _shiftQueryable = await repository.GetQueryableAsync();
@@ -168,12 +167,16 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                              GarageEnglishName = Garages.NameEn,
                              OrganizationArabicName = organization.ArabicName,
                              OrganizationEnglishName = organization.EnglishName,
-                             IsFullDay=Shifts.IsFullDay,
-                             TenantId=Shifts.TenantId,
-                             GarageId=Shifts.GarageId,
-                             CreationTime=Shifts.CreationTime
+                             IsFullDay = Shifts.IsFullDay,
+                             TenantId = Shifts.TenantId,
+                             GarageId = Shifts.GarageId,
+                             CreationTime = Shifts.CreationTime
                          };
-            var query = ApplySearchMDKHL(input, shifts);
+
+            if(CurrentTenant.Id == null)
+                shifts = ApplySearchMDKHL(input, shifts);
+            else
+                shifts = ApplySearchOrganization(input, shifts);
             return ProcessingOnShiftsQuery(input, shifts);
         }
     }
@@ -184,10 +187,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         shifts = ApplySort(input, shifts);
         shifts = shifts.Skip(input.SkipCount).Take(input.MaxResultCount);
         var result = shifts.ToList();
-        return new PagedResultDto<ShiftDto>(
-            total,
-            result
-        );
+        return new PagedResultDto<ShiftDto>(total, result);
     }
 
     public async Task<PagedResultDto<ShiftDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
@@ -195,12 +195,9 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var _shiftQueryable = await repository.GetQueryableAsync();
         var _garageQueryable = await _garageRepository.GetQueryableAsync();
 
-
         var shifts = from Shifts in _shiftQueryable
                      join Garages in _garageQueryable
                      on Shifts.GarageId equals Garages.Id
-
-
                      select new ShiftDto
                      {
                          Id = Shifts.Id,
@@ -218,13 +215,10 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                          TenantId = Shifts.TenantId,
                          GarageId = Shifts.GarageId,
                          CreationTime = Shifts.CreationTime,
-                         IsFullDay=Shifts.IsFullDay,
-                         
+                         IsFullDay = Shifts.IsFullDay,
                      };
-        ApplySearchOrganization(input, ref shifts);
-        return ProcessingOnShiftsQuery(input, shifts);
-
-
+        var query =ApplySearchOrganization(input, shifts);
+        return ProcessingOnShiftsQuery(input, query);
     }
 
     private IQueryable<ShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
@@ -246,35 +240,37 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         return queryable;
     }
 
-    private void ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, ref IQueryable<ShiftDto> queryable)
+    private IQueryable<ShiftDto> ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
     {
         if (!input.SearchingTerm.IsNullOrEmpty())
         {
             var searchingItem = input.SearchingTerm.ToLower();
             queryable = queryable.Where(
                 shift => shift.ArabicName.ToLower().Contains(searchingItem) ||
-                shift.EnglishName.ToLower().Contains(searchingItem) ||
-                shift.Description.ToLower().Contains(searchingItem) ||
-                shift.StartDate.ToLongDateString().ToLower().Contains(searchingItem) ||
-                shift.EndDate.ToLongDateString().ToLower().Contains(searchingItem) ||
-                shift.GarageArabicName.ToLower().Contains(searchingItem) ||
-                shift.GarageArabicName.ToLower().Contains(searchingItem)
-                );
-
+                         shift.EnglishName.ToLower().Contains(searchingItem) ||
+                         shift.Description.ToLower().Contains(searchingItem) ||
+                         shift.GarageArabicName.ToLower().Contains(searchingItem) ||
+                         shift.GarageEnglishName.ToLower().Contains(searchingItem) 
+            );
         }
-
+        return queryable;
     }
+
     private IQueryable<ShiftDto> ApplySearchMDKHL(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
     {
         if (!input.SearchingTerm.IsNullOrEmpty())
         {
             queryable = queryable.Where(
-              shift => shift.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-              shift.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+                shift => shift.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.GarageArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.GarageEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
-            ApplySearchOrganization(input, ref queryable);
+           
         }
-
         return queryable;
     }
     public async override Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input)
