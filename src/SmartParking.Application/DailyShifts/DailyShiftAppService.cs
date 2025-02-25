@@ -221,7 +221,7 @@ public class DailyShiftAppService :
                              
                          };
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-            result = await ApplySort(input, result);
+            result = ApplySorting(input, result);
             result = await ApplySearch(input, result);
             var total = result.Count();
             return new PagedResultDto<DailyShiftDto>
@@ -261,8 +261,8 @@ public class DailyShiftAppService :
                              Id = dailyShift.Id,
                              KeeperId = dailyShift.KeeperId,
                              OrganizationId = dailyShift.OrganizationId,
-                             OrganizationNameAr = "",
-                             OrganizationNameEn = "",
+                             OrganizationNameAr = string.Empty,
+                             OrganizationNameEn = string.Empty,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              RequestTime = dailyShift.RequestTime,
@@ -277,7 +277,7 @@ public class DailyShiftAppService :
                              EndTime = keeperShift.EndTime
                          };
 
-            result = await ApplySort(input, result);
+            result = ApplySorting(input, result);
             result = await ApplySearch(input, result);
             var total = await result.CountAsync();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -288,20 +288,19 @@ public class DailyShiftAppService :
             };
         }
     }
-    private  async Task<IQueryable<DailyShiftDto>> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? result)
+    private static IQueryable<DailyShiftDto>? ApplySorting(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? result)
     {
         var sorting = input.Sorting;
-        if (sorting.Contains(value: "DESC"))
+        if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
         {
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
         }
         result = result.OrderBy(sorting);
-        await Task.Yield();
         return result;
     }
 
-    private async Task<IQueryable<DailyShiftDto>> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? queryable)
+    private async Task<IQueryable<DailyShiftDto>?> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? queryable)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -314,7 +313,7 @@ public class DailyShiftAppService :
                 or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.KeeperShiftRequestType.ToString().Contains(input.SearchingTerm.ToLower()) ||
+                or.KeeperShiftRequestType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.ShiftNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.ShiftNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.RequestTime.ToString().Contains(input.SearchingTerm)
