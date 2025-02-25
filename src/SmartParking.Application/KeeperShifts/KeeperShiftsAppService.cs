@@ -183,8 +183,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
 
                          };
 
-
-            //int total = ApplySorting(input, ref result);
+            result = await ApplySearch(input, result);
 
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -238,6 +237,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              EnglishName = shift.EnglishName
                          };
             result = ApplySorting(input,  result);
+            result = await ApplySearch(input, result);
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
             return new PagedResultDto<KeeperShiftDto>
@@ -247,7 +247,30 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             };
         }
     }
+    private async Task<IQueryable<KeeperShiftDto>?> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<KeeperShiftDto>? queryable)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
 
+                queryable = queryable.Where(or =>
+                or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+               
+            );
+
+            }
+            await Task.Yield();
+            return queryable;
+        }
+
+    }
 
     public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForOrganization(Guid? tenantId , Guid? userId , PagedAndSortedAndSearchResultRequestDto input )
     {
@@ -276,6 +299,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
                              OrganizationId = keepershift.OrganizationId,
+                             OrganizationNameAr = string.Empty, 
+                             OrganizationNameEn = string.Empty, 
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              GarageId = keepershift.GarageId,
@@ -288,6 +313,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              EnglishName = shift.EnglishName
                          };
             result = ApplySorting(input, result);
+            result = await ApplySearch(input, result);
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
             return new PagedResultDto<KeeperShiftDto>
