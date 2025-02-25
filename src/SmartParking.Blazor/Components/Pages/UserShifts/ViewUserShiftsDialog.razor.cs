@@ -41,7 +41,10 @@ public partial class ViewUserShiftsDialog
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn , 
+            SearchingTerm = pageInfo.SearchTerm
+
+
         };
         PagedResultDto<KeeperShiftDto> keeperShiftDto;
         if (CurrentTenant.Id == null)
