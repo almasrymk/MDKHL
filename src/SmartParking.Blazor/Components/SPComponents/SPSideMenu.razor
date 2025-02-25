@@ -34,7 +34,7 @@
 @inject ICurrentUser currentuser
 @inject IAuthorizationService AuthorizationService
 @inject IUsersAppService usersService
-
+@inject UserSingletonService UserSingletonService
 
 <div class="pt-5">
     <MudDrawerContainer Class="mud-height-full" >
@@ -78,7 +78,7 @@
                             <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanAssignShifts"]</MudNavLink>
                          }
 
-                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result && usersService.IsCurrentUserHasShift().Result)
+                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result && UserSingletonService.ISCurrentUserIsAssignShift(currentuser.Id).Result)
                          {
                             <MudNavLink Href="/myshifts" Icon="@Icons.Material.Filled.Schedule">@L["MyShifts"]</MudNavLink>
                          }
