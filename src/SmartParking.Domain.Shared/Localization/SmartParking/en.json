@@ -701,8 +701,12 @@
     "ShiftNotActive": "This Shift is not Active",
     "ShiftDateOutOfRange": "Shift Date Out Of Range",
     "Start": "Start",
-    "End": "End"
-
+    "End": "End",
+    "Permission:UserShift": "UserShift Management",
+    "ViewUserShift": "View User Shift",
+    "ViewUserActive": "View User Active",
+    "Permission:DailyShift": "Daily Shift Management",
+    "Permission:Shift": "Shift Management"
 
 
   } 
