@@ -676,7 +676,7 @@
         "DailyShifts": "Daily Shifts",
         "StartShift": "Start Shift",
         "EndShift": "End Shift",
-        "keeper": "Keeper",
+        "Keeper": "Can be assigned to shift",
         "Shifts": "Shifts",
         "StartTime": "Start Time",
         "EndTime": "End Time",
@@ -691,7 +691,7 @@
         "UsersCanAssignShifts": "Users Shifts",
         "NotAssignShift": "Not Assign to this Shift",
         "CannotStartShift": "Cannot Start Shift Now",
-        "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To Shift",
+        "KeeperAlreadyAssignedToShift": "Keeper Already Assigned To This Shift",
         "CannotEndShift": "Cannot End Shift Now",
         "Shift": "Shift",
         "UserShifts": "User Shifts",
@@ -699,7 +699,15 @@
         "Assign Shift": "Assign Shift",
         "EndDateCannotBeBeforeStartDate": "End Date Cannot Be Before Start Date",
         "ShiftNotActive": "This Shift is not Active",
-        "ShiftDateOutOfRange": "Shift Date Out Of Range"
+        "ShiftDateOutOfRange": "Shift Date Out Of Range",
+        "Start": "Start",
+        "End": "End",
+        "Permission:UserShift": "UserShift Management",
+        "ViewUserShift": "View User Shift",
+        "ViewUserActive": "View User Active",
+        "Permission:DailyShift": "Daily Shift Management",
+        "Permission:Shift": "Shift Management",
+        "UsersCanShift": "User's Shift Management"
 
 
 

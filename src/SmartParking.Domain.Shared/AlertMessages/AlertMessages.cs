@@ -18,5 +18,7 @@ public static class AlertMessages
     public const string VAlIDATION_ERROR = "Vaildtion Error";
     public const string ASSIGN = "Assigned";
     public const string EXPORT = "Export";
+    public const string START = "Start";
+    public const string END = "End";
 
 }

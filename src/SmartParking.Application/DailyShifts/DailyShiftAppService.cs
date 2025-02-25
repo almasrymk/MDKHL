@@ -68,7 +68,7 @@ public class DailyShiftAppService :
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
     }
-    public CreateUpdateDailyShiftDto CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType)
+    public async Task<CreateUpdateDailyShiftDto> CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType)
     {
         return new CreateUpdateDailyShiftDto() 
         { 
@@ -76,7 +76,9 @@ public class DailyShiftAppService :
             KeeperId = input.KeeperId,
             ShiftId = input.ShiftId,
             KeeperShiftRequestType = keeperShiftRequestType,
-            TenantId = input.TenantId
+            TenantId = input.TenantId,
+            OrganizationId = input.OrganizationId,
+            RequestTime = DateTime.Now
         };
 
     }
@@ -219,8 +221,8 @@ public class DailyShiftAppService :
                              
                          };
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-            result = ApplySort(input, result);
-            result = ApplySearch(input, result);
+            result = ApplySorting(input, result);
+            result = await ApplySearch(input, result);
             var total = result.Count();
             return new PagedResultDto<DailyShiftDto>
             {
@@ -240,11 +242,11 @@ public class DailyShiftAppService :
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            if (userId.HasValue)
+                queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
+           
             var result = from dailyShift in queryDailyShift
-                         where
-                             (!TenantId.HasValue || dailyShift.TenantId == TenantId) 
-                          && (!userId.HasValue || dailyShift.KeeperId == userId) 
-
+                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
                          join user in queryUser
                          on dailyShift.KeeperId equals user.Id
                          join garage in queryGarge
@@ -274,21 +276,22 @@ public class DailyShiftAppService :
                              StartTime = keeperShift.StartTime,
                              EndTime = keeperShift.EndTime
                          };
+
+            result = ApplySorting(input, result);
+            result = await ApplySearch(input, result);
+            var total = await result.CountAsync();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-            result = ApplySort(input, result);
-            result = ApplySearch(input, result);
-            var total = result.Count();
             return new PagedResultDto<DailyShiftDto>
             {
-                TotalCount = total,
-                Items = result.ToList()
+                Items = result.ToList(), 
+                TotalCount = total
             };
         }
     }
-    private static IQueryable<DailyShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto> result)
+    private static IQueryable<DailyShiftDto>? ApplySorting(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? result)
     {
         var sorting = input.Sorting;
-        if (sorting.Contains(value: "DESC"))
+        if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
         {
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
@@ -297,28 +300,30 @@ public class DailyShiftAppService :
         return result;
     }
 
-    private static IQueryable<DailyShiftDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto> queryable)
+    private async Task<IQueryable<DailyShiftDto>?> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? queryable)
     {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        using (_dataFilter.Disable<IMultiTenant>())
         {
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
 
-            queryable = queryable.Where(or =>
+                queryable = queryable.Where(or =>
                 or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.KeeperShiftRequestType.ToString().Contains(input.SearchingTerm.ToLower()) ||
-                or.RequestTime.ToString().Contains(input.SearchingTerm) ||
-                or.StartDate.ToString().Contains(input.SearchingTerm) || 
-                or.EndDate.ToString().Contains(input.SearchingTerm) || 
-                or.StartTime.ToString().Contains(input.SearchingTerm) || 
-                or.EndTime.ToString().Contains(input.SearchingTerm) || 
-                or.ShiftNameAr.ToLower().Contains(input.SearchingTerm) ||
-                or.ShiftNameEn.ToLower().Contains(input.SearchingTerm) 
+                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.KeeperShiftRequestType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ShiftNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ShiftNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.RequestTime.ToString().Contains(input.SearchingTerm)
             );
-        }
 
-        return queryable;
+            }
+            await Task.Yield();
+            return queryable;
+        }
+        
     }
+    
 }

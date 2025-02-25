@@ -1,14 +1,18 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.DailyShift;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.DailyShifts;
 using SmartParking.Enums;
 using SmartParking.Events;
 using SmartParking.KeeperShifts;
 using SmartParking.Localization;
 using System.Globalization;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.MyShifts;
@@ -26,7 +30,7 @@ public partial class MyShifts
     private int pageSize = 100;
     private int TotalItem;
     public int CurrentPage { get; set; } = 1;
-    public int RowPerPage { get; set; } = 10; 
+    public int RowPerPage { get; set; } = 10;
     private string termSearch;
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
@@ -38,10 +42,10 @@ public partial class MyShifts
     }
     protected async override Task OnInitializedAsync()
     {
-        
+
         await base.OnInitializedAsync();
     }
-    
+
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         termSearch = pageInfo.SearchTerm;
@@ -65,10 +69,10 @@ public partial class MyShifts
             SearchingTerm = pageInfo.SearchTerm
 
         };
-        var keeperShiftDto = await KeeperShiftAppService.GetMyShiftsForCurrentUser(CurrentUser.Id , input);
+        var keeperShiftDto = await KeeperShiftAppService.GetMyShiftsForCurrentUser(CurrentUser.Id, input);
         TotalItem = (int)keeperShiftDto.TotalCount;
         await CreateTable(keeperShiftDto);
-         FirstItem = keeperShiftDto.Items.ToList().FirstOrDefault();
+        FirstItem = keeperShiftDto.Items.ToList().FirstOrDefault();
         var state = await keeperShiftSingletonService.GetAsync(FirstItem.Id);
         if (state != null)
         {
@@ -87,7 +91,7 @@ public partial class MyShifts
             ShowHeader = true
         };
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        
+
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -137,29 +141,87 @@ public partial class MyShifts
         };
 
         return await Dialog.ShowAsync<ViewMyShifts>("View MyShifts", parameters);
-    } 
-    
+    }
+
     private async Task HandleStartShift(RowDef row)
     {
-        var state = await keeperShiftSingletonService.SetAsync(int.Parse(row.Cells[0].Value));
-        if (state != null)
+        try
         {
-            await DailyShiftAppService.CreateAsync(DailyShiftAppService.CreateDailyShiftDto(FirstItem,KeeperShiftRequestType.StartShift));
-            IsStartShift = false;
-            IsEndShift = true;
-            StateHasChanged();
+            var input = await DailyShiftAppService.CreateDailyShiftDto(FirstItem, KeeperShiftRequestType.StartShift);
+            var dailyShiftDto = await DailyShiftAppService.CreateAsync(input);
+            var state = await keeperShiftSingletonService.SetAsync(int.Parse(row.Cells[0].Value));
+            if (state != null)
+            {
+
+                IsStartShift = true;
+                IsEndShift = false;
+                StateHasChanged();
+
+            }
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.START]} {L["Shift"]}", Severity.Success);
+
+
         }
-            
-        
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.START]} : {ex.Message}", Severity.Error);
+        }
+
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.START]} : {ex.Message} ", Severity.Error);
+        }
+
+
+
+
+
     }
-    
+
     private async Task HandleEndShift(RowDef row)
     {
-         await keeperShiftSingletonService.DisposeAsync();
-         await DailyShiftAppService.CreateAsync(DailyShiftAppService.CreateDailyShiftDto(FirstItem, KeeperShiftRequestType.EndShift));
-        IsStartShift = true;
-        IsEndShift = false;
-        StateHasChanged();
+        try
+        {
+            await keeperShiftSingletonService.DisposeAsync();
+            var createDailyShiftDto = await DailyShiftAppService.CreateDailyShiftDto(FirstItem, KeeperShiftRequestType.EndShift);
+            var dailyShiftDto = await DailyShiftAppService.CreateAsync(createDailyShiftDto);
+            if (dailyShiftDto != null)
+            {
+                IsStartShift = true;
+                IsEndShift = false;
+                StateHasChanged();
+            }
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.END]} {L["Shift"]}", Severity.Success);
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.END]} : {ex.Message}", Severity.Error);
+        }
+
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.END]} : {ex.Message} ", Severity.Error);
+        }
     }
 
 

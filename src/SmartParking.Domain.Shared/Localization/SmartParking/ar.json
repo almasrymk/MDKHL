@@ -699,7 +699,7 @@
         "CustomerAndPaymentReport": "الفواتير لفئة العملاء",
         "CustomerPackageReport": "الباقات لفئة العملاء",
         "PaymentMehtodReport": "الفواتير للتحويل البنكي",
-        "Keeper": "الحارس",
+        "Keeper": "يمكن ان يعين له وردية عمل",
         "RequestTime": "وقت التسجيل",
         "KeeperShiftRequestType": "نوع التسجيل",
         "DailyShifts": "الورديات اليوميه",
@@ -726,7 +726,18 @@
         "Assign Shift": "تخصيص وردية",
         "EndDateCannotBeBeforeStartDate": " لا يمكن لتاريخ النهاية ان يكون قبل تاريخ البداية",
         "ShiftNotActive": "هذه الوردية غير مفعلة",
-        "ShiftDateOutOfRange": "وقت الوردية خارج الوقت المسموح"
+        "ShiftDateOutOfRange": "وقت الوردية خارج الوقت المسموح",
+        "Start": "بدء",
+        "End": "إنهاء",
+        "Permission:UserShift": "موديول ورديات المستخدم",
+        "ViewUserShift": "عرض ورديات المستخدم",
+        "ViewUserActive": "عرض أنشطة المستخدم",
+        "Permission:MyShift": "موديول وردياتي",
+        "Permission:DailyShift": "موديول أنشطة المستخدم",
+        "Permission:Shift": "موديول الورديات",
+        "UsersCanShift": "إدارة الورديات للمستخدمين"
+
+
 
 
 
