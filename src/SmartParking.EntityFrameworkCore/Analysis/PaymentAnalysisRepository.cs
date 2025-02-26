@@ -55,7 +55,8 @@ public class PaymentAnalysisRepository
                                           .FirstOrDefault(),
                         TotalAmount = dbContext.Payments
                                 .Where(p => p.CreationTime.Date >= userShift.StartDate.ToDateTime(new TimeOnly(0, 0))&&
-                                       p.CreationTime.Date <= userShift.EndDate.ToDateTime(new TimeOnly(23, 59))
+                                       p.CreationTime.Date <= userShift.EndDate.ToDateTime(new TimeOnly(23, 59)) && 
+                                       p.CreatorId == userShift.KeeperId
                                 )
                                 .Sum(x => (decimal?)x.Amount) ?? 0, 
                         EndDate = userShift.EndDate,
