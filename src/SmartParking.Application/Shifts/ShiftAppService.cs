@@ -108,14 +108,13 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
         Expression<Func<Shift, bool>> overlapingWithMidnigtShift = IfNewNotOvernightOverlapsWithExistingMidnight(StartDate,EndDate,StartTime,EndTime);
 
+        Expression<Func<Shift, bool>> middnighOverlapsWithMidnigtShift = IfNewOvernightOverlapsWithExistingMidnight(StartDate,EndDate,StartTime,EndTime);
         // Case 2: New shift is a full-day shift
         Expression<Func<Shift, bool>> currentShiftIsFullDay = CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(IsFullday, StartDate,EndDate);
 
         Expression<Func<Shift, bool>> currentShiftIsFullDayOverlaping = NewShiftFullDayOverlapsWithExistingShiftNotFullDay(StartDate);
-
         // Case 3a: No midnight shift (StartTime <= EndTime)
         Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime);
-
         // Case 3b: Existing shift is a midnight shift (StartTime > EndTime)
         Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime);
 
@@ -138,7 +137,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             else
             {
                 // Case 3b: New shift is a midnight shift
-                return baseCondition.And(newShiftIsMidnight);
+                return baseCondition.And(newShiftIsMidnight).Or(middnighOverlapsWithMidnigtShift);
             }
         }
     }
@@ -167,6 +166,18 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             (StartTime <= s.EndTime && s.StartTime > StartTime) ||
 
             (EndTime < s.EndTime && s.StartTime > EndTime) 
+
+        );
+    }
+    public Expression<Func<Shift, bool>> IfNewOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate,TimeOnly StartTime , TimeOnly EndTime)
+    {
+        return s =>(!s.IsFullDay)
+        &&
+        s.StartTime > s.EndTime 
+        &&
+        (
+            (StartTime >= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) ||
+            (StartTime <= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) 
 
         );
     }
