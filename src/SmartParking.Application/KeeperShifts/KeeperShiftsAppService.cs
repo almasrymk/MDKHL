@@ -137,8 +137,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
 
     public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
             var queryGarage = await _garageRepository.GetQueryableAsync();
             var queryUser = await _userRepository.GetQueryableAsync();
@@ -151,8 +149,9 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                          where userId.HasValue ? keepershift.KeeperId == userId : true
                          orderby
                             keepershift.StartDate <= DateOnly.FromDateTime(DateTime.Now)
-                            && keepershift.EndDate >= DateOnly.FromDateTime(DateTime.Now)
-                            descending,
+                            && keepershift.EndDate >= DateOnly.FromDateTime(DateTime.Now) descending , 
+                             keepershift.StartTime <= TimeOnly.FromDateTime(DateTime.Now)
+                            && keepershift.EndTime >= TimeOnly.FromDateTime(DateTime.Now)  descending,
                              keepershift.StartTime >= currentTime descending,
                              keepershift.StartTime ascending,
                              keepershift.EndTime ascending
@@ -167,9 +166,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              Id = keepershift.Id,
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
-                             OrganizationId = keepershift.OrganizationId,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
+                             OrganizationId = keepershift.OrganizationId,
+                             OrganizationNameAr = string.Empty,
+                             OrganizationNameEn = string.Empty,
                              GarageId = keepershift.GarageId,
                              ShiftId = keepershift.ShiftId,
                              StartDate = keepershift.StartDate,
@@ -183,7 +184,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
 
                          };
 
-            result = await ApplySearch(input, result);
+            result = ApplySearch(input, result);
 
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -192,7 +193,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                 TotalCount = total,
                 Items = result.ToList()
             };
-        }
+        
     }
 
     public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId , PagedAndSortedAndSearchResultRequestDto input)
@@ -236,8 +237,9 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              ArabicName = shift.ArabicName,
                              EnglishName = shift.EnglishName
                          };
-            result = ApplySorting(input,  result);
-            result = await ApplySearch(input, result);
+            
+            result =  ApplySearch(input, result);
+            result = ApplySorting(input, result);
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
             return new PagedResultDto<KeeperShiftDto>
@@ -247,28 +249,25 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             };
         }
     }
-    private async Task<IQueryable<KeeperShiftDto>?> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<KeeperShiftDto>? queryable)
+    private IQueryable<KeeperShiftDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<KeeperShiftDto>? queryable)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
 
-                queryable = queryable.Where(or =>
-                or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
-               
-            );
+            queryable = queryable.Where(or =>
+            or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
 
-            }
-            await Task.Yield();
-            return queryable;
+        );
+
         }
+            return queryable;
+        
 
     }
 
@@ -312,8 +311,9 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              ArabicName = shift.ArabicName,
                              EnglishName = shift.EnglishName
                          };
+            
+            result = ApplySearch(input, result);
             result = ApplySorting(input, result);
-            result = await ApplySearch(input, result);
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
             return new PagedResultDto<KeeperShiftDto>

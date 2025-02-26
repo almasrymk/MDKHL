@@ -16,8 +16,8 @@ namespace SmartParking.KeeperShifts
         public int OrganizationId { get; set; }
         public Guid KeeperId { get; set; }
         public int ShiftId { get; set; }
-        public string OrganizationNameAr { get; set; }
-        public string OrganizationNameEn { get; set; }
+        public string OrganizationNameAr { get; set; } = string.Empty;
+        public string OrganizationNameEn { get; set; } = string.Empty;
         public string GarageNameAr { get; set; }
         public string GarageNameEn { get; set; }
         public string KeeperName { get; set; }
