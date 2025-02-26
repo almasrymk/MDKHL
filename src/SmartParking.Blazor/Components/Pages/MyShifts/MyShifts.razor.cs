@@ -72,12 +72,27 @@ public partial class MyShifts
         var keeperShiftDto = await KeeperShiftAppService.GetMyShiftsForCurrentUser(CurrentUser.Id, input);
         TotalItem = (int)keeperShiftDto.TotalCount;
         await CreateTable(keeperShiftDto);
-        FirstItem = keeperShiftDto.Items.ToList().FirstOrDefault();
-        var state = await keeperShiftSingletonService.GetAsync(FirstItem.Id);
-        if (state != null)
+        if (string.IsNullOrEmpty(input.SearchingTerm))
+        {
+            FirstItem = keeperShiftDto.Items.ToList().FirstOrDefault();
+            var state = await keeperShiftSingletonService.GetAsync(FirstItem.Id);
+            if (state != null)
+            {
+                IsStartShift = false;
+                IsEndShift = true;
+                StateHasChanged();
+            }
+            else
+            {
+                IsStartShift = true;
+                IsEndShift = false;
+                StateHasChanged();
+            }
+        }
+        else
         {
             IsStartShift = false;
-            IsEndShift = true;
+            IsEndShift = false;
             StateHasChanged();
         }
     }
@@ -189,11 +204,13 @@ public partial class MyShifts
 
     private async Task HandleEndShift(RowDef row)
     {
+
         try
         {
-            await keeperShiftSingletonService.DisposeAsync();
+            
             var createDailyShiftDto = await DailyShiftAppService.CreateDailyShiftDto(FirstItem, KeeperShiftRequestType.EndShift);
             var dailyShiftDto = await DailyShiftAppService.CreateAsync(createDailyShiftDto);
+            await keeperShiftSingletonService.DisposeAsync();
             if (dailyShiftDto != null)
             {
                 IsStartShift = true;
