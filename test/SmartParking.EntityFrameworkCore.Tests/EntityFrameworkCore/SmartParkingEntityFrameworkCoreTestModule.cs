@@ -1,8 +1,10 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Autofac.Core;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using SmartParking.Localization;
 using Volo.Abp;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.Sqlite;
@@ -43,6 +45,7 @@ public class SmartParkingEntityFrameworkCoreTestModule : AbpModule
         context.Services.AddAlwaysDisableUnitOfWorkTransaction();
 
         ConfigureInMemorySqlite(context.Services);
+        LocalizationHelper.Configure(context.Services.BuildServiceProvider());
     }
 
     private void ConfigureInMemorySqlite(IServiceCollection services)
