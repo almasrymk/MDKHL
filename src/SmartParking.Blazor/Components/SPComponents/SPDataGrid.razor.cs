@@ -223,7 +223,7 @@ public partial class SPDataGrid
                                 .Select(x => x.Trim())
                                 .ToList();
                 filterEventArgs.FilterValues = values;
-            }
+            }            
             ColumnsFilter.Add(filterEventArgs);
             ColumnsFilterApply.Add(DisplayFilter.Name);
             SelectProprtyName.Add(new KeyValuePair<string, string>(DisplayFilter.Name, filterEventArgs.FilterProperty));

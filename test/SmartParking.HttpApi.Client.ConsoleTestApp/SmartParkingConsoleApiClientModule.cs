@@ -1,6 +1,8 @@
 ﻿using System;
+using Autofac.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
+using SmartParking.Localization;
 using Volo.Abp.Autofac;
 using Volo.Abp.Http.Client;
 using Volo.Abp.Http.Client.IdentityModel;
@@ -26,5 +28,10 @@ public class SmartParkingConsoleApiClientModule : AbpModule
                 );
             });
         });
+    }
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        LocalizationHelper.Configure(context.Services.BuildServiceProvider());
+        base.ConfigureServices(context);
     }
 }

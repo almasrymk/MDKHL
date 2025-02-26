@@ -91,75 +91,128 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     public async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
     {
         var result = await repository.FirstOrDefaultAsync(expression);
-        Console.WriteLine($"{result?.EnglishName}  {result?.StartDate} {result?.EndDate}  {result?.StartTime} {result?.EndTime} ");
         return await repository.AnyAsync(expression);
     }
-    public Expression<Func<Shift, bool>> GetTimeOverlapExpression(TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate, DateOnly EndDate, int garageId, bool IsFullday, Status status)
-    {
-        // Base condition: Garage ID, date range, and status
-        Expression<Func<Shift, bool>> baseCondition = s =>
-            s.GarageId == garageId &&
-            s.StartDate <= StartDate &&
-            s.EndDate >= StartDate &&
-            s.Status == Status.Active && status == Status.Active;
-
-        // Case 1: Existing shift is a full-day shift
-        Expression<Func<Shift, bool>> existingShiftIsFullDay = AnExistingShiftIsFullDay(StartDate);
-
-        // Case 2: New shift is a full-day shift
-        Expression<Func<Shift, bool>> currentShiftIsFullDay = CurrentShiftIsFullDay(IsFullday, StartDate);
-
-        // Case 3a: No midnight shift (StartTime <= EndTime)
-        Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime);
-
-        // Case 3b: Existing shift is a midnight shift (StartTime > EndTime)
-        Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime);
-
-        if (IsFullday) { 
-            var baseConditionAndExistingShiftFullDay = baseCondition.And(existingShiftIsFullDay);
-            return baseConditionAndExistingShiftFullDay.And(currentShiftIsFullDay);
-        }
-        else
-        {
-            if (StartTime < EndTime)
-            {
-                 // Case 3a
-                return baseCondition.And(newShiftIsNotMidnight);
-            }
-            else
-            {
-                // Case 3b
-                return baseCondition.And(newShiftIsMidnight);
-            }
-        }
-    }
-
     public Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
     {
         return s => s.Id != ShiftId;
     }
+    public Expression<Func<Shift, bool>> GetTimeOverlapExpression(
+     TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate, DateOnly EndDate, int garageId, bool IsFullday, Status status)
+    {
+        // Base condition: Garage ID, date range, and status
+        Expression<Func<Shift, bool>> baseCondition = BaseConditionForCreatingShift(garageId, StartDate,EndDate, status);
 
-    public Expression<Func<Shift, bool>> AnExistingShiftIsFullDay(DateOnly StartDate)
+        // Case 1: Existing shift is a full-day shift
+        Expression<Func<Shift, bool>> existingShiftIsFullDay = AnExistingShiftIsFullDayOverlapsWithNewShift(StartDate,EndDate);
+
+        Expression<Func<Shift, bool>> overlapingWithMidnigtShift = IfNewNotOvernightOverlapsWithExistingMidnight(StartDate,EndDate,StartTime,EndTime);
+
+        Expression<Func<Shift, bool>> middnighOverlapsWithMidnigtShift = IfNewOvernightOverlapsWithExistingMidnight(StartDate,EndDate,StartTime,EndTime);
+        // Case 2: New shift is a full-day shift
+        Expression<Func<Shift, bool>> currentShiftIsFullDay = CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(IsFullday, StartDate,EndDate);
+
+        Expression<Func<Shift, bool>> currentShiftIsFullDayOverlaping = NewShiftFullDayOverlapsWithExistingShiftNotFullDay(StartDate);
+        // Case 3a: No midnight shift (StartTime <= EndTime)
+        Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime);
+        // Case 3b: Existing shift is a midnight shift (StartTime > EndTime)
+        Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime);
+
+        if (IsFullday)
+        {
+            var baseConditionAndExistingShiftFullDay = baseCondition.And(existingShiftIsFullDay);
+            return baseConditionAndExistingShiftFullDay.And(currentShiftIsFullDay)
+                .Or(baseConditionAndExistingShiftFullDay.And(currentShiftIsFullDayOverlaping));
+        }
+        else
+        {
+            //var overlapsWithExistingFullDayShift = baseCondition.And(existingShiftIsFullDay);
+
+            if (StartTime < EndTime)
+            {
+                // Case 3a: New shift is not a midnight shift
+                //
+                return baseCondition.And(newShiftIsNotMidnight).Or(existingShiftIsFullDay).Or(overlapingWithMidnigtShift);
+            }
+            else
+            {
+                // Case 3b: New shift is a midnight shift
+                return baseCondition.And(newShiftIsMidnight).Or(middnighOverlapsWithMidnigtShift);
+            }
+        }
+    }
+
+    public Expression<Func<Shift, bool>> BaseConditionForCreatingShift(int GarageId, DateOnly StartDate,DateOnly EndDate, Status status)
+    {
+        return s =>
+            s.GarageId == GarageId &&
+            (StartDate >= s.StartDate && StartDate < s.EndDate) ||
+            (EndDate > s.StartDate && EndDate <= s.EndDate) ||
+            (StartDate <= s.StartDate && EndDate >= s.EndDate) &&
+            s.Status == Status.Active && status == Status.Active;
+    }
+    public Expression<Func<Shift, bool>> IfNewNotOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate,TimeOnly StartTime , TimeOnly EndTime)
+    {
+        // Existing shift is a midnight shift (StartTime > EndTime)
+        return s =>(!s.IsFullDay)
+        &&
+        s.StartTime > s.EndTime 
+        &&
+        (
+            (StartTime >= s.StartTime && StartTime > s.EndTime) ||
+
+            (EndTime >= s.StartTime && EndTime > s.EndTime) ||
+
+            (StartTime <= s.EndTime && s.StartTime > StartTime) ||
+
+            (EndTime < s.EndTime && s.StartTime > EndTime) 
+
+        );
+    }
+    public Expression<Func<Shift, bool>> IfNewOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate,TimeOnly StartTime , TimeOnly EndTime)
+    {
+        return s =>(!s.IsFullDay)
+        &&
+        s.StartTime > s.EndTime 
+        &&
+        (
+            (StartTime >= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) ||
+            (StartTime <= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) 
+
+        );
+    }
+
+    public Expression<Func<Shift, bool>> AnExistingShiftIsFullDayOverlapsWithNewShift(DateOnly StartDate, DateOnly EndDate)
     {
         return s => s.IsFullDay && (
-                       (StartDate <= s.EndDate && StartDate >= s.StartDate) // New shift overlaps with the full-day shift's date range
+                       (StartDate >= s.StartDate && StartDate < s.EndDate) ||
+                       (EndDate > s.StartDate && EndDate <= s.EndDate) ||
+                       (StartDate <= s.StartDate && EndDate >= s.EndDate)
                    );
     }
 
-    public Expression<Func<Shift, bool>> CurrentShiftIsFullDay(bool IsFullday, DateOnly StartDate)
+    public Expression<Func<Shift, bool>> CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(bool IsFullday, DateOnly StartDate,DateOnly EndDate)
     {
         return s => IsFullday && (
-                       (s.StartDate <= StartDate && s.EndDate >= StartDate) // Existing shift overlaps with the new full-day shift's date range
+                       (StartDate >= s.StartDate && StartDate < s.EndDate) ||
+                       (EndDate > s.StartDate && EndDate <= s.EndDate) ||
+                       (StartDate <= s.StartDate && EndDate >= s.EndDate)
                    );
     }
 
     public Expression<Func<Shift, bool>> NewShiftIsNotMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
     {
-        return s => s.StartTime <= s.EndTime && (
-                           (StartTime >= s.StartTime && StartTime < s.EndTime) || // New shift starts during existing shift
-                           (EndTime > s.StartTime && EndTime <= s.EndTime) ||    // New shift ends during existing shift
-                           (StartTime <= s.StartTime && EndTime >= s.EndTime)    // New shift completely overlaps existing shift
+        return s =>(!s.IsFullDay) &&(s.StartTime<s.EndTime) &&                     //ExistingShiftIsNotMidNightOrFullDay
+                       (                               
+                           (StartTime >= s.StartTime && StartTime < s.EndTime) ||   // New shift starts during existing shift
+                           (EndTime > s.StartTime && EndTime <= s.EndTime) ||       // New shift ends during existing shift
+                           (StartTime <= s.StartTime && EndTime >= s.EndTime)       // New shift completely overlaps existing shift
                        );
+    }
+
+    public Expression<Func<Shift, bool>> NewShiftFullDayOverlapsWithExistingShiftNotFullDay(DateOnly StartDate)
+    {
+        return s => s.StartDate <= StartDate && StartDate <= s.EndDate;
     }
 
     public Expression<Func<Shift, bool>> NewShiftIsMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
