@@ -247,7 +247,7 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
             Description = "Conflicting Night Shift",
             StartDate = new DateOnly(2025, 2, 26),
             EndDate = new DateOnly(2025, 2, 26),
-            StartTime = new TimeOnly(22, 0), // Overlaps with shift1
+            StartTime = new TimeOnly(22, 0), 
             EndTime = new TimeOnly(22, 59),
             GarageId = 1,
             OrganizationId = 1,
@@ -316,5 +316,47 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AbpValidationException>(() => _shiftAppService.CreateAsync(shift));
         Assert.Contains("Value cannot be empty: Start Time,End Time", exception.ValidationErrors[0].ToString());
+    }
+    
+    [Fact]
+    public async Task CreateTwoShift_ShouldFail_ToOverlapping_MidNightShifts()
+    {
+        // Arrange
+        var shift = new CreateUpdateShiftDto
+        {
+            Description = "Invalid Time Shift",
+            StartDate = new DateOnly(2025, 2, 26),
+            EndDate = new DateOnly(2025, 2, 27),
+            StartTime = new TimeOnly(22, 0), // Overlaps with shift1
+            EndTime = new TimeOnly(4, 0),
+            GarageId = 1,
+            OrganizationId = 1,
+            Status = Enums.Status.Active,
+            ArabicName = "وقت غير صحيح",
+            EnglishName = "Invalid Time Shift",
+            IsFullDay = false, // Not full day but has empty time
+            Notes = ""
+        };
+        await _shiftAppService.CreateAsync(shift);
+
+        var shift2 = new CreateUpdateShiftDto
+        {
+            Description = "Invalid Time Shift",
+            StartDate = new DateOnly(2025, 2, 26),
+            EndDate = new DateOnly(2025, 2, 27),
+            StartTime = new TimeOnly(21, 0), // Overlaps with shift1
+            EndTime = new TimeOnly(5, 0),
+            GarageId = 1,
+            OrganizationId = 1,
+            Status = Enums.Status.Active,
+            ArabicName = "وقت غير صحيح",
+            EnglishName = "Invalid Time Shift",
+            IsFullDay = false, // Not full day but has empty time
+            Notes = ""
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _shiftAppService.CreateAsync(shift2));
+        Assert.Contains("Shift overlaps with an existing shift.", exception.Message);
     }
 }
