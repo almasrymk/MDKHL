@@ -99,13 +99,14 @@ partial class KeeperPaymentsReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = "UserName",
+            Sorting = paged.SortColumn == "Id" ? "UserName" : paged.SortColumn,
             SearchingTerm = "",
-            filters = new List<FilterRequestDto>()
+            filters = paged.Filters
 
         };
 
         var keeperPaymentAnalyses = await AnalysisAppService.ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(request, CurrentTenant.Id);
+        TotalItem = (int)keeperPaymentAnalyses.TotalCount;
         if(CurrentTenant.Id == null)
         {
             var items = await CreateTableHelper.CreateDataTableForPaymentUserShift(keeperPaymentAnalyses.Items.ToList(),null);
