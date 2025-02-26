@@ -58,11 +58,23 @@ public static class BreadCrumbsRoutes
             "roles/mdkhl" => LocalizationHelper.GetLocalizedString("Roles") ,
             "add-user" => LocalizationHelper.GetLocalizedString("Users") +" / "+ LocalizationHelper.GetLocalizedString("Add NEW"),
             "beneficiariesreport" => LocalizationHelper.GetLocalizedString("BeneficiariesReports"),
+            "customerreport" => LocalizationHelper.GetLocalizedString("CustomerAndTransactionReport"),
+            "employeereport" => LocalizationHelper.GetLocalizedString("EmployeeAndTransactionReport"),
+            "visitorreport" => LocalizationHelper.GetLocalizedString("VisitorAndTransactionReport"),
+            "keepertransactionsreport" => LocalizationHelper.GetLocalizedString("KeeperTransactionsReport"),
+            "keeperpaymentsreport" => LocalizationHelper.GetLocalizedString("KeeperPaymentsReport"),
             "customerpackage/reports" => LocalizationHelper.GetLocalizedString("PackagesReports"),
+            "customerspackage/reports" => LocalizationHelper.GetLocalizedString("CustomerPackageReport"),
             "garagesreport" => LocalizationHelper.GetLocalizedString("GaragesReports"),
             "packagepayment/reports" => LocalizationHelper.GetLocalizedString("PackagePaymentReports"),
             "paymentsreports" => LocalizationHelper.GetLocalizedString("PaymentReports"),
+            "paymentsbankreports" => LocalizationHelper.GetLocalizedString("PaymentMehtodReport"),
+            "paymentscustomerreports" => LocalizationHelper.GetLocalizedString("CustomerAndPaymentReport"),
             "roles" => LocalizationHelper.GetLocalizedString("Roles"),
+            "dailyshifs" => LocalizationHelper.GetLocalizedString("DailyShifts"),
+            "user/shifts" => LocalizationHelper.GetLocalizedString("UsersCanShift"),
+            "shifts" => LocalizationHelper.GetLocalizedString("Shifts"),
+            "myshifts" => LocalizationHelper.GetLocalizedString("MyShifts"),
             _ => LocalizationHelper.GetLocalizedString("Dashboard") // Default title if no match found
         };
     }

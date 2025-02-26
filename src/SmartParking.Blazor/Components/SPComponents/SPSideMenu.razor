@@ -1,20 +1,25 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Text.Json
 @using SmartParking.Permissions.CameraPermissions
 @using SmartParking.Permissions.ContactPermissions
 @using SmartParking.Permissions.CustomerPermissions
+@using SmartParking.Permissions.DailyShiftsPermissions
 @using SmartParking.Permissions.GaragePermissions
 @using SmartParking.Permissions.GarageTransactionPermissions
 @using SmartParking.Permissions.InvoicesPermissions
 @using SmartParking.Permissions.MyAccount
+@using SmartParking.Permissions.MyShiftsPermissions
 @using SmartParking.Permissions.OrganizationPermissions
 @using SmartParking.Permissions.PackagePermissions
 @using SmartParking.Permissions.PaymentsPermissions
 @using SmartParking.Permissions.Reports
+@using SmartParking.Permissions.ShiftsPermissions
 @using SmartParking.Permissions.SubsctriptionPermissions
 @using SmartParking.Permissions.UnLinkedTransactionPermissions
+@using SmartParking.Permissions.UserShiftsPermissions
 @using Volo.Abp.Account
 @using Volo.Abp.Identity
 @using Volo.Abp.MultiTenancy
@@ -28,41 +33,63 @@
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentuser
 @inject IAuthorizationService AuthorizationService
-
+@inject IUsersAppService usersService
+@inject UserSingletonService UserSingletonService
 
 <div class="pt-5">
     <MudDrawerContainer Class="mud-height-full" >
         <MudDrawer Elevation="0"  @bind-Open="_open" Fixed="false" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="bg-transparent">
-                <MudNavMenu>
-                 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
-                 @if (AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result && currenttenant.Id is not null)
-                 {
-                     <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>
-                 }
-                 @if (AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.Default).Result)
-                 {
-                     <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["Customers"]</MudNavLink>
-                 }
-                 @if (AuthorizationService.IsGrantedAnyAsync(OrganizationPermissions.Default).Result && currenttenant.Id is null)
-                 {
-                     <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
-                 }
-                 @if (AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result)
-                 {
-                     <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
-                 }
-                 @if (currenttenant.Id != null)
-                 {
-                     <MudNavLink Href="/lastinvoice" Icon="@Icons.Material.Filled.Check">@L["LastInvoice"]</MudNavLink>
+            <MudNavMenu>
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.InsertChartOutlined" Class="text-white">@L["Dashboard"]</MudNavLink>
+                @if (AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result && currenttenant.Id is not null)
+                {
+                    <MudNavLink Href="/view-my-account" Icon="@Icons.Material.Filled.LocationCity">@L["ViewMyAccount"]</MudNavLink>
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.Default).Result)
+                {
+                    <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.Man2">@L["Customers"]</MudNavLink>
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(OrganizationPermissions.Default).Result && currenttenant.Id is null)
+                {
+                    <MudNavLink Href="/organizations" Icon="@Icons.Material.Filled.LocationCity">@L["Organizations"]</MudNavLink>
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(GaragePermissions.Default).Result)
+                {
+                    <MudNavLink Href="/garages" Icon="@Icons.Material.Filled.Garage">@L["Garages"]</MudNavLink>
+                }
+                @if (currenttenant.Id != null)
+                {
+                    <MudNavLink Href="/lastinvoice" Icon="@Icons.Material.Filled.Check">@L["LastInvoice"]</MudNavLink>
 
-                 }
-                <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
-                     <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
-                     <MudNavLink Href="/dailyshifs" Icon="@Icons.Material.Filled.Check">@L["DailyShifts"]</MudNavLink>
-                     <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanAssignShifts"]</MudNavLink>
-                     <MudNavLink Href="/myshifts" Icon="@Icons.Material.Filled.Schedule">@L["MyShifts"]</MudNavLink>
-                </MudNavGroup>
-                
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || 
+                   AuthorizationService.IsGrantedAnyAsync(UserShiftPermission.Default).Result ||
+                   AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result ||
+                   AuthorizationService.IsGrantedAnyAsync(DailyShiftsPermission.Default).Result || currenttenant.Id == null)
+                {
+                    <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
+                        @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || currenttenant.Id == null)
+                         {
+                            <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
+                         }
+
+                        @if (AuthorizationService.IsGrantedAnyAsync(UserShiftPermission.Default).Result || currenttenant.Id == null)
+                         {
+                            <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanShift"]</MudNavLink>
+                         }
+
+                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result )
+                         {
+                            <MudNavLink Href="/myshifts" Icon="@Icons.Material.Filled.Schedule">@L["MyShifts"]</MudNavLink>
+                         }
+
+                        @if (AuthorizationService.IsGrantedAnyAsync(DailyShiftsPermission.Default).Result || currenttenant.Id == null)
+                         {
+                            <MudNavLink Href="/dailyshifs" Icon="@Icons.Material.Filled.Check">@L["DailyShifts"]</MudNavLink>
+                         }
+
+                    </MudNavGroup>
+                }
                 
 
                  @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result)
@@ -103,19 +130,28 @@
                      <MudNavGroup Icon="@Icons.Material.Filled.Assessment" Title="@L["Reports"]">
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currenttenant.Id is null)
                          {
-                             <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["Customers"]</MudNavLink>
-                         }
+                            <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["GarageTransactions"]</MudNavLink>
+                            <MudNavLink Href="/customerreport" Icon="@Icons.Material.Filled.Man">@L["CustomerAndTransactionReport"]</MudNavLink>
+                            <MudNavLink Href="/employeereport" Icon="@Icons.Material.Filled.Work">@L["EmployeeAndTransactionReport"]</MudNavLink>
+                            <MudNavLink Href="/visitorreport" Icon="@Icons.Material.Filled.Accessibility">@L["VisitorAndTransactionReport"]</MudNavLink>
+                            <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
+
+                         }  
                          @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
                          {
-                             <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["CustomerPackages"]</MudNavLink>
+                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["PackageSubscribers"]</MudNavLink>
+                            <MudNavLink Href="/customerspackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["CustomerPackageReport"]</MudNavLink>
 
                          }
 
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                          {
+                            <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
                              <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
                              <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
+                            <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
+                            <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
                          }
 
                      </MudNavGroup>

@@ -34,36 +34,63 @@ public class PaymentAnalysisRepository
     }
 
    
-    public async Task<List<PaymentAnalysis>> GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(int? organizationId)
+    public async Task<PagedResult<PaymentUserShift>> GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(Guid? tenantId, 
+        int skipCount, int maxResultCount, string sorting, 
+        Expression<Func<PaymentUserShift, bool>> filterRequests)
     {
+        if (sorting.Contains("DESC"))
+        {
+            var sortingSplit = sorting.Split(' ').ToList();
+            sorting = sortingSplit[0] + " descending";
+        }
         var dbContext = await GetDbContextAsync();
-        var query = from p in dbContext.Payments
-                    where p.OrganizationId == null || p.OrganizationId == organizationId
-                    from user in dbContext.Users
-                    where p.CreatorId == user.Id
-                    from roleId in user.Roles.Select(r => r.RoleId) 
-                    join role in dbContext.Roles 
-                        on roleId equals role.Id 
-                    where role.Name == RolesType.Keeper.ToString() 
-                    group p by new
+        var query = from payments in dbContext.Payments
+                    where tenantId == null || payments.TenantId == tenantId
+                    join userShift in dbContext.KeeperShifts on payments.CreatorId equals userShift.KeeperId
+
+                    group userShift by new
                     {
-                        p.CreatorId,
-                        Day = DateTime.Now.Date,
-                        Month = new { p.CreationTime.Year, p.CreationTime.Month }
-                    } into g
-                    select new PaymentAnalysis
+                        userShift.KeeperId,
+                        userShift.StartTime,
+                        userShift.StartDate,
+                        userShift.EndDate,
+                        userShift.EndTime,
+                        userShift.GarageId,
+                        userShift.OrganizationId,
+                        userShift.ShiftId
+                    } into groupedPayments
+                    select new PaymentUserShift
                     {
-                        KeeperName = dbContext.Users.Where(u => u.Id == g.Key.CreatorId)
+                        UserName = dbContext.Users.Where(u => u.Id == groupedPayments.Key.KeeperId)
                                           .Select(u => u.Name)
                                           .FirstOrDefault(),
-                        AmountDaily = g.Where(x => g.Key.Day.DayOfYear == DateTime.Now.DayOfYear).Sum(x => (double)x.Amount),
-                        AmountMonthly = g.Where(x => g.Key.Month.Year == DateTime.Now.Year &&
-                                                      g.Key.Month.Month == DateTime.Now.Month).Sum(x => (double)x.Amount),
-                        Day = g.Key.Day.ToString("yyyy-MM-dd"),
-                        Month = $"{g.Key.Month.Year}-{g.Key.Month.Month:D2}"
-                    };
+                        TotalAmount = dbContext.Payments
+                                .Where(p => p.CreationTime.Date >= groupedPayments.Key.StartDate.ToDateTime(new TimeOnly(0, 0))&&
+                                       p.CreationTime.Date <= groupedPayments.Key.EndDate.ToDateTime(new TimeOnly(23, 59)) && 
+                                       p.CreatorId == groupedPayments.Key.KeeperId
+                                )
+                                .Sum(x => (decimal?)x.Amount) ?? 0, 
+                        EndDate = groupedPayments.Key.EndDate,
+                        StartDate = groupedPayments.Key.StartDate,
+                        EndTime = groupedPayments.Key.EndTime,
+                        GarageArabicName = dbContext.Garages.Where(g => g.Id == groupedPayments.Key.GarageId).Select(g => g.NameAr).FirstOrDefault(),
+                        GarageEnglishName = dbContext.Garages.Where(g => g.Id == groupedPayments.Key.GarageId).Select(g => g.NameEn).FirstOrDefault(),
+                        OrganizationArabicName = dbContext.Organizations.Where(g => g.Id == groupedPayments.Key.OrganizationId).Select(g => g.ArabicName).FirstOrDefault(),
+                        OrganizationEnglishName = dbContext.Organizations.Where(g => g.Id == groupedPayments.Key.OrganizationId).Select(g => g.EnglishName).FirstOrDefault(),
+                        ShiftArabicName = dbContext.Shifts.Where(g => g.Id == groupedPayments.Key.ShiftId).Select(g => g.ArabicName).FirstOrDefault(),
+                        ShiftEnglishName = dbContext.Shifts.Where(g => g.Id == groupedPayments.Key.ShiftId).Select(g => g.EnglishName).FirstOrDefault(),
+                        StartTime = groupedPayments.Key.StartTime
 
-        return await query.ToListAsync();
+                    };
+        query = query.Where(filterRequests);
+        query = query.OrderBy(sorting);
+        var total = query.Count();
+        query = query.Skip(skipCount).Take(maxResultCount);
+        return new PagedResult<PaymentUserShift>
+        {
+            PageSize = total,
+            Queryable = query,
+        };
     }
     
     

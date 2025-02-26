@@ -11,5 +11,7 @@ public enum TypeFilter
     Number,
     Text,
     Date,
-    Enum
+    Enum,
+    Time,
+    DateOnly
 }

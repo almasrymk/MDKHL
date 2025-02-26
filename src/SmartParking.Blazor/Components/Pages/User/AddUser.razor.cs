@@ -108,8 +108,8 @@ public partial class AddUser
             
             case string v when v == "keeper":
                 IsOrganization = true;
-                IsSelectOrganization = true;
                 userCreate.UserTypeCategory = UserTypeCategory.Keeper;
+                Roles = await RoleAppService.GetListByTenant(currrentTenant.Id);
                 break;
         };
        
@@ -117,6 +117,7 @@ public partial class AddUser
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
         }
+        else
         Roles = await RoleAppService.GetListByTenant(null);
 
     }    

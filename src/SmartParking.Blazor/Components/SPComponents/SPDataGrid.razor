@@ -159,7 +159,7 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
-                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
+                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly)
                                                 {
                                                     @foreach (var column in DateOperatorEn)
                                                     {
@@ -184,7 +184,7 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
-                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
+                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly)
                                                 {
                                                     @foreach (var column in DateOperatorAR)
                                                     {
@@ -203,20 +203,20 @@
                                         </MudSelect>
                                     </MudItem>
                                 }
-                                @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date))
+                                @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.DateOnly)))
                                 {
                                     if (!IsShowValue)
                                     {
                                         <MudItem Class="d-flex align-center ms-2">
                                             <MudSelect T="string" @bind-Value="FilterValue" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Placeholder="@L["Value"]" Margin="MudBlazor.Margin.Dense" Variant="Variant.Outlined" T="string">
-                                                @foreach (var value in Enum.GetValues(Data.Columns.First(x => x.PropertyName == SelectedColumn).EnumType))
+                                                @foreach (var value in Enum.GetValues(Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeOfColumn))
                                                 {
                                                     <MudSelectItem Value="value.ToString()">@value.ToString()</MudSelectItem>
                                                 }
                                             </MudSelect>
                                         </MudItem>
                                     }
-                                    else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date)
+                                    else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.DateOnly)
                                     {
                                         <MudItem>
                                             @L["Value"]:
@@ -226,13 +226,13 @@
 
                                 }
 
-                                @if (SelectOperator.Value != null && (SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan" || SelectOperator.Value == "LessThanOrEqual" || SelectOperator.Value == "GreaterThanOrEqual") && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
+                                @if (SelectOperator.Value != null && (SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan" || SelectOperator.Value == "LessThanOrEqual" || SelectOperator.Value == "GreaterThanOrEqual") && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly))
                                 {
                                     <MudItem>
                                         <MudDatePicker Label="@L["Date"]" Editable="true" @bind-Date="@Date" Placeholder="Select Date" />
                                     </MudItem>
                                 }
-                                @if (SelectOperator.Value != null && SelectOperator.Value == "Between" && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date)
+                                @if (SelectOperator.Value != null && SelectOperator.Value == "Between" && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly))
                                 {
                                     <MudItem>
                                         <MudItem>

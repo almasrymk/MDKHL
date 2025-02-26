@@ -53,17 +53,17 @@
                         Class="w-100"
                          Required="true"
                          @bind-Date="_startDateTime"
-                        IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        PickerVariant="PickerVariant.Dialog"
-                        Label="@L["StartDate"]" />
+                         IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
+                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                         PickerVariant="PickerVariant.Dialog"
+                         Label="@L["StartDate"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudDatePicker Variant="Variant.Text"
                         Class="w-100"
                         Required="true"
                         @bind-Date="_endDateTime"
-                        IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)"
+                        IsDateDisabledFunc="@(dt => dt < (_startDateTime ?? DateTime.Today))"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         PickerVariant="PickerVariant.Dialog"
                         Label="@L["EndDate"]" />

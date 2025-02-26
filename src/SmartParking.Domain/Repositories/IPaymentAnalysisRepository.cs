@@ -14,6 +14,8 @@ namespace SmartParking.Repositories;
 
 public interface IPaymentAnalysisRepository : IRepository<Payment, Guid>
 {
-    Task<List<PaymentAnalysis>> GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(int? organizationId);
+    Task<PagedResult<PaymentUserShift>> GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(Guid? tenantId,
+        int skipCount, int maxResultCount, string sorting,
+        Expression<Func<PaymentUserShift, bool>> filterRequests);
     Task<PagedResult<PaymentAnalysis>> GetPaymentForKeeper(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<PaymentAnalysis, bool>> filterRequests);
 }

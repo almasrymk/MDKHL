@@ -33,7 +33,7 @@ public class ColumnDef
     public int Width { get; set; }
     public string PropertyName { get; set; }
     public TypeFilter TypeFilter { get; set; }
-    public Type EnumType { get; set; }
+    public Type TypeOfColumn { get; set; }
     public bool IsColumnVisible { get; set; } = true;
 }
 
