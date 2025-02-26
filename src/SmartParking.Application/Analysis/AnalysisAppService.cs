@@ -50,6 +50,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
     private readonly IGarageAnalysisRepository _garageAnalysis;
+    private readonly IShiftAnalysisRepository _shiftAnalysisRepository;
+
     private readonly IPaymentAnalysisRepository _paymentAnalysisRepository;
     private readonly IOrganizationsAppService _organizationsAppService;
 
@@ -84,7 +86,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IPaymentAnalysisRepository paymentAnalysisRepository,
         IOrganizationsAppService organizationsAppService,
         IRepository<GarageTransaction, int> garageTransactionRepository,
-        IPackageAnalysisRepository packageAnalysisRepository)
+        IPackageAnalysisRepository packageAnalysisRepository,
+        IShiftAnalysisRepository shiftAnalysisRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -99,6 +102,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _garageTransactionRepository = garageTransactionRepository;
         _packageAnalysisRepository = packageAnalysisRepository;
         _vehicleRepository = VehicleRepository;
+        _shiftAnalysisRepository = shiftAnalysisRepository;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -601,6 +605,20 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var filterExpression = BuildExpression<GarageAnalysis>.BuildFilterExpression(input.filters);
             var result = await _garageAnalysis.GetGarageReportAsync(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
             return new PagedResultDto<GarageAnalysis>
+            {
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
+            };
+        }
+
+    }
+    public async Task<PagedResultDto<ShiftAnalysis>> ReportNumberOfTransactionsWhileKeeperShift(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var filterExpression = BuildExpression<ShiftAnalysis>.BuildFilterExpression(input.filters);
+            var result = await _shiftAnalysisRepository.ReportNumberOfTransactionsWhileKeeperShift(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            return new PagedResultDto<ShiftAnalysis>
             {
                 Items = result.Queryable.ToList(),
                 TotalCount = (int)result.PageSize
