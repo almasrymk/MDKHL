@@ -25,16 +25,19 @@ public class AccountsController : ControllerBase
     private readonly IAuthenticationAppService _authenticationApp;
     private readonly ICurrentTenant currentTenant;
     private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserSingletonService _userSingleton;
 
     public AccountsController(
         IAuthenticationAppService authenticationApp,
         ICurrentTenant currentTenant,
-        SignInManager<IdentityUser> signInManager
+        SignInManager<IdentityUser> signInManager,
+        UserSingletonService userSingleton
         )
     {
         _authenticationApp = authenticationApp;
         this.currentTenant = currentTenant;
         _signInManager = signInManager;
+        _userSingleton = userSingleton;
     }
 
     [HttpGet("/logIn/{token}")]
@@ -55,6 +58,7 @@ public class AccountsController : ControllerBase
                 Response.Cookies.Append(TenantResolverConsts.DefaultTenantKey, user.TenantId.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1) });
             }
             await _signInManager.SignInAsync(user, false);
+            await _userSingleton.SetAsync(user.Id);
             return LocalRedirect("/");
         }
         catch
