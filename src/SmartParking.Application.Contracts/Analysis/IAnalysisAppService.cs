@@ -52,16 +52,7 @@ public interface IAnalysisAppService : IApplicationService
     /// <param name="category"></param>
     /// <returns> datatable of garage transaction</returns>
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
-    /// <summary>
-    /// Get report of payment collected money daily and monthly for organization
-    /// </summary>
-    /// <returns> datatable of payment collected money daily and monthly </returns>
-    Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync();
-    /// <summary>
-    /// Get report of payment collected money daily and monthly for mdkhl
-    /// </summary>
-    /// <returns> datatable of payment collected money daily and monthly </returns>
-    Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync();
+    Task<PagedResultDto<PaymentUserShift>> ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
     /// <summary>
     /// Get count of customers and visitors and employees
     /// </summary>
