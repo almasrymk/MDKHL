@@ -99,13 +99,14 @@ partial class KeeperTransactionsReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = "KeeperName",
+            Sorting = paged.SortColumn =="Id"?"KeeperName":paged.SortColumn,
             SearchingTerm = "",
-            filters = new List<FilterRequestDto>()
+            filters =  paged.Filters
 
         };
 
         var keeperTransactionAnalyses = await AnalysisAppService.ReportNumberOfTransactionsWhileKeeperShift(request, CurrentTenant.Id);
+        TotalItem = (int)keeperTransactionAnalyses.TotalCount;
         if(CurrentTenant.Id == null)
         {
             var items = await CreateTableHelper.CreateDataTableForKeeperTransaction(keeperTransactionAnalyses.Items.ToList(),null);

@@ -64,6 +64,7 @@ public class ShiftAnalysisRepository : EfCoreRepository<SmartParkingDbContext, K
                         EndTime = keeperShift.EndTime,
                         NumberOfTransaction = dbContext.GarageTransactions
                             .Where(_ =>
+                                _.GarageId == keeperShift.GarageId &&
                                 DateOnly.FromDateTime((DateTime)_.AccurateTime!) >= keeperShift.StartDate &&
                                 DateOnly.FromDateTime((DateTime)_.AccurateTime) <= keeperShift.EndDate &&
                                 TimeOnly.FromDateTime((DateTime)_.AccurateTime) >= keeperShift.StartTime &&
