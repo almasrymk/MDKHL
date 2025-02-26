@@ -393,13 +393,13 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var filterExpression = BuildExpression<GarageTransactionAnalysis>.BuildFilterExpression(input.filters);
 
-            var result= await _garageTransactionAnalysis.GetGarageTransactionsAnalysisReportAsync(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisReportAsync(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
             return new PagedResultDto<GarageTransactionAnalysis>
             {
                 Items = result.Queryable.ToList(),
@@ -408,14 +408,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    
-    public async Task<PagedResultDto<PackagePaymentAnalysis>> ReportPackagePaymentAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+
+    public async Task<PagedResultDto<PackagePaymentAnalysis>> ReportPackagePaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
             var filterExpression = BuildExpression<PackagePaymentAnalysis>.BuildFilterExpression(input.filters);
 
-            var result= await _packageAnalysisRepository.GetPackagePaymentAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            var result = await _packageAnalysisRepository.GetPackagePaymentAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
             return new PagedResultDto<PackagePaymentAnalysis>
             {
                 Items = result.Queryable.ToList(),
@@ -467,7 +467,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return query;
     }
 
-   
+
 
     private static IQueryable<CustomerPackage> CheckTenant(Guid? tenantId, IQueryable<CustomerPackage> query)
     {
@@ -514,7 +514,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -535,8 +535,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    
-    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId)
+
+    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
@@ -627,47 +627,30 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyOrganizationAsync()
-    {
-        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-        var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(organization.Id);
-        var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
-        return dataTable;
-    }
 
-    public async Task<TableData> ReportPaymentCollectedMoneyDailyAndMonthlyMdkhlAsync()
-    {
-        var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyDailyAndMonthlyAnalysis(null);
-        var dataTable = CreateTableHelper.CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(result);
-        return dataTable;
+        
 
-    }
-
-
-
-    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
+    public async Task<PagedResultDto<PaymentUserShift>> ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var query = await _custeRepo.GetQueryableAsync();
-            var groupedCounts = await query
-                   .Select(g => new
-                   {
-                       CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
-                       CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
-                       CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
-                       CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
-                   }).FirstOrDefaultAsync();
-            if (groupedCounts == null)
+            var filterExpression = BuildExpression<PaymentUserShift>.BuildFilterExpression(input.filters);
+            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            
+            return new PagedResultDto<PaymentUserShift>
             {
-                return (0, 0, 0, 0);
-            }
-            return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
+                Items = result.Queryable.ToList(),
+                TotalCount = (int)result.PageSize
+            };
         }
 
     }
 
-    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+
+
+public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
+{
+    using (_datafilter.Disable<IMultiTenant>())
     {
         var query = await _custeRepo.GetQueryableAsync();
         var groupedCounts = await query
@@ -677,7 +660,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                    CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
                    CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
                    CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
-
                }).FirstOrDefaultAsync();
         if (groupedCounts == null)
         {
@@ -686,20 +668,41 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
     }
 
+}
 
-    public async Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
+{
+    var query = await _custeRepo.GetQueryableAsync();
+    var groupedCounts = await query
+           .Select(g => new
+           {
+               CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
+               CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
+               CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
+               CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
+
+           }).FirstOrDefaultAsync();
+    if (groupedCounts == null)
     {
-        using (_datafilter.Disable<IMultiTenant>())
-        {
-            var filterExpression = BuildExpression<PaymentAnalysis>.BuildFilterExpression(input.filters);
-
-            var result = await _paymentAnalysisRepository.GetPaymentForKeeper(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
-            return new PagedResultDto<PaymentAnalysis>
-            {
-                Items = result.Queryable.ToList(),
-                TotalCount = (int)result.PageSize
-            };
-        }
-
+        return (0, 0, 0, 0);
     }
+    return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
+}
+
+
+public async Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+{
+    using (_datafilter.Disable<IMultiTenant>())
+    {
+        var filterExpression = BuildExpression<PaymentAnalysis>.BuildFilterExpression(input.filters);
+
+        var result = await _paymentAnalysisRepository.GetPaymentForKeeper(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+        return new PagedResultDto<PaymentAnalysis>
+        {
+            Items = result.Queryable.ToList(),
+            TotalCount = (int)result.PageSize
+        };
+    }
+
+}
 }
