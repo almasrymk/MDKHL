@@ -116,6 +116,7 @@ partial class Shifts
         };
         PagedResultDto<ShiftDto> shiftsDto = new PagedResultDto<ShiftDto>();
         shiftsDto = await ShiftAppService.GetListMdkhlAsync(input, CurrentTenant.Id);
+        TotalItem = (int)shiftsDto.TotalCount;
         await CreateTable(shiftsDto);
 
     }
