@@ -11,6 +11,6 @@ namespace SmartParking.EntityFrameworkCore.Applications.Shifts;
 
 [Collection(SmartParkingTestConsts.CollectionDefinitionName)]
 
-public class EfCoreShiftAppService_Tests : ShiftsAppService_Testss<SmartParkingEntityFrameworkCoreTestModule>
+public class EfCoreShiftAppService_Tests : ShiftsAppService_Tests<SmartParkingEntityFrameworkCoreTestModule>
 {
 }
