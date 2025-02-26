@@ -26,7 +26,20 @@ public class CreateUpdateShiftValidator : AbstractValidator<CreateUpdateShiftDto
          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.StartDate)
+            .Must(x => x != DateOnly.MinValue)
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+        RuleFor(x => x.EndDate)
+            .Must(x => x != DateOnly.MinValue)
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+        RuleFor(x => x.StartDate)
             .LessThan(x => x.EndDate)
-            .WithMessage("Start date must be earlier than end date.");
+            .When(x => x.StartDate != x.EndDate) 
+            .WithMessage(LocalizationHelper.GetLocalizedString("EndDateCannotBeBeforeStartDate"));
+
+        RuleFor(x => x)
+              .Must(x => !(x.IsFullDay == false && x.StartTime == TimeOnly.MinValue && x.EndTime == TimeOnly.MinValue))
+              .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation")+": "+LocalizationHelper.GetLocalizedString("StartTime")+","+ LocalizationHelper.GetLocalizedString("EndTime"));
     }
 }
