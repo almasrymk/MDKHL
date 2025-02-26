@@ -78,7 +78,7 @@
                             <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanShift"]</MudNavLink>
                          }
 
-                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result && UserSingletonService.ISCurrentUserIsAssignShift(currentuser.Id).Result)
+                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result )
                          {
                             <MudNavLink Href="/myshifts" Icon="@Icons.Material.Filled.Schedule">@L["MyShifts"]</MudNavLink>
                          }
