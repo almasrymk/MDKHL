@@ -47,28 +47,39 @@ public class PaymentAnalysisRepository
         var query = from payments in dbContext.Payments
                     where tenantId == null || payments.TenantId == tenantId
                     join userShift in dbContext.KeeperShifts on payments.CreatorId equals userShift.KeeperId
-    
+
+                    group userShift by new
+                    {
+                        userShift.KeeperId,
+                        userShift.StartTime,
+                        userShift.StartDate,
+                        userShift.EndDate,
+                        userShift.EndTime,
+                        userShift.GarageId,
+                        userShift.OrganizationId,
+                        userShift.ShiftId
+                    } into groupedPayments
                     select new PaymentUserShift
                     {
-                        UserName = dbContext.Users.Where(u => u.Id == userShift.KeeperId)
+                        UserName = dbContext.Users.Where(u => u.Id == groupedPayments.Key.KeeperId)
                                           .Select(u => u.Name)
                                           .FirstOrDefault(),
                         TotalAmount = dbContext.Payments
-                                .Where(p => p.CreationTime.Date >= userShift.StartDate.ToDateTime(new TimeOnly(0, 0))&&
-                                       p.CreationTime.Date <= userShift.EndDate.ToDateTime(new TimeOnly(23, 59)) && 
-                                       p.CreatorId == userShift.KeeperId
+                                .Where(p => p.CreationTime.Date >= groupedPayments.Key.StartDate.ToDateTime(new TimeOnly(0, 0))&&
+                                       p.CreationTime.Date <= groupedPayments.Key.EndDate.ToDateTime(new TimeOnly(23, 59)) && 
+                                       p.CreatorId == groupedPayments.Key.KeeperId
                                 )
                                 .Sum(x => (decimal?)x.Amount) ?? 0, 
-                        EndDate = userShift.EndDate,
-                        StartDate = userShift.StartDate,
-                        EndTime = userShift.EndTime,
-                        GarageArabicName = dbContext.Garages.Where(g => g.Id == userShift.GarageId).Select(g => g.NameAr).FirstOrDefault(),
-                        GarageEnglishName = dbContext.Garages.Where(g => g.Id == userShift.GarageId).Select(g => g.NameEn).FirstOrDefault(),
-                        OrganizationArabicName = dbContext.Organizations.Where(g => g.Id == userShift.OrganizationId).Select(g => g.ArabicName).FirstOrDefault(),
-                        OrganizationEnglishName = dbContext.Organizations.Where(g => g.Id == userShift.OrganizationId).Select(g => g.EnglishName).FirstOrDefault(),
-                        ShiftArabicName = dbContext.Shifts.Where(g => g.Id == userShift.ShiftId).Select(g => g.ArabicName).FirstOrDefault(),
-                        ShiftEnglishName = dbContext.Shifts.Where(g => g.Id == userShift.ShiftId).Select(g => g.EnglishName).FirstOrDefault(),
-                        StartTime = userShift.StartTime
+                        EndDate = groupedPayments.Key.EndDate,
+                        StartDate = groupedPayments.Key.StartDate,
+                        EndTime = groupedPayments.Key.EndTime,
+                        GarageArabicName = dbContext.Garages.Where(g => g.Id == groupedPayments.Key.GarageId).Select(g => g.NameAr).FirstOrDefault(),
+                        GarageEnglishName = dbContext.Garages.Where(g => g.Id == groupedPayments.Key.GarageId).Select(g => g.NameEn).FirstOrDefault(),
+                        OrganizationArabicName = dbContext.Organizations.Where(g => g.Id == groupedPayments.Key.OrganizationId).Select(g => g.ArabicName).FirstOrDefault(),
+                        OrganizationEnglishName = dbContext.Organizations.Where(g => g.Id == groupedPayments.Key.OrganizationId).Select(g => g.EnglishName).FirstOrDefault(),
+                        ShiftArabicName = dbContext.Shifts.Where(g => g.Id == groupedPayments.Key.ShiftId).Select(g => g.ArabicName).FirstOrDefault(),
+                        ShiftEnglishName = dbContext.Shifts.Where(g => g.Id == groupedPayments.Key.ShiftId).Select(g => g.EnglishName).FirstOrDefault(),
+                        StartTime = groupedPayments.Key.StartTime
 
                     };
         query = query.Where(filterRequests);
