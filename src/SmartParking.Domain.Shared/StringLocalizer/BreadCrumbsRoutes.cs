@@ -61,6 +61,8 @@ public static class BreadCrumbsRoutes
             "customerreport" => LocalizationHelper.GetLocalizedString("CustomerAndTransactionReport"),
             "employeereport" => LocalizationHelper.GetLocalizedString("EmployeeAndTransactionReport"),
             "visitorreport" => LocalizationHelper.GetLocalizedString("VisitorAndTransactionReport"),
+            "keepertransactionsreport" => LocalizationHelper.GetLocalizedString("KeeperTransactionsReport"),
+            "keeperpaymentsreport" => LocalizationHelper.GetLocalizedString("KeeperPaymentsReport"),
             "customerpackage/reports" => LocalizationHelper.GetLocalizedString("PackagesReports"),
             "customerspackage/reports" => LocalizationHelper.GetLocalizedString("CustomerPackageReport"),
             "garagesreport" => LocalizationHelper.GetLocalizedString("GaragesReports"),
