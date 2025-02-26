@@ -7,6 +7,7 @@ using Org.BouncyCastle.Tls;
 using SmartParking.Cameras;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
+using SmartParking.Garages;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
@@ -31,8 +32,9 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     private readonly ILogger<InvoiceUtilityAppService> _logger;
     private readonly IGarageTransactionsAppService GarageTransactionAppService;
     private readonly ICamerasAppService CameraAppService;
+    private readonly IGarageAppService GarageAppService;
 
-    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger, IGarageTransactionsAppService garageTransactionAppService, ICamerasAppService cameraAppService)
+    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger, IGarageTransactionsAppService garageTransactionAppService, ICamerasAppService cameraAppService, IGarageAppService garageAppService)
     {
         _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
@@ -40,6 +42,7 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         _logger = logger;
         GarageTransactionAppService = garageTransactionAppService;
         CameraAppService = cameraAppService;
+        GarageAppService = garageAppService;
     }
 
     public async Task<QRCodeDto> GetQrCodeAsync(string? token, int? invoiceId)
@@ -113,12 +116,12 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         return token;
     }
 
-    public async Task<bool> OpenGate(OpenGateRequestDto camera) {
+    public async Task<bool> OpenGate(OpenGateRequestDto camera, string GarageUrl) {
   
         var content = new StringContent(camera.ToJsonString(), Encoding.UTF8, "application/json");
         _logger.LogInformation($"Open Gate Request body => {camera.ToJsonString()}");
         _logger.LogInformation($"Open Gate Request Header => {content.Headers.ToJsonString()}");
-        var response = await _httpClient.PostAsync(openGate, content);
+        var response = await _httpClient.PostAsync(GarageUrl, content);
         _logger.LogInformation($"Open Gate Response body => {response.Headers.ToJsonString()}");
         return response.IsSuccessStatusCode;
 
@@ -136,6 +139,6 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
             username = camera.UserName ?? "",
             password = camera.Password ?? ""
         };
-        return await OpenGate(openGateBody);
+        return await OpenGate(openGateBody,camera.Garage.OpenGateURL);
     }
 }

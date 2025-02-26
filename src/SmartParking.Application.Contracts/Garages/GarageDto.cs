@@ -28,5 +28,7 @@ public class GarageDto:AuditedEntityDto<int>
     public int CurrnetCapacityForCustomers { get; set; }
     public int CurrnetCapacityEmployees { get; set; }
     public int CurrnetCapacityForFree { get; set; }
+    public string OpenGateURL { get; set; }
+
 
 }

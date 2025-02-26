@@ -1595,6 +1595,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("NameEn")
                         .HasColumnType("text");
 
+                    b.Property<string>("OpenGateURL")
+                        .HasColumnType("text");
+
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
@@ -2483,7 +2486,7 @@ namespace SmartParking.Migrations
                     b.ToTable("Shifts");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.StateManagement.StateManagement", b =>
+            modelBuilder.Entity("SmartParking.Entities.StateManagements.StateManagement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

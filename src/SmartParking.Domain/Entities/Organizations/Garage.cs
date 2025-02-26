@@ -28,6 +28,7 @@ public class Garage : FullAuditedEntity<int> , IMultiTenant,IBaseEntity
     public int MaxSlotsForCustomers { get; set; }
     public int MaxSlotsForEmployess { get; set; }
     public int MaxSlotsForFree { get; set; }
+    public  string OpenGateURL { get; set; }
 
 
 

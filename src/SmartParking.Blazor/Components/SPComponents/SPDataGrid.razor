@@ -159,7 +159,7 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
-                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly)
+                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly|| Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Time)
                                                 {
                                                     @foreach (var column in DateOperatorEn)
                                                     {
@@ -184,7 +184,7 @@
                                                         <MudSelectItem Value="@column">@column.Key</MudSelectItem>
                                                     }
                                                 }
-                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly)
+                                                else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.DateOnly|| Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Time)
                                                 {
                                                     @foreach (var column in DateOperatorAR)
                                                     {
@@ -203,7 +203,7 @@
                                         </MudSelect>
                                     </MudItem>
                                 }
-                                @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.DateOnly)))
+                                @if ((SelectOperator.Value != null && SelectOperator.Value != "IsNullOrEmpty") || (!SelectedColumn.IsNullOrEmpty() && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date || Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.DateOnly|| Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Time)))
                                 {
                                     if (!IsShowValue)
                                     {
@@ -216,7 +216,7 @@
                                             </MudSelect>
                                         </MudItem>
                                     }
-                                    else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.DateOnly)
+                                    else if (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Date && Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.DateOnly&& Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter != TypeFilter.Time)
                                     {
                                         <MudItem>
                                             @L["Value"]:
@@ -242,6 +242,28 @@
                                     <MudItem>
                                         <MudItem>
                                             <MudDatePicker Label="@L["EndDate"]" Editable="true" @bind-Date="@EndDate" Placeholder="Select Date" />
+                                        </MudItem>
+                                    </MudItem>
+                                }
+                                
+                                @if (SelectOperator.Value != null && (SelectOperator.Value == "GreaterThan" || SelectOperator.Value == "LessThan" || SelectOperator.Value == "LessThanOrEqual" || SelectOperator.Value == "GreaterThanOrEqual") && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Time ))
+                                {
+                                    <MudItem>
+                                        <MudTimePicker Label="@L["Time"]" AmPm="false" @bind-Time="@Time" Placeholder="Select Time" />
+                                    </MudItem>
+                                }
+                                @if (SelectOperator.Value != null && SelectOperator.Value == "Between" && (Data.Columns.First(x => x.PropertyName == SelectedColumn).TypeFilter == TypeFilter.Time ))
+                                {
+                                    <MudItem>
+                                        <MudItem>
+                                            <MudTimePicker Label="@L["StartTime"]" AmPm="false" @bind-Time="@StartTime" Placeholder="Select Time" />
+                
+                                        </MudItem>
+                                    </MudItem>
+                                    <MudItem>
+                                        <MudItem>
+                                            <MudTimePicker Label="@L["EndTime"]" AmPm="false" @bind-Time="@EndTime" Placeholder="Select Time" />
+                                            
                                         </MudItem>
                                     </MudItem>
                                 }

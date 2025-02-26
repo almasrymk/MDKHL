@@ -91,8 +91,11 @@ public partial class SPDataGrid
     private bool IsClickMenu = false;
     private string ValueOfMenue { get; set; } = "All";
     public DateTime? Date { get; set; }
+    public TimeSpan? Time { get; set; }
     public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public DateTime? EndDate { get; set; }   
+    public TimeSpan? StartTime { get; set; }
+    public TimeSpan? EndTime { get; set; }
     public Dictionary<string, string> StringOperatorEn { get; set; } = new Dictionary<string, string>
     {
         ["contains"] = "Contains",
@@ -215,7 +218,10 @@ public partial class SPDataGrid
                 TypeFilter = Data.Columns.FirstOrDefault(x => x.PropertyName == SelectedColumn).TypeFilter,
                 Date = Date ?? DateTime.MinValue,
                 EndDate = EndDate ?? DateTime.MinValue,
-                StartDate = StartDate ?? DateTime.MinValue
+                StartDate = StartDate ?? DateTime.MinValue,
+                Time = Time ?? TimeSpan.MinValue,
+                EndTime = EndTime ??TimeSpan.MaxValue,
+                StartTime = StartTime ?? TimeSpan.MinValue,
             };
             if (IsShowValue && SelectOperator.Value.Contains("In"))
             {
