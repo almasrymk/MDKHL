@@ -224,8 +224,8 @@ public static class BuildExpression<T>
         Expression startDateNonNullableProperty = Expression.Convert(property, typeof(TimeOnly));
         Expression endDateNonNullableProperty = Expression.Convert(property, typeof(TimeOnly));
 
-        ConstantExpression startDateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.StartTime), typeof(TimeOnly));
-        ConstantExpression endDateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.EndTime), typeof(TimeOnly));
+        ConstantExpression startDateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.StartTime.Value), typeof(TimeOnly));
+        ConstantExpression endDateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.EndTime.Value), typeof(TimeOnly));
         var greaterThan = Expression.GreaterThanOrEqual(startDateNonNullableProperty, startDateValueExpression);
         var lessThan = Expression.LessThanOrEqual(endDateNonNullableProperty, endDateValueExpression);
         return Expression.AndAlso(greaterThan, lessThan);
@@ -253,7 +253,7 @@ public static class BuildExpression<T>
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(TimeOnly));
 
-        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time), typeof(TimeOnly));
+        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time.Value), typeof(TimeOnly));
 
         return Expression.GreaterThan(DateNonNullableProperty, DateValueExpression);
     }
@@ -278,7 +278,7 @@ public static class BuildExpression<T>
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(TimeOnly));
 
-        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time), typeof(TimeOnly));
+        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time.Value), typeof(TimeOnly));
 
         return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
@@ -297,7 +297,7 @@ public static class BuildExpression<T>
     private static Expression BuildTimeOnlyLessThanCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(TimeOnly));
-        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time), typeof(TimeOnly));
+        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time.Value), typeof(TimeOnly));
         return Expression.LessThan(DateNonNullableProperty, DateValueExpression);
     }
     private static Expression BuildDateLessThanOrEqualCondition(Expression property, FilterRequestDto filter)
@@ -316,7 +316,7 @@ public static class BuildExpression<T>
     private static Expression BuildTimeOnlyLessThanOrEqualCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(TimeOnly));
-        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time), typeof(TimeOnly));
+        ConstantExpression DateValueExpression = Expression.Constant(TimeOnly.FromTimeSpan(filter.Time.Value), typeof(TimeOnly));
         return Expression.LessThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
 
