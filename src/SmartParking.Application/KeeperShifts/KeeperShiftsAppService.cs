@@ -148,13 +148,11 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var result = from keepershift in queryKeeperShift
                          where userId.HasValue ? keepershift.KeeperId == userId : true
                          orderby
-                            keepershift.StartDate <= DateOnly.FromDateTime(DateTime.Now)
-                            && keepershift.EndDate >= DateOnly.FromDateTime(DateTime.Now) descending , 
-                             keepershift.StartTime <= TimeOnly.FromDateTime(DateTime.Now)
-                            && keepershift.EndTime >= TimeOnly.FromDateTime(DateTime.Now)  descending,
-                             keepershift.StartTime >= currentTime descending,
-                             keepershift.StartTime ascending,
-                             keepershift.EndTime ascending
+                            keepershift.StartDate <= currentDate
+                            && keepershift.EndDate >= currentDate descending , 
+                             keepershift.StartTime <= currentTime
+                            && keepershift.EndTime >= currentTime descending ,
+                            keepershift.StartTime > currentTime descending
                          join garage in queryGarage
                          on keepershift.GarageId equals garage.Id
                          join user in queryUser
