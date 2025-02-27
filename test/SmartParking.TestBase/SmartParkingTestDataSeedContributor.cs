@@ -319,41 +319,41 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
 
 
         }
-        if (!await _shiftRepository.AnyAsync())
-        {
-            var shiftList = new List<Shift> {
+        //if (!await _shiftRepository.AnyAsync())
+        //{
+        //    var shiftList = new List<Shift> {
 
-            new Shift {   ArabicName = "ميد نايت " ,  EnglishName = "Mid night" ,  Notes = "test Notes" , Description = " Description test " ,
-            OrganizationId = 1 ,   GarageId =  1 ,  IsFullDay =  false , Status = 0 , TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e") ,
-            StartDate = new DateOnly(2025 , 2 ,  23) ,   EndDate = new DateOnly(2025 , 3 ,  10) ,
-            StartTime =  new TimeOnly (22 , 30) ,   EndTime = new TimeOnly (2 ,  30 )
-            }  ,
-             new Shift {   ArabicName = "تجربه" ,  EnglishName = "Test" ,  Notes = "test Notes" , Description = " Description test " ,
-            OrganizationId = 1 ,   GarageId =  1 ,  IsFullDay =  false , Status = 0 , TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e") ,
-            StartDate = new DateOnly(2025 , 2 ,  23) ,   EndDate = new DateOnly(2025 , 3 ,  10) ,
-            StartTime =  new TimeOnly (10 , 30) ,   EndTime = new TimeOnly (4 ,  30 )
-            }  ,
+        //    new Shift {   ArabicName = "ميد نايت " ,  EnglishName = "Mid night" ,  Notes = "test Notes" , Description = " Description test " ,
+        //    OrganizationId = 1 ,   GarageId =  1 ,  IsFullDay =  false , Status = 0 , TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e") ,
+        //    StartDate = new DateOnly(2025 , 2 ,  23) ,   EndDate = new DateOnly(2025 , 3 ,  10) ,
+        //    StartTime =  new TimeOnly (22 , 30) ,   EndTime = new TimeOnly (2 ,  30 )
+        //    }  ,
+        //     new Shift {   ArabicName = "تجربه" ,  EnglishName = "Test" ,  Notes = "test Notes" , Description = " Description test " ,
+        //    OrganizationId = 1 ,   GarageId =  1 ,  IsFullDay =  false , Status = 0 , TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e") ,
+        //    StartDate = new DateOnly(2025 , 2 ,  23) ,   EndDate = new DateOnly(2025 , 3 ,  10) ,
+        //    StartTime =  new TimeOnly (10 , 30) ,   EndTime = new TimeOnly (4 ,  30 )
+        //    }  ,
 
-        };
-            await _shiftRepository.InsertManyAsync(shiftList);
-        }
+        //};
+        //    await _shiftRepository.InsertManyAsync(shiftList);
+        //}
 
-        // insert keeper shift 
-        if (!await _keeperShiftRepository.AnyAsync())
-        {
-            var shift_1 = await _shiftRepository.GetAsync(1);
-            var shift_2 = await _shiftRepository.GetAsync(2);
-            var keeperShiftList = new List<KeeperShift>
-            {
-                new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = 1 , KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") , TenantId = shift_1.TenantId,
-                    StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
-                 new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId = 1 , KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") , TenantId = shift_1.TenantId,
-                    StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+        //// insert keeper shift 
+        //if (!await _keeperShiftRepository.AnyAsync())
+        //{
+        //    var shift_1 = await _shiftRepository.GetAsync(1);
+        //    var shift_2 = await _shiftRepository.GetAsync(2);
+        //    var keeperShiftList = new List<KeeperShift>
+        //    {
+        //        new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = 1 , KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") , TenantId = shift_1.TenantId,
+        //            StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+        //         new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId = 1 , KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") , TenantId = shift_1.TenantId,
+        //            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
 
 
-            };
-            await _keeperShiftRepository.InsertManyAsync(keeperShiftList);
+        //    };
+        //    await _keeperShiftRepository.InsertManyAsync(keeperShiftList);
 
-        }
+        //}
     }
 }
