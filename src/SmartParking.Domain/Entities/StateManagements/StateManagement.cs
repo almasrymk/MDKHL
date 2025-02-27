@@ -14,4 +14,5 @@ public class StateManagement : FullAuditedEntity<int>, IMultiTenant
     public Guid UserId { get; set; }
     public bool IsStateActive { get; set; }
     public DateTime? RemainingTime { get; set; }
+    public int ShiftId { get; set; }
 }
