@@ -239,7 +239,7 @@
 
         try
         {
-            shiftDto.TenantId = CurrentTenant.Id;
+            shiftDto.TenantId = Organizations.Find(x=>x.Id==shiftDto.OrganizationId).TenantId;
             shiftDto.Status = Enums.Status.Inactive;
             await ShiftAppService.CreateForMDKHLAsync(shiftDto);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {shiftDto.ArabicName}", Severity.Success);
