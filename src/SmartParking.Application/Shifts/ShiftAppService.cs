@@ -148,7 +148,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             s.GarageId == GarageId &&
             (StartDate >= s.StartDate && StartDate < s.EndDate) ||
             (EndDate > s.StartDate && EndDate <= s.EndDate) ||
-            (StartDate <= s.StartDate && EndDate >= s.EndDate) &&
+            (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
+            (StartDate <= s.StartDate && EndDate <= s.EndDate) ||
+            (StartDate >= s.StartDate && EndDate >= s.EndDate)
+            &&
+
+
             s.Status == Status.Active && status == Status.Active;
     }
     public Expression<Func<Shift, bool>> IfNewNotOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate,TimeOnly StartTime , TimeOnly EndTime)
