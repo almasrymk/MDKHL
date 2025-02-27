@@ -59,7 +59,7 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             TenantId = tenantId,
             EndDate = new DateOnly(2023, 10, 5)
         };
-        await _keeperShiftsAppService.CreateAsync(keepershift);
+        var keeperShift=await _keeperShiftsAppService.CreateAsync(keepershift);
         var keeperShiftRequestStart = new CreateUpdateDailyShiftDto
         {
             KeeperId = keeperId, 
@@ -82,7 +82,7 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             KeeperShiftRequestType = KeeperShiftRequestType.EndShift
         };
         await _dailyShiftAppService.CreateAsync(keeperShiftRequestStart);
-        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(keeperShiftRequestStart));
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(keeperShiftRequestEnd));
         Assert.Equal("CannotEndShift", exception.Message);
 
     }
