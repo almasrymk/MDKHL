@@ -2,6 +2,7 @@
 @using SmartParking.DailyShifts
 @using SmartParking.KeeperShifts
 @using SmartParking.SingletonService
+@using SmartParking.StateManagements
 @using Volo.Abp.EventBus.Distributed
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
@@ -15,7 +16,7 @@
 @inject IKeeperShiftsAppService KeeperShiftAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-@inject ISingletonService<KeeperShiftDto,int> keeperShiftSingletonService
+@inject ISingletonService<StateManagementDto,int> keeperShiftSingletonService
 @inject IDailyShiftAppService DailyShiftAppService
 @page "/myshifts"
 
