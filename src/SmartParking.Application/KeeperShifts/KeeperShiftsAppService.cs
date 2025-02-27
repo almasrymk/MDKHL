@@ -48,7 +48,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         _mapper = mapper;
     }
 
-    public  async Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input)
+    public async Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
