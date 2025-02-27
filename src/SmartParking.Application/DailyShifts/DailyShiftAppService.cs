@@ -57,14 +57,14 @@ public class DailyShiftAppService :
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
         KeeperShift? assignShift = await GetAssignShift(input) ?? throw new Exception(LocalizationHelper.GetLocalizedString("NotAssignShift"));
+        input.RequestTime = DateTime.Now;
 
         await (input.KeeperShiftRequestType switch
         {
-            KeeperShiftRequestType.StartShift => HandleStartShift(assignShift),
+            KeeperShiftRequestType.StartShift => HandleStartShift(input , assignShift),
             KeeperShiftRequestType.EndShift => HandleEndShift(input , assignShift),
             _ => throw new InvalidOperationException()
         });
-        input.RequestTime = DateTime.Now;
         if (!input.TenantId.HasValue)
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
@@ -83,10 +83,16 @@ public class DailyShiftAppService :
         };
 
     }
-    private async Task<bool> HandleStartShift ( KeeperShift assignShift)
+    private async Task<bool> HandleStartShift (CreateUpdateDailyShiftDto input ,   KeeperShift assignShift)
     {
-        
-        CheckStartShiftDateAndTime(assignShift);
+        if(assignShift.EndTime < assignShift.StartTime)
+        {
+            CheckStartShiftMidNightDateAndTime(input, assignShift);
+        }
+        else
+        {
+            CheckStartShiftDateAndTime(input , assignShift);
+        }
 
         return true;
     }
@@ -95,36 +101,143 @@ public class DailyShiftAppService :
     {
         return await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
     }
-
-    private void CheckStartShiftDateAndTime(KeeperShift assignShift)
+    private void CheckStartShiftMidNightDateAndTime(CreateUpdateDailyShiftDto input, KeeperShift assignShift)
     {
-        if (DateOnly.FromDateTime(DateTime.Now) < assignShift.StartDate || DateOnly.FromDateTime(DateTime.Now) > assignShift.EndDate)
+        var currentTime = TimeOnly.FromDateTime(input.RequestTime);
+        var currentDate = DateOnly.FromDateTime(input.RequestTime);
+        if (currentDate < assignShift.StartDate || currentDate > assignShift.EndDate)
             throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
 
-        if (TimeOnly.FromDateTime(DateTime.Now) < assignShift.StartTime || TimeOnly.FromDateTime(DateTime.Now) >= assignShift.EndTime)
+        var isWithinShift = (currentTime >= assignShift.StartTime) || (currentTime < assignShift.EndTime);
+        if(!isWithinShift)
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
+    }
+    private void CheckStartShiftDateAndTime(CreateUpdateDailyShiftDto input , KeeperShift assignShift)
+    {
+        var currentTime = TimeOnly.FromDateTime(input.RequestTime);
+        var currentDate = DateOnly.FromDateTime(input.RequestTime);
+        if (currentDate < assignShift.StartDate || currentDate > assignShift.EndDate)
+            throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
+
+        if (assignShift.StartTime < assignShift.EndTime  && currentTime < assignShift.StartTime || currentTime >= assignShift.EndTime)
             throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
     }
 
-    private void CheckEndShiftDateAndTime(KeeperShift assignShift)
+    private async Task CheckIfAnotherKeeperInSameShift(KeeperShift assignShift, CreateUpdateDailyShiftDto request)
     {
-        if (TimeOnly.FromDateTime(DateTime.Now) < assignShift.EndTime)
-            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+        // EndShiftStartsInSameDay
+        if (assignShift.StartTime<assignShift.EndTime)
+        {
+            await CheckIfKeeperInShiftInSameDay(request);
+        }
+        //midnightshift
+        else
+        {
+            //sends request day before
+            var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date.AddDays(-1) == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
+            if (!result)
+            {
+                ThrowCantEndShiftException();
+            }
+            await CheckIfKeeperInShiftInSameDay(request);
+        }
     }
+
+    private async Task CheckIfKeeperInShiftInSameDay(CreateUpdateDailyShiftDto request)
+    {
+        var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
+        if (!result)
+        {
+            ThrowCantEndShiftException();
+        }
+        return;
+    }
+
+    private static void ThrowCantEndShiftException()
+    {
+        throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+    }
+
     private async Task<bool> HandleEndShift(CreateUpdateDailyShiftDto input , KeeperShift assignShift)
     {
-        var dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && _.RequestTime.Date == DateTime.Now.Date);
-        if(dailyShift is null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
-        }
+        //check if keeper hasn't shift now.
+        //if current shift is not midnight shift
+        DailyShift dailyShift = new DailyShift();
+        DailyShift nextDailyShift = new DailyShift();
+        if (assignShift.StartTime < assignShift.EndTime)
+            dailyShift = await HandleEndShiftInSameDay(input, dailyShift);
+        //if current shift is midnight shift
+        if (assignShift.StartTime > assignShift.EndTime)
+            dailyShift = await HandleEndMidnightShift(input);
+
+        //check if there is no keeper starts next shift before requested keeper requestes to end.
+        //if next shift is not midnight shift
+        //no Need to check if next shift is Midnight , keeper already will request to end in dame day :D .
+            nextDailyShift = await NextShiftInSameDay(input, dailyShift);
+
+        //check if shift time is appropriate to end
+        await CheckIfAnotherKeeperInSameShift(assignShift,input);
+        return true;
+    }
+    /// <summary>
+    /// Method to check if keeper has started next shift.
+    /// </summary>
+    /// <param name="input">CreationRequestDto</param>
+    /// <param name="dailyShift">ShiftThatKeeperHasBeenAssigned</param>
+    /// <param name="nextDailyShift"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    private async Task<DailyShift> NextShiftInSameDay(CreateUpdateDailyShiftDto input, DailyShift dailyShift)
+    {
         var nextDailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId != input.KeeperId && _.RequestTime > dailyShift.RequestTime && _.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
         if (nextDailyShift is null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
+            ThrowCantEndShiftException();
+            return null;
         }
-        CheckEndShiftDateAndTime(assignShift);
-        return true;
+
+        return nextDailyShift;
     }
+
+    /// <summary>
+    /// Method to check if keeper has already sent to start request in day before request.
+    /// </summary>
+    /// <param name="input">CreationRequestDto</param>
+    /// <param name="dailyShift">ShiftThatKeeperHasBeenAssigned</param>
+    /// <returns>RequestToStartShift</returns>
+    /// <exception cref="Exception">IfKeeperCan'tEndShift</exception>
+    private async Task<DailyShift> HandleEndMidnightShift(CreateUpdateDailyShiftDto input)
+    {
+        var dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && (_.RequestTime.Day == (input.RequestTime.Day - 1)) && _.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
+        if (dailyShift is null)
+        {
+
+            ThrowCantEndShiftException();
+            return null;
+        }
+
+        return dailyShift;
+    }
+    /// <summary>
+    /// Method to check if keeper has already sent to start request in same day.
+    /// </summary>
+    /// <param name="input">CreationRequestDto</param>
+    /// <param name="dailyShift">ShiftThatKeeperHasBeenAssigned</param>
+    /// <returns>RequestToStartShift</returns>
+    /// <exception cref="Exception">IfKeeperCan'tEndShift</exception>
+    private async Task<DailyShift> HandleEndShiftInSameDay(CreateUpdateDailyShiftDto input, DailyShift dailyShift)
+    {
+        dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && _.RequestTime.Date == DateTime.Now.Date);
+        if (dailyShift is null)
+        {
+
+            ThrowCantEndShiftException();
+            return null;
+        }
+
+        return dailyShift;
+    }
+
     public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
     {
         return await base.UpdateAsync(id, input);

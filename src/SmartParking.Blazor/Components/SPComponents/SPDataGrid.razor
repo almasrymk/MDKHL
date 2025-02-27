@@ -444,7 +444,7 @@
                                     }
                                     @if (OnClickStart.HasDelegate && ShowStart && context.Item.Index == 0 && !context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
-                                        <MudTooltip Text=@L["startShift"] Color=MudBlazor.Color.Primary>
+                                        <MudTooltip Text=@L["StartShift"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickStart.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.NotStarted"
@@ -458,7 +458,7 @@
 
                                     @if (OnClickEnd.HasDelegate && ShowEnd &&  context.Item.Index == 0 &&!context.Item.Cells.Any(r => (r.Key.Contains("Status") || r.Key.Contains("الحالة")) && (r.Value.Contains("Deleted") || r.Value.Contains("محذوف"))))
                                     {
-                                        <MudTooltip Text=@L["endShift"] Color=MudBlazor.Color.Primary>
+                                        <MudTooltip Text=@L["EndShift"] Color=MudBlazor.Color.Primary>
 
                                         <MudIconButton OnClick="@(e => OnClickEnd.InvokeAsync(context.Item))"
                                                        Icon="@Icons.Material.Filled.StopCircle"

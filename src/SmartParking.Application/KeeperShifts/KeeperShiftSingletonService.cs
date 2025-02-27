@@ -7,7 +7,7 @@ using Volo.Abp.Users;
 
 namespace SmartParking.KeeperShifts;
 
-public sealed class KeeperShiftSingletonService : ISingletonService<KeeperShiftDto,int>
+public sealed class KeeperShiftSingletonService : ISingletonService<StateManagementDto, int>
 {
     public static KeeperShiftDto? instance;
     public static StateManagementDto? state;
@@ -27,43 +27,44 @@ public sealed class KeeperShiftSingletonService : ISingletonService<KeeperShiftD
      
     public async ValueTask DisposeAsync()
     {
-        instance = null;
 
         await _stateManagementApp.DeleteAsync(state.Id);
+        state = null;
+
     }
 
-    public async Task<KeeperShiftDto> GetAsync(int key)
+    public async Task<StateManagementDto> GetAsync(int key)
     {
-        if (instance == null)
+        if (state == null)
         {
-             state = await _stateManagementApp.GetStateManagementByUserAsync(_currentUser.Id);
-            if(state != null)
-            {
-                instance = await _keeperShiftsAppService.GetAsync(key);
-            }
+            instance = await _keeperShiftsAppService.GetAsync(key);
+            state = await _stateManagementApp.GetStateManagementByUserAsync(_currentUser.Id, instance.ShiftId);
         }
-           
-        return instance;
-    }  
 
-    public async Task<KeeperShiftDto> SetAsync(int key)
+        return state;
+    }      
+     
+
+    public async  Task<StateManagementDto> SetAsync(int key)
     {
        
 
         if (instance == null)
         {
             instance = await _keeperShiftsAppService.GetAsync(key);
+            
+        }
             var input = new CreateUpdateStateManagementDto
             {
                 IsStateActive = true,
                 RemainingTime = DateTime.UtcNow,
                 TenantId = instance.TenantId,
-                UserId = instance.KeeperId
+                UserId = instance.KeeperId,
+                ShiftId = instance.ShiftId
             };
 
-            await _stateManagementApp.CreateAsync(input);
-        }
-        return instance;
+            state = await _stateManagementApp.CreateAsync(input);
+        return state;
     }
   
 }

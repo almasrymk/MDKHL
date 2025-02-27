@@ -13,4 +13,5 @@ public class StateManagementDto:FullAuditedEntityDto<int>
     public Guid UserId { get; set; }
     public bool IsStateActive { get; set; }
     public DateTime? RemainingTime { get; set; }
+    public int ShiftId { get; set; }
 }
