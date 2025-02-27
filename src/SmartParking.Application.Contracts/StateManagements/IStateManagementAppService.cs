@@ -10,5 +10,5 @@ namespace SmartParking.StateManagements;
 
 public interface IStateManagementAppService : ICrudAppService<StateManagementDto, int, PagedAndSortedResultRequestDto, CreateUpdateStateManagementDto>
 {
-   Task<StateManagementDto> GetStateManagementByUserAsync(Guid? userId);
+   Task<StateManagementDto> GetStateManagementByUserAsync(Guid? userId, int shiftId);
 }
