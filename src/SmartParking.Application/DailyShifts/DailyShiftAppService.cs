@@ -123,14 +123,34 @@ public class DailyShiftAppService :
             throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
     }
 
-    private void CheckEndShiftDateAndTime(KeeperShift assignShift)
+    private async Task CheckIfAnotherKeeperInSameShift(KeeperShift assignShift, CreateUpdateDailyShiftDto request)
     {
         // EndShiftStartsInSameDay
-        if (TimeOnly.FromDateTime(DateTime.Now) < assignShift.EndTime)
+        if (assignShift.StartTime<assignShift.EndTime)
+        {
+            await CheckIfKeeperInShiftInSameDay(request);
+        }
+        //midnightshift
+        else
+        {
+            //sends request day before
+            var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date.AddDays(-1) == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
+            if (!result)
+            {
+                ThrowCantEndShiftException();
+            }
+            await CheckIfKeeperInShiftInSameDay(request);
+        }
+    }
+
+    private async Task CheckIfKeeperInShiftInSameDay(CreateUpdateDailyShiftDto request)
+    {
+        var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
+        if (!result)
         {
             ThrowCantEndShiftException();
-            return;
         }
+        return;
     }
 
     private static void ThrowCantEndShiftException()
@@ -156,7 +176,7 @@ public class DailyShiftAppService :
             nextDailyShift = await NextShiftInSameDay(input, dailyShift);
 
         //check if shift time is appropriate to end
-        CheckEndShiftDateAndTime(assignShift);
+        await CheckIfAnotherKeeperInSameShift(assignShift);
         return true;
     }
     /// <summary>
