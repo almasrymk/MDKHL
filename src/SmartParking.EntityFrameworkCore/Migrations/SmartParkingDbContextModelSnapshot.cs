@@ -2530,6 +2530,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("RemainingTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
