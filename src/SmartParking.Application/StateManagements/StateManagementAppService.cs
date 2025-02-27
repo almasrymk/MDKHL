@@ -21,9 +21,9 @@ public class StateManagementAppService : CrudAppService<StateManagement, StateMa
         _repository = repository;
     }
 
-    public async Task<StateManagementDto> GetStateManagementByUserAsync(Guid? userId)
+    public async Task<StateManagementDto> GetStateManagementByUserAsync(Guid? userId,int shiftId)
     {
-        var state = await _repository.FirstOrDefaultAsync(x => x.UserId == userId);
+        var state = await _repository.FirstOrDefaultAsync(x => x.UserId == userId && x.ShiftId == shiftId);
         var result = ObjectMapper.Map<StateManagement, StateManagementDto>(state);
         return result;
     }
