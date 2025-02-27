@@ -27,9 +27,10 @@ public sealed class KeeperShiftSingletonService : ISingletonService<StateManagem
      
     public async ValueTask DisposeAsync()
     {
-        instance = null;
 
         await _stateManagementApp.DeleteAsync(state.Id);
+        state = null;
+
     }
 
     public async Task<StateManagementDto> GetAsync(int key)
