@@ -86,7 +86,14 @@ public partial class ViewCustomerPackageDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ActivationDate"], Name = "ActivationDate", IsFilterable = false, PropertyName = "ActivationDate", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ExpiryDate"], Name = "ExpiryDate", IsFilterable = false, PropertyName = "ExpiryDate", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+        if(CultureInfo.CurrentCulture.Name == "en")
+        {
+              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "EnPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+        }
+        else
+        {
+             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
+        }
         
         foreach (var item in customerPackages)
         {
