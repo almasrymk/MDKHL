@@ -714,9 +714,12 @@
         "KeeperTransactionsReport": "Shifts Transactions Report",
         "KeeperPayments": "Shifts Payments",
         "KeeperTransactions": "Shifts Transactions",
-        "Time": "Time"
+        "Time": "Time",
+        "DeleteValidation": "cannot be deleted as it is currently assigned to",
+        "Permission:MyShift": "My Shift Management"
 
 
 
-    } 
+
+    }
 }
