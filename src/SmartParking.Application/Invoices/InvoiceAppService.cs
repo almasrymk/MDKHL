@@ -8,6 +8,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Localization;
 using SmartParking.Results;
 using SmartParking.Utilities;

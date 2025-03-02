@@ -27,6 +27,7 @@ using SmartParking.Customers;
 using SmartParking.Results;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Filters;
 namespace SmartParking.Authentication;
 
 [Authorize]

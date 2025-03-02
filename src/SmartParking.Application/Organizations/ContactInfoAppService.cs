@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -19,6 +19,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using System.Linq.Dynamic.Core;
+using SmartParking.Filters;
 
 namespace SmartParking.Cameras;
 
