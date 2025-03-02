@@ -732,6 +732,7 @@
         "Start": "بدء",
         "End": "إنهاء",
         "Permission:UserShift": "موديول ورديات المستخدم",
+        "Permission:ManageShifts": "موديول ادارة الورديات",
         "ViewUserShift": "عرض ورديات المستخدم",
         "ViewUserActive": "عرض أنشطة المستخدم",
         "Permission:MyShift": "موديول وردياتي",

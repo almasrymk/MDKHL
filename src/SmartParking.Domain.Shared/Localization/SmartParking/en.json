@@ -708,6 +708,7 @@
         "ViewUserShift": "View User Shift",
         "ViewUserActive": "View User Active",
         "Permission:DailyShift": "Daily Shift Management",
+        "Permission:ManageShifts": "Shift Management",
         "Permission:Shift": "Shift Management",
         "UsersCanShift": "User's Shift Management",
         "KeeperPaymentsReport": "Shifts Payments Report",
