@@ -708,17 +708,18 @@
         "ViewUserShift": "View User Shift",
         "ViewUserActive": "View User Active",
         "Permission:DailyShift": "Daily Shift Management",
-        "Permission:ManageShifts": "Shifts Management",
         "Permission:Shift": "Shift Management",
-        "Permission:MyShift": "My Shift Management",
         "UsersCanShift": "User's Shift Management",
         "KeeperPaymentsReport": "Shifts Payments Report",
         "KeeperTransactionsReport": "Shifts Transactions Report",
         "KeeperPayments": "Shifts Payments",
         "KeeperTransactions": "Shifts Transactions",
-        "Time": "Time"
+        "Time": "Time",
+        "DeleteValidation": "cannot be deleted as it is currently assigned to",
+        "Permission:MyShift": "My Shift Management"
 
 
 
-    } 
+
+    }
 }
