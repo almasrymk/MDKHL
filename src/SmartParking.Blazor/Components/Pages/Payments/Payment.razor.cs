@@ -206,9 +206,7 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], _localizer[$"{item.PaymentCategory.ToString()}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(
                 _localizer["InvoiceId"],
-                item.PaymentCategory == Enums.PaymentCategory.PaymentParking
-                ?  item.InvoiceId.ToString()
-                :  item.PackageId .ToString()
+                  item.InvoiceId.ToString()
             ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() is null ? _localizer["NotCustomer"]: _localizer[$"{item.Customers?.CustomerCategory.ToString()}"]));
