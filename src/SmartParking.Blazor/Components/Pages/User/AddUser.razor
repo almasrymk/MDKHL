@@ -85,9 +85,13 @@
                     <MudRadio Value="@("keeper")" Color="MudBlazor.Color.Primary">@L["keeper"]</MudRadio>
                 </MudRadioGroup>
                 </MudItem>
-                <MudItem sm="6">
-                <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
-                </MudItem>
+                    @if(currrentTenant.Id is null)
+                    {
+                        <MudItem sm="6">
+                            <MudCheckBox @bind-Value="@userCreate.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
+                        </MudItem>
+                    }
+
                 
                     @if (IsOrganization && !currrentTenant.IsAvailable)
                     {
