@@ -106,14 +106,7 @@ public partial class Discount
             input.Sorting = "User.Id";
 
         PagedResultDto<DiscountDto> discountDto = new PagedResultDto<DiscountDto>();
-        if (currrentTenant.Id is not null)
-        {
-             // discountDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsOrganizationAsync(input);
-        }
-        else
-        {
-            //discountDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(null, input);
-        }
+        discountDto = await DiscountAppService.GetListAsync(input);
         TotalItem = (int)discountDto.TotalCount;
         await CreateTable(discountDto.Items);
 

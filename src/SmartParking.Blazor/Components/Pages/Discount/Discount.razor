@@ -1,6 +1,7 @@
 ﻿@page "/discount"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Discounts
 @using SmartParking.KeeperShifts
 @using SmartParking.Localization
 @using SmartParking.Organizations
@@ -14,6 +15,7 @@
 @inject NavigationManager Navigation
 @inject ICurrentTenant currrentTenant
 @inject IOrganizationsAppService OrganizationAppService
+@inject IDiscountAppService DiscountAppService
 @inject IDialogService Dialog
 @using Microsoft.AspNetCore.Authorization
 <PageTitle>@L["Discount"]</PageTitle>
