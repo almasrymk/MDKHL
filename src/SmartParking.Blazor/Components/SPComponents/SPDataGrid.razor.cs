@@ -23,7 +23,6 @@ using SmartParking.Enums;
 using SmartParking.Events;
 using SmartParking.Localization;
 using SmartParking.Utilities;
-using YamlDotNet.Core.Tokens;
 
 namespace SmartParking.Blazor.Components.SPComponents;
 
@@ -74,7 +73,7 @@ public partial class SPDataGrid
     public List<FilterRequestDto> ColumnsFilter { get; set; } = new List<FilterRequestDto>();
     private List<string> ColumnsFilterApply { get; set; } = new List<string>();
     [Parameter] public int TotalItemsInTable { get; set; }
-    public string _searchString;
+    public string _searchString { get; set; } = string.Empty;
     private string sort;
     public MudDataGrid<RowDef> dataGrid { get; set; }
     private bool _ascending = true;
