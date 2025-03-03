@@ -23,6 +23,7 @@ using LocalizationHelper = SmartParking.Localization.LocalizationHelper;
 using System.Linq.Expressions;
 using SmartParking.Enums;
 using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
+
 namespace SmartParking.Shifts;
 
 [Authorize]
@@ -49,7 +50,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     {
         await CheckExistanceOfDependencies(input);
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime , input.StartDate, input.EndDate, input.GarageId,input.IsFullDay,input.Status);
-        if ( await HasOverlappingShift(_overlapExpression))
+        if ( await HasOverlappingShift(_overlapExpression) && input.Status==Status.Active)
         {
             throw new Exception("Shift overlaps with an existing shift.");
         }
@@ -90,8 +91,8 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     }
     public async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
     {
-        var result = await repository.FirstOrDefaultAsync(expression);
-        return await repository.AnyAsync(expression);
+        var result = await repository.FirstOrDefaultAsync(expression.And(s=>s.Status ==Status.Active));
+        return await repository.AnyAsync(expression.And(s => s.Status == Status.Active));
     }
     public Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
     {
@@ -132,12 +133,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             {
                 // Case 3a: New shift is not a midnight shift
                 //
-                return baseCondition.And(newShiftIsNotMidnight).Or(existingShiftIsFullDay).Or(overlapingWithMidnigtShift);
+                return baseCondition.And(newShiftIsNotMidnight).Or(baseCondition.And(existingShiftIsFullDay)).Or(baseCondition.And(overlapingWithMidnigtShift));
             }
             else
             {
                 // Case 3b: New shift is a midnight shift
-                return baseCondition.And(newShiftIsMidnight).Or(middnighOverlapsWithMidnigtShift);
+                return baseCondition.And(newShiftIsMidnight).Or(baseCondition.And(middnighOverlapsWithMidnigtShift));
             }
         }
     }
@@ -146,15 +147,13 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     {
         return s =>
             s.GarageId == GarageId &&
+            (s.Status==Status.Active) &&
             (StartDate >= s.StartDate && StartDate < s.EndDate) ||
             (EndDate > s.StartDate && EndDate <= s.EndDate) ||
             (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
             (StartDate <= s.StartDate && EndDate <= s.EndDate) ||
             (StartDate >= s.StartDate && EndDate >= s.EndDate)
-            &&
-
-
-            s.Status == Status.Active && status == Status.Active;
+          ;
     }
     public Expression<Func<Shift, bool>> IfNewNotOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate,TimeOnly StartTime , TimeOnly EndTime)
     {
@@ -403,7 +402,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         await CheckExistanceOfDependencies(input);
         var _overlapExpression  = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId,input.IsFullDay,input.Status);
         var _sameShiftExpression = NotSameEntityExpression(id);
-        if (await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))
+        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))&&(input.Status==Status.Active))
         {
             throw new Exception("Shift overlaps with an existing shift.");
         }
