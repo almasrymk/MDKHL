@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
+using SmartParking.Discounts;
 using SmartParking.Entities.Invoices;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
@@ -33,8 +34,12 @@ public class KeeperController : AbpController
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
+    private readonly IDiscountAppService _discountAppService;
     private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, IInvoiceUtilityAppService invoiceUtilityAppService = null, IGarageTransactionsAppService garageTransactionsAppService = null)
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, 
+        ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService,IDiscountAppService discountAppService,
+        IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, 
+        IInvoiceUtilityAppService invoiceUtilityAppService = null, IGarageTransactionsAppService garageTransactionsAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -45,6 +50,7 @@ public class KeeperController : AbpController
         _usersAppService = usersAppService;
         _invoiceUtilityAppService = invoiceUtilityAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
+        _discountAppService = discountAppService;
     }
 
     [HttpPost("login")]
@@ -191,6 +197,13 @@ public class KeeperController : AbpController
     {
         var user = await _usersAppService.UpdateImageAsync(_currentUser.Id, image);
         return Result.Success(user.Image);
+    }
+
+    [HttpGet("getAllDiscount")]
+    [Authorize]
+    public async Task<Result<List<DiscountDto>>> GetAllDiscount()
+    {
+        return await _discountAppService.GetListMobileAsync();
     }
 
 }
