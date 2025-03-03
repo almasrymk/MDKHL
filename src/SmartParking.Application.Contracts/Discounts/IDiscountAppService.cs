@@ -1,4 +1,5 @@
 ﻿using SmartParking.DailyShifts;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,4 +17,5 @@ public interface IDiscountAppService :
         CreateUpdateDiscountDto
         >
 {
+    Task<Result<List<DiscountDto>>> GetListMobileAsync();
 }
