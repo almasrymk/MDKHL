@@ -483,7 +483,7 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
         var updatedShift1=await _shiftAppService.UpdateAsync(result1.Id,shift1);
         var updatedShift=await _shiftAppService.UpdateAsync(result.Id,shift2);
         shift2.Status=Enums.Status.Active;
-        shift2.StartTime = new TimeOnly(7, 1);
+        shift2.StartTime = new TimeOnly(7, 0);
         shift2.EndTime = new TimeOnly(14, 59);
         var updatedShiftt=await _shiftAppService.UpdateAsync(result.Id,shift2);
 

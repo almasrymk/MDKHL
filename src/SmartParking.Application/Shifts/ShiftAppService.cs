@@ -88,8 +88,8 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     }
     public async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
     {
-        var result = await repository.FirstOrDefaultAsync(expression);
-        return await repository.AnyAsync(expression);
+        var result = await _repository.FirstOrDefaultAsync(expression);
+        return await _repository.AnyAsync(expression);
     }
     public Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
     {
