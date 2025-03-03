@@ -271,7 +271,7 @@ partial class Shifts
             ["ShiftId"] = shiftId
         };
 
-        return await Dialog.ShowAsync<AssignShiftDialog>("Assign Shift", parameters);
+        return await Dialog.ShowAsync<AssignUserDialog>("Assign Shift", parameters);
 
     }
     private async Task OnClickRowDelete(RowDef row)
