@@ -18,6 +18,7 @@ using SmartParking.Blazor.Components.Shared;
 using Volo.Abp.Validation;
 using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Vehicles.LookUps;
+using SmartParking.Blazor.Components.Pages.UserShifts;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts;
 
@@ -255,7 +256,18 @@ partial class Shifts
         if (string.IsNullOrEmpty(str)) return str;
         return str.Length > maxLength ? str.Substring(0, maxLength) + "..." : str;
     }
+    public async Task<IDialogReference> AssignUserDialog(string ShiftId)
+    {
 
+        int shiftId = int.Parse(ShiftId);
+        var parameters = new DialogParameters
+        {
+            ["ShiftId"] = shiftId
+        };
+
+        return await Dialog.ShowAsync<AssignShiftDialog>("Assign Shift", parameters);
+
+    }
     private async Task OnClickRowDelete(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);

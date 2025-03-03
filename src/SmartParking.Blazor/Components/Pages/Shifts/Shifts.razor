@@ -18,6 +18,5 @@
 <SPDataGrid PageName=@L["Shifts"] Data="@itemData" Menus="@MenuDatas" ShowAdd="true" ShowMenue="!CurrentTenant.Id.HasValue" 
             ShowEdit="true" ShowDelete="true" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" 
             OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="OpenDialogAsync" OnClickRowView="OnClickRowView" 
-            ShowView="true" OnClickRowDelete="OnClickRowDelete" 
-            ></SPDataGrid>
+            ShowView="true" OnClickRowDelete="OnClickRowDelete" ShowAssign="true" OnClickAssign="AssignUserDialog"></SPDataGrid>
 
