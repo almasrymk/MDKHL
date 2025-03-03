@@ -2,6 +2,7 @@
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Garages;
 using SmartParking.Subscriptions;
 using System;

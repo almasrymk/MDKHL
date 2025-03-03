@@ -2,6 +2,7 @@
 
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
+using SmartParking.Filters;
 using SmartParking.Garages;
 using SmartParking.GarageTransactions;
 using System;

@@ -8,6 +8,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Lookups;
 using SmartParking.Repositories;
 using SmartParking.Results;

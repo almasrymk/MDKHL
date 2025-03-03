@@ -716,7 +716,8 @@
         "KeeperTransactions": "Shifts Transactions",
         "Time": "Time",
         "DeleteValidation": "cannot be deleted as it is currently assigned to",
-        "Permission:MyShift": "My Shift Management"
+        "Permission:MyShift": "My Shift Management",
+        "Permission:ManageShifts": "Shifts Management"
 
 
 

@@ -17,6 +17,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
+using SmartParking.Filters;
 
 namespace SmartParking.Subscriptions;
 [Authorize]
