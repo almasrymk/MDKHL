@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,4 +14,6 @@ public class DiscountDto : FullAuditedEntityDto<int>
     public string EnglishName { get; set; }
     public decimal DiscountPercent { get; set; }
     public string Notes { get; set; }
+
+    public Status Status { get; set; }
 }
