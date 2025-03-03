@@ -4,6 +4,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using System;
 using System.Collections;
 using System.Collections.Generic;

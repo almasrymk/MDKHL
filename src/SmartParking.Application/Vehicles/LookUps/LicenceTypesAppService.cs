@@ -3,6 +3,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleModel;
@@ -23,7 +24,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
-    [Authorize]
+[Authorize]
 public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
 {
         private readonly IRepository<LicenceType, int> _repository;

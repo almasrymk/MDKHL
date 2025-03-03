@@ -18,7 +18,8 @@ using SmartParking.Blazor.Components.Shared;
 using Volo.Abp.Validation;
 using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Vehicles.LookUps;
-using SmartParking.Blazor.Components.Pages.UserShifts;
+using SmartParking.Permissions.ShiftsPermissions;
+using SmartParking.Permissions.PackagePermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts;
 
@@ -36,11 +37,16 @@ partial class Shifts
     private string termSearch;
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
-
+    public Shifts()
+    {
+        CreatePolicyName = ShiftPermission.Create;
+        UpdatePolicyName = ShiftPermission.Edit;
+        DeletePolicyName = ShiftPermission.Delete;
+    }
 
     protected async override Task OnInitializedAsync()
     {
-        if (!await AuthorizationService.IsGrantedAsync(CameraPermissions.Default))
+        if (!await AuthorizationService.IsGrantedAsync(ShiftPermission.Default))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);

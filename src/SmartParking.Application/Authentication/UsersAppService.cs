@@ -1,9 +1,8 @@
-﻿using iText.IO.Image;
+﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using SmartParking.Organizations;
 using SmartParking.Entities;
 using SmartParking.Repositories;
 using System;
@@ -14,28 +13,21 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.PermissionManagement;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using SmartParking.Enums;
 using SmartParking.Utilities;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using SmartParking.Localization;
 using Volo.Abp;
 using SmartParking.Entities.Customers;
 using SmartParking.Customers;
-using Castle.Core.Resource;
-using SmartParking.Cutomers;
 using SmartParking.Results;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
-using SmartParking.OrganizationsGarages;
-
+using SmartParking.Filters;
 namespace SmartParking.Authentication;
 
 [Authorize]
@@ -126,7 +118,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
             Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
 
-            if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
+            if (subscription == null || subscription.NumberOfUsers < usersActive.Count + 1)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
             }
@@ -134,6 +126,24 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return subscription;
         }
         
+    }
+
+    private async Task<Subscription> CheckSubscriptionCustomersLimitsAsync(int organizationId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var organization = await _organizationsRepository.GetAsync(organizationId);
+            var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
+            Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
+
+            if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
+            }
+
+            return subscription;
+        }
+
     }
 
     private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
@@ -173,7 +183,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 IdentificationTypes = identificationTypes,
                 NationalId = NationalId,
                 ArabicName = ArabicName,
-                TenantId = null,
+                TenantId = null
 
             };
 
@@ -296,17 +306,6 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            //IQueryable<IdentityUser> queryable = await FindByUserType();
-
-            //if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            //{
-            //    queryable = ApplySearchFilter(queryable, input.SearchingTerm);
-            //}
-
-            //if (!input.Sorting.IsNullOrEmpty())
-            //{
-            //    queryable = ApplySorting(queryable, input.Sorting);
-            //}
             var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm,input.Sorting);
             return new PagedResultDto<UserWithRole>
             {
@@ -376,16 +375,6 @@ public class UsersAppService : ApplicationService, IUsersAppService
             TotalCount = totalCount,
             Items = usersDto
         };
-    }
-
-    private IQueryable<IdentityUser> ApplySearchFilter(IQueryable<IdentityUser> queryable, string searchingTerm)
-    {
-        var lowerTerm = searchingTerm.ToLower();
-        return queryable.Where(user =>
-            user.UserName.ToLower().Contains(lowerTerm) ||
-            user.Email.ToLower().Contains(lowerTerm) ||
-            user.Name.ToLower().Contains(lowerTerm) ||
-            user.PhoneNumber.ToLower().Contains(lowerTerm));
     }
 
     private IQueryable<IdentityUser> ApplySorting(IQueryable<IdentityUser> queryable, string sorting)
@@ -459,11 +448,12 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
             await ChangeRole(input, user);
             await UpdateUserProperties(user, input);
+            await AssignRoleIfCustomerAsync(input, user);
             var updatedUser = await _userManager.UpdateAsync(user);
             if (!updatedUser.Succeeded)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
-                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE)+" "+
+                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE) + " " +
                     LocalizationHelper.GetLocalizedString("User"));
             }
 
@@ -471,6 +461,17 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return userDto;
         }
     }
+
+    private async Task AssignRoleIfCustomerAsync(UpdateUserDto input, IdentityUser? user)
+    {
+        if (input.IsCustomer)
+        {
+            await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
+            var roleCustomer = await GetCustomerRole();
+            user.AddRole(roleCustomer.Id);
+        }
+    }
+
     private async Task UpdateUserProperties(IdentityUser user, UpdateUserDto input)
     {
         await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
@@ -632,19 +633,13 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    //private async Task ChangePassword(UpdateUserDto input, IdentityUser? user)
-    //{
-    //    await _userManager.RemovePasswordAsync(user);
-    //    await _userManager.AddPasswordAsync(user, input.Password);
-    //}
-
     public async Task<UserDto> GetAsync(Guid? id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            
+
             IdentityUser? user = await IsUserFound(id);
-            
+
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userDto.Image = user.GetProperty<string>("Image");
             userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
@@ -654,8 +649,30 @@ public class UsersAppService : ApplicationService, IUsersAppService
             {
                 userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
             }
+           userDto.IsCustomer = await GetRoleCustomer(user);
             return userDto;
         }
+    }
+
+    private async Task<bool> GetRoleCustomer(IdentityUser? user)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityRole? role = await GetCustomerRole();
+            return user.Roles.Any(r => r.RoleId == role.Id);
+        }
+
+    }
+
+    private async Task<IdentityRole?> GetCustomerRole()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var roleQuery = await _roleReository.GetQueryableAsync();
+            var role = roleQuery.FirstOrDefault(r => r.Name == RolesType.Customer.ToString());
+            return role;
+        }
+        
     }
 
     public async Task<UserDto> UpdateImageAsync(Guid? id, string image)

@@ -4,6 +4,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
