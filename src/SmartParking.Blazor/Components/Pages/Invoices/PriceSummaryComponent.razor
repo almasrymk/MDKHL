@@ -2,6 +2,8 @@
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Permissions.InvoicesPermissions
+@using Discounts
+@using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IAuthorizationService AuthorizationService
 
@@ -53,9 +55,39 @@
                         </MudItem>
 
                     }
-                        <MudItem xs="@(ConfirmSize)" Class="text-center">
-                            <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
-                        </MudItem>
+                    <MudItem sm="8" md="8">
+                        <MudSelect T="int"
+                                   ValueChanged="ChoosDiscount"
+                                   Variant="Variant.Text"
+                                   Label="@L["OrganizationName"]"
+                                   Placeholder=@L["Choose"]
+                                   HelperText=@L["Helper Text"]
+                                   FullWidth="true">
+                            @foreach (var discounnt in Discounts)
+                            {
+                                if (discounnt.Status != Enums.Status.Active)
+                                    continue;
+                                if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                    <MudSelectItem T="int" Value="@discounnt.Id">
+
+                                        @discounnt.EnglishName
+                                    </MudSelectItem>
+                                }
+                                else
+                                {
+                                    <MudSelectItem T="int" Value="@discounnt.Id">
+
+                                        @discounnt.ArabicName
+                                    </MudSelectItem>
+                                }
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="@(ConfirmSize)" Class="text-center">
+                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
+                    </MudItem>
 
                 }
                 @if (ShowOpenGate)
@@ -89,8 +121,16 @@
     [Parameter] public PaymentMethod PaymentMethod { get; set; }
     [Parameter] public int ConfirmSize { get; set; }
     [Parameter] public int ComponentSize { get; set; }
+    [Parameter]
+    public EventCallback<DiscountDto> OnValueSelected { get; set; }
+    [Parameter]
+    public List<DiscountDto> Discounts { get; set; } = new();
 
-
+    private async Task ChoosDiscount(int selectedId)
+    {
+       var selectedItem = Discounts.FirstOrDefault(x => x.Id == selectedId);
+       await OnValueSelected.InvokeAsync(selectedItem);
+    }
 
 
 
