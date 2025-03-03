@@ -742,7 +742,9 @@
         "KeeperTransactionsReport": "تقارير الحركات للوردية",
         "KeeperPayments": "المبيعات للوردية",
         "KeeperTransactions": "الحركات للوردية",
-        "Time": "وقت"
+        "Time": "وقت",
+        "DeleteValidation": "لا يمكن حذفه لأنها مُخصص حاليًا",
+        "Permission:ManageShifts": "موديول ادارة الورديات"
 
 
 

@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using SmartParking.Lookups.State;
 using Volo.Abp.Domain.Entities.Events.Distributed;
 using SmartParking.Entities.Organizations;
+using SmartParking.Filters;
 
 namespace SmartParking.LookupsAppServices;
 [Authorize]

@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal.Mappers;
 using SmartParking.Entities.Lookups;
+using SmartParking.Filters;
 using SmartParking.Lookups.CameraModel;
 using System;
 using System.Collections.Generic;

@@ -17,6 +17,9 @@ using SmartParking.Shifts;
 using SmartParking.Blazor.Components.Shared;
 using Volo.Abp.Validation;
 using SmartParking.Blazor.Components.Pages.Garages;
+using SmartParking.Vehicles.LookUps;
+using SmartParking.Permissions.ShiftsPermissions;
+using SmartParking.Permissions.PackagePermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts;
 
@@ -34,11 +37,16 @@ partial class Shifts
     private string termSearch;
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
-
+    public Shifts()
+    {
+        CreatePolicyName = ShiftPermission.Create;
+        UpdatePolicyName = ShiftPermission.Edit;
+        DeletePolicyName = ShiftPermission.Delete;
+    }
 
     protected async override Task OnInitializedAsync()
     {
-        if (!await AuthorizationService.IsGrantedAsync(CameraPermissions.Default))
+        if (!await AuthorizationService.IsGrantedAsync(ShiftPermission.Default))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
@@ -255,4 +263,58 @@ partial class Shifts
         return str.Length > maxLength ? str.Substring(0, maxLength) + "..." : str;
     }
 
+    private async Task OnClickRowDelete(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[1].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("ShiftDelete", parameters);
+        var result = await dialog.Result;
+        try
+        {
+
+
+            if (!result.Canceled)
+            {
+                await ShiftAppService.DeleteAsync(id);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]}: {L["Shift"]}", Severity.Success); ;
+                await Task.Delay(1000);
+
+                Navigation.NavigateTo("/shifts", forceLoad: true);
+
+            }
+
+
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
+        }
+
+
+
+    }
 }

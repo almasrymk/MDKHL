@@ -13,6 +13,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.Organizations;
