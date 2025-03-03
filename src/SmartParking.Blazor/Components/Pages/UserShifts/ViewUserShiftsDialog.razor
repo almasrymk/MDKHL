@@ -19,7 +19,7 @@
             <MudText Class="fw-bold">@L["UserShifts"]</MudText>
         </TitleContent>
         <DialogContent>
-            <SPDataGrid PageName=@L["UserShifts"] Data="@itemData" TotalItemsInTable="TotalItem" OnSearching="FetchTableData" OnPageChanged="FetchTableData"></SPDataGrid>
+            <SPDataGrid PageName=@L["UserShifts"] Data="@itemData" TotalItemsInTable="TotalItem" ShowDelete="true" OnClickRowDelete="OnClickRowDelete" OnSearching="FetchTableData" OnPageChanged="FetchTableData"></SPDataGrid>
         </DialogContent>
         <DialogActions>
             <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>

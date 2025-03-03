@@ -392,13 +392,18 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var shift = await _keeperShiftRepository.FirstOrDefaultAsync(s => s.Id == id);
-            if (shift is null)
+            var keeperShift = await _keeperShiftRepository.FirstOrDefaultAsync(s => s.Id == id);
+            if (keeperShift is null)
             {
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
 
-            await _keeperShiftRepository.HardDeleteAsync(shift,true);
+            if( ! await _keeperShiftRepository.AnyAsync(s => s.KeeperId != keeperShift.KeeperId && s.ShiftId == keeperShift.Id))
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("RemoveAssignShiftValidation"));
+            }
+
+            await _keeperShiftRepository.HardDeleteAsync(keeperShift, true);
         }
     }
 

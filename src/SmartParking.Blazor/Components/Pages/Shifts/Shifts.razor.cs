@@ -262,7 +262,18 @@ partial class Shifts
         if (string.IsNullOrEmpty(str)) return str;
         return str.Length > maxLength ? str.Substring(0, maxLength) + "..." : str;
     }
+    public async Task<IDialogReference> AssignUserDialog(string ShiftId)
+    {
 
+        int shiftId = int.Parse(ShiftId);
+        var parameters = new DialogParameters
+        {
+            ["ShiftId"] = shiftId
+        };
+
+        return await Dialog.ShowAsync<AssignShiftDialog>("Assign Shift", parameters);
+
+    }
     private async Task OnClickRowDelete(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
