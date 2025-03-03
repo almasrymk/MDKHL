@@ -1,9 +1,11 @@
-﻿using SmartParking.Entities.Discounts;
+﻿using Microsoft.AspNetCore.Mvc;
+using SmartParking.Entities.Discounts;
 using SmartParking.Entities.Organizations;
 using SmartParking.Filters;
 using SmartParking.Garages;
 using SmartParking.OrganizationsGarages;
 using SmartParking.Packages;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +39,13 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
             totalCount,
             discountsDto
         );
+    }
+    public async Task<Result<List<DiscountDto>>> GetListMobileAsync()
+    {
+        var query = await _repository.GetQueryableAsync();
+        var discounts = await AsyncExecuter.ToListAsync(query);
+        var discountsDto = ObjectMapper.Map<List<Discount>, List<DiscountDto>>(discounts);
+        return Result<List<DiscountDto>>.Success(discountsDto);
     }
 
     private static IQueryable<Discount> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Discount> queryable)
