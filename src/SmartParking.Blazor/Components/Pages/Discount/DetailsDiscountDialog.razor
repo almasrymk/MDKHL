@@ -1,0 +1,77 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using System.Globalization
+@using Volo.Abp.Application.Dtos
+@inject IStringLocalizer<SmartParkingResource> L
+<PageTitle>@L["DiscountDetails"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+		<TitleContent>
+			<MudText Typo="Typo.h6">@L["Details"]</MudText>
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
+				<MudGrid>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="discount.ArabicName"
+									  For="@(() => discount.ArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["ArabicName"]"
+									  Disabled/>
+					</MudItem>
+
+					<MudItem sm="6">
+						<MudTextField @bind-Value="discount.EnglishName"
+									  For="@(() => discount.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["EnglishName"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="discount.Notes"
+									  For="@(() => discount.Notes)"
+									  Immediate="true"
+									  Disabled
+									  Label="@L["Notes"]" />
+					</MudItem>
+					<MudItem sm="6">
+						<MudTextField @bind-Value="discount.DiscountPercent"
+									  For="@(() => discount.DiscountPercent)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["DiscountPercent"]"
+									  Disabled />
+					</MudItem>
+					<MudItem sm="4" md="4">
+						<MudTextField Value="@L[$"{discount.Status.ToString()}"]"
+									  Immediate="true"
+									  Disabled=true
+									  Label=@L["Status"] />
+					</MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+			<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Back"]</MudButton>
+		</DialogActions>
+	</MudDialog>
+
+</MudItem>
+
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+

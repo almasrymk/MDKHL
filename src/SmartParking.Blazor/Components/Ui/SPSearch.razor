@@ -1,8 +1,13 @@
-﻿@* <div class="header-search">
-<MudTextField Class="search-field" T="string" @bind-Value="TextValue" Label="Search..." Variant="Variant.Text" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"></MudTextField>
-</div>
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+<MudTextField Elevation="2" @bind-Value:get="searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search"]" Adornment="Adornment.End" Immediate="true"
+              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
 
-@code {
-    public string TextValue { get; set; }
+@code
+{
+    [Parameter]
+    public EventCallback<string> OnSearch { get; set; }
+    [Parameter]
+    public string searchString { get; set; } 
 }
- *@

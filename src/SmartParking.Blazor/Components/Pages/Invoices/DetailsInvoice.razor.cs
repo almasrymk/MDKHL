@@ -19,6 +19,8 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Payments;
 using FluentValidation;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Discounts;
+using SmartParking.Utilities;
 
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
@@ -65,8 +67,14 @@ public partial class DetailsInvoice
     public List<GarageDto> garages = new List<GarageDto>();
 
     public List<VehicleDto> vehicles = new List<VehicleDto>();
-    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
+    private DiscountDto selectedItem;
+    public List<DiscountDto> _discounts = new List<DiscountDto>();
+
+    private void HandleLookupSelection(DiscountDto selected)
+    {
+        selectedItem = selected;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,6 +95,8 @@ public partial class DetailsInvoice
         OrgAddress=org.Address;
         OrganizationId = org.Id;
 
+        var result = await DiscountAppService.GetListAsync(new PagedAndSortedAndSearchResultRequestDto());
+        _discounts=result.Items.ToList();
         await base.OnInitializedAsync();
 
     }
@@ -121,48 +131,22 @@ public partial class DetailsInvoice
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {
-            OrganizationId=OrganizationId,
-            PaymentCategory= IsPackage?PaymentCategory.Package:PaymentCategory.PaymentParking,
-            InvoiceId= Id,
-            PaymentMethod= PaymentMethod,
-            Amount= Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2),
-            CustomerId= CustomerId
+            OrganizationId = OrganizationId,
+            PaymentCategory = IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
+            InvoiceId = Id,
+            PaymentMethod = PaymentMethod,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, selectedItem.DiscountPercent),
+            CustomerId = CustomerId
         };
-        var payment =await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
-        if (payment != null) {
+        var payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        if (payment != null)
+        {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-            
+
             await Task.Delay(1000);
             Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
         }
     }
-    private Task ViewInvoiceDetails()
-    {
-        var invoicedto = new InvoiceDto
-        {
-            InvoiceNumber = InvoiceNumber,
-            TotalHours = TotalHours,
-            InvoicePrice = InvoicePrice,
-            InvoiceTime = InvoiceTime,
-            GarageEnglishName = GarageEnglishName,
-            GarageArabicName = GarageArabicName,
-            OrganizationArabicName = OrganizationArabicName,
-            OrganizationEnglishName=OrganizationEnglishName,
-            PlateNumber = PlateNumber,
-            EntranceTime = EntranceTime,
-            CustomerArName=CustomerName,
-            
-        };
-        
-        var parameters = new DialogParameters
-        {
-            ["Invoice"] = invoicedto,
-            ["CommercialRegisteration"]= CommercialRegisteration,
-            ["ID"]=Id,
-            ["OrganizationAddress"]=OrgAddress,
-        };
-        return DialogService.ShowAsync<InvoiceDetailsViewDialog>("",parameters);
-        
 
-    }
+
 }

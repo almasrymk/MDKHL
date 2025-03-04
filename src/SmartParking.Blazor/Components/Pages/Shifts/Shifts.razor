@@ -15,5 +15,8 @@
 
 <PageTitle>@L["Shifts"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Shifts"]</MudText>
-<SPDataGrid PageName=@L["Shifts"] Data="@itemData" Menus="@MenuDatas" ShowAdd="true" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="true" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="OpenDialogAsync" OnClickRowView="OnClickRowView" ShowView="true"></SPDataGrid>
+<SPDataGrid PageName=@L["Shifts"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue"
+            ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit"
+            OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="OpenDialogAsync" OnClickRowView="OnClickRowView" 
+            ShowView="true" OnClickRowDelete="OnClickRowDelete" ShowAssign="true" OnClickAssign="AssignUserDialog"></SPDataGrid>
 

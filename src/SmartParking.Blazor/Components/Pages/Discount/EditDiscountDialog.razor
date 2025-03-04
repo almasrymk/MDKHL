@@ -1,0 +1,96 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Discounts
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using System.Globalization
+@using SmartParking.Blazor.Components.Shared
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject ISnackbar Snackbar
+@inject ICurrentTenant currrentTenant
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IDiscountAppService DiscountAppService
+@inject NavigationManager Navigation
+<PageTitle>@L["EditDiscount"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+			<TitleContent>
+				<MudText Typo="Typo.h6">@L["Edit"]</MudText>
+		</TitleContent>
+		<DialogContent>
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="editForm">
+				<MudGrid>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="discount.ArabicName"
+									  For="@(() => discount.ArabicName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+								      Label="@L["ArabicName"]" 
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+					</MudItem>
+
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="discount.EnglishName"
+									  For="@(() => discount.EnglishName)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									 Label="@L["EnglishName"]" 
+									 Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="discount.Notes"
+									  For="@(() => discount.Notes)"
+									  Immediate="true"
+									  Label="@L["Notes"]"
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField @bind-Value="discount.DiscountPercent"
+									  For="@(() => discount.DiscountPercent)"
+									  Immediate="true"
+									  Variant="Variant.Text"
+									  Label="@L["DiscountPercent"]"
+									  Required
+									  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+					</MudItem>
+					<MudItem sm="12" md="12" Class="d-flex justify-content-between">
+						<MudRadioGroup @bind-Value="@discount.Status" Class="d-flex">
+							<MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+							<MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+						</MudRadioGroup>
+					</MudItem>
+
+				</MudGrid>
+			</MudForm>
+
+
+
+		</DialogContent>
+
+		<DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark"
+        ButtonTwoColor="MudBlazor.Color.Primary"
+        ButtonOneLabel="@L["Back"]"
+        ButtonTwoLabel="@L["Save"]"
+        ButtonOneClick="Cancel"
+        ButtonTwoClick="Save"
+        ButtonOneVariant="MudBlazor.Variant.Filled"
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
+
+	</MudDialog>
+
+</MudItem>
+
+<style>
+	.mud-modal 
+	{
+		border-radius: 0 20px 0 20px;
+	}
+</style>
+

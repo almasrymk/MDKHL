@@ -1,0 +1,168 @@
+﻿@page "/assign-user-shift"
+@using SmartParking.Authentication
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Entities
+@using SmartParking.KeeperShifts
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.Shifts
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject NavigationManager Navigation
+@inject IOrganizationsAppService OrganizationsAppService
+@inject IShiftAppService ShiftAppService
+@inject IKeeperShiftsAppService KeeperShiftsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject ICurrentTenant CurrentTenant
+@inject IUsersAppService UsersAppService
+
+<PageTitle>@L["Assign User to Shift"]</PageTitle>
+<MudDialog Class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@L["Assign User to Shift"]</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@keeperShiftCreateDto" @ref="form">
+            <MudGrid>
+                <MudItem sm="6" md="6">
+                    <MudSelect T="string" Label="@L["User"]" ValueChanged="OnUserChanged" 
+                    Required="true"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                        <MudSelectItem Value="@string.Empty" Disabled="false"></MudSelectItem>
+                        @foreach (var user in Users)
+                        {
+                            <MudSelectItem Value="@user.User.Id.ToString()">@user.User.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem sm="12" md="12">
+                    <MudDatePicker Label="@L["StartDate"]"
+                    PickerVariant="PickerVariant.Dialog"
+                    ShowToolbar="false"
+                    @bind-Date="_startDateTimeCreated"
+                    MinDate="@( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime )"
+                    MaxDate="_endDateTime"
+                    Required="true"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                </MudItem>
+
+                <MudItem sm="12" md="12">
+                    <MudDatePicker Label="@L["EndDate"]"
+                    PickerVariant="PickerVariant.Dialog"
+                    ShowToolbar="false"
+                    @bind-Date="_endDateTimeCreated"
+                    MinDate="@( _startDateTimeCreated.HasValue ? _startDateTimeCreated.Value : ( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime ) )"
+                    MaxDate="_endDateTime"
+                    Required="true"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                </MudItem>
+
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="MudBlazor.Color.Dark" Variant="Variant.Filled">@L["Back"]</MudButton>
+        <MudButton OnClick="SubmitCreate" Color="MudBlazor.Color.Primary" Variant="Variant.Filled">@L["Assign"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public int ShiftId { get; set; }
+    MudForm form;
+    List<UserWithRole> Users = new();
+    CreateUpdateKeeperShiftDto keeperShiftCreateDto = new();
+    DateOnly startDate;
+    DateOnly endDate;
+
+    DateTime? _startDateTime
+    {
+        get => startDate == default ? (DateTime?)null : startDate.ToDateTime(new TimeOnly(0, 0));
+        set => startDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    DateTime? _endDateTime
+    {
+        get => endDate == default ? (DateTime?)null : endDate.ToDateTime(new TimeOnly(0, 0));
+        set => endDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    DateTime? _startDateTimeCreated
+    {
+        get => keeperShiftCreateDto.StartDate == default ? (DateTime?)null : keeperShiftCreateDto.StartDate.ToDateTime(new TimeOnly(0, 0));
+        set => keeperShiftCreateDto.StartDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    DateTime? _endDateTimeCreated
+    {
+        get => keeperShiftCreateDto.EndDate == default ? (DateTime?)null : keeperShiftCreateDto.EndDate.ToDateTime(new TimeOnly(0, 0));
+        set => keeperShiftCreateDto.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
+    }
+    public string UserId { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            var selectedShift = await ShiftAppService.GetShiftAsync(ShiftId);
+            if (selectedShift != null)
+            {
+                startDate = selectedShift.StartDate;
+                endDate = selectedShift.EndDate;
+                keeperShiftCreateDto.ShiftId = selectedShift.Id;
+                keeperShiftCreateDto.TenantId = selectedShift.TenantId.Value;
+            }
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
+        {
+        };
+        
+        var result = CurrentTenant.Id == null ? await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(CurrentTenant.Id,input) : (await KeeperShiftsAppService.GetListUserCanAssignShiftsOrganizationAsync(input));
+        Users = result.Items.ToList();
+        
+    }
+
+    private async Task OnUserChanged(string userId)
+    {
+
+        keeperShiftCreateDto.KeeperId = Guid.Parse(userId);
+    }
+
+    private async Task SubmitCreate()
+    {
+        try
+        {
+            bool success = await KeeperShiftsAppService.CreateAsync(keeperShiftCreateDto);
+            if (success)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                SnackBar.ShowSnackbar(Snackbar, $"{L["User assigned to shift successfully"]}", Severity.Success);
+            }
+        }
+        catch (BusinessException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L["Failed to assign user to shift"]}: {ex.Code}", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L["Failed to assign user to shift"]}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+
+}
+`   

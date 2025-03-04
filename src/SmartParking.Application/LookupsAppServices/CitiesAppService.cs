@@ -4,6 +4,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Lookups;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.State;

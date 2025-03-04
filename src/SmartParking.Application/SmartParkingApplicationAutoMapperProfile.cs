@@ -52,6 +52,8 @@ using SmartParking.DailyShifts;
 using SmartParking.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.StateManagements;
+using SmartParking.Entities.Discounts;
+using SmartParking.Discounts;
 
 namespace SmartParking;
 
@@ -339,6 +341,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<StateManagement, StateManagementDto>();
         CreateMap<CreateUpdateStateManagementDto, StateManagement>();
+
+        CreateMap<Discount, DiscountDto>();
+        CreateMap<CreateUpdateDiscountDto, Discount>();
 
     }
     private DateTime CalculateRemainingTimeWithGrace(DateTime? checkoutMobile, int gracePeriod)

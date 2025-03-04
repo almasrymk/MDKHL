@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Customers;
 using SmartParking.KeeperShifts;
 using SmartParking.Localization;
 using SmartParking.Vehicles;
 using System.Globalization;
+using System.Security.Authentication;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.UserShifts;
@@ -62,7 +66,58 @@ public partial class ViewUserShiftsDialog
         await CreateTable(keeperShiftDto);
 
     }
+    public async Task OnClickRowDelete(RowDef row)
+    {
+        var successMessage = L["StateDeletedSuccessfully "];
+        var id = int.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
 
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Show Delete Dialog", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await KeeperShiftsAppService.DeleteAsync(id);
+                ShowSnackbar(successMessage, Severity.Success);
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/user/shifts", forceLoad: true);
+
+            }
+
+
+        }
+        catch (BusinessException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
+        }
+
+    }
+    void ShowSnackbar(string message, Severity severity)
+
+    {
+
+        Snackbar.Clear();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
+
+        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
+
+    }
     private async Task CreateTable(PagedResultDto<KeeperShiftDto> keeperShiftDto)
     {
         var tableData = new TableData()

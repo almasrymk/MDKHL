@@ -7,6 +7,7 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Localization;
 using SmartParking.Results;
 using System;

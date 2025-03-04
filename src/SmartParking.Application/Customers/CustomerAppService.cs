@@ -27,6 +27,7 @@ using SmartParking.Localization;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using SmartParking.Filters;
 namespace SmartParking.Customers;
 [Authorize]
 public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService

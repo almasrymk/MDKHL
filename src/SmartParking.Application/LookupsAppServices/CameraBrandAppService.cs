@@ -12,6 +12,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using System.Linq.Dynamic.Core;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Filters;
 
 namespace SmartParking.LookupsAppServices;
 

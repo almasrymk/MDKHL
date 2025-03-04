@@ -1,0 +1,31 @@
+﻿@page "/discounts"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Authentication
+@using SmartParking.Discounts
+@using SmartParking.KeeperShifts
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using Volo.Abp.Identity
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.PermissionManagement
+@inject IDialogService DialogService
+@inject IKeeperShiftsAppService KeeperShiftsAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject ICurrentTenant currrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+@inject IDiscountAppService DiscountAppService
+@inject IDialogService Dialog
+@inject IAuthorizationService AuthorizationService
+@using Microsoft.AspNetCore.Authorization
+<PageTitle>@L["Discounts"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Discounts"]</MudText>
+<SPDataGrid PageName=@L["Discounts"] Data="@itemData" 
+ShowFiltering="false" TotalItemsInTable="TotalItem"
+            OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView"
+            OnAdd="CreateDiscount" OnClickRowDelete="OnClickRowDelete"
+OnPageChanged="FetchTableData" OnSearching="FetchTableData" 
+></SPDataGrid>
+
+

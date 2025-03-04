@@ -22,7 +22,7 @@
 				<MudGrid>
 
 
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Package.ArabicName"
                                       For="@(() => Package.ArabicName)"
                                       Variant="Variant.Text"
@@ -30,7 +30,7 @@
                                       Disabled='true'
                                       Label=@L["ArabicName"] />
                     </MudItem>
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Package.EnglishName"
                                       For="@(() => Package.EnglishName)"
                                       Variant="Variant.Text"
@@ -38,7 +38,7 @@
                                       Disabled='true'
                                       Label=@L["EnglishName"] />
                     </MudItem>
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="Package.Price"
                                       For="@(() => Package.Price)"
                                       Variant="Variant.Text"
@@ -49,7 +49,7 @@
                                       Label="@($"{L["Price"]} ({L["SAR"]})")" />
                     </MudItem>
 
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="Package.DurationOfPackage"
                                          Variant="Variant.Text"                                        
                                          HideSpinButtons="true"
@@ -58,7 +58,7 @@
                                          Label=@L["PackageDuration"] />
                     </MudItem>
 
-                    <MudItem sm="4" md="4">
+                    <MudItem sm="6" md="6">
                         <MudTextField Value="CustomerCategory"
                                       Immediate="true"
                                       Disabled=true
@@ -88,17 +88,24 @@
 
                     @if(Package.Published == true)
                     {
-                        <MudItem sm="4" md="4">
+                        <MudItem sm="6" md="6">
                             <MudTextField T="string"
                                           Text="@(24+L["Hour"])"
                                           Immediate="true"
                                           Disabled=true
                                           Label=@L["Published"] />
                         </MudItem>
-             
-                    
+
+                        <MudItem sm="6" md="6">
+                            <MudTextField Value="@L[$"{Package.Status.ToString()}"]"
+                                          Immediate="true"
+                                          Disabled=true
+                                          Label=@L["Status"] />
+                        </MudItem>
+
                     }
-                    else{
+                    else
+                    {
                         <MudItem sm="4" md="4">
                             <MudTextField @bind-Value="Package.PublishFrom"
                                           For="@(() => Package.PublishFrom)"
@@ -113,17 +120,17 @@
                                           Disabled=true
                                           Label=@L["Publish To"] />
                         </MudItem>
+                        <MudItem sm="4" md="4">
+                            <MudTextField Value="@L[$"{Package.Status.ToString()}"]"
+                                          Immediate="true"
+                                          Disabled=true
+                                          Label=@L["Status"] />
+                        </MudItem>
+
 
                     }
-                    
-              
+               
 
-                    <MudItem sm="4" md="4">
-                        <MudTextField Value="@L[$"{Package.Status.ToString()}"]"
-                                      Immediate="true"
-                                      Disabled=true
-                                      Label=@L["Status"] />
-                    </MudItem>
                     <MudItem sm="12">
                         <MudTextField @bind-Value="Package.Description"
                                       For="@(() => Package.Description)"

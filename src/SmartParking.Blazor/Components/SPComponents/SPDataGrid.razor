@@ -23,8 +23,7 @@
                 <div class="w-100 d-flex align-center">
                     @if (OnSearching.HasDelegate && ShowSearching)
                     {
-                        <MudTextField Elevation="2" @bind-Value:get="_searchString" @bind-Value:set="OnSearch" Placeholder="@L["Search"]" Adornment="Adornment.End" Immediate="true"
-                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0 data-grid-search"></MudTextField>
+                        <SPSearch searchString="@_searchString" OnSearch="OnSearch"></SPSearch>
                     }
 
                     @if (OnFiltering.HasDelegate && ShowFiltering)
@@ -34,13 +33,10 @@
                         </div>
                         @if (ClickFilter)
                         {
-                            @if (ClickFilter)
-{
                             <MudItem xl="2" Class="d-flex align-center gap-2">
                                  <MudButton Class="clear-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="CloseFilter">@L["Cancel"]</MudButton>
                                  <MudButton Class="apply-filter-btn" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="ApplyFilter">@L["Apply Filter"]</MudButton>
                              </MudItem>
-}
 
                         }
                     }

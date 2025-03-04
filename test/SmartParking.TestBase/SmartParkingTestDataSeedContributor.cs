@@ -12,6 +12,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Shifts;
+using SmartParking.Entities.Discounts;
 
 namespace SmartParking;
 
@@ -33,7 +34,8 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
     private readonly IRepository<LicenceType, int> _licenceTypeRepository;
     private readonly IRepository<Shift, int> _shiftRepository;
     private readonly IRepository<KeeperShift, int> _keeperShiftRepository;
-    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository)
+    private readonly IRepository<Discount, int> _discountRepository;
+    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository)
     {
         _regionRepository = regionRepository;
         _countryRepository = countryRepository;
@@ -51,6 +53,7 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         _cameraRepostory = cameraRepostory;
         _shiftRepository = shiftRepository;
         _keeperShiftRepository = keeperShiftRepository;
+        _discountRepository = discountRepository;
     }
     public async Task SeedAsync(DataSeedContext context)
     {

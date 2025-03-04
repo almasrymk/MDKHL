@@ -1,5 +1,6 @@
 ﻿@page "/invoices/details/{Id:int}"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Discounts
 @using SmartParking.Garages
 @using SmartParking.Invoices
 @using SmartParking.Localization
@@ -21,6 +22,7 @@
 @inject IDialogService DialogService
 @inject IPaymentAppService PaymentAppSerivce
 @inject IAuthorizationService AuthorizationService
+@inject IDiscountAppService DiscountAppService
 
 <PageTitle>@L["InvoiceDetails"]</PageTitle>
 
@@ -136,7 +138,7 @@
             </MudPaper>
         </MudItem>
 
-        <PriceSummaryComponent ComponentSize="5" ConfirmSize="12" InvoicePrice="@InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false"/>
+        <PriceSummaryComponent OnValueSelected="HandleLookupSelection" Discounts="_discounts" ComponentSize="5" ConfirmSize="12" InvoicePrice="@InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" />
     </MudGrid>
 </MudItem>
 

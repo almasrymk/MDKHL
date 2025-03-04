@@ -65,6 +65,9 @@
                         </MudRadioGroup>
 
                     </MudItem>
+                    <MudItem sm="6">
+                        <MudCheckBox @bind-Value="@updateUserDto.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
+                    </MudItem>
                     <MudItem sm="12">
                         <SPDataGrid PageName=@L["UserRoles"] Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete"></SPDataGrid>
                     </MudItem>

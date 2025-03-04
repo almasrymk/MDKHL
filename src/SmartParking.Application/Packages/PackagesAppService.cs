@@ -4,6 +4,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Permissions.PackagePermissions;
