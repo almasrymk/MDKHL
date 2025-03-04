@@ -157,7 +157,6 @@ public partial class Discount
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["DiscountDeletedSuccessfully "];
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
 
@@ -173,7 +172,7 @@ public partial class Discount
         {
             if (!result.Canceled)
             {
-                ShowSnackbar(successMessage, Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/discounts", forceLoad: true);
