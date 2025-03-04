@@ -386,7 +386,7 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
             Description = "Day Shift",
             StartDate = new DateOnly(2025, 2, 26),
             EndDate = new DateOnly(2025, 2, 27),
-            StartTime = new TimeOnly(7, 0),
+            StartTime = new TimeOnly(7, 1),
             EndTime = new TimeOnly(15, 0),
             GarageId = 1,
             OrganizationId = 1,
@@ -402,8 +402,8 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
             Description = "Last Shift",
             StartDate = new DateOnly(2025, 2, 26),
             EndDate = new DateOnly(2025, 2, 27),
-            StartTime = new TimeOnly(15, 0),
-            EndTime = new TimeOnly(23, 0),
+            StartTime = new TimeOnly(15, 1),
+            EndTime = new TimeOnly(22, 59),
             GarageId = 1,
             OrganizationId = 1,
             Status = Enums.Status.Active,
@@ -479,17 +479,104 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
         var result1=await _shiftAppService.CreateAsync(shift1);
         var result = await _shiftAppService.CreateAsync(shift2);
         var result2 = await _shiftAppService.CreateAsync(shift3);
-        shift1.Status=Enums.Status.Active;
-        var updatedShift1=await _shiftAppService.UpdateAsync(result1.Id,shift1);
-        var updatedShift=await _shiftAppService.UpdateAsync(result.Id,shift2);
         shift2.Status=Enums.Status.Active;
-        shift2.StartTime = new TimeOnly(7, 0);
+        shift2.StartTime = new TimeOnly(7, 1);
         shift2.EndTime = new TimeOnly(14, 59);
-        var updatedShiftt=await _shiftAppService.UpdateAsync(result.Id,shift2);
+        var updatedShift=await _shiftAppService.UpdateAsync(result.Id,shift2);
+        shift1.Status=Enums.Status.Active;
+        shift1.StartTime = new TimeOnly(23, 1);
+        shift1.EndTime = new TimeOnly(6, 59);
 
-        Assert.NotNull(updatedShift1);
+        var updatedShiftt=await _shiftAppService.UpdateAsync(result1.Id, shift1);
+
         Assert.NotNull(updatedShift);
         Assert.NotNull(updatedShiftt);
+
+    }
+    [Fact]
+    public async Task UpdateShifts_CheckStatusAndOverlappingAndAddFullDayShift()
+    {
+        // Arrange
+        var shift1 = new CreateUpdateShiftDto
+        {
+            Description = "Night Shift",
+            StartDate = new DateOnly(2025, 2, 26),
+            EndDate = new DateOnly(2025, 2, 27), // Extends into the next day
+            StartTime = new TimeOnly(23, 0), // 11 PM
+            EndTime = new TimeOnly(7, 0),   // 4 AM
+            GarageId = 1,
+            OrganizationId = 1,
+            Status = Enums.Status.Inactive,
+            ArabicName = "الوردية الليلية",
+            EnglishName = "Night Shift",
+            IsFullDay = false,
+            Notes = ""
+        };
+
+        var shift2 = new CreateUpdateShiftDto
+        {
+            Description = "Day Shift",
+            StartDate = new DateOnly(2025, 2, 26),
+            EndDate = new DateOnly(2025, 2, 27),
+            StartTime = new TimeOnly(7, 0),
+            EndTime = new TimeOnly(15, 0),
+            GarageId = 1,
+            OrganizationId = 1,
+            Status = Enums.Status.Inactive,
+            ArabicName = "شيفت صباحي",
+            EnglishName = "Day Shift",
+            IsFullDay = false,
+            Notes = ""
+        };
+
+        var shift3 = new CreateUpdateShiftDto
+        {
+            Description = "Last Shift",
+            StartDate = new DateOnly(2025, 2, 26),
+            EndDate = new DateOnly(2025, 2, 27),
+            StartTime = new TimeOnly(15, 0),
+            EndTime = new TimeOnly(23, 0),
+            GarageId = 1,
+            OrganizationId = 1,
+            Status = Enums.Status.Active,
+            ArabicName = "شيفت اخير",
+            EnglishName = "Last Shift",
+            IsFullDay = false,
+            Notes = ""
+        };
+
+        var result1 = await _shiftAppService.CreateAsync(shift1);
+        var result = await _shiftAppService.CreateAsync(shift2);
+        var result2 = await _shiftAppService.CreateAsync(shift3);
+        shift2.Status = Enums.Status.Active;
+        shift2.StartTime = new TimeOnly(7, 1);
+        shift2.EndTime = new TimeOnly(14, 59);
+        var updatedShift = await _shiftAppService.UpdateAsync(result.Id, shift2);
+        shift1.Status = Enums.Status.Active;
+        shift1.StartTime = new TimeOnly(23, 1);
+        shift1.EndTime = new TimeOnly(6, 59);
+
+        var updatedShiftt = await _shiftAppService.UpdateAsync(result1.Id, shift1);
+
+        Assert.NotNull(updatedShift);
+        Assert.NotNull(updatedShiftt);
+        var shift4 = new CreateUpdateShiftDto
+        {
+            Description = "Last Shift",
+            StartDate = new DateOnly(2025, 2, 26),
+            EndDate = new DateOnly(2025, 2, 26),
+            StartTime = new TimeOnly(0, 0),
+            EndTime = new TimeOnly(0, 0),
+            GarageId = 1,
+            OrganizationId = 1,
+            Status = Enums.Status.Active,
+            ArabicName = "شيفت اخير",
+            EnglishName = "Last Shift",
+            IsFullDay = true,
+            Notes = ""
+        };
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _shiftAppService.CreateAsync(shift4));
+        Assert.Contains("Shift overlaps with an existing shift.", exception.Message);
 
     }
 
