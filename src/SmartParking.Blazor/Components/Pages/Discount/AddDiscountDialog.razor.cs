@@ -33,6 +33,7 @@ public partial class AddDiscountDialog
                 EnglishName = input.EnglishName,
                 DiscountPercent = input.DiscountPercent,
                 Notes = input.Notes,
+                Status= Enums.Status.Inactive
             };
 
             var discount = await DiscountAppService.CreateAsync(createUpdateDiscountDto);

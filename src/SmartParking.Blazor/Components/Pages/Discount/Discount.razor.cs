@@ -152,14 +152,14 @@ public partial class Discount
     {
         var successMessage = _localizer["DiscountDeletedSuccessfully "];
         var id = int.Parse(row.Cells[0].Value);
-        var Name = row.Cells[2].Value;
+        var Name = row.Cells[1].Value;
 
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
 
         };
-
+        await DiscountAppService.DeleteAsync(id);
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("Discount Delete Dialog", parameters);
         var result = await dialog.Result;
         try
