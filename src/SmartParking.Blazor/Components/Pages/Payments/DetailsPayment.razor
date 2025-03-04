@@ -77,6 +77,13 @@
                                   Variant="Variant.Text"
                                   Label="@L["PlateNumber"]"
                                   ReadOnly="true" />
+                </MudItem>   
+                <MudItem sm="4">
+                    <MudTextField @bind-Value="Payment.Invoice.TotalHours"
+                                  Immediate="true"
+                                  Variant="Variant.Text"
+                                  Label="@L["Duration"]"
+                                  ReadOnly="true" />
                 </MudItem>
                 <MudItem sm="4">
                     <MudTextField Value="Payment.Invoice.EntranceTime.ToString()"
