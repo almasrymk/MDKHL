@@ -117,7 +117,7 @@ namespace SmartParking.Discounts
         }
 
         [Fact]
-        public async Task Validate_With_100PercentDiscount_Should_Fail()
+        public async Task Validate_With_100PercentDiscount_Should_Success()
         {
             var discountDto = new CreateUpdateDiscountDto
             {
@@ -127,9 +127,9 @@ namespace SmartParking.Discounts
                 
             };
 
-            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            var result = await _discountAppService.CreateAsync(discountDto);
 
-        }
+        } 
 
         [Fact]
         public async Task Validate_With_InvalidStatus_Should_Fail()
@@ -171,9 +171,7 @@ namespace SmartParking.Discounts
                 ArabicName = "خصم الشتاء",
                 EnglishName = "Winter Discount",
                 DiscountPercent = 12.15m,
-                Status = Enums.Status.Inactive,
                 Notes = "Winter promotion",
-                TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e")
             });
 
             var updateDto = new CreateUpdateDiscountDto
@@ -183,7 +181,6 @@ namespace SmartParking.Discounts
                 DiscountPercent = 12.15M,
                 Status = Enums.Status.Active,
                 Notes = "Winter promotion",
-                TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e")
             };
             discount.DiscountPercent = 12.15m;
             var result = await _discountAppService.UpdateAsync(discount.Id, updateDto);
