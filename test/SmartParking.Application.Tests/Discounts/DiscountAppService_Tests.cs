@@ -1,5 +1,5 @@
 ﻿using AutoMapper.Internal.Mappers;
-using SmartParking.Entities.Shifts;
+using SmartParking.Entities.Discounts;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
