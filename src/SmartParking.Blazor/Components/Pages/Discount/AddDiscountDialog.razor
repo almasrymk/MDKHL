@@ -5,7 +5,9 @@
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using SmartParking.Blazor.Components.Shared
+@using Volo.Abp.MultiTenancy
 @inject ISnackbar Snackbar
+@inject ICurrentTenant currrentTenant
 @inject IDiscountAppService DiscountAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
