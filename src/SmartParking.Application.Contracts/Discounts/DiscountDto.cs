@@ -8,12 +8,8 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Discounts;
 
-public class DiscountDto : FullAuditedEntityDto<int>
+public class DiscountDto : BaseDto
 {
-    public string ArabicName { get; set; }
-    public string EnglishName { get; set; }
     public decimal DiscountPercent { get; set; }
-    public string Notes { get; set; }
-
     public Status Status { get; set; }
 }

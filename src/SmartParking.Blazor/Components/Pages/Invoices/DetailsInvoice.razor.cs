@@ -68,6 +68,7 @@ public partial class DetailsInvoice
     public List<VehicleDto> vehicles = new List<VehicleDto>();
 
     private DiscountDto selectedItem;
+    public List<DiscountDto> _discounts = new List<DiscountDto>();
 
     private void HandleLookupSelection(DiscountDto selected)
     {
@@ -93,6 +94,8 @@ public partial class DetailsInvoice
         OrgAddress=org.Address;
         OrganizationId = org.Id;
 
+        var result = await DiscountAppService.GetListAsync(new PagedAndSortedAndSearchResultRequestDto());
+        _discounts=result.Items.ToList();
         await base.OnInitializedAsync();
 
     }
@@ -131,7 +134,7 @@ public partial class DetailsInvoice
             PaymentCategory = IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
             InvoiceId = Id,
             PaymentMethod = PaymentMethod,
-            Amount = GetPriceForPayment(),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, selectedItem),
             CustomerId = CustomerId
         };
         var payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
@@ -144,11 +147,5 @@ public partial class DetailsInvoice
         }
     }
 
-    private decimal GetPriceForPayment()
-    {
-        var price = Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2);
-        if(selectedItem == null)
-            return price;
-        return Math.Round(price*(selectedItem.DiscountPercent/100), 2);
-    }
+
 }
