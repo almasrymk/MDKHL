@@ -141,19 +141,8 @@ public partial class Discount
     }
     private async Task<IDialogReference> OnClickCreate( )
     {
-        
 
-        var stateDto = new DiscountDto();
-
-
-        var parameters = new DialogParameters
-        {
-            ["state"] = stateDto,
-            ["UpdatedId"] = 0
-        };
-
-
-        return await Dialog.ShowAsync<EditStateDialog>("Edit State", parameters);
+        return await Dialog.ShowAsync<AddDiscountDialog>("Add Discount");
 
     }
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
