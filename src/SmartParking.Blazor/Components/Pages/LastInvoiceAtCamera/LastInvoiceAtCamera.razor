@@ -2,6 +2,7 @@
 @using SmartParking.Blazor.Components.Pages.Invoices
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
+@using SmartParking.Discounts
 @using SmartParking.Enums
 @using SmartParking.GarageTransactions
 @using SmartParking.Invoices
@@ -18,7 +19,9 @@
 @inject IInvoiceUtilityAppService InvoiceUtility
 @inject IGarageTransactionsAppService GarageTransactionAppService
 @inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime;
+@inject IJSRuntime JSRuntime
+@inject IDiscountAppService DiscountAppService
+
 
 <PageTitle>@L["LastInvoice"]</PageTitle>
 <MudGrid>
@@ -52,13 +55,20 @@
 	</MudItem>
 
 
-	<PriceSummaryComponent ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
+	<PriceSummaryComponent OnValueSelected="HandleLookupSelection" Discounts="_discounts" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
 </MudGrid>
 
 @code {
 	private InvoiceDto Invoice  = new InvoiceDto();
 	private bool NoInvoice { get; set; } = false;
 	public PaymentMethod PaymentMethod { get; set; }
+	private DiscountDto selectedItem;
+	public List<DiscountDto> _discounts = new List<DiscountDto>();
+
+	private void HandleLookupSelection(DiscountDto selected)
+	{
+		selectedItem = selected;
+	}
 
 
 	protected override async Task OnInitializedAsync()
@@ -66,6 +76,8 @@
 		try{
 
 			Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+			var result = await DiscountAppService.GetListAsync(new PagedAndSortedAndSearchResultRequestDto());
+			_discounts = result.Items.ToList();
 		}catch(Exception ex){
 			SnackBar.ShowSnackbar(Snackbar,ex.Message , MudBlazor.Severity.Warning);
 			NoInvoice = true;
@@ -82,7 +94,7 @@
 			PaymentCategory = Invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
 			InvoiceId = Invoice.Id,
 			PaymentMethod = PaymentMethod,
-			Amount = Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2),
+		    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, selectedItem),
 			CustomerId = Invoice.CustomerId
 		};
 		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
