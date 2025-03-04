@@ -1,1 +1,92 @@
-﻿
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Discounts
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@using SmartParking.Blazor.Components.Shared
+@inject ISnackbar Snackbar
+@inject IDiscountAppService DiscountAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+<PageTitle>@L["AddDiscount"]</PageTitle>
+
+<MudItem class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.ArabicName"
+                                      For="@(() => input.ArabicName)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["ArabicName"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["Type Here"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    </MudItem>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.EnglishName"
+                                      For="@(() => input.EnglishName)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["EnglishName"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["Type Here"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.Notes"
+                                      For="@(() => input.Notes)"
+                                      Immediate="true"
+                                      Required
+                                      Label="@L["Discribtion"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["Type Here"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    </MudItem>
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="input.DiscountPercent"
+                                      For="@(() => input.DiscountPercent)"
+                                      Immediate="true"
+                                      Required
+                                      Variant="Variant.Text"
+                                      Label="@L["DiscountPercent"]"
+                                      InputType="InputType.Text"
+                                      Placeholder="@L["Type Here"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    </MudItem>
+
+
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+                                   ButtonTwoColor="MudBlazor.Color.Primary"
+                                   ButtonOneLabel="@L["Back"]"
+                                   ButtonTwoLabel="@L["Create"]"
+                                   ButtonOneClick="Cancel"
+                                   ButtonTwoClick="Submit"
+                                   ButtonOneVariant="MudBlazor.Variant.Filled"
+                                   ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+
+    </MudDialog>
+
+</MudItem>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

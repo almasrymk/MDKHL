@@ -19,7 +19,7 @@ public interface IShiftAppService : ICrudAppService<ShiftDto,int,PagedAndSortedR
     Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input);
     Task<ShiftDto> UpdateMDKHLAsync(int id, CreateUpdateShiftDto input);
 
-    Task<ShiftDto> GetShiftAsync(int id, Guid? tenantId);
+    Task<ShiftDto> GetShiftAsync(int id);
     
 
 
