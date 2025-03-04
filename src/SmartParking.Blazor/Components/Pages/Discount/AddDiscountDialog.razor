@@ -5,7 +5,9 @@
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using SmartParking.Blazor.Components.Shared
+@using Volo.Abp.MultiTenancy
 @inject ISnackbar Snackbar
+@inject ICurrentTenant currrentTenant
 @inject IDiscountAppService DiscountAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -47,19 +49,20 @@
                                       For="@(() => input.Notes)"
                                       Immediate="true"
                                       Required
-                                      Label="@L["Discribtion"]"
+                                      Label="@L["Notes"]"
                                       InputType="InputType.Text"
                                       Placeholder="@L["Type Here"]"
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="input.DiscountPercent"
+                        <MudNumericField @bind-Value="input.DiscountPercent"
                                       For="@(() => input.DiscountPercent)"
                                       Immediate="true"
                                       Required
+                                      Min="0"
+                                      Max ="100"
                                       Variant="Variant.Text"
                                       Label="@L["DiscountPercent"]"
-                                      InputType="InputType.Text"
                                       Placeholder="@L["Type Here"]"
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>

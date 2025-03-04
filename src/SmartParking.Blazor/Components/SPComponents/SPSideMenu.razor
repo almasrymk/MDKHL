@@ -7,6 +7,7 @@
 @using SmartParking.Permissions.ContactPermissions
 @using SmartParking.Permissions.CustomerPermissions
 @using SmartParking.Permissions.DailyShiftsPermissions
+@using SmartParking.Permissions.Discounts
 @using SmartParking.Permissions.GaragePermissions
 @using SmartParking.Permissions.GarageTransactionPermissions
 @using SmartParking.Permissions.InvoicesPermissions
@@ -194,7 +195,10 @@
                      {
                          <MudNavLink Href="/contact-data">@L["Contact Data"]</MudNavLink>
                      }
-                    <MudNavLink Href="/discounts" Icon="@Icons.Material.Filled.Discount">@L["Discounts"]</MudNavLink>
+                    @if (AuthorizationService.IsGrantedAnyAsync(DiscountPermissions.Default).Result && currenttenant.Id != null)
+                    {
+                         <MudNavLink Href="/discounts" Icon="@Icons.Material.Filled.Discount">@L["Discounts"]</MudNavLink>
+                    }
 
                  </MudNavGroup>
 

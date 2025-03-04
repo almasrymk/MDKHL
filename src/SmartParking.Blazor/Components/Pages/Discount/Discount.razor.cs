@@ -10,6 +10,8 @@ using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Discounts;
 using SmartParking.Entities;
 using SmartParking.Localization;
+using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.Discounts;
 using SmartParking.Lookups;
 using SmartParking.Permissions.ShiftsPermissions;
 using System.ComponentModel;
@@ -42,6 +44,11 @@ public partial class Discount
 
     protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(DiscountPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+       
         await base.OnInitializedAsync();
     }
    
@@ -72,7 +79,7 @@ public partial class Discount
     {
         var tableData = new TableData()
         {
-            Name = L["Discount"],
+            Name = L["Discounts"],
             ShowHeader = true
         };
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -169,7 +176,7 @@ public partial class Discount
                 ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
-                Navigation.NavigateTo("/discount", forceLoad: true);
+                Navigation.NavigateTo("/discounts", forceLoad: true);
 
             }
 

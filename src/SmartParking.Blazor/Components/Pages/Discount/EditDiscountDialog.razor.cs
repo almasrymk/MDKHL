@@ -32,8 +32,8 @@ public partial class EditDiscountDialog
                 EnglishName = discount.EnglishName,
                 DiscountPercent = discount.DiscountPercent,
                 Notes = discount.Notes,
-                Status=discount.Status
-
+                Status=discount.Status,
+                TenantId = currrentTenant.Id
             };
 
 			// Call the update method
@@ -45,10 +45,10 @@ public partial class EditDiscountDialog
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
-                Navigation.NavigateTo("/discount");
+                Navigation.NavigateTo("/discounts", forceLoad: true);
             }
 
-			else
+            else
 			{
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName}", Severity.Success);
 

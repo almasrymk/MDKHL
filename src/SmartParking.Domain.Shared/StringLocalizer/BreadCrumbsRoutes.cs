@@ -75,6 +75,8 @@ public static class BreadCrumbsRoutes
             "user/shifts" => LocalizationHelper.GetLocalizedString("UsersCanShift"),
             "shifts" => LocalizationHelper.GetLocalizedString("Shifts"),
             "myshifts" => LocalizationHelper.GetLocalizedString("MyShifts"),
+            "discounts" => LocalizationHelper.GetLocalizedString("Discounts"),
+            "lastinvoice" => LocalizationHelper.GetLocalizedString("Checkout"),
             _ => LocalizationHelper.GetLocalizedString("Dashboard") // Default title if no match found
         };
     }
