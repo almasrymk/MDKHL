@@ -27,7 +27,6 @@ public class DiscountCreateUpdateValidation : AbstractValidator<CreateUpdateDisc
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .InclusiveBetween(0, 100).WithMessage(LocalizationHelper.GetLocalizedString("PercentageValidtion"));
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .IsInEnum().WithMessage(LocalizationHelper.GetLocalizedString("StatusValidtion"));
             
     }

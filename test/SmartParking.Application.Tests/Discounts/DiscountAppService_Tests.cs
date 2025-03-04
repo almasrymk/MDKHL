@@ -26,7 +26,8 @@ namespace SmartParking.Discounts
                 ArabicName = "خصم تجريبي",
                 EnglishName = "Test Discount",
                 DiscountPercent = 20m,
-                Status = Status.Active
+                Status = Status.Active,
+                Notes ="This discount is test"
             };
 
             var result = await _discountAppService.CreateAsync(discountDto);
@@ -45,7 +46,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = 20m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
         }
 
         [Fact]
@@ -58,7 +59,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = 20m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
         }
 
         [Fact]
@@ -71,7 +72,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = 20m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
         }
 
         [Fact]
@@ -84,7 +85,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = -5m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
         }
 
         [Fact]
@@ -97,7 +98,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = 105m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
         }
 
         [Fact]
@@ -110,7 +111,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = 0m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
 
         }
 
@@ -125,7 +126,7 @@ namespace SmartParking.Discounts
                 
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
 
         }
 
@@ -139,7 +140,7 @@ namespace SmartParking.Discounts
                 DiscountPercent = 50m,
             };
 
-            await Assert.ThrowsAsync<ValidationException>(() => _discountAppService.CreateAsync(discountDto));
+            await Assert.ThrowsAsync<Volo.Abp.Validation.AbpValidationException>(() => _discountAppService.CreateAsync(discountDto));
         }
     }
 }
