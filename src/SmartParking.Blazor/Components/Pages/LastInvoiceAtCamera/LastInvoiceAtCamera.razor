@@ -94,7 +94,7 @@
 			PaymentCategory = Invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
 			InvoiceId = Invoice.Id,
 			PaymentMethod = PaymentMethod,
-		    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, selectedItem),
+		    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, selectedItem.DiscountPercent),
 			CustomerId = Invoice.CustomerId
 		};
 		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
