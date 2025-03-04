@@ -57,33 +57,29 @@
                 {
                     <MudItem sm="12" md="12">
                         <MudSelect T="int"
-                        ValueChanged="ChooseDiscount"
-                        Variant="Variant.Filled"
-                        Label="@L["Discount"]"
-                        Placeholder=@L["Choose"]
-                        HelperText=@L["Helper Text"]
-                        FullWidth="true">
-                            @foreach (var discounnt in Discounts)
+                                   ValueChanged="ChooseDiscount"
+                                   Variant="Variant.Filled"
+                                   Label="@L["Discount"]"
+                                   Placeholder="@L["Choose"]"
+                                   HelperText="@L["Helper Text"]"
+                                   FullWidth="true"
+                                   Dense="true"
+                                   Adornment="Adornment.Start"
+                                   AdornmentIcon="@Icons.Material.Outlined.LocalOffer"
+                                   >
+
+                            @foreach (var discount in _discounts)
                             {
-                                if (discounnt.Status != Enums.Status.Active)
+                                if (discount.Status != Enums.Status.Active)
                                     continue;
-                                if (CultureInfo.CurrentCulture.Name == "en")
-                                {
-                                    <MudSelectItem T="int" Value="@discounnt.Id">
 
-                                        @discounnt.EnglishName
-                                    </MudSelectItem>
-                                }
-                                else
-                                {
-                                    <MudSelectItem T="int" Value="@discounnt.Id">
-
-                                        @discounnt.ArabicName
-                                    </MudSelectItem>
-                                }
+                                <MudSelectItem T="int" Value="@discount.Id">
+                                    <MudText Typo="Typo.body1">@($"{discount.DiscountPercent} %")</MudText>
+                                </MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
+
                 }
                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result)
                 {
@@ -143,6 +139,7 @@
     public decimal InvoicePriceAfterDiscount { get; set; }
     public decimal InvoicePriceWithVat { get; set; }
     public bool OnChooseDiscount { get; set; } = false;
+    private List<DiscountDto> _discounts;
 
 
 
@@ -151,6 +148,7 @@
     protected override void OnParametersSet()
     {
         InvoicePriceWithVat = Math.Round((InvoicePrice.Value + (InvoicePrice.Value * 0.15m)), 2);
+        _discounts = Discounts;
         base.OnParametersSet();
     }
     private async Task ChooseDiscount(int selectedId)
