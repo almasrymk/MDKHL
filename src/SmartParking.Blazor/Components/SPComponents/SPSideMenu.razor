@@ -171,7 +171,6 @@
                          <MudNavLink Href="/Camerabrands" Icon="@Icons.Material.Filled.ElectricCar">@L["CameraBrands"]</MudNavLink>
                          <MudNavLink Href="/CameraModels" Icon="@Icons.Material.Filled.ElectricCar">@L["Cameramodels"]</MudNavLink>
                          <MudNavLink Href="/Cameramaintypes" Icon="@Icons.Material.Filled.ElectricCar">@L["Cameramaintypes"]</MudNavLink>
-                         <MudNavLink Href="/discount" Icon="@Icons.Material.Filled.ElectricCar">@L["Discount"]</MudNavLink>
                      </MudNavGroup>
                  }
                  <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
@@ -180,7 +179,7 @@
                      {
                          <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>
 
-                         @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Roles.Default).Result && currenttenant.Id is not null)
+                        @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Roles.Default).Result && currenttenant.Id is not null)
                          {
 
                              <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.Man2">@L["Roles"]</MudNavLink>
@@ -195,6 +194,7 @@
                      {
                          <MudNavLink Href="/contact-data">@L["Contact Data"]</MudNavLink>
                      }
+                    <MudNavLink Href="/discounts" Icon="@Icons.Material.Filled.Discount">@L["Discounts"]</MudNavLink>
 
                  </MudNavGroup>
 
