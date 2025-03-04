@@ -720,10 +720,7 @@
     "Permission:ManageShifts": "Shifts Management",
     "RemoveAssignShiftValidation": "Cannot Remove assign for this shift",
     "Discounts": "Discounts",
-    "DiscountPercent": "Discount Percent"
-
-
-
-
+    "DiscountPercent": "Discount Percent",
+    "Permission:Discount" :  "Discounts Management"
   }
 }

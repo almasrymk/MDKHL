@@ -747,8 +747,8 @@
     "Permission:ManageShifts": "موديول ادارة الورديات",
     "RemoveAssignShiftValidation": " لا يمكن الغاء التخصيص لهذه الورديه",
     "Discounts": "الخصومات",
-    "DiscountPercent" : "نسبة الخصم"
-
+    "DiscountPercent": "نسبة الخصم",
+    "Permission:Discount" :  "موديول الخصومات"
 
 
 
