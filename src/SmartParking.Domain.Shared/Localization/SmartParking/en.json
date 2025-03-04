@@ -721,6 +721,7 @@
     "RemoveAssignShiftValidation": "Cannot Remove assign for this shift",
     "Discounts": "Discounts",
     "DiscountPercent": "Discount Percent",
+    "Permission:Discount" :  "Discounts Management" , 
     "After": "After",
     "PercentageValidtion": "The value must be between 0 and 100.",
     "StatusValidtion": "Invalid status selection."
