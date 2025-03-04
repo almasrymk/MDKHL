@@ -231,7 +231,7 @@
     "InvoiceDetails": "تفاصيل المطابقة",
     "Print": "طباعة",
     "ChoosePaymentMethod": "إختر طريقة الدفع",
-    "Discount": "تخفيض",
+    "Discount": "خصم",
     "TypeDiscountCode": "إكتب كود الخصم",
     "AddDiscount%": "إضافة خصم %",
     "Apply": "تطبق",
@@ -745,11 +745,7 @@
     "Time": "وقت",
     "DeleteValidation": "لا يمكن حذفه لأنها مُخصص حاليًا",
     "Permission:ManageShifts": "موديول ادارة الورديات",
-    "RemoveAssignShiftValidation" :  " لا يمكن الغاء التخصيص لهذه الورديه"
-
-
-
-
-
+    "RemoveAssignShiftValidation": " لا يمكن الغاء التخصيص لهذه الورديه",
+    "After": "بعد"
   }
 }
