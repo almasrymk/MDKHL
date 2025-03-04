@@ -20,10 +20,10 @@
 @using Microsoft.AspNetCore.Authorization
 <PageTitle>@L["Discount"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Discount"]</MudText>
-<SPDataGrid PageName=@L["Discount"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!currrentTenant.Id.HasValue" 
+<SPDataGrid PageName=@L["Discount"] Data="@itemData" 
 ShowFiltering="false" TotalItemsInTable="TotalItem"
             OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView"
-            OnAdd="OnClickCreate" OnClickRowDelete="OnClickRowDelete"
+            OnAdd="CreateDiscount" OnClickRowDelete="OnClickRowDelete"
 OnPageChanged="FetchTableData" OnSearching="FetchTableData" 
 ></SPDataGrid>
 

@@ -745,7 +745,9 @@
     "Time": "وقت",
     "DeleteValidation": "لا يمكن حذفه لأنها مُخصص حاليًا",
     "Permission:ManageShifts": "موديول ادارة الورديات",
-    "RemoveAssignShiftValidation" :  " لا يمكن الغاء التخصيص لهذه الورديه"
+    "RemoveAssignShiftValidation": " لا يمكن الغاء التخصيص لهذه الورديه",
+    "Discounts": "الخصومات",
+    "DiscountPercent" : "نسبة الخصم"
 
 
 
