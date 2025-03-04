@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Countries;
 using SmartParking.Blazor.Components.Pages.States;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
@@ -11,6 +12,7 @@ using SmartParking.Entities;
 using SmartParking.Localization;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.Discounts;
+using SmartParking.Lookups;
 using SmartParking.Permissions.ShiftsPermissions;
 using System.ComponentModel;
 using System.Globalization;
@@ -24,7 +26,8 @@ namespace SmartParking.Blazor.Components.Pages.Discount;
 
 public partial class Discount
 {
-    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
     private int TotalItem;
     public int CurrentPage { get; set; } = 1;
     public int RowPerPage { get; set; } = 10;
@@ -45,56 +48,10 @@ public partial class Discount
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
-        await CreateMenue();
+       
         await base.OnInitializedAsync();
     }
-    private async Task CreateMenue()
-    {
-        var itemsOrganizations = new List<MenuItem>();
-        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
-        if (CultureInfo.CurrentCulture.Name == "ar")
-        {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
-            }
-        }
-        else
-        {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
-            }
-        }
-        MenuDatas = new List<MudMenuData>
-        {
-            new MudMenuData
-            {
-                Name = @L["Organizations"],
-            Label = @L[ValueOfMenue],
-                Items =itemsOrganizations
-            },
-        };
-    }
-    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
-    {
-        TenantId = tenantId;
-        ValueOfMenue = selectedValue;
-        if (sortColumn == "Id")
-            sortColumn = "EnglishName";
-        var request = new PagedAndSortedAndSearchResultRequestDto
-        {
-            MaxResultCount = RowPerPage,
-            SkipCount = (CurrentPage - 1) * RowPerPage,
-            Sorting = sortColumn,
-            SearchingTerm = termSearch
-        };
-        PagedResultDto<DiscountDto> discountDto = new(); 
-
-        TotalItem = (int)discountDto.TotalCount;
-        await CreateTable(discountDto.Items);
-    }
+   
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         termSearch = pageInfo.SearchTerm;
@@ -109,7 +66,7 @@ public partial class Discount
             SearchingTerm = pageInfo.SearchTerm
         };
         if (pageInfo.SortColumn == "Id")
-            input.Sorting = "User.Id";
+            input.Sorting = "EnglishName";
 
         PagedResultDto<DiscountDto> discountDto = new PagedResultDto<DiscountDto>();
         discountDto = await DiscountAppService.GetListAsync(input);
@@ -122,15 +79,16 @@ public partial class Discount
     {
         var tableData = new TableData()
         {
-            Name = L["UsersCanAssignShifts"],
+            Name = L["Discounts"],
             ShowHeader = true
         };
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "User.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["DiscountPercent"], Name = "DiscountPercent", IsFilterable = true, PropertyName = "DiscountPercent", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Notes"], Name = "Notes", IsFilterable = true, PropertyName = "Notes", IsSortable = true, TypeFilter = TypeFilter.Text });
- 
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
+
         foreach (var item in discountDto)
         {
             var rowDef = new RowDef();
@@ -139,64 +97,77 @@ public partial class Discount
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["DiscountPercent"], item.DiscountPercent.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Notes"], item.Notes));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
+
 
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
         await Task.Yield();
     }
-    private async Task<IDialogReference> OnClickCreate( )
+    private Task CreateDiscount()
     {
 
-        return await Dialog.ShowAsync<AddDiscountDialog>("Add Discount");
 
+        return DialogService.ShowAsync<AddDiscountDialog>("Simple Dialog", options);
     }
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var stateDto = new DiscountDto();
+        var discountDto = await DiscountAppService.GetAsync(id);
+
+        var createUpdateDiscout = new CreateUpdateDiscountDto
+        {
+            ArabicName = discountDto.ArabicName,
+            EnglishName = discountDto.EnglishName,
+            Notes = discountDto.Notes,
+            DiscountPercent = discountDto.DiscountPercent,
+            Status=discountDto.Status
+
+        };
+
 
 
         var parameters = new DialogParameters
         {
-            ["state"] = stateDto,
-            ["UpdatedId"] = id
+            ["discount"] = discountDto,
+            ["Id"] = id
         };
 
 
-        return await Dialog.ShowAsync<EditStateDialog>("Edit State", parameters);
+        return await DialogService.ShowAsync<EditDiscountDialog>("Edit Discount", parameters);
 
     }
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var stateDto = new DiscountDto();
+        var discountDto = await DiscountAppService.GetAsync(id);
 
 
         var parameters = new DialogParameters
         {
-            ["state"] = stateDto,
+            ["discount"] = discountDto,
         };
 
 
-        return await Dialog.ShowAsync<DetailsStateDialog>("View State", parameters);
+        return await DialogService.ShowAsync<DetailsDiscountDialog>("View Discount", parameters);
     }
 
     private async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = _localizer["StateDeletedSuccessfully "];
+        var successMessage = _localizer["DiscountDeletedSuccessfully "];
         var id = int.Parse(row.Cells[0].Value);
-        var Name = row.Cells[2].Value;
+        var Name = row.Cells[1].Value;
 
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
 
         };
-
-        var dialog = await Dialog.ShowAsync<SPDialogDelete>("State Delete Dialog", parameters);
+        await DiscountAppService.DeleteAsync(id);
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Discount Delete Dialog", parameters);
         var result = await dialog.Result;
         try
         {
@@ -205,7 +176,7 @@ public partial class Discount
                 ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
-                Navigation.NavigateTo("/states", forceLoad: true);
+                Navigation.NavigateTo("/discount", forceLoad: true);
 
             }
 

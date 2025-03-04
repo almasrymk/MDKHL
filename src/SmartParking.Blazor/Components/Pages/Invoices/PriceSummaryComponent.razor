@@ -33,10 +33,20 @@
                     <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
-                    <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
-                        @($"{Math.Round((InvoicePrice.Value + (InvoicePrice.Value * 0.15m)), 2)} {L["SAR"]}")
+                    <MudText Typo="Typo.h6" style="@(OnChooseDiscount ? "text-decoration: line-through;" : "")">
+                        @($"{InvoicePriceWithVat} {L["SAR"]}")
                     </MudText>
                 </MudItem>
+                @if(OnChooseDiscount){
+                    <MudItem xs="6">
+                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"]  @L["Discount"]</MudText>
+                    </MudItem>
+                    <MudItem xs="6" Class="text-end">
+                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
+                            @($"{InvoicePriceAfterDiscount} {L["SAR"]}")
+                        </MudText>
+                    </MudItem>
+                }
             </MudGrid>
         </MudItem>
 
@@ -45,24 +55,14 @@
             <MudGrid Class="mt-4">
                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result)
                 {
-                     @if (!IsPaid || InvoicePrice==0)                    
-                      {
-                        <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
-                            <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
-                              <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
-                              <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
-                          </MudRadioGroup>
-                        </MudItem>
-
-                    }
-                    <MudItem sm="8" md="8">
+                    <MudItem sm="12" md="12">
                         <MudSelect T="int"
-                                   ValueChanged="ChoosDiscount"
-                                   Variant="Variant.Text"
-                                   Label="@L["OrganizationName"]"
-                                   Placeholder=@L["Choose"]
-                                   HelperText=@L["Helper Text"]
-                                   FullWidth="true">
+                        ValueChanged="ChooseDiscount"
+                        Variant="Variant.Filled"
+                        Label="@L["Discount"]"
+                        Placeholder=@L["Choose"]
+                        HelperText=@L["Helper Text"]
+                        FullWidth="true">
                             @foreach (var discounnt in Discounts)
                             {
                                 if (discounnt.Status != Enums.Status.Active)
@@ -84,6 +84,20 @@
                             }
                         </MudSelect>
                     </MudItem>
+                }
+                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result)
+                {
+                    @if (!IsPaid || InvoicePrice==0)                    
+                    {
+                        <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
+                            <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
+                                <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
+                            </MudRadioGroup>
+                        </MudItem>
+
+                    }
+
 
                     <MudItem xs="@(ConfirmSize)" Class="text-center">
                         <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
@@ -92,15 +106,15 @@
                 }
                 @if (ShowOpenGate)
                 {
-                  <MudItem xs="12" Class="d-flex justify-content-between mt-1">
+                    <MudItem xs="12" Class="d-flex justify-content-between mt-1">
 
-                    <MudItem xs="@(ConfirmSize/2)" Class="text-center pe-1">
+                        <MudItem xs="@(ConfirmSize/2)" Class="text-center pe-1">
                             <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Error" Disabled="NoInvoice" OnClick="Cancel">@L["Cancel"]</MudButton>
-                    </MudItem>
-                    <MudItem xs="@(ConfirmSize/2)" Class="text-center ps-1">
+                        </MudItem>
+                        <MudItem xs="@(ConfirmSize/2)" Class="text-center ps-1">
                             <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Dark" Disabled="NoInvoice" OnClick="OpenGate">@L["OpenGate"]</MudButton>
+                        </MudItem>
                     </MudItem>
-                  </MudItem>
 
                 }
             </MudGrid>
@@ -126,12 +140,27 @@
     [Parameter]
     public List<DiscountDto> Discounts { get; set; } = new();
 
-    private async Task ChoosDiscount(int selectedId)
-    {
-       var selectedItem = Discounts.FirstOrDefault(x => x.Id == selectedId);
-       await OnValueSelected.InvokeAsync(selectedItem);
-    }
+    public decimal InvoicePriceAfterDiscount { get; set; }
+    public decimal InvoicePriceWithVat { get; set; }
+    public bool OnChooseDiscount { get; set; } = false;
 
+
+
+
+
+    protected override void OnParametersSet()
+    {
+        InvoicePriceWithVat = Math.Round((InvoicePrice.Value + (InvoicePrice.Value * 0.15m)), 2);
+        base.OnParametersSet();
+    }
+    private async Task ChooseDiscount(int selectedId)
+    {
+
+        var selectedItem = Discounts.FirstOrDefault(x => x.Id == selectedId);
+        InvoicePriceAfterDiscount = InvoicePriceWithVat - Math.Round(InvoicePriceWithVat * ((selectedItem.DiscountPercent * 1m) / 100), 2);
+        OnChooseDiscount = true;
+        await OnValueSelected.InvokeAsync(selectedItem);
+    }
 
 
 }

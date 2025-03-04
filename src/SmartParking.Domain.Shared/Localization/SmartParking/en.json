@@ -721,6 +721,11 @@
     "RemoveAssignShiftValidation": "Cannot Remove assign for this shift",
     "Discounts": "Discounts",
     "DiscountPercent": "Discount Percent",
-    "Permission:Discount" :  "Discounts Management"
+    "Permission:Discount" :  "Discounts Management" , 
+    "After": "After"
+
+
+
+
   }
 }

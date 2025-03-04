@@ -230,35 +230,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                        (StartTime < s.EndTime && EndTime > s.EndTime) // New shift starts during and ends after the existing shift
                      );
     }
-    public async Task<PagedResultDto<ShiftDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-
-        var queryable = await _repository.GetQueryableAsync();
-        var filterExpression = BuildExpression<Shift>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
-        {
-            queryable = queryable.Where(filterExpression);
-        }
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var shifts = await AsyncExecuter.ToListAsync(queryable);
-
-        var shiftsDto = ObjectMapper.Map<List<Shift>, List<ShiftDto>>(shifts);
-        return new PagedResultDto<ShiftDto>(
-            totalCount,
-            shiftsDto
-        );
-    }
-
-    public Task<PagedResultDto<ShiftDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            return Filter(input);
-        }
-    }
-
     public async Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -405,7 +376,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         }
         return await base.UpdateAsync(id, input);
     }
-    public async Task<ShiftDto> GetShiftAsync(int id, Guid? tenantId)
+    public async Task<ShiftDto> GetShiftAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -418,8 +389,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                         on Shifts.GarageId equals Garages.Id
                         join organization in _organizationQueryable
                         on Shifts.OrganizationId equals organization.Id
-                        where tenantId.HasValue ? organization.TenantId == tenantId : true
-
+                        
                         select new ShiftDto
                         {
                             Id = Shifts.Id,

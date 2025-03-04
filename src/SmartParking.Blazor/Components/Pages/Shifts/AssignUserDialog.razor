@@ -32,10 +32,10 @@
                     <MudSelect T="string" Label="@L["User"]" ValueChanged="OnUserChanged" 
                     Required="true"
                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
-                        <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
+                        <MudSelectItem Value="@string.Empty" Disabled="false"></MudSelectItem>
                         @foreach (var user in Users)
                         {
-                            <MudSelectItem Value="@user.User.Id">@user.User.Name</MudSelectItem>
+                            <MudSelectItem Value="@user.User.Id.ToString()">@user.User.Name</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
@@ -100,6 +100,23 @@
         get => keeperShiftCreateDto.EndDate == default ? (DateTime?)null : keeperShiftCreateDto.EndDate.ToDateTime(new TimeOnly(0, 0));
         set => keeperShiftCreateDto.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default;
     }
+    public string UserId { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            var selectedShift = await ShiftAppService.GetShiftAsync(ShiftId);
+            if (selectedShift != null)
+            {
+                startDate = selectedShift.StartDate;
+                endDate = selectedShift.EndDate;
+                keeperShiftCreateDto.ShiftId = selectedShift.Id;
+                keeperShiftCreateDto.TenantId = selectedShift.TenantId.Value;
+            }
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,22 +125,16 @@
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
         };
-        var result = (await KeeperShiftsAppService.GetListUserCanAssignShiftsOrganizationAsync(input));
+        
+        var result = CurrentTenant.Id == null ? await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(CurrentTenant.Id,input) : (await KeeperShiftsAppService.GetListUserCanAssignShiftsOrganizationAsync(input));
         Users = result.Items.ToList();
-        var selectedShift = await ShiftAppService.GetAsync(ShiftId);
-        if (selectedShift != null)
-        {
-            startDate = selectedShift.StartDate;
-            endDate = selectedShift.EndDate;
-            keeperShiftCreateDto.ShiftId = selectedShift.Id;
-            keeperShiftCreateDto.TenantId = selectedShift.TenantId.Value;
-        }
+        
     }
 
     private async Task OnUserChanged(string userId)
     {
 
-       keeperShiftCreateDto.KeeperId =  Guid.Parse(userId);
+        keeperShiftCreateDto.KeeperId = Guid.Parse(userId);
     }
 
     private async Task SubmitCreate()

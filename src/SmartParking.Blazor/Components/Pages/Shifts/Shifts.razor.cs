@@ -212,7 +212,7 @@ partial class Shifts
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var shiftDto = await ShiftAppService.GetShiftAsync(id,CurrentTenant.Id);
+        var shiftDto = await ShiftAppService.GetShiftAsync(id);
 
         var createUpdateShift = new CreateUpdateShiftDto
         {
@@ -245,7 +245,7 @@ partial class Shifts
     {
         var id = int.Parse(row.Cells[0].Value);
 
-        var shiftDto = await ShiftAppService.GetShiftAsync(id,CurrentTenant.Id);
+        var shiftDto = await ShiftAppService.GetShiftAsync(id);
 
         var parameters = new DialogParameters
         {

@@ -195,7 +195,7 @@
                      {
                          <MudNavLink Href="/contact-data">@L["Contact Data"]</MudNavLink>
                      }
-                    @if (AuthorizationService.IsGrantedAnyAsync(DiscountPermissions.Default).Result)
+                    @if (AuthorizationService.IsGrantedAnyAsync(DiscountPermissions.Default).Result && currenttenant.Id != null)
                     {
                          <MudNavLink Href="/discounts" Icon="@Icons.Material.Filled.Discount">@L["Discounts"]</MudNavLink>
                     }

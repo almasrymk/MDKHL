@@ -63,4 +63,12 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
 
         return queryable;
     }
+
+    public override async Task<DiscountDto> DeleteAsync(int id)
+    {
+        var discount = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
+        var discountsDto = ObjectMapper.Map<Discount,DiscountDto>(discount);
+        await _repository.HardDeleteAsync(discount);
+        return discountsDto;
+    }
 }
