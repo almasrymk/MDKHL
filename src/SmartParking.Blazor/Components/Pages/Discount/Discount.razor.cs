@@ -176,7 +176,7 @@ public partial class Discount
                 ShowSnackbar(successMessage, Severity.Success);
                 await Task.Delay(1000);
 
-                Navigation.NavigateTo("/discount", forceLoad: true);
+                Navigation.NavigateTo("/discounts", forceLoad: true);
 
             }
 
