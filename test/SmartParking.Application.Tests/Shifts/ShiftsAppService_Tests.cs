@@ -564,9 +564,9 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
         {
             Description = "Last Shift",
             StartDate = new DateOnly(2025, 2, 26),
-            EndDate = new DateOnly(2025, 2, 27),
-            StartTime = new TimeOnly(15, 0),
-            EndTime = new TimeOnly(23, 0),
+            EndDate = new DateOnly(2025, 2, 26),
+            StartTime = new TimeOnly(0, 0),
+            EndTime = new TimeOnly(0, 0),
             GarageId = 1,
             OrganizationId = 1,
             Status = Enums.Status.Active,
