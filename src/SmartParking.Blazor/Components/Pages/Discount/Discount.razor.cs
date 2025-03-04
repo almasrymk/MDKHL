@@ -9,6 +9,8 @@ using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Discounts;
 using SmartParking.Entities;
 using SmartParking.Localization;
+using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.Discounts;
 using SmartParking.Permissions.ShiftsPermissions;
 using System.ComponentModel;
 using System.Globalization;
@@ -39,6 +41,10 @@ public partial class Discount
 
     protected async override Task OnInitializedAsync()
     {
+        if (!await AuthorizationService.IsGrantedAsync(DiscountPermissions.Default))
+        {
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
         await CreateMenue();
         await base.OnInitializedAsync();
     }
