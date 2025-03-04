@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Discounts;
 
-public class CreateUpdateDiscountDto
+public class CreateUpdateDiscountDto : CreateUpdateBaseDto
 {
-    public string ArabicName { get; set; }
-    public string EnglishName { get; set; }
+
     public decimal DiscountPercent { get; set; }
-    public string Notes { get; set; }
     public Status Status { get; set; }
+
 
 }

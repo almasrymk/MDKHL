@@ -231,7 +231,7 @@
     "InvoiceDetails": "تفاصيل المطابقة",
     "Print": "طباعة",
     "ChoosePaymentMethod": "إختر طريقة الدفع",
-    "Discount": "تخفيض",
+    "Discount": "خصم",
     "TypeDiscountCode": "إكتب كود الخصم",
     "AddDiscount%": "إضافة خصم %",
     "Apply": "تطبق",
@@ -747,11 +747,7 @@
     "Permission:ManageShifts": "موديول ادارة الورديات",
     "RemoveAssignShiftValidation": " لا يمكن الغاء التخصيص لهذه الورديه",
     "Discounts": "الخصومات",
-    "DiscountPercent" : "نسبة الخصم"
-
-
-
-
-
+    "DiscountPercent" : "نسبة الخصم",
+    "After": "بعد"
   }
 }
