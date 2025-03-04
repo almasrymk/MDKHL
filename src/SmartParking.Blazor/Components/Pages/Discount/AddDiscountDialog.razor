@@ -53,13 +53,14 @@
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6">
-                        <MudTextField @bind-Value="input.DiscountPercent"
+                        <MudNumericField @bind-Value="input.DiscountPercent"
                                       For="@(() => input.DiscountPercent)"
                                       Immediate="true"
                                       Required
+                                      Min="0"
+                                      Max ="100"
                                       Variant="Variant.Text"
                                       Label="@L["DiscountPercent"]"
-                                      InputType="InputType.Text"
                                       Placeholder="@L["Type Here"]"
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
