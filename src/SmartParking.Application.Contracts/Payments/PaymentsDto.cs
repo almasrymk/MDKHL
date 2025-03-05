@@ -23,7 +23,8 @@ public class PaymentDto
     public string CreationTime { get; set; }
     public string PaymentNumber { get; set; }
     public string PlateNumber { get; set; }
-
+    public string OrganizationArabicName { get; set; }
+    public string OrganizationEnglishName { get; set; }
 
 
 
