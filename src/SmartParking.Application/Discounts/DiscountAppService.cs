@@ -75,7 +75,7 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
             queryable = queryable.Where(_ =>
                 _.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) || 
-                _.Status.Equals(input.SearchingTerm.ToLower()) || 
+                _.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) || 
                 _.DiscountPercent.ToString().Contains(input.SearchingTerm.ToLower())
             );
         }
