@@ -364,14 +364,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            return await ReportGarageTransactionForOrganization(PlateNumber);
+            return await ReportGarageTransactionForOrganization(PlateNumber,null);
         }
 
     }
 
-    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber, Guid? tenantId)
     {
-        var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber);
+        var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber, tenantId);
         return result;
     }
 
@@ -425,11 +425,11 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId)
+    public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {
-            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisCustomerId(CustomerId);
+            var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisCustomerId(CustomerId,tenantId);
             return result;
         }
 

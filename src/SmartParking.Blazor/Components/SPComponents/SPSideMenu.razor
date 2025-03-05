@@ -106,7 +106,7 @@
                  {
                      <MudNavLink Href="/package" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                  }
-                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Default).Result && currenttenant.Id is not null)
+                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Default).Result )
                  {
                      <MudNavLink Href="/invoices" Icon="@Icons.Material.Filled.Assignment">@L["Invoices"]</MudNavLink>
                  }
