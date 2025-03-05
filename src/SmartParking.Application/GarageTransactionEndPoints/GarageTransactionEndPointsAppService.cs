@@ -132,7 +132,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 case CameraType.Entry:
                     GarageTransaction.CustomerCategory = await GetTransactionCategory(input, GarageTransaction);
                     bool canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
-                    return canEnter ? await _garageTransactionsAppService.CreateAsync(GarageTransaction)is not null : await NotFoundEntityAndExceptionHandling(input, "Can't Enter");
+                    await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    return canEnter;
                     
             };
         }
