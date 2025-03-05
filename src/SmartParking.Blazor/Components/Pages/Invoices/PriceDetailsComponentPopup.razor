@@ -9,15 +9,29 @@
         <p><strong>@L["VAT"] 15%:</strong> @($"{Math.Round((Price * 0.15m), 2)} ") @L["SAR"]</p>
     </div>
     <div class="d-flex flex-row">
-        <p>
+        <p style="@HasDiscount?'text-decoration: line-through;':''">
             <strong>@L["TotalIncludeVAT"]:</strong>
             @($"{Math.Round((Price + (Price * 0.15m)), 2)} ") @L["SAR"]
         </p>
     </div>
+    @if(HasDiscount)
+    {
+
+        <div class="d-flex flex-row">
+            <p>
+                <strong>@L["After"]  @L["Discount"]:</strong>
+                @($"{PaymentPrice} ") @L["SAR"]
+
+            </p>
+        </div>
+    }
 </div>
 
 @code {
     [Parameter] public Decimal Price { get; set; }
+    [Parameter] public Decimal PaymentPrice { get; set; }
+    [Parameter] public bool HasDiscount { get; set; }
+    
 
 
 }

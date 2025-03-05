@@ -10,6 +10,7 @@ using SmartParking.Invoices;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Globalization;
 using static NuGet.Client.ManagedCodeConventions;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -137,7 +138,19 @@ public partial class Invoice
             Name = L["Invoices"],
             ShowHeader = true
         };
+        if (CurrentTenant.Id == null) {
 
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationEnglishName"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyName = "Organization.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+            }
+            else
+            {
+                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationArabicName"], Name = "OrganizationArabicName", IsFilterable = true, PropertyName = "Organization.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+            }
+        }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = true, PropertyName = "InvoiceId", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyName = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
@@ -156,7 +169,18 @@ public partial class Invoice
 
         foreach (var item in invoices.Items)
         {
-            var rowDef = new RowDef();
+            var rowDef = new RowDef();   
+            if (CurrentTenant.Id == null)
+            {
+                if (CultureInfo.CurrentCulture.Name == "en")
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationEnglishName"], item.OrganizationEnglishName));
+                }
+                else
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationArabicName"], item.OrganizationArabicName));
+                }
+            }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceId"], item.InvoiceId.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceTime"], item.InvoiceTime.ToString()));
             if (CultureInfo.CurrentCulture.Name == "en")
