@@ -13,10 +13,10 @@
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
 @inject IOrganizationsAppService OrganizationService
 <div class="mud-modal">
-  
+
     <div class="title-content d-flex justify-content-center align-items-center">
 
-    <InvoiceDetailsPopupHeader Title="@L[@title]" Description="@description" />
+        <InvoiceDetailsPopupHeader Title="@L[@title]" Description="@description" />
     </div>
 
 
@@ -39,35 +39,35 @@
                 </div>
                 <div class="align-items-center justify-content-center">
                     <h4 class="text-center">
-                        @L["HeaderVatReceiptPayment"]  @($"{Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2)} ") @L["SAR"]
+                        @L["HeaderVatReceiptPayment"]  @($"{PaymentPrice} ") @L["SAR"]
                     </h4>
                 </div>
             </div>
 
-                <div class="d-flex justify-content-center align-items-center col-md-10 flex-column m-auto ">
+            <div class="d-flex justify-content-center align-items-center col-md-10 flex-column m-auto ">
                 @if(Invoice is not null){
                     <InvoiceDetailsPopupDialog Invoice="@Invoice" OrganizationAddress="@OrganizationAddress"/>
                 }else{
                     <PackageDetailsPopupDialog Package="@Package" OrganizationAddress="@OrganizationAddress"/>
                 }
 
-         
-                    <div class="total-info col-md-12" style="margin-top: 2rem;">
-                        <div class="row">
 
-                            <PriceDetailsComponentPopup Price="@price" />
-                            <div class="col-md-6">
-                                <div class="d-flex flex-row justify-content-end">
-                                    <div style="width: 120px;">
-                                        <img src="@imagepath" alt="UnPaid" style="width:120px;" />
-                                    </div>
+                <div class="total-info col-md-12" style="margin-top: 2rem;">
+                    <div class="row">
+
+                        <PriceDetailsComponentPopup Price="@price" />
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row justify-content-end">
+                                <div style="width: 120px;">
+                                    <img src="@imagepath" alt="UnPaid" style="width:120px;" />
                                 </div>
                             </div>
                         </div>
+                    </div>
                     <div class=" d-flex justify-content-end align-items-center mt-3">
 
                         <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank"
-                           style="display: inline-flex; align-items: center; justify-content: center;
+                        style="display: inline-flex; align-items: center; justify-content: center;
                              background-color: #3A7398; color: white; text-decoration: none;
                              font-size: 16px; font-weight: bold; padding: 10px 20px;
                              border-radius: 8px; transition: all 0.3s ease-in-out;">
@@ -75,9 +75,9 @@
 
                         </a>
                     </div>
-                    </div>
                 </div>
             </div>
+        </div>
 
     </div>
 </div>
@@ -94,19 +94,24 @@
     [Parameter] public int ID { get; set; }
     [Parameter] public string OrganizationAddress { get; set; }
     [Parameter] public string Code { get; set; }
+    [Parameter] public decimal PaymentPrice { get; set; }
     public string imagepath { get; set; }
     public string OrganizationPicture { get; set; }
     public decimal price { get; set; }
     public string title { get; set; }
     public string description { get; set; }
+    public bool HasDiscount { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if(Invoice is not null ){
+        if (Invoice is not null) {
             price = Invoice.InvoicePrice;
             title = "Invoice";
             description = Code;
-        }
+            if (Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2) != PaymentPrice){
+                HasDiscount = true;
+            }
+    }
         else{
 
             price = Package.Price;
