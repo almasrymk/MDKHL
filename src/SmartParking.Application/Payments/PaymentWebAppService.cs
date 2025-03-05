@@ -1,4 +1,5 @@
 ﻿
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
@@ -26,6 +27,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 {
     private readonly IRepository<Payment, Guid> _paymentRepository;
     private readonly IDataFilter _dataFilter;
+    private readonly IRepository<Organization, int> organizationRepository;
     private readonly IPackagesAppService _packagesAppService;
     private readonly IRepository<Invoice, int> _invoiceAppService;
     private readonly IOrganizationsAppService _organizationsAppService;
@@ -44,6 +46,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _organizationsAppService.GetAllMobileAsync();
             query = query.OrderByDescending(x => x.CreationTime);
             query = query.Include(x => x.Customers).ThenInclude(c => c.IdentityUser);
             query = query.Include(x => x.Invoice);
@@ -53,8 +56,28 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var totalCount = await AsyncExecuter.CountAsync(query);
             query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
             var payments = await AsyncExecuter.ToListAsync(query);
-            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
-
+            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments).Select(dto => new PaymentDto
+            {
+                Id = dto.Id,
+                CustomerId = dto.CustomerId,
+                CheckoutId = dto.CheckoutId,
+                PaymentStatus = dto.PaymentStatus,
+                InvoiceId = dto.InvoiceId,
+                PackageId = dto.PackageId,
+                PaymentCategory = dto.PaymentCategory,
+                OrganizatioId = dto.OrganizatioId,
+                QrCodeInvoice = dto.QrCodeInvoice,
+                Customers = dto.Customers,
+                PaymentMethod = dto.PaymentMethod,
+                Amount = dto.Amount,
+                Currency = dto.Currency,
+                CreationTime = dto.CreationTime,
+                PaymentNumber = dto.PaymentNumber,
+                PlateNumber = dto.PlateNumber,
+                OrganizationArabicName = organizations.Value.Any( _ => _.Id == dto.OrganizatioId) ? organizations.Value.FirstOrDefault(_ => _.Id == dto.OrganizatioId).ArabicName : string.Empty,
+                OrganizationEnglishName = organizations.Value.Any(_ => _.Id == dto.OrganizatioId) ? organizations.Value.FirstOrDefault(_ => _.Id == dto.OrganizatioId).EnglishName : string.Empty
+                
+            }).ToList();
             return new PagedResultDto<PaymentDto>
             {
                 TotalCount = totalCount,
