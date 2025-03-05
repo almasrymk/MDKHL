@@ -307,6 +307,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     public async Task<PaymentDto> GetPaymentForInvoice(int invoiceId)
     {
-        return ObjectMapper.Map<Payment,PaymentDto>(await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId));
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return ObjectMapper.Map<Payment,PaymentDto>(await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId));
+        }
     }
 }
