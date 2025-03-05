@@ -9,6 +9,7 @@ using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -30,6 +31,7 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
     public async Task<PagedResultDto<DiscountDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var query = await _repository.GetQueryableAsync();
+        query = ApplySort(input, query);
         query = SearchCriteria(input, query);
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -40,6 +42,23 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
             discountsDto
         );
     }
+
+    private static IQueryable<Discount>? ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Discount>? query)
+    {
+        var sorting = input.Sorting;
+        if (!string.IsNullOrEmpty(sorting))
+        {
+            if (sorting.Contains("DESC"))
+            {
+                var sortingSplit = sorting.Split(' ').ToList();
+                sorting = sortingSplit[0] + " descending";
+            }
+            query = query.OrderBy(sorting);
+        }
+
+        return query;
+    }
+
     public async Task<Result<List<DiscountDto>>> GetListMobileAsync()
     {
         var query = await _repository.GetQueryableAsync();
