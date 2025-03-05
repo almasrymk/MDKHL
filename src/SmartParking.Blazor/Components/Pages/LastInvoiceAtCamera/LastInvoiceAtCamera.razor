@@ -62,7 +62,7 @@
 	private InvoiceDto Invoice  = new InvoiceDto();
 	private bool NoInvoice { get; set; } = false;
 	public PaymentMethod PaymentMethod { get; set; }
-	private DiscountDto selectedItem;
+	private DiscountDto selectedItem =  new DiscountDto();
 	public List<DiscountDto> _discounts = new List<DiscountDto>();
 
 	private void HandleLookupSelection(DiscountDto selected)
@@ -95,7 +95,9 @@
 			InvoiceId = Invoice.Id,
 			PaymentMethod = PaymentMethod,
 		    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, selectedItem.DiscountPercent),
-			CustomerId = Invoice.CustomerId
+			CustomerId = Invoice.CustomerId,
+			PaymentName=PaymentMethod.Cash.ToString()
+			
 		};
 		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
 		if (payment != null)

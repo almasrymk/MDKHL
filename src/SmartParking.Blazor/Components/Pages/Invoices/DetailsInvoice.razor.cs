@@ -68,7 +68,7 @@ public partial class DetailsInvoice
 
     public List<VehicleDto> vehicles = new List<VehicleDto>();
 
-    private DiscountDto selectedItem;
+    private DiscountDto selectedItem = new DiscountDto();
     public List<DiscountDto> _discounts = new List<DiscountDto>();
 
     private void HandleLookupSelection(DiscountDto selected)
