@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
+using SmartParking.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
@@ -48,6 +49,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IVehicleAppService _vehicleAppService;
+    private readonly IDiscountAppService _discountAppService;
+
 
     public KeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
@@ -63,7 +66,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IPaymentAppService paymentAppService,
          IInvoiceAppService invoiceAppService,
          IAuthenticationUtility authenticationUtility,
-         IVehicleAppService vehicleAppService)
+         IVehicleAppService vehicleAppService,
+         IDiscountAppService discountAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -79,6 +83,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _invoiceAppService = invoiceAppService;
         this._authenticationUtility = authenticationUtility;
         _vehicleAppService = vehicleAppService;
+        _discountAppService = discountAppService;
     }
 
     /// <inheritdoc/>
@@ -297,7 +302,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId)
+    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId , int discountId =default)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -307,12 +312,21 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 return Result.Error("InvoiceIsAlreadyPaid");
 
             }
+            DiscountDto discount = new DiscountDto();
+            if(discountId != default)
+            {
+                 discount = await _discountAppService.GetAsync(discountId);
+                if (discount is null)
+                {
+                    return Result.Error("DiscountNotFound");
+                }
+            }
 
             var paymentRequest = new PaymentCheckoutRequestDto
             {
                 PaymentCategory=PaymentCategory.PaymentParking,
                 PaymentMethod=PaymentMethod.Cash,
-                Amount= Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
+                Amount= PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discount.DiscountPercent),
                 CustomerId=invoice.CustomerId,
                 OrganizationId=invoice.OrganizationId,
                 InvoiceId=invoiceId,
@@ -324,36 +338,14 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
             invoiceDto.QrCodeInvoice = image.Value;
             invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
-            invoiceDto.QrCodeInvoice = image.Value;
+            invoiceDto.InvoicePriceWithDiscountAndVat = paymentRequest.Amount;
             invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
             return invoiceDto;
         }
     }
-    public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType)
+    public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType, int discountId = default)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var invoice = await _invoiceRepository.GetAsync(invoiceId);
-
-            var paymentRequest = new PaymentCheckoutRequestDto
-            {
-                PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod = PaymentMethod.Cash,
-                Amount = Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2),
-                CustomerId = invoice.CustomerId,
-                OrganizationId = invoice.OrganizationId,
-                InvoiceId = invoiceId,
-                PaymentName = PaymentType,
-                
-            };
-            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
-            var image =await _invoiceAppService.GetImage(invoice,result.QrCodeInvoice);
-            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
-            invoiceDto.QrCodeInvoice = image.Value;
-            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
-            invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
-            return invoiceDto;
-        }
+       return await CheckoutAsync(invoiceId, discountId);
     }
 
     private static bool CheckIfInvoiceIsPaid(Invoice invoice)

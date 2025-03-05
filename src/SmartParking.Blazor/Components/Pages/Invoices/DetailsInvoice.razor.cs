@@ -20,6 +20,7 @@ using SmartParking.Payments;
 using FluentValidation;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Discounts;
+using SmartParking.Utilities;
 
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
@@ -134,7 +135,7 @@ public partial class DetailsInvoice
             PaymentCategory = IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
             InvoiceId = Id,
             PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, selectedItem),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, selectedItem.DiscountPercent),
             CustomerId = CustomerId
         };
         var payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
