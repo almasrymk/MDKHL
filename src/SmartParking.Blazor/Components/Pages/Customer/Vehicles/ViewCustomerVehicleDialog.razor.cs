@@ -145,7 +145,7 @@ public partial class ViewCustomerVehicleDialog
         }
         else
         {
-            var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber);
+            var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber,CurrentTenant.Id);
             Data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto , CurrentTenant.Id);
 
         }

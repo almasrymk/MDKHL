@@ -350,7 +350,7 @@ public partial class Customer
     public async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-        var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId);
+        var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId,CurrentTenant.Id);
         var data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis , currrentTenant.Id);
 
         await DownloadExcel(data, row.Cells[1].Value);
