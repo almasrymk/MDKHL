@@ -748,9 +748,10 @@
     "RemoveAssignShiftValidation": " لا يمكن الغاء التخصيص لهذه الورديه",
     "Discounts": "الخصومات",
     "DiscountPercent": "نسبة الخصم",
-    "Permission:Discount" :  "موديول الخصومات" ,
+    "Permission:Discount": "موديول الخصومات",
     "After": "بعد",
     "PercentageValidtion": "يجب أن تكون القيمة بين 0 و 100.",
-    "StatusValidtion": "اختيار الحالة غير صالح."
+    "StatusValidtion": "اختيار الحالة غير صالح.",
+    "RemoveUserFromShiftSuccessfully" : "تم الغاء التخصيص للمستخدم من الورديه بنجاح"
   }
 }

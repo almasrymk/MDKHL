@@ -397,12 +397,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             {
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
-
-            if( ! await _keeperShiftRepository.AnyAsync(s => s.KeeperId != keeperShift.KeeperId && s.ShiftId == keeperShift.ShiftId))
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("RemoveAssignShiftValidation"));
-            }
-
             await _keeperShiftRepository.HardDeleteAsync(keeperShift, true);
         }
     }
