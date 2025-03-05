@@ -417,8 +417,8 @@ img[style*='width:120px;'] {
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
         string fileName = $"{invoiceId}.{"pdf"}";
         string fullPath = Path.Combine(imageDirectoryPath, fileName);
-        var organization = await _organizationPdfAppService.GetOrganizationForCurrentTenatAsync();
         var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
+        var organization = await _organizationPdfAppService.GetAsync(payment.OrganizationId);
         string currentPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
         string QRCodePath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{image.Value}");
         string InvoiceNumber = LocalizationHelper.GetLocalizedString("Invoice");
@@ -525,8 +525,8 @@ img[style*='width:120px;'] {
     .SetFontSize(15);
 
         Paragraph Vat = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"{organization.TaxIdentificationNumber.ArabicWithFontGlyphsToPDF()}:{Vats.ArabicWithFontGlyphsToPDF()}"
-            : $"{Vats}: {organization.TaxIdentificationNumber}")
+            ? $"{organization.TaxNumber.ArabicWithFontGlyphsToPDF()}:{Vats.ArabicWithFontGlyphsToPDF()}"
+            : $"{Vats}: {organization.TaxNumber}")
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(15);
 
