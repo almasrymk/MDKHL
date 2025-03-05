@@ -60,9 +60,9 @@ public interface IAnalysisAppService : IApplicationService
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
-    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId, Guid? tenantId);
     Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
-    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber);
+    Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber, Guid? tenantId);
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
     Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
     Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);

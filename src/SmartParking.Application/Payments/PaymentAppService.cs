@@ -293,7 +293,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     PaymentCategory = payment.PaymentCategory,
                     InvoiceId = payment.InvoiceId,
                     PackageId = payment.PackageId,
-                    OrganizatioId = payment.OrganizationId,
+                    OrganizationId = payment.OrganizationId,
                     QrCodeInvoice = payment.QrCodeInvoice,
                 };
             }

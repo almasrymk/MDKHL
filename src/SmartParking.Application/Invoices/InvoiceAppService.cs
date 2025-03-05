@@ -235,14 +235,17 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
-        var invoice = await _invoiceRepository.GetAsync(invoiceId);
-        if (invoice is null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            return Result.NotFound();
-        }
-        string? qrCode = await GetQrCodeAsync(invoice);
+            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            if (invoice is null)
+            {
+                return Result.NotFound();
+            }
+            string? qrCode = await GetQrCodeAsync(invoice);
 
-        return await GetImage(invoice, qrCode);
+            return await GetImage(invoice, qrCode);
+        }
     }
 
     private async Task<string?> GetQrCodeAsync(Invoice? invoice)

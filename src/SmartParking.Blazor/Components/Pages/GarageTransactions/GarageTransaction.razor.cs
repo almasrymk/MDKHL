@@ -240,8 +240,21 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				ShowHeader = true
 			};
 
+            if (CurrentTenant.Id == null)
+            {
 
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+                if (CultureInfo.CurrentCulture.Name == "en")
+                {
+                    tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationEnglishName"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyName = "Organization.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+                }
+                else
+                {
+                    tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationArabicName"], Name = "OrganizationArabicName", IsFilterable = true, PropertyName = "Organization.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+                }
+            }
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyName = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyName = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -252,7 +265,18 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			foreach (var item in garageTransactions.Items)
 			{
 				var rowDef = new RowDef();
-				rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+                if (CurrentTenant.Id == null)
+                {
+                    if (CultureInfo.CurrentCulture.Name == "en")
+                    {
+                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationEnglishName"], item.OrganizationEnglishName));
+                    }
+                    else
+                    {
+                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationArabicName"], item.OrganizationArabicName));
+                    }
+                }
+                rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));

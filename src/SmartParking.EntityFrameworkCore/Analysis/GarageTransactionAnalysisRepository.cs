@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.TenantManagement;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
@@ -72,11 +73,12 @@ public class GarageTransactionAnalysisRepository
     }
 
   
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisPlate(string PlateNumber)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisPlate(string PlateNumber, Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
+                    where tenantId == null || garageTransaction.TenantId == tenantId
                     where garageTransaction.PlateNumber == PlateNumber
 
                     join vehicle1 in dbContext.Vehicles
@@ -108,12 +110,12 @@ public class GarageTransactionAnalysisRepository
 
         return await query.ToListAsync();
     }
-    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisCustomerId(Guid CustomerId)
+    public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisCustomerId(Guid CustomerId,Guid? tenantId)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = from garageTransaction in dbContext.GarageTransactions
-
+                    where tenantId == null || garageTransaction.TenantId == tenantId
                     join vehicle1 in dbContext.Vehicles
                     .Include(x => x.Customer).ThenInclude(x => x.IdentityUser)
                         on garageTransaction.PlateNumber equals vehicle1.EnPlateNumber

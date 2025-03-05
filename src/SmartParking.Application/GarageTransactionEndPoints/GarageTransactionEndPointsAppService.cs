@@ -399,9 +399,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool flag = false;
         var EntryTransaction = await FindEntranceTime(GarageTransaction.PlateNumber);
         var EntranceTime = EntryTransaction?.AccurateTime;
+        var garage = await GetGarage(garageId);
 
         if (EntranceTime is null || EntranceTime > GarageTransaction.AccurateTime)
         {
+            await FreeSlots(garage, null);
             await InVailedCasesForTransacrion(GarageTransaction, EntranceTime);
             return await Task.FromResult(false);
         }
@@ -411,7 +413,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
         GarageTransaction.CustomerCategory = packageDto is null ? CustomerCategoryStatus.Customer : packageDto.CustomerCategory;
 
-        var garage = await GetGarage(garageId);
         var _categoryHasChanged = await CheckForCategoriesInTransactionsHasBeenChanged(GarageTransaction, EntryTransaction, garage);
         Customer exsitCustomer = customer is not null ? await GetCustomer(customer) : null;
 

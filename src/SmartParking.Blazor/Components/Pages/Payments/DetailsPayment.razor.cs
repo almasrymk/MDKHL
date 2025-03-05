@@ -52,6 +52,7 @@ public partial class DetailsPayment
             ["CommercialRegisteration"] = Payment.Organization.TaxNumber,
             ["OrganizationAddress"] = Payment.Organization.Address,
             ["Code"] = Payment.PaymentNumber??"",
+            ["PaymentPrice"] = Payment.Amount,
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 

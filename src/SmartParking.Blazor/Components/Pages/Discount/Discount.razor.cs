@@ -165,7 +165,7 @@ public partial class Discount
             ["Name"] = Name,
 
         };
-        await DiscountAppService.DeleteAsync(id);
+        await DiscountAppService.DeleteDiscountAsync(id);
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("Discount Delete Dialog", parameters);
         var result = await dialog.Result;
         try

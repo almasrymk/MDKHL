@@ -113,12 +113,13 @@
 
                         }
                        
-                        <MudItem sm="6">
-                            <MudCheckBox T="bool" @bind-Value="createUpdateCustomerDto.IsUser"  Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
+                        <MudItem sm="6" md="6" Style="margin-left: -13px">
+                            <MudCheckBox  T="bool" @bind-Value="createUpdateCustomerDto.IsUser"  Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
                         </MudItem>
                         @if (createUpdateCustomerDto.IsUser && createUpdateCustomerDto.OrganizationId > 0)
                         {
-                            <MudItem sm="6" md="6">
+                         
+                            <MudItem sm="6" md="6" Style="@(CurrentTenant.Id != null ? "margin-left: 13px;" : "margin-left:0")">
                                 <MudSelect @bind-Value="@RoleId"
                                            Label="@L["UserRole"]"
                                            Placeholder="@L[ "Choose"]"
