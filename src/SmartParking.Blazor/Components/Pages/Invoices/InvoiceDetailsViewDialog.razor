@@ -108,7 +108,9 @@
             price = Invoice.InvoicePrice;
             title = "Invoice";
             description = Code;
-            if (Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2) != PaymentPrice){
+            var tprice = Math.Round((price + (price * 0.15m)), 2);
+            if (tprice != PaymentPrice)
+            {
                 HasDiscount = true;
             }
         }
