@@ -65,7 +65,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 InvoiceId = dto.InvoiceId,
                 PackageId = dto.PackageId,
                 PaymentCategory = dto.PaymentCategory,
-                OrganizatioId = dto.OrganizatioId,
+                OrganizationId = dto.OrganizationId,
                 QrCodeInvoice = dto.QrCodeInvoice,
                 Customers = dto.Customers,
                 PaymentMethod = dto.PaymentMethod,
@@ -74,8 +74,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 CreationTime = dto.CreationTime,
                 PaymentNumber = dto.PaymentNumber,
                 PlateNumber = dto.PlateNumber,
-                OrganizationArabicName = organizations.Value.Any( _ => _.Id == dto.OrganizatioId) ? organizations.Value.FirstOrDefault(_ => _.Id == dto.OrganizatioId).ArabicName : string.Empty,
-                OrganizationEnglishName = organizations.Value.Any(_ => _.Id == dto.OrganizatioId) ? organizations.Value.FirstOrDefault(_ => _.Id == dto.OrganizatioId).EnglishName : string.Empty
+                OrganizationArabicName = organizations.Value.Any( _ => _.Id == dto.OrganizationId) ? organizations.Value.FirstOrDefault(_ => _.Id == dto.OrganizationId).ArabicName : string.Empty,
+                OrganizationEnglishName = organizations.Value.Any(_ => _.Id == dto.OrganizationId) ? organizations.Value.FirstOrDefault(_ => _.Id == dto.OrganizationId).EnglishName : string.Empty
                 
             }).ToList();
             return new PagedResultDto<PaymentDto>
