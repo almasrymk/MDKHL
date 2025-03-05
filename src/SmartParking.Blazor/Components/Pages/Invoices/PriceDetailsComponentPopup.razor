@@ -14,12 +14,15 @@
             @($"{Math.Round((Price + (Price * 0.15m)), 2)} ") @L["SAR"]
         </p>
     </div>
-    <div class="d-flex flex-row" style="@HasDiscount?'text-decoration: line-through;':''">
-        <p>
-            <strong>@L@L["After"]  @L["Discount"]:</strong>
-            @($"{PaymentPrice} ") @L["SAR"]
-        </p>
-    </div>
+    @if(HasDiscount){
+
+        <div class="d-flex flex-row">
+            <p>
+                <strong>@L@L["After"]  @L["Discount"]:</strong>
+                @($"{PaymentPrice} ") @L["SAR"]
+            </p>
+        </div>
+    }
 </div>
 
 @code {

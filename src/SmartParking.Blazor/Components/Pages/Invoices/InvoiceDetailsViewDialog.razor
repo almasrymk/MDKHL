@@ -100,7 +100,7 @@
     public decimal price { get; set; }
     public string title { get; set; }
     public string description { get; set; }
-    public bool HasDiscount { get; set; }
+    public bool HasDiscount { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,7 +111,7 @@
             if (Math.Round((Invoice.InvoicePrice + (Invoice.InvoicePrice * 0.15m)), 2) != PaymentPrice){
                 HasDiscount = true;
             }
-    }
+        }
         else{
 
             price = Package.Price;
