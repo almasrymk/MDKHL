@@ -124,8 +124,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     {
         bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
                      ks.KeeperId == input.KeeperId &&
-                     ks.ShiftId == input.ShiftId);
-
+                     ks.ShiftId == input.ShiftId&&
+                     ks.EndDate >= input.StartDate);
         if (alreadyAssigned)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
@@ -397,12 +397,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             {
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
-
-            if( ! await _keeperShiftRepository.AnyAsync(s => s.KeeperId != keeperShift.KeeperId && s.ShiftId == keeperShift.ShiftId))
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("RemoveAssignShiftValidation"));
-            }
-
             await _keeperShiftRepository.HardDeleteAsync(keeperShift, true);
         }
     }
