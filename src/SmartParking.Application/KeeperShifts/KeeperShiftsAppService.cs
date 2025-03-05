@@ -124,8 +124,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     {
         bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
                      ks.KeeperId == input.KeeperId &&
-                     ks.ShiftId == input.ShiftId);
-
+                     ks.ShiftId == input.ShiftId&&
+                     ks.EndDate >= input.StartDate);
         if (alreadyAssigned)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
