@@ -19,7 +19,7 @@ using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Discounts;
 
-public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, PagedAndSortedResultRequestDto, CreateUpdateDiscountDto>, IDiscountAppService
+public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, PagedAndSortedAndSearchResultRequestDto, CreateUpdateDiscountDto>, IDiscountAppService
 {
     private readonly IRepository<Discount, int> _repository;
 
@@ -28,7 +28,7 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
         _repository = repository;
     }
 
-    public async Task<PagedResultDto<DiscountDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
+    public override async Task<PagedResultDto<DiscountDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var query = await _repository.GetQueryableAsync();
         query = ApplySort(input, query);
@@ -83,7 +83,7 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
         return queryable;
     }
 
-    public override async Task<DiscountDto> DeleteAsync(int id)
+    public async Task<DiscountDto> DeleteDiscountAsync(int id)
     {
         var discount = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
         var discountsDto = ObjectMapper.Map<Discount,DiscountDto>(discount);
