@@ -68,9 +68,9 @@ public partial class ViewUserShiftsDialog
     }
     public async Task OnClickRowDelete(RowDef row)
     {
-        var successMessage = L["StateDeletedSuccessfully "];
+        var successMessage = L["RemoveUserFromShiftSuccessfully"];
         var id = int.Parse(row.Cells[0].Value);
-        var Name = row.Cells[2].Value;
+        var Name = CurrentTenant.Id != null ? row.Cells[2].Value : row.Cells[3].Value;
 
         var parameters = new DialogParameters
         {
