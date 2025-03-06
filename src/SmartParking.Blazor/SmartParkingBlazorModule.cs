@@ -83,7 +83,15 @@ public class SmartParkingBlazorModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
-
+        Configure<AbpTenantResolveOptions>(options =>
+        {
+            var domains = configuration.GetSection("TenantDomains").Get<List<string>>();
+            foreach (var domain in domains)
+            {
+                options.AddDomainTenantResolver(domain);
+            }
+           
+        });
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
             options.AddAssemblyResource(
