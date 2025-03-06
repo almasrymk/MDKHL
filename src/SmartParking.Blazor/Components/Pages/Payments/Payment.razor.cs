@@ -190,11 +190,11 @@ public partial class Payment
             if (CultureInfo.CurrentCulture.Name == "en")
             {
 
-                tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "OrganizationName", IsFilterable = true });
+                tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "OrganizationEnglishName", IsFilterable = true });
             }
             else
             {
-                tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "OrganizationNameAr", IsFilterable = true });
+                tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "OrganizationArabicName", IsFilterable = true });
 
             }
         }
@@ -220,11 +220,11 @@ public partial class Payment
             {
                 if (CultureInfo.CurrentCulture.Name == "ar")
                 {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationArabicName));
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationArabicName"), item.OrganizationArabicName));
                 }
                 else
                 {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationEnglishName));
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationEnglishName"), item.OrganizationEnglishName));
                 }
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.InvoiceId.HasValue ? item.PlateNumber : @L["Pacakge"]));
@@ -243,7 +243,7 @@ public partial class Payment
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.FullName ?? _localizer["NotCustomer"]));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.IdentityUser?.Name ?? _localizer["NotCustomer"]));
             }
         
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
