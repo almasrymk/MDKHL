@@ -25,6 +25,7 @@ public class PaymentDto
     public string PlateNumber { get; set; }
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
+    public decimal AmountWithoutDiscount { get; set; }
 
 
 
