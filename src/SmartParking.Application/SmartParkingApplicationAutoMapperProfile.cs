@@ -211,7 +211,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         
         CreateMap<Payment, PaymentDto>()
            .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.InvoiceId.HasValue?src.Invoice.PlateNumber:LocalizationHelper.GetLocalizedString("Package")))
-           .ForMember(dest => dest.Customers, opt => opt.MapFrom(src => src.Customers)).ReverseMap();
+           .ForPath(dest => dest.AmountWithoutDiscount, opt => opt.MapFrom(src => src.InvoiceId.HasValue?(src.Invoice.InvoicePrice+(src.Invoice.InvoicePrice*0.15m)):0))
+           .ForMember(dest => dest.Customers, opt => opt.MapFrom(src => src.Customers))
+           .ReverseMap();
 
         CreateMap<Customer, CustomerDto>()
             .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.IdentityUser.Name))

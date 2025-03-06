@@ -27,6 +27,7 @@ public class PaymentDto
     public string PlateNumber { get; set; }
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
+    public decimal AmountWithoutDiscount { get; set; }
     public Guid? TenantId { get; set; }
     public Invoice Invoice { get; set; }
 }

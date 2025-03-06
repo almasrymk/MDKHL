@@ -64,13 +64,13 @@ public partial class Payment
         termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        sortColumn = pageInfo.SortColumn;
+        sortColumn =sort;
 
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * pageInfo.RowsPerPage,
+            Sorting = sortColumn,
             SearchingTerm = termSearch
         };
 
@@ -204,7 +204,7 @@ public partial class Payment
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customers.CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Amount"], Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Currency"], Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Discount"], Name = "Discount", IsFilterable = true, PropertyName = "", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -236,7 +236,7 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() is null ? _localizer["NotCustomer"]: _localizer[$"{item.Customers?.CustomerCategory.ToString()}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Amount"], item.Amount.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Currency"], _localizer[$"{item.Currency.ToString()}"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Discount"], Math.Round((item.AmountWithoutDiscount-item.Amount),2).ToString()));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.ArabicName ?? _localizer["NotCustomer"]));

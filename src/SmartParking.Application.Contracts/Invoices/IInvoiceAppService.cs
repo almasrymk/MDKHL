@@ -35,6 +35,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <param name="input">specifies max number of invoice and if it sorted or not and search term</param>
     /// <returns>InvoiceDto</returns>
     public Task<PagedResultDto<InvoiceDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    public Task<PagedResultDto<InvoiceDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
 
     /// <summary>
     /// abstract method to filter of invoices

@@ -80,5 +80,15 @@ partial class EmployeeReport
          var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
          TotalItem = (int)garageTransactionAnalyses.TotalCount;
          itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            itemData.Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+
+        }
+        else
+        {
+            itemData.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis");
+
+        }
     }
 }

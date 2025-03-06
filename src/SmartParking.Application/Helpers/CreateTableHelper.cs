@@ -500,7 +500,7 @@ public static class CreateTableHelper
     {
         var tableData = new TableData()
         {
-            Name = LocalizationHelper.GetLocalizedString("KeeperTransactionReport"),
+            Name = LocalizationHelper.GetLocalizedString("KeeperCountTransactionsReport"),
             ShowHeader = true
         };
 
