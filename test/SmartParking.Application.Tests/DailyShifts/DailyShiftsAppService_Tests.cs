@@ -2,6 +2,7 @@ using AutoMapper.Internal.Mappers;
 using Shouldly;
 using SmartParking.DailyShifts;
 using SmartParking.Entities.Shifts;
+using SmartParking.KeeperShifts;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,16 @@ public abstract class DailyShiftsAppService_Tests<TStartupModule> : SmartParking
     where TStartupModule : IAbpModule
 //IRepository<Shift, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationRepository, IRepository<Garage, int> garageRepository
 {
+
+    private readonly IShiftAppService _shiftAppService;
+    private readonly IKeeperShiftsAppService _keeperShiftsAppService;
     private readonly IDailyShiftAppService _dailyShiftAppService;
     protected DailyShiftsAppService_Tests()
     {
         _dailyShiftAppService =  GetRequiredService<IDailyShiftAppService>();
-        ;
+        _keeperShiftsAppService = GetRequiredService<IKeeperShiftsAppService>();
+        _shiftAppService = GetRequiredService<IShiftAppService>();
+
     }
     [Fact] 
     public async Task DailyShiftCheckStartMidNightShift()
@@ -41,5 +47,36 @@ public abstract class DailyShiftsAppService_Tests<TStartupModule> : SmartParking
 
         Assert.NotNull(result);
         
+    }
+
+
+    [Fact]
+    public async Task TestSeedDataForShift()
+    {
+        var result = await _shiftAppService.GetListAsync(new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = 100,
+            SkipCount = 0  ,
+            Sorting = "Id"
+        });
+
+        Assert.NotNull(result);
+
+    }
+
+    [Fact]
+    public async Task TestSeedDataForKeeperShift()
+    {
+        var result = await _keeperShiftsAppService.GetListAssignedShiftsToUserForMdkhal( null,new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") ,  new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = 100,
+            SkipCount = 0,
+            Sorting = "Id"
+        });
+
+
+        Assert.Equal(2, result.TotalCount);
+      //  Assert.NotNull(result);
+
     }
 }
