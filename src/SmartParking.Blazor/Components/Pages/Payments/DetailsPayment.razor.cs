@@ -21,7 +21,10 @@ public partial class DetailsPayment
     private string LocalizedPaymentStatus{ get; set; }
     private string LocalizedPaymentCurrency{ get; set; }
     private string LocalizedPaymentInvoiceType{ get; set; }
-    
+
+    private string AmountDiscount { get; set; }
+
+
     private async Task FetchPayment()
     {
         Payment = await PaymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
@@ -32,6 +35,7 @@ public partial class DetailsPayment
         LocalizedPaymentStatus=L[Payment.PaymentStatus];
         LocalizedPaymentCurrency = L[Payment.Currency];
         LocalizedPaymentInvoiceType = L[Payment.Invoice.InvoiceType];
+        AmountDiscount=Math.Round((Payment.Invoice.InvoicePrice+ (Payment.Invoice.InvoicePrice*0.15m))- Payment.Amount, 2).ToString();
 
     }
     protected override async Task OnInitializedAsync()

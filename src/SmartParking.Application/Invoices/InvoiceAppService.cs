@@ -139,7 +139,10 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
-                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower())
+                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower())||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                
             // full date-time or includes hour
             );
 
@@ -210,7 +213,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
         // Map the garages entities to garagesDto objects
         var invoicesDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
-        Console.WriteLine(invoicesDto.Count);
         // Return the paginated result
         return new PagedResultDto<InvoiceDto>(
             totalCount,
@@ -304,7 +306,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
             await File.WriteAllBytesAsync(fullPath, qrCodeImage);
 
-            Console.WriteLine($"Image saved successfully at {fullPath}");
 
             return $"{folderQrImage}/{folderImages}/{fileName}";
         }
@@ -408,5 +409,13 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
       
         
+    }
+
+    public async Task<PagedResultDto<InvoiceDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await Search(input);
+        }
     }
 }
