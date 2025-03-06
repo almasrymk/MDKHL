@@ -42,8 +42,12 @@ public sealed class KeeperShiftSingletonService : ISingletonService<StateManagem
         }
 
         return state;
-    }      
-     
+    }
+
+    public void Refresh()
+    {
+        state = null;
+    }
 
     public async  Task<StateManagementDto> SetAsync(int key)
     {
