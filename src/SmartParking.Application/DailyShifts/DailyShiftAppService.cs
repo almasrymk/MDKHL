@@ -57,8 +57,6 @@ public class DailyShiftAppService :
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
         KeeperShift? assignShift = await GetAssignShift(input) ?? throw new Exception(LocalizationHelper.GetLocalizedString("NotAssignShift"));
-        input.RequestTime = DateTime.Now;
-
         await (input.KeeperShiftRequestType switch
         {
             KeeperShiftRequestType.StartShift => HandleStartShift(input , assignShift),
@@ -116,7 +114,7 @@ public class DailyShiftAppService :
     {
         var currentTime = TimeOnly.FromDateTime(input.RequestTime);
         var currentDate = DateOnly.FromDateTime(input.RequestTime);
-        if (currentDate < assignShift.StartDate || currentDate > assignShift.EndDate)
+        if (!(currentDate >= assignShift.StartDate && currentDate <= assignShift.EndDate))
             throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
 
         if (assignShift.StartTime < assignShift.EndTime  && currentTime < assignShift.StartTime || currentTime >= assignShift.EndTime)
