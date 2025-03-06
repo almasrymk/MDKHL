@@ -45,7 +45,7 @@ namespace SmartParking.Authentication;
 // Service Implementation
 
 /// <inheritdoc/>
-public class AuthenticationAppService : ApplicationService, IAuthenticationAppService 
+public class AuthenticationAppService : ApplicationService, IAuthenticationAppService
 {
 
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -60,6 +60,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IUsersAppService _usersAppService;
     private readonly TaqnyatSmsOptionsDto _options;
     private readonly HttpClient _httpClient;
+    private readonly ICurrentTenant _currentTenant;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -73,7 +74,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IDataFilter dataFilter,
         IAuthenticationUtility authenticationUtility,
         IUsersAppService usersAppService,
-        HttpClient httpClient)
+        HttpClient httpClient,
+        ICurrentTenant currentTenant)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -86,6 +88,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _authenticationUtility = authenticationUtility;
         _usersAppService = usersAppService;
         _httpClient = httpClient;
+        _currentTenant = currentTenant;
         _options = options.Value;
     }
     /// <inheritdoc/>
@@ -103,7 +106,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         if (user == null)
         {
-            throw new ValidationException(LocalizationHelper.GetLocalizedString("User")+" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            throw new ValidationException(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         user.SetPhoneNumber(phone, true);
         var removePasswordResult = await _userManager.RemovePasswordAsync(user);
@@ -146,7 +149,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
 
-    
+
 
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> GetUserDataAsync()
@@ -221,7 +224,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                     Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
                     TenantId = CurrentTenant.Id.ToString()
                 });
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return Result<LoginResultDto>.Invalid(new Results.ValidationError
                 {
@@ -229,8 +233,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                     ErrorMessage = "Invalid credentials."
                 });
             }
-            }
-        
+        }
+
 
     }
     [RemoteService(IsEnabled = false)]
@@ -255,34 +259,45 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     [RemoteService(IsEnabled = false)]
     public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
     {
-        IdentityUser user;
+        IdentityUser? user;
 
-        using (DataFilter.Disable<IMultiTenant>())
-        { 
-            user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == input.Username || u.PhoneNumber == input.Username);
-            if (user == null)
-              throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
-
-             await CheckOrganization(user);
-            
-            await CheckRole(user);
-            
-            await CheckPassword(input, user);
-            
-
+        if (CurrentTenant.IsAvailable)
+        {
+            user = await FindUserAsync(input);
+        }
+        else
+        {
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                user = await FindUserAsync(input);
+            }
         }
 
-        
+        if (user == null)
+            throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
+
+        await CheckOrganization(user);
+
+        await CheckRole(user);
+
+        await CheckPassword(input, user);
+
+
         return user;
     }
-    
+
+    private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
+    {
+        return await _userRepository.FirstOrDefaultAsync(u =>
+            u.UserName == input.Username || u.PhoneNumber == input.Username);
+    }
 
     private async Task CheckPassword(LoginInputDto input, IdentityUser user)
     {
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
             throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
         if (user.IsActive == false)
-         throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
         return;
     }
 
@@ -319,20 +334,20 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         try
         {
-           
-            var user = ObjectMapper.Map<RegisterInputDto ,UserCreateDto>(input);
+
+            var user = ObjectMapper.Map<RegisterInputDto, UserCreateDto>(input);
             var userAdded = await _usersAppService.AddAndValidateUserAsync(user);
-            await _usersAppService.CreateCustomerWithRoleAsync(userAdded,user);
+            await _usersAppService.CreateCustomerWithRoleAsync(userAdded, user);
 
             var AccessToken = await _authenticationUtility.GenerateTokenAsync(userAdded) ?? string.Empty;
-            return  Result<RegisterResultDto>.Success(new RegisterResultDto
+            return Result<RegisterResultDto>.Success(new RegisterResultDto
             {
                 AccessToken = AccessToken,
             });
         }
         catch (AbpValidationException validationException)
         {
-                return Result<RegisterResultDto>.Error(validationException?.ValidationErrors?.FirstOrDefault()?.MemberNames.First() + " - " + validationException?.ValidationErrors?.FirstOrDefault()?.ErrorMessage);
+            return Result<RegisterResultDto>.Error(validationException?.ValidationErrors?.FirstOrDefault()?.MemberNames.First() + " - " + validationException?.ValidationErrors?.FirstOrDefault()?.ErrorMessage);
         }
         catch (BusinessException ex)
         {
@@ -352,7 +367,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
 
     }
-    
+
     /// <inheritdoc/>
 
     public async Task<Result> SetNewPassword(ChangePasswordInputDto input)
@@ -379,12 +394,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
 
-    public async Task<bool> SetNewPasswordWeb(string UserName , string NewPassword)
+    public async Task<bool> SetNewPasswordWeb(string UserName, string NewPassword)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var user =await _userRepository.FirstOrDefaultAsync(x => x.UserName == UserName || x.PhoneNumber == UserName);
-        
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.UserName == UserName || x.PhoneNumber == UserName);
+
             if (user == null)
             {
                 throw new Exception("user isn't exist");
@@ -422,28 +437,28 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
             return tenant;
         }
-        
+
     }
     public async Task<bool> GenerateOTPForUser(string UserName)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var user = await _userRepository.FirstOrDefaultAsync(x=>x.UserName==UserName || x.PhoneNumber == UserName);    
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.UserName == UserName || x.PhoneNumber == UserName);
             if (user == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("User")+LocalizationHelper.GetLocalizedString("NotFound"));
+                throw new Exception(LocalizationHelper.GetLocalizedString("User") + LocalizationHelper.GetLocalizedString("NotFound"));
             }
             var OTP = GenrateOTP();
-           var result = await SendSms(user.PhoneNumber, $"{OTP} رمز التحقق لدخول نظام مدخل هو " );
-           user.SetProperty("OtpCode", OTP);
-           user.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(2));
-           await _userManager.UpdateAsync(user);
-           return result;
+            var result = await SendSms(user.PhoneNumber, $"{OTP} رمز التحقق لدخول نظام مدخل هو ");
+            user.SetProperty("OtpCode", OTP);
+            user.SetProperty("OtpExpirationDate", DateTime.Now.AddMinutes(2));
+            await _userManager.UpdateAsync(user);
+            return result;
         }
     }
     private string GenrateOTP()
     {
-        int min = 1000;  
+        int min = 1000;
         int max = 9999;
         Random random = new Random();
         return random.Next(min, max).ToString();
@@ -478,14 +493,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             {
                 throw new Exception("user isn't exist");
             }
-            var result = CheckOtp(Otp,user.GetProperty<string>("OtpCode"),user.GetProperty<DateTime>("OtpExpirationDate"));
+            var result = CheckOtp(Otp, user.GetProperty<string>("OtpCode"), user.GetProperty<DateTime>("OtpExpirationDate"));
             return result;
         }
     }
 
-    private bool CheckOtp(string Otp , string CurrentOtp , DateTime ExpiryTime)
+    private bool CheckOtp(string Otp, string CurrentOtp, DateTime ExpiryTime)
     {
-        if(CurrentOtp==Otp && ExpiryTime >= DateTime.Now)
+        if (CurrentOtp == Otp && ExpiryTime >= DateTime.Now)
         {
             return true;
         }
@@ -504,12 +519,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
 
-    public async Task<IdentityUser?> IsUserFoundAsync(string Id) 
-    { 
+    public async Task<IdentityUser?> IsUserFoundAsync(string Id)
+    {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             return await _userManager.FindByIdAsync(Id);
-        }   
+        }
     }
     public async Task<string> GetUserNameByPhoneNumber(string phone)
     {
