@@ -111,6 +111,7 @@ public partial class PaymentReport
 
             var payments = await AnalysisAppService.ReportCustomerPaymentForPaymentMethod(request, CurrentTenant.Id);
             var items = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            items.Name = LocalizationHelper.GetLocalizedString("PaymentsMehtodReport");
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch
@@ -134,6 +135,7 @@ public partial class PaymentReport
 
             var payments = await AnalysisAppService.ReportCustomerPayment(request, CurrentTenant.Id);
             var items = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            items.Name = LocalizationHelper.GetLocalizedString("CustomerAndPaymentReports");
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch
