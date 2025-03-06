@@ -541,7 +541,7 @@ img[style*='width:120px;'] {
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(13);
 
-        Table table = new Table(5).SetWidth(UnitValue.CreatePercentValue(100));
+        Table table = new Table(5).SetWidth(UnitValue.CreatePercentValue(100)).SetWidth(UnitValue.CreatePercentValue(100));
         Table table1 = new Table(3).SetWidth(UnitValue.CreatePercentValue(100)).SetMarginTop(20);
 
         Table table2 = new Table(2)
@@ -561,10 +561,10 @@ img[style*='width:120px;'] {
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             table.AddCell(new Cell(1, 1)
-                .SetFont(font)
-                .SetBorder(Border.NO_BORDER)
-                .SetTextAlignment(TextAlignment.RIGHT)
-                .Add(new Paragraph($"{invoice.OrganizationArabicName.ArabicWithFontGlyphsToPDF()}")));
+      .SetFont(font)
+      .SetBorder(Border.NO_BORDER)
+      .SetTextAlignment(TextAlignment.RIGHT)
+      .Add(new Paragraph($"{invoice.OrganizationArabicName.ArabicWithFontGlyphsToPDF()}")));
             table.AddCell(new Cell(1, 1)
                 .SetFont(font)
                  .SetBorder(Border.NO_BORDER)
@@ -591,15 +591,20 @@ img[style*='width:120px;'] {
                  .SetBorder(Border.NO_BORDER)
                  .Add(new Paragraph($":{PlateNumber.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
-            table.AddCell(new Cell(1, 1).SetFont(font)
-                 .SetBorder(Border.NO_BORDER)
-                 .SetTextAlignment(TextAlignment.RIGHT)
-                  .Add(new Paragraph($"{invoice.OrganizationAddress.ArabicWithFontGlyphsToPDF()}")));
+
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .Add(new Paragraph($":{OrganizationAddress.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+
+
+            table.AddCell(new Cell(1, 4).SetFont(font)
+                 .SetBorder(Border.NO_BORDER)
+                 .SetTextAlignment(TextAlignment.RIGHT)
+                  .Add(new Paragraph($"{invoice.OrganizationAddress.ArabicWithFontGlyphsToPDF()}")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("")));
 
             table.AddCell(new Cell(1, 1).SetFont(font)
                  .SetBorder(Border.NO_BORDER)
@@ -619,6 +624,8 @@ img[style*='width:120px;'] {
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .Add(new Paragraph($":{EntranceTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+
+         
 
             table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopLeftRadius(new BorderRadius(10))
             .SetBorderBottomLeftRadius(new BorderRadius(10))
@@ -704,6 +711,7 @@ img[style*='width:120px;'] {
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .Add(new Paragraph($"{invoice.GarageEnglishName}")));
+
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
             table.AddCell(new Cell(1, 1)
@@ -719,10 +727,8 @@ img[style*='width:120px;'] {
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
                  .Add(new Paragraph($"{OrganizationAddress}:")).SimulateBold());
-            table.AddCell(new Cell(1, 1)
-                 .SetTextAlignment(TextAlignment.LEFT)
-                 .SetBorder(Border.NO_BORDER)
-                  .Add(new Paragraph($"{invoice.OrganizationAddress}")));
+
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
             table.AddCell(new Cell(1, 1)
@@ -734,6 +740,12 @@ img[style*='width:120px;'] {
                  .SetTextAlignment(TextAlignment.LEFT)
                  .Add(new Paragraph($"{invoice.PlateNumber}")));
 
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+
+            table.AddCell(new Cell(1, 4)
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetBorder(Border.NO_BORDER)
+                 .Add(new Paragraph($"{invoice.OrganizationAddress}")));
             table.AddCell(new Cell(1, 1)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
