@@ -123,6 +123,7 @@ public class DailyShiftAppService :
 
     private async Task CheckIfAnotherKeeperInSameShift(KeeperShift assignShift, CreateUpdateDailyShiftDto request)
     {
+       
         // EndShiftStartsInSameDay
         if (assignShift.StartTime<assignShift.EndTime)
         {
@@ -131,24 +132,29 @@ public class DailyShiftAppService :
         //midnightshift
         else
         {
-            //sends request day before
-            var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date.AddDays(-1) == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
-            if (!result)
+            using (_dataFilter.Disable<IMultiTenant>())
             {
-                ThrowCantEndShiftException();
+                //sends request day before
+                var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date == request.RequestTime.Date.AddDays(-1) && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift && e.OrganizationId == request.OrganizationId && e.GarageId == request.GarageId);
+                if (!result)
+                {
+                    await CheckIfKeeperInShiftInSameDay(request);
+                }
             }
-            await CheckIfKeeperInShiftInSameDay(request);
         }
     }
 
     private async Task CheckIfKeeperInShiftInSameDay(CreateUpdateDailyShiftDto request)
     {
-        var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
-        if (!result)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            ThrowCantEndShiftException();
+            var result = await _repository.AnyAsync(e => e.ShiftId == request.ShiftId && e.RequestTime.Date == request.RequestTime.Date && e.KeeperId != request.KeeperId && e.KeeperShiftRequestType == KeeperShiftRequestType.StartShift && e.OrganizationId == request.OrganizationId && e.GarageId == request.GarageId);
+            if (!result)
+            {
+                ThrowCantEndShiftException();
+            }
+            return;
         }
-        return;
     }
 
     private static void ThrowCantEndShiftException()
@@ -171,7 +177,7 @@ public class DailyShiftAppService :
         //check if there is no keeper starts next shift before requested keeper requestes to end.
         //if next shift is not midnight shift
         //no Need to check if next shift is Midnight , keeper already will request to end in dame day :D .
-            nextDailyShift = await NextShiftInSameDay(input, dailyShift);
+        //nextDailyShift = await NextShiftInSameDay(input, dailyShift);
 
         //check if shift time is appropriate to end
         await CheckIfAnotherKeeperInSameShift(assignShift,input);
@@ -206,15 +212,17 @@ public class DailyShiftAppService :
     /// <exception cref="Exception">IfKeeperCan'tEndShift</exception>
     private async Task<DailyShift> HandleEndMidnightShift(CreateUpdateDailyShiftDto input)
     {
-        var dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && (_.RequestTime.Day == (input.RequestTime.Day - 1)) && _.KeeperShiftRequestType == KeeperShiftRequestType.StartShift);
-        if (dailyShift is null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
+            var dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && (_.RequestTime.DayOfYear == (input.RequestTime.DayOfYear - 1)) && _.KeeperShiftRequestType == KeeperShiftRequestType.StartShift&&_.OrganizationId==input.OrganizationId && _.GarageId==input.GarageId);
+            if (dailyShift is null)
+            {
+                ThrowCantEndShiftException();
+                return null;
+            }
 
-            ThrowCantEndShiftException();
-            return null;
+            return dailyShift;
         }
-
-        return dailyShift;
     }
     /// <summary>
     /// Method to check if keeper has already sent to start request in same day.
@@ -225,15 +233,18 @@ public class DailyShiftAppService :
     /// <exception cref="Exception">IfKeeperCan'tEndShift</exception>
     private async Task<DailyShift> HandleEndShiftInSameDay(CreateUpdateDailyShiftDto input, DailyShift dailyShift)
     {
-        dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && _.RequestTime.Date == DateTime.Now.Date);
-        if (dailyShift is null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
+            dailyShift = await _repository.FirstOrDefaultAsync(_ => _.ShiftId == input.ShiftId && _.KeeperId == input.KeeperId && _.RequestTime.Date == input.RequestTime.Date &&_.GarageId==input.GarageId && _.OrganizationId==input.OrganizationId);
+            if (dailyShift is null)
+            {
 
-            ThrowCantEndShiftException();
-            return null;
+                ThrowCantEndShiftException();
+                return null;
+            }
+
+            return dailyShift;
         }
-
-        return dailyShift;
     }
 
     public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
