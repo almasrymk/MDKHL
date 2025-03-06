@@ -70,11 +70,11 @@ MaxWidth="MaxWidth.Medium" />
         if (CurrentTenant.IsAvailable)
         {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            Image = organization.OrganizationPicture.IsNullOrWhiteSpace() ? "images/maen.jpg" : organization.OrganizationPicture;
+            Image = organization.OrganizationPicture.IsNullOrWhiteSpace() ? "images/logo/MDHKL_01.png" : organization.OrganizationPicture;
         }
         else
         {
-            Image = "images/maen.jpg";
+            Image = "images/logo/MDHKL_01.png";
         }
        
         StateHasChanged();
