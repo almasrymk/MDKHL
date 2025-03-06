@@ -303,29 +303,37 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     private async Task CheckRole(IdentityUser user)
     {
-        var roles = await _userManager.GetRolesAsync(user);
-        if (roles.Contains("Customer") && roles.Count == 1)
-            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
-        return;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Customer") && roles.Count == 1)
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
+            return;
+        }
+       
     }
 
     private async Task CheckOrganization(IdentityUser user)
     {
-        var organizationId = user.GetProperty<int>("OrganizationId");
-
-        if (organizationId == 0) return;
-
-        var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-
-        if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString(
-                (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
-                LocalizationHelper.GetLocalizedString("InActive") + " , " +
-                LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
-        }
+            var organizationId = user.GetProperty<int>("OrganizationId");
 
-        return;
+            if (organizationId == 0) return;
+
+            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+
+            if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString(
+                    (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
+                    LocalizationHelper.GetLocalizedString("InActive") + " , " +
+                    LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
+            }
+
+            return;
+        }
+        
     }
 
     /// <inheritdoc/>
