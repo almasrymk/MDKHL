@@ -425,7 +425,7 @@ public static class CreateTableHelper
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.FullName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.IdentityUser?.Name ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.InvoiceId.HasValue ? payment.PlateNumber : LocalizationHelper.GetLocalizedString("Pacakge")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentCategory"), LocalizationHelper.GetLocalizedString(payment.PaymentCategory.ToString())));
