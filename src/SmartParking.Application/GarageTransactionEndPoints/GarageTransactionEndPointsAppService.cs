@@ -401,6 +401,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var EntryTransaction = await FindEntranceTime(GarageTransaction.PlateNumber);
         var EntranceTime = EntryTransaction?.AccurateTime;
         var garage = await GetGarage(garageId);
+        var customer = await CheckVehicle(GarageTransaction.PlateNumber);
+        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
+        GarageTransaction.CustomerCategory = packageDto is null ? CustomerCategoryStatus.Customer : packageDto.CustomerCategory;
+
 
         if (EntranceTime is null || EntranceTime > GarageTransaction.AccurateTime)
         {
@@ -408,13 +412,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await InVailedCasesForTransacrion(GarageTransaction, EntranceTime);
             return await Task.FromResult(false);
         }
-        var organization = await GetOrganization(GarageTransaction.OrganizationID);
-        var customer = await CheckVehicle(GarageTransaction.PlateNumber);
         var lstCategory = EntryTransaction.CustomerCategory;
-        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
-        GarageTransaction.CustomerCategory = packageDto is null ? CustomerCategoryStatus.Customer : packageDto.CustomerCategory;
 
         var _categoryHasChanged = await CheckForCategoriesInTransactionsHasBeenChanged(GarageTransaction, EntryTransaction, garage);
+
+        var organization = await GetOrganization(GarageTransaction.OrganizationID);
+      
         Customer exsitCustomer = customer is not null ? await GetCustomer(customer) : null;
 
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);
