@@ -105,7 +105,7 @@ public partial class DetailsInvoice
         var invoice = await InvoiceAppService.GetAsync(Id);
         InvoiceNumber = invoice.InvoiceNumber;
         TotalHours = invoice.TotalHours;
-        InvoicePrice = invoice.InvoicePrice;
+        InvoicePrice = Math.Round(invoice.InvoicePrice);
         InvoiceType = invoice.InvoiceType.ToString();
         OrganizationArabicName = invoice.OrganizationArabicName;
         OrganizationEnglishName = invoice.OrganizationEnglishName;

@@ -13,6 +13,7 @@ using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.Discounts;
+using Volo.Abp.Identity;
 
 namespace SmartParking;
 
@@ -35,7 +36,8 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
     private readonly IRepository<Shift, int> _shiftRepository;
     private readonly IRepository<KeeperShift, int> _keeperShiftRepository;
     private readonly IRepository<Discount, int> _discountRepository;
-    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository)
+    private readonly IdentityUserManager _identityUserManager;
+    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager)
     {
         _regionRepository = regionRepository;
         _countryRepository = countryRepository;
@@ -54,6 +56,7 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         _shiftRepository = shiftRepository;
         _keeperShiftRepository = keeperShiftRepository;
         _discountRepository = discountRepository;
+        _identityUserManager = identityUserManager;
     }
     public async Task SeedAsync(DataSeedContext context)
     {
@@ -219,36 +222,52 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                     new Shift {
                         ArabicName = "ميد نايت " ,  EnglishName = "Mid night" ,  Notes = "test Notes" , Description = " Description test " ,
                     OrganizationId = garageTest.OrganizationId ,   GarageId = garageTest.Id ,  IsFullDay =  false , Status = 0  ,
-                    StartDate = new DateOnly(2025 , 2 ,  23) ,   EndDate = new DateOnly(2025 , 3 ,  10) ,
+                    StartDate = new DateOnly(2025 , 3 ,  5) ,   EndDate = new DateOnly(2025 , 3 ,  30) ,
                     StartTime =  new TimeOnly (22 , 30) ,   EndTime = new TimeOnly (2 ,  30 )
                     }  ,
                      new Shift {
                          ArabicName = "تجربه" ,  EnglishName = "Test" ,  Notes = "test Notes" , Description = " Description test " ,
-                        OrganizationId = garageTest.OrganizationId ,   GarageId = garageTest.Id  ,  IsFullDay =  false , Status = 0 ,
-                        StartDate = new DateOnly(2025 , 2 ,  23) ,   EndDate = new DateOnly(2025 , 3 ,  10) ,
-                        StartTime =  new TimeOnly (10 , 30) ,   EndTime = new TimeOnly (4 ,  30 )
+                        OrganizationId = garageTest.OrganizationId ,   GarageId = garageTest.Id ,  IsFullDay =  false , Status = 0  ,
+                        StartDate = new DateOnly(2025 , 3 ,  5) ,   EndDate = new DateOnly(2025 , 3 ,  29) ,
+                        StartTime =  new TimeOnly (10 , 30) ,   EndTime = new TimeOnly (15 ,  30 )
                     }
 
                 };
-                    await _shiftRepository.InsertManyAsync(shiftList);
+                    await _shiftRepository.InsertManyAsync(shiftList, autoSave: true);
                 }
+                IdentityUser user = new IdentityUser(new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"), "keeper", "testuser1@email.com");
+                IdentityUser user2 = new IdentityUser(new Guid("d600ff3d-c859-4327-94de-425f16ec9d54"), "keeper2", "testuser2@email.com");
+                await _identityUserManager.CreateAsync(user, "P@ssw0rd");
+                await _identityUserManager.CreateAsync(user2, "P@ssw0rd");
 
-                
+                var shift_1 = await _shiftRepository.FirstOrDefaultAsync(g => g.EnglishName == "Mid night");
+                var shift_2 = await _shiftRepository.FirstOrDefaultAsync(g => g.EnglishName == "Test");
+
                 if (!await _keeperShiftRepository.AnyAsync())
                 {
-                    var shift_1 = await _shiftRepository.GetAsync(1);
-                    var shift_2 = await _shiftRepository.GetAsync(2);
+                    
                     var keeperShiftList = new List<KeeperShift>
                     {
-                        new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = shift_1.Id , KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") ,
-                            StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
-                         new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId =  shift_1.Id , KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815"),
-                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+                        new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = shift_1.Id , KeeperId = user.Id ,
+                            StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+                         new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = shift_1.Id , KeeperId = user2.Id ,
+                            StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+
+                         new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user.Id,
+                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
+                          new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user2.Id,
+                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
+
+
+                          new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user.Id,
+                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
 
                     };
-                    await _keeperShiftRepository.InsertManyAsync(keeperShiftList);
+                    await _keeperShiftRepository.InsertManyAsync(keeperShiftList , true);
 
                 }
+
+             
                 var cameraBrand = new CameraBrand { ArabicName = "تست", EnglishName = "test" };
                 await _cameraBrandRepository.InsertAsync(cameraBrand, autoSave: true);
                 var cameraBrandTest = await _cameraBrandRepository.FirstOrDefaultAsync(_ => _.EnglishName == "test");

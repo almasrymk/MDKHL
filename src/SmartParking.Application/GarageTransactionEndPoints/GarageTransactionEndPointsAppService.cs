@@ -319,7 +319,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var invoice = await CreateInvoice(
           GarageTransaction.GarageId,
           "",
-          price,
+          Math.Round(price,2),
           GarageTransaction.OrganizationID,
           TotalHours,
           GarageTransaction.PlateNumber,

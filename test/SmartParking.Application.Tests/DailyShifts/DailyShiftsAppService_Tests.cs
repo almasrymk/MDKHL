@@ -18,65 +18,165 @@ namespace SmartParking.Shifts;
 
 public abstract class DailyShiftsAppService_Tests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
-//IRepository<Shift, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationRepository, IRepository<Garage, int> garageRepository
 {
-
-    private readonly IShiftAppService _shiftAppService;
-    private readonly IKeeperShiftsAppService _keeperShiftsAppService;
     private readonly IDailyShiftAppService _dailyShiftAppService;
     protected DailyShiftsAppService_Tests()
     {
-        _dailyShiftAppService =  GetRequiredService<IDailyShiftAppService>();
-        _keeperShiftsAppService = GetRequiredService<IKeeperShiftsAppService>();
-        _shiftAppService = GetRequiredService<IShiftAppService>();
-
+        _dailyShiftAppService = GetRequiredService<IDailyShiftAppService>();
     }
-    [Fact] 
-    public async Task DailyShiftCheckStartMidNightShift()
+    [Fact]
+    public async Task Should_Start_Shift_Successfully()
     {
-        var result = await _dailyShiftAppService.CreateAsync(new CreateUpdateDailyShiftDto
-        {
-            GarageId = 1,
-            OrganizationId = 1,
-            ShiftId = 1,
-            KeeperId = new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815"),
-            TenantId = new Guid("3a177b65-6973-9fcf-cc7d-e988aea9085e") , 
-            RequestTime = new DateTime(2025 , 2 , 27 ,14 , 0 , 1),
-            KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift
-        });
-
-        Assert.NotNull(result);
-        
+        var dailyShift = await _dailyShiftAppService.CreateAsync(
+            new CreateUpdateDailyShiftDto
+            {
+                KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+                ShiftId = 2,
+                OrganizationId = 1,
+                GarageId = 1,
+                KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+                TenantId = new Guid(),
+                RequestTime = new DateTime(2025, 3, 5, 11, 30, 0)
+            }
+            );
+        Assert.NotNull(dailyShift);
     }
+    [Fact]
+    public async Task Should_Connot_Start_Shift_OutOfRenageDate()
+    {
+        var createUpdateDailyShift =
+            new CreateUpdateDailyShiftDto
+            {
+                KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+                ShiftId = 3,
+                OrganizationId = 1,
+                GarageId = 1,
+                KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+                TenantId = new Guid(),
+                RequestTime = new DateTime(2025, 3, 5, 11, 30, 0)
+            };
+            
+        await Assert.ThrowsAsync<Exception>(() => _dailyShiftAppService.CreateAsync(createUpdateDailyShift));
+    }
+    [Fact]
+    public async Task Should_Connot_Start_Shift_OutOfRenageTime()
+    {
+        var createUpdateDailyShift =
+            new CreateUpdateDailyShiftDto
+            {
+                KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+                ShiftId =2 ,
+                OrganizationId = 1,
+                GarageId = 1,
+                KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+                TenantId = new Guid(),
+                RequestTime = new DateTime(2025, 3, 5, 9, 30, 0)
+            };
 
+        await Assert.ThrowsAsync<Exception>(() => _dailyShiftAppService.CreateAsync(createUpdateDailyShift));
+    }
+    /// Mid Night Shift 
+    /// Start Time : 22 : 30 
+    /// End Time : 2 : 30 
+    /// should start shift within this range only 
+    [Fact]
+    public async Task Should_Start_MidNightShift_Successfully()
+    {
+        var createUpdateDailyShift =
+           new CreateUpdateDailyShiftDto
+           {
+               KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+               ShiftId = 1,
+               OrganizationId = 1,
+               GarageId = 1,
+               KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+               TenantId = new Guid(),
+               RequestTime = new DateTime(2025, 3, 5, 23, 30, 0)
+           };
+        var result = await _dailyShiftAppService.CreateAsync(createUpdateDailyShift);
+        Assert.NotNull(result);
+    }
+    [Fact]
+    public async Task Should_Start_MidNightShift_Successfully_2()
+    {
+        var createUpdateDailyShift =
+           new CreateUpdateDailyShiftDto
+           {
+               KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+               ShiftId = 1,
+               OrganizationId = 1,
+               GarageId = 1,
+               KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+               TenantId = new Guid(),
+               RequestTime = new DateTime(2025, 3, 6, 0, 30, 0)
+           };
+        var result = await _dailyShiftAppService.CreateAsync(createUpdateDailyShift);
+        Assert.NotNull(result);
+    }
+    [Fact]
+    public async Task Should_Start_MidNightShift_Successfully_3()
+    {
+        var createUpdateDailyShift =
+           new CreateUpdateDailyShiftDto
+           {
+               KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+               ShiftId = 1,
+               OrganizationId = 1,
+               GarageId = 1,
+               KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+               TenantId = new Guid(),
+               RequestTime = new DateTime(2025, 3, 6, 2, 29, 0)
+           };
+        var result = await _dailyShiftAppService.CreateAsync(createUpdateDailyShift);
+        Assert.NotNull(result);
+    }
+    [Fact]
+    public async Task Should_Connot_Start_MidNightShift_OutOfRangeAfter()
+    {
+        var createUpdateDailyShift =
+           new CreateUpdateDailyShiftDto
+           {
+               KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+               ShiftId = 1,
+               OrganizationId = 1,
+               GarageId = 1,
+               KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+               TenantId = new Guid(),
+               RequestTime = new DateTime(2025, 3, 6, 3, 31, 0)
+           };
+        await Assert.ThrowsAsync<Exception>(() => _dailyShiftAppService.CreateAsync(createUpdateDailyShift));
+    }
+    [Fact]
+    public async Task Should_Connot_Start_MidNightShift_OutOfRangeBefore()
+    {
+        var createUpdateDailyShift =
+           new CreateUpdateDailyShiftDto
+           {
+               KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+               ShiftId = 1,
+               OrganizationId = 1,
+               GarageId = 1,
+               KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+               TenantId = new Guid(),
+               RequestTime = new DateTime(2025, 3, 6, 22, 29, 0)
+           };
+        await Assert.ThrowsAsync<Exception>(() => _dailyShiftAppService.CreateAsync(createUpdateDailyShift));
+    }
 
     [Fact]
-    public async Task TestSeedDataForShift()
+    public async Task Should_Connot_Start_MidNightShift_OutOfRangeBefore__1()
     {
-        var result = await _shiftAppService.GetListAsync(new PagedAndSortedResultRequestDto
-        {
-            MaxResultCount = 100,
-            SkipCount = 0  ,
-            Sorting = "Id"
-        });
-
-        Assert.NotNull(result);
-
-    }
-
-    [Fact]
-    public async Task TestSeedDataForKeeperShift()
-    {
-        var result = await _keeperShiftsAppService.GetListAssignedShiftsToUserForMdkhal( null,new Guid("3a182b4a-115e-aa2c-4665-44084dbd9815") ,  new PagedAndSortedAndSearchResultRequestDto
-        {
-            MaxResultCount = 100,
-            SkipCount = 0,
-            Sorting = "Id"
-        });
-
-
-        Assert.Equal(2, result.TotalCount);
-      //  Assert.NotNull(result);
-
+        var createUpdateDailyShift =
+           new CreateUpdateDailyShiftDto
+           {
+               KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+               ShiftId = 1,
+               OrganizationId = 1,
+               GarageId = 1,
+               KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+               TenantId = new Guid(),
+               RequestTime = new DateTime(2025, 3, 6, 20, 29, 0)
+           };
+        await Assert.ThrowsAsync<Exception>(() => _dailyShiftAppService.CreateAsync(createUpdateDailyShift));
     }
 }
