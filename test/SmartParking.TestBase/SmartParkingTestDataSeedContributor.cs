@@ -236,7 +236,9 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                     await _shiftRepository.InsertManyAsync(shiftList, autoSave: true);
                 }
                 IdentityUser user = new IdentityUser(new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"), "keeper", "testuser1@email.com");
+                IdentityUser user2 = new IdentityUser(new Guid("d600ff3d-c859-4327-94de-425f16ec9d54"), "keeper2", "testuser2@email.com");
                 await _identityUserManager.CreateAsync(user, "P@ssw0rd");
+                await _identityUserManager.CreateAsync(user2, "P@ssw0rd");
 
                 var shift_1 = await _shiftRepository.FirstOrDefaultAsync(g => g.EnglishName == "Mid night");
                 var shift_2 = await _shiftRepository.FirstOrDefaultAsync(g => g.EnglishName == "Test");
@@ -248,8 +250,15 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                     {
                         new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = shift_1.Id , KeeperId = user.Id ,
                             StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+                         new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = shift_1.Id , KeeperId = user2.Id ,
+                            StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
+
                          new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user.Id,
                             StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
+                          new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user2.Id,
+                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
+
+
                           new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user.Id,
                             StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
 
