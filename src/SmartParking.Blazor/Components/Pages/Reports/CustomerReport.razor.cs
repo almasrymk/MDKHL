@@ -58,6 +58,7 @@ partial class CustomerReport
     private async Task FetchData(PageChangeEventArgs paged)
     {
         string selectvalue = "Customer";
+       
 
         var request = new PagedAndSortedAndFilteredResultRequestDto
         {
@@ -79,6 +80,16 @@ partial class CustomerReport
 
          var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
          TotalItem = (int)garageTransactionAnalyses.TotalCount;
-         itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+        itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            itemData.Name = LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+
+        }
+        else
+        {
+            itemData.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("GarageTransactionAnalysis");
+
+        }
     }
 }

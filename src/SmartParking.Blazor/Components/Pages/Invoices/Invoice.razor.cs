@@ -67,8 +67,6 @@ public partial class Invoice
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
 
         // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
@@ -83,11 +81,22 @@ public partial class Invoice
         };
 
         // Call the service to perform the search based on the input parameters
-        var invoiceDto = await AppService.Search(input);
+
+        if (CurrentTenant.Id == null)
+        {
+            var invoiceDto = await AppService.SearchForMDKHL(input);
+            TotalItem = (int)invoiceDto.TotalCount;
+            CreateTable(invoiceDto);
+        }
+        else
+        {
+            var invoiceDto = await AppService.Search(input);
+            TotalItem = (int)invoiceDto.TotalCount;
+            CreateTable(invoiceDto);
+        }
 
         // Calculate the total number of pages required to display all results
-        TotalItem = (int)invoiceDto.TotalCount;
-        CreateTable(invoiceDto);
+     
     }
 
     /// <summary>
@@ -105,7 +114,6 @@ public partial class Invoice
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
@@ -144,7 +152,7 @@ public partial class Invoice
             {
                 tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationEnglishName"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyName = "Organization.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
-            }
+                }
             else
             {
                 tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationArabicName"], Name = "OrganizationArabicName", IsFilterable = true, PropertyName = "Organization.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });

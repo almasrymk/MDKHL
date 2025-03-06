@@ -61,5 +61,6 @@ public partial class PaymentCustomerReport
         var payments = await AnalysisAppService.ReportCustomerPayment(request, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
         itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+        itemData.Name = LocalizationHelper.GetLocalizedString("CustomerAndPaymentReports");
     }
 }

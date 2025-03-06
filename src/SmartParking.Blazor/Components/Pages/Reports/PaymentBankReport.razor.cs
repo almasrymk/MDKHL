@@ -61,5 +61,6 @@ public partial class PaymentBankReport
         var payments = await AnalysisAppService.ReportCustomerPaymentForPaymentMethod(request, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
         itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+        itemData.Name = LocalizationHelper.GetLocalizedString("PaymentsMehtodReport");
     }
 }

@@ -73,6 +73,16 @@ public partial class CustomersPackage
         var customerPackages = await AnalysisAppService.ReportCustomerPackage(request, CurrentTenant.Id);
         TotalItem = (int)customerPackages.TotalCount;
         itemData = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            itemData.Name = LocalizationHelper.GetLocalizedString("PackagesReports") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+
+        }
+        else
+        {
+            itemData.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("PackagesReports");
+
+        }
 
     }
 }

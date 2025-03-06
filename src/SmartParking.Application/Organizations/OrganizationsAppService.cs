@@ -32,8 +32,6 @@ using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Organizations;
-
-[Authorize]
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
@@ -395,7 +393,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         using (DataFilter.Disable<IMultiTenant>())
         {
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(org => org.TenantId == CurrentTenant.Id);
+        query = query.Where(org => CurrentTenant.IsAvailable? org.TenantId == CurrentTenant.Id : true);
         var org = await AsyncExecuter.FirstOrDefaultAsync(query);
         return org;
         }

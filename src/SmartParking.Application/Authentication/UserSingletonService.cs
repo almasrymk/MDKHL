@@ -1,4 +1,5 @@
-﻿using SmartParking.Enums;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Enums;
 using SmartParking.KeeperShifts;
 using SmartParking.SingletonService;
 using SmartParking.StateManagements;
@@ -67,4 +68,8 @@ public class UserSingletonService : ISingletonService<IdentityUser, Guid?>
         return userCategory > 0 ? true : false;
     }
 
+    public void Refresh()
+    {
+        instance = null;
+    }
 }

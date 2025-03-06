@@ -35,19 +35,6 @@
     private MudForm form;
     private LoginInputDto loginModel = new LoginInputDto();
 
-    // [Parameter]
-    // [SupplyParameterFromQuery]
-    // public string? errorMessage { get; set; }
-    // protected override Task OnInitializedAsync()
-    // {
-    //     if(!errorMessage.IsNullOrEmpty())
-    //     {
-    //         SnackBar.ShowSnackbar(Snackbar, L["InvalidCredentials"], Severity.Error);
-    //     }
-    //     return base.OnInitializedAsync();
-
-    // }
-
     private async void HandleLogin()
     {
         try
@@ -80,8 +67,7 @@
 
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-        
-        //NavigationManager.NavigateTo($"api/Accounts?username={loginModel.UserNameOrEmailAddress}&password={loginModel.Password}", true);
+     
     }
 
 }

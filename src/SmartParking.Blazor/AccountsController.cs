@@ -17,6 +17,8 @@ using System.Text;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Localization;
 using System.Text.RegularExpressions;
+using SmartParking.SingletonService;
+using SmartParking.StateManagements;
 namespace SmartParking.Blazor;
 [Route("api/[controller]")]
 [ApiController]
@@ -26,18 +28,21 @@ public class AccountsController : ControllerBase
     private readonly ICurrentTenant currentTenant;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserSingletonService _userSingleton;
+    private readonly ISingletonService<StateManagementDto, int> _stateManagement;
 
     public AccountsController(
         IAuthenticationAppService authenticationApp,
         ICurrentTenant currentTenant,
         SignInManager<IdentityUser> signInManager,
-        UserSingletonService userSingleton
+        UserSingletonService userSingleton,
+        ISingletonService<StateManagementDto, int> stateManagement
         )
     {
         _authenticationApp = authenticationApp;
         this.currentTenant = currentTenant;
         _signInManager = signInManager;
         _userSingleton = userSingleton;
+        _stateManagement = stateManagement;
     }
 
     [HttpGet("/logIn/{token}")]
@@ -59,6 +64,7 @@ public class AccountsController : ControllerBase
             }
             await _signInManager.SignInAsync(user, false);
             await _userSingleton.SetAsync(user.Id);
+            _stateManagement.Refresh();
             return LocalRedirect("/");
         }
         catch

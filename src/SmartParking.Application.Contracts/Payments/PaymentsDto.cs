@@ -1,4 +1,6 @@
 ﻿using SmartParking.Cutomers;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
 using System;
 
@@ -8,15 +10,15 @@ public class PaymentDto
 {
 
     public Guid Id { get; set; }
-    public Guid CustomerId { get; set; }
-    public string CheckoutId { get; set; }
+    public Guid? CustomerId { get; set; }
+    public string? CheckoutId { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     public int? InvoiceId { get; set; }
     public int? PackageId { get; set; }
     public PaymentCategory PaymentCategory { get; set; }
     public int OrganizationId { get; set; }
     public string QrCodeInvoice { get; set; }
-    public CustomerDto Customers { get; set; }
+    public Customer Customers { get; set; }
     public string PaymentMethod { get; set; }
     public decimal Amount { get; set; }
     public string Currency { get; set; }
@@ -25,9 +27,7 @@ public class PaymentDto
     public string PlateNumber { get; set; }
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
-
-
-
-
-
+    public decimal AmountWithoutDiscount { get; set; }
+    public Guid? TenantId { get; set; }
+    public Invoice Invoice { get; set; }
 }

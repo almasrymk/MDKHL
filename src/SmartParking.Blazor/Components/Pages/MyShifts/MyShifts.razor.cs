@@ -73,6 +73,8 @@ public partial class MyShifts
         TotalItem = (int)keeperShiftDto.TotalCount;
         await CreateTable(keeperShiftDto);
         FirstItem = keeperShiftDto.Items.ToList().FirstOrDefault();
+        var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
         if (string.IsNullOrEmpty(input.SearchingTerm) && FirstItem != null)
         {
             
@@ -83,9 +85,15 @@ public partial class MyShifts
                     IsEndShift = true;
                     StateHasChanged();
                 }
-                else
+                else if(currentTime >= FirstItem.StartTime && currentTime <= FirstItem.EndTime && currentDate >= FirstItem.StartDate && currentDate <= FirstItem.EndDate)
                 {
                     IsStartShift = true;
+                    IsEndShift = false;
+                    StateHasChanged();
+                }
+                else
+                {
+                    IsStartShift = false;
                     IsEndShift = false;
                     StateHasChanged();
                 }

@@ -51,22 +51,22 @@
         </MudItem>
 
         <MudItem>
-
+           
             <MudGrid Class="mt-4">
-                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result)
+                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result && (!IsPaid || InvoicePrice == 0))
                 {
                     <MudItem sm="12" md="12">
                         <MudSelect T="int"
                                    ValueChanged="ChooseDiscount"
-                                   Variant="Variant.Filled"
+                                   Variant="Variant.Text"
                                    Label="@L["Discount"]"
                                    Placeholder="@L["Choose"]"
                                    HelperText="@L["Helper Text"]"
                                    FullWidth="true"
-                                   Dense="true"
                                    Adornment="Adornment.End"
                                    AdornmentIcon="@Icons.Material.Outlined.LocalOffer"
-                                   >
+                                    >
+
 
                             @foreach (var discount in _discounts)
                             {
