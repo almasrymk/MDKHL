@@ -1,12 +1,16 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.Organizations
+@using Volo.Abp.MultiTenancy
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
+@inject ICurrentTenant CurrentTenant
+@inject IOrganizationsAppService OrganizationAppService
 <MudPopoverProvider />
 <MudDialogProvider 
-    FullWidth="true"
-    MaxWidth="MaxWidth.Medium" />
+FullWidth="true"
+MaxWidth="MaxWidth.Medium" />
 <MudSnackbarProvider />
 <MudThemeProvider Theme="CustomTheme" />
 
@@ -18,9 +22,9 @@
                     <MudMenu>
                         <ActivatorContent>
                             <MudTooltip Text=@L["ChangeLanguage"] Color=MudBlazor.Color.Primary>
-                            <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
-                                <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
-                            </div>
+                                <div @onclick="@(() => ChangeLanguage())" class="cursor-pointer">
+                                    <MudImage src="@LocaleImgSrc()" Width="24" Height="24" Class="cursor-pointer" />
+                                </div>
                             </MudTooltip>
                         </ActivatorContent>
                     </MudMenu>
@@ -31,7 +35,7 @@
                     </MudItem>
                     <MudItem xs="12" md="6">
                         <MudCard class="w-100 py-12 rounded-be-0 rounded-ts-0 rounded-te-xl rounded-bs-xl d-flex flex-column align-center">
-                            <Image Source="images/maen.jpg" Class="mb-7" />
+                            <Image Source="@Image" Class="mb-7" />
                             @Body
                         </MudCard>
                     </MudItem>
@@ -60,7 +64,21 @@
             },
 
         };
-
+    private string Image { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (CurrentTenant.IsAvailable)
+        {
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            Image = organization.OrganizationPicture.IsNullOrWhiteSpace() ? "images/maen.jpg" : organization.OrganizationPicture;
+        }
+        else
+        {
+            Image = "images/maen.jpg";
+        }
+       
+        StateHasChanged();
+    }
     private void ChangeLanguage()
     {
         Navigation.NavigateTo($"api/SetLanguage?returnUrl={Navigation.Uri}", true);
@@ -68,5 +86,5 @@
     private string LocaleImgSrc()
     {
         return CultureInfo.CurrentCulture.Name == "en" ? "images/svgs/arabic.svg" : "images/svgs/english.svg";
-    }
+    }   
 }
