@@ -500,6 +500,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = CheckTenantPayment(tenantId, query);
             query = ApplySortPayment(input, query);
             query = ApplyFilterPayment(input, query);
@@ -520,6 +521,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = query.Where(_ => _.CustomerId != null);
             query = CheckTenantPayment(tenantId, query);
             query = ApplySortPayment(input, query);
@@ -542,6 +544,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
             query = CheckTenantPayment(tenantId, query);
             query = ApplySortPayment(input, query);
