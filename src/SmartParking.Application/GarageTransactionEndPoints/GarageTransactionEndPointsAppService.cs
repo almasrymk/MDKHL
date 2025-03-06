@@ -132,7 +132,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                 case CameraType.Entry:
                     GarageTransaction.CustomerCategory = await GetTransactionCategory(input, GarageTransaction);
                     bool canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
-                    return canEnter ? await _garageTransactionsAppService.CreateAsync(GarageTransaction)is not null : await NotFoundEntityAndExceptionHandling(input, "Can't Enter");
+                    await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    return canEnter;
                     
             };
         }
@@ -399,20 +400,24 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool flag = false;
         var EntryTransaction = await FindEntranceTime(GarageTransaction.PlateNumber);
         var EntranceTime = EntryTransaction?.AccurateTime;
-
-        if (EntranceTime is null || EntranceTime > GarageTransaction.AccurateTime)
-        {
-            await InVailedCasesForTransacrion(GarageTransaction, EntranceTime);
-            return await Task.FromResult(false);
-        }
-        var organization = await GetOrganization(GarageTransaction.OrganizationID);
+        var garage = await GetGarage(garageId);
         var customer = await CheckVehicle(GarageTransaction.PlateNumber);
-        var lstCategory = EntryTransaction.CustomerCategory;
         CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
         GarageTransaction.CustomerCategory = packageDto is null ? CustomerCategoryStatus.Customer : packageDto.CustomerCategory;
 
-        var garage = await GetGarage(garageId);
+
+        if (EntranceTime is null || EntranceTime > GarageTransaction.AccurateTime)
+        {
+            await FreeSlots(garage, null);
+            await InVailedCasesForTransacrion(GarageTransaction, EntranceTime);
+            return await Task.FromResult(false);
+        }
+        var lstCategory = EntryTransaction.CustomerCategory;
+
         var _categoryHasChanged = await CheckForCategoriesInTransactionsHasBeenChanged(GarageTransaction, EntryTransaction, garage);
+
+        var organization = await GetOrganization(GarageTransaction.OrganizationID);
+      
         Customer exsitCustomer = customer is not null ? await GetCustomer(customer) : null;
 
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(GarageTransaction.PlateNumber);

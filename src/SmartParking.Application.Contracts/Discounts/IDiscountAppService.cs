@@ -18,4 +18,5 @@ public interface IDiscountAppService :
         >
 {
     Task<Result<List<DiscountDto>>> GetListMobileAsync();
+    Task<DiscountDto> DeleteDiscountAsync(int id);
 }
