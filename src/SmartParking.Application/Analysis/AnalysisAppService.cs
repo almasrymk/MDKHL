@@ -673,17 +673,24 @@ public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int tota
 
 public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
 {
-    var query = await _custeRepo.GetQueryableAsync();
-    var groupedCounts = await query
-           .Select(g => new
-           {
-               CountOfCustomers = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Customer)).Count(),
-               CountOfEmployees = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Employee)).Count(),
-               CountOfVisitors = query.Where(c => c.CustomerPackages.Any(_ => _.CustomerCategory == CustomerCategoryStatus.Visitor)).Count(),
-               CountOfNoPackage = query.Where(c => !c.CustomerPackages.Any()).Count()
-
-           }).FirstOrDefaultAsync();
-    if (groupedCounts == null)
+    var query = await _customerPackageRepository.GetQueryableAsync();
+        var groupedCounts = await query
+         .GroupBy(c => c.CustomerId)
+         .Select(g => new
+         {
+             FirstCategory = g.OrderBy(c => c.PackageId).Select(c => c.CustomerCategory).FirstOrDefault(),
+             HasPackage = g.Any(c => c.PackageId != null) 
+         })
+         .GroupBy(_ => 1) 
+         .Select(g => new
+         {
+             CountOfCustomers = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Customer && x.HasPackage),
+             CountOfEmployees = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Employee && x.HasPackage),
+             CountOfVisitors = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Visitor && x.HasPackage),
+             CountOfNoPackage = g.Count(x => !x.HasPackage)
+         })
+         .FirstOrDefaultAsync();
+        if (groupedCounts == null)
     {
         return (0, 0, 0, 0);
     }
