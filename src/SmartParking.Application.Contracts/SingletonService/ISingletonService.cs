@@ -11,4 +11,5 @@ public interface ISingletonService<T, TKey> : ISingletonDependency,IAsyncDisposa
 {
     Task<T> GetAsync(TKey key);
     Task<T> SetAsync(TKey key);
+    void Refresh();
 }
