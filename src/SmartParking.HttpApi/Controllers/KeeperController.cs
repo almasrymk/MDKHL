@@ -133,9 +133,9 @@ public class KeeperController : AbpController
 
     [HttpGet("PayAtExitCamera")]
     [Authorize]
-    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId,int discountId)
+    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue)
     {
-        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, discountId);
+        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, DiscountValue);
         var openGate=invoice.IsSuccess&& await _invoiceUtilityAppService.SendRequestToOpenGate(invoice.Value.GarageTransactionExitId);
         return invoice;
     }
@@ -168,17 +168,17 @@ public class KeeperController : AbpController
 
     [HttpGet("PayInvoiceByCustomerRequest")]
     [Authorize]
-    public async Task<Result<InvoiceMobileDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType,int discountId)
+    public async Task<Result<InvoiceMobileDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType, decimal DiscountValue)
     {
-        return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId, PaymentType, discountId);
+        return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId, PaymentType, DiscountValue);
 
     }
     [HttpGet("KeeperCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType,int discountId)
+    public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType,decimal DiscountValue)
     {
         var invoice = await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
-        return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType, discountId);
+        return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType, DiscountValue);
     }
 
 

@@ -314,6 +314,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 return Result.Error("InvoiceIsAlreadyPaid");
 
             }
+            if(discountValue != default)
+            {
+                await _invoiceAppService.UpdateDiscountForInvoice(invoiceId,discountValue);
+            }
             var result = await RequestToPaymentCheckout(invoice, discountValue);
             var image = await _invoiceAppService.GetImage(invoice, result.QrCodeInvoice);
             return await ProcessingInvoiceMobileDto(discountValue, invoice, image);
