@@ -25,7 +25,7 @@ public class StateManagementAppService : CrudAppService<StateManagement, StateMa
     {
         var query = await _repository.GetQueryableAsync();
         var state = query.Where(x => x.UserId == userId && x.ShiftId == shiftId).ToList();
-        if (state.Count > 0)
+        if (state.Count > 1)
         {
             var statesToDelete = state.Skip(1).ToList();
 
@@ -35,7 +35,7 @@ public class StateManagementAppService : CrudAppService<StateManagement, StateMa
             }
 
         }
-        var result = ObjectMapper.Map<StateManagement, StateManagementDto>(state.First());
+        var result = ObjectMapper.Map<StateManagement, StateManagementDto>(state.FirstOrDefault());
         return result;
     }
     public override async Task DeleteAsync(int id)
