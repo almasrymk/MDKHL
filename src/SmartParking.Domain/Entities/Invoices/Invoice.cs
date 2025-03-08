@@ -29,6 +29,9 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public bool IsPackage { get; set; }
     public string EntryTransactionImage { get; set; }
     public string ExitTransactionImage { get; set; }
+    public decimal Discount { get; set; }
+
+
 
 
 }
