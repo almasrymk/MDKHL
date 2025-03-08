@@ -674,31 +674,35 @@ public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int tota
 
 }
 
-public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
-{
-    var query = await _customerPackageRepository.GetQueryableAsync();
-        var groupedCounts = await query
-         .GroupBy(c => c.CustomerId)
-         .Select(g => new
-         {
-             FirstCategory = g.OrderBy(c => c.PackageId).Select(c => c.CustomerCategory).FirstOrDefault(),
-             HasPackage = g.Any(c => c.PackageId != null) 
-         })
-         .GroupBy(_ => 1) 
-         .Select(g => new
-         {
-             CountOfCustomers = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Customer && x.HasPackage),
-             CountOfEmployees = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Employee && x.HasPackage),
-             CountOfVisitors = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Visitor && x.HasPackage),
-             CountOfNoPackage = g.Count(x => !x.HasPackage)
-         })
-         .FirstOrDefaultAsync();
-        if (groupedCounts == null)
+    public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
     {
-        return (0, 0, 0, 0);
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _customerPackageRepository.GetQueryableAsync();
+            var groupedCounts = await query
+             .Where(c => c.OrganizationId == organizationId)
+             .GroupBy(c => c.CustomerId)
+             .Select(g => new
+             {
+                 FirstCategory = g.OrderBy(c => c.PackageId).Select(c => c.CustomerCategory).FirstOrDefault(),
+                 HasPackage = g.Any(c => c.PackageId.HasValue)
+             })
+             .GroupBy(_ => 1)
+             .Select(g => new
+             {
+                 CountOfCustomers = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Customer && x.HasPackage),
+                 CountOfEmployees = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Employee && x.HasPackage),
+                 CountOfVisitors = g.Count(x => x.FirstCategory == CustomerCategoryStatus.Visitor && x.HasPackage),
+                 CountOfNoPackage = g.Count(x => !x.HasPackage)
+             })
+             .FirstOrDefaultAsync();
+            if (groupedCounts == null)
+            {
+                return (0, 0, 0, 0);
+            }
+            return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
+        }
     }
-    return (groupedCounts.CountOfCustomers, groupedCounts.CountOfVisitors, groupedCounts.CountOfEmployees, groupedCounts.CountOfNoPackage);
-}
 
 
 public async Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
