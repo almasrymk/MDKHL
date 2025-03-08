@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using SmartParking.Discounts;
+using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
@@ -29,6 +30,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.Mobile.Keepers;
 
@@ -302,7 +304,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		return tenant;
 	}
 
-    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId , int discountId =default)
+    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId , decimal discountValue =default)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -312,40 +314,44 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 return Result.Error("InvoiceIsAlreadyPaid");
 
             }
-            DiscountDto discount = new DiscountDto();
-            if(discountId != default)
+            if(discountValue != default)
             {
-                 discount = await _discountAppService.GetAsync(discountId);
-                if (discount is null)
-                {
-                    return Result.Error("DiscountNotFound");
-                }
+                await _invoiceAppService.UpdateDiscountForInvoice(invoiceId,discountValue);
             }
-
-            var paymentRequest = new PaymentCheckoutRequestDto
-            {
-                PaymentCategory=PaymentCategory.PaymentParking,
-                PaymentMethod=PaymentMethod.Cash,
-                Amount= PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discount.DiscountPercent),
-                CustomerId=invoice.CustomerId,
-                OrganizationId=invoice.OrganizationId,
-                InvoiceId=invoiceId,
-                PaymentName= PaymentMethod.Cash.ToString()
-            };
-
-            var result = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentRequest);
+            var result = await RequestToPaymentCheckout(invoice, discountValue);
             var image = await _invoiceAppService.GetImage(invoice, result.QrCodeInvoice);
-            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
-            invoiceDto.QrCodeInvoice = image.Value;
-            invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
-            invoiceDto.InvoicePriceWithDiscountAndVat = paymentRequest.Amount;
-            invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
-            return invoiceDto;
+            return await ProcessingInvoiceMobileDto(discountValue, invoice, image);
         }
     }
-    public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType, int discountId = default)
+
+    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, Invoice invoice, Result<string> image)
     {
-       return await CheckoutAsync(invoiceId, discountId);
+        var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
+        invoiceDto.QrCodeInvoice = image.Value;
+        invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
+        invoiceDto.TotalPriceWithVatAndDiscount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue);
+        invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
+        return invoiceDto;
+    }
+
+    private async Task<PaymentCheckoutDto> RequestToPaymentCheckout(Invoice invoice , decimal discountValue)
+    {
+        var paymentChekout = new PaymentCheckoutRequestDto
+        {
+            PaymentCategory = PaymentCategory.PaymentParking,
+            PaymentMethod = PaymentMethod.Cash,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue),
+            CustomerId = invoice.CustomerId,
+            OrganizationId = invoice.OrganizationId,
+            InvoiceId = invoice.Id,
+            PaymentName = PaymentMethod.Cash.ToString()
+        };
+        var payment = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        return payment;
+    }
+    public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType, decimal discountValue = default)
+    {
+       return await CheckoutAsync(invoiceId, discountValue);
     }
 
     private static bool CheckIfInvoiceIsPaid(Invoice invoice)

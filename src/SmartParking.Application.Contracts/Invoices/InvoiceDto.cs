@@ -28,6 +28,9 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public string OrganizationAddress { get; set; }
     public string OrganizationTIN { get; set; }
     public int GarageTransactionExitId { get; set; }
+    public decimal TotalPriceWithVatAndDiscount { get; set; }
+    public decimal Discount { get; set; }
+
 
 
 

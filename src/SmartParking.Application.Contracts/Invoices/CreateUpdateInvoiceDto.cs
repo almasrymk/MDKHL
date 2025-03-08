@@ -27,6 +27,7 @@ public class CreateUpdateInvoiceDto
     public string EntryTransactionImage { get; set; }
     public string ExitTransactionImage { get; set; }
     public int GarageTransactionExitId { get; set; }
+    public decimal Discount { get; set; } = default;
 
 
 

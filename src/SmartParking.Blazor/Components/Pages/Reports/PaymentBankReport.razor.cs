@@ -52,7 +52,7 @@ public partial class PaymentBankReport
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name",
+            Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name" : paged.SortColumn,
             SearchingTerm = "",
             filters = new List<FilterRequestDto>(),
 

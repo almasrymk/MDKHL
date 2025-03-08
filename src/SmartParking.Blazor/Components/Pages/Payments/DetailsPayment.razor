@@ -64,7 +64,7 @@
                @if (Payment.Invoice is not null)
                    {
                 <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["Discount"] @bind-Value="AmountDiscount" />
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["Discount"] Value="Payment.Invoice.Discount.ToString()" />
                 </MudItem>
                                
                        <MudItem sm="4">
@@ -82,7 +82,7 @@
                     <MudTextField @bind-Value="Payment.Invoice.TotalHours"
                                   Immediate="true"
                                   Variant="Variant.Text"
-                                  Label="@L["Duration"]"
+                                  Label="@L["TotalHours"]"
                                   ReadOnly="true" />
                 </MudItem>
                 <MudItem sm="4">
