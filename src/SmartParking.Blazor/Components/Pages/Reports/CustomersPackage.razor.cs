@@ -56,7 +56,7 @@ public partial class CustomersPackage
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customer.ArabicName" : "Customer.IdentityUser.Name",
+            Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "Customer.ArabicName" : "Customer.IdentityUser.Name" : paged.SortColumn,
             SearchingTerm = "",
             filters = new List<FilterRequestDto>
                 {
