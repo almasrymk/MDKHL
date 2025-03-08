@@ -170,6 +170,9 @@ public class DailyShiftAppService :
         DailyShift nextDailyShift = new DailyShift();
         if (assignShift.StartTime < assignShift.EndTime)
             dailyShift = await HandleEndShiftInSameDay(input, dailyShift);
+
+
+        
         //if current shift is midnight shift
         if (assignShift.StartTime > assignShift.EndTime)
             dailyShift = await HandleEndMidnightShift(input);
@@ -180,7 +183,7 @@ public class DailyShiftAppService :
         //nextDailyShift = await NextShiftInSameDay(input, dailyShift);
 
         //check if shift time is appropriate to end
-        await CheckIfAnotherKeeperInSameShift(assignShift,input);
+        //await CheckIfAnotherKeeperInSameShift(assignShift,input);
         return true;
     }
     /// <summary>

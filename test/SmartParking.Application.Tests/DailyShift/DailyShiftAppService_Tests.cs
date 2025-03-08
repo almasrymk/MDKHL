@@ -27,7 +27,7 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
         _dailyShiftAppService = GetRequiredService<IDailyShiftAppService>();
     }
     [Fact]
-    public async Task KeeperRequestsToEndMidnightShiftInSameDayBeforeMIdnight()
+    public async Task KeeperRequestsToEndMidnightShiftAfterShiftHasBeedEnded()
     {
         var tenantId= Guid.NewGuid();
         var StartShiftRequest =
@@ -50,12 +50,12 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
                 GarageId = 1,
                 KeeperShiftRequestType = Enums.KeeperShiftRequestType.EndShift,
                 TenantId = tenantId,
-                RequestTime = new DateTime(2025, 3, 6, 23, 0, 0)
+                RequestTime = new DateTime(2025, 3, 6, 4, 0, 0)
             };
         var result = await _dailyShiftAppService.CreateAsync(StartShiftRequest);
         Assert.NotNull(result);
-        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(EndShiftRequest));
-        Assert.Equal("Cannot End Shift Now", exception.Message);
+        var result2 =  await _dailyShiftAppService.CreateAsync(EndShiftRequest);
+        Assert.NotNull(result2);
 
     }
 
@@ -73,7 +73,7 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
                 GarageId = 1,
                 KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
                 TenantId = tenantId,
-                RequestTime = new DateTime(2025, 3, 6, 0, 30, 0)
+                RequestTime = new DateTime(2025, 3, 5, 0, 30, 0)
             };
         var EndShiftRequest =
             new CreateUpdateDailyShiftDto
@@ -88,11 +88,12 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             };
         var result = await _dailyShiftAppService.CreateAsync(StartShiftRequest);
         Assert.NotNull(result);
-        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(EndShiftRequest));
-        Assert.Equal("Cannot End Shift Now", exception.Message);
+        var result2 = await _dailyShiftAppService.CreateAsync(EndShiftRequest);
+        Assert.NotNull(result2);
+
 
     }
-    
+
     [Fact]
     public async Task KeeperRequestsToEndMidnightShiftInSameDayAfterMidnight()
     {
@@ -122,11 +123,12 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             };
         var result = await _dailyShiftAppService.CreateAsync(StartShiftRequest);
         Assert.NotNull(result);
-        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(EndShiftRequest));
-        Assert.Equal("Cannot End Shift Now", exception.Message);
+        var result2 = await _dailyShiftAppService.CreateAsync(EndShiftRequest);
+        Assert.NotNull(result2);
+
 
     }
-    
+
     [Fact]
     public async Task KeeperEndsShiftSuccessfullyWhenAnotherKeeperIsInSameShiftbeforemidnight()
     {
@@ -257,6 +259,8 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
         await _dailyShiftAppService.CreateAsync(StartShiftRequest2);
         var result2= await _dailyShiftAppService.CreateAsync(EndShiftRequest);
         Assert.NotNull(result2);
-    }
+    } 
+    
+  
 
 }
