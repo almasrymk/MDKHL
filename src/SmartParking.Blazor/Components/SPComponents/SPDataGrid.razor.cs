@@ -311,7 +311,7 @@ public partial class SPDataGrid
         try
         {
             GridState<RowDef> state = new GridState<RowDef>();
-            state.PageSize = 500;
+            state.PageSize = int.MaxValue - 1;
             IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/Excel");
@@ -340,7 +340,7 @@ public partial class SPDataGrid
         try
         {
             GridState<RowDef> state = new GridState<RowDef>();
-            state.PageSize = 500;
+            state.PageSize = int.MaxValue - 1;
             IsExport = true;
             await ServerReload(state);
             var folderName = FileHelper.CreateImageDirectory("Folders/Csv");
