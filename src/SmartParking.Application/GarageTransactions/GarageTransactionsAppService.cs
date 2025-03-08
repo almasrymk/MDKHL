@@ -108,28 +108,12 @@ public class GarageTransactionsAppService :
 
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
-
-        // Get the current base URL dynamically
-        var request = _httpContextAccessor.HttpContext.Request;
-        var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
-
-        // Add full URL to VehiclePicture field
-
-        if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                var garageTransaction = await base.GetAsync(id);
-                garageTransaction.VehiclePicture = $"{baseUrl}{garageTransaction.VehiclePicture}";
-                return garageTransaction;
-            }
+            return await base.GetAsync(id);
+
         }
-        else
-        {
-            var garageTransaction = await base.GetAsync(id);
-            garageTransaction.VehiclePicture = $"{baseUrl}{garageTransaction.VehiclePicture}";
-            return garageTransaction;
-        }
+      
     }
     public async Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
