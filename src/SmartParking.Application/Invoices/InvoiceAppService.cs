@@ -418,4 +418,19 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await Search(input);
         }
     }
+
+    public async Task UpdateDiscountForInvoice(int invoiceId,decimal discount)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var invoice =await _invoiceRepository.FirstOrDefaultAsync(x => x.Id==invoiceId);
+            if (invoice == null) {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
+            }
+            invoice.Discount=discount;
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+        }
+
+    }
 }

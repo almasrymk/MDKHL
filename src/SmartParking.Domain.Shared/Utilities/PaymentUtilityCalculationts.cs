@@ -13,6 +13,6 @@ public static class PaymentUtilityCalculationts
         var price = Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2);
         if (DiscountPercent == default)
             return price;
-        return price - Math.Round(price * (DiscountPercent * 1m) / 100, 2);
+        return Math.Round(price - DiscountPercent,2);
     }
 }

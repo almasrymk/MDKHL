@@ -42,64 +42,51 @@
 
 		</MudItem>
 		<div class="mx-3">
-		<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
-		<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
-		<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
-		<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.GarageEnglishName:Invoice?.GarageArabicName)" />
-		<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
-		<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
-		<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
+			<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
+			<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
+			<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
+			<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.GarageEnglishName:Invoice?.GarageArabicName)" />
+			<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
+			<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
+			<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
 		</div>
 
 
 	</MudItem>
 
 
-	<PriceSummaryComponent OnValueSelected="HandleLookupSelection" Discounts="_discounts" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
+	<PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
 </MudGrid>
 
 @code {
 	private InvoiceDto Invoice  = new InvoiceDto();
 	private bool NoInvoice { get; set; } = false;
 	public PaymentMethod PaymentMethod { get; set; }
-	private DiscountDto selectedItem =  new DiscountDto();
-	public List<DiscountDto> _discounts = new List<DiscountDto>();
-
-	private void HandleLookupSelection(DiscountDto selected)
+	public decimal Discount { get; set; } = default;
+	private void HandleAddDiscount(decimal selected)
 	{
-		selectedItem = selected;
+		Discount = selected;
 	}
-
 
 	protected override async Task OnInitializedAsync()
 	{
 		try{
 
 			Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
-			var result = await DiscountAppService.GetListAsync(new PagedAndSortedAndSearchResultRequestDto());
-			_discounts = result.Items.ToList();
 		}catch(Exception ex){
 			SnackBar.ShowSnackbar(Snackbar,ex.Message , MudBlazor.Severity.Warning);
 			NoInvoice = true;
-			//await Task.Delay(1000);
-			//Navigation.NavigateTo("/", true);
 		}
 
 	}
 	private async Task PayInvoice(){
 
-		var paymentChekout = new PaymentCheckoutRequestDto
+		if (Discount != default)
 		{
-			OrganizationId = Invoice.OrganizationId,
-			PaymentCategory = Invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
-			InvoiceId = Invoice.Id,
-			PaymentMethod = PaymentMethod,
-		    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, selectedItem.DiscountPercent),
-			CustomerId = Invoice.CustomerId,
-			PaymentName=PaymentMethod.Cash.ToString()
-			
-		};
-		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+			await InvoiceAppService.UpdateDiscountForInvoice(Invoice.Id, Discount);
+		}
+
+		PaymentCheckoutDto payment = await RequestToPaymentCheckout();
 		if (payment != null)
 		{
 			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
@@ -137,5 +124,21 @@
 	private void Refresh(){
 		Navigation.Refresh(true);
 
+	}
+
+	private async Task<PaymentCheckoutDto> RequestToPaymentCheckout()
+	{
+		var paymentChekout = new PaymentCheckoutRequestDto
+			{
+				OrganizationId = Invoice.OrganizationId,
+				PaymentCategory = Invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
+				InvoiceId = Invoice.Id,
+				PaymentMethod = PaymentMethod,
+				Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+				CustomerId = Invoice.CustomerId,
+				PaymentName = PaymentMethod.Cash.ToString()
+			};
+		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+		return payment;
 	}
 }
