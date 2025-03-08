@@ -265,6 +265,8 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			foreach (var item in garageTransactions.Items)
 			{
 				var rowDef = new RowDef();
+                
+                rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
                 if (CurrentTenant.Id == null)
                 {
                     if (CultureInfo.CurrentCulture.Name == "en")
@@ -276,8 +278,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                         rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationArabicName"], item.OrganizationArabicName));
                     }
                 }
-                rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
-				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"],_localizer[$"{item.CameraType.ToString()}"]));
