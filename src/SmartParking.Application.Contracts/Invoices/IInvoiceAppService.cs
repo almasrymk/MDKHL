@@ -63,6 +63,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
 
     Task<InvoiceDto?> GetLatestInvoiceForOrganization();
 
+    Task UpdateDiscountForInvoice(int invoiceId, decimal discount);
 
 
 }

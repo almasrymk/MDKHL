@@ -42,16 +42,14 @@
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField @bind-Value="TotalHours"
-                            For="@(() => TotalHours)"
+                            <MudTextField @bind-Value="Invoice.TotalHours"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@($"{L["TotalHours"]} ({L["Hours"]})")"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField @bind-Value="InvoicePrice"
-                            For="@(() => InvoicePrice)"
+                            <MudTextField @bind-Value="Invoice.InvoicePrice"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@($"{L["InvoicePrice"]} ({L["SAR"]})")"
@@ -69,14 +67,14 @@
                           {
                             <MudItem sm="4">
 
-                                <MudTextField @bind-Value="OrganizationArabicName"
+                                <MudTextField @bind-Value="Invoice.OrganizationArabicName"
                                 Immediate="true"
                                 Variant="Variant.Text"
                                 Label="@L["OrganizationName"]"
                                 Disabled />
                                 </MudItem>
                             <MudItem sm="4">
-                                <MudTextField @bind-Value="GarageArabicName"
+                                <MudTextField @bind-Value="Invoice.GarageArabicName"
                                               Immediate="true"
                                               Variant="Variant.Text"
                                               Label="@L["Garage Name"]"
@@ -86,14 +84,14 @@
 
                             <MudItem sm="4">
 
-                                <MudTextField @bind-Value="OrganizationEnglishName"
+                                <MudTextField @bind-Value="Invoice.OrganizationEnglishName"
                                               Immediate="true"
                                               Variant="Variant.Text"
                                               Label="@L["OrganizationName"]"
                                               Disabled />
                             </MudItem>
                             <MudItem sm="4">
-                                <MudTextField @bind-Value="GarageEnglishName"
+                                <MudTextField @bind-Value="Invoice.GarageEnglishName"
                                               Immediate="true"
                                               Variant="Variant.Text"
                                               Label="@L["Garage Name"]"
@@ -103,22 +101,21 @@
                         
                         
                         <MudItem sm="4">
-                            <MudTextField @bind-Value="PlateNumber"
-                            For="@(() => PlateNumber)"
+                            <MudTextField @bind-Value="Invoice.PlateNumber"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@L["PlateNumber"]"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Value="EntranceTime.ToString()"
+                            <MudTextField Value="Invoice.EntranceTime.ToString()"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@L["EntranceTime"]"
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Value="InvoiceTime.ToString()"
+                            <MudTextField Value="Invoice.InvoiceTime.ToString()"
                             Immediate="true"
                             Variant="Variant.Text"
                             Label="@L["ExitTime"]"
@@ -138,7 +135,7 @@
             </MudPaper>
         </MudItem>
 
-        <PriceSummaryComponent OnValueSelected="HandleLookupSelection" Discounts="_discounts" ComponentSize="5" ConfirmSize="12" InvoicePrice="@InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" />
+        <PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice.InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" />
     </MudGrid>
 </MudItem>
 

@@ -27,101 +27,30 @@ namespace SmartParking.Blazor.Components.Pages.Invoices;
 
 public partial class DetailsInvoice 
 {
-  
-    public string code;
     [Parameter] 
     public int Id { get; set; }
-    public string InvoiceNumber { get; set; }
-    public string OrganizationArabicName { get; set; }
-    public string OrganizationEnglishName { get; set; }
-    public string InvoiceType { get; set; }
 
-    public string GarageEnglishName { get; set; }
-    public string GarageArabicName { get; set; }
-    public string PlateNumber { get; set; }
-    public int TotalHours { get; set; }
-    public decimal InvoicePrice { get; set; }
-    public string  OrgAddress { get; set; }
-    public string  CustomerName { get; set; }
-    public DateTime ?InvoiceTime { get; set; }
-
-    public DateTime ?EntranceTime { get; set; }
-    public DateTime ?ExitTime { get; set; }
-
-    public int OrganizationId { get; set; }
-    public Guid? CustomerId { get; set; }
-
-    public bool IsPaid { get; set; }
-    public bool IsPackage { get; set; }
+    private InvoiceDto Invoice = new InvoiceDto();
     private string LocalizedInvoiceType { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
-
-
-
-
-
-    public string CommercialRegisteration { get; set; }
-
-    public List<OrganizationDto> organizations = new List<OrganizationDto>();
-
-    public List<GarageDto> garages = new List<GarageDto>();
-
-    public List<VehicleDto> vehicles = new List<VehicleDto>();
-
-    private DiscountDto selectedItem = new DiscountDto();
-    public List<DiscountDto> _discounts = new List<DiscountDto>();
-
-    private void HandleLookupSelection(DiscountDto selected)
+    public decimal Discount { get; set; }=default;
+    public bool IsPaid { get; set; }
+    private void HandleAddDiscount(decimal selected)
     {
-        selectedItem = selected;
+        Discount = selected;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchData();
-        var organizationDto = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-
-        var garageDto = await GarageAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-
-        var vehicleDto = await VehiclesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-
-        organizations = organizationDto.Items.ToList();
-
-        garages = garageDto.Items.ToList();
-
-        vehicles = vehicleDto.Items.ToList();
-        CommercialRegisteration = organizations.Find(x => x.ArabicName == OrganizationArabicName).CommercialRegistrationNumber;
-        var org = organizations.Find(x => x.ArabicName == OrganizationArabicName);
-        OrgAddress=org.Address;
-        OrganizationId = org.Id;
-
-        var result = await DiscountAppService.GetListAsync(new PagedAndSortedAndSearchResultRequestDto());
-        _discounts=result.Items.ToList();
+        await FetchData();  
         await base.OnInitializedAsync();
-
     }
     private async Task FetchData()
     {
-        var invoice = await InvoiceAppService.GetAsync(Id);
-        InvoiceNumber = invoice.InvoiceNumber;
-        TotalHours = invoice.TotalHours;
-        InvoicePrice = Math.Round(invoice.InvoicePrice);
-        InvoiceType = invoice.InvoiceType.ToString();
-        OrganizationArabicName = invoice.OrganizationArabicName;
-        OrganizationEnglishName = invoice.OrganizationEnglishName;
-        GarageEnglishName = invoice.GarageEnglishName;
-        GarageArabicName = invoice.GarageArabicName;
-        PlateNumber = invoice.PlateNumber;
-        InvoiceTime = invoice.InvoiceTime;
-        EntranceTime = invoice.EntranceTime;
-        CustomerName=invoice.CustomerEnName;
-        ExitTime = invoice.InvoiceTime;
-        CustomerId = invoice.CustomerId;
-        IsPaid= invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
-        LocalizedInvoiceType = L[invoice.InvoiceType];
-        IsPackage=invoice.IsPackage;
+        Invoice = await InvoiceAppService.GetAsync(Id);
 
-
+        LocalizedInvoiceType = L[Invoice.InvoiceType];
+        IsPaid= Invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
     }
     private void Back()
     {
@@ -129,16 +58,11 @@ public partial class DetailsInvoice
     }
     private async Task PayInvoice()
     {
-        var paymentChekout = new PaymentCheckoutRequestDto
+        if (Discount != default)
         {
-            OrganizationId = OrganizationId,
-            PaymentCategory = IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
-            InvoiceId = Id,
-            PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, selectedItem.DiscountPercent),
-            CustomerId = CustomerId
-        };
-        var payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+            await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+        }
+        PaymentCheckoutDto payment = await RequestToPaymentCheckout();
         if (payment != null)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
@@ -148,5 +72,18 @@ public partial class DetailsInvoice
         }
     }
 
-
+    private async Task<PaymentCheckoutDto> RequestToPaymentCheckout()
+    {
+        var paymentChekout = new PaymentCheckoutRequestDto
+        {
+            OrganizationId = Invoice.OrganizationId,
+            PaymentCategory = PaymentCategory.PaymentParking,
+            InvoiceId = Id,
+            PaymentMethod = PaymentMethod,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+            CustomerId = Invoice.CustomerId
+        };
+        var payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        return payment;
+    }
 }

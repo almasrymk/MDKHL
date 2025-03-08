@@ -56,28 +56,7 @@
                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result && (!IsPaid || InvoicePrice == 0))
                 {
                     <MudItem sm="12" md="12">
-                        <MudSelect T="int"
-                                   ValueChanged="ChooseDiscount"
-                                   Variant="Variant.Text"
-                                   Label="@L["Discount"]"
-                                   Placeholder="@L["Choose"]"
-                                   HelperText="@L["Helper Text"]"
-                                   FullWidth="true"
-                                   Adornment="Adornment.End"
-                                   AdornmentIcon="@Icons.Material.Outlined.LocalOffer"
-                                    >
-
-
-                            @foreach (var discount in _discounts)
-                            {
-                                if (discount.Status != Enums.Status.Active)
-                                    continue;
-
-                                <MudSelectItem T="int" Value="@discount.Id">
-                                    <MudText Typo="Typo.body1">@($"{discount.DiscountPercent} %")</MudText>
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
+                        <MudNumericField T="decimal" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Min="decimal.Zero" Max="InvoicePriceWithVat" Culture="CultureInfo.InvariantCulture" />
                     </MudItem>
 
                 }
@@ -132,32 +111,27 @@
     [Parameter] public int ConfirmSize { get; set; }
     [Parameter] public int ComponentSize { get; set; }
     [Parameter]
-    public EventCallback<DiscountDto> OnValueSelected { get; set; }
-    [Parameter]
-    public List<DiscountDto> Discounts { get; set; } = new();
+    public EventCallback<decimal> OnValueSelected { get; set; }
 
     public decimal InvoicePriceAfterDiscount { get; set; }
     public decimal InvoicePriceWithVat { get; set; }
     public bool OnChooseDiscount { get; set; } = false;
-    private List<DiscountDto> _discounts;
-
-
-
 
 
     protected override void OnParametersSet()
     {
         InvoicePriceWithVat = Math.Round((InvoicePrice.Value + (InvoicePrice.Value * 0.15m)), 2);
-        _discounts = Discounts;
         base.OnParametersSet();
     }
-    private async Task ChooseDiscount(int selectedId)
+    private async Task OnAddDiscount(decimal discountValue)
     {
+        InvoicePriceAfterDiscount = InvoicePriceWithVat - discountValue;
+        if(discountValue!=default)
+            OnChooseDiscount = true;
+        else
+            OnChooseDiscount = false;
 
-        var selectedItem = Discounts.FirstOrDefault(x => x.Id == selectedId);
-        InvoicePriceAfterDiscount = InvoicePriceWithVat - Math.Round(InvoicePriceWithVat * ((selectedItem.DiscountPercent * 1m) / 100), 2);
-        OnChooseDiscount = true;
-        await OnValueSelected.InvokeAsync(selectedItem);
+        await OnValueSelected.InvokeAsync(discountValue);
     }
 
 

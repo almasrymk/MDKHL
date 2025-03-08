@@ -706,6 +706,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime?>("EntranceTime")
                         .HasColumnType("timestamp without time zone");
 

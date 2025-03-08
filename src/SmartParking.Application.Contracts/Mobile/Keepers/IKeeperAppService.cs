@@ -60,8 +60,8 @@ public interface IKeeperAppService
 
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 
-    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId, int discountId = default);
-    Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType , int discountId = default);
+    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId, decimal discountId = default);
+    Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType , decimal discountId = default);
 
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
 }
