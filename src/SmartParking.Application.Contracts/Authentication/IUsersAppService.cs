@@ -1,6 +1,7 @@
 ﻿
 
 using SmartParking.Entities;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -108,4 +109,5 @@ public interface IUsersAppService:  IApplicationService
     Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId);
 
     Task<bool> IsCurrentUserHasShift();
+    Task CheckSubscriptionUsersLimitsAsync(int organizationId);
 }
