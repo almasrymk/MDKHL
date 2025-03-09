@@ -54,8 +54,9 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             };
         var result = await _dailyShiftAppService.CreateAsync(StartShiftRequest);
         Assert.NotNull(result);
-        var result2 =  await _dailyShiftAppService.CreateAsync(EndShiftRequest);
-        Assert.NotNull(result2);
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(EndShiftRequest));
+        Assert.Equal("Cannot End Shift Now", exception.Message);
+
 
     }
 
@@ -88,8 +89,9 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             };
         var result = await _dailyShiftAppService.CreateAsync(StartShiftRequest);
         Assert.NotNull(result);
-        var result2 = await _dailyShiftAppService.CreateAsync(EndShiftRequest);
-        Assert.NotNull(result2);
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(EndShiftRequest));
+        Assert.Equal("Cannot End Shift Now", exception.Message);
+
 
 
     }
@@ -123,8 +125,8 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
             };
         var result = await _dailyShiftAppService.CreateAsync(StartShiftRequest);
         Assert.NotNull(result);
-        var result2 = await _dailyShiftAppService.CreateAsync(EndShiftRequest);
-        Assert.NotNull(result2);
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _dailyShiftAppService.CreateAsync(EndShiftRequest));
+        Assert.Equal("Cannot End Shift Now", exception.Message);
 
 
     }
@@ -259,6 +261,28 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
         await _dailyShiftAppService.CreateAsync(StartShiftRequest2);
         var result2= await _dailyShiftAppService.CreateAsync(EndShiftRequest);
         Assert.NotNull(result2);
+    } 
+    
+    [Fact]
+    public async Task CheckForDuplicateRequestIssues()
+    {
+        var tenantId = Guid.NewGuid();
+
+        var StartShiftRequest =
+            new CreateUpdateDailyShiftDto
+            {
+                KeeperId = new Guid("d600ff3d-c859-4327-94de-425f16ec9d55"),
+                ShiftId = 2,
+                OrganizationId = 1,
+                GarageId = 1,
+                TenantId = tenantId,
+                KeeperShiftRequestType = Enums.KeeperShiftRequestType.StartShift,
+                RequestTime = new DateTime(2025, 3, 5, 11, 0, 0)
+            };
+        await _dailyShiftAppService.CreateAsync(StartShiftRequest);
+        var result = await _dailyShiftAppService.GetListDailyShiftsOrganizationAsync(new PagedAndSortedAndSearchResultRequestDto { MaxResultCount=100,SkipCount=0,Sorting="Id"},tenantId,null);
+
+        Assert.Equal(result.TotalCount,1);
     } 
     
   
