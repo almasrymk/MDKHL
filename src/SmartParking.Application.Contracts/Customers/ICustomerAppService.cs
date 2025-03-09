@@ -112,5 +112,5 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
 
     Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId, Guid? tenantId);
     Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId, Guid? tenantId);
-
+    Task<int> GetNumberOfCustomerAtOrganizationAsync(int  organizationId);
 }
