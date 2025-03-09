@@ -19,6 +19,7 @@ using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
+using SmartParking.Blazor.MultiTenants;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
@@ -85,12 +86,7 @@ public class SmartParkingBlazorModule : AbpModule
         var configuration = context.Services.GetConfiguration();
         Configure<AbpTenantResolveOptions>(options =>
         {
-            var domains = configuration.GetSection("TenantDomains").Get<List<string>>();
-            foreach (var domain in domains)
-            {
-                options.AddDomainTenantResolver(domain);
-            }
-           
+            options.TenantResolvers.Add(new MultiDomainTenantResolver());
         });
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
