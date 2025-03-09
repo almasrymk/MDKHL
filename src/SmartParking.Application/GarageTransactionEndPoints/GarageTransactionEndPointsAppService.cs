@@ -329,7 +329,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
           exsitCustomer?.ArabicName ?? customerArName,
           IsPackage,
           image,
-          exsitCustomer?.Id ?? null
+          exsitCustomer?.Id ?? null,
+         
+          
          
           
         );
@@ -569,7 +571,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             GarageId = GarageId,
             InvoiceNumber = GeneratedInvoiceNumber,
             InvoicePrice = Price,
-            InvoiceType = InvoiceType.UnPaid,
+            InvoiceType = Price >0?InvoiceType.UnPaid:InvoiceType.Paid,
             OrganizationId = OrganizationID,
             TotalHours = TotalHours,
             PlateNumber = PlateNumber,
@@ -581,6 +583,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             IsPackage = IsPackage,
             ExitTransactionImage = ExitTransactionImage,
             EntryTransactionImage = entryTransactionImage,
+
         };
 
         return invoice;
