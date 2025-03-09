@@ -329,7 +329,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
           exsitCustomer?.ArabicName ?? customerArName,
           IsPackage,
           image,
-          exsitCustomer?.Id ?? null,
+          exsitCustomer?.Id ?? null
          
           
          
