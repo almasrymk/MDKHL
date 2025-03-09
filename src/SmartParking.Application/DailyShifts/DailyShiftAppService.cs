@@ -328,7 +328,7 @@ public class DailyShiftAppService :
                          join garage in queryGarge
                          on dailyShift.GarageId equals garage.Id
                          join keeperShift in queryKeeperShift
-                         on dailyShift.ShiftId equals keeperShift.ShiftId
+                         on dailyShift.KeeperId equals keeperShift.KeeperId
                          join shift in queryShift
                          on dailyShift.ShiftId equals shift.Id
                          select new DailyShiftDto
