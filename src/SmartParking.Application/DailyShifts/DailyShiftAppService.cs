@@ -183,7 +183,7 @@ public class DailyShiftAppService :
         //nextDailyShift = await NextShiftInSameDay(input, dailyShift);
 
         //check if shift time is appropriate to end
-        //await CheckIfAnotherKeeperInSameShift(assignShift,input);
+        await CheckIfAnotherKeeperInSameShift(assignShift,input);
         return true;
     }
     /// <summary>

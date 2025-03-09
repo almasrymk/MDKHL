@@ -371,7 +371,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             var query = await _invoiceRepository.GetQueryableAsync();
            
             var invoice = await AsyncExecuter.FirstOrDefaultAsync(
-                query.Where(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid)
+                query.Where(invo => invo.OrganizationId == organizationId && invo.InvoiceType == InvoiceType.UnPaid&&invo.InvoicePrice>0)
                 .OrderByDescending(invo => invo.InvoiceTime));
             return ObjectMapper.Map<Invoice, InvoiceDto>(invoice); 
 
