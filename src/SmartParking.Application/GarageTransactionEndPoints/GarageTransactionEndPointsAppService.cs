@@ -330,10 +330,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
           IsPackage,
           image,
           exsitCustomer?.Id ?? null
-         
-          
-         
-          
         );
         return invoice;
     }
