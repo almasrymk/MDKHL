@@ -20,6 +20,7 @@
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
 @inject IVehiclesAppService VehiclesAppService
+
 <PageTitle>@L["Assign Package"]</PageTitle>
 
 <div class="modal-wrapper w-100">
@@ -148,13 +149,13 @@
 		</DialogContent>
 		<DialogActions>
 			<DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
-								   ButtonTwoColor="MudBlazor.Color.Primary"
-								   ButtonOneLabel="@L["Back"]"
-								   ButtonTwoLabel="@L["Assign"]"
-								   ButtonOneClick="CancelEdit"
-								   ButtonTwoClick="SubmitEdit"
-								   ButtonOneVariant="MudBlazor.Variant.Filled"
-								   ButtonTwoVariant="MudBlazor.Variant.Filled" />
+			ButtonTwoColor="MudBlazor.Color.Primary"
+			ButtonOneLabel="@L["Back"]"
+			ButtonTwoLabel="@L["Assign"]"
+			ButtonOneClick="CancelEdit"
+			ButtonTwoClick="SubmitEdit"
+			ButtonOneVariant="MudBlazor.Variant.Filled"
+			ButtonTwoVariant="MudBlazor.Variant.Filled" />
 		</DialogActions>
 
 
@@ -204,7 +205,7 @@
 
 	private async Task SubmitEdit()
 	{
-		
+
 		if(CustomerPackage.CustomerCategory!=Customercategory.ToString()){
 			SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Package")} , " +
 			$"{LocalizationHelper.GetLocalizedString("customer category")} "+
@@ -215,6 +216,10 @@
 		try
 		{
 			var vehicle = await VehiclesAppService.GetAsync(VehicleId);
+			if (CustomerPackage.CustomerCategory == CustomerCategoryStatus.Customer.ToString())
+			{
+				await CustomerPackagesAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
+			}
 			var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id, vehicle.ArPlateNumber,vehicle.EnPlateNumber);
 			if (!assignPackage)
 				throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " "+

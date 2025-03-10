@@ -28,6 +28,7 @@ using SmartParking.Results;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Filters;
+using SmartParking.Cutomers;
 namespace SmartParking.Authentication;
 
 [Authorize]
@@ -43,6 +44,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
+ 
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
@@ -50,10 +52,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         IOptions<IdentityOptions> identityOptions,
         IAuthenticationUtility authenticationUtility,
         IBaseCustomerAppService baseCustomer,
-        IRepository<Customer, Guid> customerRepository ,
-        IRepository<Subscription, int> subscriptionRepository ,
-        IRepository<Organization, int> organizationsRepository
-        )
+        IRepository<Customer, Guid> customerRepository,
+        IRepository<Subscription, int> subscriptionRepository,
+        IRepository<Organization, int> organizationsRepository)
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -65,12 +66,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _customerRepository = customerRepository;
         _subscriptionRepository = subscriptionRepository;
         _organizationsRepository = organizationsRepository;
+
     }
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
     {
         IdentityUser user = await AddAndValidateUserAsync(input);
-
+        if (input.OrganizationId != 0 && input.IsActive && !input.IsCustomer)
+        {
+            await CheckSubscriptionUsersLimitsAsync(input.OrganizationId);
+        }
         await AssignRoleAndPermissionsAsync(user, roleId, input);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
@@ -87,10 +92,6 @@ public class UsersAppService : ApplicationService, IUsersAppService
     [AllowAnonymous]
     public async Task<IdentityUser> AddAndValidateUserAsync (UserCreateDto input)
     {
-        if(input.OrganizationId != 0 && input.IsActive)
-        {
-            await CheckSubscriptionUsersLimitsAsync(input.OrganizationId);
-        }
         await _identityOptions.SetAsync();
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         await _authenticationUtility.CheckUserNameIsValid(input.Name);
@@ -110,42 +111,25 @@ public class UsersAppService : ApplicationService, IUsersAppService
         return user;
     }
 
-    private async Task<Subscription> CheckSubscriptionUsersLimitsAsync(int organizationId)
+    public async Task CheckSubscriptionUsersLimitsAsync(int organizationId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var organization = await _organizationsRepository.GetAsync(organizationId);
-            var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
-            Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
-
-            if (subscription == null || subscription.NumberOfUsers < usersActive.Count + 1)
+            if (organizationId != 0)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
-            }
+                var organization = await _organizationsRepository.GetAsync(organizationId);
+                var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
+                Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
 
-            return subscription;
+                if (subscription == null || subscription.NumberOfUsers < usersActive.Count + 1)
+                {
+                    throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
+                }
+            }
+        }
         }
         
-    }
-
-    private async Task<Subscription> CheckSubscriptionCustomersLimitsAsync(int organizationId)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var organization = await _organizationsRepository.GetAsync(organizationId);
-            var usersActive = await _userRepository.FindByOrganizationAndActiveAsync(organizationId);
-            Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
-
-            if (subscription == null || subscription.NumberOfCustomers < usersActive.Count + 1)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
-            }
-
-            return subscription;
-        }
-
-    }
-
+    
     private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
     {
         using(DataFilter.Disable<IMultiTenant>())
@@ -219,7 +203,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 await CreateCustomerWithRoleAsync(user, input);
-
+                //  
             }
 
 

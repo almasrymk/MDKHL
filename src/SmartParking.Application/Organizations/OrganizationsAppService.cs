@@ -138,10 +138,10 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
     private async Task<Tenant> CreateTenat(CreateUpdateOrganiztionDto input)
     {
-        var tenant = await _tenantManager.CreateAsync(input.UserName);
+        var tenant = await _tenantManager.CreateAsync(input.TenantName);
         var input1 = new TenantCreateDto
         {
-            Name = input.UserName,
+            Name = input.TenantName,
             AdminEmailAddress = input.Email,
             AdminPassword = "P@ssw0rd",
         };

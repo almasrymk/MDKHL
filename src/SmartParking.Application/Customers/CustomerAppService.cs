@@ -121,6 +121,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
             userMap.TenantId = null;
+            userMap.OrganizationId = 0;
             var role = await _authenticationUtility.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
             var user = await _usersAppService.CreateWithRoleAsync(userMap, role.Id);
             return user;
@@ -636,6 +637,17 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         await _repository.HardDeleteAsync(customer);
 
     }
-
+   public async Task<int> GetNumberOfCustomerAtOrganizationAsync(int organizationId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Include(x => x.CustomerPackages)
+                         .Where(x => x.CustomerPackages != null && x.CustomerPackages.Any(o => o.OrganizationId == organizationId))
+                         .DistinctBy(x => x.Id);
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
 
 }

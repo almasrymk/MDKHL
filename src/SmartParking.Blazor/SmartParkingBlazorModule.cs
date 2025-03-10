@@ -86,6 +86,7 @@ public class SmartParkingBlazorModule : AbpModule
         var configuration = context.Services.GetConfiguration();
         Configure<AbpTenantResolveOptions>(options =>
         {
+            options.TenantResolvers.Clear();
             options.TenantResolvers.Add(new MultiDomainTenantResolver());
         });
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
