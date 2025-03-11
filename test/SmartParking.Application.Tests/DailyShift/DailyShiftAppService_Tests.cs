@@ -266,7 +266,7 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
     [Fact]
     public async Task CheckForDuplicateRequestIssues()
     {
-        var tenantId = Guid.NewGuid();
+        var tenantId = new Guid();
 
         var StartShiftRequest =
             new CreateUpdateDailyShiftDto
@@ -284,7 +284,4 @@ public abstract class DailyShiftAppService_Tests<TStartupModule> : SmartParkingA
 
         Assert.Equal(result.TotalCount,1);
     } 
-    
-  
-
 }
