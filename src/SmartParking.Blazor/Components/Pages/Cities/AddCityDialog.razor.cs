@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SmartParking.Lookups.State;
+using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
-using System.Linq;
-using System;
-using SmartParking.Lookups.State;
-using SmartParking.Lookups.CameraBrands;
-using SmartParking.Blazor.Components.Shared;
-using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
@@ -23,13 +18,13 @@ public partial class AddCityDialog
     private string StateSelectValue { get; set; }
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
 
     private void SelectState(string state)
     {
-		StateSelectValue = state;
+        StateSelectValue = state;
     }
-   
+
     protected override async Task OnInitializedAsync()
     {
         states = await StateAppService.GetStateLookupAsync();
@@ -37,7 +32,7 @@ public partial class AddCityDialog
     }
     private async Task Submit()
     {
-       
+
         try
         {
             CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
@@ -48,17 +43,17 @@ public partial class AddCityDialog
             };
 
             var city = await CitiesAppService.CreateAsync(createUpdateCityDto);
-        if (city != null)
+            if (city != null)
             {
-            SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCityDto.ArabicName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
-				await Task.Delay(1000);
-				Navigation.NavigateTo("/cities", forceLoad: true);
-			}
+                SnackBar.ShowSnackbar(Snackbar, $"{createUpdateCityDto.ArabicName} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/cities", forceLoad: true);
+            }
 
             else
             {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}  {L[AlertMessages.AlertMessages.ADD]} {createUpdateCityDto.ArabicName}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}  {L[AlertMessages.AlertMessages.ADD]} {createUpdateCityDto.ArabicName}", Severity.Error);
 
             }
         }
@@ -93,5 +88,5 @@ public partial class AddCityDialog
     {
         MudDialog.Cancel();
     }
-    
+
 }

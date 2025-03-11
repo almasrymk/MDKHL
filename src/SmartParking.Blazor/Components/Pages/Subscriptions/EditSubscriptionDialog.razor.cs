@@ -1,22 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
-using Volo.Abp.Validation;
-using System.Linq;
-using SmartParking.Blazor.Components.Shared;
 using System.Security.Authentication;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
 public partial class EditSubscriptionDialog
 {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public SubscriptionDto subscription { get; set; } = new SubscriptionDto();
 
     public List<SubscriptionTypeLookupDto> subscriptions = new List<SubscriptionTypeLookupDto>();
@@ -54,7 +48,7 @@ public partial class EditSubscriptionDialog
     private async Task Save()
     {
 
-       
+
         try
         {
 
@@ -70,8 +64,8 @@ public partial class EditSubscriptionDialog
                 ActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MinValue),
                 InActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MaxValue),
                 NumberOfCameras = BoundNumberOfCameras,
-                NumberOfCustomers = BoundNumberOfCustomers, 
-                NumberOfUsers = BoundNumberOfUsers ,
+                NumberOfCustomers = BoundNumberOfCustomers,
+                NumberOfUsers = BoundNumberOfUsers,
                 NumbersOfGarages = BoundNumberOfGarages,
                 SubscriptionSlotNumber = subscription.SubscriptionSlotNumber,
                 ParkingSlot = subscription.ParkingSlot,
@@ -103,7 +97,7 @@ public partial class EditSubscriptionDialog
 
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
-        
+
         catch (Exception ex)
         {
 

@@ -18,7 +18,7 @@ public partial class AddUnLinkedTransactionDialog
     public CreateUpdateGarageTransactionEndPointDto input = new CreateUpdateGarageTransactionEndPointDto();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     protected override async Task OnInitializedAsync()
     {

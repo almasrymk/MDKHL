@@ -2,11 +2,8 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Localization;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using SmartParking.CustomerCategories;
+using SmartParking.Localization;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
@@ -14,7 +11,7 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 public partial class CategoriesDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     [Parameter] public int organizationId { get; set; }
     private void Cancel() => MudDialog.Cancel();
 
@@ -126,7 +123,7 @@ public partial class CategoriesDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Description"], Name = "Description", IsFilterable = true, PropertyName = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
-       
+
         foreach (var item in garages.Items)
         {
             var rowDef = new RowDef();

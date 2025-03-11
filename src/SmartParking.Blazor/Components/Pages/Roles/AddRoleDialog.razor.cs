@@ -17,7 +17,7 @@ partial class AddRoleDialog
     public IdentityRoleCreateDto input = new IdentityRoleCreateDto();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
 
     private List<OrganizationDto> organizationList = new List<OrganizationDto>();
     bool _clearable;

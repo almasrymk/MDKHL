@@ -17,7 +17,7 @@ public partial class AddCountryDialog
     public CreateUpdateCountryDto input = new CreateUpdateCountryDto();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
 
 

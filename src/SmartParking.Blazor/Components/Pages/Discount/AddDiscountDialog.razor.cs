@@ -2,13 +2,8 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Discounts;
-using SmartParking.Lookups;
-using System;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Discount;
@@ -19,7 +14,7 @@ public partial class AddDiscountDialog
     public CreateUpdateDiscountDto input = new CreateUpdateDiscountDto();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
 
 
@@ -34,8 +29,8 @@ public partial class AddDiscountDialog
                 EnglishName = input.EnglishName,
                 DiscountPercent = input.DiscountPercent,
                 Notes = input.Notes,
-                Status= Enums.Status.Inactive,
-                TenantId=currrentTenant.Id
+                Status = Enums.Status.Inactive,
+                TenantId = currrentTenant.Id
             };
 
             var discount = await DiscountAppService.CreateAsync(createUpdateDiscountDto);

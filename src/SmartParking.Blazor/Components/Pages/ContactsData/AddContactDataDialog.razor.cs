@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp;
-using SmartParking.Organizations;
-using Volo.Abp.Validation;
-using System.Linq;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Organizations;
 using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -17,23 +14,23 @@ public partial class AddContactDataDialog
     public ContactInfoCreateUpdateDto input = new ContactInfoCreateUpdateDto();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     [Parameter] public int organizationId { get; set; }
 
     private async Task Submit()
     {
-       
+
         try
         {
             ContactInfoCreateUpdateDto createUpdateContactDataDto = new ContactInfoCreateUpdateDto()
             {
-               Name = input.Name,
-               ContactMail = input.ContactMail,
-               OrganizationId = organizationId,
-               PhoneNum = input.PhoneNum,
-               TenantId = CurrentTenant.Id,
-               WhatsAppNum = input.WhatsAppNum  
+                Name = input.Name,
+                ContactMail = input.ContactMail,
+                OrganizationId = organizationId,
+                PhoneNum = input.PhoneNum,
+                TenantId = CurrentTenant.Id,
+                WhatsAppNum = input.WhatsAppNum
             };
 
 

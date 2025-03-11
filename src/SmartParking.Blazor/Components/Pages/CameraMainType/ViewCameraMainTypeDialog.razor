@@ -90,7 +90,7 @@
     [Parameter]
     public CameraMainTypeDto cameraMainType { get; set; } = new CameraMainTypeDto();
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     private void Cancel()
     {
         MudDialog.Cancel();

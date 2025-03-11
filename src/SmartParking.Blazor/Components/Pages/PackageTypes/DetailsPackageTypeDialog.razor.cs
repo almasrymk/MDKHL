@@ -7,7 +7,7 @@ namespace SmartParking.Blazor.Components.Pages.PackageTypes;
 public partial class DetailsPackageTypeDialog
 {
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public PackageTypeDto packageType { get; set; } = new PackageTypeDto();
 
 

@@ -113,7 +113,7 @@
     private MudForm form;
     private CreateUpdateGarageTransactionDto garageTransactionDto = new CreateUpdateGarageTransactionDto();
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
 
     protected override async Task OnInitializedAsync()

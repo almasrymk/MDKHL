@@ -3,11 +3,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups;
 using SmartParking.Lookups.State;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
@@ -15,26 +11,26 @@ namespace SmartParking.Blazor.Components.Pages.Cities;
 
 public partial class EditCityDialog
 {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public CityDto city { get; set; } = new CityDto();
     [Parameter] public CreateUpdateCityDto input { get; set; } = new CreateUpdateCityDto();
-	public IReadOnlyList<StateLookupDto> states { get; set; } = new List<StateLookupDto>();
-	private MudForm editForm;
+    public IReadOnlyList<StateLookupDto> states { get; set; } = new List<StateLookupDto>();
+    private MudForm editForm;
     bool _clearable;
-	private string StateSelectValue { get; set; }
+    private string StateSelectValue { get; set; }
 
-	[Parameter] public int Id { get; set; }
+    [Parameter] public int Id { get; set; }
 
     private void SelectState(string state)
     {
-		StateSelectValue = state;
+        StateSelectValue = state;
     }
 
     protected override async Task OnInitializedAsync()
     {
         states = await StateAppService.GetStateLookupAsync();
-		await base.OnInitializedAsync();
-	}
+        await base.OnInitializedAsync();
+    }
 
     private async Task Save()
     {
@@ -46,7 +42,7 @@ public partial class EditCityDialog
                 ArabicName = city.ArabicName,
                 EnglishName = city.EnglishName,
                 StateId = city.StateId,
-                
+
             };
 
             // Call the update method
@@ -56,9 +52,9 @@ public partial class EditCityDialog
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName} ", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
-				await Task.Delay(1000);
-				Navigation.NavigateTo("/cities", forceLoad: true);
-			}
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/cities", forceLoad: true);
+            }
 
             else
             {
@@ -92,9 +88,9 @@ public partial class EditCityDialog
     }
 
     private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
+    {
+        MudDialog.Cancel();
+    }
 
 
 }

@@ -103,7 +103,7 @@
     private MudForm form;
     private CreateUpdateCameraMainTypeDto cameraMainType = new CreateUpdateCameraMainTypeDto();
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
 

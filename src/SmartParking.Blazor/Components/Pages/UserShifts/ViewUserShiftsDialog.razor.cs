@@ -19,7 +19,7 @@ namespace SmartParking.Blazor.Components.Pages.UserShifts;
 public partial class ViewUserShiftsDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     [Parameter]
     public Guid UserId { get; set; }
 

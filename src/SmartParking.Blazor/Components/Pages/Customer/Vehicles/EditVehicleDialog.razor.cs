@@ -1,25 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
-using SmartParking.Mobile.Vehicles;
-using SmartParking.Vehicles.LookUps;
+using SmartParking.Validations;
 using SmartParking.Vehicles;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Authentication;
-using System.Threading.Tasks;
-using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
-using System.Linq;
-using Microsoft.AspNetCore.Components.Web;
-using System.Text;
-using System.Globalization;
-using SmartParking.Validations;
-using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -36,13 +28,13 @@ public partial class EditVehicleDialog
     IReadOnlyList<VehicleModelDto> VehicleModels = new List<VehicleModelDto>();
     bool _clearable;
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
     private string plateLetters = "";
     private string plateNumbers = "";
 
     protected override async Task OnInitializedAsync()
     {
-        if(CultureInfo.CurrentCulture.Name == "ar")
+        if (CultureInfo.CurrentCulture.Name == "ar")
         {
             plateLetters = Vehicle.ArPlateLetters;
             plateNumbers = Vehicle.ArPlateNumber;
@@ -70,7 +62,7 @@ public partial class EditVehicleDialog
     }
     private async void SubmitEdit()
     {
-  
+
         try
         {
             Vehicle.CustomerId = Vehicle.CustomerId;

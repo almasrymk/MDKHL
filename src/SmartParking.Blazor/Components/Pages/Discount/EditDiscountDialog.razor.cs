@@ -2,11 +2,7 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Discounts;
-using SmartParking.Lookups;
-using System;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
@@ -15,33 +11,33 @@ namespace SmartParking.Blazor.Components.Pages.Discount;
 public partial class EditDiscountDialog
 {
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public DiscountDto discount { get; set; } = new DiscountDto();
     private MudForm editForm;
     [Parameter] public int Id { get; set; }
 
     private async Task Save()
     {
-		
-		try
-		{
-			// Create the input object for update
-			var input = new CreateUpdateDiscountDto
-			{
+
+        try
+        {
+            // Create the input object for update
+            var input = new CreateUpdateDiscountDto
+            {
                 ArabicName = discount.ArabicName,
                 EnglishName = discount.EnglishName,
                 DiscountPercent = discount.DiscountPercent,
                 Notes = discount.Notes,
-                Status=discount.Status,
+                Status = discount.Status,
                 TenantId = currrentTenant.Id
             };
 
-			// Call the update method
+            // Call the update method
 
-			var discountt = await DiscountAppService.UpdateAsync(discount.Id, input);
+            var discountt = await DiscountAppService.UpdateAsync(discount.Id, input);
 
-			if (discountt != null)
-			{
+            if (discountt != null)
+            {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
@@ -49,11 +45,11 @@ public partial class EditDiscountDialog
             }
 
             else
-			{
+            {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} {input.ArabicName}", Severity.Success);
 
             }
-		}
+        }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)

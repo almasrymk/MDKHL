@@ -36,7 +36,7 @@ public partial class AddVehicleDialog
     IReadOnlyList<VehicleModelDto> VehicleModels = new List<VehicleModelDto>();
     bool _clearable;
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
 
 	[Parameter]
 	public Guid CustomerId { get; set; }
