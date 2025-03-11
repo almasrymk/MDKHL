@@ -220,7 +220,7 @@
                       
                     <MudItem sm="12" Class="d-inline-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
-                            <MudRadioGroup @bind-Value="@subscription.Status" Class="d-inline-flex align-content-center">
+                            <MudRadioGroup T="SubscriptionStatus" ValueChanged="@((SubscriptionStatus newStatus) => OnStatusChanged(newStatus))" Value="subscription.Status" Class="d-inline-flex align-content-center">
                                 <MudRadio Value="@(SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                                 <MudRadio Value="@(SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
                             </MudRadioGroup>

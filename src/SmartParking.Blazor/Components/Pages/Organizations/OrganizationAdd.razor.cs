@@ -25,38 +25,16 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 public partial class OrganizationAdd
 {
     private MudForm form;
-    public string UserName { get; set; }
-    public string ArabicName { get; set; } 
-    public string EnglishName { get; set; }
-    public string CommercialRegistrationNumber { get; set; }
-    public int NumOfCameras { get; set; }
-    public int MaxCapacity { get; set; }
     private string CountrySelectValue {  get; set; }
     private string PackageSelectValue {  get; set; }
     private string CitySelectValue {  get; set; }
     private string StateSelectValue {  get; set; }
     public string RegionSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
-    public decimal FirstHourPrice { get; set; }
-    public decimal SecondHourPrice { get; set; }
-    public decimal ThirdHourPrice { get; set; }
-    public decimal AdditionalHourPrice { get; set; }
-    public decimal FullDayPrice { get; set; }
-    public bool IsNumberOfHoursExceeded { get; set; }
     public int NumberOfHours { get; set; }
-    public bool IsClose { get; set; }
     public TimeSpan? ClosingHoursStart { get; set; }
     public TimeSpan? ClosingHoursEnd { get; set; }
     public bool Status { get; set; } = true;
-    public string PhoneNum { get; set; }
-    public string WhatsAppNum { get; set; }
-    public string ContactMail { get; set; }
-    public string Address { get; set; }
-    public int BuildingNumber { get; set; }
-    public string StreetName { get; set; }
-    public int SecondaryNumber { get; set; }
-    public int PostalCode { get; set; }
-    public string District { get; set; }
     public string OrganizationPicture { get; set; } 
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
@@ -64,15 +42,10 @@ public partial class OrganizationAdd
     public int NumberOfCustomers { get; set; }
     public int SubscriptionSlotNumber { get; set; }
     public int ParkingSlot { get; set; }
-
     private SubscriptionDto? SelectedPackage;
-    public int FreeMinutes { get; set; }
-    public int Graceperiod { get; set; }
     private string NewAddress { get; set; }
-    public string TaxIdentificationNumber { get; set; }
-    public string NationalId { get; set; }
-
-
+    public CreateUpdateOrganiztionDto CreateUpdateOrganiztion { get; set; } = new CreateUpdateOrganiztionDto();
+    
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IList<CountryLookupDto> countries = new List<CountryLookupDto>();
@@ -155,59 +128,22 @@ public partial class OrganizationAdd
         {
             StatusValue = Enums.Status.Inactive;
         }
-       
-        CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
-        {
-            ArabicName = ArabicName,
-            EnglishName = EnglishName,
-            CommercialRegistrationNumber = CommercialRegistrationNumber,
-            NumOfCameras = NumOfCameras,
-            MaxCapacity = MaxCapacity,
-            CityId = int.Parse(CitySelectValue),
-            RegionId = int.Parse(RegionSelectValue),
-            StateId = int.Parse(StateSelectValue),
-            Email = ContactMail,
-            CountryId = int.Parse(CountrySelectValue),
-            CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
-            Status = StatusValue,
-            PhoneNumber = PhoneNum,
-            IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
-            IsClose = IsClose,
-            WhatsAppNum = WhatsAppNum,
-            FirstHourPrice = FirstHourPrice,
-            SecondHourPrice = SecondHourPrice,
-            ThirdHourPrice = ThirdHourPrice,
-            AdditionalHourPrice = AdditionalHourPrice,
-            FullDayPrice = FullDayPrice,
-            NumberOfHours = NumberOfHours > 0 ? NumberOfHours : 0,
-            ClosingHoursStart = ClosingHoursStart.HasValue
-            ? TimeOnly.FromTimeSpan(ClosingHoursStart.Value)
-            : null,
-            ClosingHoursEnd = ClosingHoursEnd.HasValue
-            ? TimeOnly.FromTimeSpan(ClosingHoursEnd.Value)
-            : null,
-            UserName = UserName,
-            StreetName = StreetName,
-            District = District,
-            BuildingNumber = BuildingNumber,
-            PostalCode = PostalCode,
-            SecondaryNumber = SecondaryNumber,
-            OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder),
-            FreeMinutes = FreeMinutes,
-            Address = NewAddress,
-            Graceperiod = Graceperiod,
-            TaxNumber=TaxIdentificationNumber,
-            SubscriptionId= int.Parse(PackageSelectValue),
-            NationalId=NationalId,
-            
 
-        };
-       
         
+        CreateUpdateOrganiztion.CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue);
+        CreateUpdateOrganiztion.SubscriptionId = int.Parse(PackageSelectValue);
+        CreateUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
+        CreateUpdateOrganiztion.NumberOfHours = NumberOfHours > 0 ? NumberOfHours : 0;
+        CreateUpdateOrganiztion.ClosingHoursStart = ClosingHoursStart.HasValue? TimeOnly.FromTimeSpan(ClosingHoursStart.Value): null;
+        CreateUpdateOrganiztion.ClosingHoursEnd = ClosingHoursEnd.HasValue ? TimeOnly.FromTimeSpan(ClosingHoursEnd.Value) : null;
+        CreateUpdateOrganiztion.CountryId = int.Parse(CountrySelectValue);
+        CreateUpdateOrganiztion.CityId = int.Parse(CitySelectValue);
+        CreateUpdateOrganiztion.RegionId = int.Parse(RegionSelectValue);
+        CreateUpdateOrganiztion.StateId = int.Parse(StateSelectValue);
         try
         {
-            createUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(IsClose, createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
-            var oragnization =  await OrganizationAppService.CreateAsync(createUpdateOrganiztion);
+            CreateUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(CreateUpdateOrganiztion.IsClose, CreateUpdateOrganiztion.ClosingHoursStart, CreateUpdateOrganiztion.ClosingHoursEnd);
+            var oragnization =  await OrganizationAppService.CreateAsync(CreateUpdateOrganiztion);
             await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id,int.Parse(PackageSelectValue));
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Organization"]} {oragnization.ArabicName}", Severity.Success);
             Navigation.NavigateTo("/organizations");
