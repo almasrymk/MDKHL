@@ -34,7 +34,7 @@ public partial class CustomerDialog
 	private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
 	private readonly IStringLocalizer<SmartParkingResource> _localizer;
 	[CascadingParameter]
-	private MudDialogInstance MudDialog { get; set; }
+	private IMudDialogInstance MudDialog { get; set; }
 	[Parameter] public int organizationId { get; set; }
 	private void Cancel() => MudDialog.Cancel();
 

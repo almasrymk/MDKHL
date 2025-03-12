@@ -19,7 +19,7 @@
 //{
 //    [Inject] ICurrentTenant currrentTenant { get; set; }
 //    [CascadingParameter]
-//    private MudDialogInstance MudDialog { get; set; }
+//    private IMudDialogInstance MudDialog { get; set; }
 //    [Parameter] public int organizationId { get; set; }
 //    private void Cancel() => MudDialog.Cancel();
 

@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Lookups;
 using SmartParking.SubscriptionTypes;
 
 namespace SmartParking.Blazor.Components.Pages.SubscriptionType;
 
 public partial class DetailsSubscriptionType
 {
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-	[Parameter] public SubscriptionTypeDto subscriptionType { get; set; } = new SubscriptionTypeDto();
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public SubscriptionTypeDto subscriptionType { get; set; } = new SubscriptionTypeDto();
 
 
-	private void Cancel()
-	{
-		MudDialog.Cancel();
-	}
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
 }

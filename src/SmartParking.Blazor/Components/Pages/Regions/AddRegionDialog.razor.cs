@@ -3,11 +3,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.Region;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
@@ -19,13 +15,13 @@ public partial class AddRegionDialog
     public List<CountryLookupDto> countries = new List<CountryLookupDto>();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     private string CountrySelectValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-		countries = await CountriesAppService.GetCountryLookupAsync();
+        countries = await CountriesAppService.GetCountryLookupAsync();
         await base.OnInitializedAsync();
     }
 
@@ -36,37 +32,37 @@ public partial class AddRegionDialog
     private async Task Submit()
     {
 
-		var successedMessage = L["RegionCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateRegion"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        var successedMessage = L["RegionCreatedSuccessfully"];
+        var errorMessage = L["Can'tCreateRegion"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
 
-		// Call your service to create the region
-		try
-		{
-			CreateUpdateRegionDto createUpdateRegionDto = new CreateUpdateRegionDto()
-			{
-				ArabicName = input.ArabicName,
-				EnglishName = input.EnglishName,
-				Status = input.Status,
-				CountryId = input.CountryId
-			};
+        // Call your service to create the region
+        try
+        {
+            CreateUpdateRegionDto createUpdateRegionDto = new CreateUpdateRegionDto()
+            {
+                ArabicName = input.ArabicName,
+                EnglishName = input.EnglishName,
+                Status = input.Status,
+                CountryId = input.CountryId
+            };
 
-			var regions = await RegionAppService.CreateAsync(createUpdateRegionDto);
-			if (regions != null)
-			{
-				Snackbar.Add(successedMessage, Severity.Success);
-				MudDialog.Close(DialogResult.Ok(true));
-				await Task.Delay(1000);
-				Navigation.NavigateTo("/regions", true);
-			}
+            var regions = await RegionAppService.CreateAsync(createUpdateRegionDto);
+            if (regions != null)
+            {
+                Snackbar.Add(successedMessage, Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/regions", true);
+            }
 
-			else
-			{
-				Snackbar.Add(errorMessage, Severity.Error);
+            else
+            {
+                Snackbar.Add(errorMessage, Severity.Error);
 
-			}
-		}
+            }
+        }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)

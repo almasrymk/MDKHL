@@ -1,26 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using SmartParking.Authentication;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Identity;
-using Volo.Abp;
-using SmartParking.Entities;
-using MudBlazor;
-using Volo.Abp.Validation;
-using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Customers;
-using SmartParking.Vehicles;
-using System.Globalization;
 using Microsoft.Extensions.Localization;
-using SmartParking.Localization;
-using SmartParking.Blazor.Components.SPComponents;
-using static MudBlazor.CategoryTypes;
-using System.Security.Authentication;
-using System.Linq;
+using MudBlazor;
+using SmartParking.Authentication;
+using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Entities;
 using SmartParking.Enums;
+using SmartParking.Localization;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -38,7 +28,7 @@ public partial class MDKHLEditUserDialog
     private TableData itemData = new TableData();
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
 
 
     public MDKHLEditUserDialog(IStringLocalizer<SmartParkingResource> localizer)
@@ -138,7 +128,7 @@ public partial class MDKHLEditUserDialog
     }
     private async Task HandleDelete(RowDef row)
     {
-        
+
 
         var id = Guid.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;

@@ -244,7 +244,7 @@
 	[Inject] ICameraModelAppService CameraModelAppService { get; set; }
 	[Inject] ICameraMainTypeAppService CameraMainTypeAppService { get; set; }
 	[CascadingParameter]
-	private MudDialogInstance MudDialogAdd { get; set; }
+	private IMudDialogInstance MudDialogAdd { get; set; }
 	[Parameter] public CreateUpdateCameraDto Camera { get; set; }
 	[Parameter]
 	public int UpdatedId { get; set; }

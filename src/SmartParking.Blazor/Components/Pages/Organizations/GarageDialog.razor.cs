@@ -2,22 +2,19 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Garages;
 using SmartParking.Garages;
 using SmartParking.Localization;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using SmartParking.Blazor.Components.Pages.Garages;
-using System.Globalization;
 using SmartParking.OrganizationsGarages;
+using System.Globalization;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class GarageDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     [Parameter] public int organizationId { get; set; }
     private void Cancel() => MudDialog.Cancel();
 
@@ -82,7 +79,7 @@ public partial class GarageDialog
         };
 
         // Call the service to perform the search based on the input parameters
-     var garagessDto = await GarageAppService.Search(input);
+        var garagessDto = await GarageAppService.Search(input);
 
         // Calculate the total number of pages required to display all results
         TotalItem = (int)garagessDto.TotalCount;

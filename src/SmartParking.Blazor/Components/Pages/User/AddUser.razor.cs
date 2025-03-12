@@ -1,21 +1,14 @@
-﻿using MudBlazor;
-using SmartParking.Organizations;
-using SmartParking.OrganizationsGarages;
-using System.Collections.Generic;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp;
+﻿using Microsoft.AspNetCore.Authorization;
+using MudBlazor;
 using SmartParking.Authentication;
-using System.Linq;
-using Volo.Abp.Validation;
-using SmartParking.Enums;
-using Volo.Abp.Identity;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Enums;
 using SmartParking.Localization;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.AspNetCore.Authorization;
-using FluentValidation.Validators;
+using SmartParking.Organizations;
+using System.Security.Authentication;
+using Volo.Abp;
+using Volo.Abp.Identity;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -39,8 +32,9 @@ public partial class AddUser
     }
     private async Task HandleBlur()
     {
-      var user = await UsersAppService.CheckPhoneIsUnique(textField.Value);
-        if (user != null) {
+        var user = await UsersAppService.CheckPhoneIsUnique(textField.Value);
+        if (user != null)
+        {
             Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
             Snackbar.Add(LocalizationHelper.GetLocalizedString("User") + " " +
@@ -49,7 +43,7 @@ public partial class AddUser
                     {
                         config.Action = LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE);
                         config.ActionColor = Color.Primary;
-                        config.Onclick = snackbar =>
+                        config.OnClick = snackbar =>
                         {
                             HandleEdit(user);
                             return Task.CompletedTask;
@@ -83,44 +77,45 @@ public partial class AddUser
     }
     protected override async Task OnInitializedAsync()
     {
-        if(!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Create))
+        if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Create))
         {
             NavigationManager.NavigateTo("/Account/AccessDenied", true);
         }
         userCreate = new UserCreateDto();
         Roles = await RoleAppService.GetListByTenant(null);
-       await GetOrganizationDetailsAsync();
+        await GetOrganizationDetailsAsync();
 
     }
     private async Task IsMdkhlSelect(string value)
     {
-        switch(value)
+        switch (value)
         {
             case string v when v == "admin":
                 IsOrganization = true;
                 IsSelectOrganization = true;
-                break;            
-            
+                break;
+
             case string v when v == "mdkhl":
                 IsOrganization = false;
                 IsSelectOrganization = false;
-                break;           
-            
+                break;
+
             case string v when v == "keeper":
                 IsOrganization = true;
                 userCreate.UserTypeCategory = UserTypeCategory.Keeper;
                 Roles = await RoleAppService.GetListByTenant(currrentTenant.Id);
                 break;
-        };
-       
+        }
+        ;
+
         if (IsOrganization)
         {
             Organizations = await OrganizationAppService.GetAllMobileAsync();
         }
         else
-        Roles = await RoleAppService.GetListByTenant(null);
+            Roles = await RoleAppService.GetListByTenant(null);
 
-    }    
+    }
     private async Task SelectOrganization(int organizationId)
     {
         IsSelectOrganization = true;
@@ -131,7 +126,7 @@ public partial class AddUser
     }
     private async void SubmitCreate()
     {
-        
+
 
         await AddUserAsync();
     }
@@ -158,7 +153,7 @@ public partial class AddUser
 
         if (role == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("UserRole") +" "+LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("UserRole") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
         }
 
         userCreate.UserType = role?.Name switch
@@ -205,7 +200,7 @@ public partial class AddUser
         }
     }
 
-  
+
     public void CancelAdd()
     {
         NavigationManager.NavigateTo("/users", true);

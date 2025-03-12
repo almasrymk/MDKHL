@@ -20,7 +20,7 @@ namespace SmartParking.Blazor.Components.Pages.Garages;
 public partial class AddGarageDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
     public CreateUpdateGarageDto createUpdateGarage { get; set; }
     private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();

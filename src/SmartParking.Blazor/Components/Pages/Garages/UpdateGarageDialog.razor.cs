@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
-using SmartParking.Entities.Organizations;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using SmartParking.Validations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Validation;
@@ -19,7 +14,7 @@ namespace SmartParking.Blazor.Components.Pages.Garages;
 public partial class UpdateGarageDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
     [Parameter] public CreateUpdateGarageDto Garage { get; set; }
     [Parameter]
     public int UpdatedId { get; set; }

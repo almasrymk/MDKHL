@@ -274,7 +274,7 @@
     private MudForm form;
     private CreateUpdateCameraDto cameraDto = new CreateUpdateCameraDto();
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
 

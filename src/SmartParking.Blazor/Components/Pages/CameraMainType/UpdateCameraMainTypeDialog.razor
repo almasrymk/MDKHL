@@ -104,7 +104,7 @@
     [Parameter]
     public int Id { get; set; }
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
 

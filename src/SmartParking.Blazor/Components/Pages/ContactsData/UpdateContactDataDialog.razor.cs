@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Organizations;
-using System.Threading.Tasks;
-using System;
+using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
-using System.Linq;
-using SmartParking.Blazor.Components.Shared;
-using System.Security.Authentication;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
@@ -16,7 +13,7 @@ public partial class UpdateContactDataDialog
     private MudForm form;
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     [Parameter] public int organizationId { get; set; }
     [Parameter] public int contactDataId { get; set; }
@@ -24,7 +21,7 @@ public partial class UpdateContactDataDialog
 
     private async Task Submit()
     {
-        
+
 
 
         // Call your service to edit the ContactData

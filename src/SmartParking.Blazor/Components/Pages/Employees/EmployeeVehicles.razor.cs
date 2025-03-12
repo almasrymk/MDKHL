@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Customers;
 using SmartParking.Cutomers;
 using SmartParking.Vehicles;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SmartParking.Blazor.Components.Pages.Employees;
 
 public partial class EmployeeVehicles
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
 
     [Parameter]
     public Guid CustomerId { get; set; }
