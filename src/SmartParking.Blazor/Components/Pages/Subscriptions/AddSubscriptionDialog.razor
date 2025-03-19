@@ -126,7 +126,7 @@
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder="@L["Type Here"]"
-                                             Label="@L["NumberOfCustomers"]"
+                                             Label="@L["NumberOfCustomersSub"]"
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfCustomers"
@@ -134,7 +134,7 @@
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudSwitch Label="@L["UnlimitedCustomers"]"
+                            <MudSwitch Label="@L["UnlimitedCustomersSub"]"
                                        LabelPosition="LabelPosition.Start"
                                        @bind-Value="maximumNumberOfCustomers"
                                        Color="MudBlazor.Color.Primary"
@@ -197,7 +197,7 @@
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
-                                             Label="@L["NumberOfUsers"]"
+                                             Label="@L["NumbersOfUsers"]"
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfUsers"
