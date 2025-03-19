@@ -13,6 +13,6 @@
 @inject IGenerateFilesAppService GenerateFilesAppService
 @inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
-<PageTitle>@L["PackagePaymentReports"]</PageTitle>
-<MudText Typo="Typo.h5" Class="mb-2">@L["PackagePaymentReports"] </MudText>
-<SPDataGrid PageName=@($"{@L["PackagePaymentReports"]}") ShowMenue="true" Data="@itemData" Menus="@MenuDatas" ShowFiltering="true" OnPageChanged="FetchData" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
+<PageTitle>@L["PackagePaymentsData"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["PackagePaymentsData"] </MudText>
+<SPDataGrid PageName=@($"{@L["PackagePaymentsData"]}") ShowMenue="true" Data="@itemData" Menus="@MenuDatas" ShowFiltering="true" OnPageChanged="FetchData" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
