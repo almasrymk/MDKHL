@@ -746,7 +746,7 @@
         "UsersCanShift": "إدارة الورديات",
         "KeeperPaymentsReport": "تقارير المبيعات للوردية",
         "KeeperTransactionsReport": "تقارير الحركات للوردية",
-        "KeeperPayments": " تحصيلات الوردية",
+        "KeeperPayments": "تحصيلات الوردية",
         "KeeperTransactions": "الحركات للوردية",
         "Time": "وقت",
         "DeleteValidation": "لا يمكن حذفه لأنها مُخصص حاليًا",
@@ -759,7 +759,7 @@
         "PercentageValidtion": "يجب أن تكون القيمة بين 0 و 100.",
         "StatusValidtion": "اختيار الحالة غير صالح.",
         "RemoveUserFromShiftSuccessfully": "تم الغاء التخصيص للمستخدم من الورديه بنجاح",
-        "PaymentUserShiftReport": "تقرير بالمبيعات للعامل بالوردية",
+        "PaymentUserShiftReport": "تقرير بتحصيلات الوردية",
         "KeeperCountTransactionsReport": "تقرير بعدد الحركات للعامل بالوردية",
         "TenantName": "اسم المستأجر"
 
