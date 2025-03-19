@@ -71,7 +71,7 @@
                     <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
                         @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || currenttenant.Id == null)
                          {
-                            <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
+                            <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["AddShifts"]</MudNavLink>
                          }
 
                         @if (AuthorizationService.IsGrantedAnyAsync(UserShiftPermission.Default).Result || currenttenant.Id == null)
