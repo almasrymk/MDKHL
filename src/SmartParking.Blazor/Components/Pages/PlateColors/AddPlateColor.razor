@@ -70,7 +70,7 @@
     private MudForm form;
     private CreateUpdatePlateColorDto plateColorDro = new CreateUpdatePlateColorDto();
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
 
     protected override async Task OnInitializedAsync()

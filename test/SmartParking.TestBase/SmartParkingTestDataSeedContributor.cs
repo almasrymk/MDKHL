@@ -254,14 +254,12 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                             StartDate = new DateOnly(year: 2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_1.StartTime  , EndTime = shift_1.EndTime  } ,
 
                          new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user.Id,
-                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
+                            StartDate = new DateOnly(2025 ,  3 ,  1 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
                           new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user2.Id,
-                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
+                            StartDate = new DateOnly(2025 ,  3 ,  1 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
 
 
-                          new KeeperShift { GarageId = shift_2.GarageId , OrganizationId = shift_2.OrganizationId , ShiftId =  shift_2.Id , KeeperId =  user.Id,
-                            StartDate = new DateOnly(2025 ,  2 ,  27 )  , EndDate = new DateOnly(2025 , 3 , 1) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
-
+                      
                     };
                     await _keeperShiftRepository.InsertManyAsync(keeperShiftList , true);
 

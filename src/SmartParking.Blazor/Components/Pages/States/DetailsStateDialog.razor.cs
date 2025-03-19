@@ -8,7 +8,7 @@ namespace SmartParking.Blazor.Components.Pages.States;
 
 public partial class DetailsStateDialog
 {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public StateDto state { get; set; } = new StateDto();
 
     protected override async Task OnInitializedAsync()

@@ -1,20 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Garages;
 using SmartParking.OrganizationsGarages;
 using System.Security.Authentication;
-using System.Threading.Tasks;
-using System;
 using Volo.Abp;
 using Volo.Abp.Validation;
-using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
 public partial class AddGarageDialogInOrganization
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
     [Parameter]
     public int OrganizationId { get; set; }
     public CreateUpdateGarageDto createUpdateGarage { get; set; }
@@ -29,10 +25,10 @@ public partial class AddGarageDialogInOrganization
     }
     private async void SubmitCreate()
     {
-		var successedMessage = L["GarageCreatedSuccessfully"];
-		var errorMessage = L["Can'tCreateGarage"];
-		var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-		try
+        var successedMessage = L["GarageCreatedSuccessfully"];
+        var errorMessage = L["Can'tCreateGarage"];
+        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
+        try
         {
             createUpdateGarage.Code = "";
             createUpdateGarage.OrganizationId = OrganizationId;

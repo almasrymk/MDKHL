@@ -2,11 +2,7 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.CustomerCategories;
 using SmartParking.Localization;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using SmartParking.Organizations;
 using Volo.Abp.Application.Dtos;
 
@@ -15,7 +11,7 @@ namespace SmartParking.Blazor.Components.Pages.Organizations;
 public partial class ContactDataDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     [Parameter] public int organizationId { get; set; }
     private void Cancel() => MudDialog.Cancel();
 
@@ -53,7 +49,7 @@ public partial class ContactDataDialog
         };
 
         // Retrieve the list of organizations from the server
-        var contactDto = await ContactInfoAppService.GetContactInfoByOrganization(input,organizationId);
+        var contactDto = await ContactInfoAppService.GetContactInfoByOrganization(input, organizationId);
         TotalItem = (int)contactDto.TotalCount;
         CreateTable(contactDto);
 

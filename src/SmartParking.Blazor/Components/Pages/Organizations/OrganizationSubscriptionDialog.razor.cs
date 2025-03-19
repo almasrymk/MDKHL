@@ -8,8 +8,8 @@ public partial class OrganizationSubscriptionDialog
 {
 
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; }
-    [Parameter] public SubscriptionDto subscription { get; set; } 
+    IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public SubscriptionDto subscription { get; set; }
 
 
     private void Cancel()

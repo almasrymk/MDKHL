@@ -2,18 +2,9 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.Customers;
-using SmartParking.Localization;
-using SmartParking.Vehicles;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp;
 using SmartParking.Invoices;
-using System.Linq;
+using SmartParking.Localization;
+using System.Globalization;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
@@ -21,7 +12,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer;
 public partial class ViewCustomerInvoiceDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     [Parameter] public string CustomerId { get; set; }
     private void Cancel() => MudDialog.Cancel();
 
@@ -73,7 +64,7 @@ public partial class ViewCustomerInvoiceDialog
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         var input = new PagedResultRequestDto
-        { 
+        {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage
         };
@@ -93,7 +84,7 @@ public partial class ViewCustomerInvoiceDialog
             Name = "customer invoice Data",
             ShowHeader = true
         };
-        
+
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = false, PropertyName = "InvoiceId", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "ar")
@@ -104,7 +95,7 @@ public partial class ViewCustomerInvoiceDialog
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerEnName"], Name = "CustomerEnName", IsFilterable = false, PropertyName = "CustomerEnName", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
-        
+
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TotalHours"], Name = "TotalHours", IsFilterable = false, PropertyName = "TotalHours", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoicePrice"], Name = "InvoicePrice", IsFilterable = false, PropertyName = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = false, PropertyName = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -112,8 +103,8 @@ public partial class ViewCustomerInvoiceDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyName = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         foreach (var item in invoice)
-        { 
-           
+        {
+
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceId"], item.Id.ToString()));
@@ -125,7 +116,7 @@ public partial class ViewCustomerInvoiceDialog
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerEnName"], item.CustomerEnName));
             }
-                
+
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], item.InvoiceType));
@@ -147,6 +138,6 @@ public partial class ViewCustomerInvoiceDialog
         }
         itemData = tableData;
     }
-   
+
 
 }

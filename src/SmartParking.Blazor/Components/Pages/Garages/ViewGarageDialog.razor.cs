@@ -10,7 +10,7 @@ public partial class ViewGarageDialog
 {
 
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
     [Parameter] public GarageDto Garage { get; set; }
 
     private void OnCloseViewOnly()

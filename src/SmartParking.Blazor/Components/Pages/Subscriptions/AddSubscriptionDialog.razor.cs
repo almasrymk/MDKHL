@@ -1,17 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
-using Volo.Abp.Validation;
-using System.Linq;
-using SmartParking.Lookups;
-using SmartParking.Blazor.Components.Shared;
 using System.Security.Authentication;
-using SmartParking.Localization;
+using Volo.Abp;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -24,11 +19,11 @@ public partial class AddSubscriptionDialog
     private DateTime? creationTime = DateTime.Now;
     public bool maximumNumberOfGarages { get; set; }
     public int UnlimitedMaximumNumber { get; set; } = 9999;
-	public bool maximumNumberOfCameras { get; set; }
-	public bool maximumNumberOfUsers { get; set; }
-	public bool maximumNumberOfCustomers { get; set; }
-	public bool maximumNumberOfParkingSlots { get; set; }
-  
+    public bool maximumNumberOfCameras { get; set; }
+    public bool maximumNumberOfUsers { get; set; }
+    public bool maximumNumberOfCustomers { get; set; }
+    public bool maximumNumberOfParkingSlots { get; set; }
+
 
 
     public CreateUpdateSubscriptionDto input = new CreateUpdateSubscriptionDto();
@@ -43,7 +38,7 @@ public partial class AddSubscriptionDialog
     public List<SubscriptionTypeLookupDto> subscriptions = new List<SubscriptionTypeLookupDto>();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
 
     protected override async Task OnInitializedAsync()
@@ -51,7 +46,7 @@ public partial class AddSubscriptionDialog
         var result = await SubscriptionTypeAppService.GetSubscriptionTypeLookupAsync();
         subscriptions = result;
     }
-   
+
 
     private async Task Submit()
     {
@@ -59,11 +54,11 @@ public partial class AddSubscriptionDialog
         try
         {
             input.NumbersOfGarages = BoundNumberOfGarages;
-            input.NumberOfCustomers =  BoundNumberOfCustomers;
-            input.NumberOfUsers =  BoundNumberOfUsers;
+            input.NumberOfCustomers = BoundNumberOfCustomers;
+            input.NumberOfUsers = BoundNumberOfUsers;
             input.NumberOfCameras = BoundNumberOfCameras;
             input.ParkingSlot = BoundNumberOfParkingSlots;
-           
+
             input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
 
             input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
@@ -102,7 +97,7 @@ public partial class AddSubscriptionDialog
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Message}", Severity.Error);
 
         }
-      
+
         catch (AuthenticationException ex)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);

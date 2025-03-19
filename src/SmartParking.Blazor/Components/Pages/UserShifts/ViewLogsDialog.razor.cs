@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.CustomerPackages;
 using SmartParking.DailyShifts;
 using System.Globalization;
 using Volo.Abp.Application.Dtos;
@@ -11,7 +10,7 @@ namespace SmartParking.Blazor.Components.Pages.UserShifts;
 public partial class ViewLogsDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
     public string userId { get; set; }
@@ -48,16 +47,16 @@ public partial class ViewLogsDialog
         PagedResultDto<DailyShiftDto> userLogs;
         if (CurrentTenant.Id == null)
         {
-            userLogs = await DailyShiftsAppService.GetListDailyShiftsAsync( input,null, Guid.Parse(userId));
+            userLogs = await DailyShiftsAppService.GetListDailyShiftsAsync(input, null, Guid.Parse(userId));
         }
         else
         {
-            userLogs = await DailyShiftsAppService.GetListDailyShiftsOrganizationAsync(input,CurrentTenant.Id, Guid.Parse(userId));
+            userLogs = await DailyShiftsAppService.GetListDailyShiftsOrganizationAsync(input, CurrentTenant.Id, Guid.Parse(userId));
         }
         TotalItem = (int)userLogs.TotalCount;
 
 
-       await CreateTable(userLogs.Items.ToList());
+        await CreateTable(userLogs.Items.ToList());
 
     }
 

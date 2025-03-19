@@ -142,7 +142,7 @@
     [Parameter] public CreateUpdateShiftDto Shift { get; set; }
     [Parameter] public int UpdatedId { get; set; }
     [CascadingParameter]
-    private MudDialogInstance MudDialogAdd { get; set; }
+    private IMudDialogInstance MudDialogAdd { get; set; }
     private TimeSpan? _timeSpanStart
     {
         get => Shift.StartTime.ToTimeSpan();

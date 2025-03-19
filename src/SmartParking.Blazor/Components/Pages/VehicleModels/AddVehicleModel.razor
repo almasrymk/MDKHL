@@ -115,7 +115,7 @@
     private MudForm form;
     private CreateUpdateVehicleModelDto vehicleModelDto = new CreateUpdateVehicleModelDto();
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     private string ModelPicture { get; set; }
     bool _clearable;
 

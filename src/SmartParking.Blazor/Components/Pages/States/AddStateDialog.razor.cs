@@ -2,11 +2,7 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups.State;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
@@ -21,13 +17,13 @@ public partial class AddStateDialog
     private MudForm form;
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
     private string RegionSelectValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-		regions = await StateAppService.GetRegionLookupAsync();
+        regions = await StateAppService.GetRegionLookupAsync();
         await base.OnInitializedAsync();
     }
 
@@ -37,26 +33,26 @@ public partial class AddStateDialog
     }
     private async Task Submit()
     {
-	
-		try
-		{
-			CreateUpdateStateDto createUpdateStateDto = new CreateUpdateStateDto()
-			{
-				ArabicName = input.ArabicName,
-				EnglishName = input.EnglishName,
-				Status = input.Status,
-				RegionId = input.RegionId,
-			};
 
-			var states = await StateAppService.CreateAsync(createUpdateStateDto);
-			if (states != null)
-			{
+        try
+        {
+            CreateUpdateStateDto createUpdateStateDto = new CreateUpdateStateDto()
+            {
+                ArabicName = input.ArabicName,
+                EnglishName = input.EnglishName,
+                Status = input.Status,
+                RegionId = input.RegionId,
+            };
+
+            var states = await StateAppService.CreateAsync(createUpdateStateDto);
+            if (states != null)
+            {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {states.EnglishName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
-				await Task.Delay(1000);
-				Navigation.NavigateTo("/states", true);
-			}
-		}
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/states", true);
+            }
+        }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
@@ -64,7 +60,7 @@ public partial class AddStateDialog
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
-         catch (BusinessException ex)
+        catch (BusinessException ex)
         {
 
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);

@@ -2,15 +2,13 @@
 using MudBlazor;
 using SmartParking.Lookups;
 using SmartParking.Lookups.State;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
 public partial class DetailsCityDialog
 {
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public CityDto city { get; set; } = new CityDto();
     public IReadOnlyList<StateLookupDto> states { get; set; } = new List<StateLookupDto>();
 

@@ -31,7 +31,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 public partial class ViewCustomerVehicleDialog
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
     [Parameter] public string CustomerId { get; set; }
     private void Cancel() => MudDialog.Cancel();
 

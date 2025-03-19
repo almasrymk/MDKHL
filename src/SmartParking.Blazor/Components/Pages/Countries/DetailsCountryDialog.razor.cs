@@ -8,7 +8,7 @@ public partial class DetailsCountryDialog
 {
 
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public CountryDto country { get; set; } = new CountryDto();
 
 
