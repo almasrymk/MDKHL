@@ -308,7 +308,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            var invoice = await _invoiceAppService.GetAsync(invoiceId);
             if (CheckIfInvoiceIsPaid(invoice))
             {
                 return Result.Error("InvoiceIsAlreadyPaid");
@@ -324,9 +324,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
     }
 
-    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, Invoice invoice, Result<string> image)
+    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, InvoiceDto invoice, Result<string> image)
     {
-        var invoiceDto = ObjectMapper.Map<Invoice, InvoiceMobileDto>(invoice);
+        var invoiceDto = ObjectMapper.Map<InvoiceDto, InvoiceMobileDto>(invoice);
         invoiceDto.QrCodeInvoice = image.Value;
         invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
         invoiceDto.TotalPriceWithVatAndDiscount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue);
@@ -334,7 +334,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return invoiceDto;
     }
 
-    private async Task<PaymentCheckoutDto> RequestToPaymentCheckout(Invoice invoice , decimal discountValue)
+    private async Task<PaymentCheckoutDto> RequestToPaymentCheckout(InvoiceDto invoice , decimal discountValue)
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {
@@ -354,9 +354,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
        return await CheckoutAsync(invoiceId, discountValue);
     }
 
-    private static bool CheckIfInvoiceIsPaid(Invoice invoice)
+    private static bool CheckIfInvoiceIsPaid(InvoiceDto invoice)
     {
-        if (invoice.InvoiceType == InvoiceType.Paid)
+        if (invoice.InvoiceType == InvoiceType.Paid.ToString())
         {
             return true;
         }
