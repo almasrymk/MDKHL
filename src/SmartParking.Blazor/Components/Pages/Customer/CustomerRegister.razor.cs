@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using SmartParking.Authentication;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Cutomers;
@@ -152,7 +153,9 @@ public partial class CustomerRegister
     {
         if (createUpdateCustomerDto.IsUser)
         {
+            await UsersAppService.CheckSubscriptionUsersLimitsAsync(createUpdateCustomerDto.OrganizationId);
             var organization = await OrganizationAppService.GetAsync(createUpdateCustomerDto.OrganizationId);
+
             createUpdateCustomerDto.TenantId = organization.TenantId;
             createUpdateCustomerDto.RoleId = Guid.Parse(RoleId);
         }

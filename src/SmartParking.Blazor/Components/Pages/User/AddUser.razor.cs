@@ -169,7 +169,8 @@ public partial class AddUser
         {
             await GetOrganizationDetailsAsync();
             CheckUser();
-            var user = await UsersAppService.CreateWithRoleAsync(userCreate, role.Id);
+            await UsersAppService.CheckSubscriptionUsersLimitsAsync(userCreate.OrganizationId);
+            var user = await UsersAppService.CreateWithRoleAsync(userCreate,role.Id);
             SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
             LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
             LocalizationHelper.GetLocalizedString("User"), Severity.Success);

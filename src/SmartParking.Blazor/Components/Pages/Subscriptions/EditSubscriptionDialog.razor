@@ -120,7 +120,7 @@
                                           Immediate="true"
                                           Variant="Variant.Text"
                                           Placeholder="@L["Type Here"]"
-                                          Label="@L["NumberOfCustomers"]"
+                                             Label="@L["NumberOfCustomersSub"]"
                                              HideSpinButtons
                                              Min="0"
                                              Disabled="maximumNumberOfCustomers"
@@ -128,7 +128,7 @@
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudSwitch Label="@L["UnlimitedCustomers"]"
+                            <MudSwitch Label="@L["UnlimitedCustomersSub"]"
                                        LabelPosition="LabelPosition.Start"
                                        @bind-Value="maximumNumberOfCustomers"
                                        Color="MudBlazor.Color.Primary" />
@@ -182,7 +182,7 @@
                                           Immediate="true"
                                           Variant="Variant.Text"
                                           Placeholder=@L["Type Here"]
-                                          Label="@L["NumberOfUsers"]"
+                                          Label="@L["NumbersOfUsers"]"
                                           HideSpinButtons
                                           Min="0"
                                           Disabled="maximumNumberOfUsers"
@@ -220,7 +220,7 @@
                       
                     <MudItem sm="12" Class="d-inline-flex justify-content-center">
                         <MudItem Class="d-flex flex-row justify-content-between">
-                            <MudRadioGroup @bind-Value="@subscription.Status" Class="d-inline-flex align-content-center">
+                            <MudRadioGroup T="SubscriptionStatus" ValueChanged="@((SubscriptionStatus newStatus) => OnStatusChanged(newStatus))" Value="subscription.Status" Class="d-inline-flex align-content-center">
                                 <MudRadio Value="@(SubscriptionStatus.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                                 <MudRadio Value="@(SubscriptionStatus.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
                             </MudRadioGroup>

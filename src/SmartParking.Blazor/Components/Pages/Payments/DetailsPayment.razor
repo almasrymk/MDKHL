@@ -54,7 +54,7 @@
                 </MudItem>
 
             <MudItem sm="4">
-                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Amount" Label=@L["Amount"] />
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Amount" Label="@($"{L["Amount"]} ({L["SAR"]})")" />
             </MudItem>
             <MudItem sm="4">
                 <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["PaymentStatus"] @bind-Value="LocalizedPaymentStatus"/>
@@ -64,7 +64,7 @@
                @if (Payment.Invoice is not null)
                    {
                 <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["Discount"] Value="Payment.Invoice.Discount.ToString()" />
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label="@($"{L["Discount"]} ({L["SAR"]})")" Value="Payment.Invoice.Discount.ToString()" />
                 </MudItem>
                                
                        <MudItem sm="4">

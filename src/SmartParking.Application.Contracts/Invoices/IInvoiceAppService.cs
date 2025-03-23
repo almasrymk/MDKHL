@@ -59,7 +59,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
 
     Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId, PagedResultRequestDto input);
     Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber);
-    Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto);
+    Task<Result<string>> GetImage(InvoiceDto? invoice, string? qrCodedto);
 
     Task<InvoiceDto?> GetLatestInvoiceForOrganization();
 

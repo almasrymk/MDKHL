@@ -10,7 +10,7 @@ using SmartParking.Localization;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq; 
 using System.Linq.Dynamic.Core;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -29,7 +29,7 @@ public class DailyShiftAppService :
         DailyShift,
         DailyShiftDto,
         int,
-        PagedAndSortedAndSearchResultRequestDto,
+        PagedAndSortedAndSearchResultRequestDto, 
         CreateUpdateDailyShiftDto
         >,
     IDailyShiftAppService
@@ -183,7 +183,7 @@ public class DailyShiftAppService :
         //nextDailyShift = await NextShiftInSameDay(input, dailyShift);
 
         //check if shift time is appropriate to end
-        //await CheckIfAnotherKeeperInSameShift(assignShift,input);
+        await CheckIfAnotherKeeperInSameShift(assignShift,input);
         return true;
     }
     /// <summary>
@@ -280,7 +280,8 @@ public class DailyShiftAppService :
                          join garage in queryGarge
                          on dailyShift.GarageId equals garage.Id
                          join keeperShift in queryKeeperShift
-                         on dailyShift.ShiftId equals keeperShift.ShiftId
+                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
+                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
                          join shift in queryShift
                          on dailyShift.ShiftId equals shift.Id
                          select new DailyShiftDto
@@ -317,10 +318,11 @@ public class DailyShiftAppService :
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            if (userId.HasValue)
+                queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
             var result = from dailyShift in queryDailyShift
                          where
-                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true 
-                         && userId.HasValue ? dailyShift.KeeperId == userId : true 
+                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true
                          join user in queryUser
                          on dailyShift.KeeperId equals user.Id
                          join organization in queryOrganization
@@ -328,7 +330,8 @@ public class DailyShiftAppService :
                          join garage in queryGarge
                          on dailyShift.GarageId equals garage.Id
                          join keeperShift in queryKeeperShift
-                         on dailyShift.ShiftId equals keeperShift.ShiftId
+                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
+                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
                          join shift in queryShift
                          on dailyShift.ShiftId equals shift.Id
                          select new DailyShiftDto
@@ -353,12 +356,13 @@ public class DailyShiftAppService :
                              
                          };
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+           
             result = ApplySorting(input, result);
             result = await ApplySearch(input, result);
-            var total = result.Count();
+          
             return new PagedResultDto<DailyShiftDto>
             {
-                TotalCount = total,
+                TotalCount = result.Count(),
                 Items = result.ToList()
             };
         }
@@ -384,10 +388,10 @@ public class DailyShiftAppService :
                          join garage in queryGarge
                          on dailyShift.GarageId equals garage.Id
                          join keeperShift in queryKeeperShift
-                         on dailyShift.ShiftId equals keeperShift.ShiftId
+                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
+                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
                          join shift in queryShift
                          on dailyShift.ShiftId equals shift.Id
-
                          select new DailyShiftDto
                          {
                              Id = dailyShift.Id,
@@ -423,12 +427,15 @@ public class DailyShiftAppService :
     private static IQueryable<DailyShiftDto>? ApplySorting(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? result)
     {
         var sorting = input.Sorting;
-        if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
+        if (!string.IsNullOrEmpty(sorting))
         {
-            var sortingSplit = sorting.Split(' ').ToList();
-            sorting = sortingSplit[0] + " descending";
+            if (sorting.Contains("DESC"))
+            {
+                var sortingSplit = sorting.Split(' ').ToList();
+                sorting = sortingSplit[0] + " descending";
+            }
+            result = result.OrderBy(sorting);
         }
-        result = result.OrderBy(sorting);
         return result;
     }
 

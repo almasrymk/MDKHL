@@ -94,8 +94,22 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             }
         }
 
-        
-            return await base.UpdateAsync(id, input);
+        if (existingSubscription.StatusSubscription != input.Status)
+        {
+            existingSubscription.StatusSubscription = input.Status;
+
+            if (input.Status == SubscriptionStatus.Active)
+            {
+                existingSubscription.ActivationDate = DateOnly.FromDateTime(DateTime.Now);
+
+            }
+            else if (input.Status == SubscriptionStatus.Inactive)
+            {
+                existingSubscription.InActivationDate = DateOnly.FromDateTime(DateTime.Now);
+            }
+        }
+
+        return await base.UpdateAsync(id, input);
         
     
     }

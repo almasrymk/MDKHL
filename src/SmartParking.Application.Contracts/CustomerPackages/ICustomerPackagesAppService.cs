@@ -46,6 +46,6 @@ namespace SmartParking.CustomerPackages
 
         Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId,Guid CustomerId , int PackageId);
 
-
+        Task CheckSubscriptionCustomersLimitsAsync(int organizationId);
     }
 }

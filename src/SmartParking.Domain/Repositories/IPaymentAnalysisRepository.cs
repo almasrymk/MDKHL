@@ -18,4 +18,7 @@ public interface IPaymentAnalysisRepository : IRepository<Payment, Guid>
         int skipCount, int maxResultCount, string sorting,
         Expression<Func<PaymentUserShift, bool>> filterRequests);
     Task<PagedResult<PaymentAnalysis>> GetPaymentForKeeper(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<PaymentAnalysis, bool>> filterRequests);
+    Task<PagedResult<DiscountPaymentAnalysis>> GetReportDiscount(Guid? tenantId,
+       int skipCount, int maxResultCount, string sorting,
+       Expression<Func<DiscountPaymentAnalysis, bool>> filterRequests, string searchTerm);
 }

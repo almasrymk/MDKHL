@@ -5,6 +5,10 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using System.Security.Authentication;
 using Volo.Abp.Validation;
+using System.Linq;
+using SmartParking.Blazor.Components.Shared;
+using System.Security.Authentication;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -44,14 +48,39 @@ public partial class EditSubscriptionDialog
         BoundNumberOfCameras = subscription.NumberOfCameras;
         BoundNumberOfCustomers = subscription.NumberOfCustomers;
         BoundNumberOfGarages = subscription.NumbersOfGarages;
+        ActivationDate = subscription.ActivationDate.ToDateTime(TimeOnly.MinValue);
+        InActivationDate = subscription.InActivationDate.ToDateTime(TimeOnly.MinValue);
     }
+    
+    private void OnStatusChanged(SubscriptionStatus newStatus)
+    {
+        if (subscription.Status != newStatus) // Ensure only updates on change
+        {
+            subscription.Status = newStatus;
+
+            if (newStatus == SubscriptionStatus.Active)
+            {
+                ActivationDate = DateTime.Now;
+                InActivationDate = subscription.InActivationDate.ToDateTime(TimeOnly.MinValue);
+            }
+            else if (newStatus == SubscriptionStatus.Inactive)
+            {
+                InActivationDate = DateTime.Now;
+                ActivationDate = subscription.ActivationDate.ToDateTime(TimeOnly.MinValue);
+
+            }
+
+            StateHasChanged(); // Force UI refresh
+        }
+    }
+
     private async Task Save()
     {
 
 
         try
         {
-
+            
             // Create the input object for update
             var input = new CreateUpdateSubscriptionDto
             {
@@ -62,7 +91,7 @@ public partial class EditSubscriptionDialog
                 Status = subscription.Status,
                 SubscriptionTypeId = subscription.SubscriptionTypeId,
                 ActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MinValue),
-                InActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MaxValue),
+                InActivationDate = DateOnly.FromDateTime(InActivationDate ?? DateTime.MaxValue),
                 NumberOfCameras = BoundNumberOfCameras,
                 NumberOfCustomers = BoundNumberOfCustomers,
                 NumberOfUsers = BoundNumberOfUsers,

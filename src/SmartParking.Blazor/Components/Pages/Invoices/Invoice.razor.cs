@@ -219,7 +219,16 @@ public partial class Invoice
     }
     private void HandleView(RowDef row)
     {
-        Navigation.NavigateTo("/invoices/details/" + row.Cells[0].Value, true);
+        if (CurrentTenant.Id != null)
+        {
+            Navigation.NavigateTo("/invoices/details/" + row.Cells[0].Value, true);
+
+        }
+        else
+        {
+            Navigation.NavigateTo("/invoices/details/" + row.Cells[1].Value, true);
+
+        }
     }
     /// <summary>
 
