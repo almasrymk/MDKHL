@@ -766,7 +766,8 @@
         "TenantName": "اسم المستأجر",
         "NumberOfTransactions": "عدد الحركات",
         "VisitorAndTransactionReportName": "تقرير بحركات الزوار",
-        "EmployeeAndTransactionReportName": "تقرير بحركات الموظفين"
+        "EmployeeAndTransactionReportName": "تقرير بحركات الموظفين",
+        "exportstarted": "بدأ عملية التصدير"
 
 
     }
