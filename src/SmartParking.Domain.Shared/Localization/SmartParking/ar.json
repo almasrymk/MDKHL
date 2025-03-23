@@ -377,7 +377,7 @@
     "Package": "باقة",
     "Will Be Generated Automatically": "سيتم إنشاءه تلقائيًا",
     "Assign": "تخصيص ",
-    "CreationTime": "الوقت / التاريخ",
+    "CreationTime": "وقت الإضافة",
     "Creator": "الإنشاء بواسطة",
     "AddContactData": "إنشاء بيانات الاتصال",
     "NewContactData": " بيانات الإتصال جديد",
@@ -393,7 +393,7 @@
     "RegionArabicName": "إسم المنطقة بالعربية",
     "RegionEnglishName": "إسم المنطقة بالإنجليزية",
     "State": "محافظة",
-    "CreationDate": "تاريخ الانشاء",
+    "CreationDate": "تاريخ الإضافة",
     "UnlimitedCustomers": "عدد لا محدود من العملاء",
     "UnlimitedCustomersSub": "عدد لا محدود من المستفيدين",
     "UnlimitedOrganizations": "عدد لا محدود من المنشآءات",
@@ -770,7 +770,9 @@
     "EmployeeAndTransactionReportName": "تقرير بحركات الموظفين",
     "exportstarted": "بدأ عملية التصدير",
     "DiscountsReport": "تقرير بالخصومات",
-    "NotPlateNumber": "لا يوجد رقم اللوحة"
+    "NotPlateNumber": "لا يوجد رقم اللوحة",
+    "CreatorName": "مضافة بواسطة",
+    "VicheleTransactionsReport": "تقرير بحركة سيارة"
 
 
   }

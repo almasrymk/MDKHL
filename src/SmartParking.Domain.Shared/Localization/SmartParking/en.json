@@ -742,6 +742,8 @@
     "ShiftOverlapValidation": "Shift overlaps with an existing shift.",
     "Assigned": "Assigned",
     "DiscountsReport": "Discounts Report",
-    "NotPlateNumber": "Not PlateNumber"
+    "NotPlateNumber": "Not PlateNumber",
+    "CreatorName": "Creator Name",
+    "VicheleTransactionsReport": "Vehicle Transactions Report"
   }
 }
