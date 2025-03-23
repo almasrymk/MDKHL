@@ -149,6 +149,7 @@ public partial class ViewCustomerVehicleDialog
             Data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto , CurrentTenant.Id);
 
         }
+        Data.Name = L["VicheleTransactionsReport"];
         await DownloadExcel(Data,plateNumber);
 
     }
