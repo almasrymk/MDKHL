@@ -744,6 +744,8 @@
     "DiscountsReport": "Discounts Report",
     "NotPlateNumber": "Not PlateNumber",
     "CreatorName": "Creator Name",
-    "VicheleTransactionsReport": "Vehicle Transactions Report"
+    "VicheleTransactionsReport": "Vehicle Transactions Report",
+    "DiscountInvalidationLessThanZero": "Discount cannot be less than zero.",
+    "DiscountInvalidationGreater": "Discount cannot be greater than the total invoice amount."
   }
 }

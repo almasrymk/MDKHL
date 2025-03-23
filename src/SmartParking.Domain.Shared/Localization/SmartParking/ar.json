@@ -772,7 +772,9 @@
     "DiscountsReport": "تقرير بالخصومات",
     "NotPlateNumber": "لا يوجد رقم اللوحة",
     "CreatorName": "مضافة بواسطة",
-    "VicheleTransactionsReport": "تقرير بحركة سيارة"
+    "VicheleTransactionsReport": "تقرير بحركة سيارة",
+    "DiscountInvalidationLessThanZero": "لا يمكن أن يكون الخصم أقل من صفر",
+    "DiscountInvalidationGreater": "لا يمكن أن يكون الخصم أكبر من قيمة الفاتورة"
 
 
   }
