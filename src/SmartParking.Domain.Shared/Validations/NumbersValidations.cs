@@ -170,4 +170,17 @@ public static class NumbersValidations
         MaxSlotsForCustomers = 0;
         MaxSlotsForFree = 0;
     }
+
+    public static string ValidateInvoice(decimal discountValue, decimal InvoicePriceWithVat)
+    {
+        if (discountValue < 0)
+            return LocalizationHelper.GetLocalizedString("DiscountInvalidationLessThanZero");
+        if (discountValue > InvoicePriceWithVat)
+        {
+            return LocalizationHelper.GetLocalizedString("DiscountInvalidationGreater");
+        }
+        
+        return null;
+    }
+
 }
