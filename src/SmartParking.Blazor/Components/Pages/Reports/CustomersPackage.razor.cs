@@ -80,7 +80,7 @@ public partial class CustomersPackage
         }
         else
         {
-            itemData.Name = LocalizationHelper.GetLocalizedString("CustomerPackageReport") + LocalizationHelper.GetLocalizedString("Report");
+            itemData.Name = LocalizationHelper.GetLocalizedString("CustomerPackageReport") + " "+ LocalizationHelper.GetLocalizedString("Report");
 
         }
 
