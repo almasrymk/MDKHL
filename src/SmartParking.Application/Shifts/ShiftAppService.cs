@@ -49,7 +49,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime , input.StartDate, input.EndDate, input.GarageId,input.IsFullDay,input.Status);
         if ( await HasOverlappingShift(_overlapExpression) && (input.Status == Status.Active))
         {
-            throw new Exception("Shift overlaps with an existing shift.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("ShiftOverlapValidation"));
         }
         return await base.CreateAsync(input);
     }
@@ -379,7 +379,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var _sameShiftExpression = NotSameEntityExpression(id);
         if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))&&(input.Status==Status.Active))
         {
-            throw new Exception("Shift overlaps with an existing shift.");
+            throw new Exception(LocalizationHelper.GetLocalizedString("ShiftOverlapValidation"));
         }
         return await base.UpdateAsync(id, input);
     }
@@ -424,7 +424,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             var shiftDto = shift.FirstOrDefault();
             if (shiftDto == null)
             {
-                throw new Exception("NotFoundValidation");
+                throw new Exception(LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
             return shiftDto;
 
