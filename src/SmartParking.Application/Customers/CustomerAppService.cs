@@ -643,7 +643,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Include(x => x.CustomerPackages)
-                         .Where(x => x.CustomerPackages != null && x.CustomerPackages.Any(o => o.OrganizationId == organizationId))
+                         .Where(x => x.CustomerPackages != null && x.CustomerPackages.Any(o => o.OrganizationId == organizationId && o.ExpiryDate >= DateTime.Now
+                         ))
                          .DistinctBy(x => x.Id);
             var count = await AsyncExecuter.CountAsync(query);
             return count;
