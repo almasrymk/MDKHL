@@ -628,6 +628,7 @@
         "Permission:SecurityManager": "Security Manager Reports",
         "Permission:FinancialManagement": "Financial Management Reports",
         "Reports": "Reports",
+        "Report": "Report",
         "TotalCustomersAndTheirTransactions": "Total Customers And Their Transactions",
         "GarageStatusDateAsync": "Garage Status on Accurate Date",
         "GarageStatusRangeAsync": "Garage Status between Date ",
@@ -735,8 +736,8 @@
         "PercentageValidtion": "The value must be between 0 and 100.",
         "StatusValidtion": "Invalid status selection.",
         "RemoveUserFromShiftSuccessfully": "Remove Assign User From Shift Successfully",
-        "PaymentUserShiftReport": "User Payments Per Shift Report",
-        "KeeperCountTransactionsReport": "User Transaction Count per Shift Report",
+        "PaymentUserShiftReport": "Shifts Payments Report",
+        "KeeperCountTransactionsReport": "Shifts Transactions Report",
         "NumberOfTransactions": "Number of Transactions",
         "TenantName": "Tenant Name"
 

@@ -654,6 +654,7 @@
         "Permission:SecurityManager": "تقارير مدير الأمن",
         "Permission:FinancialManagement": "تقارير الإدراة المالية",
         "Reports": "تقارير",
+        "Report": "تقرير",
         "TotalCustomersAndTheirTransactions": "تقرير العملاء وحركة سياراتهم",
         "GarageStatusDateAsync": "حالة الجراج في تاريخ",
         "GarageStatusRangeAsync": "حالة الجراج من تاريخ الي تاريخ",
@@ -689,9 +690,9 @@
         "Date": "الوقت",
         "GaragesReports": "تقارير المواقف",
         "BeneficiariesReports": "تقارير الحركات",
-        "PackagesReports": "تقارير اشتراكات الباقات",
-        "PackagePaymentReports": "تقارير الباقات",
-        "PaymentReports": "تقارير الفواتير",
+        "PackagesReports": "تقرير باشتراك الباقات",
+        "PackagePaymentReports": "تقرير بالباقات",
+        "PaymentReports": "تقرير بالفواتير",
         "ColumnVisibility": "اختيار الحقل",
         "UpgradeSubscriptionValidationCustomer": "اشتراكك الحالي لا يسمح بإضافة مستفيد جديد",
         "GetPdf": "تصدير بي دي اف",
@@ -760,9 +761,10 @@
         "PercentageValidtion": "يجب أن تكون القيمة بين 0 و 100.",
         "StatusValidtion": "اختيار الحالة غير صالح.",
         "RemoveUserFromShiftSuccessfully": "تم الغاء التخصيص للمستخدم من الورديه بنجاح",
-        "PaymentUserShiftReport": "تقرير بتحصيلات الوردية",
-        "KeeperCountTransactionsReport": "تقرير بعدد الحركات للعامل بالوردية",
-        "TenantName": "اسم المستأجر"
+        "PaymentUserShiftReport": "تقرير بالتحصيلات للوردية",
+        "KeeperCountTransactionsReport": "تقرير بالحركات للوردية",
+        "TenantName": "اسم المستأجر",
+        "NumberOfTransactions": "عدد الحركات"
 
 
     }
