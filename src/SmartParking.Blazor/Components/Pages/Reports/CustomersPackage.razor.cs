@@ -75,12 +75,12 @@ public partial class CustomersPackage
         itemData = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            itemData.Name = LocalizationHelper.GetLocalizedString("PackagesReports") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+            itemData.Name = LocalizationHelper.GetLocalizedString("Report") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString("CustomerPackageReport");
 
         }
         else
         {
-            itemData.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("PackagesReports");
+            itemData.Name = LocalizationHelper.GetLocalizedString("CustomerPackageReport") + LocalizationHelper.GetLocalizedString("Report");
 
         }
 
