@@ -117,25 +117,29 @@ public static class CreateTableHelper
             Name = LocalizationHelper.GetLocalizedString("TotalCustomersAndTheirTransactions"),
             ShowHeader = true
         };
-
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "GarageName" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "CameraType" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text , IsSortable = true  , PropertyName = "PlateNumber" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "AccurateTime" });
-       if(currentTenant == null)
+        if (currentTenant == null)
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("OrganizationName"), Name = "OrganizationName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "OrganizationName" });
         }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PlateNumber" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "GarageName" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "CameraType" });
+        
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "AccurateTime" });
+       
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("customer category"), Name = "CustomerCategory", TypeFilter = TypeFilter.Enum, IsSortable = true, PropertyName = "CustomerCategory", IsFilterable = true, TypeOfColumn = typeof(CustomerCategoryStatus) });
 
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ArabicName"), Name = "ArabicName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "ArabicName", IsFilterable = true });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Shift"), Name = "Shift", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "ShiftArabicName", IsFilterable = true });
         }
         else
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("UserName"), Name = "UserName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "UserName" ,IsFilterable = true});
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Shift"), Name = "Shift", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "ShiftEnglishName", IsFilterable = true});
         }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CreatorName"), Name = "CreatorName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "CreatorName", IsFilterable = true });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CreationDate"), Name = "CreationDate", TypeFilter = TypeFilter.DateOnly, IsSortable = true, PropertyName = "CreationDate", IsFilterable = true });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CreationTime"), Name = "CreationTiem", TypeFilter = TypeFilter.Time, IsSortable = true, PropertyName = "CreationTime", IsFilterable = true });
 
         foreach (var item in data)
         {
@@ -166,12 +170,16 @@ public static class CreateTableHelper
 
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ArabicName"), item.ArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Shift"), item.ShiftArabicName));
             }
             else
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), item.UserName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Shift"), item.ShiftEnglishName));
             }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CreatorName"), item.CreatorName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CreationDate"), item.CreationDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CreationTime"), item.CreationTime.ToString()));
+
             tableData.Rows.Add(rowDef);
         }
         await Task.Yield();
