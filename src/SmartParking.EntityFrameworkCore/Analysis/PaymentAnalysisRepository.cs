@@ -38,11 +38,7 @@ public class PaymentAnalysisRepository
         int skipCount, int maxResultCount, string sorting, 
         Expression<Func<PaymentUserShift, bool>> filterRequests)
     {
-        if (sorting.Contains("DESC"))
-        {
-            var sortingSplit = sorting.Split(' ').ToList();
-            sorting = sortingSplit[0] + " descending";
-        }
+        sorting = CheckSort(sorting);
         var dbContext = await GetDbContextAsync();
         var query = from payments in dbContext.Payments
                     where tenantId == null || payments.TenantId == tenantId
@@ -97,11 +93,7 @@ public class PaymentAnalysisRepository
     public async Task<PagedResult<PaymentAnalysis>> GetPaymentForKeeper(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<PaymentAnalysis, bool>> filterRequests)
     {
         var dbContext = await GetDbContextAsync();
-        if (sorting.Contains("DESC"))
-        {
-            var sortingSplit = sorting.Split(' ').ToList();
-            sorting = sortingSplit[0] + " descending";
-        }
+        sorting = CheckSort(sorting);
         var query = from payment in dbContext.Payments
                     where tenantId == null? true : payment.TenantId == tenantId
                     from user in dbContext.Users
@@ -140,7 +132,55 @@ public class PaymentAnalysisRepository
         };
     }
 
-   
 
+    public async Task<PagedResult<DiscountPaymentAnalysis>> GetReportDiscount(Guid? tenantId,
+       int skipCount, int maxResultCount, string sorting,
+       Expression<Func<DiscountPaymentAnalysis, bool>> filterRequests,string searchTerm)
+    {
+        sorting = CheckSort(sorting);
+        var dbContext = await GetDbContextAsync();
+        var query = from payments in dbContext.Payments
+                    where tenantId == null || payments.TenantId == tenantId
+                   
+                    select new DiscountPaymentAnalysis
+                    {
+                        Discount = payments != null && payments.Invoice != null ? payments.Invoice.Discount : 0m,
+                        Amount = payments.Amount,
+                        Currency = payments.Currency,
+                        CustomerArabicName = payments.Customers.ArabicName ?? "NotCustomer",
+                        CustomerEnglishName = payments.Customers.IdentityUser.Name ?? "NotCustomer",
+                        PlateNumber = payments != null && payments.Invoice != null?payments.Invoice.PlateNumber : "NotPlateNumber",
+                        InvoiceId = payments.InvoiceId,
+                        PaymentCategory = payments.PaymentCategory,
+                        PaymentDate = payments.CreationTime,
+                        PaymentMethod = payments.PaymentMethod,
+                        PaymentNumber = payments.PaymentNumber,
+                        PaymentStatus = payments.PaymentStatus,
+                        TenantId = payments.TenantId
 
+                        
+                    };
+        query = query.Where(filterRequests);
+        if(!string.IsNullOrWhiteSpace(searchTerm))
+            query = query.Where(_ => _.Discount.ToString().Contains(searchTerm));
+        query = query.OrderBy(sorting);
+        var total = query.Count();
+        query = query.Skip(skipCount).Take(maxResultCount);
+        return new PagedResult<DiscountPaymentAnalysis>
+        {
+            PageSize = total,
+            Queryable = query,
+        };
+    }
+
+    private static string CheckSort(string sorting)
+    {
+        if (sorting.Contains("DESC"))
+        {
+            var sortingSplit = sorting.Split(' ').ToList();
+            sorting = sortingSplit[0] + " descending";
+        }
+
+        return sorting;
+    }
 }
