@@ -761,10 +761,14 @@
     "StatusValidtion": "اختيار الحالة غير صالح.",
     "RemoveUserFromShiftSuccessfully": "تم الغاء التخصيص للمستخدم من الورديه بنجاح",
     "PaymentUserShiftReport": "تقرير بتحصيلات الوردية",
-    "KeeperCountTransactionsReport": "تقرير بعدد الحركات للعامل بالوردية",
+    "KeeperCountTransactionsReport": "تقرير بالحركات للوردية",
     "TenantName": "اسم المستأجر",
     "ShiftOverlapValidation": "هذه الورديه تتداخل مع وردية موجودة",
-    "Assigned": "التخصيص"
+    "Assigned": "التخصيص",
+    "NumberOfTransactions": "عدد الحركات",
+    "VisitorAndTransactionReportName": "تقرير بحركات الزوار",
+    "EmployeeAndTransactionReportName": "تقرير بحركات الموظفين",
+    "exportstarted": "بدأ عملية التصدير"
 
 
   }

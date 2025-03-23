@@ -121,14 +121,14 @@ public partial class CustomerPackage
             var customerPackages = await AnalysisAppService.ReportCustomerPackage(request, CurrentTenant.Id);
             TableData items = new TableData();
             items = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
-            if(CultureInfo.CurrentCulture.Name=="ar")
+            if (CultureInfo.CurrentCulture.Name == "ar")
             {
-                items.Name = LocalizationHelper.GetLocalizedString("PackagesReports") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString(selectvalue);
+                items.Name = LocalizationHelper.GetLocalizedString("Report") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString("CustomerPackageReport");
 
             }
             else
             {
-                items.Name = LocalizationHelper.GetLocalizedString(selectvalue) + " " + LocalizationHelper.GetLocalizedString("PackagesReports");
+                items.Name = LocalizationHelper.GetLocalizedString("CustomerPackageReport") + " " + LocalizationHelper.GetLocalizedString("Report");
 
             }
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
