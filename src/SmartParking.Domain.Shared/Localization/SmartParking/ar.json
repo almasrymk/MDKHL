@@ -761,10 +761,12 @@
         "PercentageValidtion": "يجب أن تكون القيمة بين 0 و 100.",
         "StatusValidtion": "اختيار الحالة غير صالح.",
         "RemoveUserFromShiftSuccessfully": "تم الغاء التخصيص للمستخدم من الورديه بنجاح",
-        "PaymentUserShiftReport": "تقرير بالتحصيلات للوردية",
+        "PaymentUserShiftReport": "تقرير بتحصيلات الوردية",
         "KeeperCountTransactionsReport": "تقرير بالحركات للوردية",
         "TenantName": "اسم المستأجر",
-        "NumberOfTransactions": "عدد الحركات"
+        "NumberOfTransactions": "عدد الحركات",
+        "VisitorAndTransactionReportName": "تقرير بحركات الزوار",
+        "EmployeeAndTransactionReportName": "تقرير بحركات الموظفين"
 
 
     }
