@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
@@ -41,16 +43,20 @@ public class CustomerPackagesAppService:
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IOrganizationsAppService _organizationsApp;
+    private readonly IRepository<Subscription, int> _subscriptionRepository;
+    private readonly IRepository<Organization, int> _organizationsRepository;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,IRepository<Package> packageRepository,IDataFilter dataFilter,IRepository<Customer, Guid> customerRepository,IOrganizationsAppService organizationsApp) :base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
         _dataFilter = dataFilter;
         _customerRepository = customerRepository;
         _organizationsApp = organizationsApp;
+        _subscriptionRepository = subscriptionRepository;
+        _organizationsRepository = organizationsRepository;
     }
-  
+
     public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber,DateTime ExitTransaction)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -122,7 +128,7 @@ public class CustomerPackagesAppService:
                     );
                     return await UpdateCustomerPackageAsync(customerPackage);
                 }
-
+                
                 return await InsertCustomerPackageAsync(customerPackage);
             }
     }
@@ -229,13 +235,49 @@ public class CustomerPackagesAppService:
                 var updatePackage = await UpdateCustomerPackageAsync(customerPackage);
                 return updatePackage.IsSuccess;
             }
-
+            // Check Subscription Limit for number Of Customers
+            await CheckSubscriptionCustomersLimitsAsync(package.OrganizationId);
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
            return insertPackage.IsSuccess;
         }
     }
+    public async Task CheckSubscriptionCustomersLimitsAsync(int organizationId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var organization = await _organizationsRepository.GetAsync(organizationId);
+            int numberOfCustomers = await GetNumberOfCustomerAtOrganizationAsync(organizationId);
+            Subscription? subscription = await GetSubscriptionByOrganizationId(organization);
 
-   public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
+            if (subscription == null || subscription.NumberOfCustomers < numberOfCustomers + 1)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
+            }
+            
+        }
+    }
+
+    public async Task<int> GetNumberOfCustomerAtOrganizationAsync(int organizationId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _customerRepository.GetQueryableAsync();
+            query = query.Include(x => x.CustomerPackages)
+                         .Where(x => x.CustomerPackages != null && x.CustomerPackages.Any(o => o.OrganizationId == organizationId));
+                         
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+    private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+        }
+    }
+
+    public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
    {
 
         using (_dataFilter.Disable<IMultiTenant>())

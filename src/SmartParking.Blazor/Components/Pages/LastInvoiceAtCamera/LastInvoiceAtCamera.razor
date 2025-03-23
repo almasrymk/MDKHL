@@ -47,8 +47,8 @@
 			<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.OrganizationEnglishName:Invoice?.OrganizationArabicName)" />
 			<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.GarageEnglishName:Invoice?.GarageArabicName)" />
 			<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
-			<LastInvoiceOnGateDetails Key="@L["TotalHours"]" Value="@Invoice?.TotalHours.ToString()" />
-			<LastInvoiceOnGateDetails Key="@L["Price"]" Value="@Invoice?.InvoicePrice.ToString()" />
+			<LastInvoiceOnGateDetails Key="@($"{L["TotalHours"]} ({L["Hour"]})")" Value="@Invoice?.TotalHours.ToString()" />
+			<LastInvoiceOnGateDetails Key="@($"{L["Price"]} ({L["SAR"]})")" Value="@Invoice?.InvoicePrice.ToString()" />
 		</div>
 
 

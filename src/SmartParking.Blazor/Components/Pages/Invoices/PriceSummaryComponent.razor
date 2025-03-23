@@ -1,12 +1,14 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Permissions.InvoicesPermissions
 @using Discounts
 @using System.Globalization
+@using SmartParking.Validations
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IAuthorizationService AuthorizationService
-
+@inject ISnackbar Snackbar
 
 <MudItem sm="ComponentSize">
     <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
@@ -51,12 +53,12 @@
         </MudItem>
 
         <MudItem>
-           
+
             <MudGrid Class="mt-4">
                 @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result && (!IsPaid || InvoicePrice == 0))
                 {
                     <MudItem sm="12" md="12">
-                        <MudNumericField T="decimal" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Min="decimal.Zero" Max="InvoicePriceWithVat" Culture="CultureInfo.InvariantCulture" />
+                        <MudNumericField T="decimal" Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value,InvoicePriceWithVat))" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Culture="CultureInfo.InvariantCulture" />
                     </MudItem>
 
                 }
@@ -75,7 +77,7 @@
 
 
                     <MudItem xs="@(ConfirmSize)" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
+                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0 || !CanPayInvoice" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
                     </MudItem>
 
                 }
@@ -116,7 +118,7 @@
     public decimal InvoicePriceAfterDiscount { get; set; }
     public decimal InvoicePriceWithVat { get; set; }
     public bool OnChooseDiscount { get; set; } = false;
-
+    public bool CanPayInvoice { get; set; } = true;
 
     protected override void OnParametersSet()
     {
@@ -125,13 +127,22 @@
     }
     private async Task OnAddDiscount(decimal discountValue)
     {
-        InvoicePriceAfterDiscount = InvoicePriceWithVat - discountValue;
-        if(discountValue!=default)
-            OnChooseDiscount = true;
+        if (discountValue < InvoicePriceWithVat && discountValue > 0)
+        {
+            
+            InvoicePriceAfterDiscount = InvoicePriceWithVat - discountValue;
+            if (discountValue != default)
+                OnChooseDiscount = true;
+            else
+                OnChooseDiscount = false;
+            CanPayInvoice = true;
+            await OnValueSelected.InvokeAsync(discountValue);
+        }
         else
-            OnChooseDiscount = false;
-
-        await OnValueSelected.InvokeAsync(discountValue);
+        {
+            CanPayInvoice = false;
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L["InvalidValidation"]}", Severity.Error);
+        }
     }
 
 

@@ -239,7 +239,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            var invoice = await GetAsync(invoiceId);
             if (invoice is null)
             {
                 return Result.NotFound();
@@ -250,7 +250,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    private async Task<string?> GetQrCodeAsync(Invoice? invoice)
+    private async Task<string?> GetQrCodeAsync(InvoiceDto? invoice)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -267,7 +267,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var invoice = await _invoiceRepository.GetAsync(invoiceId);
+            var invoice = await GetAsync(invoiceId);
             if (invoice is null)
             {
                 return Result.NotFound();
@@ -280,9 +280,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     [RemoteService(false)]
 
-    public async Task<Result<string>> GetImage(Invoice? invoice, string? qrCodedto)
+    public async Task<Result<string>> GetImage(InvoiceDto? invoice, string? qrCodedto)
     {
-        //var text = Convert.FromBase64String(qrCodedto.QRCode);
         if (qrCodedto.IsNullOrEmpty())
             return " ";
         using (QRCodeGenerator qrGenerator = new QRCodeGenerator())

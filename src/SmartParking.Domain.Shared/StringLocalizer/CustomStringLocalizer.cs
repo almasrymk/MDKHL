@@ -19,7 +19,7 @@ public static class CustomStringLocalizer
     public const string IT = "Permission:IT";
     public const string SecurityManager = "Permission:SecurityManager";
     public const string FinancialManagement = "Permission:FinancialManagement";
-    public const char For ='ل';
+    public const char For ='ب';
     public static LocalizableString L(string name)
     {
         return LocalizableString.Create<SmartParkingResource>(name);

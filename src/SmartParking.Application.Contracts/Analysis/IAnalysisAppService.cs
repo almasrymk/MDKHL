@@ -74,4 +74,18 @@ public interface IAnalysisAppService : IApplicationService
     Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
     Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
     Task<PagedResultDto<ShiftAnalysis>> ReportNumberOfTransactionsWhileKeeperShift(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Asynchronously generates a report for discount payment analysis, applying filtering, sorting, and pagination.
+    /// </summary>
+    /// <param name="input">An object containing filter, sorting, and pagination parameters for the report query.</param>
+    /// <param name="tenantId">The tenant identifier to filter the report data by. If null, the report includes data for all tenants.</param>
+    /// <returns>
+    /// A <see cref="PagedResultDto{DiscountPaymentAnalysis}"/> containing the filtered, sorted, and paginated discount payment analysis results.
+    /// </returns>
+    /// <remarks>
+    /// This method constructs a filter expression based on the provided filters and then fetches the discount payment report data from the repository.
+    /// The report data is then returned as a paged result with the items and total count.
+    /// </remarks>
+    Task<PagedResultDto<DiscountPaymentAnalysis>> ReportDiscountPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }

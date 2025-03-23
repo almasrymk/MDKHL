@@ -105,7 +105,21 @@ public class GarageTransactionAnalysisRepository
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                         UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.UserName : v1.Customer.IdentityUser.UserName,
                         CustomerId = (v1 == null) ? (v2 == null) ? Guid.Empty : v2.CustomerId : (Guid)v1.CustomerId,
-                        GarageTransaction = garageTransaction
+                        GarageTransaction = garageTransaction,
+                        ShiftArabicName = dbContext.Shifts
+                                            .Where(_ => ( _.StartDate <= DateOnly.FromDateTime(garageTransaction.AccurateTime.Value) && _.EndDate >= DateOnly.FromDateTime(garageTransaction.AccurateTime.Value))&&
+                                                  (_.StartTime <= TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value) && _.EndTime >= TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value)) )
+                                            .Select(_ => _.ArabicName)
+                                            .FirstOrDefault(),                       
+                        ShiftEnglishName = dbContext.Shifts
+                                            .Where(_ => ( _.StartDate <= DateOnly.FromDateTime(garageTransaction.AccurateTime.Value) && _.EndDate >= DateOnly.FromDateTime(garageTransaction.AccurateTime.Value))&&
+                                                  (_.StartTime <= TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value) && _.EndTime >= TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value)) )
+                                            .Select(_ => _.EnglishName)
+                                            .FirstOrDefault(),
+                        CreatorName = dbContext.Users.Where(_ => _.Id == garageTransaction.CreatorId).Select(_ => _.Name).FirstOrDefault(),
+                        CreationDate = v1 == null ? v2 == null ? null : DateOnly.FromDateTime(v2.CreationTime) : DateOnly.FromDateTime(v1.CreationTime),
+                        CreationTime = v1 == null ? v2 == null ? null : TimeOnly.FromDateTime(v2.CreationTime) : TimeOnly.FromDateTime(v1.CreationTime),
+                        
 
                     };
 
@@ -329,4 +343,7 @@ public class GarageTransactionAnalysisRepository
         };
        
     }
+
+    
+   
 }

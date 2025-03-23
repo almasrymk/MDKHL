@@ -71,7 +71,7 @@
                     <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
                         @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || currenttenant.Id == null)
                          {
-                            <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["Shifts"]</MudNavLink>
+                            <MudNavLink Href="/shifts" Icon="@Icons.Material.Filled.ViewTimeline">@L["AddShifts"]</MudNavLink>
                          }
 
                         @if (AuthorizationService.IsGrantedAnyAsync(UserShiftPermission.Default).Result || currenttenant.Id == null)
@@ -153,6 +153,7 @@
                              <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                             <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
                             <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
+                            <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>
                          }
 
                      </MudNavGroup>

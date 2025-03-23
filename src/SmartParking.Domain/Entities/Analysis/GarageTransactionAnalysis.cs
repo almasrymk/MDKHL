@@ -27,4 +27,9 @@ public class GarageTransactionAnalysis
     public string OrganizationNameAr{ get; set; }
     public string ArabicName { get; set; }
     public Guid CustomerId { get; set; }
+    public string ShiftArabicName { get; set; }
+    public string ShiftEnglishName { get; set; }
+    public string CreatorName { get; set; }
+    public DateOnly? CreationDate { get; set; }
+    public TimeOnly? CreationTime { get; set; }
 }
