@@ -179,40 +179,6 @@ public static class CreateTableHelper
         return tableData;
     }
 
-    public static TableData CreateDataTableForPaymentCollectedMoneyDailyAndMonthly(List<PaymentAnalysis> data)
-    {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
-        var tableData = new TableData()
-        {
-            Name =LocalizationHelper.GetLocalizedString("PaymentReports"),
-            ShowHeader = true
-        };
-
-
-
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("KeeperName"), Name = "KeeperName", TypeFilter = TypeFilter.Text , IsSortable = true , PropertyName = "KeeperName" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AmountDaily"), Name = "AmountDaily", TypeFilter = TypeFilter.Text ,IsSortable = true ,  PropertyName = "AmountDaily" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AmountMonthly"), Name = "AmountMonthly", TypeFilter = TypeFilter.Text ,  IsSortable = true, PropertyName = "AmountMonthly" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Day"), Name = "Day", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "Day" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Month"), Name = "Month", TypeFilter = TypeFilter.Text , IsSortable = true, PropertyName = "Month" });
-
-
-        foreach (var item in data)
-        {
-            var rowDef = new RowDef();
-
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("KeeperName"), item.KeeperName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AmountDaily"), item.AmountDaily.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AmountMonthly"), item.AmountMonthly.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Day"), item.Day));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Month"), item.Month));
-
-
-            tableData.Rows.Add(rowDef);
-        }
-        return tableData;
-    }
-
     public static async Task<TableData> CreateDataTableForGarages(List<GarageAnalysis> garages)
     {
         var tableData = new TableData()
@@ -621,6 +587,84 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndDate"), paymentUserShift.EndDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("StartTime"), paymentUserShift.StartTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndTime"), paymentUserShift.EndTime.ToString()));
+
+            tableData.Rows.Add(rowDef);
+        }
+        await Task.Yield();
+        return tableData;
+    }
+
+    /// <summary>
+    /// Asynchronously creates a data table for payment records, mapping the relevant properties of each payment to table columns and rows.
+    /// </summary>
+    /// <param name="discountPayments">A list of <see cref="DiscountPaymentAnalysis"/> objects representing payment records that will be displayed in the table.</param>
+    /// <returns>
+    /// A <see cref="TableData"/> object containing the columns and rows that represent the payment data, formatted for display in a table.
+    /// </returns>
+    /// <remarks>
+    /// This method constructs a table with various columns, including payment details such as payment number, customer name, plate number, 
+    /// payment category, invoice ID, payment method, amount, discount, payment date, and payment status. The columns are dynamically 
+    /// adjusted based on the current culture (e.g., customer names are localized for Arabic). Each row in the table represents a single 
+    /// payment record and is populated with its corresponding data from the provided <paramref name="discountPayments"/> list.
+    /// </remarks>
+    public static async Task<TableData> CreateDataTableForDiscountPayments(List<DiscountPaymentAnalysis> discountPayments)
+    {
+        var tableData = new TableData()
+        {
+            Name = LocalizationHelper.GetLocalizedString("DiscountsReport"),
+            ShowHeader = true
+        };
+        // Define the columns for the table
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("InvoiceId"), Name = "InvoiceId", IsFilterable = true, PropertyName = "InvoiceId", IsSortable = true, TypeFilter = TypeFilter.Number });
+
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "CustomerArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+            
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "CustomerEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentCategory"), Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentCategory) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentMethod"), Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentMethod) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Currency"), Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Discount")} ({LocalizationHelper.GetLocalizedString("SAR")})", Name = "Discount", IsFilterable = true, PropertyName = "Discount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Amount")} ({LocalizationHelper.GetLocalizedString("SAR")})", Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", IsFilterable = true, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Date, TypeOfColumn = typeof(DateTime) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentStatus"), Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentStatus) });
+
+        // Define the rows for the table
+        foreach (var payment in discountPayments)
+        {
+            var rowDef = new RowDef();
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), payment.PaymentNumber?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("InvoiceId"), payment.InvoiceId?.ToString()));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.CustomerArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+                
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.CustomerEnglishName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+                
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.PlateNumber));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentCategory"), LocalizationHelper.GetLocalizedString(payment.PaymentCategory.ToString())));
+            
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.PaymentMethod.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Currency"), LocalizationHelper.GetLocalizedString(payment.Currency)));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("Amount")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment.Amount.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("Discount")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment.Discount.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.PaymentDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
             tableData.Rows.Add(rowDef);
         }
