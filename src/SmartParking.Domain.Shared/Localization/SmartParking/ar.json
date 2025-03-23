@@ -768,7 +768,9 @@
     "NumberOfTransactions": "عدد الحركات",
     "VisitorAndTransactionReportName": "تقرير بحركات الزوار",
     "EmployeeAndTransactionReportName": "تقرير بحركات الموظفين",
-    "exportstarted": "بدأ عملية التصدير"
+    "exportstarted": "بدأ عملية التصدير",
+    "DiscountsReport": "تقرير بالخصومات",
+    "NotPlateNumber": "لا يوجد رقم اللوحة"
 
 
   }
