@@ -49,7 +49,7 @@ public class VehiclesAppService:
 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
-
+        input.CreatorId = _currentUser.Id;
         // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 
         //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
@@ -78,6 +78,7 @@ public class VehiclesAppService:
 
         }
         input.PlateColorId = licenceType.PlateColorId;
+
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
