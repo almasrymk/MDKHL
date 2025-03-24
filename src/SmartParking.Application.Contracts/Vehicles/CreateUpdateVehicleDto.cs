@@ -7,7 +7,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Vehicles
 {
-	public class CreateUpdateVehicleDto  
+	public class CreateUpdateVehicleDto 
     {
 		public int VehicleModelId { get; set; }
         public string ArPlateLetters { get; set; } = "";
@@ -35,5 +35,6 @@ namespace SmartParking.Vehicles
 		public string ModelYear { get; set; }
 		public bool BelongToCompany { get; set; }
 		public string? CompanyName { get; set; }
+        public Guid? CreatorId { get; set; }
     }
 }

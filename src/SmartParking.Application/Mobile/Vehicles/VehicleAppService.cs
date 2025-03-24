@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Text;
 using Volo.Abp.MultiTenancy;
 using SmartParking.Lookups.LicenceType;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 
 namespace SmartParking.Mobile.Vehicles;
@@ -98,6 +99,11 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
                 mappedVehicle.VehicleModelId = model.Id;
                 mappedVehicle.VehicleBrandId = brand.Id;
                 mappedVehicle.CustomerId = customer.Id;
+                ObjectHelper.TrySetProperty(
+                            mappedVehicle,
+                            x => x.CreatorId,
+                            () => CurrentUser.Id
+                        );
                 var vehicle = await _vehicleRepository.InsertAsync(mappedVehicle, autoSave: true);
 
                 var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
