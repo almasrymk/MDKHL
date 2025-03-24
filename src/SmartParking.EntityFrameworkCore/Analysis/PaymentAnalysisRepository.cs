@@ -141,7 +141,7 @@ public class PaymentAnalysisRepository
         var dbContext = await GetDbContextAsync();
         var query = from payments in dbContext.Payments
                     where tenantId == null || payments.TenantId == tenantId
-                   
+                    where payments.Invoice != null && payments.Invoice.Discount > 0
                     select new DiscountPaymentAnalysis
                     {
                         Discount = payments != null && payments.Invoice != null ? payments.Invoice.Discount : 0m,
