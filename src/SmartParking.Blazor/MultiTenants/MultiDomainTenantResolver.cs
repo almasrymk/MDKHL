@@ -73,7 +73,7 @@ public class MultiDomainTenantResolver : HttpTenantResolveContributorBase
 
 
         var hostName = httpContext.Request.Host.Value.RemovePreFix(ProtocolPrefixes);
-        var subDomain = hostName.Split('.')[0];
+        var subDomain = hostName.Split('.')[0].ToLower();
         if (subDomain.Equals("admin", StringComparison.OrdinalIgnoreCase) || hostName.Equals("app", StringComparison.OrdinalIgnoreCase))
         {
             return Task.FromResult<string>(null);
@@ -81,7 +81,7 @@ public class MultiDomainTenantResolver : HttpTenantResolveContributorBase
 
         var tenantRepo = context.ServiceProvider.GetRequiredService<ITenantRepository>();
 
-        var tenant = tenantRepo.FindByNameAsync(subDomain).Result;
+        var tenant = tenantRepo.FindByNameAsync(subDomain.ToUpper()).Result;
 
         if (tenant == null)
             return Task.FromResult<string>(null);
