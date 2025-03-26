@@ -442,6 +442,7 @@ img[style*='width:120px;'] {
         string TotalIncludeVAT = LocalizationHelper.GetLocalizedString("TotalIncludeVAT");
         string Discount = LocalizationHelper.GetLocalizedString("Discount");
         string After = LocalizationHelper.GetLocalizedString("After");
+        string InvoiceNumberView = LocalizationHelper.GetLocalizedString("InvoiceNumberView");
         decimal price = (Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2));
         decimal paymentPrice = payment.Amount;
         MemoryStream stream = new MemoryStream();
@@ -530,8 +531,8 @@ img[style*='width:120px;'] {
     .SetFontSize(13);
 
         Paragraph Vat = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"{organization.TaxNumber.ArabicWithFontGlyphsToPDF()}:{Vats.ArabicWithFontGlyphsToPDF()}"
-            : $"{Vats}: {organization.TaxNumber}")
+            ? $"{organization.TaxNumber.ArabicWithFontGlyphsToPDF()}:{InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
+            : $"{InvoiceNumberView}: {organization.TaxNumber}")
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(13);
 
