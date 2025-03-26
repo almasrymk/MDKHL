@@ -1,15 +1,9 @@
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MudBlazor;
@@ -23,17 +17,10 @@ using SmartParking.Blazor.MultiTenants;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
-using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Results;
-using SmartParking.Utilities;
-using SmartParking.Validations;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
@@ -84,11 +71,6 @@ public class SmartParkingBlazorModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
-        Configure<AbpTenantResolveOptions>(options =>
-        {
-            options.TenantResolvers.Clear();
-            options.TenantResolvers.Add(new MultiDomainTenantResolver());
-        });
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
             options.AddAssemblyResource(
@@ -122,7 +104,7 @@ public class SmartParkingBlazorModule : AbpModule
             Configure<RazorPagesOptions>(options =>
             {
                 options.Conventions.AuthorizePage("/Login");
-               
+
             });
             PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
             {
@@ -138,16 +120,26 @@ public class SmartParkingBlazorModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-       
+
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
+        var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
+        Configure<AbpTenantResolveOptions>(options =>
+        {
+            //options.TenantResolvers.Clear();
+            //options.TenantResolvers.Add(new MultiDomainTenantResolver());
+            foreach (var tenantDomain in tenantDomains)
+            {
+                options.TenantResolvers.Add(new MultiDomainTenantResolver(tenantDomain));
+            }
+        });
         context.Services.AddSingleton<NotificationService>();
         // Define the supported cultures
         var supportedCultures = new[]
         {
-        new CultureInfo("ar"),
-        new CultureInfo("en")
-    };
+            new CultureInfo("ar"),
+            new CultureInfo("en")
+        };
 
         Configure<RequestLocalizationOptions>(options =>
         {
@@ -179,7 +171,7 @@ public class SmartParkingBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
     {
-        
+
         context.Services.Configure<IdentityOptions>(options =>
         {
             options.User.RequireUniqueEmail = false;
@@ -205,14 +197,14 @@ public class SmartParkingBlazorModule : AbpModule
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.ContentType = "application/json";
-                    var result = Result.Unauthorized(); 
-                   
+                    var result = Result.Unauthorized();
+
                     var resultJson = JsonSerializer.Serialize(result);
-                    
+
                     await context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(resultJson));
                     await Task.CompletedTask;
                 }
-                
+
                 context.Response.Redirect(context.RedirectUri);
 
                 await Task.CompletedTask;
