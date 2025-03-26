@@ -28,7 +28,7 @@
         </TitleContent>
         <DialogContent>
 
-            <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper"  Model="createUpdatePackage"  >
+            <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="createUpdatePackage" @ref="form">
                 <MudGrid>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="createUpdatePackage.ArabicName"
@@ -51,22 +51,20 @@
                         Label=@L["EnglishName"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudNumericField @bind-Value="createUpdatePackage.Price"
+                        <MudTextField @bind-Value="createUpdatePackage.Price"
                         For="@(() => createUpdatePackage.Price)"
                         Variant="Variant.Text"
-                        Min="0"
-                        HideSpinButtons="true"
+                        Validation="NumbersValidations.ValidateInteger"
                         Required="true"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
                         Label="@($"{L["Price"]} ({L["SAR"]})")"  />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
+                        <MudTextField @bind-Value="createUpdatePackage.DurationOfPackage"
                         For="@(() => createUpdatePackage.DurationOfPackage)"
                         Variant="Variant.Text"
-                        Min="1"
-                        HideSpinButtons="true"
+                        Validation="NumbersValidations.ValidateDuration"
                         Required="true"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Class="w-100"
@@ -190,17 +188,17 @@
             </MudForm>
 
         </DialogContent>
-       <DialogActions>
-    <DialogActionComponent 
-        ButtonOneColor="MudBlazor.Color.Dark" 
-        ButtonTwoColor="MudBlazor.Color.Primary" 
-        ButtonOneLabel="@L["Back"]" 
-        ButtonTwoLabel="@L["SaveAsDraft"]" 
-        ButtonOneClick="Cancel" 
-        ButtonTwoClick="Submit" 
-        ButtonOneVariant="MudBlazor.Variant.Filled" 
-        ButtonTwoVariant="MudBlazor.Variant.Filled" />
-</DialogActions>
+        <DialogActions>
+            <DialogActionComponent 
+            ButtonOneColor="MudBlazor.Color.Dark" 
+            ButtonTwoColor="MudBlazor.Color.Primary" 
+            ButtonOneLabel="@L["Back"]" 
+            ButtonTwoLabel="@L["SaveAsDraft"]" 
+            ButtonOneClick="Cancel" 
+            ButtonTwoClick="Submit" 
+            ButtonOneVariant="MudBlazor.Variant.Filled" 
+            ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
 
 
     </MudDialog>
@@ -277,8 +275,9 @@
         }
         try
         {
-            createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
-
+            if(form.IsValid)
+            {
+                createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
             createUpdatePackage.TenantId = CurrentTenant.Id;
             createUpdatePackage.ActivationDate = DateTime.Now;
             createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
@@ -288,6 +287,13 @@
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 NavigationManager.NavigateTo("/package", true);
+            }
+            else
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
+
+            }
+            
             }
         catch (AbpValidationException validationException)
         {
