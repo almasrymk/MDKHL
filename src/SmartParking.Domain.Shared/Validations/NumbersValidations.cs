@@ -17,6 +17,20 @@ public static class NumbersValidations
             return LocalizationHelper.GetLocalizedString("InvalidValidation");
         return null;
     }
+    public static string ValidateInteger(string input)
+    {
+        if (int.TryParse(input, out _))
+            return null; // Valid integer
+
+        return LocalizationHelper.GetLocalizedString("InvalidValidation"); // Not an integer
+    } 
+    public static string ValidateDuration(string input)
+    {
+        if (int.TryParse(input, out int duration) && duration >= 1)
+            return null; // Valid integer
+
+        return LocalizationHelper.GetLocalizedString("InvalidValidation"); // Not an integer
+    }
     public static string ValidateNumber11111to99999(int value)
     {
         if (value < 11111 || value > 99999)
