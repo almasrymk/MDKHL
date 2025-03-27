@@ -48,23 +48,25 @@
                         Label="@L["EnglishName"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="Package.Price"
+                        <MudNumericField @bind-Value="Package.Price"
                         For="@(() => Package.Price)"
                         Variant="Variant.Text"
                         Required="true"
-                        Validation="NumbersValidations.ValidateInteger"
+                        Min="0" 
+                        HideSpinButtons="true"
+                        class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")" 
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        Class="w-100"
                         Label="@($"{L["Price"]} ({L["SAR"]})")" />
                     </MudItem>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="Package.DurationOfPackage"
+                        <MudNumericField @bind-Value="Package.DurationOfPackage"
                         For="@(() => Package.DurationOfPackage)"
                         Variant="Variant.Text"
-                        Validation="NumbersValidations.ValidateDuration"
-                        Required
-                        Class="w-100"
+                        Min="0" 
+                        HideSpinButtons="true"
+                        class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                         
+                        Required="true"
                         Label=@L["PackageDuration"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
@@ -202,6 +204,13 @@
     .mud-modal {
     border-radius: 0 20px 0 20px;
     }
+
+    .custom-numeric-field input {
+        display: flex;
+        text-align: end;
+        width: 100%; /* Equivalent to w-100 in Bootstrap */
+    }
+
 </style>
 
 @code {
