@@ -51,23 +51,25 @@
                         Label=@L["EnglishName"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="createUpdatePackage.Price"
+                        <MudNumericField @bind-Value="createUpdatePackage.Price"
                         For="@(() => createUpdatePackage.Price)"
                         Variant="Variant.Text"
-                        Validation="NumbersValidations.ValidateInteger"
+                        Min="0" 
+                        HideSpinButtons="true"
                         Required="true"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        Class="w-100"
+                        class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
                         Label="@($"{L["Price"]} ({L["SAR"]})")"  />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="createUpdatePackage.DurationOfPackage"
+                        <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
                         For="@(() => createUpdatePackage.DurationOfPackage)"
                         Variant="Variant.Text"
-                        Validation="NumbersValidations.ValidateDuration"
+                        Min="0" 
+                        HideSpinButtons="true"
                         Required="true"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        Class="w-100"
+                        class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
                         Label=@L["PackageDuration"] />
                     </MudItem>
                     @if (CurrentTenant.Id == null)
@@ -210,6 +212,13 @@
     {
     border-radius: 0 20px 0 20px;
     }
+
+    .custom-numeric-field input {
+        display: flex;
+        text-align: end;
+        width: 100%; /* Equivalent to w-100 in Bootstrap */
+    }
+
 </style>
 
 @code 
