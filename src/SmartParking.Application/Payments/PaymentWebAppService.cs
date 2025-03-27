@@ -201,8 +201,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             int?invoiceId = payment.InvoiceId;
             if (invoiceId == null)
                 return null;
-
-            var invoiceEntity=  await _invoiceAppService.GetAsync(invoiceId??0);
+            var query = await _invoiceAppService.GetQueryableAsync();
+            var invoiceEntity=  await query.FirstOrDefaultAsync(x => x.Id == invoiceId);
             return ObjectMapper.Map<Invoice, InvoiceDto>(invoiceEntity);
         }
         

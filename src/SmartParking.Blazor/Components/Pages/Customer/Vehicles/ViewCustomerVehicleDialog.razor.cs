@@ -134,8 +134,9 @@ public partial class ViewCustomerVehicleDialog
         }
         itemData = tableData;
     }
-    public async Task ShowCustomerTransactions(RowDef row)
+    public async Task ShowCustomerTransactions((RowDef row, string TypeDownload) args)
     {
+        var (row, TypeDownload) = args;
         var plateNumber = row.Cells[1].Value;
         TableData Data;
         if (CurrentTenant.Id == null)
@@ -150,9 +151,19 @@ public partial class ViewCustomerVehicleDialog
 
         }
         Data.Name = L["VicheleTransactionsReport"];
-        await DownloadExcel(Data,plateNumber);
+        var exportTask = TypeDownload.ToLower() switch
+        {
+            "pdf" => JSRuntime.ExportToPdfAsync(Data, GenerateFilesAppService, Snackbar),
+            "excel" => JSRuntime.ExportToExcelAsync(Data, GenerateFilesAppService, Snackbar),
+            "csv" => JSRuntime.ExportToCsvAsync(Data, GenerateFilesAppService, Snackbar),
+            _ => Task.CompletedTask
+        };
+
+        await exportTask;
+        
 
     }
+
     public async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
@@ -162,7 +173,8 @@ public partial class ViewCustomerVehicleDialog
                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
         await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Name} Transactions.xlsx", "_blank");
-    }
+    }     
+    
     private async Task<IDialogReference> HandleAdd()
     {
 

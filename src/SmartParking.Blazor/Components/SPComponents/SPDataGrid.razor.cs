@@ -12,6 +12,7 @@ using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -42,7 +43,7 @@ public partial class SPDataGrid
     [Parameter] public bool ShowCustomerTransactions { get; set; } = false;
     [Parameter] public bool ShowVehicleTransactions { get; set; } = false;
     [Parameter] public EventCallback<RowDef> ShowCustomerTransactionsMethod { get; set; }
-    [Parameter] public EventCallback<RowDef> ShowVehicleTransactionsMethod { get; set; }
+    [Parameter] public EventCallback<(RowDef, string)> ShowVehicleTransactionsMethod { get; set; }
     [Parameter] public EventCallback<RowDef> OnClickRowEdit { get; set; }
     [Parameter] public EventCallback<RowDef> OnClickButton { get; set; }
     [Parameter] public bool ShowEdit { get; set; } = true;
