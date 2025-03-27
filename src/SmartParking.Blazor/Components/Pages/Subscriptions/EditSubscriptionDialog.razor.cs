@@ -80,38 +80,46 @@ public partial class EditSubscriptionDialog
 
         try
         {
-            
-            // Create the input object for update
-            var input = new CreateUpdateSubscriptionDto
+            if(editForm.IsValid)
             {
-                ArabicName = subscription.ArabicName,
-                EnglishName = subscription.EnglishName,
-                SubscriptionDescription = subscription.SubscriptionDescription,
-                SubscriptionPrice = subscription.SubscriptionPrice,
-                Status = subscription.Status,
-                SubscriptionTypeId = subscription.SubscriptionTypeId,
-                ActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MinValue),
-                InActivationDate = DateOnly.FromDateTime(InActivationDate ?? DateTime.MaxValue),
-                NumberOfCameras = BoundNumberOfCameras,
-                NumberOfCustomers = BoundNumberOfCustomers,
-                NumberOfUsers = BoundNumberOfUsers,
-                NumbersOfGarages = BoundNumberOfGarages,
-                SubscriptionSlotNumber = subscription.SubscriptionSlotNumber,
-                ParkingSlot = subscription.ParkingSlot,
-                CreationTime = subscription.CreationTime
-            };
+                var input = new CreateUpdateSubscriptionDto
+                {
+                    ArabicName = subscription.ArabicName,
+                    EnglishName = subscription.EnglishName,
+                    SubscriptionDescription = subscription.SubscriptionDescription,
+                    SubscriptionPrice = subscription.SubscriptionPrice,
+                    Status = subscription.Status,
+                    SubscriptionTypeId = subscription.SubscriptionTypeId,
+                    ActivationDate = DateOnly.FromDateTime(ActivationDate ?? DateTime.MinValue),
+                    InActivationDate = DateOnly.FromDateTime(InActivationDate ?? DateTime.MaxValue),
+                    NumberOfCameras = BoundNumberOfCameras,
+                    NumberOfCustomers = BoundNumberOfCustomers,
+                    NumberOfUsers = BoundNumberOfUsers,
+                    NumbersOfGarages = BoundNumberOfGarages,
+                    SubscriptionSlotNumber = subscription.SubscriptionSlotNumber,
+                    ParkingSlot = subscription.ParkingSlot,
+                    CreationTime = subscription.CreationTime
+                };
 
-            // Call the update method
+                // Call the update method
 
-            var subscriptions = await SubscriptionAppService.UpdateAsync(UpdatedId, input);
+                var subscriptions = await SubscriptionAppService.UpdateAsync(UpdatedId, input);
 
-            if (subscriptions != null)
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {subscriptions.EnglishName}", Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                await Task.Delay(1000);
-                Navigation.NavigateTo("/subscriptions", true);
+                if (subscriptions != null)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {subscriptions.EnglishName}", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                    await Task.Delay(1000);
+                    Navigation.NavigateTo("/subscriptions", true);
+                }
             }
+            else
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
+
+            }
+            // Create the input object for update
+
 
         }
         catch (AbpValidationException validationException)
