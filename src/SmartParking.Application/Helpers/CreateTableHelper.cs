@@ -413,7 +413,7 @@ public static class CreateTableHelper
             ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.PaymentMethod)));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("Amount")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment.Amount.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("Discount")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment.Invoice.Discount.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("Discount")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment?.Invoice?.Discount.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.CreationTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
