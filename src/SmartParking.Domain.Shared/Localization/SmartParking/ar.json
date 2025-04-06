@@ -776,7 +776,9 @@
         "DiscountInvalidationLessThanZero": "لا يمكن أن يكون الخصم أقل من صفر",
         "DiscountInvalidationGreater": "لا يمكن أن يكون الخصم أكبر من قيمة الفاتورة",
         "Assign User to Shift": "تخصيص وردية للمستخدم",
-        "InvoiceNumberView": "رقم الفاتورة"
+        "InvoiceNumberView": "رقم الفاتورة",
+        "DelPackage": "لا يمكن مسح باقه لديها مشتركين"
+
 
 
     }

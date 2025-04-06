@@ -748,6 +748,7 @@
         "DiscountInvalidationLessThanZero": "Discount cannot be less than zero.",
         "DiscountInvalidationGreater": "Discount cannot be greater than the total invoice amount.",
         "Assign User to Shift": "Assign User to Shift",
-        "InvoiceNumberView": "Invoice Number"
+        "InvoiceNumberView": "Invoice Number",
+        "DelPackage": "Can't delete package It has subscribers"
     }
 }
