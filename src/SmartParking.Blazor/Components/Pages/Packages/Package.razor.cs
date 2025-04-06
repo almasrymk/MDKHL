@@ -389,7 +389,6 @@ public partial class Package
         if (Subscribers > 0)
         {
             SnackBar.ShowSnackbar(Snackbar,L["DelPackage"], Severity.Warning);
-            //ShowSnackbar("Can't delete package It Has Subscribers", MudBlazor.Severity.Warning);
             return;
 
         }
