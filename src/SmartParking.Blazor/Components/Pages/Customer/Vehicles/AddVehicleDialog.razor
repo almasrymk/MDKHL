@@ -47,7 +47,7 @@
                     <MudItem sm="6" md="6">
 
 
-                        <MudSelect @bind-Value="@createUpdateVehicle.LicenceTypeId"
+                        <MudSelect @bind-Value="LicenceTypeId"
                                    Variant="Variant.Text"
                                    Label="@L["LicenceType"]"
                                    Placeholder=@L["Choose"]
@@ -58,18 +58,18 @@
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")
                                 {
-                                    <MudSelectItem Value="licenceType.Id">@licenceType.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="licenceType.Id.ToString()">@licenceType.EnglishName</MudSelectItem>
                                 }
                                 else
                                 {
-                                    <MudSelectItem Value="licenceType.Id">@licenceType.ArabicName</MudSelectItem>
+                                    <MudSelectItem Value="licenceType.Id.ToString()">@licenceType.ArabicName</MudSelectItem>
 
                                 }
                             }
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect T="int"
+                        <MudSelect T="string"
                                    Variant="Variant.Text"
                                    Label="@L["VehicleBrand"]"
                                    Placeholder=@L["Choose"]
@@ -81,19 +81,19 @@
                             {
                                 @if(CultureInfo.CurrentCulture.Name == "en")
                                 {
-                                    <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="vehiclebrand.Id.ToString()">@vehiclebrand.EnglishName</MudSelectItem>
 
                                 }
                                 else
                                 {
-                                    <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.ArabicName</MudSelectItem>
+                                    <MudSelectItem Value="vehiclebrand.Id.ToString()">@vehiclebrand.ArabicName</MudSelectItem>
 
                                 }
                             }
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@createUpdateVehicle.VehicleModelId"
+                        <MudSelect @bind-Value="@VehicleModelId"
                                    Variant="Variant.Text"
                                    Label="@L["VehicleModel"]"
                                    Placeholder=@L["Choose"]
@@ -104,11 +104,11 @@
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")
                                 {
-                                    <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.EnglishName</MudSelectItem>
+                                    <MudSelectItem Value="vehiclemodel.Id.ToString()">@vehiclemodel.EnglishName</MudSelectItem>
                                 }
                                 else
                                 {
-                                    <MudSelectItem Value="vehiclemodel.Id">@vehiclemodel.ArabicName</MudSelectItem>
+                                    <MudSelectItem Value="vehiclemodel.Id.ToString()">@vehiclemodel.ArabicName</MudSelectItem>
                                 }
 
                             }

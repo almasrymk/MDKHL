@@ -102,7 +102,7 @@
                             <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
                         <MudItem sm="8">
-                            <MudNumericField ReadOnly="true" dir="rtl" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
