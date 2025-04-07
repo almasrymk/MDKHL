@@ -5,6 +5,7 @@
 @using SmartParking.SubscriptionTypes
 @using SmartParking.Subscriptions
 @using System.Globalization
+@using SmartParking.Validations
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ISubscriptionTypeAppService SubscriptionTypeAppService
 @inject ISnackbar Snackbar
@@ -73,36 +74,41 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem sm="6">
-                            <MudTextField @bind-Value="input.SubscriptionPrice"
+                            <MudNumericField @bind-Value="input.SubscriptionPrice"
                                           For="@(() => input.SubscriptionPrice)"
                                           Immediate="true"
-                                          Placeholder=@L["Type Here"]
+                                          HideSpinButtons="true"
+                                          class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                          Placeholder=@L["Type Here"]
                                           Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")"
                                           InputType="InputType.Text"
-                                          Required="true" 
+                                          Required="true"
+                                          Min="0" 
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudNumericField T="int"
+                            <MudNumericField 
                                              @bind-Value="@(BoundNumberOfParkingSlots=maximumNumberOfParkingSlots?UnlimitedMaximumNumber:BoundNumberOfParkingSlots)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
-                                             HideSpinButtons
-                                             Min="0"
-                                             Disabled="maximumNumberOfParkingSlots"
+                                             HideSpinButtons="true"
+                                             class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                             Disabled="maximumNumberOfParkingSlots"
                                              Required="maximumNumberOfParkingSlots"
                                              Label="@L["ParkingSlot"]" 
+                                             Min="0" 
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudTextField @bind-Value="input.SubscriptionSlotNumber"
+                            <MudNumericField @bind-Value="input.SubscriptionSlotNumber"
                                           For="@(() => input.SubscriptionSlotNumber)"
                                           Immediate="true"
                                           Variant="Variant.Text"
                                           Placeholder=@L["Type Here"]
                                           InputType="InputType.Text"
+                                          HideSpinButtons="true"
+                                          class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                          
                                           Label="@L["SubscriptionSlotNumber"]"
+                                          Min="0" 
                                           Required="true" 
                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
@@ -121,15 +127,16 @@
                      
                     <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
                         <MudItem sm="6">
-                            <MudNumericField T="int"
+                            <MudNumericField
                                              @bind-Value="@(BoundNumberOfCustomers=maximumNumberOfCustomers?UnlimitedMaximumNumber:BoundNumberOfCustomers)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder="@L["Type Here"]"
-                                             Label="@L["NumberOfCustomersSub"]"
-                                             HideSpinButtons
-                                             Min="0"
+                                             Label="@L["NumberOfCustomers"]"
                                              Disabled="maximumNumberOfCustomers"
+                                             HideSpinButtons="true"
+                                             Min="0" 
+                                             class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"
                                              Required="maximumNumberOfCustomers" 
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
@@ -144,15 +151,15 @@
                      
                         <MudItem sm="6">
 
-                            <MudNumericField T="int"
+                            <MudNumericField 
                                              @bind-Value="@( BoundNumberOfCameras=maximumNumberOfCameras?UnlimitedMaximumNumber:BoundNumberOfCameras)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
                                              Label="@L["NumberOfCameras"]"
-                                             HideSpinButtons
-                                             Min="0"
-                                             Disabled="maximumNumberOfCameras"
+                                             HideSpinButtons="true"
+                                             Min="0" 
+                                             class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                             Disabled="maximumNumberOfCameras"
                                              Required="maximumNumberOfCameras" 
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 
@@ -170,15 +177,15 @@
 
                         <MudItem sm="6">
 
-                            <MudNumericField T="int"
+                            <MudNumericField 
                                              @bind-Value="@( BoundNumberOfGarages=maximumNumberOfGarages?UnlimitedMaximumNumber:BoundNumberOfGarages)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
-                                             Label="@L["NumbersOfGarages"]"
-                                             HideSpinButtons
-                                             Min="0"
-                                             Disabled="maximumNumberOfGarages"
+                                             Label="@L["NumbersOfGarages"]"                 
+                                             Min="0" 
+                                             HideSpinButtons="true"
+                                             class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                             Disabled="maximumNumberOfGarages"
                                              Required="maximumNumberOfGarages" 
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
@@ -192,15 +199,15 @@
                         </MudItem>
 
                         <MudItem sm="6">
-                            <MudNumericField T="int"
+                            <MudNumericField 
                                              @bind-Value="@(BoundNumberOfUsers=maximumNumberOfUsers?UnlimitedMaximumNumber:BoundNumberOfUsers)"
                                              Immediate="true"
                                              Variant="Variant.Text"
                                              Placeholder=@L["Type Here"]
                                              Label="@L["NumbersOfUsers"]"
-                                             HideSpinButtons
-                                             Min="0"
-                                             Disabled="maximumNumberOfUsers"
+                                             Min="0" 
+                                             HideSpinButtons="true"
+                                             class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                             Disabled="maximumNumberOfUsers"
                                              Required="maximumNumberOfUsers" 
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
@@ -279,5 +286,11 @@
     .mud-modal {
         border-radius: 0 20px 0 20px;
         width:auto;
+    }
+
+    .custom-numeric-field input 
+    {
+        display: flex;
+        text-align:end;       
     }
 </style>

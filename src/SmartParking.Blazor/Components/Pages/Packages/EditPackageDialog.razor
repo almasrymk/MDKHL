@@ -12,6 +12,7 @@
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
+@using SmartParking.Validations
 @inject IPackagesAppService PackagesAppService
 @inject IOrganizationsAppService organizationAppService
 @inject IPackageTypesAppService packageTypesAppService
@@ -50,11 +51,11 @@
                         <MudNumericField @bind-Value="Package.Price"
                         For="@(() => Package.Price)"
                         Variant="Variant.Text"
-                        Min="0"
-                        HideSpinButtons="true"
                         Required="true"
+                        Min="0" 
+                        HideSpinButtons="true"
+                        class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")" 
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        Class="w-100"
                         Label="@($"{L["Price"]} ({L["SAR"]})")" />
                     </MudItem>
 
@@ -62,10 +63,10 @@
                         <MudNumericField @bind-Value="Package.DurationOfPackage"
                         For="@(() => Package.DurationOfPackage)"
                         Variant="Variant.Text"
-                        Min="1"
+                        Min="0" 
                         HideSpinButtons="true"
-                        Required
-                        Class="w-100"
+                        class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                         
+                        Required="true"
                         Label=@L["PackageDuration"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
@@ -203,6 +204,13 @@
     .mud-modal {
     border-radius: 0 20px 0 20px;
     }
+
+    .custom-numeric-field input {
+        display: flex;
+        text-align: end;
+        width: 100%; /* Equivalent to w-100 in Bootstrap */
+    }
+
 </style>
 
 @code {
@@ -259,14 +267,23 @@
 
         try
         {
-            Package.TenantId = _organizations.FirstOrDefault(x=>x.Id==Package.OrganizationId).TenantId;
-            Package.Published = Package.Published|| PackageValidations.CheckPackageTimeValiditity(Package.PublishFrom, Package.PublishTo);
-          
-            await PackagesAppService.UpdateAsync(UpdatedId, Package);
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
-            MudDialogAdd.Close(DialogResult.Ok(true));
-            await Task.Delay(1000);
-            Navigation.NavigateTo("/package", true);
+            if(form.IsValid)
+            {
+                Package.TenantId = _organizations.FirstOrDefault(x => x.Id == Package.OrganizationId).TenantId;
+                Package.Published = Package.Published || PackageValidations.CheckPackageTimeValiditity(Package.PublishFrom, Package.PublishTo);
+                await PackagesAppService.UpdateAsync(UpdatedId, Package);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
+                MudDialogAdd.Close(DialogResult.Ok(true));
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/package", true);
+            }
+            else
+            {
+             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
+
+            }
+            
+           
         }
         catch (AbpValidationException validationException)
         {

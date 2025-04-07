@@ -171,14 +171,17 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
     }
     public override async Task DeleteAsync(int id)
     {
-        var package = await _repository.FindAsync(id);
-
-        if (package is null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new EntityNotFoundException(typeof(VehicleModel), id);
-        }
+            var package = await _repository.FindAsync(id);
 
-        await _repository.HardDeleteAsync(package);
+            if (package is null)
+            {
+                throw new EntityNotFoundException(typeof(VehicleModel), id);
+            }
+
+            await _repository.HardDeleteAsync(package);
+        }
     }
     ///<inheritdoc/>
     public async Task<PagedResultDto<PackageDto>> GetAllListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
@@ -284,15 +287,20 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
     public override async Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var packageDto = await _repository.GetAsync(id);
+            if (packageDto.Status == Status.Active && input.Status == Status.Inactive)
+            {
+                input.DeactivationDate = DateTime.Now;
+            }
+            else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
+            {
+                input.ActivationDate = DateTime.Now;
+            }
 
-      var packageDto = await _repository.GetAsync(id);
-      if (packageDto.Status == Status.Active && input.Status==Status.Inactive) {
-          input.DeactivationDate=DateTime.Now;
-      }else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
-      {
-          input.ActivationDate = DateTime.Now;
-      }
-      return await base.UpdateAsync(id, input);
+            return await base.UpdateAsync(id, input);
+        }
         
     }
     public override Task<PackageDto> GetAsync(int id)
@@ -307,6 +315,5 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         return base.GetAsync(id);
 
     }
-
 
 }

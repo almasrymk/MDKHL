@@ -415,12 +415,22 @@
                                     {
                                         <MudTooltip Text=@L["Export"] Color=MudBlazor.Color.Primary>
 
-                                            <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))"
-                                                       Icon="@Icons.Material.Filled.CompareArrows"
-                                                       Variant="Variant.Filled"
-                                                       Color="MudBlazor.Color.Tertiary"
-                                                       Size="MudBlazor.Size.Small"
-                                                       Class="mx-1" />
+                                            <MudMenu Icon="@Icons.Material.Filled.CompareArrows"
+                                                     AriaLabel="@L["Export"]"
+                                                     Variant="Variant.Filled"
+                                                     Color="MudBlazor.Color.Tertiary"
+                                                     Size="MudBlazor.Size.Small"
+                                                     Class="mx-1">
+                                                <MudMenuItem OnClick="@(() => ShowVehicleTransactionsMethod.InvokeAsync((context.Item, "pdf")))" Label="@L["PDF"]" />
+                                                <MudMenuItem OnClick="@(() => ShowVehicleTransactionsMethod.InvokeAsync((context.Item, "csv")))" Label="@L["CSV"]" />
+                                                <MudMenuItem OnClick="@(() => ShowVehicleTransactionsMethod.InvokeAsync((context.Item, "excel")))" Label="@L["Excel"]" />
+                                            </MudMenu>
+                                            @* <MudIconButton OnClick="@(e => ShowVehicleTransactionsMethod.InvokeAsync(context.Item))" *@
+                                            @*            Icon="" *@
+                                            @*            Variant="Variant.Filled" *@
+                                            @*            Color="MudBlazor.Color.Tertiary" *@
+                                            @*            Size="MudBlazor.Size.Small" *@
+                                            @*            Class="mx-1" /> *@
                                         </MudTooltip>
 
 

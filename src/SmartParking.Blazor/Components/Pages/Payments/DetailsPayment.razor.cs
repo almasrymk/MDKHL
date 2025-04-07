@@ -34,8 +34,8 @@ public partial class DetailsPayment
         LocalizedPaymentMethod=L[Payment.PaymentMethod];
         LocalizedPaymentStatus=L[Payment.PaymentStatus];
         LocalizedPaymentCurrency = L[Payment.Currency];
-        LocalizedPaymentInvoiceType = L[Payment.Invoice.InvoiceType];
-        AmountDiscount=Math.Round((Payment.Invoice.InvoicePrice+ (Payment.Invoice.InvoicePrice*0.15m))- Payment.Amount, 2).ToString();
+        LocalizedPaymentInvoiceType = Payment.Invoice is not null ? L[Payment.Invoice.InvoiceType] : "";
+        AmountDiscount= Payment.Invoice is not null ? Math.Round((Payment.Invoice.InvoicePrice+ (Payment.Invoice.InvoicePrice*0.15m))- Payment.Amount, 2).ToString() : "0";
 
     }
     protected override async Task OnInitializedAsync()

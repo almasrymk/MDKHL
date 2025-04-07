@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Localization;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
+using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
@@ -24,6 +26,7 @@ public partial class AddSubscriptionDialog
     public bool maximumNumberOfCustomers { get; set; }
     public bool maximumNumberOfParkingSlots { get; set; }
 
+    private bool IsArabic => CultureInfo.CurrentCulture.Name == "ar";
 
 
     public CreateUpdateSubscriptionDto input = new CreateUpdateSubscriptionDto();
@@ -47,41 +50,49 @@ public partial class AddSubscriptionDialog
         subscriptions = result;
     }
 
-
     private async Task Submit()
     {
         // Call your service to create the subscription
         try
         {
-            input.NumbersOfGarages = BoundNumberOfGarages;
-            input.NumberOfCustomers = BoundNumberOfCustomers;
-            input.NumberOfUsers = BoundNumberOfUsers;
-            input.NumberOfCameras = BoundNumberOfCameras;
-            input.ParkingSlot = BoundNumberOfParkingSlots;
-
-            input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
-
-            input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
-            input.Status = Enums.SubscriptionStatus.Draft;
-            input.CreationTime = DateTime.Now;
-            var subscription = await SubscriptionAppService.CreateAsync(input);
-
-            if (subscription != null)
+            if(form.IsValid)
             {
-                SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
-                           LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
-                           LocalizationHelper.GetLocalizedString("SubscriptionType"), Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                await Task.Delay(1000);
-                Navigation.NavigateTo("/subscriptions", true);
-            }
+                input.NumbersOfGarages = BoundNumberOfGarages;
+                input.NumberOfCustomers = BoundNumberOfCustomers;
+                input.NumberOfUsers = BoundNumberOfUsers;
+                input.NumberOfCameras = BoundNumberOfCameras;
+                input.ParkingSlot = BoundNumberOfParkingSlots;
 
+                input.ActivationDate = DateOnly.FromDateTime(_activateDate ?? DateTime.Now);
+
+                input.InActivationDate = DateOnly.FromDateTime(_inActivateDate ?? DateTime.MinValue);
+                input.Status = Enums.SubscriptionStatus.Draft;
+                input.CreationTime = DateTime.Now;
+                var subscription = await SubscriptionAppService.CreateAsync(input);
+
+                if (subscription != null)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
+                               LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                               LocalizationHelper.GetLocalizedString("SubscriptionType"), Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                    await Task.Delay(1000);
+                    Navigation.NavigateTo("/subscriptions", true);
+                }
+
+                else
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {input.ArabicName}", Severity.Error);
+
+                }
+            }
             else
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {input.ArabicName}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
 
             }
         }
+            
         catch (AbpValidationException abpValidationException)
         {
             string errors = string.Empty;

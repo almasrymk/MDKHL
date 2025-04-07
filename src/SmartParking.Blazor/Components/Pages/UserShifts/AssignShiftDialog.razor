@@ -28,43 +28,43 @@
         <MudForm Model="@keeperShiftCreateDto" @ref="form">
             <MudGrid>
                 <MudItem sm="6" md="6">
-                    <MudSelect T="int" Label="@L["Shift"]" ValueChanged="OnShiftChanged" 
+                    <MudSelect T="string" Label="@L["Shift"]" ValueChanged="OnShiftChanged" 
                     Required="true"
+                    Placeholder="@L["Choose"]"
                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
-                        <MudSelectItem Value="0" Disabled="false"></MudSelectItem>
                         @foreach (var shift in Shifts)
                         {
                             if (CultureInfo.CurrentCulture.Name != "ar")
                             {
-                                <MudSelectItem Value="@shift.Id">@shift.EnglishName</MudSelectItem>
+                                <MudSelectItem Value="@shift.Id.ToString()">@shift.EnglishName</MudSelectItem>
                             }
                             else
                             {
-                                <MudSelectItem Value="@shift.Id">@shift.ArabicName</MudSelectItem>
+                                <MudSelectItem Value="@shift.Id.ToString()">@shift.ArabicName</MudSelectItem>
                             }
                         }
                     </MudSelect>
                 </MudItem>
                 <MudItem sm="12" md="12">
                     <MudDatePicker Label="@L["StartDate"]"
-                                   PickerVariant="PickerVariant.Dialog"
-                                   ShowToolbar="false"
-                                   @bind-Date="_startDateTimeCreated"
-                                   MinDate="@( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime )"
-                                   MaxDate="_endDateTime"
-                                   Required="true"
-                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    PickerVariant="PickerVariant.Dialog"
+                    ShowToolbar="false"
+                    @bind-Date="_startDateTimeCreated"
+                    MinDate="@( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime )"
+                    MaxDate="_endDateTime"
+                    Required="true"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                 </MudItem>
 
                 <MudItem sm="12" md="12">
                     <MudDatePicker Label="@L["EndDate"]"
-                                   PickerVariant="PickerVariant.Dialog"
-                                   ShowToolbar="false"
-                                   @bind-Date="_endDateTimeCreated"
-                                   MinDate="@( _startDateTimeCreated.HasValue ? _startDateTimeCreated.Value : ( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime ) )"
-                                   MaxDate="_endDateTime"
-                                   Required="true"
-                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    PickerVariant="PickerVariant.Dialog"
+                    ShowToolbar="false"
+                    @bind-Date="_endDateTimeCreated"
+                    MinDate="@( _startDateTimeCreated.HasValue ? _startDateTimeCreated.Value : ( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime ) )"
+                    MaxDate="_endDateTime"
+                    Required="true"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                 </MudItem>
 
 
@@ -118,11 +118,11 @@
         keeperShiftCreateDto.KeeperId = Guid.Parse(UserId);
     }
 
-    private async Task OnShiftChanged(int shiftId)
+    private async Task OnShiftChanged(string shiftId)
     {
-        keeperShiftCreateDto.ShiftId = shiftId;
+        keeperShiftCreateDto.ShiftId= int.Parse(shiftId);
 
-        var selectedShift =  Shifts.Find(s => s.Id == shiftId);
+        var selectedShift =  Shifts.Find(s => s.Id == int.Parse(shiftId));
 
         if (selectedShift is not null)
         {

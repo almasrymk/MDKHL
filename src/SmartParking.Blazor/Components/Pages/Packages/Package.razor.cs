@@ -388,7 +388,7 @@ public partial class Package
         var Subscribers = int.Parse(row.Cells[4].Value);
         if (Subscribers > 0)
         {
-            ShowSnackbar("Can't delete package It Has Subscribers", MudBlazor.Severity.Warning);
+            SnackBar.ShowSnackbar(Snackbar,L["DelPackage"], Severity.Warning);
             return;
 
         }

@@ -42,6 +42,8 @@ public partial class AddVehicleDialog
 	public Guid CustomerId { get; set; }
     private string plateLetters = "";
     private string plateNumbers = "";
+    private string LicenceTypeId { get; set; }
+    private string VehicleModelId { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -60,10 +62,10 @@ public partial class AddVehicleDialog
         
 
     }
-    private async Task SelectBrand(int brandId)
+    private async Task SelectBrand(string brandId)
     {
-        createUpdateVehicle.VehicleBrandId = brandId;
-        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId);
+        createUpdateVehicle.VehicleBrandId = int.Parse(brandId);
+        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(createUpdateVehicle.VehicleBrandId);
         VehicleModels = resultVehicleModel.Value;
     }
     private async void SubmitCreate()
@@ -72,7 +74,8 @@ public partial class AddVehicleDialog
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
-
+            createUpdateVehicle.VehicleModelId = int.Parse(VehicleModelId);
+            createUpdateVehicle.LicenceTypeId = int.Parse(LicenceTypeId);
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
