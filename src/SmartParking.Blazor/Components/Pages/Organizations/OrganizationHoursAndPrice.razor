@@ -1,0 +1,68 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@inject IStringLocalizer<SmartParkingResource> L
+<MudItem sm="4">
+    <MudNumericField T="decimal" RequiredError="@L["This field is required."]" @bind-Value="CreateUpdateOrganiztion.FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField @bind-Value="CreateUpdateOrganiztion.SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField @bind-Value="CreateUpdateOrganiztion.ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") />
+</MudItem>
+
+<MudItem sm="4">
+    <MudNumericField @bind-Value="CreateUpdateOrganiztion.AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField @bind-Value="CreateUpdateOrganiztion.FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDayPrice"]} ({L["SAR"]})") />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField @bind-Value="CreateUpdateOrganiztion.FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField @bind-Value="CreateUpdateOrganiztion.Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") />
+</MudItem>
+<MudItem sm="12">
+    <MudSwitch Required="false" Label="@L["IsClose"]" LabelPosition="LabelPosition.End" @bind-Value="CreateUpdateOrganiztion.IsClose" Color="MudBlazor.Color.Primary" />
+</MudItem>
+@if (CreateUpdateOrganiztion.IsClose)
+{
+    <MudItem sm="6">
+        <MudTimePicker Required="false" Label="@L["ClosingHoursStart"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursStart"  ShowToolbar="false" />
+    </MudItem>
+    <MudItem sm="6">
+        <MudTimePicker Required="false" Label="@L["ClosingHoursEnd"]" TimeFormat="h:mm tt" Placeholder="@L["Type Here"]" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+    </MudItem>
+}
+<MudItem sm="12">
+    <MudSwitch Required="false" Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="CreateUpdateOrganiztion.IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+</MudItem>
+@if (CreateUpdateOrganiztion.IsNumberOfHoursExceeded)
+{
+    <MudItem sm="6">
+        <MudNumericField Required="false" @bind-Value="CreateUpdateOrganiztion.NumberOfHours" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+    </MudItem>
+}
+
+@code {
+
+    [Parameter]
+    public CreateUpdateOrganiztionDto CreateUpdateOrganiztion { get; set; }
+    public TimeSpan? ClosingHoursStart { get; set; }
+    public TimeSpan? ClosingHoursEnd { get; set; }
+
+
+
+    protected override Task OnInitializedAsync()
+    {
+        ClosingHoursStart = ConvertTimeOnlyToTimeSpan(CreateUpdateOrganiztion.ClosingHoursStart);
+        ClosingHoursEnd = ConvertTimeOnlyToTimeSpan(CreateUpdateOrganiztion.ClosingHoursEnd);
+        return base.OnInitializedAsync();
+    }
+    private TimeSpan ConvertTimeOnlyToTimeSpan(TimeOnly? timeOnly )
+    {
+        return timeOnly?.ToTimeSpan() ?? TimeSpan.Zero;
+    }
+}
