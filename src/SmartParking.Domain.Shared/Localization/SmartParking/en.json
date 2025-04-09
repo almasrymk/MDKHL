@@ -504,6 +504,21 @@
     "Permission:UnLinkedTransaction": "UnLinked Transaction Management",
     "Permission:Payment": "Payment Management",
     "Permission:Invoice": "Mapping Management",
+    "Permission:ViewCustomerCard": "View Customers Count Card",
+    "Permission:ViewVisitorCard": "View Visitors Count Card",
+    "Permission:ViewEmployeeCard": "View Employees Count Card",
+    "Permission:ViewOrganizationCard": "View Organizations Count Card",
+    "Permission:ViewGarageCard": "View Garages Count Card",
+    "Permission:ViewBeneficiaresCard": "View Beneficiares Count Card",
+    "Permission:ViewBarChartCard": "View Payment Chart",
+    "Permission:ViewPieChartCard": "View Benefeciares Chart",
+    "Permission:ViewAmountCard": "View Amount Card",
+    "Permission:ViewNoPackageCard": "View No Package Card",
+    "Permission:ViewNumberOfVisitorCard": "View Number Of Visitors in Garage Card",
+    "Permission:ViewNumberOfEmployeeCard": "View Number Of Employees in Garage Card",
+    "Permission:ViewNumberOfCustomerCard": "View Number Of Customers in Garage Card",
+    "Permission:ViewTotalSlotsCard": "View Total Slots Card",
+    "Permission:Dashboard": "Dashboard Management",
     "True": "Yes",
     "False": "No",
     "Permission:Contact": "Contact Management",
@@ -750,7 +765,7 @@
     "Assign User to Shift": "Assign User to Shift",
     "InvoiceNumberView": "Invoice Number",
     "DelPackage": "Can't delete package It has subscribers",
-    "HasFreeSlots" :  "Without Slots"
+    "HasFreeSlots": "Without Slots"
   }
 
 }
