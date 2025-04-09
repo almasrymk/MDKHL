@@ -533,7 +533,7 @@
     "Permission:ViewGarageCard": "اظهار عدد المواقف",
     "Permission:ViewBeneficiaresCard": "اظهار عدد المستفيدين",
     "Permission:ViewBarChartCard": "اظهار احصائية المبيعات",
-    "Permission:ViewBieChartCard": "اظهار احصائيه المستفيدين",
+    "Permission:ViewPieChartCard": "اظهار احصائيه المستفيدين",
     "Permission:ViewAmountCard": "اظهار المبيعات اليومية",
     "Permission:ViewNoPackageCard": "اظهار بدون باقة",
     "Permission:ViewNumberOfVisitorCard": "اظهار عدد الزوار بالمواقف",

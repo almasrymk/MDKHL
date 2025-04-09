@@ -766,5 +766,6 @@
     "InvoiceNumberView": "Invoice Number",
     "DelPackage": "Can't delete package It has subscribers",
     "HasFreeSlots": "Without Slots"
+
   }
 }
