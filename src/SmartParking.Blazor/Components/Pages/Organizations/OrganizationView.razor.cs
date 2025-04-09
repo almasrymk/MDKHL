@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using System.Globalization;
 using SmartParking.Subscriptions;
+using SmartParking.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.Organizations;
 
@@ -16,11 +17,7 @@ public partial class OrganizationView
     private string Code { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
-    public string ArabicName { get; set; }
-    public string EnglishName { get; set; }
-    public string CommercialRegistrationNumber { get; set; }
-    public int NumOfActiveCameras { get; set; }
-    public int NumOfActiveGarages { get; set; }
+ 
     private string CountrySelectValue { get; set; }
     private string CitySelectValue { get; set; }
 
@@ -28,45 +25,15 @@ public partial class OrganizationView
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
     public int Status { get; set; } = 1;//1-> active , 2-> inactive 3->deleted 
-    public string PhoneNum { get; set; }
-    public string WhatsAppNum { get; set; }
-    public string ContactMail { get; set; }
+ 
     public string Address { get; set; }
-    public int BuildingNumber { get; set; }
-    public string StreetName { get; set; }
-    public int SecondaryNumber { get; set; }
-    public int PostalCode { get; set; }
-    public string District { get; set; }
-    public string Photo { get; set; }
-    public string OrganizationPicture { get; set; }
-    public string SubscriptionArName { get; set; }
-    public string SubscriptionEnName { get; set; }
-    public int NumbersOfGarages { get; set; }
-    public int NumberOfCameras { get; set; }
-    public int NumberOfUsers { get; set; }
-    public int NumberOfMobileCustomers { get; set; }
-    public int NumberOfOrganizations { get; set; }
-    public int SubscriptionSlotNumber { get; set; }
-    public string TaxIdentificationNumber { get; set; }
-    public decimal FirstHourPrice { get; set; }
-    public decimal SecondHourPrice { get; set; }
-    public decimal ThirdHourPrice { get; set; }
-    public decimal AdditionalHourPrice { get; set; }
-    public decimal FullDayPrice { get; set; }
-    public int FreeMinutes { get; set; }
-    public int Graceperiod { get; set; }
 
 
+    OrganizationDto organization = new OrganizationDto();
     private async Task FetchData()
     {
         var id = int.Parse(Id);
-        var organization = await OrganizationsAppService.GetAsync(id);
-        EnglishName = organization.EnglishName;
-        ArabicName = organization.ArabicName;
-        NumOfActiveCameras = organization.ActiveCameras;
-        CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
-        
-        OrganizationPicture = organization.OrganizationPicture;
+        organization = await OrganizationsAppService.GetAsync(id);       
         if (organization.Status == Enums.Status.Active)
         {
             Status = 1;
@@ -96,34 +63,6 @@ public partial class OrganizationView
             CityName = organization.CityNameAr;
             Address = organization.Address + organization.CityNameAr;
         }
-        NumOfActiveGarages = organization.ActiveGarages;
-        ContactMail = organization.ContactMail;
-        CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        PhoneNum = organization.PhoneNum;
-        WhatsAppNum = organization.WhatsAppNum; 
-        Code = organization.Code;
-        BuildingNumber = organization.BuildingNumber;
-        StreetName = organization.StreetName;
-        SecondaryNumber = organization.SecondaryNumber;
-        PostalCode = organization.PostalCode;
-        District = organization.District;
-        SubscriptionArName = organization.SubscriptionArabicName;
-        SubscriptionEnName = organization.SubscriptionEnglishName;
-        NumbersOfGarages = organization.NumbersOfGarages;
-        NumberOfCameras=organization.NumberOfCameras;
-        NumberOfMobileCustomers = organization.NumberOfCustomers;
-        NumberOfUsers= organization.NumberOfUsers;
-        SubscriptionArName = organization.SubscriptionArabicName;
-        SubscriptionEnName= organization.SubscriptionEnglishName;
-        TaxIdentificationNumber=organization.TaxNumber;
-        FirstHourPrice = organization.FirstHourPrice;
-        SecondHourPrice = organization.SecondHourPrice;
-        ThirdHourPrice = organization.ThirdHourPrice;
-        FullDayPrice = organization.FullDayPrice;
-        AdditionalHourPrice = organization.AdditionalHourPrice;
-        FreeMinutes = organization.FreeMinutes;
-        Graceperiod = organization.Graceperiod;
-
     }
     protected override async Task OnInitializedAsync()
     {

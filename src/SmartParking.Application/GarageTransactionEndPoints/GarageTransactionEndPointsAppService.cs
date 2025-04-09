@@ -120,6 +120,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             return await NotFoundEntityAndExceptionHandling(input,"Organization");
         }
+        var _hasFreeSlots = await CheckIfOrganizationHasFreeSots(organizationId);
+        
         CreateUpdateGarageTransactionDto GarageTransaction = GenerateCreateGarageTransactionDto(input, camera, cameraId, garageId, organizationId);
 
         try
@@ -127,11 +129,19 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             switch(GarageTransaction.CameraType)
             {
                 case CameraType.Exit:
+                    if (_hasFreeSlots)
+                    {
+                        return false;
+                    }
                     return await HandleCamersExit(garageId, organizationId, GarageTransaction);
 
                 case CameraType.Entry:
                     GarageTransaction.CustomerCategory = await GetTransactionCategory(input, GarageTransaction);
-                    bool canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
+                    bool canEnter = true;
+                    if (!_hasFreeSlots)
+                    {
+                        canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
+                    }
                     await _garageTransactionsAppService.CreateAsync(GarageTransaction);
                     return canEnter;
                     
@@ -139,13 +149,17 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         catch (Exception ex)
         {
-
             return await NotFoundEntityAndExceptionHandling(input, ex.Message);
-
-
         }
         await CreateUnLinkedTransaction(input);
         return await Task.FromResult(false);
+
+    }
+
+    private async Task<bool> CheckIfOrganizationHasFreeSots(int OrganizationId)
+    {
+        var organization = await GetOrganization(OrganizationId);
+        return organization.HasFreeSlots;
 
     }
 
@@ -795,12 +809,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
         var lstCheckout = result.EntryGarageTransaction.CheckoutMobile.HasValue? result.EntryGarageTransaction.CheckoutMobile.Value:DateTime.MinValue;
-        if (lstCheckout != DateTime.MinValue && lstCheckout.AddMinutes(result.EntryGarageTransaction.Organization.Graceperiod) >= DateTime.Now)
+        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(result.EntryGarageTransaction);
+        if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
         {
             throw new Exception("Transaction Already Checked-Out");
         }
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
-        invoice.Value.InvoiceType = InvoiceType.Paid;
         await UpdateEntryTransactionCheckouFromMobile(result.EntryGarageTransaction);
         return await SaveTransactionWithInvoice(invoice, result.ExitGarageTransaction);
     }

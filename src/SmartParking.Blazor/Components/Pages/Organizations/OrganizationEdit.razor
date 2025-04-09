@@ -38,13 +38,13 @@
                     <MudGrid>
                        
                         <MudItem sm="6">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Placeholder=@L["Type Here"] Label=@L["EnglishName"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.EnglishName" Placeholder=@L["Type Here"] Label=@L["EnglishName"] />
                         </MudItem>
                         <MudItem sm="6">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.ArabicName" Placeholder=@L["Type Here"] Label=@L["ArabicName"] />
                         </MudItem>                        
                         <MudItem sm="6">
-                            <MudTextField Disabled="true" T="string" InputType="InputType.Text" @bind-Value="code" Placeholder=@L["Type Here"] Label=@L["Code"] />
+                            <MudTextField Disabled="true" T="string" InputType="InputType.Text" @bind-Value="Code" Placeholder=@L["Type Here"] Label=@L["Code"] />
                         </MudItem>
                       
                         <MudItem sm="6">
@@ -53,22 +53,22 @@
                         </MudItem>
                         
                         <MudItem sm="6">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
 
                         <MudItem sm="6">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="TaxIdentificationNumber" Placeholder=@L["Type Here"] Label=@L["TaxNumber"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.TaxNumber" Placeholder=@L["Type Here"] Label=@L["TaxNumber"] />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="PhoneNum" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.PhoneNumber" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="WhatsAppNum" Placeholder=@L["Type Here"] Label=@L["Whatsapp Num"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.WhatsAppNum" Placeholder=@L["Type Here"] Label=@L["Whatsapp Num"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="ContactMail" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.Email" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
@@ -80,7 +80,7 @@
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@CountrySelectValue"
                                        @onchange="GetRegions">
-                                <MudSelectItem Value="CountryNameEdit"></MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="CountryNameEdit"></MudSelectItem>
                                 @foreach (var country in countries)
                                 {
                                     if (CultureInfo.CurrentCulture.Name == "en")
@@ -103,7 +103,7 @@
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="RegionSelectValue"
                                        @onchange="GetStates">
-                                <MudSelectItem Value="RegionNameEdit"></MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="RegionNameEdit"></MudSelectItem>
                                 @foreach (var region in regions)
                                 {
                                     if (CultureInfo.CurrentCulture.Name == "en")
@@ -122,7 +122,7 @@
                                        Label=@L["State"]
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
-                                       @bind-Value="StateSelectValue"
+                                       Text="@StateNameEdit"
                                        @onchange="GetCities">
                                 <MudSelectItem Value="StateNameEdit"></MudSelectItem>
                                 @foreach (var state in states)
@@ -147,7 +147,7 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        @bind-Value="@CitySelectValue">
-                                <MudSelectItem Value="CityNameEdit"></MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="CityNameEdit"></MudSelectItem>
                                 @foreach (var city in cities)
                                 {
 
@@ -169,25 +169,25 @@
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField Required="true" Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))" @bind-Value="_createUpdateOrganiztionDto.BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
                         </MudItem>
                         <MudItem sm="4">
                             <MudNumericField Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber1111to9999))"
-                                             Required="true" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
+                                             Required="true" @bind-Value="_createUpdateOrganiztionDto.SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
+                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField Required="true" Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber11111to99999))" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                            <MudNumericField Required="true" Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber11111to99999))" @bind-Value="_createUpdateOrganiztionDto.PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                        <MudItem sm="8">
-                            <MudTextField Disabled T="string" InputType="InputType.Text" dir="rtl" @bind-Value="Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                        <MudItem sm="12">
+                            <MudTextField Disabled T="string" InputType="InputType.Text" dir="rtl" @bind-Value="_createUpdateOrganiztionDto.Address" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                    
                        
@@ -199,9 +199,9 @@
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
                                        Required
-                                       Value="SubscriptionId"
                                        ValueChanged="OnSubscriptionSelected">
-                                <MudSelectItem Value="SelectedSubscription.Id"></MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="SelectedSubscription.Id">@(CultureInfo.CurrentCulture.Name == "en" ? SelectedSubscription.EnglishName : SelectedSubscription.ArabicName)</MudSelectItem>
+
                                 @foreach (var subscription in SubscriptionDtos)
                                 {
                                     if (subscription.Status != Enums.SubscriptionStatus.Active)
@@ -245,49 +245,51 @@
 
                         }
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
-                            <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
+                        <MudItem sm="4">
+                            <MudCheckBox T="bool" @bind-Value="_createUpdateOrganiztionDto.HasFreeSlots">@L["HasFreeSlots"]</MudCheckBox>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDay"]} ({L["SAR"]})") />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDay"]} ({L["SAR"]})") />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudNumericField T="int" @bind-Value="FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") />
+                            <MudNumericField T="int" @bind-Value="_createUpdateOrganiztionDto.FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") />
+                            <MudNumericField T="int" @bind-Value="_createUpdateOrganiztionDto.Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") />
                         </MudItem>
                         <MudItem sm="12">
-                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="_createUpdateOrganiztionDto.IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudItem sm="12">
-                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.End" @bind-Value="IsClose" Color="MudBlazor.Color.Primary" />
+                            <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.End" @bind-Value="_createUpdateOrganiztionDto.IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
                     
-                        @if (IsNumberOfHoursExceeded)
+                        @if (_createUpdateOrganiztionDto.IsNumberOfHoursExceeded)
                         {
-
                             <MudItem sm="6">
-                                <MudNumericField T="int" Immediate="true" Required="@IsNumberOfHoursExceeded" @bind-Value="NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
+                                <MudNumericField T="int" Immediate="true" Required="@_createUpdateOrganiztionDto.IsNumberOfHoursExceeded" @bind-Value="@NumberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                             </MudItem>
                         }
-                        @if (IsClose)
+                        @if (_createUpdateOrganiztionDto.IsClose)
                         {
                             <MudItem sm="6">
-                                <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
+                                <MudTimePicker Required="@_createUpdateOrganiztionDto.IsClose" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursStart" ShowToolbar="false" />
                             </MudItem>
                             <MudItem sm="6">
-                                <MudTimePicker Required="@IsClose" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
+                                <MudTimePicker Required="@_createUpdateOrganiztionDto.IsClose" Label="@L["ClosingHoursEnd"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="ClosingHoursEnd" ShowToolbar="false" />
                             </MudItem>
 
                         }
@@ -371,5 +373,7 @@
         -moz-background-size: cover;
         -o-background-size: cover;
         background-size: cover;
+        display: flex;
+        align-self: center;
     }
 </style>

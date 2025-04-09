@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Blazorise;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
@@ -34,58 +36,32 @@ public partial class OrganizationEdit
     private string StateNameEdit { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
-    public string ArabicName { get; set; }
-    public string code { get; set; }
-    public string EnglishName { get; set; }
-    public string CommercialRegistrationNumber { get; set; }
-    public int NumOfCameras { get; set; }
-    public int MaxCapacity { get; set; }
     private string CountrySelectValue { get; set; }
     private string CitySelectValue { get; set; }
     public string RegionSelectValue { get; set; }
     public string StateSelectValue { get; set; }
     private DateTime? CRExpiryDate { get; set; }
-    public decimal FirstHourPrice { get; set; }
-    public decimal SecondHourPrice { get; set; }
-    public decimal ThirdHourPrice { get; set; }
-    public decimal AdditionalHourPrice { get; set; }
-    public decimal FullDayPrice { get; set; }
-    public bool IsNumberOfHoursExceeded { get; set; }
-    public int NumberOfHours { get; set; }
-    public bool IsClose { get; set; }
     public TimeSpan? ClosingHoursStart { get; set; }
     public TimeSpan? ClosingHoursEnd { get; set; }
     public bool Status { get; set; } = true;
-    public string PhoneNum { get; set; }
-    public string WhatsAppNum { get; set; }
-    public string ContactMail { get; set; }
-    public string Address { get; set; }
-    public int BuildingNumber { get; set; }
-    public string StreetName { get; set; }
-    public int SecondaryNumber { get; set; }
-    public int PostalCode { get; set; }
-    public int SubscriptionId { get; set; }
     public string District { get; set; }
-    public string OrganizationPicture { get; set; }
-    public string Photo { get; set; }
     private string SubscriptionSelectValue { get; set; }
-    private Guid orgTenant { get; set; }
     public int NumbersOfGarages { get; set; }
     public int NumberOfCameras { get; set; }
     public int NumberOfUsers { get; set; }
     public int NumberOfCustomers { get; set; }
     public int SubscriptionSlotNumber { get; set; }
+    public int NumberOfHours { get; set; }
     public int Parkingslot { get; set; }
     private SubscriptionDto SelectedSubscription = new SubscriptionDto();
     public string ViewSubscriptionArabicName { get; set; }
-    public  int FreeMinutes { get; set; }
-    public  int Graceperiod { get; set; }
-    public string TaxIdentificationNumber { get; set; }
+    public string Code { get; set; }
+    public string OrganizationPicture { get; set; }
 
     private bool HasChangeStatusPermission;
     private bool IsPictureChanged;
 
-
+    private CreateUpdateOrganiztionDto _createUpdateOrganiztionDto = new CreateUpdateOrganiztionDto();
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -97,29 +73,8 @@ public partial class OrganizationEdit
     private async Task OnSubscriptionSelected(int value)
     {
 
-        SubscriptionId =  value;
+        _createUpdateOrganiztionDto .SubscriptionId =  value;
         SelectedSubscription = SubscriptionDtos.FirstOrDefault(p => p.Id == value);
-
-        if (SelectedSubscription != null)
-        {
-            NumbersOfGarages = SelectedSubscription.NumbersOfGarages;
-            NumberOfCameras = SelectedSubscription.NumberOfCameras;
-            NumberOfUsers = SelectedSubscription.NumberOfUsers;
-            NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
-            SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
-            Parkingslot = SelectedSubscription.ParkingSlot;
-        }
-        else
-        {
-            // Reset values if no package is selected
-            NumbersOfGarages = 0;
-            NumberOfCameras = 0;
-            NumberOfUsers = 0;
-            NumberOfCustomers = 0;
-            SubscriptionSlotNumber = 0;
-            Parkingslot = 0;
-        }
-
         // Trigger UI update
         StateHasChanged();
 
@@ -127,78 +82,26 @@ public partial class OrganizationEdit
     }
     private async Task Update()
     {
-        var successedMessage = L["OrganiztionUpdatedSuccessfully"];
-        var errorMessage = L["Can'tUpdateOrganiztion"];
-        var validationErrorMessage = L["PleaseFixTheValidationErrors"];
-
         var id = int.Parse(Id);
-
-        Status StatusValue;
-        if (Status)
-        {
-            StatusValue = Enums.Status.Active;
-        }
-        else
-        {
-            StatusValue = Enums.Status.Inactive;
-        }
-
-
-        CreateUpdateOrganiztionDto createUpdateOrganiztion = new CreateUpdateOrganiztionDto()
-        {
-            ArabicName = ArabicName,
-            EnglishName = EnglishName,
-            CommercialRegistrationNumber = CommercialRegistrationNumber,
-            NumOfCameras = NumOfCameras,
-            MaxCapacity = MaxCapacity,
-            CityId = int.Parse(CitySelectValue),
-            RegionId = int.Parse(RegionSelectValue),
-            StateId = int.Parse(StateSelectValue),
-            Email = ContactMail,
-            CountryId = int.Parse(CountrySelectValue),
-            CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue),
-            Status = StatusValue,
-            PhoneNumber = PhoneNum,
-            WhatsAppNum = WhatsAppNum,
-            FirstHourPrice = FirstHourPrice,
-            SecondHourPrice = SecondHourPrice,
-            ThirdHourPrice = ThirdHourPrice,
-            AdditionalHourPrice = AdditionalHourPrice,
-            FullDayPrice = FullDayPrice,
-            IsNumberOfHoursExceeded = IsNumberOfHoursExceeded,
-            NumberOfHours = NumberOfHours,
-            IsClose = IsClose,
-            ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue),
-            ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue),
-            BuildingNumber = BuildingNumber,
-            StreetName = StreetName,
-            SecondaryNumber = SecondaryNumber,
-            PostalCode = PostalCode,
-            District = District,
-            OrganizationPicture = OrganizationPicture,
-            Address = BuildingNumber + StreetName + SecondaryNumber + District + PostalCode + CityNameEdit ,
-            FreeMinutes= FreeMinutes,
-            Graceperiod= Graceperiod,
-            SubscriptionId= SubscriptionId,
-            TenantId=orgTenant,
-            TaxNumber= TaxIdentificationNumber,
-        };
-
+        _createUpdateOrganiztionDto.ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue);
+        _createUpdateOrganiztionDto.ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue);
+        _createUpdateOrganiztionDto.RegionId = int.Parse(RegionSelectValue);
+        _createUpdateOrganiztionDto.StateId = int.Parse(StateSelectValue);
+        _createUpdateOrganiztionDto.CityId = int.Parse(CitySelectValue);
+        _createUpdateOrganiztionDto.CountryId = int.Parse(CountrySelectValue);
+        _createUpdateOrganiztionDto.CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue);
+        _createUpdateOrganiztionDto.NumberOfHours = NumberOfHours;
 
         try
         {
-            createUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(IsClose, createUpdateOrganiztion.ClosingHoursStart, createUpdateOrganiztion.ClosingHoursEnd);
+            _createUpdateOrganiztionDto.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(_createUpdateOrganiztionDto.IsClose, _createUpdateOrganiztionDto.ClosingHoursStart, _createUpdateOrganiztionDto.ClosingHoursEnd);
 
             if (IsPictureChanged)
-                createUpdateOrganiztion.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
-            var oragnization = await OrganizationAppService.UpdateAsync(id, createUpdateOrganiztion);
-            //if (SubscriptionId != int.Parse(SubscriptionSelectValue))
-            //{
-            //    await OrganizationAppService.AddOrganizationForSubscription(oragnization.Id, int.Parse(SubscriptionSelectValue));
+                _createUpdateOrganiztionDto.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
+            var oragnization = await OrganizationAppService.UpdateAsync(id, _createUpdateOrganiztionDto);
 
-            //}
             Navigation.NavigateTo("/organizations");
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {createUpdateOrganiztion.ArabicName}", Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {_createUpdateOrganiztionDto.ArabicName}", Severity.Success);
 
         }
         catch (AbpValidationException validationException)
@@ -233,10 +136,7 @@ public partial class OrganizationEdit
         var id = int.Parse(Id);
         var organization = await OrganizationAppService.GetAsync(id);
         SelectedSubscription = await SubscriptionAppService.GetAsync(organization.SubscriptionId);
-        EnglishName = organization.EnglishName;
-        ArabicName = organization.ArabicName;
-        NumOfCameras = organization.NumOfCameras;
-        CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
+        MappingDtos(organization);
         if (organization.Status == Enums.Status.Active)
         {
             Status = true;
@@ -260,36 +160,14 @@ public partial class OrganizationEdit
             RegionNameEdit = organization.RegionNameAr;
             StateNameEdit = organization.StateNameAr;
         }
-        MaxCapacity = organization.MaxCapacity;
         StateSelectValue = organization.StateId.ToString();
-        ContactMail = organization.ContactMail;
         CRExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        PhoneNum = organization.PhoneNum;
-        WhatsAppNum = organization.WhatsAppNum;
+        ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
+        ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();
-        FirstHourPrice = organization.FirstHourPrice;
-        SecondHourPrice = organization.SecondHourPrice;
-        ThirdHourPrice = organization.ThirdHourPrice;
-        FullDayPrice = organization.FullDayPrice;
-        NumberOfHours = organization.NumberOfHours;
-        IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
-        FullDayPrice = organization.FullDayPrice;
-        ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
-        ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
-        AdditionalHourPrice = organization.AdditionalHourPrice;
-        Address = organization.Address;
-        BuildingNumber = organization.BuildingNumber;
-        StreetName = organization.StreetName;
-        SecondaryNumber = organization.SecondaryNumber;
-        PostalCode = organization.PostalCode;
-        District = organization.District;
-        IsClose = organization.IsClose;
-        OrganizationPicture = organization.OrganizationPicture;
-        SubscriptionId = organization.SubscriptionId;
-        orgTenant = organization.TenantId;
-        FreeMinutes = organization.FreeMinutes;
+        Code= organization.Code;
         SubscriptionSelectValue = organization.SubscriptionId.ToString();
         ViewSubscriptionArabicName = organization.SubscriptionArabicName;
         NumbersOfGarages = SelectedSubscription.NumbersOfGarages;
@@ -298,11 +176,44 @@ public partial class OrganizationEdit
         NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
         SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
         Parkingslot = SelectedSubscription.ParkingSlot;
-        Graceperiod = Graceperiod;
-        code = organization.Code;
-        TaxIdentificationNumber= organization.TaxNumber;
+
 
     }
+
+    private void MappingDtos(OrganizationDto organization)
+    {
+        _createUpdateOrganiztionDto.EnglishName = organization.EnglishName;
+        _createUpdateOrganiztionDto.ArabicName = organization.ArabicName;
+        _createUpdateOrganiztionDto.NumOfCameras = organization.NumOfCameras;
+        _createUpdateOrganiztionDto.CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
+        _createUpdateOrganiztionDto.Status = organization.Status;
+        _createUpdateOrganiztionDto.MaxCapacity = organization.MaxCapacity;
+        _createUpdateOrganiztionDto.Email = organization.ContactMail;
+        _createUpdateOrganiztionDto.PhoneNumber = organization.PhoneNum;
+        _createUpdateOrganiztionDto.WhatsAppNum = organization.WhatsAppNum;
+        _createUpdateOrganiztionDto.FirstHourPrice = organization.FirstHourPrice;
+        _createUpdateOrganiztionDto.SecondHourPrice = organization.SecondHourPrice;
+        _createUpdateOrganiztionDto.ThirdHourPrice = organization.ThirdHourPrice;
+        _createUpdateOrganiztionDto.FullDayPrice = organization.FullDayPrice;
+        _createUpdateOrganiztionDto.NumberOfHours = organization.NumberOfHours;
+        _createUpdateOrganiztionDto.IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
+        _createUpdateOrganiztionDto.AdditionalHourPrice = organization.AdditionalHourPrice;
+        _createUpdateOrganiztionDto.Address = organization.Address;
+        _createUpdateOrganiztionDto.BuildingNumber = organization.BuildingNumber;
+        _createUpdateOrganiztionDto.StreetName = organization.StreetName;
+        _createUpdateOrganiztionDto.SecondaryNumber = organization.SecondaryNumber;
+        _createUpdateOrganiztionDto.PostalCode = organization.PostalCode;
+        _createUpdateOrganiztionDto.District = organization.District;
+        _createUpdateOrganiztionDto.IsClose = organization.IsClose;
+        _createUpdateOrganiztionDto.OrganizationPicture = organization.OrganizationPicture;
+        _createUpdateOrganiztionDto.SubscriptionId = organization.SubscriptionId;
+        _createUpdateOrganiztionDto.FreeMinutes = organization.FreeMinutes;
+        _createUpdateOrganiztionDto.Graceperiod = organization.Graceperiod;
+        _createUpdateOrganiztionDto.TaxNumber = organization.TaxNumber;
+        _createUpdateOrganiztionDto.HasFreeSlots = organization.HasFreeSlots;
+        _createUpdateOrganiztionDto.TenantId=organization.TenantId;
+    }
+
     private async Task GetRegions()
     {
 

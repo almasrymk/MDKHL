@@ -258,8 +258,9 @@
 
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
-
-
+                        <MudItem sm="4"> 
+                        <MudCheckBox @bind-Value="CreateUpdateOrganiztion.HasFreeSlots">@L["HasFreeSlots"]</MudCheckBox>
+                        </MudItem>
                         <MudItem sm="4">
                             <MudNumericField T="decimal" RequiredError="@L["This field is required."]" @bind-Value="CreateUpdateOrganiztion.FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
@@ -361,5 +362,7 @@
         -moz-background-size: cover;
         -o-background-size: cover;
         background-size: cover;
+        display: flex;
+        align-self: center;
     }
 </style>
