@@ -206,13 +206,13 @@
                         
                     @if(organization.OrganizationPicture!=null)
                     {
-                        <MudItem sm="12" class="d-flex flex-column align-content-center gap-4 p-5 mb-3">
+                        <MudItem sm="12" class="d-flex flex-column align-content-center justify-content-center gap-4 p-5 mb-3">
                             <MudImage Src="@(organization.OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                         </MudItem>
                     }
                     else
                     {
-                        <MudItem sm="12" class="d-flex flex-column align-content-center gap-4 p-5 mb-3">
+                        <MudItem sm="12" class="d-flex flex-column align-content-center justify-content-center gap-4 p-5 mb-3">
 
                             <MudImage Src="images/MDHKL_04.png" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
 
@@ -291,5 +291,7 @@
         -moz-background-size: cover;
         -o-background-size: cover;
         background-size: cover;
+        display: flex;
+        align-self:center;
     }
 </style>
