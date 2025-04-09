@@ -115,7 +115,7 @@
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" @bind-Value="organization.PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
-                        <MudItem sm="8">
+                        <MudItem sm="12">
                             <MudTextField ReadOnly="true" dir="rtl" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                         
@@ -159,13 +159,11 @@
 
                         </MudItem>
                        
-                       
-
-                       
-
-
-                        @* Hours *@
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
+                        <MudItem sm="4">
+                            <MudCheckBox T="bool" Immediate="true" @bind-Value="organization.HasFreeSlots" Label=@($"{L["HasFreeSlots"]}") ReadOnly="true" />
+                        </MudItem> 
                         <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
