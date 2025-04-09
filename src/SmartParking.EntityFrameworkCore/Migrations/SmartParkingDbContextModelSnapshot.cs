@@ -1789,6 +1789,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("Graceperiod")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("HasFreeSlots")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsClose")
                         .HasColumnType("boolean");
 
