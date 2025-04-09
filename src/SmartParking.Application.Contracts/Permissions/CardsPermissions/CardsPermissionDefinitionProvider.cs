@@ -24,7 +24,10 @@ namespace SmartParking.Permissions.CardsPermissions
             cardPermission.AddChild(CardsPermissions.ViewAmountCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewAmountCard));
             cardPermission.AddChild(CardsPermissions.ViewBarChartCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewBarChartCard));
             cardPermission.AddChild(CardsPermissions.ViewBieChartCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewBieChartCard));
-            cardPermission.AddChild(CardsPermissions.ViewNoPackageCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewNoPackageCard));
+            cardPermission.AddChild(CardsPermissions.ViewNumberOfVisitorCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewNumberOfVisitorCard));
+            cardPermission.AddChild(CardsPermissions.ViewNumberOfEmployeeCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewNumberOfEmployeeCard));
+            cardPermission.AddChild(CardsPermissions.ViewNumberOfCustomerCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewNumberOfCustomerCard));
+            cardPermission.AddChild(CardsPermissions.ViewTotalSlotsCard, CustomStringLocalizer.L(CustomStringLocalizer.ViewTotalSlotsCard));
         }
     }
 }

@@ -22,5 +22,9 @@ namespace SmartParking.Permissions.CardsPermissions
         public const string ViewBieChartCard = Default + SmartParkingPermissions.ViewBieChartCard;
         public const string ViewAmountCard = Default + SmartParkingPermissions.ViewAmountCard;
         public const string ViewNoPackageCard = Default + SmartParkingPermissions.ViewNoPackageCard;
+        public const string ViewTotalSlotsCard = Default + SmartParkingPermissions.ViewTotalSlotsCard;
+        public const string ViewNumberOfEmployeeCard = Default + SmartParkingPermissions.ViewNumberOfEmployeeCard;
+        public const string ViewNumberOfCustomerCard = Default + SmartParkingPermissions.ViewNumberOfCustomerCard;
+        public const string ViewNumberOfVisitorCard = Default + SmartParkingPermissions.ViewNumberOfVisitorCard;
     }
 }
