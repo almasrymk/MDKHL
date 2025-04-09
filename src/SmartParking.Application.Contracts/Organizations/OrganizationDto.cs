@@ -66,6 +66,8 @@ public class OrganizationDto :AuditedEntityDto<int>
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
     public string TaxNumber { get; set; }
+    public bool HasFreeSlots { get; set; }
+
 
 
 }

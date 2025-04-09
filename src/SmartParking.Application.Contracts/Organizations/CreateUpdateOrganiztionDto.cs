@@ -51,6 +51,7 @@ public class CreateUpdateOrganiztionDto
     public string? NationalId { get; set; }
 
     public string TenantName { get; set; }
+    public bool HasFreeSlots { get; set; }
 
 
 }
