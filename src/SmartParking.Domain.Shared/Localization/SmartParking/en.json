@@ -511,7 +511,7 @@
         "Permission:ViewGarageCard": "View Garages Count Card",
         "Permission:ViewBeneficiaresCard": "View Beneficiares Count Card",
         "Permission:ViewBarChartCard": "View Payment Chart",
-        "Permission:ViewBieChartCard": "View Benefeciares Card",
+        "Permission:ViewPieChartCard": "View Benefeciares Chart",
         "Permission:ViewAmountCard": "View Amount Card",
         "Permission:ViewNoPackageCard": "View No Package Card",
         "Permission:Dashboard": "Dashboard Management",
