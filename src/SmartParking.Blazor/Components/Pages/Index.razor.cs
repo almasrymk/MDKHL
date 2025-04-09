@@ -13,8 +13,7 @@ namespace SmartParking.Blazor.Components.Pages;
 
 public partial class Index
 {
-    ChartOptions options = new ChartOptions();
-    AnalysisNamesCountDto value = new AnalysisNamesCountDto();
+    
     public EventCallback<string> SelectValueChanged { get; set; }
     private int _organizationsCount;
     private int _garagesCount;
@@ -22,13 +21,12 @@ public partial class Index
     private int grid;
     private int totalGrid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
-    double[] data = { 0, 0, 0, 0 };
+    public double[] data { get; set; } = { 0, 0, 0, 0 };
 
     string[] labels = { "Customers", "Employees", "Visitors", "NoPackage" };
-    string msg;
+    public string msg { get; set; }
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-    public string[] XAxisLabels = { " " };
-    private int index = -1;
+    public string[] XAxisLabels { get; set; } = { " " };
 
     public List<ChartSeries> Series = new List<ChartSeries>();
 
@@ -93,10 +91,8 @@ public partial class Index
             collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()} {@L["SAR"]}";
         }
 
-        string[] colors = { "#0D5480", "#16B7D3", "#CE3333", "#ca06e1" };
-        options.ChartPalette = colors;
-        options.ShowLegend = true;
-        options.LineStrokeWidth = 20;
+        
+
     }
 
     private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees, int? NumberOfNoPackage)
