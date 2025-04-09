@@ -80,8 +80,11 @@ public partial class Index
         IsShowNoPackagesCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNoPackageCard);
         IsShowVisitorsCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewVisitorCard);
         IsShowPieChartCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewBieChartCard);
-       IsShowTotalCustomersCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewCustomerCard);
-
+        IsShowTotalCustomersCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewCustomerCard);
+        IsShowTotalSlotsCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewTotalSlotsCard);
+        IsShowNumberOfCustomerParkingCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNumberOfCustomerCard);
+        IsShowNumberOfEmployeeParkingCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNumberOfEmployeeCard);
+        IsShowNumberOfVistiorParkingCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNumberOfVisitorCard);
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
 
