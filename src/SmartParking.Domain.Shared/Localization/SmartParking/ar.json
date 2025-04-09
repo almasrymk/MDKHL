@@ -526,6 +526,21 @@
     "Permission:UnLinkedTransaction": "موديول حركات غير معرفة",
     "Permission:Payment": "موديول الفواتير",
     "Permission:Invoice": "موديول المطابقة",
+    "Permission:ViewCustomerCard": "اظهار عدد العملاء",
+    "Permission:ViewVisitorCard": "اظهار عدد الزوار",
+    "Permission:ViewEmployeeCard": "اظهار عدد الموظفين",
+    "Permission:ViewOrganizationCard": "اظهار عدد المؤسسات",
+    "Permission:ViewGarageCard": "اظهار عدد المواقف",
+    "Permission:ViewBeneficiaresCard": "اظهار عدد المستفيدين",
+    "Permission:ViewBarChartCard": "اظهار احصائية المبيعات",
+    "Permission:ViewBieChartCard": "اظهار احصائيه المستفيدين",
+    "Permission:ViewAmountCard": "اظهار المبيعات اليومية",
+    "Permission:ViewNoPackageCard": "اظهار بدون باقة",
+    "Permission:ViewNumberOfVisitorCard": "اظهار عدد الزوار بالمواقف",
+    "Permission:ViewNumberOfEmployeeCard": "اظهار عدد الموظفين بالمواقف",
+    "Permission:ViewNumberOfCustomerCard": "اظهار عدد العملاء بالمواقف",
+    "Permission:ViewTotalSlotsCard": "اظهار اجمالي اماكن الوقوف",
+    "Permission:Dashboard": "موديول الشاشة الرئيسية",
     "True": "نعم",
     "False": "لا",
     "Permission:Contact": "موديول بيانات الاتصال ",
@@ -778,7 +793,8 @@
     "Assign User to Shift": "تخصيص وردية للمستخدم",
     "InvoiceNumberView": "رقم الفاتورة",
     "DelPackage": "لا يمكن مسح باقه لديها مشتركين",
-    "HasFreeSlots" :  "بدون اماكن"
+    "HasFreeSlots": "بدون اماكن"
+
 
 
 
