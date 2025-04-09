@@ -60,7 +60,7 @@
     }
 
 
-    @if (currenttenant.Id is not null )
+    @if (currenttenant.Id is not null && IsShowTotalSlotsCard)
     {
         <SpCardStatistics grid="grid"
         Header="@L["TotalSlots"]"
@@ -112,24 +112,30 @@
 
     @if(currenttenant.Id is not null)
     {
-
-        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
-        HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
-        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfCustomerReservedParking"
-        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
-        ExportModel="@L["Excel"]"></SpCardDashbard>
-
-        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
-        BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
+        @if (IsShowNumberOfCustomerParkingCard)
+        {
+            <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Customers"]" 
+            HeaderText1="@L["CustomersParking"]" BodyText1="@getNumberOfParking.NumberOfCustomerParking" 
+            HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfCustomerReservedParking"
+            HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Customer))"
+            ExportModel="@L["Excel"]"></SpCardDashbard>
+        }
+        @if (IsShowNumberOfEmployeeParkingCard)
+        {
+            <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Employees"]" HeaderText1="@L["CustomersParking"]"
+            BodyText1="@getNumberOfParking.NumberOfEmployeeParking" 
         HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfEmployeeReservedParking"
         HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Employee))"
         ExportModel="@L["Excel"]"></SpCardDashbard>
-
-        <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
-        BodyText1="@getNumberOfParking.NumberOfVisitorParking"
-        HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfVistiorReservedParking"
-        HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
-        ExportModel="@L["Excel"]"></SpCardDashbard>
+        }
+        @if(IsShowNumberOfVistiorParkingCard){
+            <SpCardDashbard Image="images/dashboard/car.png" Header="@L["Visitors"]" HeaderText1="@L["CustomersParking"]"
+                            BodyText1="@getNumberOfParking.NumberOfVisitorParking"
+                            HeaderText2="@L["Reserved"]" BodyText2="@getNumberOfParking.NumberOfVistiorReservedParking"
+                            HandleExport="@( ()=> ExportToExcel(CustomerCategoryStatus.Visitor))"
+                            ExportModel="@L["Excel"]"></SpCardDashbard>
+        }
+        
 
 
 
