@@ -809,12 +809,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var result = await InitiateGarageTransaction(garageTransactionId);
         var lstCheckout = result.EntryGarageTransaction.CheckoutMobile.HasValue? result.EntryGarageTransaction.CheckoutMobile.Value:DateTime.MinValue;
-        if (lstCheckout != DateTime.MinValue && lstCheckout.AddMinutes(result.EntryGarageTransaction.Organization.Graceperiod) >= DateTime.Now)
+        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(result.EntryGarageTransaction);
+        if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
         {
             throw new Exception("Transaction Already Checked-Out");
         }
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
-        invoice.Value.InvoiceType = InvoiceType.Paid;
         await UpdateEntryTransactionCheckouFromMobile(result.EntryGarageTransaction);
         return await SaveTransactionWithInvoice(invoice, result.ExitGarageTransaction);
     }
