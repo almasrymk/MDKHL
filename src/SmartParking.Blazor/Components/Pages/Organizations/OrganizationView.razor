@@ -31,34 +31,34 @@
                     <MudGrid>
                         
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="ArabicName" Label=@L["ArabicName"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.ArabicName" Label=@L["ArabicName"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="EnglishName" Label=@L["EnglishName"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.EnglishName" Label=@L["EnglishName"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.CommercialRegistrationNumber" Placeholder=@L["Type Here"] Label=@L["CommercialRegistrationNumber"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="TaxIdentificationNumber" Placeholder=@L["Type Here"] Label=@L["TaxNumber"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.TaxNumber" Placeholder=@L["Type Here"] Label=@L["TaxNumber"] />
                         </MudItem>
         
                         <MudItem sm="4">
                             <MudDatePicker ReadOnly="true" Label="@L["CR Expiry Date"]" @bind-Date="CRExpiryDate" ShowToolbar="false" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Code" Label=@L["Code"] />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.Code" Label=@L["Code"] />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" @bind-Value="PhoneNum" Label=@L["Contact Phone"] />
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="organization.PhoneNum" Label=@L["Contact Phone"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" @bind-Value="WhatsAppNum" Label="@L["Whatsapp Num"]" />
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="organization.WhatsAppNum" Label="@L["Whatsapp Num"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" @bind-Value="ContactMail" Label="@L["Contact Email"]" />
+                            <MudTextField ReadOnly="true" T="string" @bind-Value="organization.ContactMail" Label="@L["Contact Email"]" />
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
@@ -99,24 +99,24 @@
                         @* Address *@
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField ReadOnly="true" @bind-Value="organization.BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
+                            <MudNumericField ReadOnly="true" @bind-Value="organization.SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
+                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="organization.District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
+                            <MudTextField ReadOnly="true" @bind-Value="organization.PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
                         </MudItem>
                         <MudItem sm="8">
-                            <MudNumericField ReadOnly="true" dir="rtl" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
+                            <MudTextField ReadOnly="true" dir="rtl" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                         
                         @* Subscription  *@
@@ -126,36 +126,36 @@
 
 
                             <MudItem sm="4">
-                                <MudNumericField ReadOnly="true" @bind-Value="SubscriptionEnName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                                <MudTextField ReadOnly="true" @bind-Value="organization.SubscriptionEnglishName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
                             </MudItem>
                         }
                         else
                         {
 
                             <MudItem sm="4">
-                                <MudNumericField ReadOnly="true" @bind-Value="SubscriptionArName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                                <MudNumericField ReadOnly="true" @bind-Value="organization.SubscriptionArabicName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
                             </MudItem>
                         }
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveCameras" HideSpinButtons="true" Label=@L["Num Of Cameras"] />
+                            <MudNumericField ReadOnly="true" @bind-Value="organization.ActiveCameras" HideSpinButtons="true" Label=@L["Num Of Cameras"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" @bind-Value="NumOfActiveGarages" HideSpinButtons="true" Label=@L["ParkingSlot"] />
+                            <MudNumericField ReadOnly="true" @bind-Value="organization.ActiveGarages" HideSpinButtons="true" Label=@L["ParkingSlot"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="NumbersOfGarages" />
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Garages"] @bind-Value="organization.NumbersOfGarages" />
 
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="NumberOfCameras" />
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Cameras"] @bind-Value="organization.NumberOfCameras" />
 
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="NumberOfUsers" />
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Users"] @bind-Value="organization.NumberOfUsers" />
 
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="NumberOfMobileCustomers" />
+                            <MudNumericField ReadOnly="true" HideSpinButtons="true" Label=@L["Max Number Of Customers"] @bind-Value="organization.NumberOfCustomers" />
 
                         </MudItem>
                        
@@ -167,27 +167,27 @@
                         @* Hours *@
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDay"]} ({L["SAR"]})") ReadOnly="true" />
-                        </MudItem>
-
-                        <MudItem sm="4">
-                            <MudNumericField T="int" @bind-Value="FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") ReadOnly="true" />
+                            <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDay"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") ReadOnly="true" />
+                            <MudNumericField T="int" @bind-Value="organization.FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") ReadOnly="true" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudNumericField T="int" @bind-Value="organization.Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") ReadOnly="true" />
                         </MudItem>
 
 
@@ -206,10 +206,10 @@
 
                     <MudItem sm="12" >
                         
-                    @if(OrganizationPicture!=null)
+                    @if(organization.OrganizationPicture!=null)
                     {
                         <MudItem sm="12" class="d-flex flex-column align-content-center gap-4 p-5 mb-3">
-                            <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
+                            <MudImage Src="@(organization.OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
                         </MudItem>
                     }
                     else
